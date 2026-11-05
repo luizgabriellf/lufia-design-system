@@ -1,0 +1,64 @@
+name: Bug report
+description: Something is broken, looks wrong, or is not accessible
+title: "bug: "
+labels: ["type: bug", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the design system. Accessibility problems are bugs: please report them here.
+        Security issues must **not** be reported here; see the security policy.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Git tag or version, for example v0.1.0
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Component or token
+      placeholder: EmptyState
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Steps, a Storybook story, or a CodeSandbox / StackBlitz link.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Visual / layout
+        - Accessibility (keyboard, screen reader, contrast, zoom)
+        - Theming / tokens
+        - Types / API
+        - Build / packaging
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser and version, OS, framework (for example Next.js 15), and assistive technology if relevant.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true

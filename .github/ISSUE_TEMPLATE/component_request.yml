@@ -1,0 +1,50 @@
+name: Component or token request (RFC)
+description: Propose a new component, token or API change
+title: "rfc: "
+labels: ["type: rfc", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New components start as a short RFC so the problem is agreed before code is written. See CONTRIBUTING for the flow.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can users not do today, or do badly?
+    validations:
+      required: true
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use cases
+      description: Two or more real use cases, ideally from different apps. A component needed in only one place usually stays in that app.
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: API sketch
+      description: Props, slots and states, with a short usage example. Every user-facing string must come in through props.
+      render: tsx
+    validations:
+      required: true
+  - type: textarea
+    id: a11y
+    attributes:
+      label: Accessibility
+      description: Which WAI-ARIA Authoring Practices pattern applies, and the expected keyboard behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and the Storybook docs.
+          required: true
+        - label: I am willing to help build it.

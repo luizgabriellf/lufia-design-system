@@ -1,0 +1,49 @@
+# Source of truth for repository labels. Apply with scripts/setup-repo-settings.sh or a label-sync tool.
+- name: "type: bug"
+  color: d73a4a
+  description: Something is broken or inaccessible
+- name: "type: feature"
+  color: 0e8a16
+  description: New component, token or capability
+- name: "type: rfc"
+  color: 5319e7
+  description: Proposal that needs discussion before code
+- name: "type: docs"
+  color: 0075ca
+  description: Documentation only
+- name: "type: chore"
+  color: ededed
+  description: Tooling, CI, dependencies, housekeeping
+- name: "area: a11y"
+  color: 1d76db
+  description: Accessibility
+- name: "area: tokens"
+  color: c5def5
+  description: Design tokens and themes
+- name: "area: components"
+  color: c5def5
+  description: Component code
+- name: "area: storybook"
+  color: c5def5
+  description: Storybook and docs site
+- name: "area: build"
+  color: c5def5
+  description: Build, packaging, release
+- name: "status: needs-triage"
+  color: fbca04
+  description: Not reviewed yet
+- name: "status: blocked"
+  color: b60205
+  description: Waiting on something external
+- name: "status: help wanted"
+  color: 008672
+  description: Open to community contributions
+- name: "good first issue"
+  color: 7057ff
+  description: Good for newcomers
+- name: "breaking change"
+  color: e99695
+  description: Needs a major version and a migration note
+- name: "dependencies"
+  color: 0366d6
+  description: Dependency updates
