@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/luizgabriellf/lufia-design-system/security/advisories/new
+    about: Report vulnerabilities privately. Never open a public issue for them.
+  - name: Documentation and Storybook
+    url: https://luizgabriellf.github.io/lufia-design-system/
+    about: Browse component docs, tokens and accessibility notes.

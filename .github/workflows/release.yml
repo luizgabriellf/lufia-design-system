@@ -1,0 +1,54 @@
+name: Release
+
+# Versioning only. After CI succeeds on main, this workflow opens or updates the "Version packages" pull request and,
+# once that pull request is merged (no changesets left), tags the bumped commit. It never publishes to npm (on hold).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Version and tag
+    if: (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: npm run version-packages
+          commit-message: "chore(release): version packages"
+          pr-title: "chore(release): version packages"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag the released version
+        # No pending changesets means HEAD is the merged "Version packages" commit (or a release-neutral commit).
+        if: steps.changesets.outputs.has-changesets == 'false'
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/${version}" >/dev/null 2>&1; then
+            echo "${version} already exists"
+          else
+            git tag "${version}" "${{ github.event.workflow_run.head_sha }}"
+            git push origin "${version}"
+          fi

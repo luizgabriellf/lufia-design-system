@@ -85,7 +85,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 - [ ] **Changesets** for versioning and the generated CHANGELOG. Semver is strict:
   - breaking changes are majors and come with a migration guide;
   - deprecations last at least one minor version with a console warning in dev.
-- [ ] Release workflow: on merge to main, changesets opens a "Version packages" PR, and merging it publishes and tags.
+- [ ] Release workflow: on merge to main, changesets opens a "Version packages" PR, and merging it tags the release (publishing to npm is on hold; apps install a git tag).
 
 ## 9. Adoption in consuming apps
 - [ ] Each app imports `@lufia/design-system/tokens.css` plus its own brand theme once at the root layout.
