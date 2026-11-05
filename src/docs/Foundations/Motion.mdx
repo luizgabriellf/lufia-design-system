@@ -1,22 +1,80 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 import { TokenTable } from "../TokenTable";
+import { TrackDemo, DistanceDemo, ReducedMotionReadout } from "../MotionDemos";
 
 <Meta title="Foundations/Motion" />
 
 # Motion
 
-> **Placeholder.** Duration and easing tokens ship today. Motion primitives and the verification gate are extracted from
-> a reference implementation in phase P2 (see the roadmap).
+Motion keeps people oriented: where something came from, where it went, what just changed. If it does not do that, leave
+it out. Everything on this page is a token, and every token respects `prefers-reduced-motion` by itself.
+
+The full rules live in [`docs/MOTION.md`](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/MOTION.md).
+The primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight, `usePrefersReducedMotion`) are under
+**Motion** in the sidebar, and the `lufia-verify-motion` command checks your own source against these rules.
+
+<ReducedMotionReadout />
 
 ## Durations
 
+Exits are always shorter than entrances. Nothing in application UI should exceed 300 ms; `medium` and `slow` are for
+marketing-style reveals and large surfaces.
+
 <TokenTable group="motion.duration" preview="duration" />
+
+<TrackDemo kind="duration" />
 
 ## Easing
 
+| Token                          | Use                                                   |
+| ------------------------------ | ----------------------------------------------------- |
+| `--lufia-motion-easing-out`    | Entrances: fast start, soft landing                   |
+| `--lufia-motion-easing-in`     | Exits: slow start, accelerates away                   |
+| `--lufia-motion-easing-in-out` | Moving between two resting places                     |
+| `--lufia-motion-easing-drawer` | Large travel (sheets): a soft start and a long settle |
+
 <TokenTable group="motion.easing" />
+
+<TrackDemo kind="easing" />
+
+## Distance
+
+How far something travels while entering or leaving. Distances are in `rem`, so they scale with the user's text size.
+
+<TokenTable group="motion.distance" />
+
+<DistanceDemo />
 
 ## Reduced motion
 
-Under `prefers-reduced-motion: reduce`, `tokens.css` collapses every duration to `0.01ms`. Components that animate
-position or size must still reach their end state.
+Under `prefers-reduced-motion: reduce`, `tokens.css` collapses every `--lufia-motion-duration-*` to `0.01ms` and every
+`--lufia-motion-distance-*` to `0rem`. Durations stay just above zero, not zero, on purpose: `transitionend` and
+`animationend` still fire, so code that waits for them keeps working, and the end state is reached on the next frame.
+
+- Anything built from the tokens needs no extra work.
+- Endless loops (spinners, shimmer) are **stopped**, not shortened: a 0.01 ms loop is a strobe. Add a
+  `@media (prefers-reduced-motion: reduce)` rule for them.
+- JavaScript-driven motion reads `usePrefersReducedMotion()` and renders the final state.
+- Reduced motion means _less_ motion, not less information.
+
+## Rules in short
+
+1. Animate `transform`, `opacity` and similar compositor properties. Never `width`, `height`, `top`, `left` or margins.
+   [Collapse](?path=/docs/motion-collapse--docs) is the approved way to animate height.
+2. Durations and easings come from tokens, never literals.
+3. Only real state changes animate, never first paint or every re-render.
+4. Motion never carries meaning alone and never blocks input.
+
+## Using the tokens
+
+```css
+.panel {
+  transition:
+    transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out),
+    opacity var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+.panel[data-closed] {
+  opacity: 0;
+  transform: translateY(var(--lufia-motion-distance-rise));
+}
+```

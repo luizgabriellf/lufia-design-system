@@ -25,6 +25,10 @@ The first components come from existing production React code that had been copi
   - CONTRIBUTING and ADRs.
   - Full checklist in STANDARDS.md.
 - **P1 – Identical components:** move the components that are identical across consumers. Consumers switch to the package with no visual change, confirmed by screenshot diffs.
-- **P2 – Motion:** motion tokens and primitives, plus the verify-motion gate.
+- **P2 – Motion:** motion tokens and primitives, plus the verify-motion gate. **Done** (all `beta`, see [MOTION.md](MOTION.md)):
+  - duration, easing and distance tokens with a reduced-motion policy;
+  - Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight and `usePrefersReducedMotion`;
+  - the `lufia-verify-motion` CLI with a shrink-only baseline, run on this repo in `npm run check`.
+  - Still open: consuming apps adopting the primitives and the CLI (phase P1/P3 sweeps).
 - **P3 – Diverged components:** one cluster at a time (overlays: Modal, ConfirmDialog, Toast, focus trap; inputs; tables; navigation). Each cluster is merged into a single API, consumers migrate, and they are swept at 4 widths.
 - **P4 – Hardening:** a screen-reader pass for every component, stable labels, an adoption tracker, and removal of the legacy copies in consuming apps.

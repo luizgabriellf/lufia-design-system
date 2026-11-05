@@ -22,6 +22,9 @@ accessibility note.
   TypeScript map and JSON. Primitive and semantic layers, light, dark and `forced-colors`.
 - **Components** in React 19, styled with CSS Modules that read only semantic tokens, safe for Server Components. Every
   user-facing string is a prop, so the package carries no i18n of its own.
+- **Motion**: duration, easing and distance tokens (`--lufia-motion-*`) that collapse under `prefers-reduced-motion`,
+  five small primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight) and a `lufia-verify-motion` CLI
+  that checks your own source against the [motion rules](docs/MOTION.md).
 - **Accessibility as a gate**: WCAG 2.2 AA contrast checked in CI for every theme and mode, `vitest-axe` on every component,
   keyboard behaviour documented per component.
 - **Storybook** with theme, mode and viewport (320 / 390 / 768 / 1440) controls, deployed to GitHub Pages after CI passes on `main`
@@ -69,6 +72,7 @@ import { EmptyState } from "@lufia/design-system/components/EmptyState";
 ## Project
 
 - [Roadmap](docs/ROADMAP.md) and [standards checklist](docs/STANDARDS.md)
+- [Motion rules](docs/MOTION.md) and the `lufia-verify-motion` check
 - [Architecture decision records](docs/adr)
 - [Contributing](CONTRIBUTING.md) (workflow, RFCs, definition of done, changesets) and [governance](GOVERNANCE.md)
 - [Code of conduct](CODE_OF_CONDUCT.md), [security policy](SECURITY.md), [support](SUPPORT.md)
