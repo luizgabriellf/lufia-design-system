@@ -1,0 +1,207 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-5);
+}
+
+.track + .track {
+  padding-top: 18px;
+  border-top: 1px solid var(--lufia-color-border-subtle);
+}
+
+.trackTitle {
+  font-family: var(--lufia-font-family-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin: 0 0 10px;
+}
+
+.nodes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Vertical node graph: icon and connector on the left, content stacked to its right. */
+.node {
+  position: relative;
+  display: flex;
+  gap: var(--lufia-space-3);
+  padding-bottom: var(--lufia-space-5);
+}
+
+.node:last-child {
+  padding-bottom: 0;
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--lufia-color-border-strong);
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-muted);
+}
+
+/* Connector edge between this node and the next. Anchored on `.node` (not
+   `.icon`) with `top`/`bottom` instead of a fixed height: node content
+   (label + pill + timestamp + deadline + action button) routinely runs
+   100px+ tall, so a fixed-height stub fell well short of the next node and
+   read as a disconnected dash. `bottom: 0` reaches this node's own bottom
+   edge, which is exactly where the next node's box starts (the gap between
+   nodes is this node's own padding-bottom, not a `gap` on `.nodes`), so the
+   line always spans the real distance regardless of either node's height. */
+.node:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 24px;
+  bottom: 0;
+  left: 12px;
+  transform: translateX(-50%);
+  width: 2px;
+  background: var(--lufia-color-border-subtle);
+}
+
+.node.done .icon {
+  border-color: var(--lufia-color-status-success-fg);
+  background: var(--lufia-color-status-success-bg);
+  color: var(--lufia-color-status-success-fg);
+}
+
+.node.pending .icon {
+  border-color: var(--lufia-color-status-warning-border);
+  background: var(--lufia-color-status-warning-bg);
+  color: var(--lufia-color-status-warning-fg);
+}
+
+/* Overdue must never read as a shade of pending: solid danger fill, not just a tinted border. */
+.node.overdue .icon {
+  border-color: var(--lufia-color-status-danger-solid);
+  background: var(--lufia-color-status-danger-solid);
+  color: var(--lufia-color-status-danger-on-solid);
+}
+
+.node.needsTimestamp .icon {
+  color: var(--lufia-color-text-subtle);
+}
+
+.node.notApplicable .icon {
+  color: var(--lufia-color-text-subtle);
+  opacity: 0.7;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--lufia-space-1);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  flex-wrap: wrap;
+}
+
+.label {
+  font-size: 0.9rem;
+}
+
+.timestamp {
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.8rem;
+  color: var(--lufia-color-text-muted);
+}
+
+.due {
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.8rem;
+  color: var(--lufia-color-text-subtle);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--lufia-color-text-subtle);
+}
+
+.actionSlot {
+  margin-top: 2px;
+}
+
+@media (width >= 640px) {
+  .node {
+    gap: var(--lufia-space-4);
+  }
+
+  .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Keep the connector's top offset and horizontal centering matched to the
+     larger icon size at this breakpoint. */
+  .node:not(:last-child)::after {
+    top: 28px;
+    left: 14px;
+  }
+}
+
+/* State pill. The label text names the state; colour is reinforcement only. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.72rem;
+  font-weight: var(--lufia-font-weight-semibold);
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: var(--lufia-radius-sm);
+}
+
+.pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: currentcolor;
+  border-radius: 50%;
+}
+
+.ok {
+  color: var(--lufia-color-status-success-fg);
+  background: var(--lufia-color-status-success-bg);
+  border-color: var(--lufia-color-border-strong);
+}
+
+.warn {
+  color: var(--lufia-color-status-warning-fg);
+  background: var(--lufia-color-status-warning-bg);
+}
+
+.danger {
+  color: var(--lufia-color-status-danger-fg);
+  background: var(--lufia-color-status-danger-bg);
+}
+
+.neutral {
+  color: var(--lufia-color-status-neutral-fg);
+  background: var(--lufia-color-status-neutral-bg);
+}
+
+@media (forced-colors: active) {
+  .pill {
+    border-color: currentcolor;
+  }
+}

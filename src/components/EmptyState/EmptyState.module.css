@@ -1,0 +1,40 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--lufia-space-3);
+  padding: var(--lufia-space-12) var(--lufia-space-6);
+  color: var(--lufia-color-text-muted);
+}
+
+.icon {
+  font-size: 2.2rem;
+  opacity: var(--lufia-opacity-decorative);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-weight: var(--lufia-font-weight-semibold);
+  font-size: var(--lufia-font-size-md);
+  color: var(--lufia-color-text-default);
+}
+
+.body {
+  margin: 0;
+  max-width: 340px;
+  font-size: var(--lufia-font-size-sm);
+  line-height: 1.55;
+  color: var(--lufia-color-text-muted);
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lufia-space-2);
+  margin-top: var(--lufia-space-1);
+}

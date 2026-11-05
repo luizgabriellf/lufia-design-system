@@ -30,5 +30,7 @@ jobs:
           HUSKY: "0"
       - name: Check (typecheck, lint, stylelint, format, tests, contrast)
         run: npm run check
+      - name: Coverage
+        run: npm run test:coverage
       - name: Build package
         run: npm run build

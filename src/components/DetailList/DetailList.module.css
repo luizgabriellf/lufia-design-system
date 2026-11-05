@@ -1,0 +1,23 @@
+.list {
+  display: grid;
+  grid-template-columns: fit-content(40%) 1fr;
+  gap: var(--lufia-space-2) var(--lufia-space-4);
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--lufia-color-text-default);
+}
+
+.term {
+  color: var(--lufia-color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.value {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--lufia-font-family-mono);
+}
