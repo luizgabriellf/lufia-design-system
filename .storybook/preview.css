@@ -31,3 +31,81 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Docs pages: keep wide blocks (code, props tables) inside their own box so phones never scroll sideways. */
+.sbdocs.sbdocs-wrapper {
+  box-sizing: border-box;
+  min-width: 0;
+  padding-inline: clamp(1rem, 4vw, 4rem);
+}
+
+.sbdocs .sbdocs-content {
+  min-width: 0;
+  max-width: 62rem;
+}
+
+.sbdocs pre,
+.sbdocs .docblock-source {
+  max-width: 100%;
+}
+
+.sbdocs .docblock-argstable {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sbdocs .docblock-argstable td {
+  overflow-wrap: anywhere;
+}
+
+.sbdocs .sbdocs-preview {
+  max-width: 100%;
+}
+
+.sbdocs :focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Storybook sets nowrap on inline code; a long token name would push a phone sideways. */
+.sbdocs :not(pre) > code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Syntax colours from the semantic tokens, so code keeps AA contrast in every theme and mode. */
+.sbdocs .sbdocs-content pre .token {
+  color: var(--lufia-color-text-default);
+}
+
+.sbdocs .sbdocs-content pre .token.comment,
+.sbdocs .sbdocs-content pre .token.prolog {
+  color: var(--lufia-color-text-muted);
+}
+
+.sbdocs .sbdocs-content pre .token.tag,
+.sbdocs .sbdocs-content pre .token.attr-name,
+.sbdocs .sbdocs-content pre .token.selector,
+.sbdocs .sbdocs-content pre .token.function,
+.sbdocs .sbdocs-content pre .token.class-name {
+  color: var(--lufia-color-text-accent);
+}
+
+.sbdocs .sbdocs-content pre .token.string,
+.sbdocs .sbdocs-content pre .token.attr-value,
+.sbdocs .sbdocs-content pre .token.property {
+  color: var(--lufia-color-status-success-fg);
+}
+
+.sbdocs .sbdocs-content pre .token.keyword,
+.sbdocs .sbdocs-content pre .token.atrule,
+.sbdocs .sbdocs-content pre .token.operator {
+  color: var(--lufia-color-status-ai-fg);
+}
+
+.sbdocs .sbdocs-content pre .token.number,
+.sbdocs .sbdocs-content pre .token.boolean,
+.sbdocs .sbdocs-content pre .token.constant {
+  color: var(--lufia-color-status-warning-fg);
+}
