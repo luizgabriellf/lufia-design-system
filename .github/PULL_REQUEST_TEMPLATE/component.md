@@ -11,7 +11,7 @@ Use this template for a new component, or for a significant change to a componen
 
 ## Problem and use cases
 
-<!-- What does this component solve? Give a use case from each consuming app (Salvus, salvflow) where possible. -->
+<!-- What does this component solve? Give at least one real use case from a consuming app. -->
 
 ## API
 
@@ -34,7 +34,7 @@ Use this template for a new component, or for a significant change to a componen
   |     |        |
 
 - **Screen-reader pass:** VoiceOver / NVDA / not yet (required before `stable`)
-- **Contrast:** checked in all brand × theme combinations
+- **Contrast:** checked in every theme
 
 ## Tokens
 
@@ -42,12 +42,12 @@ Use this template for a new component, or for a significant change to a componen
 
 ## Screenshots / Storybook
 
-<!-- Every state: default, hover, focus, disabled, loading, error, empty. Both brands, light and dark. -->
+<!-- Every state: default, hover, focus, disabled, loading, error, empty. Every theme, light and dark. -->
 
 ## Definition of done (docs/STANDARDS.md)
 
 - [ ] Typed API following docs/API_CONVENTIONS.md
-- [ ] Stories cover every state × brand × theme
+- [ ] Stories cover every state × theme
 - [ ] MDX docs: usage, when to use / when not to use, do and don't, a11y notes, content guidelines
 - [ ] vitest + Testing Library tests, with axe passing
 - [ ] Keyboard spec tested

@@ -38,7 +38,7 @@ Specialised templates: append `?template=component.md`, `?template=bugfix.md` or
 - [ ] PR title follows Conventional Commits
 - [ ] A changeset is added (`npx changeset`), or the PR has no user-facing change
 - [ ] Typecheck, lint, stylelint, tests and contrast check pass locally
-- [ ] Stories cover the changed states, in both brands (salvus, salvflow) and both themes (light, dark)
+- [ ] Stories cover the changed states, in every theme (light, dark, example-brand)
 - [ ] The Storybook a11y panel and vitest-axe show no violations
 - [ ] Keyboard behaviour follows the WAI-ARIA APG pattern, and focus is visible
 - [ ] Works at 320 / 390 / 768 / 1440 widths and at 200% zoom

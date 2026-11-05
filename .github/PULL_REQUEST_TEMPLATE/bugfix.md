@@ -21,7 +21,7 @@ PR title: `fix(<scope>): ...`
 2. What happens after this PR:
 
 - [ ] A regression test is added that fails without this fix
-- [ ] Checked in both brands (salvus, salvflow) and both themes (light, dark)
+- [ ] Checked in every theme (light, dark, example-brand)
 - [ ] No a11y regressions (axe and keyboard)
 - [ ] Changeset added (patch)
 
