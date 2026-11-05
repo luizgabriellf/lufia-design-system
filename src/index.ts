@@ -8,3 +8,4 @@ export * from "./components/StatusTimeline";
 export * from "./components/Stepper";
 export * from "./components/TableToolbar";
 export * from "./components/useBodyScrollLock";
+export * from "./motion";

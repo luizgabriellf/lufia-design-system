@@ -1,0 +1,50 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Collapse.stories";
+
+<Meta of={Stories} />
+
+# Collapse <StatusBadge status="beta" />
+
+Expands and collapses content to its natural height. It is the one place the package animates a layout property, and it
+does so without measuring anything in JavaScript (`grid-template-rows` from `0fr` to `1fr`).
+
+<Canvas of={Stories.Open} />
+
+## Usage
+
+```tsx
+import { Collapse } from "@lufia/design-system/motion";
+
+<button aria-expanded={open} aria-controls="shipping" onClick={() => setOpen(!open)}>
+  {t("shipping")}
+</button>
+<Collapse id="shipping" open={open}>
+  {t("shippingBody")}
+</Collapse>;
+```
+
+<Controls of={Stories.Open} />
+
+## When to use
+
+- Disclosures, accordions, "show more" areas, inline filter panels.
+
+## When not to use
+
+- Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the
+  approved route.
+- Content that should leave the page entirely: use [Reveal](?path=/docs/motion-reveal--docs).
+
+## Accessibility
+
+- The trigger is yours. It must be a button with `aria-expanded` and `aria-controls` pointing at the `id` you pass.
+- While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen
+  readers, but it is still in the server-rendered HTML.
+- Opening and closing are instant under `prefers-reduced-motion`.
+- The inner wrapper clips overflow while animating and when open; leave room for focus rings of controls at its edge.
+- Browsers without `grid-template-rows` transitions (older than 2023) still work: the panel snaps open and closed.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

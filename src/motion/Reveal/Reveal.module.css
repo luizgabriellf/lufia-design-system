@@ -1,0 +1,44 @@
+/* Enter and exit use keyframes that animate `from` only, so the resting state is the end state. */
+.root[data-animate][data-state="open"] {
+  animation: reveal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.root[data-animate][data-state="closed"] {
+  animation: reveal-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+.root[data-variant="fade"] {
+  --reveal-y: 0rem;
+  --reveal-scale: 1;
+}
+
+.root[data-variant="rise"] {
+  --reveal-y: var(--lufia-motion-distance-rise);
+  --reveal-scale: 1;
+}
+
+.root[data-variant="scale"] {
+  --reveal-y: 0rem;
+  --reveal-scale: 0.98;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-y)) scale(var(--reveal-scale));
+  }
+}
+
+@keyframes reveal-out {
+  to {
+    opacity: 0;
+    transform: translateY(var(--reveal-y)) scale(var(--reveal-scale));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-animate][data-state] {
+    animation: none;
+  }
+}

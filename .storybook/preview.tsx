@@ -68,7 +68,7 @@ const preview: Preview = {
         w1440: { name: "1440 · desktop", styles: { width: "1440px", height: "900px" }, type: "desktop" },
       },
     },
-    options: { storySort: { order: ["Introduction", "Foundations", "Components"] } },
+    options: { storySort: { order: ["Introduction", "Foundations", "Components", "Motion"] } },
   },
 };
 
