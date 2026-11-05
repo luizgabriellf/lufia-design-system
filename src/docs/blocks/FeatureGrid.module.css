@@ -1,0 +1,49 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  font-family: var(--lufia-font-family-body);
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  min-inline-size: 0;
+  padding: 1.25rem;
+  margin: 0;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  margin-block-end: 0.5rem;
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border: 1px solid var(--lufia-color-accent-border);
+  border-radius: var(--lufia-radius-control);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-lg);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+  color: var(--lufia-color-text-default);
+}
+
+.body {
+  margin: 0;
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-relaxed);
+  color: var(--lufia-color-text-muted);
+}

@@ -1,0 +1,71 @@
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  font-family: var(--lufia-font-family-body);
+  list-style: none;
+}
+
+.list li {
+  margin: 0;
+}
+
+.link {
+  position: relative;
+  display: grid;
+  gap: 0.125rem;
+  block-size: 100%;
+  padding: 1rem 3rem 1rem 1.125rem;
+  color: var(--lufia-color-text-default);
+  text-decoration: none;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+  transition:
+    border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.link:hover {
+  background: var(--lufia-color-accent-subtle);
+  border-color: var(--lufia-color-accent-border);
+}
+
+.link:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.title {
+  font-family: var(--lufia-font-family-display);
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.body {
+  font-size: var(--lufia-font-size-sm);
+  color: var(--lufia-color-text-muted);
+}
+
+.arrow {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 1.125rem;
+  color: var(--lufia-color-text-accent);
+  transform: translateY(-50%);
+  transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.link:hover .arrow {
+  transform: translate(var(--lufia-motion-distance-nudge), -50%);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
