@@ -1,0 +1,143 @@
+{
+  "space": {
+    "$type": "dimension",
+    "$description": "Spacing scale on a 4px base",
+    "0": { "$value": "{core.size.0}" },
+    "1": { "$value": "{core.size.1}" },
+    "2": { "$value": "{core.size.2}" },
+    "3": { "$value": "{core.size.3}" },
+    "4": { "$value": "{core.size.4}" },
+    "5": { "$value": "{core.size.5}" },
+    "6": { "$value": "{core.size.6}" },
+    "8": { "$value": "{core.size.8}" },
+    "10": { "$value": "{core.size.10}" },
+    "12": { "$value": "{core.size.12}" },
+    "16": { "$value": "{core.size.16}" }
+  },
+  "radius": {
+    "$type": "dimension",
+    "xs": { "$value": "{core.radius.4}", "$description": "Focus rings, small inline elements" },
+    "sm": { "$value": "{core.radius.7}", "$description": "Pills and badges" },
+    "md": { "$value": "{core.radius.9}", "$description": "Chips and search fields" },
+    "control": { "$value": "{core.radius.11}", "$description": "Buttons and inputs" },
+    "card": { "$value": "{core.radius.16}" },
+    "panel": { "$value": "{core.radius.20}" },
+    "full": { "$value": "{core.radius.pill}" }
+  },
+  "border-width": {
+    "$type": "dimension",
+    "thin": { "$value": "{core.stroke.1}" },
+    "thick": { "$value": "{core.stroke.2}" }
+  },
+  "font": {
+    "family": {
+      "display": {
+        "$value": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+        "$description": "System stack by default. A consuming app sets its own face by overriding this property in its theme."
+      },
+      "body": {
+        "$value": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      },
+      "mono": {
+        "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "2xs": { "$value": "{core.font-size.68}" },
+      "xs": { "$value": "{core.font-size.75}" },
+      "sm": { "$value": "{core.font-size.88}" },
+      "md": { "$value": "{core.font-size.100}" },
+      "lg": { "$value": "{core.font-size.113}" },
+      "xl": { "$value": "{core.font-size.125}" },
+      "2xl": { "$value": "{core.font-size.150}" },
+      "3xl": { "$value": "{core.font-size.200}" }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": { "$value": "{core.weight.400}" },
+      "medium": { "$value": "{core.weight.500}" },
+      "semibold": { "$value": "{core.weight.600}" },
+      "bold": { "$value": "{core.weight.700}" }
+    },
+    "line-height": {
+      "$type": "number",
+      "tight": { "$value": "{core.line-height.120}" },
+      "normal": { "$value": "{core.line-height.150}" },
+      "relaxed": { "$value": "{core.line-height.160}" }
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "none": {
+      "$value": { "color": "#00000000", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0px" }
+    },
+    "sm": {
+      "$value": {
+        "color": "{core.shadow-color.10}",
+        "offsetX": "0px",
+        "offsetY": "1px",
+        "blur": "2px",
+        "spread": "0px"
+      }
+    },
+    "md": {
+      "$value": {
+        "color": "{core.shadow-color.10}",
+        "offsetX": "0px",
+        "offsetY": "8px",
+        "blur": "18px",
+        "spread": "0px"
+      }
+    },
+    "lg": {
+      "$value": {
+        "color": "{core.shadow-color.18}",
+        "offsetX": "0px",
+        "offsetY": "16px",
+        "blur": "40px",
+        "spread": "0px"
+      }
+    }
+  },
+  "z": {
+    "$type": "number",
+    "base": { "$value": 0 },
+    "dropdown": { "$value": 100 },
+    "sticky": { "$value": 200 },
+    "overlay": { "$value": 300 },
+    "modal": { "$value": 400 },
+    "toast": { "$value": 500 },
+    "tooltip": { "$value": 600 }
+  },
+  "breakpoint": {
+    "$type": "dimension",
+    "$description": "Mirrors the media queries components use. CSS custom properties cannot drive @media; use these in JS and docs.",
+    "compact": { "$value": "640px" },
+    "medium": { "$value": "960px" },
+    "wide": { "$value": "1440px" }
+  },
+  "opacity": {
+    "$type": "number",
+    "disabled": { "$value": "{core.opacity.55}" },
+    "decorative": { "$value": "{core.opacity.45}" }
+  },
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "instant": { "$value": "{core.duration.120}" },
+      "fast": { "$value": "{core.duration.180}" },
+      "enter": { "$value": "{core.duration.240}" },
+      "exit": { "$value": "{core.duration.160}" },
+      "medium": { "$value": "{core.duration.380}" },
+      "slow": { "$value": "{core.duration.640}" }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "out": { "$value": "{core.easing.out}" },
+      "in": { "$value": "{core.easing.in}" },
+      "in-out": { "$value": "{core.easing.in-out}" },
+      "drawer": { "$value": "{core.easing.drawer}" }
+    }
+  }
+}
