@@ -1,0 +1,27 @@
+/* Renders identically to plain header text, but stays a focusable control. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  min-height: 24px;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background: none;
+  border: 0;
+}
+
+.button:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--lufia-radius-xs);
+}
+
+.arrow {
+  font-size: 0.9em;
+}

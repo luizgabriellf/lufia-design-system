@@ -1,0 +1,121 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-space-2);
+}
+
+.toolbar[data-variant="inline"] {
+  padding: var(--lufia-space-3) var(--lufia-space-4);
+  border-bottom: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.toolbar[data-variant="standalone"] {
+  margin-bottom: 14px;
+}
+
+.chip {
+  padding: 6px var(--lufia-space-3);
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.8rem;
+  color: var(--lufia-color-text-muted);
+  white-space: nowrap;
+  touch-action: manipulation;
+  cursor: pointer;
+  background: transparent;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-md);
+  transition:
+    background var(--lufia-motion-duration-instant),
+    border-color var(--lufia-motion-duration-instant),
+    color var(--lufia-motion-duration-instant);
+}
+
+.chip:hover:not([data-active]) {
+  color: var(--lufia-color-text-default);
+  border-color: var(--lufia-color-border-strong);
+}
+
+.chip[data-active] {
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border-color: var(--lufia-color-border-strong);
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.chip:focus-visible,
+.clear:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.search {
+  display: flex;
+  flex: 1;
+  gap: var(--lufia-space-2);
+  align-items: center;
+  min-width: 140px;
+  padding: var(--lufia-space-2) var(--lufia-space-3);
+  font-size: 0.86rem;
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-md);
+}
+
+.search:focus-within {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  color: var(--lufia-color-text-subtle);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--lufia-color-text-default);
+  text-overflow: ellipsis;
+  background: none;
+  border: 0;
+
+  /* The wrapper draws the focus ring through :focus-within. */
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list */
+  outline: none;
+}
+
+.searchInput::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.clear {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 2px;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--lufia-color-text-subtle);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.clear:hover {
+  color: var(--lufia-color-text-muted);
+}
+
+@media (pointer: coarse), (width <= 959px) {
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
