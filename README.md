@@ -15,10 +15,10 @@ The package ships TypeScript source; there is no build step. In each app:
 
 ```jsonc
 // package.json
-"@lufia/design-system": "^0.1.0"
+"@lufia/design-system": "github:luizgabriellf/lufia-design-system#v0.1.0"
 ```
 ```js
 // next.config: transpilePackages: ["@lufia/design-system"] // only until the build step lands
 ```
 Pin to a tag. To ship a change, bump the version, tag it, then bump the tag in both apps.
-Published on public npm (see docs/STANDARDS.md §8).
+npm publishing is on hold; install from a git tag (see docs/STANDARDS.md §8).

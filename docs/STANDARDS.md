@@ -79,7 +79,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 
 ## 8. Packaging and release
 - [ ] **Build step** (tsup/tsdown) producing ESM, `.d.ts` and extracted CSS, with per-component entry points and `sideEffects` limited to CSS. This replaces the "ship TS source" bootstrap mode.
-- [x] **Distribution channel (decided 2026-11-05): public npm as `@lufia/design-system`.**
+- [ ] **Distribution channel: public npm as `@lufia/design-system`. ON HOLD (owner, 2026-11-05).** Until it is lifted, apps install a git tag: `"@lufia/design-system": "github:luizgabriellf/lufia-design-system#vX.Y.Z"`.
   - The `@lufia` scope leaves room for `@lufia/tokens`, `@lufia/icons` and so on.
   - The owner creates the free npm org `lufia` and configures **trusted publishing** (GitHub Actions OIDC, no long-lived token) for this repo.
   - The first publish happens at the end of P0, once the build step exists.
