@@ -1,0 +1,36 @@
+{
+  "name": "@lufia/design-system",
+  "version": "0.1.0",
+  "description": "An accessible, themeable React design system: design tokens, components, motion primitives and quality gates.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens/tokens.css",
+    "./motion": "./src/motion/index.ts"
+  },
+  "bin": {
+    "lufia-verify-motion": "./scripts/verify-motion.mjs"
+  },
+  "files": [
+    "src",
+    "scripts",
+    "docs"
+  ],
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "repository": "github:luizgabriellf/lufia-design-system",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
