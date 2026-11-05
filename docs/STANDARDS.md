@@ -79,9 +79,10 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 
 ## 8. Packaging and release
 - [ ] **Build step** (tsup/tsdown) producing ESM, `.d.ts` and extracted CSS, with per-component entry points and `sideEffects` limited to CSS. This replaces the "ship TS source" bootstrap mode.
-- [ ] **DECISION:** distribution channel.
-  - **Recommendation: publish to public npm** with provenance. This needs the npm name/scope chosen, e.g. `@lufia/design-system`.
-  - Alternative: keep a git-tag dependency.
+- [x] **Distribution channel (decided 2026-11-05): public npm as `@lufia/design-system`.**
+  - The `@lufia` scope leaves room for `@lufia/tokens`, `@lufia/icons` and so on.
+  - The owner creates the free npm org `lufia` and configures **trusted publishing** (GitHub Actions OIDC, no long-lived token) for this repo.
+  - The first publish happens at the end of P0, once the build step exists.
 - [ ] **Changesets** for versioning and the generated CHANGELOG. Semver is strict:
   - breaking changes are majors and come with a migration guide;
   - deprecations last at least one minor version with a console warning in dev.

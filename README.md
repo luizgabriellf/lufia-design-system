@@ -1,4 +1,4 @@
-# lufia-design-system
+# @lufia/design-system
 
 The design layer that Salvus (PT, `luizgabriellf/salvus`) and salvflow (BR, `luizgabriellf/salvus-br`) share.
 
@@ -15,10 +15,10 @@ The package ships TypeScript source; there is no build step. In each app:
 
 ```jsonc
 // package.json
-"lufia-design-system": "github:luizgabriellf/lufia-design-system#v0.1.0"
+"@lufia/design-system": "^0.1.0"
 ```
 ```js
-// next.config: transpilePackages: ["lufia-design-system"]
+// next.config: transpilePackages: ["@lufia/design-system"] // only until the build step lands
 ```
 Pin to a tag. To ship a change, bump the version, tag it, then bump the tag in both apps.
-The repo is public, so Vercel installs it without a token.
+Published on public npm (see docs/STANDARDS.md §8).
