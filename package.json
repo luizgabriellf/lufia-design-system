@@ -1,22 +1,36 @@
 {
   "name": "@lufia/design-system",
   "version": "0.1.0",
-  "description": "An accessible, themeable React design system: design tokens, components, motion primitives and quality gates.",
+  "description": "Accessible, themeable React components and design tokens shared by several products.",
   "type": "module",
   "sideEffects": [
     "**/*.css"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./tokens.css": "./src/tokens/tokens.css",
-    "./motion": "./src/motion/index.ts"
-  },
-  "bin": {
-    "lufia-verify-motion": "./scripts/verify-motion.mjs"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./motion": {
+      "types": "./dist/motion/index.d.ts",
+      "import": "./dist/motion/index.js"
+    },
+    "./tokens": {
+      "types": "./dist/tokens/index.d.ts",
+      "import": "./dist/tokens/index.js"
+    },
+    "./tokens.json": "./dist/tokens.json",
+    "./tokens.css": "./dist/tokens.css",
+    "./themes/default.css": "./dist/themes/default.css",
+    "./themes/example-brand.css": "./dist/themes/example-brand.css",
+    "./components/*": {
+      "types": "./dist/components/*/index.d.ts",
+      "import": "./dist/components/*/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "src",
-    "scripts",
+    "dist",
     "docs"
   ],
   "peerDependencies": {
@@ -24,13 +38,85 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
+    "build": "node scripts/clean.mjs && tsup && node scripts/postbuild.mjs",
+    "prepare": "node scripts/prepare.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "lint": "eslint .",
+    "lint:css": "stylelint \"src/**/*.css\" --allow-empty-input",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --passWithNoTests",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "test:coverage": "vitest run --passWithNoTests --coverage",
+    "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test",
+    "release": "npm run build && changeset tag",
+    "commitlint": "commitlint"
   },
   "license": "MIT",
-  "repository": "github:luizgabriellf/lufia-design-system",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luizgabriellf/lufia-design-system.git"
+  },
+  "homepage": "https://luizgabriellf.github.io/lufia-design-system/",
+  "bugs": "https://github.com/luizgabriellf/lufia-design-system/issues",
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@eslint/js": "9.39.5",
+    "@storybook/addon-a11y": "10.6.6",
+    "@storybook/addon-docs": "10.6.6",
+    "@storybook/react-vite": "10.6.6",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "@vitest/coverage-v8": "5.1.0",
+    "axe-core": "4.14.0",
+    "eslint": "9.39.5",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-storybook": "10.6.6",
+    "globals": "17.14.0",
+    "husky": "9.1.7",
+    "jsdom": "29.1.1",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "storybook": "10.6.6",
+    "style-dictionary": "5.8.0",
+    "stylelint": "17.16.0",
+    "stylelint-config-standard": "40.0.0",
+    "tsup": "8.5.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.6",
+    "vitest": "5.1.0",
+    "vitest-axe": "0.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "react",
+    "accessibility",
+    "wcag",
+    "storybook",
+    "css-modules"
+  ]
 }

@@ -1,0 +1,11 @@
+dist
+storybook-static
+coverage
+package-lock.json
+src/tokens/generated
+.changeset/*.md
+CHANGELOG.md
+docs/ROADMAP.md
+docs/STANDARDS.md
+.github/pull_request_template.md
+.github/PULL_REQUEST_TEMPLATE

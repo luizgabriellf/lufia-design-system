@@ -1,0 +1,22 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "declaration-property-value-disallowed-list": {
+      "outline": ["none", "0"],
+      "/^outline(-style)?$/": ["none"]
+    },
+    "color-named": "never",
+    "declaration-no-important": true
+  },
+  "overrides": [
+    {
+      "files": ["**/*.module.css"],
+      "rules": {
+        "color-no-hex": [true, { "message": "Use a --lufia-* semantic token instead of a raw colour." }],
+        "function-disallowed-list": ["rgb", "rgba", "hsl", "hsla"]
+      }
+    }
+  ]
+}
