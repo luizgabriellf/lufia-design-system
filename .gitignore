@@ -1,2 +1,8 @@
 node_modules/
 .DS_Store
+dist/
+storybook-static/
+coverage/
+src/tokens/generated/
+*.log
+.env*
