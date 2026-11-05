@@ -1,0 +1,63 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# Lufia Design System
+
+Accessible, themeable React components and design tokens, built to be shared by several apps. Everything here is public
+and MIT licensed. Component status is labelled on every page (`alpha`, `beta`, `stable`, `deprecated`).
+
+## Getting started
+
+Until the package is on npm, install a tagged release straight from GitHub:
+
+```bash
+npm install github:luizgabriellf/lufia-design-system#v0.1.0
+```
+
+The tag builds itself on install (`prepare` script). Peer dependencies are React 19 and React DOM 19.
+
+Import the tokens and **one** theme once, at the root of your app:
+
+```tsx
+// app/layout.tsx
+import "@lufia/design-system/tokens.css";
+import "@lufia/design-system/themes/default.css";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Then use components from the package root or from a per-component entry point:
+
+```tsx
+import { EmptyState } from "@lufia/design-system/components/EmptyState";
+```
+
+Components ship CSS Modules; your bundler (Next.js, Vite) processes them. Every user-facing string is a prop: the
+package contains no translation layer.
+
+## Theming
+
+| Attribute                         | Values                     | Effect                                                       |
+| --------------------------------- | -------------------------- | ------------------------------------------------------------ |
+| `data-lufia-theme`                | `default`, `example-brand` | Selects a named theme. Optional for the default theme.       |
+| `data-lufia-mode`                 | `light`, `dark`            | Forces a mode. Omit it to follow `prefers-color-scheme`.     |
+| `@media (forced-colors)`          | automatic                  | Semantic tokens map to system colours in high-contrast mode. |
+| `@media (prefers-reduced-motion)` | automatic                  | Motion durations collapse.                                   |
+
+Use the **Theme** and **Mode** controls in the toolbar above to preview every story in each combination, and the
+viewport menu for the 320 / 390 / 768 / 1440 test widths. Product brands are not part of this package: each consuming app
+maps its own values onto the `--lufia-*` tokens (see "Foundations / Creating a theme").
+
+## Principles
+
+1. **Accessibility is a gate**, not a polish pass (WCAG 2.2 AA, axe on every component).
+2. **Semantic tokens only.** Components never read raw palette values, so a brand is a file, not a fork.
+3. **No app imports.** No router, i18n or data layer inside a component; apps inject them.
+4. **Small and boring.** Each component earns its place by being needed in more than one app.

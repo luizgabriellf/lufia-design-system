@@ -1,0 +1,22 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--lufia-space-4);
+  width: 100%;
+}
+
+.cell {
+  min-width: 0;
+  padding: var(--lufia-space-4);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-canvas);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-card);
+}
+
+.label {
+  margin: 0 0 var(--lufia-space-3);
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  color: var(--lufia-color-text-muted);
+}
