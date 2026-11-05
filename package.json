@@ -1,0 +1,32 @@
+{
+  "name": "lufia-design-system",
+  "version": "0.1.0",
+  "description": "Shared motion primitives, motion/design tokens and the verify-motion gate for Salvus (PT) and salvflow (BR). Brand colors, fonts and product components stay in each app.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens/tokens.css",
+    "./motion": "./src/motion/index.ts"
+  },
+  "bin": {
+    "lufia-verify-motion": "./scripts/verify-motion.mjs"
+  },
+  "files": [
+    "src",
+    "scripts",
+    "docs"
+  ],
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "repository": "github:luizgabriellf/lufia-design-system"
+}
