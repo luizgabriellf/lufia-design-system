@@ -28,7 +28,7 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Check (typecheck, lint, stylelint, format, tests)
+      - name: Check (typecheck, lint, stylelint, format, tests, contrast)
         run: npm run check
       - name: Build package
         run: npm run build

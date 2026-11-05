@@ -1,0 +1,127 @@
+{
+  "color": {
+    "$type": "color",
+    "bg": {
+      "canvas": {
+        "$value": "{core.color.plum.975}"
+      },
+      "surface": {
+        "$value": "{core.color.alpha.white.4}"
+      },
+      "surface-raised": {
+        "$value": "{core.color.alpha.white.8}"
+      },
+      "surface-solid": {
+        "$value": "{core.color.plum.900}"
+      },
+      "field": {
+        "$value": "{core.color.plum.850}"
+      }
+    },
+    "text": {
+      "default": {
+        "$value": "{core.color.plum.50}"
+      },
+      "muted": {
+        "$value": "{core.color.plum.200}"
+      },
+      "subtle": {
+        "$value": "{core.color.plum.300}"
+      },
+      "on-accent": {
+        "$value": "{core.color.plum.975}"
+      },
+      "accent": {
+        "$value": "{core.color.fuchsia.300}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$value": "{core.color.alpha.white.12}"
+      },
+      "strong": {
+        "$value": "{core.color.alpha.white.24}"
+      }
+    },
+    "accent": {
+      "default": {
+        "$value": "{core.color.fuchsia.400}"
+      },
+      "hover": {
+        "$value": "{core.color.fuchsia.300}"
+      },
+      "subtle": {
+        "$value": "{core.color.alpha.fuchsia-400.16}"
+      },
+      "border": {
+        "$value": "{core.color.alpha.fuchsia-400.50}"
+      }
+    },
+    "focus": {
+      "ring": {
+        "$value": "{core.color.fuchsia.300}"
+      }
+    },
+    "status": {
+      "success": {
+        "fg": {
+          "$value": "{core.color.green.300}"
+        },
+        "bg": {
+          "$value": "{core.color.alpha.green-300.14}"
+        },
+        "border": {
+          "$value": "{core.color.alpha.green-300.40}"
+        }
+      },
+      "warning": {
+        "fg": {
+          "$value": "{core.color.amber.300}"
+        },
+        "bg": {
+          "$value": "{core.color.alpha.amber-300.14}"
+        },
+        "border": {
+          "$value": "{core.color.alpha.amber-300.40}"
+        }
+      },
+      "danger": {
+        "fg": {
+          "$value": "{core.color.red.300}"
+        },
+        "bg": {
+          "$value": "{core.color.alpha.red-300.14}"
+        },
+        "border": {
+          "$value": "{core.color.alpha.red-300.40}"
+        },
+        "solid": {
+          "$value": "{core.color.red.300}"
+        },
+        "on-solid": {
+          "$value": "{core.color.plum.975}"
+        }
+      },
+      "ai": {
+        "fg": {
+          "$value": "{core.color.violet.300}"
+        },
+        "bg": {
+          "$value": "{core.color.alpha.violet-300.14}"
+        },
+        "border": {
+          "$value": "{core.color.alpha.violet-300.40}"
+        }
+      },
+      "neutral": {
+        "fg": {
+          "$value": "{core.color.slate.350}"
+        },
+        "bg": {
+          "$value": "{core.color.alpha.white.8}"
+        }
+      }
+    }
+  },
+  "$description": "Demonstrates the theming API with its own palette; copy as a starting point for an app theme."
+}

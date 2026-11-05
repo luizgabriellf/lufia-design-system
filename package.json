@@ -38,18 +38,20 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "build": "node scripts/clean.mjs && tsup && node scripts/postbuild.mjs",
+    "tokens": "node scripts/build-tokens.mjs",
+    "build": "node scripts/clean.mjs && npm run tokens && tsup && node scripts/postbuild.mjs",
     "prepare": "node scripts/prepare.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run tokens && tsc --noEmit",
     "lint": "eslint .",
     "lint:css": "stylelint \"src/**/*.css\" --allow-empty-input",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run --passWithNoTests",
+    "contrast": "tsx scripts/check-contrast.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "test:coverage": "vitest run --passWithNoTests --coverage",
-    "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test",
+    "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test && npm run contrast",
     "release": "npm run build && changeset tag",
     "commitlint": "commitlint"
   },
