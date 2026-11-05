@@ -3,6 +3,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ActionIcons } from "../../docs/placeholders";
 import { DetailList } from "../DetailList";
 import { DetailSectionCard } from "./DetailSectionCard";
+import { DemoButton } from "../../docs/demo";
 
 const meta = {
   title: "Components/DetailSectionCard",
@@ -20,6 +21,7 @@ const meta = {
       />
     ),
   },
+  argTypes: { icon: { control: false }, action: { control: false }, children: { control: false } },
   decorators: [
     (Story) => (
       <div style={{ width: "min(100%, 520px)" }}>
@@ -34,13 +36,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const WithIconAndAction: Story = {
-  args: { icon: <ActionIcons.Edit />, action: <button type="button">Edit</button> },
+  args: { icon: <ActionIcons.Edit />, action: <DemoButton size="sm">Edit</DemoButton> },
 };
 export const TitleOnly: Story = { args: { description: undefined } };
 export const LongContent: Story = {
   args: {
     title: "A long section title that wraps onto several lines on narrow screens without clipping",
-    action: <button type="button">Edit details</button>,
+    action: <DemoButton size="sm">Edit details</DemoButton>,
     description: "reference-0123456789-abcdefghijklmnopqrstuvwxyz-0123456789-abcdefghijklmnopqrstuvwxyz",
   },
   globals: { viewport: { value: "w320", isRotated: false } },
@@ -48,7 +50,11 @@ export const LongContent: Story = {
 export const AllThemes: Story = {
   render: (args) => (
     <ThemeMatrix>
-      <DetailSectionCard {...args} icon={<ActionIcons.Edit />} action={<button type="button">Edit</button>} />
+      <DetailSectionCard
+        {...args}
+        icon={<ActionIcons.Edit />}
+        action={<DemoButton size="sm">Edit</DemoButton>}
+      />
     </ThemeMatrix>
   ),
 };

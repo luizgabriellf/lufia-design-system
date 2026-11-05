@@ -18,11 +18,13 @@ import { DetailAttentionCard } from "@lufia/design-system/components/DetailAtten
 
 <DetailAttentionCard
   tone="danger"
-  toneLabel={t("overdue")}
-  title={t("subscriptionExpired")}
-  action={<Button>{t("renew")}</Button>}
+  toneLabel="Overdue"
+  title="Subscription expired"
+  action={<a href="/billing">Renew</a>}
 />;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Warn} />
 

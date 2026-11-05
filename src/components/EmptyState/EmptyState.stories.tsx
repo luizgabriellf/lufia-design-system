@@ -1,17 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { EmptyState } from "./EmptyState";
+import { DemoButton, DocumentIcon, SearchIcon, UploadIcon } from "../../docs/demo";
 
 const meta = {
   title: "Components/EmptyState",
   component: EmptyState,
   parameters: { layout: "padded" },
   args: {
-    icon: "📄",
+    icon: <DocumentIcon size={40} />,
     title: "No documents yet",
     body: "Documents you upload will appear here.",
-    action: <button type="button">Upload document</button>,
+    action: (
+      <DemoButton variant="primary" icon={<UploadIcon size={16} />}>
+        Upload document
+      </DemoButton>
+    ),
   },
+  argTypes: { icon: { control: false }, action: { control: false } },
   decorators: [
     (Story) => (
       <div style={{ width: "min(100%, 480px)" }}>
@@ -29,10 +35,10 @@ export const TitleOnly: Story = { args: { icon: undefined, body: undefined, acti
 export const NoAction: Story = { args: { action: undefined } };
 export const SearchNoResults: Story = {
   args: {
-    icon: "🔍",
+    icon: <SearchIcon size={40} />,
     title: "No results for “reference-0123456789-abcdefghij”",
     body: "Try a different search term or clear the filters.",
-    action: <button type="button">Clear filters</button>,
+    action: <DemoButton>Clear filters</DemoButton>,
   },
 };
 export const AllThemes: Story = {

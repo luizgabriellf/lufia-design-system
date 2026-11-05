@@ -16,9 +16,11 @@ Flashes a soft background behind its children when `value` changes while they ar
 import { ChangeHighlight } from "@lufia/design-system/motion";
 
 <ChangeHighlight value={order.status}>
-  <Badge>{t(order.status)}</Badge>
+  <Badge>{order.statusLabel}</Badge>
 </ChangeHighlight>;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Default} />
 

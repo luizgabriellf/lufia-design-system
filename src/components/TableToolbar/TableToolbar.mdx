@@ -18,17 +18,19 @@ import { TableToolbar } from "@lufia/design-system/components/TableToolbar";
 
 <TableToolbar
   filters={[
-    { key: "all", label: t("all") },
-    { key: "open", label: t("open") },
+    { key: "all", label: "All" },
+    { key: "open", label: "Open" },
   ]}
   activeFilter={filter}
   onFilterChange={setFilter}
   search={query}
   onSearchChange={setQuery}
-  searchPlaceholder={t("search")}
-  clearSearchLabel={t("clearSearch")}
+  searchPlaceholder="Search items"
+  clearSearchLabel="Clear search"
 />;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 The search field renders only when `onSearchChange` is provided. State is controlled by the parent.
 

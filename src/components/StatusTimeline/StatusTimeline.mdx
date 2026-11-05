@@ -20,13 +20,13 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
   tracks={[
     {
       id: "review",
-      title: t("review"),
+      title: "Review",
       nodes: [
         {
           id: "n1",
-          label: t("notify"),
+          label: "Notify the team",
           state: "done",
-          stateLabel: t("state.done"),
+          stateLabel: "Done",
           timestampLabel: formatted,
         },
       ],
@@ -34,6 +34,8 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
   ]}
 />;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 States: `needsTimestamp`, `pending`, `overdue`, `done`, `notApplicable`. Pass your own domain values straight through.
 
