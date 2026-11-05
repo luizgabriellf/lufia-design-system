@@ -48,6 +48,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run --passWithNoTests",
     "contrast": "tsx scripts/check-contrast.ts",
+    "storybook": "npm run tokens && storybook dev -p 6006",
+    "build-storybook": "npm run tokens && storybook build -o storybook-static",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "test:coverage": "vitest run --passWithNoTests --coverage",

@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { ColorSwatches, ContrastTable } from "../ColorTables";
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Colours are defined in three layers (see ADR 0001):
+
+1. **Primitive** (`core.color.*`): the raw palette. Components never read these.
+2. **Semantic** (`color.bg.*`, `color.text.*`, `color.border.*`, `color.accent.*`, `color.status.*`, `color.focus.*`):
+   what components read, as `--lufia-color-*` custom properties.
+3. **Component**: only where a component needs its own override.
+
+Each theme ships a light and a dark set, plus a `forced-colors` mapping to system colours.
+
+## Contrast
+
+CI fails when any listed pair drops below WCAG 2.2 AA: **4.5:1** for text, **3:1** for non-text UI such as the focus
+ring. Translucent tokens are composited over the canvas before measuring. Borders are decorative separators and are not
+in this list; do not rely on them alone to identify a control.
+
+## Default theme
+
+### Light
+
+<ColorSwatches theme="default" mode="light" />
+<ContrastTable theme="default" mode="light" />
+
+### Dark
+
+<ColorSwatches theme="default" mode="dark" />
+<ContrastTable theme="default" mode="dark" />
+
+## Example brand theme
+
+A second palette that exists to demonstrate the theming API. See "Creating a theme" for how an app ships its own.
+
+### Light
+
+<ColorSwatches theme="example-brand" mode="light" />
+<ContrastTable theme="example-brand" mode="light" />
+
+### Dark
+
+<ColorSwatches theme="example-brand" mode="dark" />
+<ContrastTable theme="example-brand" mode="dark" />

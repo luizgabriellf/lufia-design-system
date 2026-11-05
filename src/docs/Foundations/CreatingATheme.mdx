@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Creating a theme" />
+
+# Creating a theme
+
+A theme is a set of values for the semantic `--lufia-color-*` custom properties. Components read only those, so an app can
+brand the whole system without touching a component.
+
+## In your app (recommended)
+
+Define the properties in your own stylesheet, scoped to a name of your choosing:
+
+```css
+[data-lufia-theme="acme"] {
+  color-scheme: light;
+  --lufia-color-bg-canvas: #fafafa;
+  --lufia-color-text-default: #111111;
+  --lufia-color-accent-default: #0a5cff;
+  --lufia-color-text-on-accent: #ffffff;
+  /* ...every token in the list below */
+  --lufia-font-family-body: var(--my-body-font), system-ui, sans-serif;
+}
+
+[data-lufia-theme="acme"][data-lufia-mode="dark"] {
+  color-scheme: dark;
+  /* dark values */
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-lufia-theme="acme"]:not([data-lufia-mode]) {
+    color-scheme: dark;
+    /* dark values again */
+  }
+}
+```
+
+Then set `data-lufia-theme="acme"` on `<html>`. Typography tokens (`--lufia-font-family-*`) and any other shared token can be
+overridden the same way.
+
+## In this repository
+
+To add a theme to the package itself, copy `tokens/themes/example-brand.light.tokens.json` and `.dark.tokens.json`, rename
+them, and add the name to `THEMES` in `scripts/build-tokens.mjs`. Values are DTCG tokens that alias into the palette in
+`tokens/primitive/color.tokens.json`. `npm run contrast` then checks every text and UI pair against WCAG 2.2 AA.
+
+## Tokens to define
+
+Every theme must define: `bg.canvas`, `bg.surface`, `bg.surface-raised`, `bg.surface-solid`, `bg.field`, `text.default`,
+`text.muted`, `text.subtle`, `text.on-accent`, `text.accent`, `border.subtle`, `border.strong`, `accent.default`,
+`accent.hover`, `accent.subtle`, `accent.border`, `focus.ring`, and the `status.{success,warning,danger,ai}` groups
+(`fg`, `bg`, `border`), `status.danger.solid`, `status.danger.on-solid` and `status.neutral.{fg,bg}`.
+
+## Checklist
+
+- Text on every surface: 4.5:1 or better. Focus ring and accent against canvas: 3:1 or better.
+- Provide both light and dark, or document that one is unsupported.
+- Under `forced-colors: active` the package maps tokens to system colours for you; do not fight it.

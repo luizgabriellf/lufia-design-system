@@ -1,0 +1,22 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { TokenTable } from "../TokenTable";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+> **Placeholder.** Duration and easing tokens ship today. Motion primitives and the verification gate are extracted from
+> a reference implementation in phase P2 (see the roadmap).
+
+## Durations
+
+<TokenTable group="motion.duration" preview="duration" />
+
+## Easing
+
+<TokenTable group="motion.easing" />
+
+## Reduced motion
+
+Under `prefers-reduced-motion: reduce`, `tokens.css` collapses every duration to `0.01ms`. Components that animate
+position or size must still reach their end state.

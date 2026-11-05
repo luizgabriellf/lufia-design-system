@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { TokenTable } from "../TokenTable";
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+Each app loads its own fonts with `next/font` and exposes them as `--font-space-grotesk`, `--font-ibm-plex-sans` and
+`--font-ibm-plex-mono`. The family tokens read those variables and fall back to named system stacks, so Storybook and
+unconfigured apps still render legibly.
+
+## Families
+
+<TokenTable group="font.family" preview="font-family" />
+
+## Type scale
+
+<TokenTable group="font.size" preview="font-size" />
+
+## Weights
+
+<TokenTable group="font.weight" preview="weight" />
+
+## Line height
+
+<TokenTable group="font.line-height" />
+
+Body copy uses `normal` (1.5) or `relaxed` (1.6); headings use `tight`. Text must stay readable at 200% zoom and reflow
+at 320px without horizontal scrolling (WCAG 1.4.4 and 1.4.10), so prefer `rem` over `px` for type.

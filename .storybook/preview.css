@@ -1,0 +1,33 @@
+:root {
+  font-family: var(--lufia-font-family-body);
+}
+
+body {
+  margin: 0;
+}
+
+.sb-surface {
+  box-sizing: border-box;
+  min-width: 100%;
+  padding: var(--lufia-space-4);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-canvas);
+  font-family: var(--lufia-font-family-body);
+}
+
+.sb-surface[data-docs] {
+  padding: var(--lufia-space-4) 0;
+}
+
+.sb-surface * {
+  box-sizing: border-box;
+}
+
+.sb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

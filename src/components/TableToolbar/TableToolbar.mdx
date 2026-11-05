@@ -1,0 +1,59 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./TableToolbar.stories";
+
+<Meta of={Stories} />
+
+# TableToolbar <StatusBadge status="beta" />
+
+Filter chips plus an optional search box for the top of a table or list. Extra controls (for example a dropdown for an
+open-ended filter) go in as children.
+
+<Canvas of={Stories.Interactive} />
+
+## Usage
+
+```tsx
+import { TableToolbar } from "@lufia/design-system/components/TableToolbar";
+
+<TableToolbar
+  filters={[
+    { key: "all", label: t("all") },
+    { key: "open", label: t("open") },
+  ]}
+  activeFilter={filter}
+  onFilterChange={setFilter}
+  search={query}
+  onSearchChange={setQuery}
+  searchPlaceholder={t("search")}
+  clearSearchLabel={t("clearSearch")}
+/>;
+```
+
+The search field renders only when `onSearchChange` is provided. State is controlled by the parent.
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- Narrowing a list by a handful of mutually exclusive statuses, and free-text search.
+
+## When not to use
+
+- Many-valued filters (use a dropdown in `children`) or multi-select faceting (a different pattern).
+
+## Accessibility
+
+- Chips are toggle buttons with `aria-pressed`; the group has `role="group"` (add `aria-label` through props to name it).
+- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised);
+  it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.
+- The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.
+- Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px.
+
+## Content guidelines
+
+Chip labels are one or two words. Do not put counts in colour alone; include them in the label text if useful.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

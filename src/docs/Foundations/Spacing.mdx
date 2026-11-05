@@ -1,0 +1,21 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { TokenTable } from "../TokenTable";
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+A 4px base scale. Pick the nearest step instead of inventing an in-between value.
+
+<TokenTable group="space" preview="space" />
+
+## Test widths
+
+Components are checked at **320**, **390**, **768** and **1440** px. The media queries components use today are mirrored
+as breakpoint tokens (custom properties cannot drive `@media`, so these are for JS and documentation):
+
+<TokenTable group="breakpoint" />
+
+## Target size
+
+Interactive targets are at least 24x24 CSS px (WCAG 2.5.8) and 44px on coarse pointers where the layout allows.

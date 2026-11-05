@@ -1,0 +1,93 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--lufia-color-border-subtle);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--lufia-color-text-muted);
+}
+
+.mono {
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.8125rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+  background-image: conic-gradient(
+    color-mix(in srgb, var(--lufia-color-text-muted) 25%, transparent) 25%,
+    transparent 0 50%,
+    color-mix(in srgb, var(--lufia-color-text-muted) 25%, transparent) 0 75%,
+    transparent 0
+  );
+  background-size: 8px 8px;
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-xs);
+}
+
+.swatch > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pass {
+  color: var(--lufia-color-status-success-fg);
+  font-weight: 600;
+}
+
+.fail {
+  color: var(--lufia-color-status-danger-fg);
+  font-weight: 600;
+}
+
+.bar {
+  display: block;
+  height: 12px;
+  background: var(--lufia-color-accent-default);
+  border-radius: 2px;
+}
+
+.box {
+  width: 64px;
+  height: 40px;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid currentcolor;
+  border-radius: var(--lufia-radius-full);
+}
+
+.badge[data-status="beta"] {
+  color: var(--lufia-color-status-warning-fg);
+}
+
+.badge[data-status="stable"] {
+  color: var(--lufia-color-status-success-fg);
+}
+
+.badge[data-status="alpha"],
+.badge[data-status="deprecated"] {
+  color: var(--lufia-color-status-danger-fg);
+}
