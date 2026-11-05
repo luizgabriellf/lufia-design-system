@@ -232,6 +232,14 @@ const CAMEL =
   /\b(transition|transitionDuration|transitionProperty|transitionTimingFunction|animation|animationDuration|animationTimingFunction)\s*:\s*(["'`])((?:\\.|(?!\2)[^\\])*)\2/g;
 const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 
+/** Blanks block and line comments (keeping offsets). Skips `//` that is part of a URL such as `https://`. */
+function stripScriptComments(source: string): string {
+  return stripComments(source).replace(
+    /(^|[^:])\/\/.*$/gm,
+    (m, lead: string) => lead + " ".repeat(m.length - lead.length),
+  );
+}
+
 /** Findings for a script or component file: inline styles, and JavaScript-driven motion without a reduced-motion check. */
 export function scanScript(source: string, options: ScanOptions): Finding[] {
   const found: { finding: Finding; anchorLine?: number }[] = [];
@@ -241,8 +249,10 @@ export function scanScript(source: string, options: ScanOptions): Finding[] {
     analyse(kebab(m[1] ?? ""), m[3] ?? "", line, m[0], options, local);
     local.forEach((finding) => found.push({ finding }));
   }
-  const driver = /\b(requestAnimationFrame\s*\(|\.animate\s*\()/.exec(source);
-  const aware = /prefers-reduced-motion|usePrefersReducedMotion|useReducedMotion/.test(source);
+  // Comments must not count: a mention of the hook in a comment is not handling.
+  const code = stripScriptComments(source);
+  const driver = /\b(requestAnimationFrame\s*\(|\.animate\s*\()/.exec(code);
+  const aware = /prefers-reduced-motion|usePrefersReducedMotion|useReducedMotion/.test(code);
   if (driver && !aware)
     found.push({
       finding: {

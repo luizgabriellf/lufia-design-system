@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync, realpathSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync, realpathSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { compare, countFindings, emptyBaseline, type Baseline } from "./ratchet";
@@ -15,7 +15,7 @@ Options:
   --baseline <file>      Ratchet file. Violations listed there are tolerated; the file can only shrink
   --init                 Create the baseline from the current violations (refuses if it already exists)
   --update               Rewrite the baseline after fixing violations (refuses to add any)
-  --ignore <prefix>      Skip paths starting with this prefix (repeatable)
+  --ignore <path>        Skip this file or directory (matches whole path segments; repeatable)
   --token-prefix <p>     Extra custom-property prefix that counts as a motion token (repeatable)
   -h, --help             Show this help
 
@@ -75,9 +75,16 @@ function parseArgs(argv: string[]): Options | string {
   return options;
 }
 
+function isIgnored(file: string, ignored: string): boolean {
+  const base = path.posix.normalize(ignored.split(path.sep).join("/")).replace(/\/+$/, "");
+  return file === base || file.startsWith(`${base}/`);
+}
+
 function walk(root: string, rel: string, out: string[]) {
   const full = path.join(root, rel);
-  if (statSync(full).isDirectory()) {
+  const stat = lstatSync(full);
+  if (stat.isSymbolicLink()) return; // never follow links: they can leave the project or loop
+  if (stat.isDirectory()) {
     for (const entry of readdirSync(full).sort()) {
       if (!SKIP_DIRS.has(entry)) walk(root, path.posix.join(rel, entry), out);
     }
@@ -112,7 +119,7 @@ export function run(argv: string[], io: Io): number {
   }
   const sources = [...new Set(files.map((f) => f.replace(/^\.\//, "")))]
     .filter((f) => (CSS.test(f) || SCRIPT.test(f)) && !NOT_SOURCE.test(f))
-    .filter((f) => !options.ignore.some((prefix) => f.startsWith(prefix)));
+    .filter((f) => !options.ignore.some((ignored) => isIgnored(f, ignored)));
   const contents = new Map(sources.map((f) => [f, readFileSync(path.join(io.cwd, f), "utf8")]));
 
   const globalReducedMotion = [...contents].some(([f, c]) => CSS.test(f) && hasGlobalKillSwitch(c));
@@ -124,7 +131,11 @@ export function run(argv: string[], io: Io): number {
   }
   const current = countFindings(byFile);
 
-  const baselinePath = options.baseline ? path.join(io.cwd, options.baseline) : undefined;
+  const baselinePath = options.baseline ? path.resolve(io.cwd, options.baseline) : undefined;
+  if (baselinePath !== undefined && path.relative(io.cwd, baselinePath).startsWith("..")) {
+    io.err(`Baseline is outside the current directory: ${options.baseline}`);
+    return 2;
+  }
   const exists = baselinePath !== undefined && existsSync(baselinePath);
   if (options.init) {
     if (exists) {
@@ -141,6 +152,15 @@ export function run(argv: string[], io: Io): number {
       baseline = JSON.parse(readFileSync(baselinePath, "utf8")) as Baseline;
     } catch {
       io.err(`${options.baseline} is not valid JSON`);
+      return 2;
+    }
+    if (
+      typeof baseline !== "object" ||
+      baseline === null ||
+      typeof baseline.files !== "object" ||
+      baseline.files === null
+    ) {
+      io.err(`${options.baseline} is not a baseline file (expected {"version":1,"files":{...}})`);
       return 2;
     }
   } else if (options.baseline && !options.update) {

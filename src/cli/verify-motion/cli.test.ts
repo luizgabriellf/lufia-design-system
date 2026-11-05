@@ -1,4 +1,12 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  symlinkSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { run } from "./cli";
@@ -118,6 +126,41 @@ describe("lufia-verify-motion", () => {
     write("src/bad.css", BAD);
     expect(cli(path.join(dir, "src")).code).toBe(1);
     expect(cli(path.dirname(dir)).code).toBe(2);
+  });
+
+  it("rejects a baseline path outside the working directory without writing it", () => {
+    write("src/ok.css", GOOD);
+    const outside = path.join(path.dirname(dir), "escaped-motion.json");
+    expect(cli("src", "--baseline", "../escaped-motion.json", "--init").code).toBe(2);
+    expect(cli("src", "--baseline", outside, "--init").code).toBe(2);
+    expect(existsSync(outside)).toBe(false);
+  });
+
+  it("exits 2 for a baseline that is invalid JSON, null or the wrong shape", () => {
+    write("src/ok.css", GOOD);
+    for (const content of ["{nope", "null", "[]", '{"files":null}', "42"]) {
+      write("b.json", content);
+      const result = cli("src", "--baseline", "b.json");
+      expect(result.code, content).toBe(2);
+      expect(result.err).toMatch(/baseline|JSON/);
+    }
+  });
+
+  it("does not follow symlinks", () => {
+    write("outside/bad.css", BAD);
+    write("src/ok.css", GOOD);
+    symlinkSync(path.join(dir, "outside"), path.join(dir, "src", "link"));
+    expect(cli("src").code).toBe(0);
+  });
+
+  it("--ignore matches whole path segments, not prefixes", () => {
+    write("src/bad.css", BAD);
+    write("srcx/bad.css", BAD);
+    const result = cli("--ignore", "src", ".");
+    expect(result.code).toBe(1);
+    expect(result.err).toContain("srcx/bad.css");
+    expect(result.err).not.toContain("src/bad.css");
+    expect(cli("--ignore", "src/", "--ignore", "srcx", ".").code).toBe(0);
   });
 
   it("reports usage errors with exit code 2", () => {

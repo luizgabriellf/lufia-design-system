@@ -162,6 +162,12 @@ describe("scanScript", () => {
     expect(scanScript("const r = usePrefersReducedMotion(); requestAnimationFrame(tick)", options)).toEqual(
       [],
     );
+    // Mentioning the hook in a comment is not handling.
+    expect(scanScript("// TODO usePrefersReducedMotion\nrequestAnimationFrame(tick)", options)).toHaveLength(
+      1,
+    );
+    expect(scanScript("/* prefers-reduced-motion */ requestAnimationFrame(tick)", options)).toHaveLength(1);
+    expect(scanScript("// requestAnimationFrame(tick)", options)).toEqual([]);
     expect(scanScript("// lufia-motion-allow reduced-motion\nrequestAnimationFrame(tick)", options)).toEqual(
       [],
     );
