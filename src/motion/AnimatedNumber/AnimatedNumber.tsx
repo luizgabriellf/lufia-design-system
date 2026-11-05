@@ -57,8 +57,7 @@ export function AnimatedNumber({
       setDisplay(shown.current);
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
-    if (reduced) shown.current = value;
-    else frame = requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [value, reduced, duration]);
 

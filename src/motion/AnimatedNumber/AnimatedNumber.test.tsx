@@ -61,6 +61,25 @@ describe("AnimatedNumber", () => {
     expect(container.textContent).toBe("50");
   });
 
+  it("shows the latest value when reduced motion is turned off after a change", () => {
+    const media = mockReducedMotion(true);
+    const { rerender, container } = render(<AnimatedNumber value={1} />);
+    rerender(<AnimatedNumber value={5} />);
+    advance(32);
+    act(() => media.set(false));
+    advance(32);
+    expect(container.textContent).toBe("5");
+  });
+
+  it("cancels the pending frame on unmount", () => {
+    const cancel = vi.spyOn(window, "cancelAnimationFrame");
+    const { rerender, unmount } = render(<AnimatedNumber value={0} duration={400} />);
+    rerender(<AnimatedNumber value={100} duration={400} />);
+    cancel.mockClear();
+    unmount();
+    expect(cancel).toHaveBeenCalled();
+  });
+
   it("jumps within a frame when the duration token collapses", () => {
     const { rerender, container } = render(<AnimatedNumber value={1} duration={0} />);
     rerender(<AnimatedNumber value={9} duration={0} />);
