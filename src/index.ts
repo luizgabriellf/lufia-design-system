@@ -7,6 +7,7 @@ export * from "./components/EmptyState";
 export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/SortableTh";
+export * from "./components/PeerNav";
 export * from "./components/StatusTimeline";
 export * from "./components/Stepper";
 export * from "./components/SuccessCheck";

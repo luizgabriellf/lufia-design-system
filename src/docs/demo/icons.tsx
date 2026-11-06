@@ -107,3 +107,63 @@ export const ServerIcon = (props: DemoIconProps) => (
     <path d="M8 7h.01M8 17h.01" />
   </Frame>
 );
+
+export const HomeIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" />
+  </Frame>
+);
+
+export const GridIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <rect x="4" y="4" width="7" height="7" rx="1" />
+    <rect x="13" y="4" width="7" height="7" rx="1" />
+    <rect x="4" y="13" width="7" height="7" rx="1" />
+    <rect x="13" y="13" width="7" height="7" rx="1" />
+  </Frame>
+);
+
+export const UsersIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <circle cx="9" cy="8" r="3" />
+    <path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17 15a5 5 0 0 1 4 5" />
+  </Frame>
+);
+
+export const ChartIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M4 4v15a1 1 0 0 0 1 1h15M9 16v-5M14 16V8M19 16v-3" />
+  </Frame>
+);
+
+export const InboxIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M4 13V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7M4 13l2 6h12l2-6M4 13h5a3 3 0 0 0 6 0h5" />
+  </Frame>
+);
+
+export const SettingsIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
+  </Frame>
+);
+
+export const MenuIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </Frame>
+);
+
+export const HelpIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6M12 17h.01" />
+  </Frame>
+);
+
+export const ChevronRightIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="m9 6 6 6-6 6" />
+  </Frame>
+);

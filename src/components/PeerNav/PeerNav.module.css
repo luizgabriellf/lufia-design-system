@@ -1,0 +1,233 @@
+.root {
+  position: relative;
+  display: grid;
+  inline-size: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--lufia-space-2);
+  padding: 0.4rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  background: var(--lufia-color-bg-surface);
+  box-sizing: border-box;
+}
+
+/* Slides behind the chosen item (useSlidingIndicator) and carries the active chrome once positioned. */
+.indicator {
+  position: absolute;
+  top: 0;
+  left: 0; /* positioned with measured, physical coordinates */
+  z-index: 0;
+  box-sizing: border-box;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-accent-border);
+  border-radius: var(--lufia-radius-control);
+  background: var(--lufia-color-accent-subtle);
+  box-shadow: var(--lufia-shadow-md);
+  pointer-events: none;
+}
+
+.indicator[data-ready] {
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
+.item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-inline-size: 0;
+  min-block-size: 3.625rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.85rem;
+  border: var(--lufia-border-width-thin) solid transparent;
+  border-radius: var(--lufia-radius-control);
+  background: transparent;
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.item:hover {
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.item:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.item[aria-disabled="true"],
+.item:disabled {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.item[data-active] {
+  color: var(--lufia-color-text-default);
+  border-color: var(--lufia-color-accent-border);
+  background: var(--lufia-color-accent-subtle);
+  box-shadow: var(--lufia-shadow-md);
+}
+
+/* Once the indicator is on screen it carries the chrome, so the item must not paint it twice. */
+.root:has(> .indicator:not([hidden])) .item[data-active] {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.icon {
+  display: grid;
+  inline-size: 2.125rem;
+  block-size: 2.125rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: var(--lufia-radius-md);
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.item[data-active] .icon {
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+}
+
+.labelGroup {
+  min-inline-size: 0;
+}
+
+.label {
+  display: block;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-bold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.description {
+  display: block;
+  margin-block-start: 0.16rem;
+  overflow: hidden;
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-tight);
+  color: var(--lufia-color-text-subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item[data-active] .description {
+  color: var(--lufia-color-text-muted);
+}
+
+/* Many views: keep them readable and scroll instead of compressing the labels. */
+.root[data-layout="scroll"] {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(9.5rem, 1fr);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.root[data-layout="scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll cue: fade the edge that hides more views. Any opaque colour works for a mask. */
+.root[data-more="end"] {
+  mask-image: linear-gradient(to right, var(--lufia-color-text-default) calc(100% - 2.5rem), transparent);
+}
+
+.root[data-more="start"] {
+  mask-image: linear-gradient(to left, var(--lufia-color-text-default) calc(100% - 2.5rem), transparent);
+}
+
+.root[data-more="both"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--lufia-color-text-default) 2.5rem,
+    var(--lufia-color-text-default) calc(100% - 2.5rem),
+    transparent
+  );
+}
+
+.root[data-more="end"]:dir(rtl) {
+  mask-image: linear-gradient(to left, var(--lufia-color-text-default) calc(100% - 2.5rem), transparent);
+}
+
+.root[data-more="start"]:dir(rtl) {
+  mask-image: linear-gradient(to right, var(--lufia-color-text-default) calc(100% - 2.5rem), transparent);
+}
+
+.root[data-layout="scroll"] .description {
+  white-space: normal;
+  text-overflow: clip;
+}
+
+@media (width < 35rem) {
+  .root {
+    gap: 0.35rem;
+    padding: 0.3rem;
+  }
+
+  .item {
+    min-block-size: 3.125rem;
+    gap: 0.5rem;
+    padding: 0.6rem;
+  }
+
+  .icon {
+    inline-size: 1.875rem;
+    block-size: 1.875rem;
+  }
+
+  .label {
+    font-size: var(--lufia-font-size-xs);
+  }
+
+  .description {
+    display: none;
+  }
+}
+
+/* Phones: icon over label so three or four views still fit. */
+@media (width < 26rem) {
+  .root[data-layout="fit"] .item {
+    min-block-size: 4.25rem;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.25rem;
+    text-align: center;
+  }
+
+  .root[data-layout="scroll"] {
+    grid-auto-columns: minmax(6.75rem, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  .indicator {
+    border-color: Highlight;
+  }
+
+  .item[data-active] {
+    border-color: Highlight;
+  }
+
+  .root:has(> .indicator:not([hidden])) .item[data-active] {
+    border-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator[data-ready] {
+    transition: none;
+  }
+}
