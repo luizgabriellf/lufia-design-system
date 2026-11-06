@@ -39,6 +39,14 @@
       "380": { "$value": "380ms" },
       "640": { "$value": "640ms" }
     },
+    "distance": {
+      "$type": "dimension",
+      "$description": "Travel distances for enter and exit motion, in rem so they scale with the root font size",
+      "0.25": { "$value": "0.25rem" },
+      "0.375": { "$value": "0.375rem" },
+      "0.5": { "$value": "0.5rem" },
+      "1": { "$value": "1rem" }
+    },
     "easing": {
       "$type": "cubicBezier",
       "out": { "$value": [0.22, 1, 0.36, 1] },

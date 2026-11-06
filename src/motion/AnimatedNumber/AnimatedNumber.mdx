@@ -1,0 +1,52 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./AnimatedNumber.stories";
+
+<Meta of={Stories} />
+
+# AnimatedNumber <StatusBadge status="beta" />
+
+A number that counts to its new value when `value` changes. It uses `requestAnimationFrame`, no animation library.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { AnimatedNumber } from "@lufia/design-system/motion";
+
+const money = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" });
+
+<AnimatedNumber value={total} format={(n) => money.format(n)} />;
+```
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- Headline figures that can change while visible: totals, counters, progress percentages.
+
+## When not to use
+
+- Values that should not look like they are being computed (identifiers, dates, anything people copy exactly).
+- Numbers that change many times per second. Show them directly.
+
+## Behaviour
+
+- The first render shows the real value, so server HTML, tests and no-JS users read the true number. Only later changes
+  animate: a count from zero on every page load would show a change that did not happen.
+- The display travels from what is on screen now, so interrupting a count is smooth.
+- Duration comes from `--lufia-motion-duration-medium` (read from the element) unless you pass `duration` in
+  milliseconds. Digits are tabular so the width does not jitter.
+- Integers stay whole while counting; fractions keep the precision of the target.
+
+## Accessibility
+
+- It is not a live region. If the change matters to someone using a screen reader, announce it yourself (for example
+  "Total updated to 1,280 euros" in a polite live region), or pair it with [ChangeHighlight](?path=/docs/motion-changehighlight--docs).
+- Under `prefers-reduced-motion` the new value appears at once; there are never intermediate numbers.
+- Formatting and locale are yours: pass a formatter built with the user's locale.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

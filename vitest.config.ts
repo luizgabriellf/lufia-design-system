@@ -11,7 +11,7 @@ export default defineConfig({
     css: { modules: { classNameStrategy: "non-scoped" } },
     coverage: {
       provider: "v8",
-      include: ["src/components/**"],
+      include: ["src/components/**", "src/motion/**"],
       exclude: ["src/**/*.{stories,test}.*", "src/**/index.ts"],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 70 },
     },

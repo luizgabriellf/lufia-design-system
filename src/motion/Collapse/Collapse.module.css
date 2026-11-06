@@ -1,0 +1,34 @@
+/* The one place the package animates a layout property, on purpose: 0fr to 1fr is the only way to reach
+   `height: auto` without measuring. Declared here so consuming apps never write it themselves. */
+.root {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+
+  /* lufia-motion-allow layout */
+  transition:
+    grid-template-rows var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in-out),
+    visibility 0s linear var(--lufia-motion-duration-exit);
+}
+
+.root[data-state="open"] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+
+  /* lufia-motion-allow layout */
+  transition:
+    grid-template-rows var(--lufia-motion-duration-enter) var(--lufia-motion-easing-in-out),
+    visibility 0s linear 0s;
+}
+
+.inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .root[data-state="open"] {
+    transition: none;
+  }
+}

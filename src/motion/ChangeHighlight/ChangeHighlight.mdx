@@ -1,0 +1,49 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./ChangeHighlight.stories";
+
+<Meta of={Stories} />
+
+# ChangeHighlight <StatusBadge status="beta" />
+
+Flashes a soft background behind its children when `value` changes while they are on screen. Never on mount.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { ChangeHighlight } from "@lufia/design-system/motion";
+
+<ChangeHighlight value={order.status}>
+  <Badge>{t(order.status)}</Badge>
+</ChangeHighlight>;
+```
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- A value that updates by itself (polling, live data, a result of another action) and the person should notice where.
+
+## When not to use
+
+- Values the person just typed or chose: they already know.
+- Whole rows or tables that refresh together. Highlight the cell that changed.
+
+## Behaviour
+
+- Compares `value` between renders; only a real change plays. The children are never remounted, so focus and state in
+  them survive.
+- The flash is an overlay whose `opacity` animates (compositor only) over `--lufia-motion-duration-slow`, using
+  `--lufia-color-accent-subtle`.
+
+## Accessibility
+
+- Decoration only. It is not announced and carries no meaning by itself: if the change matters, make it readable in
+  text, or announce it in a polite live region.
+- It does not play under `prefers-reduced-motion`, and is removed in `forced-colors` mode.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

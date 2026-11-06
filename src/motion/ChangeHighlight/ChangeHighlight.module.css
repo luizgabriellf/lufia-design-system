@@ -1,0 +1,48 @@
+.root {
+  position: relative;
+  isolation: isolate;
+}
+
+/* The flash is an overlay whose opacity animates, which stays on the compositor. */
+.root::before {
+  position: absolute;
+  inset: -0.125rem -0.25rem;
+  z-index: -1;
+  content: "";
+  background: var(--lufia-color-accent-subtle);
+  border-radius: var(--lufia-radius-xs);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.root[data-flash="a"]::before {
+  animation: highlight-a var(--lufia-motion-duration-slow) var(--lufia-motion-easing-out);
+}
+
+.root[data-flash="b"]::before {
+  animation: highlight-b var(--lufia-motion-duration-slow) var(--lufia-motion-easing-out);
+}
+
+@keyframes highlight-a {
+  from {
+    opacity: 1;
+  }
+}
+
+@keyframes highlight-b {
+  from {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-flash]::before {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root::before {
+    display: none;
+  }
+}

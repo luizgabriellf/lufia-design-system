@@ -9,10 +9,10 @@ accessibility as a gate. By participating you agree to the [Code of Conduct](COD
 nvm use            # Node 24, see .nvmrc
 npm ci             # installs dependencies and git hooks
 npm run storybook  # http://localhost:6006
-npm run check      # typecheck, lint, stylelint, format, tests, contrast
+npm run check      # typecheck, lint, stylelint, format, tests, contrast, motion rules
 ```
 
-Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `changeset`.
+Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
 
 ## Workflow
 

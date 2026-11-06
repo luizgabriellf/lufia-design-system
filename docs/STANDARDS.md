@@ -15,7 +15,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 - [ ] **Themes:** light and dark, plus `forced-colors` support (high contrast). The package ships a neutral `default` theme and an `example-brand` theme that demonstrates the theming API in Storybook. Brand themes belong to the consuming apps, which map their values onto the semantic tokens.
 - [ ] Every scale is documented: color, spacing (4px base), radius, border width, elevation/shadow, z-index layers, breakpoints (320/390/768/1440 as the test widths), opacity.
 - [ ] Typography: font-family tokens (each brand loads its own fonts through `next/font`), a type scale, line heights, weights, and fluid sizes where needed.
-- [ ] Motion: duration and easing tokens, plus `prefers-reduced-motion` policy (phase P2).
+- [x] Motion: duration, easing and distance tokens, plus the `prefers-reduced-motion` policy (phase P2). Rules in [MOTION.md](MOTION.md); tokens collapse under reduced motion and `lufia-verify-motion` runs in `npm run check`.
 - [ ] Contrast check in CI: every text/background semantic pair meets WCAG 2.2 AA (4.5:1 for body text, 3:1 for large text and UI), in every theme.
 
 ## 2. Iconography and assets

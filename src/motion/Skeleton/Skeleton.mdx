@@ -1,0 +1,58 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Skeleton.stories";
+
+<Meta of={Stories} />
+
+# Skeleton <StatusBadge status="beta" />
+
+A placeholder that holds the shape of content while it loads, with a calm shimmer.
+
+<Canvas of={Stories.Composed} />
+
+## Usage
+
+```tsx
+import { Skeleton } from "@lufia/design-system/motion";
+
+<div aria-busy={loading}>
+  {loading ? (
+    <>
+      <Skeleton width="60%" />
+      <Skeleton variant="rect" height="6rem" label={t("loadingProfile")} />
+    </>
+  ) : (
+    <Profile />
+  )}
+</div>;
+```
+
+<Controls of={Stories.Text} />
+
+## When to use
+
+- A region whose layout is known while its data is pending: cards, lists, table rows, profile headers.
+
+## When not to use
+
+- Unknown shape or very short waits (under about 300 ms): show nothing, or a spinner on the triggering control.
+- Errors or empty results: use an error message or [EmptyState](?path=/docs/components-emptystate--docs).
+
+## Do and don't
+
+- **Do** give the skeleton the size of the content that replaces it, so nothing shifts when it arrives.
+- **Don't** fake content with invented text.
+
+## Accessibility
+
+- Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite
+  `role="status"` message ("Loading profile"). The string is yours, so it can be translated.
+- Mark the region `aria-busy="true"` while loading.
+- The shimmer is `transform` only, and it stops under `prefers-reduced-motion` (the shape stays). `still` turns it off
+  everywhere.
+- In `forced-colors` mode the skeleton becomes an outlined box and the shimmer is removed.
+- No information is carried by the motion.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

@@ -132,6 +132,14 @@
       "medium": { "$value": "{core.duration.380}" },
       "slow": { "$value": "{core.duration.640}" }
     },
+    "distance": {
+      "$type": "dimension",
+      "$description": "How far an element travels while it enters or leaves. Collapses to 0 under prefers-reduced-motion.",
+      "nudge": { "$value": "{core.distance.0.25}", "$description": "Small controls and indicators" },
+      "rise": { "$value": "{core.distance.0.375}", "$description": "Content and page entrances" },
+      "slide": { "$value": "{core.distance.0.5}", "$description": "List rows and panels" },
+      "travel": { "$value": "{core.distance.1}", "$description": "Sheets and full-screen surfaces" }
+    },
     "easing": {
       "$type": "cubicBezier",
       "out": { "$value": "{core.easing.out}" },
