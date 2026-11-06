@@ -21,6 +21,14 @@ function Harness({ swipe = true, initial = false }: { swipe?: boolean; initial?:
   );
 }
 
+function Refusing() {
+  return (
+    <NavSheet open onOpenChange={() => {}} label="Menu">
+      <a href="/one">One</a>
+    </NavSheet>
+  );
+}
+
 const sheet = () => screen.queryByRole("dialog", { name: "Menu" });
 
 describe("NavSheet", () => {
@@ -113,6 +121,60 @@ describe("NavSheet", () => {
       expect(sheet()).not.toBeNull();
       expect(sheet()).not.toHaveAttribute("data-dragging");
       expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
+    });
+
+    it("dismisses on a quick flick that is shorter than the distance threshold", async () => {
+      render(<Harness initial />);
+      fireEvent.pointerDown(grabber(), {
+        pointerId: 1,
+        clientY: 100,
+        button: 0,
+        pointerType: "touch",
+        timeStamp: 0,
+      });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch", timeStamp: 10 });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 20 });
+      act(() => {
+        fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 30 });
+      });
+      await waitFor(() => expect(sheet()).toBeNull());
+    });
+
+    it("does not dismiss a slow drag of the same distance", () => {
+      render(<Harness initial />);
+      fireEvent.pointerDown(grabber(), {
+        pointerId: 1,
+        clientY: 100,
+        button: 0,
+        pointerType: "touch",
+        timeStamp: 0,
+      });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch", timeStamp: 500 });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 1000 });
+      fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 1500 });
+      expect(sheet()).not.toBeNull();
+    });
+
+    it("springs back when the pointer is cancelled mid-drag", () => {
+      render(<Harness initial />);
+      fireEvent.pointerDown(grabber(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 300, pointerType: "touch" });
+      expect(sheet()).toHaveAttribute("data-dragging", "true");
+      fireEvent.pointerCancel(grabber(), { pointerId: 1, pointerType: "touch" });
+      expect(sheet()).not.toHaveAttribute("data-dragging");
+      expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
+      expect(sheet()).not.toBeNull();
+    });
+
+    it("returns to rest when the owner refuses the dismissal", async () => {
+      render(<Refusing />);
+      fireEvent.pointerDown(grabber(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 300, pointerType: "touch" });
+      act(() => {
+        fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 300, pointerType: "touch" });
+      });
+      await waitFor(() => expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px"));
+      expect(sheet()).not.toBeNull();
     });
 
     it("never moves up", () => {

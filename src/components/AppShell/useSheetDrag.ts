@@ -41,8 +41,16 @@ export function useSheetDrag(onDismiss: () => void, enabled = true) {
     gesture.current = null;
     if (!element) return;
     delete element.dataset.dragging;
-    if (dismiss) onDismiss();
-    else element.style.setProperty("--lufia-sheet-drag", "0px");
+    const reset = () => element.style.setProperty("--lufia-sheet-drag", "0px");
+    if (!dismiss) {
+      reset();
+      return;
+    }
+    onDismiss();
+    // The owner may refuse (a guarded close): the sheet is then still open, and must not stay stuck at the dragged offset.
+    queueMicrotask(() => {
+      if (element.isConnected && element.closest('[data-state="open"]')) reset();
+    });
   };
 
   return {

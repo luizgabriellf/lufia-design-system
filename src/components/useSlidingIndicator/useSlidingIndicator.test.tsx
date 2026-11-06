@@ -80,3 +80,45 @@ describe("useSlidingIndicator", () => {
     expect(mark.dataset.ready).toBe("true");
   });
 });
+
+describe("useSlidingIndicator resizing", () => {
+  class FakeObserver {
+    static instances: FakeObserver[] = [];
+    disconnected = false;
+    constructor(public callback: () => void) {
+      FakeObserver.instances.push(this);
+    }
+    observe() {}
+    disconnect() {
+      this.disconnected = true;
+    }
+  }
+
+  beforeEach(() => {
+    FakeObserver.instances = [];
+    vi.stubGlobal("ResizeObserver", FakeObserver);
+    mockReducedMotion(false);
+    vi.stubGlobal("requestAnimationFrame", () => 1);
+    vi.stubGlobal("cancelAnimationFrame", () => {});
+  });
+
+  it("re-measures on resize and jumps instead of sliding", () => {
+    mockBox(0);
+    render(<Tabs />);
+    const mark = screen.getByTestId("mark");
+    mark.dataset.ready = "true";
+    vi.spyOn(HTMLElement.prototype, "offsetLeft", "get").mockReturnValue(120);
+    FakeObserver.instances[0]!.callback();
+    expect(mark.style.transform).toBe("translate3d(120px, 0px, 0)");
+    expect(mark.dataset.ready).toBeUndefined();
+  });
+
+  it("disconnects the observer on unmount", () => {
+    mockBox(0);
+    const { unmount } = render(<Tabs />);
+    const observer = FakeObserver.instances[0]!;
+    expect(observer.disconnected).toBe(false);
+    unmount();
+    expect(observer.disconnected).toBe(true);
+  });
+});
