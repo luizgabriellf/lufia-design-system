@@ -10,7 +10,7 @@ const options: RadioOption[] = [
 ];
 
 const meta = {
-  title: "Forms/RadioGroup",
+  title: "Components/Forms/RadioGroup",
   component: RadioGroup,
   parameters: { layout: "padded" },
   args: { label: "Payment method", options, defaultValue: "card" },

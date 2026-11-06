@@ -1,17 +1,23 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./CommandPalette.stories";
 
 <Meta of={Stories} />
 
-# CommandPalette <StatusBadge status="beta" />
+<DocHeader
+  name="CommandPalette"
+  status="beta"
+  sections={["overview", "examples", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A search-and-run overlay opened with Ctrl+K or Cmd+K: type to filter navigation targets and actions, choose with the
 arrow keys, run with Enter.
 
 <Canvas of={Stories.OpenOnLoad} />
 
-## Usage
+### Usage
 
 ```tsx
 import { CommandPalette } from "@lufia/design-system/components/CommandPalette";
@@ -43,22 +49,27 @@ Strings in the snippet are plain literals. In your app they arrive through props
 plurals are yours. The commands are data and the palette knows no routes: `onSelect` does the work (navigate, open a
 modal). The `AppShell` `search` entry is the natural trigger: `search={{ label, onSelect: () => setOpen(true) }}`.
 
-### Filtering
+#### Filtering
 
 The default matcher (`filterCommands`, exported) requires every word of the query to appear in the label, description, group
 or keywords, ignoring case and accents. Pass `filter` to replace it. For a server search, pass `filter={() => true}`, listen
 to `onQueryChange` and feed the answer back through `items`. A command with `keepOpen` leaves the palette open after it
 runs, for commands that show their answer inside.
 
-## When to use
+</Section>
 
-- Apps with many destinations and actions, where power users want the keyboard.
+<Section id="examples">
 
-## When not to use
+### States
 
-- As the only way to reach something: every command should also exist in the visible UI.
+<Canvas of={Stories.SingleGroup} />
+<Canvas of={Stories.LongText} />
 
-## Keyboard and accessibility
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard and accessibility
 
 It follows the WAI-ARIA APG pattern for a combobox with a listbox popup, inside a modal dialog.
 
@@ -80,12 +91,21 @@ It follows the WAI-ARIA APG pattern for a combobox with a listbox popup, inside 
   dimmed page closes it.
 - It rises and fades with the `--lufia-motion-*` tokens and appears at once under `prefers-reduced-motion`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Apps with many destinations and actions, where power users want the keyboard.
+
+### When not to use
+
+- As the only way to reach something: every command should also exist in the visible UI.
+
+### Content guidelines
 
 Command labels are verbs for actions ("New document") and nouns for destinations ("Settings"). Use `keywords` for the words
 people might type that the label does not contain.
 
-## States
-
-<Canvas of={Stories.SingleGroup} />
-<Canvas of={Stories.LongText} />
+</Section>

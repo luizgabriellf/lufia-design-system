@@ -1,9 +1,20 @@
 :root {
+  /* Docs-site typography only: Geist and Geist Mono, self-hosted (see public/fonts). The package's own font tokens are
+     system stacks on purpose, so each consuming app brings its brand font; the docs just give the site an identity. */
+  --lufia-font-family-display: "Geist Variable", system-ui, -apple-system, "Segoe UI", "Roboto", sans-serif;
+  --lufia-font-family-body: "Geist Variable", system-ui, -apple-system, "Segoe UI", "Roboto", sans-serif;
+  --lufia-font-family-mono:
+    "Geist Mono Variable", ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+
   font-family: var(--lufia-font-family-body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   margin: 0;
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-canvas);
 }
 
 .sb-surface {
@@ -33,33 +44,9 @@ body {
 }
 
 /* Docs pages: keep wide blocks (code, props tables) inside their own box so phones never scroll sideways. */
-.sbdocs.sbdocs-wrapper {
-  box-sizing: border-box;
-  min-inline-size: 0;
-  padding-inline: clamp(1rem, 4vw, 4rem);
-}
-
-.sbdocs .sbdocs-content {
-  min-inline-size: 0;
-  max-inline-size: 62rem;
-}
 
 .sbdocs pre,
 .sbdocs .docblock-source {
-  max-inline-size: 100%;
-}
-
-.sbdocs .docblock-argstable {
-  display: block;
-  max-inline-size: 100%;
-  overflow-x: auto;
-}
-
-.sbdocs .docblock-argstable td {
-  overflow-wrap: anywhere;
-}
-
-.sbdocs .sbdocs-preview {
   max-inline-size: 100%;
 }
 
@@ -113,8 +100,4 @@ body {
 /* Long identifiers (usePrefersReducedMotion) are one unbreakable word; let them wrap and shrink on phones. */
 .sbdocs .sbdocs-content :is(h1, h2, h3) {
   overflow-wrap: anywhere;
-}
-
-.sbdocs .sbdocs-content h1 {
-  font-size: clamp(1.5rem, 7vw, 2rem);
 }

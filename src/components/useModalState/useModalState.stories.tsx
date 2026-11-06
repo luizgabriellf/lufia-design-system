@@ -32,7 +32,7 @@ function Demo({ initial }: { initial: string }) {
 }
 
 const meta = {
-  title: "Components/useModalState",
+  title: "Hooks/useModalState",
   component: Demo,
   parameters: { layout: "padded" },
   args: { initial: "" },

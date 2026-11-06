@@ -12,7 +12,7 @@ const items: MoreActionItem[] = [
 ];
 
 const meta = {
-  title: "Components/MoreActions",
+  title: "Components/Actions/MoreActions",
   component: MoreActions,
   parameters: { layout: "padded" },
   args: { label: "More actions", items },

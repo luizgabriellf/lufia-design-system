@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./SortableTh.stories";
 
 <Meta of={Stories} />
 
-# SortableTh <StatusBadge status="beta" />
+<DocHeader
+  name="SortableTh"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A sortable table column header. It renders a `<th>` containing a real `<button>`, so the column can be sorted from the
 keyboard, and keeps `aria-sort` on the `<th>`.
 
 <Canvas of={Stories.InteractiveSort} />
 
-## Usage
+### Usage
 
 ```tsx
 import { SortableTh } from "@lufia/design-system/components/SortableTh";
@@ -23,17 +29,25 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 The component does not sort data; it reports the click and shows state. Own the sort state and the ordering yourself.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Ascending} />
 
-## When to use
+</Section>
 
-- Table columns the user can reorder by.
+<Section id="accessibility">
 
-## When not to use
-
-- Columns that are not sortable (use a plain `<th scope="col">`) or card layouts without a header row.
-
-## Accessibility
+### Accessibility
 
 - Follows the WAI-ARIA Authoring Practices **sortable table** pattern: `aria-sort="ascending" | "descending" | "none"` is
   set on the column header, the control inside is a native button (Tab to focus, Enter or Space to activate).
@@ -42,10 +56,20 @@ The component does not sort data; it reports the click and shows state. Own the 
 - A visible focus ring (2px, `--lufia-color-focus-ring`) is always present and the target is at least 24px tall.
 - The button inherits header typography, so it looks like plain text until focused.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Table columns the user can reorder by.
+
+### When not to use
+
+- Columns that are not sortable (use a plain `<th scope="col">`) or card layouts without a header row.
+
+### Content guidelines
 
 `label` is the localised column name. Keep it to one or two words; the header does not wrap by default.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

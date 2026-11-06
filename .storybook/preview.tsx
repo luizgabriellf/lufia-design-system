@@ -4,7 +4,9 @@ import "../dist/tokens.css";
 import "../dist/themes/default.css";
 import "../dist/themes/example-brand.css";
 import "./preview.css";
+import "./docs.css";
 import { LufiaDocsContainer } from "./DocsContainer";
+import { ProseTable } from "./ProseTable";
 
 const THEMES = ["default", "example-brand"] as const;
 const MODES = ["light", "dark"] as const;
@@ -59,7 +61,7 @@ const preview: Preview = {
   parameters: {
     layout: "centered",
     controls: { expanded: true },
-    docs: { container: LufiaDocsContainer },
+    docs: { container: LufiaDocsContainer, components: { table: ProseTable } },
     a11y: { test: "error" },
     backgrounds: { disabled: true },
     viewport: {
@@ -70,7 +72,28 @@ const preview: Preview = {
         w1440: { name: "1440 · desktop", styles: { width: "1440px", height: "900px" }, type: "desktop" },
       },
     },
-    options: { storySort: { order: ["Introduction", "Foundations", "Components", "Motion"] } },
+    options: {
+      storySort: {
+        method: "alphabetical",
+        order: [
+          "Introduction",
+          "Foundations",
+          [
+            "Colors",
+            "Typography",
+            "Spacing",
+            "Radius and borders",
+            "Elevation",
+            "Motion",
+            "Creating a theme",
+          ],
+          "Components",
+          ["Actions", "Forms", "Overlays", "Navigation", "Data display", "Feedback", "Motion", "Utilities"],
+          "Patterns",
+          "Hooks",
+        ],
+      },
+    },
   },
 };
 

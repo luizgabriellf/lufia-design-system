@@ -1,17 +1,23 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./usePrefersReducedMotion.stories";
 
 <Meta of={Stories} />
 
-# usePrefersReducedMotion <StatusBadge status="beta" />
+<DocHeader
+  name="usePrefersReducedMotion"
+  status="beta"
+  sections={["overview", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Returns `true` while the operating system asks for reduced motion (`prefers-reduced-motion: reduce`) and follows the
 setting when it changes.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { usePrefersReducedMotion } from "@lufia/design-system/motion";
@@ -20,19 +26,29 @@ const reduced = usePrefersReducedMotion();
 if (reduced) showFinalState();
 ```
 
-## When to use
+</Section>
 
-- Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects,
-  or waiting for an exit animation before unmounting.
+<Section id="accessibility">
 
-## When not to use
-
-- Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a
-  `@media (prefers-reduced-motion: reduce)` rule. See [Motion](?path=/docs/foundations-motion--docs).
-
-## Accessibility
+### Accessibility
 
 - Reduced motion means _less_ motion, not none of the information: render the final state, do not hide the change.
 - On the server the hook returns `false` (full motion), because the preference is unknown. React re-reads the real value
   on hydration, and CSS has already collapsed durations through the tokens.
 - Without `matchMedia` (old environments, some test runners) it returns `false`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects,
+  or waiting for an exit animation before unmounting.
+
+### When not to use
+
+- Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a
+  `@media (prefers-reduced-motion: reduce)` rule. See [Motion](?path=/docs/foundations-motion--docs).
+
+</Section>

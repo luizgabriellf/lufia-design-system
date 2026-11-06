@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./FileField.stories";
 
 <Meta of={Stories} />
 
-# FileField <StatusBadge status="beta" />
+<DocHeader
+  name="FileField"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A file picker with a drop area. The native `<input type="file">` stays in the form, limits on type, size and count are checked
 with messages you provide, and the chosen files are listed with a remove button each.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { FormField } from "@lufia/design-system/components/FormField";
@@ -37,9 +43,11 @@ Strings in the snippet are plain literals. In your app they arrive through props
 `formatRejection` is required: every refusal reaches the person in your wording. It gets `{ file, reason }`, where `reason` is
 `"type"`, `"size"` or `"count"`, and the limits in force, so the message can name them.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## How files are handled
+<Section id="examples">
+
+### How files are handled
 
 - **Picked or dropped, same rules.** A dropped file bypasses the native `accept` attribute, so the component applies it again
   (`matchesAccept` is exported if you need it elsewhere), then `maxSize`, then `maxFiles`.
@@ -54,7 +62,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.WithFiles} />
 <Canvas of={Stories.Rejected} />
 
-## States
+### States
 
 <Canvas of={Stories.SingleFile} />
 <Canvas of={Stories.Required} />
@@ -64,16 +72,21 @@ Strings in the snippet are plain literals. In your app they arrive through props
 Uploading and its progress belong to your app, which knows the request. Show progress next to the list or in the hint, and
 disable the field with `disabled` while files are in flight if removing them would be wrong.
 
-## When to use
+### All themes
 
-- Attachments, documents and images that are submitted with a form, where people may have the files on their desktop.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- Importing data that needs a preview and column mapping: build that flow around a plain file input.
-- Large or resumable uploads: use a dedicated uploader and show its progress.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 | Key / action     | Behaviour                                                                      |
 | ---------------- | ------------------------------------------------------------------------------ |
@@ -91,12 +104,23 @@ disable the field with `disabled` while files are in flight if removing them wou
 - Pass `describeFiles` to have a polite status announce the new count ("2 files chosen") after a pick.
 - The drop area is a dashed border that fills with the accent when files are dragged over it, which is not colour alone.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Attachments, documents and images that are submitted with a form, where people may have the files on their desktop.
+
+### When not to use
+
+- Importing data that needs a preview and column mapping: build that flow around a plain file input.
+- Large or resumable uploads: use a dedicated uploader and show its progress.
+
+### Content guidelines
 
 Say what is accepted before the person chooses, in the hint: types and the size limit. Refusals say which file and why, and
 what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than 5 MB.". Keep the button a verb phrase
 ("Choose files") and the drop text secondary ("or drop files here"), since many people will not drag.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

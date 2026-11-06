@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Stepper.stories";
 
 <Meta of={Stories} />
 
-# Stepper <StatusBadge status="beta" />
+<DocHeader
+  name="Stepper"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A mobile-first step indicator. Below 600px it shows a compact "2 / 4" caption with the active label; from 600px it
 expands into a numbered row with connectors that fill as the user progresses.
 
 <Canvas of={Stories.Interactive} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Stepper } from "@lufia/design-system/components/Stepper";
@@ -21,17 +27,25 @@ import { Stepper } from "@lufia/design-system/components/Stepper";
 
 The parent owns navigation: `current` is controlled, and `onStepClick` is called only for already-visited steps.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Short linear flows (wizards, multi-step forms) of 3 to 7 steps.
+<Section id="accessibility">
 
-## When not to use
-
-- Non-linear navigation (use tabs) or dated process tracking (use `StatusTimeline`).
-
-## Accessibility
+### Accessibility
 
 - A visually hidden `role="status"` live region announces "2 / 4: Review" when `current` changes, at every viewport.
 - The active step's list item has `aria-current="step"`; every step exposes the name "2. Review" (visually hidden text, or
@@ -41,11 +55,21 @@ The parent owns navigation: `current` is controlled, and `onStepClick` is called
 - Dots are 32px; focus shows a 2px ring. The connector fill is a transform transition and stops under
   `prefers-reduced-motion`. In forced-colors mode connectors use `CanvasText`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Short linear flows (wizards, multi-step forms) of 3 to 7 steps.
+
+### When not to use
+
+- Non-linear navigation (use tabs) or dated process tracking (use `StatusTimeline`).
+
+### Content guidelines
 
 Step labels are short nouns (one or two words). The mobile caption shows the full active label, so it may be longer than
 what fits under a dot.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

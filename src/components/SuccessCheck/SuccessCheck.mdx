@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./SuccessCheck.stories";
 
 <Meta of={Stories} />
 
-# SuccessCheck <StatusBadge status="beta" />
+<DocHeader
+  name="SuccessCheck"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A check mark whose stroke draws in once as it appears. The shared "it worked" mark: toasts use it for the success tone.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
@@ -23,22 +29,40 @@ import { SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
 It draws with `currentColor`, so colour comes from the surrounding text. Replay the animation by remounting it (a changed
 `key`).
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Confirming that something completed, next to text that says what.
+<Section id="accessibility">
 
-## When not to use
-
-- As the only signal of success, or as a status icon in a list (it animates every time it mounts). Use a status badge.
-
-## Accessibility
+### Accessibility
 
 - Decorative: `aria-hidden="true"` and `focusable="false"`. The adjacent text carries the meaning, so the check is never
   the only cue.
 - The draw uses `--lufia-motion-duration-enter` and stops under `prefers-reduced-motion`, leaving the finished check.
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- Confirming that something completed, next to text that says what.
+
+### When not to use
+
+- As the only signal of success, or as a status icon in a list (it animates every time it mounts). Use a status badge.
+
+</Section>

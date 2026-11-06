@@ -6,7 +6,7 @@ import { IconButton } from "./IconButton";
 const VARIANTS = ["primary", "secondary", "ghost", "danger"] as const;
 
 const meta = {
-  title: "Components/IconButton",
+  title: "Components/Actions/IconButton",
   component: IconButton,
   parameters: { layout: "padded" },
   args: { icon: <SettingsIcon size={18} />, "aria-label": "Open settings" },

@@ -5,7 +5,7 @@ import { HomeIcon, InboxIcon, SettingsIcon, UsersIcon } from "../../docs/demo";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 
 const meta = {
-  title: "Components/AppShell/Sidebar",
+  title: "Components/Navigation/AppShell/Sidebar",
   component: Sidebar,
   parameters: { layout: "padded" },
   args: {

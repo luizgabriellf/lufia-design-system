@@ -9,6 +9,7 @@ import { Hero } from "./Hero";
 import { ResourceLinks } from "./ResourceLinks";
 import { SpacingRuler } from "./SpacingRuler";
 import { ThemeShowcase } from "./ThemeShowcase";
+import { ENTRIES } from "../taxonomy";
 import { ElevationDemo, LayerStack, RadiusDemo } from "./ShapeDemos";
 import { FamilySpecimens, ScaleSpecimens } from "./TypeSpecimens";
 
@@ -37,14 +38,14 @@ describe("docs blocks", () => {
     const { container } = render(<ComponentGallery />);
     const previews = container.querySelectorAll("[aria-hidden='true'][inert]");
     expect(previews.length).toBeGreaterThanOrEqual(16);
-    // Each card exposes exactly one link: the component name.
-    expect(screen.getAllByRole("link")).toHaveLength(previews.length);
+    // Every component, primitive and hook has exactly one link, whether it shows a preview card or a compact row.
+    expect(screen.getAllByRole("link")).toHaveLength(ENTRIES.length);
   });
 
   it("links every gallery card to a docs page", () => {
     render(<ComponentGallery />);
     const link = screen.getByRole("link", { name: "EmptyState" });
-    expect(link).toHaveAttribute("href", "./?path=/docs/components-emptystate--docs");
+    expect(link).toHaveAttribute("href", "./?path=/docs/components-feedback-emptystate--docs");
   });
 
   it("opens external links safely and says so", () => {

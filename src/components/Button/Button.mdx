@@ -1,16 +1,33 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import {
+  DocHeader,
+  Section,
+  ButtonAnatomy,
+  ButtonDoDont,
+  ButtonVariants,
+  ButtonSizes,
+} from "../../docs/blocks/page";
 import * as Stories from "./Button.stories";
 
 <Meta of={Stories} />
 
-# Button <StatusBadge status="beta" />
+<DocHeader
+  name="Button"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 The control for an action. It renders a native `<button>`, or a link when `href` is given, and looks the same either way.
 
 <Canvas of={Stories.AllVariantsAndSizes} />
 
-## Usage
+### Anatomy
+
+<ButtonAnatomy />
+
+### Usage
 
 ```tsx
 import { Button } from "@lufia/design-system/components/Button";
@@ -24,9 +41,7 @@ import { Button } from "@lufia/design-system/components/Button";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. With `href`, the link
 renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works.
 
-<Controls of={Stories.Default} />
-
-## Variants
+### Variants
 
 | Variant     | Use for                                                       |
 | ----------- | ------------------------------------------------------------- |
@@ -35,7 +50,17 @@ renders through the `linkComponent` set on `LufiaProvider`, so client-side routi
 | `ghost`     | Low-emphasis actions, toolbars, actions repeated in lists     |
 | `danger`    | Destructive actions that are about to happen (delete, remove) |
 
-## Loading
+</Section>
+
+<Section id="examples">
+
+### Side by side
+
+<ButtonVariants />
+
+<ButtonSizes />
+
+### Loading
 
 `loading` keeps the label in the layout (hidden visually), draws a spinner on top and sets `aria-busy="true"`. The width
 does not change. The button stays focusable and ignores activation instead of being disabled, so keyboard focus is not lost
@@ -43,25 +68,36 @@ when a submit starts. Announce the outcome in a live region or a toast; `aria-bu
 
 <Canvas of={Stories.Loading} />
 
-## Keyboard
+### States
+
+<Canvas of={Stories.Danger} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.FullWidth} />
+<Canvas of={Stories.AsLink} />
+<Canvas of={Stories.LongLabel} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 | Key           | Action                                                |
 | ------------- | ----------------------------------------------------- |
 | Tab           | Moves focus to the button (a disabled one is skipped) |
 | Enter / Space | Activates a button; Enter activates a link            |
 
-## When to use
-
-- Anything that does something on the page: submit, open a dialog, add, save.
-- With `href`, a call to action that navigates and should look like a button.
-
-## When not to use
-
-- Navigation inside text: use `Link`.
-- A button with only an icon: use `IconButton`, which requires an accessible name.
-- More than one `primary` in the same view.
-
-## Accessibility
+### Accessibility
 
 - Native elements, so role, focus and activation come from the browser.
 - Focus shows a 2px ring with an offset in every variant. In forced-colors mode the border uses `ButtonText`.
@@ -70,19 +106,28 @@ when a submit starts. Announce the outcome in a live region or a toast; `aria-bu
 - A link used as a button is marked `aria-disabled` when disabled or loading, and its activation is cancelled.
 - The spinner is a rotation only and stops under `prefers-reduced-motion`; `aria-busy` and the cursor still say it is busy.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<ButtonDoDont />
+
+### When to use
+
+- Anything that does something on the page: submit, open a dialog, add, save.
+- With `href`, a call to action that navigates and should look like a button.
+
+### When not to use
+
+- Navigation inside text: use `Link`.
+- A button with only an icon: use `IconButton`, which requires an accessible name.
+- More than one `primary` in the same view.
+
+### Content guidelines
 
 Start with a verb ("Save changes", "Delete record"). Keep it to one to three words; longer labels wrap instead of
 truncating. Give the destructive action a specific name rather than "Yes".
 
-## States
-
-<Canvas of={Stories.Danger} />
-<Canvas of={Stories.Disabled} />
-<Canvas of={Stories.FullWidth} />
-<Canvas of={Stories.AsLink} />
-<Canvas of={Stories.LongLabel} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

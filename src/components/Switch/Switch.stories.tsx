@@ -4,7 +4,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Switch } from "./Switch";
 
 const meta = {
-  title: "Forms/Switch",
+  title: "Components/Forms/Switch",
   component: Switch,
   parameters: { layout: "padded" },
   args: { label: "Email alerts" },

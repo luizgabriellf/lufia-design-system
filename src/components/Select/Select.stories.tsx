@@ -22,7 +22,7 @@ function Demo({ label, hint, error, required, disabled, ...input }: DemoProps) {
 }
 
 const meta = {
-  title: "Forms/Select",
+  title: "Components/Forms/Select",
   component: Demo,
   parameters: { layout: "padded" },
   args: { label: "Country", options: countries, defaultValue: "pt" },

@@ -46,7 +46,7 @@ function Demo({ initialFocus, restoreFocus }: Pick<UseFocusTrapOptions, "initial
 }
 
 const meta = {
-  title: "Components/useFocusTrap",
+  title: "Hooks/useFocusTrap",
   component: Demo,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Demo>;

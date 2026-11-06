@@ -18,7 +18,7 @@ function Card({ still }: { still?: boolean }) {
 }
 
 const meta = {
-  title: "Motion/Skeleton",
+  title: "Components/Motion/Skeleton",
   component: Skeleton,
   parameters: { layout: "padded" },
   args: { variant: "text", label: undefined },

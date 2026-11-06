@@ -7,7 +7,12 @@
 }
 
 .groupTitle {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  padding-block-end: 0.5rem;
   margin: 0 0 1rem;
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
   font-family: var(--lufia-font-family-display);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
@@ -53,7 +58,7 @@
 .preview {
   display: grid;
   place-items: center;
-  block-size: 11.5rem;
+  block-size: 9rem;
   padding: 1rem;
   overflow: hidden;
   background-color: var(--lufia-color-bg-canvas);
@@ -211,4 +216,57 @@
 .statusLine {
   margin: 0;
   text-align: center;
+}
+
+.groupCount {
+  padding: 0 0.5rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  letter-spacing: 0;
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border-radius: var(--lufia-radius-full);
+}
+
+.more {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.5rem), 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  margin: 1rem 0 0;
+  list-style: none;
+}
+
+.more li {
+  display: grid;
+  margin: 0;
+}
+
+.moreLink {
+  display: grid;
+  gap: 0.125rem;
+  align-content: start;
+  padding: 0.625rem 0.875rem;
+  color: inherit;
+  text-decoration: none;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+  transition: border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.moreLink:hover {
+  border-color: var(--lufia-color-accent-border);
+}
+
+.moreName {
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-default);
+}
+
+.moreSummary {
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+  color: var(--lufia-color-text-muted);
 }

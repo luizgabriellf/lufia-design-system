@@ -4,7 +4,7 @@ import { DocumentIcon, UsersIcon } from "../../docs/demo";
 import { NavRow } from "./NavRow";
 
 const meta = {
-  title: "Components/NavRow",
+  title: "Components/Navigation/NavRow",
   component: NavRow,
   parameters: { layout: "padded" },
   args: {

@@ -16,7 +16,7 @@ const overflow: MoreActionItem[] = [
 ];
 
 const meta = {
-  title: "Components/PageActions",
+  title: "Components/Actions/PageActions",
   component: PageActions,
   parameters: { layout: "padded" },
   args: { primary, secondary, overflow, moreLabel: "More actions" },
@@ -43,6 +43,7 @@ export const Disabled: Story = { args: { primary: { ...primary, disabled: true }
 export const InPageHeader: Story = {
   render: (args) => (
     <PageHeader
+      headingLevel={2}
       eyebrow="Reports"
       title="Quarterly overview"
       description="Totals for the period, grouped by team."

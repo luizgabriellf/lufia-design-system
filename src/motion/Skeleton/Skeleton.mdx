@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Skeleton.stories";
 
 <Meta of={Stories} />
 
-# Skeleton <StatusBadge status="beta" />
+<DocHeader
+  name="Skeleton"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A placeholder that holds the shape of content while it loads, with a calm shimmer.
 
 <Canvas of={Stories.Composed} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Skeleton } from "@lufia/design-system/motion";
@@ -29,23 +35,25 @@ import { Skeleton } from "@lufia/design-system/motion";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Text} />
 
-## When to use
+</Section>
 
-- A region whose layout is known while its data is pending: cards, lists, table rows, profile headers.
+<Section id="accessibility">
 
-## When not to use
-
-- Unknown shape or very short waits (under about 300 ms): show nothing, or a spinner on the triggering control.
-- Errors or empty results: use an error message or [EmptyState](?path=/docs/components-emptystate--docs).
-
-## Do and don't
-
-- **Do** give the skeleton the size of the content that replaces it, so nothing shifts when it arrives.
-- **Don't** fake content with invented text.
-
-## Accessibility
+### Accessibility
 
 - Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite
   `role="status"` message ("Loading profile"). The string is yours, so it can be translated.
@@ -55,6 +63,22 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - In `forced-colors` mode the skeleton becomes an outlined box and the shimmer is removed.
 - No information is carried by the motion.
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- A region whose layout is known while its data is pending: cards, lists, table rows, profile headers.
+
+### When not to use
+
+- Unknown shape or very short waits (under about 300 ms): show nothing, or a spinner on the triggering control.
+- Errors or empty results: use an error message or [EmptyState](?path=/docs/components-feedback-emptystate--docs).
+
+### Do and don't
+
+- **Do** give the skeleton the size of the content that replaces it, so nothing shifts when it arrives.
+- **Don't** fake content with invented text.
+
+</Section>

@@ -31,7 +31,7 @@ function Demo({ pageSize }: { pageSize: number }) {
 }
 
 const meta = {
-  title: "Components/usePagination",
+  title: "Hooks/usePagination",
   component: Demo,
   parameters: { layout: "padded" },
   args: { pageSize: 5 },

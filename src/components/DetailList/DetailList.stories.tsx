@@ -10,7 +10,7 @@ const rows = [
 ];
 
 const meta = {
-  title: "Components/DetailList",
+  title: "Components/Data display/DetailList",
   component: DetailList,
   parameters: { layout: "padded" },
   args: { rows },

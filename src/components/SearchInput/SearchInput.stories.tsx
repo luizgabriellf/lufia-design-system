@@ -5,7 +5,7 @@ import { FormField } from "../FormField";
 import { SearchInput } from "./SearchInput";
 
 const meta = {
-  title: "Forms/SearchInput",
+  title: "Components/Forms/SearchInput",
   component: SearchInput,
   parameters: { layout: "padded" },
   args: { placeholder: "Search customers" },

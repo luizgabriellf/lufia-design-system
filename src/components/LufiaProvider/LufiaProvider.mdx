@@ -1,17 +1,23 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./LufiaProvider.stories";
 
 <Meta of={Stories} />
 
-# LufiaProvider <StatusBadge status="beta" />
+<DocHeader
+  name="LufiaProvider"
+  status="beta"
+  sections={["overview", "examples", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 One place to adapt the package to an app: the **link component** that navigates, and the **aria-only labels** that
 components fall back on. The package imports no router and no i18n library; this provider is the seam.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
@@ -31,23 +37,37 @@ try and required for a real app.
 | `linkComponent` | plain `<a>` | Any component that accepts anchor props and `href: string`.                  |
 | `labels`        | English     | Partial. `close`, `dismiss`, `notifications`. Merged over an outer provider. |
 
-## When to use
+</Section>
 
-- Once, at the root of every app that uses the package.
-- Nested, to change the language or the router of one subtree.
+<Section id="examples">
 
-## When not to use
+### All themes
 
-- For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns
-  them. `labels` is only text that assistive technology reads.
+<Canvas of={Stories.AllThemes} />
 
-## Accessibility
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 - The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always
   override them: a Portuguese page with an English "Close" button is an accessibility defect.
 - A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and
   "open in new tab".
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- Once, at the root of every app that uses the package.
+- Nested, to change the language or the router of one subtree.
+
+### When not to use
+
+- For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns
+  them. `labels` is only text that assistive technology reads.
+
+</Section>

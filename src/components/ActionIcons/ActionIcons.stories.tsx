@@ -3,7 +3,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ACTION_ICONS, DeleteIcon } from "./ActionIcons";
 
 const meta = {
-  title: "Components/ActionIcons",
+  title: "Components/Actions/ActionIcons",
   component: DeleteIcon,
   args: { size: 16 },
   argTypes: { size: { control: { type: "number", min: 12, max: 48 } } },

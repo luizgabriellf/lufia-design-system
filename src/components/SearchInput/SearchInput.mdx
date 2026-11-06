@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./SearchInput.stories";
 
 <Meta of={Stories} />
 
-# SearchInput <StatusBadge status="beta" />
+<DocHeader
+  name="SearchInput"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A search box: a magnifier, a native `type="search"` input, a clear button, an optional shortcut hint and a debounced
 `onSearch`.
 
 <Canvas of={Stories.WithShortcut} />
 
-## Usage
+### Usage
 
 ```tsx
 import { SearchInput } from "@lufia/design-system/components/SearchInput";
@@ -28,9 +34,17 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 Use `value` and `onValueChange` to control the text, or `defaultValue` to leave it to the component.
 
-<Controls of={Stories.Default} />
+### Shortcut hint
 
-## Debounced search
+`shortcut` draws a `<kbd>` hint while the box is empty and idle. It is **display only**: bind the key in your app (and
+remember a single-key shortcut such as `/` must not fire while someone is typing in another field). The hint is hidden from
+assistive technology and on touch screens, and gives way to the clear button as soon as there is text.
+
+</Section>
+
+<Section id="examples">
+
+### Debounced search
 
 `onValueChange` fires on every keystroke, for UI that mirrors the text. `onSearch` is for work: it fires once the person has
 stopped typing for `debounceMs` (300 by default), at once on Enter, and at once when the text is cleared. It does not fire for
@@ -38,13 +52,7 @@ the initial value, and not twice for the same text in a row. Pending timers are 
 
 <Canvas of={Stories.Debounced} />
 
-## Shortcut hint
-
-`shortcut` draws a `<kbd>` hint while the box is empty and idle. It is **display only**: bind the key in your app (and
-remember a single-key shortcut such as `/` must not fire while someone is typing in another field). The hint is hidden from
-assistive technology and on touch screens, and gives way to the clear button as soon as there is text.
-
-## States
+### States
 
 <Canvas of={Stories.InsideFormField} />
 <Canvas of={Stories.Loading} />
@@ -52,16 +60,21 @@ assistive technology and on touch screens, and gives way to the clear button as 
 <Canvas of={Stories.ReadOnly} />
 <Canvas of={Stories.Invalid} />
 
-## When to use
+### All themes
 
-- Filtering or finding items in a list, a table or a whole product.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- Choosing one value from a list of known options: use `Combobox`, which keeps the choice and its keyboard model.
-- A form field whose text is data, not a query: use `TextInput`.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 | Key / action | Behaviour                                                                                      |
 | ------------ | ---------------------------------------------------------------------------------------------- |
@@ -76,11 +89,22 @@ assistive technology and on touch screens, and gives way to the clear button as 
   `prefers-reduced-motion`.
 - Results are not announced by this component: the list you update should announce its own count (a live region).
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Filtering or finding items in a list, a table or a whole product.
+
+### When not to use
+
+- Choosing one value from a list of known options: use `Combobox`, which keeps the choice and its keyboard model.
+- A form field whose text is data, not a query: use `TextInput`.
+
+### Content guidelines
 
 The placeholder says what can be searched ("Search customers"), not "Search...". Put the scope in it when there is more than one
 search on a page. `clearLabel` and `loadingLabel` are read aloud: "Clear search", "Searching customers".
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

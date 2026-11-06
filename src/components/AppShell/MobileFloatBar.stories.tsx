@@ -3,7 +3,7 @@ import { MenuIcon, PlusIcon, SearchIcon } from "../../docs/demo";
 import { MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator } from "./MobileFloatBar";
 
 const meta = {
-  title: "Components/AppShell/MobileFloatBar",
+  title: "Components/Navigation/AppShell/MobileFloatBar",
   component: MobileFloatBar,
   parameters: { layout: "fullscreen", docs: { story: { inline: false, iframeHeight: 240 } } },
   args: { label: "Quick navigation", children: null },

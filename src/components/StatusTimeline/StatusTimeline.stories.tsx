@@ -49,7 +49,7 @@ const tracks: StatusTimelineTrack[] = [
 ];
 
 const meta = {
-  title: "Components/StatusTimeline",
+  title: "Components/Data display/StatusTimeline",
   component: StatusTimeline,
   parameters: { layout: "padded" },
   args: { tracks },

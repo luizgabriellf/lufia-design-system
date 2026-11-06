@@ -13,7 +13,7 @@ const LABELS: Record<BadgeTone, string> = {
 };
 
 const meta = {
-  title: "Components/Badge",
+  title: "Components/Data display/Badge",
   component: Badge,
   parameters: { layout: "padded" },
   args: { children: "Approved", tone: "success" },

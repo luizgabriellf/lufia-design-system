@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./PeerNav.stories";
 
 <Meta of={Stories} />
 
-# PeerNav <StatusBadge status="beta" />
+<DocHeader
+  name="PeerNav"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A horizontal set of sibling views of one page, such as an overview and a work queue. Each item has a label and, optionally,
 a description and an icon. An indicator slides to the chosen one.
 
 <Canvas of={Stories.Links} />
 
-## Usage
+### Usage
 
 ```tsx
 import { PeerNav } from "@lufia/design-system/components/PeerNav";
@@ -35,9 +41,7 @@ import { PeerNav } from "@lufia/design-system/components/PeerNav";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Links render through
 the `linkComponent` set on `LufiaProvider`, so client-side routing works.
 
-<Controls of={Stories.Links} />
-
-## Links or tabs
+### Links or tabs
 
 The semantics depend on what the items are, and the component derives it so the markup cannot lie.
 
@@ -52,7 +56,31 @@ The semantics depend on what the items are, and the component derives it so the 
 A mix is not offered on purpose: a tablist promises arrow keys that links do not have. A tab can name its panel with
 `controls`; give the panel `role="tabpanel"` and `aria-labelledby="<id>-tab-<key>"` (set `id` on `PeerNav`).
 
-## Keyboard
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Tabs} />
+<Canvas of={Stories.ManyItems} />
+<Canvas of={Stories.DisabledItem} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Links} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 | Key                | Links                    | Tabs                                           |
 | ------------------ | ------------------------ | ---------------------------------------------- |
@@ -64,15 +92,7 @@ A mix is not offered on purpose: a tablist promises arrow keys that links do not
 Tabs use automatic activation: the arrow key focuses and selects, which suits views that render without a wait. Disabled
 tabs are skipped.
 
-## When to use
-
-- Two to six peer views of one screen that share a heading and data.
-
-## When not to use
-
-- Page-level site navigation (use the app shell), steps in order (use `Stepper`), or a switch between two display modes.
-
-## Accessibility
+### Accessibility
 
 - Always give `label`: a page often has several navigations or tablists.
 - Icons are decorative. The description is part of the link's or tab's name.
@@ -83,16 +103,20 @@ tabs are skipped.
 - Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under
   `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Two to six peer views of one screen that share a heading and data.
+
+### When not to use
+
+- Page-level site navigation (use the app shell), steps in order (use `Stepper`), or a switch between two display modes.
+
+### Content guidelines
 
 Labels are one or two words. Descriptions are a short phrase and may be omitted; they disappear on phones.
 
-## States
-
-<Canvas of={Stories.Tabs} />
-<Canvas of={Stories.ManyItems} />
-<Canvas of={Stories.DisabledItem} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

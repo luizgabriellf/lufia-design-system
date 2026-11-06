@@ -11,7 +11,7 @@ function Demo({ query }: { query: string }) {
 }
 
 const meta = {
-  title: "Components/useMediaQuery",
+  title: "Hooks/useMediaQuery",
   component: Demo,
   parameters: { layout: "padded" },
   args: { query: "(max-width: 40rem)" },

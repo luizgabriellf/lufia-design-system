@@ -77,6 +77,13 @@ import { EmptyState } from "@lufia/design-system/components/EmptyState";
 - [Contributing](CONTRIBUTING.md) (workflow, RFCs, definition of done, changesets) and [governance](GOVERNANCE.md)
 - [Code of conduct](CODE_OF_CONDUCT.md), [security policy](SECURITY.md), [support](SUPPORT.md)
 
+## Fonts
+
+The documentation site (not the package) is set in [Geist](https://github.com/vercel/geist-font) and Geist Mono, copyright
+The Geist Project Authors, under the SIL Open Font License 1.1. The files are self-hosted in
+`.storybook/public/fonts`, next to their licences: [Geist](.storybook/public/fonts/OFL-Geist.txt) and
+[Geist Mono](.storybook/public/fonts/OFL-Geist-Mono.txt). The package's font tokens are system stacks.
+
 ## License
 
 [MIT](LICENSE)

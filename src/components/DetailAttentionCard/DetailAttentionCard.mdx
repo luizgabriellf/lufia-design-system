@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./DetailAttentionCard.stories";
 
 <Meta of={Stories} />
 
-# DetailAttentionCard <StatusBadge status="beta" />
+<DocHeader
+  name="DetailAttentionCard"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A high-signal card for deadlines, risk and missing-data states. A tone mark, a title, optional description
 and meta line, and an optional call to action.
 
 <Canvas of={Stories.AllTones} />
 
-## Usage
+### Usage
 
 ```tsx
 import { DetailAttentionCard } from "@lufia/design-system/components/DetailAttentionCard";
@@ -26,23 +32,25 @@ import { DetailAttentionCard } from "@lufia/design-system/components/DetailAtten
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Warn} />
 
-## When to use
+</Section>
 
-- A single item needs the user's attention and you can state what to do next.
+<Section id="accessibility">
 
-## When not to use
-
-- Routine confirmations (use a toast) or long lists of problems (use a table with status cells).
-- Do not stack more than two or three on a screen; if everything is urgent, nothing is.
-
-## Do and don't
-
-- **Do** write the title as the finding and the action as the fix.
-- **Don't** rely on colour: the mark is a glyph and `toneLabel` names the tone for screen readers.
-
-## Accessibility
+### Accessibility
 
 - Renders a `<section>` with an `<h3>`. Make sure the page's heading hierarchy fits, or wrap it in a labelled region.
 - The tone is shown by colour and a glyph (`✓`, `!`, `·`) that are hidden from assistive technology. **Pass `toneLabel`**
@@ -51,10 +59,26 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - The action is a plain slot; its keyboard behaviour is the control you pass in. On narrow screens buttons and links in
   the slot stretch to full width.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A single item needs the user's attention and you can state what to do next.
+
+### When not to use
+
+- Routine confirmations (use a toast) or long lists of problems (use a table with status cells).
+- Do not stack more than two or three on a screen; if everything is urgent, nothing is.
+
+### Do and don't
+
+- **Do** write the title as the finding and the action as the fix.
+- **Don't** rely on colour: the mark is a glyph and `toneLabel` names the tone for screen readers.
+
+### Content guidelines
 
 All copy comes in through props, already localised. Keep titles under about 60 characters; long strings wrap. Prefer a plain imperative verb for the action label ("Renew", not "Renew now!!").
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

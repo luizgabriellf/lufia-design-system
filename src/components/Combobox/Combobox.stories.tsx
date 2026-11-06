@@ -40,7 +40,7 @@ const openAndHighlight = async (context: { canvasElement: HTMLElement }) => {
 };
 
 const meta = {
-  title: "Forms/Combobox",
+  title: "Components/Forms/Combobox",
   component: Demo,
   parameters: { layout: "padded" },
   args: {

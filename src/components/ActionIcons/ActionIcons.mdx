@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./ActionIcons.stories";
 
 <Meta of={Stories} />
 
-# ActionIcons <StatusBadge status="beta" />
+<DocHeader
+  name="ActionIcons"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIcon`, `DuplicateIcon`, `PendingIcon`,
 `OpenIcon` and `ReportIcon`. They share a 16x16 grid, a 1.4 stroke and round caps, and inherit `currentColor`.
 
 <Canvas of={Stories.Gallery} />
 
-## Usage
+### Usage
 
 ```tsx
 import { DeleteIcon } from "@lufia/design-system/components/ActionIcons";
@@ -21,18 +27,25 @@ import { DeleteIcon } from "@lufia/design-system/components/ActionIcons";
 </button>;
 ```
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Beside a visible text label in menus and buttons (decorative).
-- As the only content of an icon button, with an accessible name on the button.
+<Section id="accessibility">
 
-## When not to use
-
-- As the only carrier of meaning without a name. If the icon stands alone, give it `aria-label`.
-
-## Accessibility
+### Accessibility
 
 - **Decorative by default**: `aria-hidden="true"` and `focusable="false"`, so assistive technology skips it.
 - **Meaningful on request**: `aria-label` switches to `role="img"` with that name. Prefer labelling the surrounding button
@@ -40,10 +53,21 @@ import { DeleteIcon } from "@lufia/design-system/components/ActionIcons";
 - Icons inherit `currentColor`; contrast is the responsibility of the text colour they sit in (3:1 for non-text content).
 - Keyboard and focus behaviour belong to the enclosing control.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Beside a visible text label in menus and buttons (decorative).
+- As the only content of an icon button, with an accessible name on the button.
+
+### When not to use
+
+- As the only carrier of meaning without a name. If the icon stands alone, give it `aria-label`.
+
+### Content guidelines
 
 Icons carry no text. Localised labels are supplied by the app next to the icon.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

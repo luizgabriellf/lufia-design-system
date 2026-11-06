@@ -5,7 +5,7 @@ import { EmptyState } from "./EmptyState";
 import { DocumentIcon, SearchIcon, UploadIcon } from "../../docs/demo";
 
 const meta = {
-  title: "Components/EmptyState",
+  title: "Components/Feedback/EmptyState",
   component: EmptyState,
   parameters: { layout: "padded" },
   args: {

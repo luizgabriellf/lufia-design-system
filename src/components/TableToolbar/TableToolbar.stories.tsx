@@ -10,7 +10,7 @@ const filters = [
 ];
 
 const meta = {
-  title: "Components/TableToolbar",
+  title: "Components/Data display/TableToolbar",
   component: TableToolbar,
   parameters: { layout: "padded" },
   args: {

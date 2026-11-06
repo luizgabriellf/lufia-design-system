@@ -1,16 +1,18 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./useSlidingIndicator.stories";
 
 <Meta of={Stories} />
 
-# useSlidingIndicator <StatusBadge status="beta" />
+<DocHeader name="useSlidingIndicator" status="beta" sections={["overview", "accessibility", "guidelines"]} />
+
+<Section id="overview">
 
 Slides a decorative indicator behind the active item of a tab-like row. Only `transform` animates; the items never move.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { useSlidingIndicator } from "@lufia/design-system/components/useSlidingIndicator";
@@ -38,15 +40,11 @@ const indicator = useSlidingIndicator(nav, `[data-key="${active}"]`, active);
 `PeerNav` is built on it. Pass `{ stretch: true }` to keep a fixed-width indicator and stretch it with `scaleX`, which suits
 items of unequal width.
 
-## When to use
+</Section>
 
-- A small row of peer items where the chosen one should feel like it moved, not like it was swapped.
+<Section id="accessibility">
 
-## When not to use
-
-- Lists that wrap onto several lines or scroll in both axes: the indicator follows one box.
-
-## Accessibility
+### Accessibility
 
 - The indicator is decorative: give it `aria-hidden="true"`. State stays on the items (`aria-current`, `aria-pressed`).
 - It starts `hidden`, so with no script or before the first measure the active item keeps its own styling.
@@ -54,3 +52,17 @@ items of unequal width.
   instead of sliding. Under `prefers-reduced-motion` the duration tokens collapse and the indicator simply appears in place.
 - Positions are measured, physical coordinates; the indicator uses `left: 0` on purpose and follows the items in RTL
   layouts too.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A small row of peer items where the chosen one should feel like it moved, not like it was swapped.
+
+### When not to use
+
+- Lists that wrap onto several lines or scroll in both axes: the indicator follows one box.
+
+</Section>

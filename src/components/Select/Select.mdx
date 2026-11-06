@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Select.stories";
 
 <Meta of={Stories} />
 
-# Select <StatusBadge status="beta" />
+<DocHeader
+  name="Select"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A native `<select>` in the shared field box, with a drawn chevron. The browser keeps its own list, keyboard handling,
 typeahead and mobile picker.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { FormField } from "@lufia/design-system/components/FormField";
@@ -33,9 +39,11 @@ import { Select } from "@lufia/design-system/components/Select";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 Pass `<option>` and `<optgroup>` elements as `children` when you need groups.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## Placeholder
+<Section id="examples">
+
+### Placeholder
 
 `placeholder` adds an empty first choice. It is shown while nothing is chosen and then drops out of the list, so a required
 field cannot be put back to empty. Set `allowEmpty` for an optional field where "no preference" is a valid answer.
@@ -43,22 +51,27 @@ field cannot be put back to empty. Set `allowEmpty` for an optional field where 
 <Canvas of={Stories.WithPlaceholder} />
 <Canvas of={Stories.OptionalWithEmptyChoice} />
 
-## States
+### States
 
 <Canvas of={Stories.Required} />
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
 
-## When to use
+### All themes
 
-- Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- Fewer than four options that matter equally: a `RadioGroup` shows them all at once.
-- Long lists, search, async data or options with more than text: use `Combobox`.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 A native `<select>`, so the platform's behaviour applies.
 
@@ -74,11 +87,22 @@ A native `<select>`, so the platform's behaviour applies.
 - The chevron is decorative and does not take clicks; the whole box opens the list.
 - Under `forced-colors` the box and focus ring use system colours.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).
+
+### When not to use
+
+- Fewer than four options that matter equally: a `RadioGroup` shows them all at once.
+- Long lists, search, async data or options with more than text: use `Combobox`.
+
+### Content guidelines
 
 Options are sentence case, parallel and sorted in a way that fits the data (alphabetical for names, natural order for
 ranges). The placeholder is an instruction, "Choose a country", never the label again.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

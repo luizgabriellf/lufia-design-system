@@ -6,7 +6,7 @@ import { Button, type ButtonVariant } from "./Button";
 const VARIANTS: ButtonVariant[] = ["primary", "secondary", "ghost", "danger"];
 
 const meta = {
-  title: "Components/Button",
+  title: "Components/Actions/Button",
   component: Button,
   parameters: { layout: "padded" },
   args: { children: "Save changes" },

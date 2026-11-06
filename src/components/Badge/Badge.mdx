@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section, BadgeDoDont, BadgeTones } from "../../docs/blocks/page";
 import * as Stories from "./Badge.stories";
 
 <Meta of={Stories} />
 
-# Badge <StatusBadge status="beta" />
+<DocHeader
+  name="Badge"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A short, non-interactive label for a category, a count or the state of a record. `StatusBadge` is the same component with a
 dot on by default.
 
 <Canvas of={Stories.AllTonesWithDot} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Badge, StatusBadge } from "@lufia/design-system/components/Badge";
@@ -22,9 +28,7 @@ import { Badge, StatusBadge } from "@lufia/design-system/components/Badge";
 
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
 
-<Controls of={Stories.Default} />
-
-## Tones
+### Tones
 
 | Tone      | Meaning                                             |
 | --------- | --------------------------------------------------- |
@@ -37,22 +41,39 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 The `ai` tone exists so generated content is always marked as such; pair it with text that says so.
 
-## Keyboard
+</Section>
+
+<Section id="examples">
+
+### Side by side
+
+<BadgeTones />
+
+### States
+
+<Canvas of={Stories.WithDot} />
+<Canvas of={Stories.Status} />
+<Canvas of={Stories.LongText} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 A badge is not interactive and takes no focus. If it needs to act, use a `Button` or `Link`.
 
-## When to use
-
-- A status in a table row, a card header or a detail page.
-- A count or category next to a heading.
-
-## When not to use
-
-- A message that needs to be read now: use a toast or an alert.
-- Anything clickable.
-- Long sentences. Past two or three words, write text instead.
-
-## Accessibility
+### Accessibility
 
 - The text is always present and carries the meaning. The tone and the dot only reinforce it (WCAG 1.4.1), so never omit
   the text and never reuse one word for two tones.
@@ -60,17 +81,28 @@ A badge is not interactive and takes no focus. If it needs to act, use a `Button
 - Every tone's text meets 4.5:1 on its own background in light and dark; the contrast check enforces the status pairs.
 - In forced-colors mode the border and dot use system colours, so the shape remains.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<BadgeDoDont />
+
+### When to use
+
+- A status in a table row, a card header or a detail page.
+- A count or category next to a heading.
+
+### When not to use
+
+- A message that needs to be read now: use a toast or an alert.
+- Anything clickable.
+- Long sentences. Past two or three words, write text instead.
+
+### Content guidelines
 
 One to three words, sentence case ("In review", not "IN REVIEW"). Say the state, not the colour. Long text wraps instead of
 truncating.
 
-## States
-
-<Canvas of={Stories.WithDot} />
-<Canvas of={Stories.Status} />
-<Canvas of={Stories.LongText} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

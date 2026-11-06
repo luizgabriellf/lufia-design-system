@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Reveal.stories";
 
 <Meta of={Stories} />
 
-# Reveal <StatusBadge status="beta" />
+<DocHeader
+  name="Reveal"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Mounts and unmounts content with an enter and an exit animation. Entrances use `--lufia-motion-duration-enter`, exits the
 shorter `--lufia-motion-duration-exit`.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Reveal } from "@lufia/design-system/motion";
@@ -23,27 +29,32 @@ import { Reveal } from "@lufia/design-system/motion";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
-<Controls of={Stories.Default} />
-
-## When to use
-
-- A notice, panel or row that appears or disappears because of something the person did.
-
-## When not to use
-
-- Content that changes height in place: use [Collapse](?path=/docs/motion-collapse--docs).
-- Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real
-  state changes animate.
-- Dialogs and popovers. They need focus management that belongs to their own components.
-
-## Behaviour
+### Behaviour
 
 - The children stay mounted until the exit animation ends, then unmount. Keep side effects out of them while `show` is
   `false`.
 - Showing it again during the exit re-enters immediately.
 - Only `opacity` and `transform` animate, with distances from `--lufia-motion-distance-*`.
 
-## Accessibility
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 - Under `prefers-reduced-motion` the content appears and disappears at once.
 - Nothing is conveyed by the motion alone: the content is in the DOM and the accessibility tree whenever it is shown.
@@ -52,6 +63,19 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - During the exit the content is no longer clickable (`pointer-events: none`), but it is still focusable for the 160 ms
   it takes to leave. Move focus yourself if the focused element is inside.
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- A notice, panel or row that appears or disappears because of something the person did.
+
+### When not to use
+
+- Content that changes height in place: use [Collapse](?path=/docs/components-motion-collapse--docs).
+- Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real
+  state changes animate.
+- Dialogs and popovers. They need focus management that belongs to their own components.
+
+</Section>

@@ -11,10 +11,12 @@ const actions = (
 );
 
 const meta = {
-  title: "Components/PageHeader",
+  title: "Components/Navigation/PageHeader",
   component: PageHeader,
   parameters: { layout: "padded" },
   args: {
+    // Demos use h2 so the docs page, whose header is the one h1, keeps a valid outline. The component's default is 1.
+    headingLevel: 2,
     eyebrow: "Reports",
     title: "Quarterly overview",
     description: "Totals for the period, grouped by team, with the changes since last quarter.",

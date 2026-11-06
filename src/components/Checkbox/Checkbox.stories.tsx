@@ -4,7 +4,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Checkbox } from "./Checkbox";
 
 const meta = {
-  title: "Forms/Checkbox",
+  title: "Components/Forms/Checkbox",
   component: Checkbox,
   parameters: { layout: "padded" },
   args: { label: "Send me the weekly report" },

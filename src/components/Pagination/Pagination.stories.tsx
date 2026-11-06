@@ -27,7 +27,7 @@ function Stateful(props: PaginationProps) {
 }
 
 const meta = {
-  title: "Components/Pagination",
+  title: "Components/Navigation/Pagination",
   component: Pagination,
   parameters: { layout: "padded" },
   args: { page: 3, totalPages: 12, total: 118, labels, onPageChange: () => {} },

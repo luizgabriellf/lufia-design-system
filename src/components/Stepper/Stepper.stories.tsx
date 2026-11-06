@@ -12,7 +12,7 @@ const steps = [
 ];
 
 const meta = {
-  title: "Components/Stepper",
+  title: "Components/Navigation/Stepper",
   component: Stepper,
   parameters: { layout: "padded" },
   args: { steps, current: 1, onStepClick: () => {} },

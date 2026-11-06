@@ -1,17 +1,19 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./useModalState.stories";
 
 <Meta of={Stories} />
 
-# useModalState <StatusBadge status="beta" />
+<DocHeader name="useModalState" status="beta" sections={["overview", "accessibility", "guidelines"]} />
+
+<Section id="overview">
 
 Keeps "which modal is open" in the URL, so a refresh or a shared link reopens it and the browser's back button closes it.
 Router-agnostic: it talks to the URL through a small adapter.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 Without a router it uses the History API:
 
@@ -51,19 +53,29 @@ const { modal, open, close } = useModalState({ adapter, onNavigate: startProgres
 `open(name, id?, { consumeKeys })` drops the listed one-shot parameters (a `?new=1` deep link) so they do not reopen the
 modal on refresh. Opening a modal from another records the parent; `close()` returns to it, or to a clean URL.
 
-## When to use
+</Section>
 
-- Modals people link to, refresh on, or expect the back button to close: record details, edit forms.
+<Section id="accessibility">
 
-## When not to use
-
-- Transient confirmations and menus. A confirmation should not survive a refresh; use `useConfirmDialog` or plain state.
-- Anything that must not appear in the URL (personal data belongs in the `id`'s lookup, not in the address).
-
-## Accessibility
+### Accessibility
 
 - A refresh reopens the modal, and there is no opener to return focus to. Focus then goes back to the page body when it
   closes. If that matters, manage focus in the consumer.
 - `open` pushes a history entry and `close` replaces it, so Back closes the modal and does not stack closed states.
 - Opening and closing are real navigations: in a routed app, let `onNavigate` drive the same loading indication as
   other navigations.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Modals people link to, refresh on, or expect the back button to close: record details, edit forms.
+
+### When not to use
+
+- Transient confirmations and menus. A confirmation should not survive a refresh; use `useConfirmDialog` or plain state.
+- Anything that must not appear in the URL (personal data belongs in the `id`'s lookup, not in the address).
+
+</Section>

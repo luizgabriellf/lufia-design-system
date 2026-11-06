@@ -77,7 +77,7 @@ function Demo({ startOpen = false, paragraphs = 0, slowSave = false, footer, ...
 }
 
 const meta = {
-  title: "Components/Modal",
+  title: "Components/Overlays/Modal",
   component: Demo,
   parameters: { layout: "padded" },
   args: {},

@@ -23,7 +23,7 @@ function Demo({ label, hint, error, requiredLabel, required, disabled, ...input 
 }
 
 const meta = {
-  title: "Forms/TextInput",
+  title: "Components/Forms/TextInput",
   component: Demo,
   parameters: { layout: "padded" },
   args: { label: "Project name", placeholder: "Quarterly report" },

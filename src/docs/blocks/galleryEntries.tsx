@@ -17,15 +17,17 @@ import { Stepper } from "../../components/Stepper";
 import { TableToolbar } from "../../components/TableToolbar";
 import { AnimatedNumber, ChangeHighlight, Collapse, Reveal, Skeleton } from "../../motion";
 import { DocumentIcon } from "../demo";
+import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { Checkbox } from "../../components/Checkbox";
+import { SegmentedToggle } from "../../components/SegmentedToggle";
+import { Switch } from "../../components/Switch";
+import { TextInput } from "../../components/TextInput";
 import styles from "./ComponentGallery.module.css";
 
 export type GalleryEntry = {
   name: string;
-  group: "Components" | "Motion";
-  /** Storybook docs id of the page the card links to. */
-  docsId: string;
-  summary: string;
   preview: ReactNode;
 };
 
@@ -35,10 +37,68 @@ const ICONS = [EditIcon, DuplicateIcon, OpenIcon, ReportIcon, PendingIcon, Delet
 
 export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
+    name: "Button",
+    preview: (
+      <div className={styles.iconRow}>
+        <Button variant="primary" size="sm">
+          Save
+        </Button>
+        <Button size="sm">Cancel</Button>
+        <Button variant="danger" size="sm">
+          Delete
+        </Button>
+      </div>
+    ),
+  },
+  {
+    name: "Badge",
+    preview: (
+      <div className={styles.iconRow}>
+        <Badge tone="success" dot>
+          Done
+        </Badge>
+        <Badge tone="warning" dot>
+          Pending
+        </Badge>
+        <Badge tone="danger">Overdue</Badge>
+      </div>
+    ),
+  },
+  {
+    name: "Card",
+    preview: (
+      <Card title="Storage" padding="sm">
+        <span className={styles.statusLine}>14.2 of 20 GB used</span>
+      </Card>
+    ),
+  },
+  {
+    name: "TextInput",
+    preview: <TextInput aria-label="Work email" placeholder="name@example.com" readOnly />,
+  },
+  {
+    name: "Switch",
+    preview: <Switch label="Weekly summary" defaultChecked />,
+  },
+  {
+    name: "Checkbox",
+    preview: <Checkbox label="Remember me" defaultChecked />,
+  },
+  {
+    name: "SegmentedToggle",
+    preview: (
+      <SegmentedToggle
+        label="Density"
+        defaultValue="comfortable"
+        options={[
+          { value: "comfortable", label: "Comfortable" },
+          { value: "compact", label: "Compact" },
+        ]}
+      />
+    ),
+  },
+  {
     name: "EmptyState",
-    group: "Components",
-    docsId: "components-emptystate",
-    summary: "What to show when a list or panel has nothing yet, with the one next step.",
     preview: (
       <EmptyState
         icon={<DocumentIcon size={32} />}
@@ -51,9 +111,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "DetailAttentionCard",
-    group: "Components",
-    docsId: "components-detailattentioncard",
-    summary: "A high-signal card for deadlines and risk, with a tone mark and an optional action.",
     preview: (
       <DetailAttentionCard
         tone="warn"
@@ -66,9 +123,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "DetailList",
-    group: "Components",
-    docsId: "components-detaillist",
-    summary: "Key and value rows in a native description list.",
     preview: (
       <DetailList
         rows={[
@@ -81,9 +135,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "DetailSectionCard",
-    group: "Components",
-    docsId: "components-detailsectioncard",
-    summary: "A section container with a consistent heading, action slot and content area.",
     preview: (
       <DetailSectionCard title="Contact details" icon={<EditIcon />} action={<Button size="sm">Edit</Button>}>
         <DetailList rows={[{ label: "Email", value: "ada@example.com" }]} />
@@ -92,9 +143,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "SortableTh",
-    group: "Components",
-    docsId: "components-sortableth",
-    summary: "A column header with a real button and aria-sort on the cell.",
     preview: (
       <table className={styles.miniTable}>
         <thead>
@@ -108,9 +156,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "StatusTimeline",
-    group: "Components",
-    docsId: "components-statustimeline",
-    summary: "A connected timeline of steps grouped into tracks, each with a state pill.",
     preview: (
       <StatusTimeline
         tracks={[
@@ -140,9 +185,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "Stepper",
-    group: "Components",
-    docsId: "components-stepper",
-    summary: "A mobile-first step indicator that expands into a numbered row from 600px.",
     preview: (
       <Stepper
         steps={[
@@ -156,9 +198,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "TableToolbar",
-    group: "Components",
-    docsId: "components-tabletoolbar",
-    summary: "Filter chips and an optional search box for the top of a table or list.",
     preview: (
       <TableToolbar
         filters={[
@@ -173,9 +212,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "ActionIcons",
-    group: "Components",
-    docsId: "components-actionicons",
-    summary: "Six small outline icons that inherit the colour of their text.",
     preview: (
       <div className={styles.iconRow}>
         {ICONS.map((Icon, index) => (
@@ -188,9 +224,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "useBodyScrollLock",
-    group: "Components",
-    docsId: "components-usebodyscrolllock",
-    summary: "Locks page scroll under an overlay and restores it. Stacked overlays are safe.",
     preview: (
       <pre className={styles.snippet}>
         <code>{"useBodyScrollLock(isOpen);"}</code>
@@ -199,9 +232,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "Reveal",
-    group: "Motion",
-    docsId: "motion-reveal",
-    summary: "Mount and unmount content with an enter and an exit animation.",
     preview: (
       <Reveal show variant="rise">
         <div className={styles.toast}>Changes saved</div>
@@ -210,9 +240,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "Collapse",
-    group: "Motion",
-    docsId: "motion-collapse",
-    summary: "Animate height with CSS grid rows. No measuring in JavaScript.",
     preview: (
       <div className={styles.disclosure}>
         <span className={styles.disclosureHead}>Shipping details</span>
@@ -224,9 +251,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "Skeleton",
-    group: "Motion",
-    docsId: "motion-skeleton",
-    summary: "Loading placeholders shaped like the content that replaces them.",
     preview: (
       <div className={styles.skeletons} aria-hidden="true">
         <Skeleton variant="circle" width="2.5rem" still />
@@ -239,9 +263,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "AnimatedNumber",
-    group: "Motion",
-    docsId: "motion-animatednumber",
-    summary: "A number that counts to its new value, with no animation library.",
     preview: (
       <p className={styles.bigNumber}>
         <AnimatedNumber value={1280} format={(n) => n.toLocaleString("en-US")} />
@@ -250,9 +271,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "ChangeHighlight",
-    group: "Motion",
-    docsId: "motion-changehighlight",
-    summary: "A soft wash behind a value that changed while it was on screen. Never on mount.",
     preview: (
       <p className={styles.statusLine}>
         Status:{" "}
@@ -264,9 +282,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   },
   {
     name: "usePrefersReducedMotion",
-    group: "Motion",
-    docsId: "motion-useprefersreducedmotion",
-    summary: "Returns true while the system asks for reduced motion, and follows changes.",
     preview: (
       <pre className={styles.snippet}>
         <code>{"const reduced = usePrefersReducedMotion();"}</code>

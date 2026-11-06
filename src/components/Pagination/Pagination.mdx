@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Pagination.stories";
 
 <Meta of={Stories} />
 
-# Pagination <StatusBadge status="beta" />
+<DocHeader
+  name="Pagination"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Page navigation for a list or table: previous and next, numbered pages that collapse into an ellipsis, and a status line.
 It is the view for `usePagination`.
 
 <Canvas of={Stories.WithUsePagination} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Pagination } from "@lufia/design-system/components/Pagination";
@@ -40,17 +46,25 @@ the component when everything fits on one page (`usePagination` returns `show`).
 For server-side pagination or crawlable pages, pass `hrefFor` and the controls become real links rendered through the
 configured `linkComponent`.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Long lists or tables that are paged. Prefer it to infinite scroll when people need to return to a position.
+<Section id="accessibility">
 
-## When not to use
-
-- Fewer than two pages, or feeds without a known end.
-
-## Keyboard and accessibility
+### Keyboard and accessibility
 
 | Key                          | Action                                            |
 | ---------------------------- | ------------------------------------------------- |
@@ -67,10 +81,20 @@ configured `linkComponent`.
 - Controls are 2.5rem square. Focus shows a 2px ring; the current page also has a border and weight, not colour alone, and
   keeps a `Highlight` border in forced-colors mode.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Long lists or tables that are paged. Prefer it to infinite scroll when people need to return to a position.
+
+### When not to use
+
+- Fewer than two pages, or feeds without a known end.
+
+### Content guidelines
 
 Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

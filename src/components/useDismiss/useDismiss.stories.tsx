@@ -47,7 +47,7 @@ function Demo() {
 }
 
 const meta = {
-  title: "Components/useDismiss",
+  title: "Hooks/useDismiss",
   component: Demo,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Demo>;

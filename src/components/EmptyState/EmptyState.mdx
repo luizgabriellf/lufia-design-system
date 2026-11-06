@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section, EmptyStateDoDont } from "../../docs/blocks/page";
 import * as Stories from "./EmptyState.stories";
 
 <Meta of={Stories} />
 
-# EmptyState <StatusBadge status="beta" />
+<DocHeader
+  name="EmptyState"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Placeholder for a list, table or panel that has nothing to show yet: an optional icon, a title, an explanation and a next
 step.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { EmptyState } from "@lufia/design-system/components/EmptyState";
@@ -25,22 +31,25 @@ import { EmptyState } from "@lufia/design-system/components/EmptyState";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- First use (nothing created yet), and results that are empty after a search or filter.
+<Section id="accessibility">
 
-## When not to use
-
-- Errors (say what went wrong and how to recover instead) or loading states (use a skeleton or spinner).
-
-## Do and don't
-
-- **Do** say what the area is for and offer the one action that fills it.
-- **Don't** blame the user ("You have no items"); describe the state ("No items yet").
-
-## Accessibility
+### Accessibility
 
 - The root is `role="status"`, a polite live region. When the empty state replaces a list after a filter changes, the
   new message is announced. If it is present on first render it is not announced, which is the right behaviour.
@@ -48,11 +57,30 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - Title and body use the text and muted-text tokens, which pass AA on every surface.
 - The action slot keeps the keyboard behaviour of the control you pass in.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<EmptyStateDoDont />
+
+### When to use
+
+- First use (nothing created yet), and results that are empty after a search or filter.
+
+### When not to use
+
+- Errors (say what went wrong and how to recover instead) or loading states (use a skeleton or spinner).
+
+### Writing the copy
+
+- **Do** say what the area is for and offer the one action that fills it.
+- **Don't** blame the user ("You have no items"); describe the state ("No items yet").
+
+### Content guidelines
 
 All strings are props. Keep the title under about 40 characters and the body to one or two sentences (the body is capped
 at 340px wide for readability).
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

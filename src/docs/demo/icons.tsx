@@ -167,3 +167,48 @@ export const ChevronRightIcon = (props: DemoIconProps) => (
     <path d="m9 6 6 6-6 6" />
   </Frame>
 );
+
+export const CodeIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14" />
+  </Frame>
+);
+
+export const BookIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H20v14H5.5A1.5 1.5 0 0 0 4 19.5z" />
+    <path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3M9 8h7" />
+  </Frame>
+);
+
+export const CrossIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="m6 6 12 12M18 6 6 18" />
+  </Frame>
+);
+
+export const ExternalIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </Frame>
+);
+
+export const LayersIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="m12 3 9 5-9 5-9-5zM3 13l9 5 9-5" />
+  </Frame>
+);
+
+export const KeyboardIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <rect x="3" y="6" width="18" height="12" rx="2" />
+    <path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" />
+  </Frame>
+);
+
+export const PaletteIcon = (props: DemoIconProps) => (
+  <Frame {...props}>
+    <path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.5-1.8-.4-1.3.3-2.2 1.5-2.2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z" />
+    <path d="M7.5 11h.01M10 7.5h.01M14.5 7.5h.01" />
+  </Frame>
+);

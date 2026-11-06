@@ -1,17 +1,27 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section, ModalAnatomy, ModalDoDont } from "../../docs/blocks/page";
 import * as Stories from "./Modal.stories";
 
 <Meta of={Stories} />
 
-# Modal <StatusBadge status="beta" />
+<DocHeader
+  name="Modal"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A dialog that blocks the page behind it until the person answers or dismisses it. Portaled to `document.body`, with focus
 containment, scroll lock, an inert background and an enter/exit motion.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Anatomy
+
+<ModalAnatomy />
+
+### Usage
 
 ```tsx
 import { Modal } from "@lufia/design-system/components/Modal";
@@ -35,53 +45,57 @@ import { Modal } from "@lufia/design-system/components/Modal";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 The modal is controlled: it never closes itself, it calls `onClose`, and you decide what happens.
 
-<Controls of={Stories.OpenByDefault} />
+</Section>
 
-## Sizes
+<Section id="examples">
+
+### Sizes
 
 `sm` (26 rem) for short questions, `md` (35 rem, default) for forms, `lg` (48 rem) and `xl` (60 rem) for dense content.
 Below 600 px every size becomes a sheet anchored to the bottom of the screen that rises into view.
 
-<Canvas of={Stories.Large} />
+<Canvas of={Stories.Large} story={{ inline: false, height: "30rem" }} />
 
-## Dismissal policy
+### Dismissal policy
 
 Three ways out, each one switchable: the close button (`hideCloseButton`), Escape (`closeOnEscape`) and a click on the
 backdrop (`closeOnOutsideClick`). For a form with unsaved input, turn the last two off and let the footer buttons decide.
 
-<Canvas of={Stories.StrictDismissal} />
+<Canvas of={Stories.StrictDismissal} story={{ inline: false, height: "30rem" }} />
 
 A click only closes when the press **began** on the backdrop. Selecting text inside the dialog and releasing the mouse
 outside it does not.
 
-## Busy
+### Busy
 
 While `busy`, the dialog has `aria-busy="true"`, the close button is disabled and every dismissal is refused. Use it while
 an action that cannot be aborted is in flight. Re-enable it when the request settles; do not leave it `busy` forever.
 
 <Canvas of={Stories.BusyWhileSaving} />
 
-## Slots and props
+### All themes
+
+Each cell opens its own modal inside itself. Use the Theme and Mode toolbar to see the real page overlay.
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.OpenByDefault} />
+
+### Slots and props
 
 `title`, `description`, `headerAction`, `footer` and the body (`children`) are slots. Rest props and `className` go to the
 dialog element. Everything the person reads arrives through props; only the close button's accessible name has an English
-default (`closeLabel`, or `labels.close` from [LufiaProvider](?path=/docs/components-lufiaprovider--docs)).
+default (`closeLabel`, or `labels.close` from [LufiaProvider](?path=/docs/components-utilities-lufiaprovider--docs)).
 
-## When to use
+</Section>
 
-- A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking
-  from a list, confirming settings.
-- Anything that interrupts and needs an answer: build on it with [ConfirmDialog](?path=/docs/components-confirmdialog--docs).
+<Section id="accessibility">
 
-## When not to use
-
-- A message that does not need a response: use a [Toast](?path=/docs/components-toast--docs).
-- Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the
-  context a modal hides.
-- Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive
-  `open` with `useModalState`.
-
-## Accessibility
+### Accessibility
 
 Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) pattern.
 
@@ -109,14 +123,32 @@ Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patter
 
 Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`).
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<ModalDoDont />
+
+### When to use
+
+- A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking
+  from a list, confirming settings.
+- Anything that interrupts and needs an answer: build on it with [ConfirmDialog](?path=/docs/components-overlays-confirmdialog--docs).
+
+### When not to use
+
+- A message that does not need a response: use a [Toast](?path=/docs/components-feedback-toast--docs).
+- Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the
+  context a modal hides.
+- Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive
+  `open` with `useModalState`.
+
+### Content guidelines
 
 Titles say what the dialog is for ("Edit project", "Delete invoice 2041?"), not "Are you sure?". Buttons say what they do
 ("Save changes"), not "OK". Put the primary action last and the cancel action before it; on phones the order reverses so the
 primary action sits on top.
 
-## All themes
-
-Each cell opens its own modal inside itself. Use the Theme and Mode toolbar to see the real page overlay.
-
-<Canvas of={Stories.AllThemes} />
+</Section>

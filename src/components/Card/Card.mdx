@@ -1,17 +1,27 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section, CardAnatomy, CardDoDont, CardPaddings } from "../../docs/blocks/page";
 import * as Stories from "./Card.stories";
 
 <Meta of={Stories} />
 
-# Card <StatusBadge status="beta" />
+<DocHeader
+  name="Card"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A surface that groups related content, with an optional title, header action, body and footer. With `href` the whole card
 is clickable through one link.
 
 <Canvas of={Stories.WithFooter} />
 
-## Usage
+### Anatomy
+
+<CardAnatomy />
+
+### Usage
 
 ```tsx
 import { Card } from "@lufia/design-system/components/Card";
@@ -26,9 +36,15 @@ import { Card } from "@lufia/design-system/components/Card";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. The link renders
 through the `linkComponent` set on `LufiaProvider`.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## The interactive card
+<Section id="examples">
+
+### Side by side
+
+<CardPaddings />
+
+### The interactive card
 
 An interactive card is not a clickable `div`. It uses the stretched-link pattern: the `title` renders as the only link, and
 that link's `::after` pseudo-element covers the card. This gives you:
@@ -42,7 +58,28 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 
 <Canvas of={Stories.InteractiveWithFooterButton} />
 
-## Keyboard
+### States
+
+<Canvas of={Stories.Interactive} />
+<Canvas of={Stories.WithHeaderAction} />
+<Canvas of={Stories.PaddingNone} />
+<Canvas of={Stories.LongText} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 | Key   | Action                                                         |
 | ----- | -------------------------------------------------------------- |
@@ -51,19 +88,7 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 
 A plain card is not focusable. The focus ring is drawn around the whole card.
 
-## When to use
-
-- A self-contained unit: a record, a report, a summary, a setting group.
-- An interactive card for a list of destinations where each item has a title and a bit of context.
-
-## When not to use
-
-- Content people need to select or copy: use a plain `Card`.
-- Page layout or grouping that has no visual boundary: use spacing.
-- A card with several equal destinations inside: link them separately, and leave the card plain.
-- A card whose only content is a button: use `Button`.
-
-## Accessibility
+### Accessibility
 
 - `title` renders as a heading (`headingLevel`, default 3). Choose the level that keeps the page outline in order.
 - In the interactive variant, put nothing interactive in `headerAction` and `footer` that duplicates the link's destination.
@@ -71,18 +96,29 @@ A plain card is not focusable. The focus ring is drawn around the whole card.
   forced-colors mode the border is `CanvasText` and the ring `Highlight`.
 - Hover only adds an accent border and shadow; nothing is revealed on hover alone.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<CardDoDont />
+
+### When to use
+
+- A self-contained unit: a record, a report, a summary, a setting group.
+- An interactive card for a list of destinations where each item has a title and a bit of context.
+
+### When not to use
+
+- Content people need to select or copy: use a plain `Card`.
+- Page layout or grouping that has no visual boundary: use spacing.
+- A card with several equal destinations inside: link them separately, and leave the card plain.
+- A card whose only content is a button: use `Button`.
+
+### Content guidelines
 
 A title says what the card is ("Quarterly report"). The body is one to three short lines. Do not repeat the title in the
 body.
 
-## States
-
-<Canvas of={Stories.Interactive} />
-<Canvas of={Stories.WithHeaderAction} />
-<Canvas of={Stories.PaddingNone} />
-<Canvas of={Stories.LongText} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

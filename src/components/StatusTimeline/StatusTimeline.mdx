@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./StatusTimeline.stories";
 
 <Meta of={Stories} />
 
-# StatusTimeline <StatusBadge status="beta" />
+<DocHeader
+  name="StatusTimeline"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A vertical, connected timeline of obligations or steps grouped into tracks. Each node has an icon, a state pill, an
 optional timestamp or deadline, a hint, and an optional inline action.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
@@ -39,17 +45,25 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 States: `needsTimestamp`, `pending`, `overdue`, `done`, `notApplicable`. Pass your own domain values straight through.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Tracking dated obligations or a multi-party process where order and status both matter.
+<Section id="accessibility">
 
-## When not to use
-
-- A simple progress indicator (use `Stepper`) or an activity feed.
-
-## Accessibility
+### Accessibility
 
 - Each track is a `<section>` with an `<h3>`; each node list is an ordered list, so order and count are announced.
 - **State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a
@@ -60,11 +74,21 @@ States: `needsTimestamp`, `pending`, `overdue`, `done`, `notApplicable`. Pass yo
 - Actions are slots; keep them keyboard operable and labelled.
 - In forced-colors mode the pill keeps a visible border.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Tracking dated obligations or a multi-party process where order and status both matter.
+
+### When not to use
+
+- A simple progress indicator (use `Stepper`) or an activity feed.
+
+### Content guidelines
 
 All text arrives formatted and localised (dates in the user's locale: `5 Nov 2026` vs `05/11/2026`). Avoid colour words
 ("red") in labels.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

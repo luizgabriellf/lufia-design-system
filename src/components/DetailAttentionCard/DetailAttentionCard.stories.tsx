@@ -4,7 +4,7 @@ import { Button } from "../Button";
 import { DetailAttentionCard } from "./DetailAttentionCard";
 
 const meta = {
-  title: "Components/DetailAttentionCard",
+  title: "Components/Data display/DetailAttentionCard",
   component: DetailAttentionCard,
   parameters: { layout: "padded" },
   args: {
