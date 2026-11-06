@@ -1,31 +1,8 @@
-.root {
-  position: relative;
+/* The look comes from Button. This module only holds the label layers, which share one grid cell. */
+.cell {
   display: inline-grid;
   place-items: center;
-  box-sizing: border-box;
-  min-inline-size: 2.75rem;
-  min-block-size: 2.75rem;
-  padding-block: 0.5rem;
-  padding-inline: var(--lufia-space-5);
-  color: var(--lufia-color-text-on-accent);
-  background: var(--lufia-color-accent-default);
-  border: var(--lufia-border-width-thin) solid var(--lufia-color-accent-default);
-  border-radius: var(--lufia-radius-control);
-  font: inherit;
-  font-size: var(--lufia-font-size-md);
-  font-weight: var(--lufia-font-weight-semibold);
-  line-height: var(--lufia-font-line-height-tight);
-  cursor: pointer;
-  touch-action: manipulation;
-  transition:
-    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
-}
-
-.root[data-variant="secondary"] {
-  color: var(--lufia-color-text-default);
-  background: var(--lufia-color-bg-surface-raised);
-  border-color: var(--lufia-color-border-strong);
+  min-inline-size: 0;
 }
 
 /* Every layer shares one grid cell, so the button is as wide as the widest of them. */
@@ -64,12 +41,8 @@
 }
 
 /* The button keeps its size and focus ring; only the label layer fades out in favour of the pending one. */
-.root[data-pending] .label {
+.cell[data-pending] .label {
   opacity: 0;
-}
-
-.root[data-pending] {
-  cursor: progress;
 }
 
 /*
@@ -101,28 +74,7 @@
   }
 }
 
-.root:focus-visible {
-  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
-  outline-offset: 2px;
-}
-
-.root:disabled {
-  opacity: var(--lufia-opacity-disabled);
-  cursor: not-allowed;
-}
-
-.root:hover:not([data-pending], :disabled) {
-  background: var(--lufia-color-accent-hover);
-  border-color: var(--lufia-color-accent-hover);
-}
-
-.root[data-variant="secondary"]:hover:not([data-pending], :disabled) {
-  background: var(--lufia-color-bg-surface);
-  border-color: var(--lufia-color-accent-default);
-}
-
-@media (forced-colors: active) {
-  .root {
-    border-color: ButtonText;
-  }
+/* Busy is not disabled: the button keeps its colours and its focus, and only the cursor says to wait. */
+.root[aria-busy="true"] {
+  cursor: progress;
 }

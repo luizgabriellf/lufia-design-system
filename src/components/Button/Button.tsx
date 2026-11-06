@@ -64,7 +64,7 @@ export function Button(props: ButtonProps) {
     "data-size": size,
     "data-loading": loading || undefined,
     "data-full-width": fullWidth || undefined,
-    "aria-busy": loading || undefined,
+    "aria-busy": loading || props["aria-busy"] || undefined,
   };
   const content = (
     <>

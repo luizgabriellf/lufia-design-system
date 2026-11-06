@@ -48,7 +48,7 @@ re-renders the button outside the transition and loses `useFormStatus().pending`
 
 ## No double submit
 
-While pending, the button is `aria-disabled` and its click is cancelled, which also cancels the implicit submission of Enter in
+While pending, the button is `aria-busy` and its click is cancelled, which also cancels the implicit submission of Enter in
 a text field. It is deliberately **not** `disabled`: a disabled button drops keyboard focus, and a person who pressed it with
 the keyboard would lose their place. A genuinely `disabled` button (`disabled` prop) is also supported.
 
@@ -74,7 +74,7 @@ the keyboard would lose their place. A genuinely `disabled` button (`disabled` p
 | Tab           | Focuses the button. It stays in the tab order while pending. |
 | Enter / Space | Submits when idle. While pending nothing happens.            |
 
-- `aria-busy` and `aria-disabled` are set while pending. The button keeps its accessible name (the idle label).
+- `aria-busy` is set while pending. The button keeps its accessible name (the idle label).
 - A live region next to the button (`role="status"`) announces `pendingLabel` when the wait starts and clears afterwards.
   It sits outside the button because a live region inside a button is often ignored.
 - The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under
