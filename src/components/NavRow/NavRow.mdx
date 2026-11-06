@@ -1,0 +1,73 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./NavRow.stories";
+
+<Meta of={Stories} />
+
+# NavRow <StatusBadge status="beta" />
+
+A compact, clickable list row: an optional icon, a title with an optional badge, a description and a meta line, and a
+trailing chevron. It is the row used to open a detail, a sub-page or a modal from a list of destinations.
+
+<Canvas of={Stories.InAList} />
+
+## Usage
+
+```tsx
+import { NavRow } from "@lufia/design-system/components/NavRow";
+
+<ul>
+  <li>
+    <NavRow
+      title="Members"
+      description="Invite people"
+      meta="12 active"
+      badge={12}
+      icon={<UsersIcon />}
+      href="/members"
+    />
+  </li>
+  <li>
+    <NavRow title="Export" onClick={openExport} />
+  </li>
+</ul>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props. The row is one of three elements:
+
+| Props                 | Renders                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `href`                | A link through the configured `linkComponent`, with a chevron |
+| `onClick` (no `href`) | A `<button type="button">`, with a chevron                    |
+| neither               | A `<div>`: no chevron and nothing to activate                 |
+
+<Controls of={Stories.AsLink} />
+
+## When to use
+
+- A list of destinations where each needs a title and a sentence of context.
+
+## When not to use
+
+- Tabular data (use a table), or a row with several independent actions (a row can only have one target).
+
+## Accessibility
+
+- A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading
+  order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own
+  `aria-label` only when it contains the visible text.
+- Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.
+- A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled.
+  Disabled rows read at reduced contrast by design; keep the reason in the meta line.
+- Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum
+  height is 3.5rem, well above the 24px target size.
+- Put rows in a `ul` so a screen reader announces the count.
+
+## Content guidelines
+
+Titles are a noun or a short verb phrase. The description adds context and is never the only place for essential
+information. Meta is for facts that change (a date, a count in words).
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
