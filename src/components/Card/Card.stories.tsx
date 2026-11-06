@@ -58,6 +58,20 @@ export const InteractiveWithFooterButton: Story = {
     ),
   },
 };
+/** Controls and links in the body are lifted above the stretched link and work with a mouse. */
+export const InteractiveWithBodyControls: Story = {
+  args: {
+    href: "#report",
+    children: (
+      <>
+        Totals for the period. <a href="#glossary">What is a total?</a>{" "}
+        <Button size="sm" variant="secondary">
+          Refresh
+        </Button>
+      </>
+    ),
+  },
+};
 export const PaddingNone: Story = { args: { padding: "none" } };
 export const PaddingSmall: Story = { args: { padding: "sm" } };
 export const PaddingLarge: Story = { args: { padding: "lg" } };
