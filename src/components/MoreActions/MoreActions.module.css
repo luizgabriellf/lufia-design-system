@@ -2,6 +2,9 @@
   position: relative;
   display: inline-flex;
   flex: none;
+
+  /* An explicit height stops a stretching flex parent from making the root taller than the button, which the menu hangs from. */
+  block-size: fit-content;
 }
 
 .menu {

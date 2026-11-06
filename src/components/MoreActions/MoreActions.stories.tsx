@@ -83,7 +83,7 @@ export const AllThemes: Story = {
   args: { defaultOpen: true },
   render: (args) => (
     <ThemeMatrix>
-      <div style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "20rem" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "21rem" }}>
         <MoreActions {...args} />
       </div>
     </ThemeMatrix>
