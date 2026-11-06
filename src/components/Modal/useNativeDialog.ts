@@ -8,6 +8,7 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from "react";
+import { notifyTopModalDialogChanged } from "./topModalDialog";
 
 export type UseNativeDialogOptions = {
   /** The person asked to close: a platform close request, or a press on the backdrop. The owner decides (busy, guards). */
@@ -44,6 +45,7 @@ export function useNativeDialog(
     if (!dialog.open) dialog.showModal();
     return () => {
       if (dialog.open) dialog.close();
+      notifyTopModalDialogChanged();
       // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
       const focused = document.activeElement;
       if (previous?.isConnected && (!focused || focused === document.body || dialog.contains(focused)))

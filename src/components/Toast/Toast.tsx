@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -12,6 +13,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTopModalDialog } from "../Modal/topModalDialog";
 import { usePrefersReducedMotion } from "../../motion/usePrefersReducedMotion";
 import { useLufia } from "../LufiaProvider";
 import { SuccessCheck } from "../SuccessCheck";
@@ -68,6 +70,8 @@ type Item = {
   action: ToastAction | undefined;
   /** Dismissed and playing its exit; removed when that ends. */
   leaving: boolean;
+  /** The list changed host while it was on screen: no enter animation. */
+  moved: boolean;
 };
 
 type Timer = {
@@ -86,27 +90,6 @@ const noSubscription = () => () => {};
 let counter = 0;
 
 const TONES: readonly string[] = ["info", "success", "warning", "error"];
-
-/** The topmost open modal `<dialog>` (the last one in the document), or `null`. Browsers without `:modal` see any open dialog. */
-function topmostModalDialog(): HTMLDialogElement | null {
-  const open = document.querySelectorAll<HTMLDialogElement>("dialog[open]");
-  for (let index = open.length - 1; index >= 0; index -= 1) {
-    const dialog = open[index]!;
-    try {
-      if (dialog.matches(":modal")) return dialog;
-    } catch {
-      return dialog;
-    }
-  }
-  return null;
-}
-
-/** Calls back when a dialog opens or closes or is added or removed, so the host can follow the top layer. */
-function watchDialogs(onChange: () => void) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
-  return () => observer.disconnect();
-}
 
 export type ToastProviderProps = {
   children: ReactNode;
@@ -142,11 +125,7 @@ export function ToastProvider({
 }: ToastProviderProps) {
   const { labels } = useLufia();
   const auto = container === "auto";
-  const dialogHost = useSyncExternalStore(
-    auto ? watchDialogs : noSubscription,
-    () => (auto ? topmostModalDialog() : null),
-    () => null,
-  );
+  const dialogHost = useTopModalDialog(auto);
   const host = auto ? (dialogHost ?? undefined) : (container ?? undefined);
   const mounted = useSyncExternalStore(
     noSubscription,
@@ -161,6 +140,14 @@ export function ToastProvider({
     itemsRef.current = next;
     setItems(next);
   }, []);
+
+  // A toast already on screen when the host changes moves with the list; it must not play its enter again.
+  const lastHost = useRef(host);
+  useLayoutEffect(() => {
+    if (host === lastHost.current) return;
+    lastHost.current = host;
+    commit(itemsRef.current.map((item) => ({ ...item, moved: true })));
+  }, [host, commit]);
 
   const dropTimer = useCallback((id: string) => {
     const timer = timers.current.get(id);
@@ -233,6 +220,7 @@ export function ToastProvider({
         tone,
         action: options.action,
         leaving: false,
+        moved: false,
       };
       const next = [...itemsRef.current, item];
       // Past the limit the oldest visible toasts leave.
@@ -282,6 +270,11 @@ export function ToastProvider({
     [show, dismiss, clear],
   );
 
+  const announce = (assertive: boolean) =>
+    items
+      .filter((item) => !item.leaving && (item.tone === "error") === assertive)
+      .map((item) => <div key={item.uid}>{item.message}</div>);
+
   const render = (assertive: boolean) =>
     items
       .filter((item) => (item.tone === "error") === assertive)
@@ -300,10 +293,24 @@ export function ToastProvider({
   return (
     <ToastContext.Provider value={api}>
       {children}
-      {mounted
-        ? createPortal(
-            // The lists stay mounted while empty: a live region only announces content added after it exists. Errors are
-            // assertive, everything else polite. `data-lufia-inert-exempt` keeps them reachable while a modal is open.
+      {mounted ? (
+        <>
+          {createPortal(
+            // The announcer is long-lived and always in the body: a live region only announces content added after it
+            // exists, so it must not be recreated when the visible list changes host (a dialog closing as a toast is raised).
+            // Errors are assertive, everything else polite.
+            <div className={styles.announcer} data-lufia-inert-exempt="">
+              <div aria-live="assertive" aria-atomic="false" aria-relevant="additions">
+                {announce(true)}
+              </div>
+              <div aria-live="polite" aria-atomic="false" aria-relevant="additions">
+                {announce(false)}
+              </div>
+            </div>,
+            document.body,
+          )}
+          {createPortal(
+            // The visible stack. `data-lufia-inert-exempt` keeps it reachable while a modal is open.
             <div
               role="region"
               aria-label={labels.notifications}
@@ -311,16 +318,13 @@ export function ToastProvider({
               data-placement={placement}
               data-lufia-inert-exempt=""
             >
-              <ol className={styles.list} aria-live="assertive" aria-atomic="false" aria-relevant="additions">
-                {render(true)}
-              </ol>
-              <ol className={styles.list} aria-live="polite" aria-atomic="false" aria-relevant="additions">
-                {render(false)}
-              </ol>
+              <ol className={styles.list}>{render(true)}</ol>
+              <ol className={styles.list}>{render(false)}</ol>
             </div>,
             host ?? document.body,
-          )
-        : null}
+          )}
+        </>
+      ) : null}
     </ToastContext.Provider>
   );
 }
@@ -370,6 +374,7 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
       className={styles.item}
       data-tone={item.tone}
       data-state={item.leaving ? "leaving" : "open"}
+      data-moved={item.moved || undefined}
       onAnimationEnd={(event) => {
         if (item.leaving && event.target === event.currentTarget) onExited(item.uid);
       }}

@@ -1,6 +1,17 @@
 /* Theming hooks, set in the consuming theme: --lufia-toast-icon-size, --lufia-toast-radius, --lufia-toast-border-width
    (the tone stripe) and --lufia-toast-offset-block. */
 
+/* The announcer holds a copy of each message for screen readers only. */
+.announcer {
+  position: fixed;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* The viewport is a fixed corner. Clicks pass through everything but the toasts themselves. */
 .viewport {
   --toast-enter-y: var(--lufia-motion-distance-slide);
@@ -88,6 +99,10 @@
 .item[data-tone="error"] {
   --toast-tone: var(--lufia-color-status-danger-fg);
   --toast-tone-bg: var(--lufia-color-status-danger-bg);
+}
+
+.item[data-moved][data-state="open"] {
+  animation: none;
 }
 
 .item[data-state="leaving"] {
