@@ -1,0 +1,91 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./CommandPalette.stories";
+
+<Meta of={Stories} />
+
+# CommandPalette <StatusBadge status="beta" />
+
+A search-and-run overlay opened with Ctrl+K or Cmd+K: type to filter navigation targets and actions, choose with the
+arrow keys, run with Enter.
+
+<Canvas of={Stories.OpenOnLoad} />
+
+## Usage
+
+```tsx
+import { CommandPalette } from "@lufia/design-system/components/CommandPalette";
+
+<CommandPalette
+  open={open}
+  onOpenChange={setOpen}
+  items={[
+    { key: "new", label: "New document", group: "Actions", icon: <PlusIcon />, onSelect: createDocument },
+    {
+      key: "settings",
+      label: "Settings",
+      group: "Go to",
+      keywords: "preferences",
+      onSelect: () => router.push("/settings"),
+    },
+  ]}
+  labels={{
+    title: "Search or run a command",
+    placeholder: "Type a command or search…",
+    empty: (query) => `No results for “${query}”`,
+    resultCount: (count) => `${count} results`,
+  }}
+  hint="Search by name, or choose an action."
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer, so word order and
+plurals are yours. The commands are data and the palette knows no routes: `onSelect` does the work (navigate, open a
+modal). The `AppShell` `search` entry is the natural trigger: `search={{ label, onSelect: () => setOpen(true) }}`.
+
+### Filtering
+
+The default matcher (`filterCommands`, exported) requires every word of the query to appear in the label, description, group
+or keywords, ignoring case and accents. Pass `filter` to replace it. For a server search, pass `filter={() => true}`, listen
+to `onQueryChange` and feed the answer back through `items`. A command with `keepOpen` leaves the palette open after it
+runs, for commands that show their answer inside.
+
+## When to use
+
+- Apps with many destinations and actions, where power users want the keyboard.
+
+## When not to use
+
+- As the only way to reach something: every command should also exist in the visible UI.
+
+## Keyboard and accessibility
+
+It follows the WAI-ARIA APG pattern for a combobox with a listbox popup, inside a modal dialog.
+
+| Key          | Action                                                                   |
+| ------------ | ------------------------------------------------------------------------ |
+| Ctrl/Cmd + K | Opens the palette; closes it when open (`shortcut={false}` turns it off) |
+| Type         | Filters; the first match is highlighted                                  |
+| Down / Up    | Moves the highlight, wrapping at the ends                                |
+| Enter        | Runs the highlighted command                                             |
+| Escape       | Closes; focus returns to where it was                                    |
+| Tab          | Cycles between the field and the close button                            |
+
+- The text field is the `combobox`. Focus never leaves it: the highlighted option is named by `aria-activedescendant`, and
+  options are not focusable, as the pattern requires. `aria-expanded` is false when nothing matches.
+- Groups are `role="group"` named by their heading. A polite status line announces the result count as you type.
+- The highlight has a fill and a bar on the inline-start edge, not colour alone; hover moves it too.
+- The dialog is modal: focus is trapped, the page behind is inert and its scroll is not moved. Escape handling belongs to
+  `useFocusTrap`, so nested overlays close one at a time. The palette adds no outside-click listener of its own; a tap on the
+  dimmed page closes it.
+- It rises and fades with the `--lufia-motion-*` tokens and appears at once under `prefers-reduced-motion`.
+
+## Content guidelines
+
+Command labels are verbs for actions ("New document") and nouns for destinations ("Settings"). Use `keywords` for the words
+people might type that the label does not contain.
+
+## States
+
+<Canvas of={Stories.SingleGroup} />
+<Canvas of={Stories.LongText} />

@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
+import { useRef, useSyncExternalStore, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { usePrefersReducedMotion } from "../../motion";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
 import { CloseGlyph } from "./icons";
 import { NavSurfaceContext } from "./navigation";
+import { usePresence } from "./usePresence";
 import { useSheetDrag } from "./useSheetDrag";
 import styles from "./NavSheet.module.css";
 
@@ -35,8 +28,6 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   container?: HTMLElement | null;
   children: ReactNode;
 };
-
-type Phase = "open" | "closed" | "unmounted";
 
 const subscribeNothing = () => () => {};
 
@@ -61,25 +52,13 @@ export function NavSheet({
   ...rest
 }: NavSheetProps) {
   const { labels } = useLufia();
-  const reduced = usePrefersReducedMotion();
   const panel = useRef<HTMLDivElement>(null);
   const client = useSyncExternalStore(
     subscribeNothing,
     () => true,
     () => false,
   );
-  const [phase, setPhase] = useState<Phase>(open ? "open" : "unmounted");
-  // Derive the phase while rendering, as Reveal does: an exit keeps the sheet mounted until its animation ends.
-  if (open && phase !== "open") setPhase("open");
-  else if (!open && phase === "open") setPhase(reduced ? "unmounted" : "closed");
-
-  useEffect(() => {
-    if (phase !== "closed") return;
-    const style = panel.current ? getComputedStyle(panel.current) : null;
-    if (style && style.animationName !== "none" && parseFloat(style.animationDuration) > 0) return;
-    const frame = requestAnimationFrame(() => setPhase("unmounted"));
-    return () => cancelAnimationFrame(frame);
-  }, [phase]);
+  const { phase, finish } = usePresence(open, panel);
 
   const close = () => onOpenChange(false);
   useFocusTrap(phase === "open", panel, { onEscape: close, inertBackground: true });
@@ -102,7 +81,7 @@ export function NavSheet({
           tabIndex={-1}
           className={[styles.panel, className].filter(Boolean).join(" ")}
           onAnimationEnd={(event) => {
-            if (event.target === event.currentTarget && phase === "closed") setPhase("unmounted");
+            if (event.target === event.currentTarget) finish();
           }}
         >
           <div

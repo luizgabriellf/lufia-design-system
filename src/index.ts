@@ -1,5 +1,6 @@
 export * from "./components/ActionIcons";
 export * from "./components/AppShell";
+export * from "./components/CommandPalette";
 export * from "./components/ConfirmDialog";
 export * from "./components/DetailAttentionCard";
 export * from "./components/DetailList";
