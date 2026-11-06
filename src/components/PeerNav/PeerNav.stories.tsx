@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ChartIcon, GridIcon, InboxIcon, SettingsIcon, UsersIcon } from "../../docs/demo";
 import { PeerNav, type PeerNavItem, type PeerNavProps } from "./PeerNav";
@@ -96,6 +96,26 @@ export const LongText: Story = {
 export const Phone320: Story = {
   args: { items: manyItems.slice(0, 4) },
   globals: { viewport: { value: "w320", isRotated: false } },
+};
+/** Four items wrap into two rows of two on a phone, so each label keeps its width. */
+export const PhoneTwoByTwo: Story = {
+  args: { phoneGrid: "2x2" },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** The consuming theme sets the --lufia-peer-nav-* variables; here they are set on the nav. */
+export const ThemedByVariables: Story = {
+  args: {
+    style: {
+      "--lufia-peer-nav-max-inline-size": "61rem",
+      "--lufia-peer-nav-radius": "0.875rem",
+      "--lufia-peer-nav-item-radius": "0.625rem",
+      "--lufia-peer-nav-label-size": "0.9rem",
+      "--lufia-peer-nav-label-line-height": "1.25",
+      "--lufia-peer-nav-description-size": "0.74rem",
+      "--lufia-peer-nav-disabled-opacity": "0.5",
+      "--lufia-peer-nav-focus-width": "2.5px",
+    } as CSSProperties,
+  },
 };
 export const Phone390: Story = { globals: { viewport: { value: "w390", isRotated: false } } };
 export const RightToLeft: Story = {

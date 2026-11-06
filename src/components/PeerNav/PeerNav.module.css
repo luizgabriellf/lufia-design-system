@@ -1,12 +1,18 @@
+/* Theming hooks, all optional, set in the consuming theme or on the nav: --lufia-peer-nav-radius,
+   --lufia-peer-nav-item-radius, --lufia-peer-nav-max-inline-size, --lufia-peer-nav-label-size,
+   --lufia-peer-nav-label-size-phone, --lufia-peer-nav-label-line-height, --lufia-peer-nav-description-size,
+   --lufia-peer-nav-description-line-height, --lufia-peer-nav-indicator-border, --lufia-peer-nav-indicator-shadow,
+   --lufia-peer-nav-active-icon-color, --lufia-peer-nav-disabled-opacity, --lufia-peer-nav-focus-width. */
 .root {
   position: relative;
   display: grid;
   inline-size: 100%;
+  max-inline-size: var(--lufia-peer-nav-max-inline-size, none);
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: var(--lufia-space-2);
   padding: 0.4rem;
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
-  border-radius: var(--lufia-radius-card);
+  border-radius: var(--lufia-peer-nav-radius, var(--lufia-radius-card));
   background: var(--lufia-color-bg-surface);
   box-sizing: border-box;
 }
@@ -18,10 +24,11 @@
   left: 0; /* positioned with measured, physical coordinates */
   z-index: 0;
   box-sizing: border-box;
-  border: var(--lufia-border-width-thin) solid var(--lufia-color-accent-border);
-  border-radius: var(--lufia-radius-control);
+  border: var(--lufia-border-width-thin) solid
+    var(--lufia-peer-nav-indicator-border, var(--lufia-color-accent-border));
+  border-radius: var(--lufia-peer-nav-item-radius, var(--lufia-radius-control));
   background: var(--lufia-color-accent-subtle);
-  box-shadow: var(--lufia-shadow-md);
+  box-shadow: var(--lufia-peer-nav-indicator-shadow, var(--lufia-shadow-md));
   pointer-events: none;
 }
 
@@ -39,7 +46,7 @@
   gap: 0.7rem;
   padding: 0.7rem 0.85rem;
   border: var(--lufia-border-width-thin) solid transparent;
-  border-radius: var(--lufia-radius-control);
+  border-radius: var(--lufia-peer-nav-item-radius, var(--lufia-radius-control));
   background: transparent;
   color: var(--lufia-color-text-muted);
   font: inherit;
@@ -59,21 +66,22 @@
 }
 
 .item:focus-visible {
-  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline: var(--lufia-peer-nav-focus-width, var(--lufia-border-width-thick)) solid
+    var(--lufia-color-focus-ring);
   outline-offset: 2px;
 }
 
 .item[aria-disabled="true"],
 .item:disabled {
-  opacity: var(--lufia-opacity-disabled);
+  opacity: var(--lufia-peer-nav-disabled-opacity, var(--lufia-opacity-disabled));
   cursor: not-allowed;
 }
 
 .item[data-active] {
   color: var(--lufia-color-text-default);
-  border-color: var(--lufia-color-accent-border);
+  border-color: var(--lufia-peer-nav-indicator-border, var(--lufia-color-accent-border));
   background: var(--lufia-color-accent-subtle);
-  box-shadow: var(--lufia-shadow-md);
+  box-shadow: var(--lufia-peer-nav-indicator-shadow, var(--lufia-shadow-md));
 }
 
 /* Once the indicator is on screen it carries the chrome, so the item must not paint it twice. */
@@ -95,7 +103,7 @@
 }
 
 .item[data-active] .icon {
-  color: var(--lufia-color-text-accent);
+  color: var(--lufia-peer-nav-active-icon-color, var(--lufia-color-text-accent));
   background: var(--lufia-color-accent-subtle);
 }
 
@@ -105,17 +113,17 @@
 
 .label {
   display: block;
-  font-size: var(--lufia-font-size-sm);
+  font-size: var(--lufia-peer-nav-label-size, var(--lufia-font-size-sm));
   font-weight: var(--lufia-font-weight-bold);
-  line-height: var(--lufia-font-line-height-tight);
+  line-height: var(--lufia-peer-nav-label-line-height, var(--lufia-font-line-height-tight));
 }
 
 .description {
   display: block;
   margin-block-start: 0.16rem;
   overflow: hidden;
-  font-size: var(--lufia-font-size-xs);
-  line-height: var(--lufia-font-line-height-tight);
+  font-size: var(--lufia-peer-nav-description-size, var(--lufia-font-size-xs));
+  line-height: var(--lufia-peer-nav-description-line-height, var(--lufia-font-line-height-tight));
   color: var(--lufia-color-text-subtle);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -127,6 +135,7 @@
 
 /* Many views: keep them readable and scroll instead of compressing the labels. */
 .root[data-layout="scroll"] {
+  max-inline-size: none;
   grid-template-columns: none;
   grid-auto-flow: column;
   grid-auto-columns: minmax(9.5rem, 1fr);
@@ -188,7 +197,7 @@
   }
 
   .label {
-    font-size: var(--lufia-font-size-xs);
+    font-size: var(--lufia-peer-nav-label-size-phone, var(--lufia-font-size-xs));
   }
 
   .description {
@@ -196,9 +205,27 @@
   }
 }
 
+/* Four views on a phone can wrap into two rows of two, so each label keeps its width (opt in with `phoneGrid="2x2"`). */
+@media (width < 35rem) {
+  .root[data-phone-grid="2x2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .root[data-phone-grid="2x2"] .item {
+    min-block-size: 0;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .root[data-phone-grid="2x2"] .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 /* Phones: icon over label so three or four views still fit. */
 @media (width < 26rem) {
-  .root[data-layout="fit"] .item {
+  .root[data-layout="fit"]:not([data-phone-grid]) .item {
     min-block-size: 4.25rem;
     flex-direction: column;
     justify-content: center;
