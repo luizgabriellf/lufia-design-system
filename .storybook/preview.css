@@ -8,7 +8,7 @@ body {
 
 .sb-surface {
   box-sizing: border-box;
-  min-width: 100%;
+  min-inline-size: 100%;
   padding: var(--lufia-space-4);
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-canvas);
@@ -35,23 +35,23 @@ body {
 /* Docs pages: keep wide blocks (code, props tables) inside their own box so phones never scroll sideways. */
 .sbdocs.sbdocs-wrapper {
   box-sizing: border-box;
-  min-width: 0;
+  min-inline-size: 0;
   padding-inline: clamp(1rem, 4vw, 4rem);
 }
 
 .sbdocs .sbdocs-content {
-  min-width: 0;
-  max-width: 62rem;
+  min-inline-size: 0;
+  max-inline-size: 62rem;
 }
 
 .sbdocs pre,
 .sbdocs .docblock-source {
-  max-width: 100%;
+  max-inline-size: 100%;
 }
 
 .sbdocs .docblock-argstable {
   display: block;
-  max-width: 100%;
+  max-inline-size: 100%;
   overflow-x: auto;
 }
 
@@ -60,7 +60,7 @@ body {
 }
 
 .sbdocs .sbdocs-preview {
-  max-width: 100%;
+  max-inline-size: 100%;
 }
 
 .sbdocs :focus-visible {
@@ -108,4 +108,13 @@ body {
 .sbdocs .sbdocs-content pre .token.boolean,
 .sbdocs .sbdocs-content pre .token.constant {
   color: var(--lufia-color-status-warning-fg);
+}
+
+/* Long identifiers (usePrefersReducedMotion) are one unbreakable word; let them wrap and shrink on phones. */
+.sbdocs .sbdocs-content :is(h1, h2, h3) {
+  overflow-wrap: anywhere;
+}
+
+.sbdocs .sbdocs-content h1 {
+  font-size: clamp(1.5rem, 7vw, 2rem);
 }
