@@ -1,0 +1,86 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./SearchInput.stories";
+
+<Meta of={Stories} />
+
+# SearchInput <StatusBadge status="beta" />
+
+A search box: a magnifier, a native `type="search"` input, a clear button, an optional shortcut hint and a debounced
+`onSearch`.
+
+<Canvas of={Stories.WithShortcut} />
+
+## Usage
+
+```tsx
+import { SearchInput } from "@lufia/design-system/components/SearchInput";
+
+<SearchInput
+  placeholder="Search customers"
+  clearLabel="Clear search"
+  shortcut="/"
+  onSearch={(text) => load(text)}
+  loading={isLoading}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+Use `value` and `onValueChange` to control the text, or `defaultValue` to leave it to the component.
+
+<Controls of={Stories.Default} />
+
+## Debounced search
+
+`onValueChange` fires on every keystroke, for UI that mirrors the text. `onSearch` is for work: it fires once the person has
+stopped typing for `debounceMs` (300 by default), at once on Enter, and at once when the text is cleared. It does not fire for
+the initial value, and not twice for the same text in a row. Pending timers are cancelled on unmount.
+
+<Canvas of={Stories.Debounced} />
+
+## Shortcut hint
+
+`shortcut` draws a `<kbd>` hint while the box is empty and idle. It is **display only**: bind the key in your app (and
+remember a single-key shortcut such as `/` must not fire while someone is typing in another field). The hint is hidden from
+assistive technology and on touch screens, and gives way to the clear button as soon as there is text.
+
+## States
+
+<Canvas of={Stories.InsideFormField} />
+<Canvas of={Stories.Loading} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.ReadOnly} />
+<Canvas of={Stories.Invalid} />
+
+## When to use
+
+- Filtering or finding items in a list, a table or a whole product.
+
+## When not to use
+
+- Choosing one value from a list of known options: use `Combobox`, which keeps the choice and its keyboard model.
+- A form field whose text is data, not a query: use `TextInput`.
+
+## Accessibility
+
+| Key / action | Behaviour                                                                                      |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| Tab          | Focus moves to the input, then to the clear button when there is text.                         |
+| Enter        | Runs the search at once (and submits a surrounding form, as a native search box does).         |
+| Escape       | Clears the text and keeps focus. With nothing to clear it does nothing, so a dialog can close. |
+| Click clear  | Clears, searches for the empty text and returns focus to the input.                            |
+
+- Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.
+- The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.
+- While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under
+  `prefers-reduced-motion`.
+- Results are not announced by this component: the list you update should announce its own count (a live region).
+
+## Content guidelines
+
+The placeholder says what can be searched ("Search customers"), not "Search...". Put the scope in it when there is more than one
+search on a page. `clearLabel` and `loadingLabel` are read aloud: "Clear search", "Searching customers".
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
