@@ -1,5 +1,63 @@
 # @lufia/design-system
 
+## 0.3.0
+
+### Minor Changes
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `AppShell` slots and options: `navigationPending`, `topBar`, `statusRow`, `searchTrigger` (and `keyShortcuts`/`opensDialog` on `search`), page-registered primary actions (`useShellPrimaryAction`, `ShellPrimaryActionSlot`), per-item `ariaLabel`, `data-*` attributes forwarded on the floating bar, and `sheetAs="dialog"` (also `NavSheet` `renderAs="dialog"`) for a native top-layer navigation sheet.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Badge` and `StatusBadge`, a pill label with neutral, info, success, warning, danger and ai tones and an optional dot. The text is always present, so the tone never carries the meaning alone.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Button` with primary, secondary, ghost and danger variants, three sizes, a width-preserving loading state, icon slots, full width, and a link rendering through `LufiaLink` when `href` is given.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Card`, a surface with title, header action, body and footer slots, four padding sizes, and an interactive variant that makes the whole card clickable through a single stretched link.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Checkbox` (with the indeterminate state), `RadioGroup` (a radiogroup with roving arrow keys) and `Switch` (a `role="switch"` button).
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Combobox`, a searchable single select following the WAI-ARIA combobox with listbox pattern. It supports typeahead, async options, empty and loading states, and dismisses through the shared layer stack. `FormField` now gives its label an id and exports `useFormFieldLabelId`.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `CommandPalette` `bodyOverride` (replaces the results, e.g. with an answer), `onEscape` (intercept the first Escape to leave a sub-mode), `groupOrder` (fixed section order) and `loading` (for server-side search driven by `onQueryChange`).
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `FileField`, a file picker with drag and drop, the native input kept in the form, type, size and count limits with messages supplied through props, and a list of chosen files with remove buttons. Also exports `formatFileSize` and `matchesAccept`.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `FormField`, which wires a label, hint and error to its control through ids, `aria-describedby` and `aria-invalid`, marks required fields in text, and exposes its ids through context, a render prop and `useFormFieldControl`.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `IconButton`, an icon-only `Button` whose `aria-label` is required by the types and which shows it as a `title` tooltip.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Link`, an inline text link rendered through `LufiaLink`, with an external-link indicator and a required visually hidden "opens in new tab" label.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Modal` `keepMounted` (children stay mounted while closed, so typed input survives) and `renderAs="dialog"` (a native `<dialog>` opened with `showModal()` in the browser's top layer, with the same focus trap, Escape handling and layer stack).
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Modal` theming hooks: `--lufia-modal-*` custom properties (radius, header, body and footer padding, title size, close-button size, backdrop colour, phone sheet offset and radius), `sheetPlacement`, `titleWrap`, `scrollShadow`, and a `size` that also accepts a custom CSS length.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `MoreActions`, an overflow menu button following the WAI-ARIA menu button pattern: arrow keys, Home, End, typeahead, and Escape or outside press through `useDismiss`.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `PageActions`, a page action row with a primary action, secondary actions that collapse into the menu on narrow screens, and an overflow menu.
+
+- [#20](https://github.com/luizgabriellf/lufia-design-system/pull/20) [`11132ee`](https://github.com/luizgabriellf/lufia-design-system/commit/11132ee1021717f3615f4ff409df60119280ffcd) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `PageHeader`: eyebrow, title with a heading level prop, description and an actions slot that wraps under the text on narrow screens.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Pagination` `variant="compact"` (previous and next only, with the status line) and a `buttonClassName` slot for the controls.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `PeerNav` theming hooks (`--lufia-peer-nav-*` for radii, label and description type, indicator border and shadow, active icon colour, disabled opacity, focus ring width and maximum inline size), a `phoneGrid="2x2"` option for four items, and `onItemClick`, which fires for the current item and for modified clicks.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `PendingSubmit`, a form submit button that blocks double submission, shows pending and progress labels, and follows the form through React 19 `useFormStatus` or a `pending` prop.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `SearchInput`, a search box with a clear button, an optional shortcut hint, a loading state and a debounced `onSearch`.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `SegmentedToggle`, a radiogroup of compact segments with roving arrow keys and an animated indicator.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Select`, a native select styled with tokens that joins a surrounding `FormField`.
+
+- [#22](https://github.com/luizgabriellf/lufia-design-system/pull/22) [`c36d366`](https://github.com/luizgabriellf/lufia-design-system/commit/c36d3660ef08cc990dcf50778981b4bcf60a785f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `TextInput` with prefix and suffix slots, and `Textarea` with an optional character count. Both join a surrounding `FormField` automatically.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `ToastProvider` now announces from persistent, visually hidden live regions (`role="status"` and `role="alert"`): one in the body and one inside each open modal dialog, so a toast raised while a dialog is open, or as it closes, is still read out. Only the visible stack moves between hosts, without replaying its enter animation. Note for tests: the hidden announcer holds a copy of each message, so `getByText` can find two matches; assert what is announced with `getByRole("status")` (or `"alert"` for errors) and query the visible toast inside the `Notifications` region.
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `ToastProvider` `container` (hosts the notification region inside the topmost open modal `<dialog>` by default, so toasts stay visible above a top-layer dialog, or in a given element) and `toneAliases` for an app's own tone names, plus `--lufia-toast-icon-size`, `--lufia-toast-radius` and `--lufia-toast-border-width`.
+
+### Patch Changes
+
+- [#24](https://github.com/luizgabriellf/lufia-design-system/pull/24) [`414cd76`](https://github.com/luizgabriellf/lufia-design-system/commit/414cd76dc224ff78de4f3beae5518f5fe028c335) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Render a portal `Modal` or `ConfirmDialog` opened over a native dialog inside that dialog, turn the native `close` event into `onClose`, compose the caller's `onClick` and `onPointerDown` on a native `Modal`, keep the registration order of `useShellPrimaryAction`, and honour a prevented `PeerNav` `onItemClick`.
+
 ## 0.2.0
 
 ### Minor Changes
