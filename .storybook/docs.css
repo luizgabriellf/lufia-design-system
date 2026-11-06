@@ -48,9 +48,9 @@
 }
 
 .sbdocs .sbdocs-content h3:not(.sb-unstyled *) {
-  margin-block: 2rem 0.5rem;
-  font-size: var(--lufia-font-size-lg);
-  font-weight: var(--lufia-font-weight-semibold);
+  margin-block: 2.25rem 0.5rem;
+  font-size: var(--lufia-font-size-xl);
+  font-weight: var(--lufia-font-weight-bold);
 }
 
 .sbdocs .sbdocs-content h4:not(.sb-unstyled *) {
@@ -82,7 +82,7 @@
 }
 
 /* Code blocks: a quiet surface, mono type, and a copy button that reads as part of the block. */
-.sbdocs .sbdocs-content pre:not(.sb-unstyled *),
+.sbdocs .sbdocs-content pre:not(.sb-unstyled *, .docblock-source *),
 .sbdocs .docblock-source {
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-sm);
@@ -96,9 +96,11 @@
 
 .sbdocs .docblock-source pre,
 .sbdocs .docblock-source code {
+  margin: 0;
   font-family: var(--lufia-font-family-mono);
   background: none;
   border: 0;
+  border-radius: 0;
 }
 
 .sbdocs .docblock-source button {
@@ -136,7 +138,14 @@
 }
 
 .sbdocs .docs-story > div {
-  padding: 1.5rem;
+  display: flex;
+  justify-content: safe center;
+  padding: 2rem 1.5rem;
+}
+
+.sbdocs .docs-story > div > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 /* Prose tables (key, action, API): the same look as the token tables. */

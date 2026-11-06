@@ -1,0 +1,76 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternFrame, PatternHeader } from "./PatternHeader";
+import { SettingsFormDemo } from "./SettingsFormDemo";
+
+<Meta title="Patterns/Settings form" parameters={{ layout: "fullscreen" }} />
+
+<PatternHeader
+  title="Settings form"
+  summary="A grouped form that validates as you leave a field, shows a pending state while it saves and confirms with a toast."
+  uses={[
+    "FormField",
+    "TextInput",
+    "Select",
+    "Textarea",
+    "SegmentedToggle",
+    "Switch",
+    "PendingSubmit",
+    "Card",
+    "PageHeader",
+    "Toast",
+  ]}
+/>
+
+## Try it
+
+Clear the display name and tab away to see the inline error, then save.
+
+<PatternFrame label="Settings / Profile">
+  <SettingsFormDemo />
+</PatternFrame>
+
+## Why it is built this way
+
+- **One card per decision.** Identity and preferences are separate cards, so a person can scan for the part they came to change.
+- **Errors appear on blur, not on every keystroke,** and say how to fix the problem. `FormField` links the message to the control with `aria-describedby` and sets `aria-invalid`.
+- **The submit button owns the pending state.** `PendingSubmit` keeps its width, stays focusable and ignores a second activation, so the form cannot be sent twice.
+- **A toast confirms the result.** It is announced politely and does not take focus, so someone who tabs on straight away is not interrupted.
+
+## Code
+
+```tsx
+const toast = useToast();
+const [pending, start] = useTransition();
+
+<form
+  onSubmit={(event) => {
+    event.preventDefault();
+    start(async () => {
+      await save();
+      toast.success("Profile saved.");
+    });
+  }}
+>
+  <Card title="Identity">
+    <FormField label="Display name" required error={error}>
+      <TextInput
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        onBlur={() => setTouched(true)}
+      />
+    </FormField>
+  </Card>
+  <PendingSubmit pending={pending} pendingLabel="Saving…" variant="primary">
+    Save changes
+  </PendingSubmit>
+</form>;
+```
+
+## Keyboard
+
+| Key        | Action                                                        |
+| ---------- | ------------------------------------------------------------- |
+| Tab        | Moves through fields in reading order; the toggle is one stop |
+| Arrow keys | Change the segment inside `SegmentedToggle`                   |
+| Space      | Toggles the switch                                            |
+| Enter      | Submits from any text field                                   |

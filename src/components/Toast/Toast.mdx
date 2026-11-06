@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, ToastAnatomy, ToastDoDont } from "../../docs/blocks/page";
 import * as Stories from "./Toast.stories";
 
 <Meta of={Stories} />
@@ -12,6 +12,10 @@ Short, non-blocking notifications that stack in a corner of the screen, are anno
 themselves and wait while they are hovered or focused. Mount `ToastProvider` once, call `useToast()` anywhere below.
 
 <Canvas of={Stories.Default} />
+
+### Anatomy
+
+<ToastAnatomy />
 
 ### Usage
 
@@ -93,6 +97,10 @@ needs time to be found.
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<ToastDoDont />
 
 ### When to use
 

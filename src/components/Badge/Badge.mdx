@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, BadgeDoDont, BadgeTones } from "../../docs/blocks/page";
 import * as Stories from "./Badge.stories";
 
 <Meta of={Stories} />
@@ -45,6 +45,10 @@ The `ai` tone exists so generated content is always marked as such; pair it with
 
 <Section id="examples">
 
+### Side by side
+
+<BadgeTones />
+
 ### States
 
 <Canvas of={Stories.WithDot} />
@@ -80,6 +84,10 @@ A badge is not interactive and takes no focus. If it needs to act, use a `Button
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<BadgeDoDont />
 
 ### When to use
 

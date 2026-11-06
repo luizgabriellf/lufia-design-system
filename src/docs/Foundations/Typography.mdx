@@ -1,4 +1,5 @@
 import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternHeader } from "../patterns/PatternHeader";
 import { TokenTable } from "../TokenTable";
 import {
   FamilySpecimens,
@@ -9,7 +10,13 @@ import {
 
 <Meta title="Foundations/Typography" />
 
-# Typography
+<PatternHeader
+  kind="Foundation"
+  title="Typography"
+  summary="Family, scale, weight and line-height tokens; each app brings its own fonts."
+/>
+
+> This documentation site sets its own type, Geist and Geist Mono, self-hosted and applied to the docs only. The package's font tokens below stay system stacks on purpose.
 
 Each app loads its own fonts with `next/font` and exposes them as `--font-space-grotesk`, `--font-ibm-plex-sans` and
 `--font-ibm-plex-mono`. The family tokens read those variables and fall back to named system stacks, so Storybook and

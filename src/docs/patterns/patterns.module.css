@@ -1,0 +1,225 @@
+.header {
+  display: grid;
+  gap: 0.875rem;
+  justify-items: start;
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
+  margin-block: 0.5rem 1.5rem;
+  font-family: var(--lufia-font-family-body);
+  color: var(--lufia-color-text-default);
+  background:
+    radial-gradient(50% 120% at 100% 0%, var(--lufia-color-accent-subtle), transparent 70%),
+    radial-gradient(var(--lufia-color-border-subtle) 1px, transparent 1px) 0 0 / 1.25rem 1.25rem,
+    var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-panel);
+}
+
+.crumb {
+  margin: 0;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lufia-color-text-muted);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--lufia-font-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  border: 0;
+}
+
+.summary {
+  max-inline-size: 40rem;
+  margin: 0;
+  font-size: var(--lufia-font-size-lg);
+  line-height: var(--lufia-font-line-height-relaxed);
+  color: var(--lufia-color-text-muted);
+  text-wrap: pretty;
+}
+
+.uses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+}
+
+.usesLabel {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lufia-color-text-muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chips li {
+  margin: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.75rem;
+  padding-inline: 0.625rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  color: var(--lufia-color-text-default);
+  text-decoration: none;
+  background: var(--lufia-color-bg-field);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+}
+
+.chip:hover {
+  color: var(--lufia-color-text-accent);
+  border-color: var(--lufia-color-accent-border);
+}
+
+.frame {
+  margin-block: 1.25rem;
+  overflow: hidden;
+  font-family: var(--lufia-font-family-body);
+  background: var(--lufia-color-bg-canvas);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.frameBar {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--lufia-color-bg-surface-raised);
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.frameBar span {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  background: var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+}
+
+.frameBar b {
+  margin-inline-start: 0.5rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-medium);
+  color: var(--lufia-color-text-muted);
+}
+
+.frameBody {
+  min-inline-size: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--lufia-color-text-default);
+  background:
+    radial-gradient(var(--lufia-color-border-subtle) 1px, transparent 1px) 0 0 / 1rem 1rem,
+    var(--lufia-color-bg-canvas);
+}
+
+.settings,
+.listPage,
+.detail {
+  display: grid;
+  gap: 1rem;
+  max-inline-size: 44rem;
+  margin-inline: auto;
+}
+
+.fields {
+  display: grid;
+  gap: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rows {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rows li {
+  margin: 0;
+}
+
+.detailColumns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.note {
+  margin: 0;
+  font-size: var(--lufia-font-size-sm);
+  color: var(--lufia-color-text-muted);
+}
+
+.patternGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  padding: 0;
+  margin-block: 1.25rem;
+  list-style: none;
+}
+
+.patternCard {
+  position: relative;
+  padding: 1rem 1.125rem;
+  margin: 0;
+  font-family: var(--lufia-font-family-body);
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  transition: border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.patternCard:hover,
+.patternCard:focus-within {
+  border-color: var(--lufia-color-accent-border);
+}
+
+.patternTitle {
+  margin: 0 0 0.25rem;
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.patternLink {
+  color: var(--lufia-color-text-default);
+  text-decoration: none;
+}
+
+.patternLink::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.patternBody {
+  margin: 0;
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+  color: var(--lufia-color-text-muted);
+}

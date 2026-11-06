@@ -1,6 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 import { DocTable } from "./blocks/DocTable";
 import { Hero } from "./blocks/Hero";
+import { PatternLinks } from "./patterns/PatternLinks";
 import { FeatureGrid } from "./blocks/FeatureGrid";
 import { ComponentGallery } from "./blocks/ComponentGallery";
 import { ThemeShowcase } from "./blocks/ThemeShowcase";
@@ -10,16 +11,11 @@ import { ResourceLinks } from "./blocks/ResourceLinks";
 
 <Hero />
 
-## What's inside
+## Why Lufia
+
+Four commitments that every component is held to, and that a pull request cannot merge without.
 
 <FeatureGrid />
-
-## Components
-
-Every card is the real component, rendered with plain strings. Open one for usage, keyboard behaviour and accessibility
-notes. Component status is labelled on every page (`alpha`, `beta`, `stable`, `deprecated`).
-
-<ComponentGallery />
 
 ## Quick start
 
@@ -48,6 +44,18 @@ import { EmptyState } from "@lufia/design-system/components/EmptyState";
 Components ship CSS Modules, so your bundler (Next.js, Vite) processes them. Strings in the snippet are plain literals: in
 your app every user-facing string is a prop, and the package has no translation layer.
 
+## Components
+
+Every component, primitive and hook, grouped like the sidebar. Cards show the real component; open one for usage, anatomy, keyboard behaviour and accessibility notes. Maturity (`alpha`, `beta`, `stable`, `deprecated`) is labelled on every page.
+
+<ComponentGallery />
+
+## Patterns
+
+Components are easier to judge in composition. Each pattern is a live, interactive page built only from the package, with the reasoning written next to it.
+
+<PatternLinks />
+
 ## Theming
 
 Light and dark follow `prefers-color-scheme`. Force one, or choose a named theme, with attributes on `<html>`. The
@@ -70,16 +78,8 @@ same markup below is rendered under each combination.
   ]}
 />
 
-Use the **Theme** and **Mode** controls in the toolbar to preview every page in each combination, and the viewport menu
-for the 320 / 390 / 768 / 1440 test widths. Product brands are not part of this package: each app maps its own values onto
+Use the **Theme** and **Mode** controls in the toolbar: they restyle the whole documentation, not only the canvases. The viewport menu offers the 320 / 390 / 768 / 1440 test widths. Product brands are not part of this package: each app maps its own values onto
 the `--lufia-*` tokens (see **Foundations / Creating a theme**).
-
-## Principles
-
-1. **Accessibility is a gate**, not a polish pass (WCAG 2.2 AA, axe on every component).
-2. **Semantic tokens only.** Components never read raw palette values, so a brand is a file, not a fork.
-3. **No app imports.** No router, i18n or data layer inside a component; apps inject them.
-4. **Small and boring.** Each component earns its place by being needed in more than one app.
 
 ## Keep exploring
 

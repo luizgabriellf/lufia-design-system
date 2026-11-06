@@ -1,0 +1,42 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternFrame, PatternHeader } from "./PatternHeader";
+import { DetailPageDemo } from "./DetailPageDemo";
+
+<Meta title="Patterns/Detail page" parameters={{ layout: "fullscreen" }} />
+
+<PatternHeader
+  title="Detail page"
+  summary="A record page that puts the thing needing attention first, then the facts, then the history."
+  uses={[
+    "PageHeader",
+    "Badge",
+    "DetailAttentionCard",
+    "DetailSectionCard",
+    "DetailList",
+    "StatusTimeline",
+    "Button",
+  ]}
+/>
+
+## Try it
+
+<PatternFrame label="Reports / Quarterly overview">
+  <DetailPageDemo />
+</PatternFrame>
+
+## Why it is built this way
+
+- **Attention first.** `DetailAttentionCard` sits above the details, with a tone mark and text, so urgency is not carried by colour alone.
+- **One primary action** in the header. Everything else is secondary, so the page has a single obvious next step.
+- **Facts as a description list.** `DetailList` renders `dl`, `dt` and `dd`, which assistive technology reads as label and value pairs.
+- **History as a timeline.** `StatusTimeline` keeps each node's state in text ("Pending", "Done") as well as in colour.
+
+## Code
+
+```tsx
+<PageHeader title="Quarterly overview" description={<Badge tone="warning" dot>Awaiting review</Badge>}
+  actions={<Button variant="primary">Publish</Button>} />
+<DetailAttentionCard tone="warn" toneLabel="Warning" title="Review due in 5 days" action={<Button size="sm">Request sign-off</Button>} />
+<DetailSectionCard title="Details"><DetailList rows={rows} /></DetailSectionCard>
+<DetailSectionCard title="Progress"><StatusTimeline tracks={tracks} /></DetailSectionCard>
+```

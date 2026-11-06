@@ -1,8 +1,13 @@
 import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternHeader } from "../patterns/PatternHeader";
 
 <Meta title="Foundations/Creating a theme" />
 
-# Creating a theme
+<PatternHeader
+  kind="Foundation"
+  title="Creating a theme"
+  summary="A theme is a file of values for the semantic colour tokens; no component changes."
+/>
 
 A theme is a set of values for the semantic `--lufia-color-*` custom properties. Components read only those, so an app can
 brand the whole system without touching a component.

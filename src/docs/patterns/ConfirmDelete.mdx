@@ -1,0 +1,50 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternFrame, PatternHeader } from "./PatternHeader";
+import { ConfirmDeleteDemo } from "./ConfirmDeleteDemo";
+
+<Meta title="Patterns/Confirm delete" parameters={{ layout: "fullscreen" }} />
+
+<PatternHeader
+  title="Confirm delete"
+  summary="A destructive action that asks one specific question, shows progress, and then offers Undo instead of a second confirmation."
+  uses={["ConfirmDialog", "Modal", "Toast", "Button", "Card", "Badge"]}
+/>
+
+## Try it
+
+<PatternFrame label="Invoices / 2041">
+  <ConfirmDeleteDemo />
+</PatternFrame>
+
+## Why it is built this way
+
+- **The question names the thing** ("Delete invoice 2041?") and the button repeats the verb ("Delete invoice"). A bare Yes or OK forces people to re-read the title.
+- **Focus starts on the safe choice.** `ConfirmDialog` focuses Cancel, so pressing Enter by reflex does not delete anything.
+- **Busy blocks dismissal.** While the request runs the dialog cannot be closed and the confirm button reports progress.
+- **Undo beats a second confirmation.** Where the action can be reversed, do it and say so in a toast; the toast pauses while it is focused so there is time to reach Undo.
+
+## Code
+
+```tsx
+<ConfirmDialog
+  open={open}
+  destructive
+  busy={busy}
+  title="Delete invoice 2041?"
+  message="It moves to the trash for 30 days."
+  confirmLabel="Delete invoice"
+  cancelLabel="Keep invoice"
+  onConfirm={remove}
+  onCancel={() => setOpen(false)}
+/>;
+
+toast.info("Invoice 2041 moved to the trash.", { action: { label: "Undo", onAction: restore } });
+```
+
+## Keyboard
+
+| Key         | Action                                     |
+| ----------- | ------------------------------------------ |
+| Tab         | Cycles inside the dialog; it cannot leave  |
+| Escape      | Cancels, unless the dialog is busy         |
+| Enter/Space | Activates the focused button, Cancel first |

@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, FormFieldAnatomy, FormFieldDoDont } from "../../docs/blocks/page";
 import * as Stories from "./FormField.stories";
 import * as Composed from "./Forms.stories";
 
@@ -18,6 +18,10 @@ them. It generates the ids, points the label at the control, links the hint and 
 `aria-invalid` when there is an error, and marks a required field in text.
 
 <Canvas of={Stories.Default} />
+
+### Anatomy
+
+<FormFieldAnatomy />
 
 ### Usage
 
@@ -96,6 +100,10 @@ Follows the WAI-ARIA [Forms tutorial](https://www.w3.org/WAI/tutorials/forms/) g
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<FormFieldDoDont />
 
 ### When to use
 

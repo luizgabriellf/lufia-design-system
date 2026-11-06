@@ -62,7 +62,7 @@ there are no built-in "OK" or "Cancel" defaults, because those are visible text.
 `destructive` styles the confirm button as dangerous and starts focus on **Cancel**, so a reflexive Enter keeps the data.
 Without it, focus starts on the confirm button.
 
-<Canvas of={Stories.Destructive} />
+<Canvas of={Stories.Destructive} story={{ inline: false, height: "26rem" }} />
 
 ### Busy
 
@@ -70,7 +70,7 @@ While `busy` the dialog refuses to close: Escape, a click outside and Cancel do 
 spinner and `aria-busy="true"`. The buttons use `aria-disabled` rather than `disabled`, so focus stays where the person
 left it instead of falling back to the page. Clear `busy` when the action settles, and close the dialog yourself.
 
-<Canvas of={Stories.Busy} />
+<Canvas of={Stories.Busy} story={{ inline: false, height: "26rem" }} />
 
 ### All themes
 

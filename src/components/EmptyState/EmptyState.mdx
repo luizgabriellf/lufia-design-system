@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, EmptyStateDoDont } from "../../docs/blocks/page";
 import * as Stories from "./EmptyState.stories";
 
 <Meta of={Stories} />
@@ -61,6 +61,10 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 <Section id="guidelines">
 
+### Do and don't
+
+<EmptyStateDoDont />
+
 ### When to use
 
 - First use (nothing created yet), and results that are empty after a search or filter.
@@ -69,7 +73,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 - Errors (say what went wrong and how to recover instead) or loading states (use a skeleton or spinner).
 
-### Do and don't
+### Writing the copy
 
 - **Do** say what the area is for and offer the one action that fills it.
 - **Don't** blame the user ("You have no items"); describe the state ("No items yet").

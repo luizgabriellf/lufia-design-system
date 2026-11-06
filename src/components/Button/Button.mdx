@@ -1,5 +1,12 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import {
+  DocHeader,
+  Section,
+  ButtonAnatomy,
+  ButtonDoDont,
+  ButtonVariants,
+  ButtonSizes,
+} from "../../docs/blocks/page";
 import * as Stories from "./Button.stories";
 
 <Meta of={Stories} />
@@ -15,6 +22,10 @@ import * as Stories from "./Button.stories";
 The control for an action. It renders a native `<button>`, or a link when `href` is given, and looks the same either way.
 
 <Canvas of={Stories.AllVariantsAndSizes} />
+
+### Anatomy
+
+<ButtonAnatomy />
 
 ### Usage
 
@@ -42,6 +53,12 @@ renders through the `linkComponent` set on `LufiaProvider`, so client-side routi
 </Section>
 
 <Section id="examples">
+
+### Side by side
+
+<ButtonVariants />
+
+<ButtonSizes />
 
 ### Loading
 
@@ -92,6 +109,10 @@ when a submit starts. Announce the outcome in a live region or a toast; `aria-bu
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<ButtonDoDont />
 
 ### When to use
 

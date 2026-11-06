@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, ModalAnatomy, ModalDoDont } from "../../docs/blocks/page";
 import * as Stories from "./Modal.stories";
 
 <Meta of={Stories} />
@@ -16,6 +16,10 @@ A dialog that blocks the page behind it until the person answers or dismisses it
 containment, scroll lock, an inert background and an enter/exit motion.
 
 <Canvas of={Stories.Default} />
+
+### Anatomy
+
+<ModalAnatomy />
 
 ### Usage
 
@@ -50,14 +54,14 @@ The modal is controlled: it never closes itself, it calls `onClose`, and you dec
 `sm` (26 rem) for short questions, `md` (35 rem, default) for forms, `lg` (48 rem) and `xl` (60 rem) for dense content.
 Below 600 px every size becomes a sheet anchored to the bottom of the screen that rises into view.
 
-<Canvas of={Stories.Large} />
+<Canvas of={Stories.Large} story={{ inline: false, height: "30rem" }} />
 
 ### Dismissal policy
 
 Three ways out, each one switchable: the close button (`hideCloseButton`), Escape (`closeOnEscape`) and a click on the
 backdrop (`closeOnOutsideClick`). For a form with unsaved input, turn the last two off and let the footer buttons decide.
 
-<Canvas of={Stories.StrictDismissal} />
+<Canvas of={Stories.StrictDismissal} story={{ inline: false, height: "30rem" }} />
 
 A click only closes when the press **began** on the backdrop. Selecting text inside the dialog and releasing the mouse
 outside it does not.
@@ -122,6 +126,10 @@ Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`).
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<ModalDoDont />
 
 ### When to use
 

@@ -1,6 +1,6 @@
 import { Unstyled } from "@storybook/addon-docs/blocks";
 import type { ComponentType } from "react";
-import { CheckIcon, ServerIcon, ShieldIcon, SlidersIcon, WaveIcon, DocumentIcon } from "../demo";
+import { ShieldIcon, SlidersIcon, WaveIcon, DocumentIcon } from "../demo";
 import styles from "./FeatureGrid.module.css";
 
 type Feature = { title: string; body: string; Icon: ComponentType<{ size?: number }> };
@@ -8,7 +8,7 @@ type Feature = { title: string; body: string; Icon: ComponentType<{ size?: numbe
 const FEATURES: Feature[] = [
   {
     title: "Accessible by default",
-    body: "Every component has a vitest-axe test and documented keyboard behaviour. Contrast is checked against WCAG 2.2 AA in CI for every theme and mode.",
+    body: "Every component has an axe test and documented keyboard behaviour. Contrast is checked against WCAG 2.2 AA in every theme and mode, from 320 to 1440 px.",
     Icon: ShieldIcon,
   },
   {
@@ -22,23 +22,13 @@ const FEATURES: Feature[] = [
     Icon: WaveIcon,
   },
   {
-    title: "RSC-friendly",
-    body: "Static components carry no use client directive and styling is plain CSS Modules, so they render in Server Components without a runtime.",
-    Icon: ServerIcon,
-  },
-  {
     title: "No app coupling",
-    body: "Every user-facing string is a prop. There is no router, i18n or data layer inside a component; your app injects them.",
+    body: "Every user-facing string is a prop and styling is plain CSS Modules. No router, i18n or data layer inside a component, and static ones render in Server Components.",
     Icon: DocumentIcon,
-  },
-  {
-    title: "Checked where it counts",
-    body: "Each component is built for 320, 390, 768 and 1440 px, in light and dark, and under forced-colors, with a visible focus ring throughout.",
-    Icon: CheckIcon,
   },
 ];
 
-/** The six things the package promises, as a grid of short cards. */
+/** The four things the package promises, as a grid of short cards. */
 export function FeatureGrid() {
   return (
     <Unstyled>

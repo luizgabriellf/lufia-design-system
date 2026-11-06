@@ -1,0 +1,42 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { PatternFrame, PatternHeader } from "./PatternHeader";
+import { ListPageDemo } from "./ListPageDemo";
+
+<Meta title="Patterns/List page" parameters={{ layout: "fullscreen" }} />
+
+<PatternHeader
+  title="List page"
+  summary="A page of records with navigation between views, filtering, search, pagination and a useful empty state."
+  uses={["PageHeader", "PeerNav", "TableToolbar", "NavRow", "Badge", "Pagination", "EmptyState"]}
+/>
+
+## Try it
+
+Search for something that does not exist to see the empty state, or filter to change the page count.
+
+<PatternFrame label="Workspace / Reports">
+  <ListPageDemo />
+</PatternFrame>
+
+## Why it is built this way
+
+- **Three levels of navigation, each with one job.** `PageHeader` says where you are, `PeerNav` switches between sibling views and `TableToolbar` narrows what you see inside one.
+- **Changing a filter returns to page 1.** Staying on page 4 of a result set that now has two pages is the most common list bug.
+- **The empty state offers the way out.** After a search or filter it says so and gives a single action that clears them.
+- **Pagination announces itself.** The summary line ("Page 2 of 5, 23 results") is a polite live region, so a screen reader hears the change.
+
+## Code
+
+```tsx
+<PageHeader title="Reports" actions={<Button variant="primary">New report</Button>} />
+<PeerNav label="Report views" value={view} onValueChange={setView} items={views} />
+<TableToolbar filters={filters} activeFilter={filter} search={search} onSearchChange={setSearch} />
+{rows.length === 0 ? (
+  <EmptyState title="No reports match" action={<Button onClick={clear}>Clear filters</Button>} />
+) : (
+  <>
+    <ul>{rows.map((row) => <li key={row.id}><NavRow href={row.href} title={row.title} /></li>)}</ul>
+    <Pagination page={page} totalPages={totalPages} onPageChange={setPage} labels={labels} />
+  </>
+)}
+```

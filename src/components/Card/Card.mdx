@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { DocHeader, Section } from "../../docs/blocks/page";
+import { DocHeader, Section, CardAnatomy, CardDoDont, CardPaddings } from "../../docs/blocks/page";
 import * as Stories from "./Card.stories";
 
 <Meta of={Stories} />
@@ -16,6 +16,10 @@ A surface that groups related content, with an optional title, header action, bo
 is clickable through one link.
 
 <Canvas of={Stories.WithFooter} />
+
+### Anatomy
+
+<CardAnatomy />
 
 ### Usage
 
@@ -35,6 +39,10 @@ through the `linkComponent` set on `LufiaProvider`.
 </Section>
 
 <Section id="examples">
+
+### Side by side
+
+<CardPaddings />
 
 ### The interactive card
 
@@ -91,6 +99,10 @@ A plain card is not focusable. The focus ring is drawn around the whole card.
 </Section>
 
 <Section id="guidelines">
+
+### Do and don't
+
+<CardDoDont />
 
 ### When to use
 
