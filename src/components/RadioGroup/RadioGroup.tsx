@@ -4,6 +4,7 @@ import { useId, useRef, useState, type HTMLAttributes, type ReactNode, type Ref 
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
+import { useSubmitIntent } from "../FormField/useSubmitIntent";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./RadioGroup.module.css";
 import { useRadioKeys } from "./useRadioKeys";
@@ -82,6 +83,7 @@ export function RadioGroup({
   };
   const keys = useRadioKeys(items, value, choose);
   const root = useRef<HTMLDivElement>(null);
+  const submitting = useSubmitIntent(root);
   useFormReset(root, () => {
     setMissing(null);
     setValue(defaultValue);
@@ -179,17 +181,16 @@ export function RadioGroup({
             const message =
               requiredMessage ?? (mirror.validationMessage || "Please select one of these options.");
             setMissing((previous) => ({ message, count: (previous?.count ?? 0) + 1 }));
-            // `checkValidity()` fires this too and must stay silent, so focus moves only on a real attempt: this is the
-            // first invalid control, and focus is not in another field (it is on the page, the form or a submit control).
+            // `checkValidity()` fires this too and must stay silent, so focus moves only for a real attempt (a submit
+            // click or Enter) and only when this is the first invalid control. Fieldsets report invalid themselves, so
+            // they are skipped when looking for the first one.
             const form = mirror.form;
-            const active = document.activeElement;
-            const idle =
-              !active ||
-              active === document.body ||
-              active === form ||
-              (active instanceof HTMLElement &&
-                active.matches('button, input[type="submit"], input[type="image"]'));
-            if (form?.querySelector(":invalid") === mirror && idle) {
+            const first =
+              form &&
+              Array.from(form.elements).find(
+                (el) => !(el instanceof HTMLFieldSetElement) && !(el as HTMLInputElement).validity.valid,
+              );
+            if (submitting.current && first === mirror) {
               root.current?.querySelector<HTMLElement>('[data-radio-index][tabindex="0"]')?.focus();
             }
           }}

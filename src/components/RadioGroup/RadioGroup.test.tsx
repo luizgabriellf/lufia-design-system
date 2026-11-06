@@ -149,16 +149,15 @@ describe("RadioGroup", () => {
     expect(container.querySelector('input[name="payment"]')).toHaveValue("card");
   });
 
-  it("shows the message and moves focus to the radio when the browser reports it missing", () => {
-    const { container } = render(
+  it("shows the message and moves focus to the radio when a submit is refused", async () => {
+    const user = userEvent.setup();
+    render(
       <form>
         <RadioGroup label="Payment" options={options} required requiredMessage="Choose a payment method" />
+        <button type="submit">Send</button>
       </form>,
     );
-    const mirror = container.querySelector("input[aria-hidden]")!;
-    const event = new Event("invalid", { cancelable: true });
-    act(() => void mirror.dispatchEvent(event));
-    expect(event.defaultPrevented).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Send" }));
     expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
     expect(screen.getByRole("alert")).toHaveTextContent("Choose a payment method");
     expect(screen.getByRole("radiogroup")).toBeInvalid();
@@ -185,23 +184,37 @@ describe("RadioGroup", () => {
     expect(screen.getByRole("radiogroup")).toBeInvalid();
   });
 
-  it("moves focus to the radio on a real attempt: reportValidity from a submit control", async () => {
+  it("moves focus to the radio when a submit button is clicked, also inside a fieldset", async () => {
     const user = userEvent.setup();
-    const { container } = render(
+    render(
       <form>
-        <input aria-label="Name" required defaultValue="x" />
-        <RadioGroup label="Payment" options={options} required />
+        <fieldset>
+          <input aria-label="Name" defaultValue="x" required />
+          <RadioGroup label="Payment" options={options} required />
+        </fieldset>
         <button type="submit">Send</button>
       </form>,
     );
     await user.click(screen.getByRole("button", { name: "Send" }));
-    act(() => void container.querySelector("form")!.reportValidity());
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
+  });
+
+  it("moves focus to the radio on Enter in a valid text field", async () => {
+    const user = userEvent.setup();
+    render(
+      <form>
+        <input aria-label="Name" defaultValue="x" required />
+        <RadioGroup label="Payment" options={options} required />
+        <button type="submit">Send</button>
+      </form>,
+    );
+    await user.type(screen.getByLabelText("Name"), "{Enter}");
     expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
   });
 
   it("does not take focus when an earlier field is the first invalid one", async () => {
     const user = userEvent.setup();
-    const { container } = render(
+    render(
       <form>
         <input aria-label="Name" required />
         <RadioGroup label="Payment" options={options} required />
@@ -209,8 +222,21 @@ describe("RadioGroup", () => {
       </form>,
     );
     await user.click(screen.getByRole("button", { name: "Send" }));
-    act(() => void container.querySelector("form")!.reportValidity());
     expect(screen.getByRole("radio", { name: "Card" })).not.toHaveFocus();
+  });
+
+  it("clears the error as soon as a radio is chosen", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <RadioGroup label="Payment" options={options} required />
+      </form>,
+    );
+    act(() => void container.querySelector("form")!.checkValidity());
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("radiogroup")).not.toBeInvalid();
   });
 
   it("clears the required message on choosing and on reset, and announces a second refusal anew", async () => {
@@ -235,8 +261,9 @@ describe("RadioGroup", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
-  it("focuses the chosen radio, or skips a disabled first one", () => {
-    const { container } = render(
+  it("focuses the first radio that is not disabled", async () => {
+    const user = userEvent.setup();
+    render(
       <form>
         <RadioGroup
           label="Payment"
@@ -244,14 +271,10 @@ describe("RadioGroup", () => {
           required
           value=""
         />
+        <button type="submit">Send</button>
       </form>,
     );
-    act(
-      () =>
-        void container
-          .querySelector("input[aria-hidden]")!
-          .dispatchEvent(new Event("invalid", { cancelable: true })),
-    );
+    await user.click(screen.getByRole("button", { name: "Send" }));
     expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
   });
 
