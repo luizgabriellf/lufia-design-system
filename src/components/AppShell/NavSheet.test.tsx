@@ -33,7 +33,10 @@ const sheet = () => screen.queryByRole("dialog", { name: "Menu" });
 
 describe("NavSheet", () => {
   beforeEach(() => mockReducedMotion(true));
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
 
   it("renders nothing while closed", () => {
     render(<Harness />);
@@ -123,35 +126,32 @@ describe("NavSheet", () => {
       expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
     });
 
+    const at = (time: number, act: () => void) => {
+      vi.spyOn(performance, "now").mockReturnValue(time);
+      act();
+    };
+
     it("dismisses on a quick flick that is shorter than the distance threshold", async () => {
       render(<Harness initial />);
-      fireEvent.pointerDown(grabber(), {
-        pointerId: 1,
-        clientY: 100,
-        button: 0,
-        pointerType: "touch",
-        timeStamp: 0,
-      });
-      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch", timeStamp: 10 });
-      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 20 });
+      at(0, () =>
+        fireEvent.pointerDown(grabber(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" }),
+      );
+      at(10, () => fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch" }));
+      at(20, () => fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch" }));
       act(() => {
-        fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 30 });
+        at(30, () => fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch" }));
       });
       await waitFor(() => expect(sheet()).toBeNull());
     });
 
     it("does not dismiss a slow drag of the same distance", () => {
       render(<Harness initial />);
-      fireEvent.pointerDown(grabber(), {
-        pointerId: 1,
-        clientY: 100,
-        button: 0,
-        pointerType: "touch",
-        timeStamp: 0,
-      });
-      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch", timeStamp: 500 });
-      fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 1000 });
-      fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch", timeStamp: 1500 });
+      at(0, () =>
+        fireEvent.pointerDown(grabber(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" }),
+      );
+      at(500, () => fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 130, pointerType: "touch" }));
+      at(1000, () => fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch" }));
+      at(1500, () => fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 160, pointerType: "touch" }));
       expect(sheet()).not.toBeNull();
     });
 

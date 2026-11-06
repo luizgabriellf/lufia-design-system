@@ -64,7 +64,7 @@ export function useSheetDrag(onDismiss: () => void, enabled = true) {
         id: event.pointerId,
         startY: event.clientY,
         lastY: event.clientY,
-        lastTime: event.timeStamp,
+        lastTime: performance.now(),
         velocity: 0,
         moved: false,
       };
@@ -76,10 +76,10 @@ export function useSheetDrag(onDismiss: () => void, enabled = true) {
       const offset = Math.max(0, event.clientY - current.startY);
       if (!current.moved && offset < SLOP) return;
       current.moved = true;
-      const elapsed = event.timeStamp - current.lastTime;
+      const elapsed = performance.now() - current.lastTime;
       if (elapsed > 0) current.velocity = (event.clientY - current.lastY) / elapsed;
       current.lastY = event.clientY;
-      current.lastTime = event.timeStamp;
+      current.lastTime = performance.now();
       element.dataset.dragging = "true";
       element.style.setProperty("--lufia-sheet-drag", `${offset}px`);
     },
