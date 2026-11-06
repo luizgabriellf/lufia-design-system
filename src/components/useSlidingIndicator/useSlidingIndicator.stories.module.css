@@ -1,0 +1,46 @@
+/* Story-only styles: they show the CSS contract of the hook. */
+.nav {
+  position: relative;
+  display: inline-flex;
+  gap: var(--lufia-space-1);
+  padding: var(--lufia-space-1);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+  background: var(--lufia-color-bg-surface);
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  min-block-size: 2.5rem;
+  padding-inline: var(--lufia-space-3);
+  border: 0;
+  border-radius: var(--lufia-radius-md);
+  background: transparent;
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tab[aria-pressed="true"] {
+  color: var(--lufia-color-text-accent);
+}
+
+.tab:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.indicator {
+  position: absolute;
+  top: 0;
+  left: 0; /* the hook positions with measured, physical coordinates */
+  transform-origin: 0 0;
+  border-radius: var(--lufia-radius-md);
+  background: var(--lufia-color-accent-subtle);
+  pointer-events: none;
+}
+
+.indicator[data-ready] {
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}

@@ -1,0 +1,164 @@
+.root {
+  position: fixed;
+  z-index: var(--lufia-z-modal);
+  inset: 0;
+}
+
+/* Dim only: a full-viewport backdrop blur would repaint on every frame of the fade. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--lufia-color-bg-canvas) 55%, transparent);
+  animation: backdrop-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.root[data-state="closed"] .backdrop {
+  animation: backdrop-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+.panel {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: flex;
+  flex-direction: column;
+  max-block-size: min(88dvh, 40rem);
+  min-block-size: 0;
+  box-sizing: border-box;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-block-end: 0;
+  border-radius: var(--lufia-radius-panel) var(--lufia-radius-panel) 0 0;
+  background: var(--lufia-color-bg-surface-solid);
+  color: var(--lufia-color-text-default);
+  box-shadow: var(--lufia-shadow-lg);
+  overflow: hidden;
+  overscroll-behavior: none;
+  transform: translateY(var(--lufia-sheet-drag, 0));
+
+  /* Springs back after a short drag. A drag in progress follows the finger without easing. */
+  transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) both;
+}
+
+.panel:focus {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.panel[data-dragging] {
+  transition: none;
+  will-change: transform;
+}
+
+.root[data-state="closed"] .panel {
+  animation: sheet-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+/* Only the grabber and header own vertical gestures; the body keeps native scrolling. */
+.dragZone {
+  flex: none;
+  user-select: none;
+}
+
+.dragZone[data-swipe] {
+  touch-action: none;
+}
+
+.grabber {
+  display: block;
+  inline-size: 2.625rem;
+  block-size: 0.3125rem;
+  margin: 0.75rem auto 0.375rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-border-strong);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lufia-space-3);
+  min-block-size: 3rem;
+  padding: 0.25rem var(--lufia-space-4) 0.375rem;
+}
+
+.headContent {
+  min-inline-size: 0;
+}
+
+.close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--lufia-radius-control);
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-default);
+  cursor: pointer;
+}
+
+.close:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  padding-inline: var(--lufia-space-3);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.foot {
+  flex: none;
+  padding: var(--lufia-space-2) var(--lufia-space-3) calc(var(--lufia-space-3) + env(safe-area-inset-bottom));
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+/* The keyframes animate one end only, so the resting state is the end state and a disabled animation leaves it visible. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(110%);
+  }
+}
+
+@keyframes sheet-out {
+  to {
+    transform: translateY(110%);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .backdrop {
+    animation: none;
+  }
+
+  .panel {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .panel {
+    border-color: CanvasText;
+  }
+}

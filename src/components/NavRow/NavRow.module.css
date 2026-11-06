@@ -1,0 +1,115 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 3.5rem;
+  padding: 0.75rem 0.85rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  background: var(--lufia-color-bg-surface);
+  box-sizing: border-box;
+  color: var(--lufia-color-text-default);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+a.root,
+button.root {
+  cursor: pointer;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+a.root:hover,
+button.root:hover:not(:disabled) {
+  border-color: var(--lufia-color-border-strong);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.root:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.root[data-disabled] {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--lufia-color-text-muted);
+}
+
+.copy {
+  display: grid;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  gap: 0.18rem;
+}
+
+.topline {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.title {
+  min-inline-size: 0;
+  font-weight: var(--lufia-font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  display: inline-flex;
+  min-inline-size: 1.55rem;
+  justify-content: center;
+  padding: 0.08rem 0.42rem;
+  border-radius: var(--lufia-radius-sm);
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+}
+
+.chevron {
+  flex: 0 0 auto;
+  color: var(--lufia-color-text-muted);
+}
+
+.root:dir(rtl) .chevron {
+  transform: scaleX(-1);
+}
+
+@media (hover: hover) {
+  a.root:hover .chevron,
+  button.root:hover:not(:disabled) .chevron {
+    color: var(--lufia-color-text-default);
+  }
+}
+
+@media (width < 40rem) {
+  .root {
+    min-block-size: 3.625rem;
+    border-radius: var(--lufia-radius-control);
+  }
+}

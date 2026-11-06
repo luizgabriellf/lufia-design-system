@@ -1,0 +1,272 @@
+.root {
+  position: fixed;
+  z-index: var(--lufia-z-modal);
+  inset: 0;
+}
+
+/* Dim only: a full-viewport backdrop blur would repaint on every frame of the fade. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--lufia-color-bg-canvas) 55%, transparent);
+  animation: backdrop-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.root[data-state="closed"] .backdrop {
+  animation: backdrop-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+.panel {
+  position: absolute;
+  inset-block-start: 12vh;
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  inline-size: min(36rem, 94vw);
+  max-block-size: min(80dvh, 32rem);
+  margin-inline: auto;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-panel);
+  box-sizing: border-box;
+  background: var(--lufia-color-bg-surface-solid);
+  color: var(--lufia-color-text-default);
+  box-shadow: var(--lufia-shadow-lg);
+  overflow: hidden;
+  animation: panel-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.panel:focus {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.root[data-state="closed"] .panel {
+  animation: panel-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+.header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--lufia-space-3);
+  min-block-size: 3.5rem;
+  padding: var(--lufia-space-2) var(--lufia-space-3) var(--lufia-space-2) var(--lufia-space-4);
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.glyph {
+  flex: none;
+  color: var(--lufia-color-text-muted);
+}
+
+.input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  min-block-size: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lufia-color-text-default);
+  font: inherit;
+  font-size: var(--lufia-font-size-lg);
+}
+
+/* The field has no box of its own: the whole header takes the focus ring, so the cue is never lost. */
+.header:has(.input:focus-visible) {
+  box-shadow: inset 0 0 0 var(--lufia-border-width-thick) var(--lufia-color-focus-ring);
+}
+
+.input:focus {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.input::placeholder {
+  color: var(--lufia-color-text-subtle);
+}
+
+.escape {
+  flex: none;
+  padding: 0.1rem 0.35rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-xs);
+  color: var(--lufia-color-text-subtle);
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-2xs);
+}
+
+.close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--lufia-radius-full);
+  background: transparent;
+  color: var(--lufia-color-text-muted);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-default);
+}
+
+.close:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  padding: var(--lufia-space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.group + .group {
+  margin-block-start: var(--lufia-space-2);
+  padding-block-start: var(--lufia-space-2);
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.heading {
+  margin: 0;
+  padding: var(--lufia-space-1) var(--lufia-space-3);
+  color: var(--lufia-color-text-subtle);
+  font-size: var(--lufia-font-size-2xs);
+  font-weight: var(--lufia-font-weight-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-3);
+  min-block-size: 3.25rem;
+  padding: 0.5rem var(--lufia-space-3);
+  border-radius: var(--lufia-radius-control);
+  cursor: pointer;
+}
+
+/* The highlighted option is shown by a fill and by a bar on its inline-start edge, so colour is not the only cue. */
+.option[data-active] {
+  background: var(--lufia-color-accent-subtle);
+  box-shadow: inset 0.1875rem 0 0 var(--lufia-color-accent-default);
+}
+
+.option[data-active]:dir(rtl) {
+  box-shadow: inset -0.1875rem 0 0 var(--lufia-color-accent-default);
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: var(--lufia-radius-md);
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-muted);
+}
+
+.copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.label {
+  font-weight: var(--lufia-font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  overflow-wrap: anywhere;
+}
+
+.empty,
+.hint {
+  margin: 0;
+  padding: var(--lufia-space-5) var(--lufia-space-4);
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  text-align: center;
+}
+
+.hint {
+  padding-block: var(--lufia-space-2) var(--lufia-space-3);
+  text-align: start;
+}
+
+/* Announces the number of results without showing it. */
+.status {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (width < 40rem) {
+  .panel {
+    inset-block-start: var(--lufia-space-3);
+    max-block-size: 70dvh;
+  }
+
+  .escape {
+    display: none;
+  }
+}
+
+/* The keyframes animate one end only, so the resting state is the end state and a disabled animation leaves it visible. */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--lufia-motion-distance-rise) * -1)) scale(0.98);
+  }
+}
+
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .backdrop {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .option[data-active] {
+    outline: var(--lufia-border-width-thin) solid Highlight;
+  }
+}

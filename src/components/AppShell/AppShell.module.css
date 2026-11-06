@@ -1,0 +1,168 @@
+.shell {
+  --lufia-shell-sidebar-width: 16.75rem;
+
+  display: grid;
+  grid-template-columns: var(--lufia-shell-sidebar-width) minmax(0, 1fr);
+  min-block-size: 100dvh;
+  background: var(--lufia-color-bg-canvas);
+  color: var(--lufia-color-text-default);
+}
+
+.shell[data-collapsed] {
+  --lufia-shell-sidebar-width: 4.75rem;
+}
+
+.sidebarSlot {
+  position: sticky;
+  inset-block-start: 0;
+  align-self: start;
+  block-size: 100dvh;
+  min-inline-size: 0;
+  border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.main {
+  min-inline-size: 0;
+  padding: var(--lufia-space-8);
+}
+
+.main:focus {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.topBar,
+.float {
+  display: none;
+}
+
+/* Visible only while focused. */
+.skip {
+  position: absolute;
+  z-index: var(--lufia-z-toast);
+  inset-block-start: var(--lufia-space-2);
+  inset-inline-start: var(--lufia-space-2);
+  padding: var(--lufia-space-2) var(--lufia-space-4);
+  border-radius: var(--lufia-radius-control);
+  background: var(--lufia-color-bg-surface-solid);
+  color: var(--lufia-color-text-default);
+  box-shadow: var(--lufia-shadow-md);
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  inline-size: 100%;
+  min-block-size: 2.5rem;
+  padding: 0 0.75rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+  box-sizing: border-box;
+  background: var(--lufia-color-bg-surface-raised);
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.search:hover {
+  border-color: var(--lufia-color-border-strong);
+  color: var(--lufia-color-text-default);
+}
+
+.search:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.search[data-rail] {
+  justify-content: center;
+  padding: 0;
+}
+
+.searchLabel {
+  flex: 1 1 auto;
+}
+
+.shortcut {
+  padding: 0.1rem 0.35rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-xs);
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-2xs);
+  color: var(--lufia-color-text-subtle);
+}
+
+.sheetNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+  padding-block-end: var(--lufia-space-2);
+}
+
+@media (width < 60rem) {
+  .shell {
+    display: block;
+    min-block-size: 0;
+  }
+
+  .sidebarSlot {
+    display: none;
+  }
+
+  .topBar {
+    position: sticky;
+    z-index: var(--lufia-z-sticky);
+    inset-block-start: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--lufia-space-3);
+    min-block-size: 3.5rem;
+    padding: var(--lufia-space-2) var(--lufia-space-4);
+    border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+    box-sizing: border-box;
+    background: color-mix(in srgb, var(--lufia-color-bg-canvas) 92%, transparent);
+    backdrop-filter: blur(1.375rem) saturate(1.35);
+  }
+
+  .topEnd {
+    min-inline-size: 0;
+    margin-inline-start: auto;
+  }
+
+  .float {
+    display: flex;
+  }
+
+  .main {
+    padding: var(--lufia-space-4) var(--lufia-space-4) calc(6.5rem + env(safe-area-inset-bottom));
+  }
+
+  /* Focus and in-page scrolling stop clear of the sticky bar and the floating bar. */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
+  :global(html):has(.shell) {
+    scroll-padding-block: 4.5rem calc(6.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .topBar {
+    backdrop-filter: none;
+    background: var(--lufia-color-bg-canvas);
+  }
+}
+
+@media (forced-colors: active) {
+  .sidebarSlot,
+  .topBar {
+    border-color: CanvasText;
+  }
+}

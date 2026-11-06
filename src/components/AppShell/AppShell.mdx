@@ -1,0 +1,175 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./AppShell.stories";
+import * as SidebarStories from "./Sidebar.stories";
+import * as FloatBarStories from "./MobileFloatBar.stories";
+import * as SheetStories from "./NavSheet.stories";
+
+<Meta of={Stories} />
+
+# AppShell <StatusBadge status="beta" />
+
+The frame of an application. On wide screens a sidebar with groups that open and close and that can shrink to a rail. On
+phones a sticky top bar, a floating bar within thumb reach, and a navigation sheet that rises from the bottom. The
+navigation is data, so both layouts always agree.
+
+<Canvas of={Stories.Desktop} />
+
+## Usage
+
+```tsx
+import { AppShell } from "@lufia/design-system/components/AppShell";
+
+<AppShell
+  groups={[
+    {
+      key: "workspace",
+      label: "Workspace",
+      items: [
+        { key: "home", label: "Overview", href: "/", icon: <HomeIcon />, exact: true },
+        { key: "inbox", label: "Inbox", href: "/inbox", icon: <InboxIcon />, badge: 3 },
+      ],
+    },
+    {
+      key: "insights",
+      label: "Insights",
+      collapsible: true,
+      items: [{ key: "reports", label: "Reports", href: "/insights/reports" }],
+    },
+  ]}
+  currentPath={pathname}
+  labels={{
+    skipToContent: "Skip to content",
+    navigation: "Main navigation",
+    menu: "Menu",
+    floatBar: "Quick navigation",
+    collapseSidebar: "Collapse sidebar",
+    expandSidebar: "Expand sidebar",
+  }}
+  brand={({ collapsed }) => <Logo compact={collapsed} />}
+  footer={<AccountLinks />}
+  search={{ label: "Search…", shortcut: "Ctrl K", onSelect: openPalette }}
+  primaryAction={{ label: "New item", icon: <PlusIcon />, onSelect: createItem }}
+>
+  <PageContent />
+</AppShell>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Links render through the
+`linkComponent` of `LufiaProvider`, so a router's client-side navigation works; pass `currentPath` from its hook.
+
+<Controls of={Stories.Desktop} />
+
+## Parts
+
+The shell is built from parts that are exported, so an app with another arrangement composes its own.
+
+| Part                                                                | What it is                                                                     |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `AppShell`                                                          | The whole frame, wired to `groups`                                             |
+| `Sidebar`, `SidebarGroup`, `SidebarItem`                            | The desktop sidebar and what goes in it                                        |
+| `ShellNavigation`                                                   | Renders `groups` data as groups and items, for the sidebar and the sheet alike |
+| `MobileFloatBar`, `MobileFloatBarButton`, `MobileFloatBarSeparator` | The floating bar and its controls                                              |
+| `NavSheet`                                                          | The modal bottom sheet with swipe-to-dismiss                                   |
+| `findActiveNavKey`                                                  | The matcher behind `currentPath`                                               |
+
+<Canvas of={SidebarStories.Composition} />
+
+### Marking the current page
+
+`currentPath` makes the item whose `href` equals it, or contains it, current. The most specific item wins, so
+`/settings/billing` is never current together with `/settings`; `exact: true` limits an item to its own path. Query strings
+and hashes are ignored. Pass `isActive` instead when your routes do not map to paths.
+
+A click on a link makes it look current at once and closes the sheet; `aria-current` stays on the real page until
+`currentPath` changes.
+
+### Groups, the rail and slots
+
+- A group with `collapsible` and a `label` is a disclosure button over its items. Groups marked `defaultOpen`, and the one
+  holding the current page, start open; arriving on a page inside a closed group opens it. Own the state with `openGroups`
+  and `onOpenGroupsChange` to persist it (a cookie, `localStorage`); the package stores nothing.
+- The rail (`collapsed`, `defaultCollapsed`, `onCollapsedChange`) shows icons only. Names stay in the DOM and a native
+  tooltip shows the label. A rail shows the items of collapsible groups too, because a closed group would hide icons.
+  `fixedSidebar` removes the rail button.
+- `brand` and `footer` take a node or a function that receives `{ collapsed }`, so a logo can shrink to its mark.
+  `topBarEnd` fills the right of the phone top bar.
+
+<Canvas of={Stories.Rail} />
+
+## Phones
+
+Below `60rem` (the `--lufia-breakpoint-medium` token) the sidebar gives way to the top bar, the floating bar and the sheet.
+The page gets bottom padding and `scroll-padding` so nothing hides under the bar.
+
+<Canvas of={Stories.Phone} />
+
+### Floating bar
+
+<Canvas of={FloatBarStories.Default} />
+
+A pill fixed above the safe area, translucent where the browser can blur (solid under `prefers-reduced-transparency`, and
+where `backdrop-filter` is missing). It holds a search entry, the page's one main action and the menu button. The search
+entry gives way first when the bar is crowded; the main action then ends in an ellipsis, and below 22.5rem it shows only
+its icon. All keep their accessible names.
+
+### Navigation sheet
+
+<Canvas of={SheetStories.Default} />
+
+`NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
+made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
+
+## Keyboard and accessibility
+
+| Key             | Where              | Action                                                         |
+| --------------- | ------------------ | -------------------------------------------------------------- |
+| Tab / Shift+Tab | Everywhere         | Moves through the skip link, the sidebar and the page in order |
+| Enter           | Link               | Follows it                                                     |
+| Enter / Space   | Button, group head | Activates it; a group head toggles `aria-expanded`             |
+| Escape          | Sheet              | Closes it; focus returns to the menu button                    |
+| Tab / Shift+Tab | Sheet              | Cycle inside the sheet; the page behind is inert               |
+
+- **Landmarks.** The page is wrapped in the only `<main>`; do not render another. A skip link to it is the first tab stop.
+  The sidebar and the sheet each hold a `<nav>` named by `labels.navigation`. The sidebar is hidden (`display: none`) below
+  the breakpoint, so a phone never sees two.
+- **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button shows the active style
+  to point at the page inside it.
+- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet; the body keeps native scrolling
+  because only the drag zone captures the gesture. Escape and the close button always work. A short drag springs back; a
+  past-threshold release or a quick flick dismisses. The offset follows the finger even under reduced motion, because it
+  is direct manipulation.
+- **Focus.** The sheet traps focus, lands it on the dialog itself (nothing is chosen for the person, and no keyboard
+  pops up on touch), and gives it back to the opener. Body scroll is locked.
+- **The floating bar is a labelled group**, not an ARIA toolbar: a toolbar promises arrow-key movement and every control
+  here is a plain tab stop.
+- **Targets** are at least 2.75rem (44px). Focus is a 2px ring. The active item has a bar on its inline-start edge besides the
+  colour, and a `Highlight` border in forced-colors mode.
+- **Motion.** The sheet rises and the backdrop fades with the `--lufia-motion-*` tokens; exits are shorter than entrances.
+  Groups use `Collapse`. Under `prefers-reduced-motion` the sheet appears and disappears at once. The sidebar width changes
+  without animation, on purpose: animating it would animate layout.
+- **Right to left.** Logical properties throughout; chevrons mirror.
+
+## Data attributes
+
+`data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-open` on an open group,
+`data-state="open|closed"` on the sheet and `data-dragging` while it is dragged. Use them to style slot content.
+
+## When to use
+
+- A signed-in application with a handful of top-level areas, on both phones and desktops.
+
+## When not to use
+
+- A marketing site (use a header), or navigation that is only a few peer views of one page (use `PeerNav`).
+
+## Content guidelines
+
+Item labels are one or two words. Put the rarely used areas in a collapsible group and the one thing the page is for in
+`primaryAction`. The search label is a verb phrase ("Search…").
+
+## All states
+
+<Canvas of={Stories.GroupOpenOnArrival} />
+<Canvas of={Stories.PhoneWithoutPrimaryAction} />
+<Canvas of={Stories.RightToLeft} />
