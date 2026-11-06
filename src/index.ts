@@ -10,6 +10,7 @@ export * from "./components/DetailList";
 export * from "./components/DetailSectionCard";
 export * from "./components/EmptyState";
 export * from "./components/IconButton";
+export * from "./components/Link";
 export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/NavRow";

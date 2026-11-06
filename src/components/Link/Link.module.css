@@ -1,0 +1,33 @@
+.root {
+  border-radius: var(--lufia-radius-xs);
+  color: var(--lufia-color-text-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.2em;
+  transition: color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.root:hover {
+  text-decoration-thickness: 0.125rem;
+}
+
+.root:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.indicator {
+  display: inline-block;
+  margin-inline-start: 0.25em;
+  vertical-align: -0.125em;
+}
+
+[dir="rtl"] .indicator {
+  transform: scaleX(-1);
+}
+
+@media (forced-colors: active) {
+  .root {
+    color: LinkText;
+  }
+}
