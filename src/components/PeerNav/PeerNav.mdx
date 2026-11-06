@@ -70,6 +70,20 @@ A mix is not offered on purpose: a tablist promises arrow keys that links do not
 
 <Canvas of={Stories.AllThemes} />
 
+### Theming hooks
+
+All optional `--lufia-peer-nav-*` custom properties, set in your theme or on the nav: `radius`, `item-radius`,
+`max-inline-size`, `label-size`, `label-size-phone`, `label-line-height`, `description-size`, `description-line-height`,
+`indicator-border`, `indicator-shadow`, `active-icon-color`, `disabled-opacity` and `focus-width`.
+
+`phoneGrid="2x2"` wraps four items into two rows of two on a phone. `onItemClick(key, event)` fires for every click on an
+enabled item, including the current one and modified clicks, while `onValueChange` reports only a real change. Calling
+`event.preventDefault()` in `onItemClick` takes over: no `onValueChange`, no indicator move, no selection (tabs) and no
+navigation (links).
+
+<Canvas of={Stories.ThemedByVariables} />
+<Canvas of={Stories.PhoneTwoByTwo} />
+
 </Section>
 
 <Section id="props">

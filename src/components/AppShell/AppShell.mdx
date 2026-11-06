@@ -138,6 +138,26 @@ made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
 <Canvas of={Stories.PhoneWithoutPrimaryAction} />
 <Canvas of={Stories.RightToLeft} />
 
+### Slots
+
+| Prop                                            | What it does                                                                                                                                           |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `topBar`, `statusRow`                           | Bars beside the sidebar, above the page, at every width (a unit picker; sync state). The page stays a direct child of the shell when both are omitted. |
+| `navigationPending`                             | A skeleton shown in place of the navigation (sidebar and sheet) while a route loads; `aria-busy` meanwhile.                                            |
+| `searchTrigger`                                 | Replaces the sidebar search entry. `search` still drives the floating bar entry and takes `shortcut` (a `kbd`), `keyShortcuts`, `opensDialog`.         |
+| `primaryAction`                                 | The default main action. A page replaces it with `useShellPrimaryAction`, and `ShellPrimaryActionSlot` shows it on wide screens.                       |
+| `menuData`, `search.data`, `primaryAction.data` | `data-*` attributes on the floating bar controls (analytics, guided tours).                                                                            |
+| `sheetAs="dialog"`                              | The phone navigation sheet as a native `<dialog>` in the top layer (see `Modal` `renderAs`).                                                           |
+
+Nav items take an `ariaLabel` when the accessible name should add to the label ("Inbox, 3 unread"). A group without a
+`label` is a plain run of items; a group with a `label` and no `collapsible` has a static heading. A page registers its
+action with `useShellPrimaryAction`: the first registration of a page keeps its place when it updates, and a newly
+mounted page takes over from the older one.
+
+<Canvas of={Stories.TopBarAndStatusRow} />
+<Canvas of={Stories.RegisteredPrimaryAction} />
+<Canvas of={Stories.NavigationPending} />
+
 </Section>
 
 <Section id="props">
