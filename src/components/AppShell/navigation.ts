@@ -30,7 +30,13 @@ export type ShellNavGroup = {
   defaultOpen?: boolean;
 };
 
-const pathOf = (href: string) => (href.split(/[?#]/)[0] ?? "").replace(/(.)\/+$/, "$1");
+// Trailing slashes are trimmed with a loop, not a regex, so a long run of "/" can't cause backtracking.
+const pathOf = (href: string) => {
+  const path = href.split(/[?#]/)[0] ?? "";
+  let end = path.length;
+  while (end > 1 && path[end - 1] === "/") end -= 1;
+  return path.slice(0, end);
+};
 
 /**
  * The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the
