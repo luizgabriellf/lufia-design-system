@@ -69,15 +69,23 @@ export function RadioGroup({
   const baseId = id ?? `radiogroup-${generated.replace(/:/g, "")}`;
   const labelId = `${baseId}-label`;
   const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);
-  const [missing, setMissing] = useState<string | null>(null);
+  const [missing, setMissing] = useState<{ message: string; count: number } | null>(null);
   const hintId = hint ? `${baseId}-hint` : undefined;
   // A refused submission shows its message as an error until something is chosen.
-  const shownError = error ?? (missing && !value ? missing : null);
+  const shownError = error ?? (missing && !value ? missing.message : null);
   const errorId = shownError ? `${baseId}-error` : undefined;
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
-  const keys = useRadioKeys(items, value, setValue);
+  // Choosing something settles a refused submission.
+  const choose = (next: string) => {
+    setMissing(null);
+    setValue(next);
+  };
+  const keys = useRadioKeys(items, value, choose);
   const root = useRef<HTMLDivElement>(null);
-  useFormReset(root, () => setValue(defaultValue));
+  useFormReset(root, () => {
+    setMissing(null);
+    setValue(defaultValue);
+  });
 
   return (
     <div
@@ -133,7 +141,7 @@ export function RadioGroup({
               disabled={isDisabled}
               tabIndex={option.value === keys.tabbable ? 0 : -1}
               className={styles.option}
-              onClick={() => setValue(option.value)}
+              onClick={() => choose(option.value)}
             >
               <span className={styles.circle} aria-hidden="true" />
               <span className={styles.text}>
@@ -165,19 +173,34 @@ export function RadioGroup({
           value={value}
           onChange={() => {}}
           onInvalid={(event) => {
-            // The browser would point its bubble at an invisible field. Show the message on the group instead, and put
-            // focus where the person chooses: the chosen radio, or the first one that can be.
+            // The browser would point its bubble at an invisible field. Show the message on the group instead.
             event.preventDefault();
-            setMissing(
-              requiredMessage ??
-                (event.currentTarget.validationMessage || "Please select one of these options."),
-            );
-            root.current?.querySelector<HTMLElement>(`[data-radio-index][tabindex="0"]`)?.focus();
+            const mirror = event.currentTarget;
+            const message =
+              requiredMessage ?? (mirror.validationMessage || "Please select one of these options.");
+            setMissing((previous) => ({ message, count: (previous?.count ?? 0) + 1 }));
+            // `checkValidity()` fires this too and must stay silent, so focus moves only on a real attempt: this is the
+            // first invalid control, and focus is not in another field (it is on the page, the form or a submit control).
+            const form = mirror.form;
+            const active = document.activeElement;
+            const idle =
+              !active ||
+              active === document.body ||
+              active === form ||
+              (active instanceof HTMLElement &&
+                active.matches('button, input[type="submit"], input[type="image"]'));
+            if (form?.querySelector(":invalid") === mirror && idle) {
+              root.current?.querySelector<HTMLElement>('[data-radio-index][tabindex="0"]')?.focus();
+            }
           }}
         />
       ) : null}
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
-      {shownError ? <FieldError id={errorId}>{shownError}</FieldError> : null}
+      {shownError ? (
+        <FieldError key={missing?.count ?? 0} id={errorId}>
+          {shownError}
+        </FieldError>
+      ) : null}
     </div>
   );
 }
