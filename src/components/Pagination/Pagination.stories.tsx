@@ -31,6 +31,7 @@ const meta = {
   component: Pagination,
   parameters: { layout: "padded" },
   args: { page: 3, totalPages: 12, total: 118, labels, onPageChange: () => {} },
+  argTypes: { variant: { control: "inline-radio", options: ["default", "compact"] } },
   render: (args) => <Stateful {...args} />,
   decorators: [
     (Story) => (
@@ -51,6 +52,21 @@ export const FewPages: Story = { args: { page: 2, totalPages: 4, total: 36 } };
 export const ManyPages: Story = { args: { page: 250, totalPages: 500, total: 4990 } };
 export const WithoutTotal: Story = { args: { total: undefined } };
 export const MoreSiblings: Story = { args: { page: 10, totalPages: 30, siblingCount: 2 } };
+/** Previous and next only, with the status line: for tables where the position matters more than a page number. */
+export const Compact: Story = { args: { variant: "compact" } };
+export const CompactLinks: Story = { args: { variant: "compact", hrefFor: (page) => `#page-${page}` } };
+/** The app supplies the control look through `buttonClassName`; the built-in look is left out. */
+export const CustomButtonClass: Story = {
+  args: { variant: "compact", buttonClassName: "demo-button" },
+  decorators: [
+    (Story) => (
+      <>
+        <style>{`.demo-button{font:inherit;padding:.25rem .75rem;border-radius:var(--lufia-radius-control);border:1px solid var(--lufia-color-border-strong);background:transparent;color:var(--lufia-color-text-default);text-decoration:none;cursor:pointer}`}</style>
+        <Story />
+      </>
+    ),
+  ],
+};
 /** Real links: pages can be opened in a new tab. `onPageChange` still fires on a plain click. */
 export const AsLinks: Story = {
   args: { hrefFor: (page) => `#page-${page}` },

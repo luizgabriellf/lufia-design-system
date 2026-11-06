@@ -13,6 +13,8 @@
 }
 
 .sidebarSlot {
+  grid-column: 1;
+  grid-row: 1 / span 3;
   position: sticky;
   inset-block-start: 0;
   align-self: start;
@@ -21,7 +23,15 @@
   border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
 
+/* The optional bars and the page share the column beside the sidebar; the sidebar spans the rows they fill. */
+.contextBar,
+.statusRow {
+  grid-column: 2;
+  min-inline-size: 0;
+}
+
 .main {
+  grid-column: 2;
   min-inline-size: 0;
   padding: var(--lufia-space-8);
 }
@@ -101,6 +111,11 @@
   color: var(--lufia-color-text-subtle);
 }
 
+/* Wide screens only: the floating bar carries the primary action on phones. */
+.primarySlot {
+  flex: none;
+}
+
 .sheetNav {
   display: flex;
   flex-direction: column;
@@ -140,6 +155,10 @@
 
   .float {
     display: flex;
+  }
+
+  .primarySlot {
+    display: none;
   }
 
   .main {

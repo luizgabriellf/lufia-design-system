@@ -1,11 +1,20 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
+import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { NavSheet } from "./NavSheet";
 
-function Harness({ swipe = true, initial = false }: { swipe?: boolean; initial?: boolean }) {
+function Harness({
+  swipe = true,
+  initial = false,
+  renderAs,
+}: {
+  swipe?: boolean;
+  initial?: boolean;
+  renderAs?: "portal" | "dialog";
+}) {
   const [open, setOpen] = useState(initial);
   return (
     <>
@@ -13,7 +22,14 @@ function Harness({ swipe = true, initial = false }: { swipe?: boolean; initial?:
         Open menu
       </button>
       <p>Page content</p>
-      <NavSheet open={open} onOpenChange={setOpen} label="Menu" header={<b>Brand</b>} swipeToDismiss={swipe}>
+      <NavSheet
+        open={open}
+        onOpenChange={setOpen}
+        label="Menu"
+        header={<b>Brand</b>}
+        swipeToDismiss={swipe}
+        renderAs={renderAs}
+      >
         <a href="/one">One</a>
         <a href="/two">Two</a>
       </NavSheet>
@@ -213,5 +229,77 @@ describe("NavSheet", () => {
   it("has no axe violations open", async () => {
     render(<Harness initial />);
     expect(await axe(document.body)).toHaveNoViolations();
+  });
+});
+
+describe('NavSheet renderAs="dialog"', () => {
+  let dialogMock: ReturnType<typeof mockDialog>;
+  beforeEach(() => {
+    mockReducedMotion(true);
+    dialogMock = mockDialog();
+  });
+  afterEach(() => {
+    cleanup();
+    dialogMock.restore();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("renders a native dialog opened with showModal, and nothing while closed", async () => {
+    render(<Harness renderAs="dialog" />);
+    expect(sheet()).toBeNull();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Open menu" }));
+    const dialog = sheet()!;
+    expect(dialog.tagName).toBe("DIALOG");
+    expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+    expect(dialog).toHaveFocus();
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+  });
+
+  it("closes on Escape and the close button, returning focus, and does not inert the page itself", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Harness renderAs="dialog" />);
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+    expect(container).not.toHaveAttribute("inert");
+    await user.keyboard("{Escape}");
+    expect(sheet()).toBeNull();
+    expect(screen.getByRole("button", { name: "Open menu" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(sheet()).toBeNull();
+  });
+
+  it("closes from the native backdrop (a press outside the panel) and from a cancel event", async () => {
+    const user = userEvent.setup();
+    render(<Harness renderAs="dialog" />);
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+    // jsdom has no layout: the panel box is all zeros, so any positive coordinate is outside it.
+    fireEvent.pointerDown(sheet()!, { clientX: 9, clientY: 9 });
+    fireEvent.click(sheet()!, { clientX: 9, clientY: 9 });
+    await waitFor(() => expect(sheet()).toBeNull());
+
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+    const cancel = new Event("cancel", { cancelable: true });
+    act(() => void sheet()!.dispatchEvent(cancel));
+    expect(cancel.defaultPrevented).toBe(true);
+    await waitFor(() => expect(sheet()).toBeNull());
+  });
+
+  it("keeps swipe to dismiss", async () => {
+    render(<Harness renderAs="dialog" initial />);
+    const grabber = document.querySelector<HTMLElement>("[data-swipe]")!;
+    fireEvent.pointerDown(grabber, { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+    fireEvent.pointerMove(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    expect(sheet()).toHaveAttribute("data-dragging", "true");
+    act(() => {
+      fireEvent.pointerUp(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    });
+    await waitFor(() => expect(sheet()).toBeNull());
+  });
+
+  it("has no axe violations open", async () => {
+    render(<Harness renderAs="dialog" initial />);
+    // The browser makes the page behind inert; jsdom does not, so check the dialog alone.
+    expect(await axe(sheet()!)).toHaveNoViolations();
   });
 });

@@ -11,6 +11,11 @@ export type ShellNavItem = {
   /** Short mark after the label, such as an unread count. */
   badge?: ReactNode;
   disabled?: boolean;
+  /**
+   * Accessible name when it should differ from the visible label ("Inbox, 3 unread"). Keep the visible label in it so
+   * speech-control users can say what they see (WCAG 2.5.3).
+   */
+  ariaLabel?: string;
   /** With `currentPath`, match this path only and not the pages under it. */
   exact?: boolean;
   /** Called when the item is chosen (before navigation for links). */

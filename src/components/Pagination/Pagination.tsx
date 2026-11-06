@@ -32,6 +32,16 @@ export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   /** Page numbers shown on each side of the current one. Default 1. */
   siblingCount?: number;
   labels: PaginationLabels;
+  /**
+   * `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is
+   * previous and next only, with the status line; the status line then carries the position at every width.
+   */
+  variant?: "default" | "compact";
+  /**
+   * A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the
+   * built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it.
+   */
+  buttonClassName?: string;
 };
 
 type Entry = number | "start-gap" | "end-gap";
@@ -67,13 +77,18 @@ export function Pagination({
   hrefFor,
   siblingCount = 1,
   labels,
+  variant = "default",
+  buttonClassName,
   className,
   ...rest
 }: PaginationProps) {
   const { linkComponent: Link } = useLufia();
   const last = Math.max(1, Math.floor(totalPages));
   const current = Math.min(Math.max(1, Math.floor(page)), last);
-  const entries = pageEntries(current, last, Math.max(0, Math.floor(siblingCount)));
+  const compact = variant === "compact";
+  const entries = compact ? [] : pageEntries(current, last, Math.max(0, Math.floor(siblingCount)));
+  const controlClass = (extra: string) =>
+    [buttonClassName ? styles.bare : styles.control, extra, buttonClassName].filter(Boolean).join(" ");
 
   const control = (
     target: number,
@@ -107,14 +122,19 @@ export function Pagination({
   };
 
   return (
-    <nav {...rest} className={[styles.root, className].filter(Boolean).join(" ")} aria-label={labels.nav}>
+    <nav
+      {...rest}
+      className={[styles.root, className].filter(Boolean).join(" ")}
+      aria-label={labels.nav}
+      data-variant={variant}
+    >
       <p className={styles.summary} aria-live="polite" aria-atomic="true">
         {labels.summary(current, last, total)}
       </p>
       <ul className={styles.list}>
         <li>
           {control(current - 1, current > 1, labels.previous, {
-            className: `${styles.control} ${styles.step}`,
+            className: controlClass(styles.step!),
           })}
         </li>
         {entries.map((entry) =>
@@ -123,7 +143,7 @@ export function Pagination({
               {control(entry, true, entry, {
                 "aria-label": labels.page(entry),
                 current: entry === current,
-                className: `${styles.control} ${styles.page}`,
+                className: controlClass(styles.page!),
               })}
             </li>
           ) : (
@@ -134,7 +154,7 @@ export function Pagination({
         )}
         <li>
           {control(current + 1, current < last, labels.next, {
-            className: `${styles.control} ${styles.step}`,
+            className: controlClass(styles.step!),
           })}
         </li>
       </ul>

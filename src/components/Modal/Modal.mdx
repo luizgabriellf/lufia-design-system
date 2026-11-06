@@ -79,6 +79,51 @@ Each cell opens its own modal inside itself. Use the Theme and Mode toolbar to s
 
 <Canvas of={Stories.AllThemes} />
 
+### Theming hooks
+
+Set these `--lufia-modal-*` custom properties in your theme, or on the panel through `style` or `className`, to reshape
+the modal without forking it. All are optional and the defaults are unchanged.
+
+| Property                                                                                     | Controls                                          |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `--lufia-modal-radius`                                                                       | Panel corner radius                               |
+| `--lufia-modal-header-padding`, `--lufia-modal-body-padding`, `--lufia-modal-footer-padding` | Padding of each part (a `padding` shorthand)      |
+| `--lufia-modal-title-size`                                                                   | Title font size                                   |
+| `--lufia-modal-close-size`                                                                   | Close button width and height                     |
+| `--lufia-modal-backdrop`                                                                     | Backdrop colour                                   |
+| `--lufia-modal-sheet-offset`, `--lufia-modal-sheet-radius`                                   | Phone sheet gap to the screen edge, corner radius |
+| `--lufia-modal-scroll-shadow`                                                                | Edge shadow colour of `scrollShadow`              |
+
+`size` also takes any CSS length (`size="62rem"`). `sheetPlacement="top"` hangs the phone sheet from the offset instead of
+rising from the bottom, `titleWrap="ellipsis"` keeps the title on one line, and `scrollShadow` scrolls the body between a
+fixed header and footer with an edge shadow.
+
+<Canvas of={Stories.ThemedByVariables} />
+<Canvas of={Stories.ScrollShadow} />
+
+### Keep mounted and the native top layer
+
+`keepMounted` keeps the children mounted while the modal is closed (hidden and inert), so typed input and component state
+survive a close and reopen. A kept-mounted modal has no exit animation.
+
+`renderAs="dialog"` renders a native `<dialog>` opened with `showModal()`, so it sits in the browser's top layer above every
+fixed layer. Focus containment, Escape, scroll lock and the shared layer stack work as in portal mode.
+
+| Contract              | `portal` (default)                                         | `dialog`                                                                            |
+| --------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Stacking              | `z-index` layer in a portal                                | Browser top layer                                                                   |
+| Page behind           | Made `inert` by the package                                | Made inert by the browser                                                           |
+| Backdrop              | A fixed element                                            | The native `::backdrop`                                                             |
+| Exit                  | Animated                                                   | Immediate                                                                           |
+| Closed by the browser | Not applicable                                             | The `close` and `cancel` events become `onClose`; refused while `busy`              |
+| Nesting               | Opened over a native dialog, it renders inside that dialog | A portal `Modal` or `ConfirmDialog` opened from it lives inside it and stays usable |
+
+A portal modal opened while a native modal dialog is open renders inside that dialog automatically (unless you pass
+`container`), and the dialog itself is not made inert. Escape closes the inner layer first.
+
+<Canvas of={Stories.NativeTopLayer} />
+<Canvas of={Stories.KeepMounted} />
+
 </Section>
 
 <Section id="props">

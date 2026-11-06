@@ -41,6 +41,26 @@
   animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) both;
 }
 
+/* A native dialog sits in the top layer, so it positions itself against the viewport and the browser draws the backdrop. */
+.native {
+  position: fixed;
+  inset-block: auto 0;
+  inset-inline: 0;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin: 0;
+  padding: 0;
+}
+
+.native:not([open]) {
+  display: none;
+}
+
+.native::backdrop {
+  background: color-mix(in srgb, var(--lufia-color-bg-canvas) 55%, transparent);
+  animation: backdrop-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
 .panel:focus {
   outline: var(--lufia-border-width-thick) solid transparent;
 }
@@ -148,7 +168,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .panel,
-  .backdrop {
+  .backdrop,
+  .native::backdrop {
     animation: none;
   }
 

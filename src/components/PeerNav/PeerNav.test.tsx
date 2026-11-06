@@ -144,3 +144,112 @@ describe("PeerNav as tabs", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("PeerNav onItemClick", () => {
+  it("fires for the current item and for modified clicks, which onValueChange ignores", async () => {
+    const user = userEvent.setup();
+    const onItemClick = vi.fn();
+    const onValueChange = vi.fn();
+    render(
+      <PeerNav
+        label="Views"
+        items={links}
+        value="a"
+        onItemClick={onItemClick}
+        onValueChange={onValueChange}
+      />,
+    );
+    await user.click(screen.getByRole("link", { name: /Overview/ }));
+    expect(onItemClick).toHaveBeenLastCalledWith("a", expect.anything());
+    await user.keyboard("{Control>}");
+    await user.click(screen.getByRole("link", { name: /Work/ }));
+    await user.keyboard("{/Control}");
+    expect(onItemClick).toHaveBeenLastCalledWith("b", expect.anything());
+    expect(onItemClick).toHaveBeenCalledTimes(2);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("takes over for links: a prevented click skips onValueChange and the pending state", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <PeerNav
+        label="Views"
+        items={links}
+        value="a"
+        onValueChange={onValueChange}
+        onItemClick={(_, event) => event.preventDefault()}
+      />,
+    );
+    await user.click(screen.getByRole("link", { name: /Work/ }));
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("takes over for tabs: a prevented click selects nothing", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <PeerNav
+        label="Views"
+        items={tabs}
+        defaultValue="a"
+        onValueChange={onValueChange}
+        onItemClick={(_, event) => event.preventDefault()}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: /Work/ }));
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("tab", { name: /Work/ })).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("does not fire for a disabled item", async () => {
+    const user = userEvent.setup();
+    const onItemClick = vi.fn();
+    render(<PeerNav label="Views" items={links} value="a" onItemClick={onItemClick} />);
+    await user.click(screen.getByRole("link", { name: /People/ }));
+    expect(onItemClick).not.toHaveBeenCalled();
+  });
+
+  it("lets the handler take over: a prevented click does not move the indicator", async () => {
+    const user = userEvent.setup();
+    render(
+      <PeerNav label="Views" items={links} value="a" onItemClick={(_, event) => event.preventDefault()} />,
+    );
+    const work = screen.getByRole("link", { name: /Work/ });
+    await user.click(work);
+    expect(work).not.toHaveAttribute("data-active");
+  });
+
+  it("fires for tabs before the selection changes", async () => {
+    const user = userEvent.setup();
+    const calls: string[] = [];
+    render(
+      <PeerNav
+        label="Views"
+        items={tabs}
+        defaultValue="a"
+        onItemClick={(key) => calls.push(`click:${key}`)}
+        onValueChange={(key) => calls.push(`change:${key}`)}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: /Work/ }));
+    await user.click(screen.getByRole("tab", { name: /Work/ }));
+    expect(calls).toEqual(["click:b", "change:b", "click:b", "change:b"]);
+  });
+});
+
+describe("PeerNav phoneGrid", () => {
+  it("marks four fitting items for the 2x2 phone grid", () => {
+    render(<PeerNav label="Views" items={links} phoneGrid="2x2" />);
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-phone-grid", "2x2");
+  });
+
+  it("leaves other counts, scrolling navs and the default alone", () => {
+    const { rerender } = render(<PeerNav label="Views" items={links.slice(0, 3)} phoneGrid="2x2" />);
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-phone-grid");
+    rerender(<PeerNav label="Views" items={links} phoneGrid="2x2" layout="scroll" />);
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-phone-grid");
+    rerender(<PeerNav label="Views" items={links} />);
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-phone-grid");
+  });
+});

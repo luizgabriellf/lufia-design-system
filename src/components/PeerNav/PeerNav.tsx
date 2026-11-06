@@ -47,6 +47,18 @@ export type PeerNavProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onCha
    * edge that hides more. `"auto"` (default) scrolls from five items.
    */
   layout?: "auto" | "fit" | "scroll";
+  /**
+   * Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button)
+   * included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change.
+   * Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not
+   * followed and a tab is not selected. Links and tabs.
+   */
+  onItemClick?: (key: string, event: MouseEvent<HTMLElement>) => void;
+  /**
+   * What four items do on a phone (narrower than 35rem, `fit` layout). `"row"` (default) keeps them in one row with the icon
+   * above the label; `"2x2"` wraps them into two rows of two so each label keeps its width.
+   */
+  phoneGrid?: "row" | "2x2";
 };
 
 const SCROLL_FROM = 5;
@@ -70,6 +82,8 @@ export function PeerNav({
   defaultValue,
   onValueChange,
   layout = "auto",
+  onItemClick,
+  phoneGrid = "row",
   className,
   id,
   ...rest
@@ -135,6 +149,7 @@ export function PeerNav({
     ref: navRef,
     className: [styles.root, className].filter(Boolean).join(" "),
     "data-layout": scrolls ? "scroll" : "fit",
+    "data-phone-grid": phoneGrid === "2x2" && !scrolls && items.length === 4 ? "2x2" : undefined,
     "data-mode": asLinks ? "links" : "tabs",
   };
   const mark = <span ref={indicator} className={styles.indicator} hidden aria-hidden="true" />;
@@ -159,6 +174,8 @@ export function PeerNav({
                   event.preventDefault();
                   return;
                 }
+                onItemClick?.(item.key, event);
+                if (event.defaultPrevented) return;
                 if (isCurrent || !isPlainClick(event)) return;
                 onValueChange?.(item.key, event);
                 if (!event.defaultPrevented) setPending({ key: item.key, from: current });
@@ -217,7 +234,10 @@ export function PeerNav({
             aria-controls={item.controls}
             disabled={item.disabled}
             tabIndex={item.key === tabbable ? 0 : -1}
-            onClick={() => select(item.key)}
+            onClick={(event) => {
+              onItemClick?.(item.key, event);
+              if (!event.defaultPrevented) select(item.key);
+            }}
           >
             {content(item)}
           </button>

@@ -65,6 +65,19 @@ runs, for commands that show their answer inside.
 <Canvas of={Stories.SingleGroup} />
 <Canvas of={Stories.LongText} />
 
+### Sections, answers and Escape
+
+- `groupOrder` fixes the order of the section headings; other groups follow in order of first use.
+- `bodyOverride` replaces the results with your own content (an answer to the query). While it is set the field is not a
+  listbox and the arrow keys and Enter do nothing. A function gets `{ query }`.
+- `onEscape` runs before Escape closes the palette. Return `true` after leaving a sub-mode (clearing the answer) and the
+  palette stays open; the next Escape closes it.
+- `loading` marks the results `aria-busy` and holds the empty message back until a server search answers. Pair it with
+  `onQueryChange` and `filter={() => true}`.
+
+<Canvas of={Stories.AnswerReplacesResults} />
+<Canvas of={Stories.ServerSideSearch} />
+
 </Section>
 
 <Section id="accessibility">

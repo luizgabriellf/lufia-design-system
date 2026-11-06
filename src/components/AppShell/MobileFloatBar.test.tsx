@@ -58,4 +58,17 @@ describe("MobileFloatBar", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("passes data-* attributes to a button and to a link", () => {
+    render(
+      <MobileFloatBar label="Bar">
+        <MobileFloatBarButton label="Search" data-tour="search" />
+        <MobileFloatBarButton variant="primary" label="New item" href="/new" data-tour="primary" data-x="1" />
+      </MobileFloatBar>,
+    );
+    expect(screen.getByRole("button", { name: "Search" })).toHaveAttribute("data-tour", "search");
+    const link = screen.getByRole("link", { name: "New item" });
+    expect(link).toHaveAttribute("data-tour", "primary");
+    expect(link).toHaveAttribute("data-x", "1");
+  });
 });

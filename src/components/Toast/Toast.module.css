@@ -1,3 +1,17 @@
+/* Theming hooks, set in the consuming theme: --lufia-toast-icon-size, --lufia-toast-radius, --lufia-toast-border-width
+   (the tone stripe) and --lufia-toast-offset-block. */
+
+/* The announcer holds a copy of each message for screen readers only. */
+.announcer {
+  position: fixed;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* The viewport is a fixed corner. Clicks pass through everything but the toasts themselves. */
 .viewport {
   --toast-enter-y: var(--lufia-motion-distance-slide);
@@ -56,8 +70,8 @@
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-surface-solid);
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
-  border-inline-start: 0.25rem solid var(--toast-tone);
-  border-radius: var(--lufia-radius-card);
+  border-inline-start: var(--lufia-toast-border-width, 0.25rem) solid var(--toast-tone);
+  border-radius: var(--lufia-toast-radius, var(--lufia-radius-card));
   box-shadow: var(--lufia-shadow-md);
   font-size: var(--lufia-font-size-md);
   line-height: var(--lufia-font-line-height-normal);
@@ -87,6 +101,10 @@
   --toast-tone-bg: var(--lufia-color-status-danger-bg);
 }
 
+.item[data-moved][data-state="open"] {
+  animation: none;
+}
+
 .item[data-state="leaving"] {
   animation: toast-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
   pointer-events: none;
@@ -96,8 +114,8 @@
   display: grid;
   place-items: center;
   flex: none;
-  inline-size: 1.5rem;
-  block-size: 1.5rem;
+  inline-size: var(--lufia-toast-icon-size, 1.5rem);
+  block-size: var(--lufia-toast-icon-size, 1.5rem);
   color: var(--toast-tone);
   background: var(--toast-tone-bg);
   border-radius: var(--lufia-radius-full);
