@@ -8,3 +8,6 @@ export const SECTIONS = {
 } as const;
 
 export type SectionId = keyof typeof SECTIONS;
+
+/** DOM id of a section. Prefixed so it cannot collide with the id Storybook gives a heading of the same name. */
+export const sectionDomId = (id: SectionId) => `section-${id}`;

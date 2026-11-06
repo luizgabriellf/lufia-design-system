@@ -145,17 +145,30 @@
   padding: 2rem 1.5rem;
 }
 
-/* Prose tables (key, action, API): the same look as the token tables. */
-.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) {
-  inline-size: 100%;
+/* Prose tables (key, action, API) live in a scroll box (see ProseTable.tsx): a wide table scrolls inside its own frame
+   and never widens the page. The frame is a focusable region so the keyboard can scroll it. */
+.sbdocs .sbdocs-content .lufia-prose-table {
+  max-inline-size: 100%;
   margin-block: 1rem;
-  overflow: hidden;
-  font-size: var(--lufia-font-size-sm);
-  border-collapse: separate;
-  border-spacing: 0;
+  overflow-x: auto;
   background: var(--lufia-color-bg-surface-solid);
   border: 1px solid var(--lufia-color-border-subtle);
   border-radius: var(--lufia-radius-card);
+}
+
+.sbdocs .sbdocs-content .lufia-prose-table:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) {
+  inline-size: 100%;
+  margin: 0;
+  font-size: var(--lufia-font-size-sm);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: none;
+  border: 0;
 }
 
 .sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) :is(th, td) {
@@ -247,10 +260,10 @@
   display: contents;
 }
 
-/* Code in table cells stays on one line; a name like "secondary" must not break mid-word on a phone. */
+/* Long code in a cell wraps instead of widening the table; very wide tables still scroll in their frame. */
 .sbdocs .sbdocs-content table:not(.docblock-argstable) code {
-  overflow-wrap: normal;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 /* MDX wraps a fenced block in <pre> around Storybook's own source box; only the inner box is drawn. */
@@ -265,4 +278,10 @@
 .sbdocs .sbdocs-content .docblock-source {
   margin-block: 1.25rem;
   overflow: hidden;
+}
+
+/* Boolean controls in the props table: Storybook draws the False and True labels in a fixed grey that misses AA on the
+   raised surface; use the token that is verified for it in every theme and mode. */
+.sbdocs .docblock-argstable label[for^="control-"] > span[aria-hidden="true"] {
+  color: var(--lufia-color-text-default);
 }

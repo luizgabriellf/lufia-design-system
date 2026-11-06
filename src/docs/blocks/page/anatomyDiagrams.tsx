@@ -16,7 +16,7 @@ const noop = () => {};
 const BUTTON_PARTS: AnatomyPart[] = [
   {
     label: "Container",
-    note: "A native button, or a link when href is set. Minimum target of 2rem, 2.75rem on coarse pointers.",
+    note: "A native button, or a link when href is set. Height runs from 2rem (sm) to 3rem (lg), and at least 2.75rem on coarse pointers.",
     x: 50,
     y: 0,
   },
@@ -125,14 +125,14 @@ export function CardAnatomy() {
 const MODAL_PARTS: AnatomyPart[] = [
   {
     label: "Backdrop",
-    note: "Dims the page and blocks it from pointer input; a press on it can dismiss, depending on the policy.",
+    note: "Dims the page and blocks it from pointer input; a press that begins on it dismisses unless closeOnOutsideClick is off.",
     x: 3,
     y: 10,
     side: "start",
   },
   {
     label: "Dialog",
-    note: "role=dialog with aria-modal and a name from the title. Focus is trapped inside.",
+    note: "role=dialog (alertdialog on request) with aria-modal, named by the title. Focus is contained, and starts on the container unless initialFocus says otherwise.",
     x: 50,
     y: 20,
     side: "top",
@@ -146,21 +146,21 @@ const MODAL_PARTS: AnatomyPart[] = [
   },
   {
     label: "Close button",
-    note: "Always present unless the dialog is busy. Its name is an aria-only label.",
+    note: "Shown unless hideCloseButton is set, and disabled while busy. Its name is an aria-only label.",
     x: 84,
     y: 30,
     side: "top",
   },
   {
     label: "Body",
-    note: "Scrolls inside the dialog when it is taller than the viewport.",
+    note: "Holds the optional description and the content. It scrolls inside the dialog when it is taller than the viewport.",
     x: 62,
     y: 44,
     side: "end",
   },
   {
     label: "Footer actions",
-    note: "One primary action, and a way out. Focus lands on the least destructive one.",
+    note: "An optional slot for the actions. Put the primary one last; ConfirmDialog focuses Cancel when it is destructive.",
     x: 81,
     y: 74,
     side: "bottom",
@@ -197,7 +197,7 @@ export function ModalAnatomy() {
 const TOAST_PARTS: AnatomyPart[] = [
   {
     label: "Region",
-    note: "A polite live region that holds the stack; it exists before the first toast, so the message is announced.",
+    note: "A named region that holds the stack. Its two lists stay mounted while empty: errors go to an assertive live region, every other tone to a polite one.",
     x: 50,
     y: 0,
     side: "top",
@@ -212,12 +212,18 @@ const TOAST_PARTS: AnatomyPart[] = [
   { label: "Message", note: "One short sentence that says what happened.", x: 40, y: 100, side: "bottom" },
   {
     label: "Action",
-    note: "Optional, for example Undo. The toast pauses while it is focused.",
+    note: "Optional, for example Undo. Pressing it runs the callback and dismisses the toast. Hover or focus pauses the timer.",
     x: 76,
     y: 50,
     side: "bottom",
   },
-  { label: "Dismiss", note: "A close button with an aria-only label.", x: 96, y: 50, side: "end" },
+  {
+    label: "Dismiss",
+    note: "A close button named by the aria-only dismiss label. Escape dismisses the focused toast too.",
+    x: 96,
+    y: 50,
+    side: "end",
+  },
 ];
 
 export function ToastAnatomy() {
@@ -242,29 +248,29 @@ export function ToastAnatomy() {
 const COMBOBOX_PARTS: AnatomyPart[] = [
   {
     label: "Input",
-    note: "role=combobox. Typing filters; the value is the chosen option, not the text.",
+    note: "role=combobox. Typing filters; the value is the chosen option, not the text. A clear button appears once an option is chosen, and Escape clears too when the list is closed.",
     x: 30,
     y: 0,
     side: "top",
   },
   {
-    label: "Clear button",
-    note: "Optional. Escape clears too, when the list is closed.",
+    label: "Toggle button",
+    note: "Opens and closes the list, and carries aria-expanded.",
     x: 92,
     y: 12,
     side: "top",
   },
   {
     label: "Listbox",
-    note: "Opens below the input; aria-activedescendant tracks the highlighted option while focus stays in the input.",
+    note: "Opens below the input. aria-activedescendant tracks the highlighted option while DOM focus stays in the input.",
     x: 100,
     y: 62,
     side: "end",
   },
   { label: "Option", note: "role=option; the chosen one is aria-selected.", x: 2, y: 56, side: "start" },
   {
-    label: "Status line",
-    note: "Loading, empty and result counts are announced in a live region.",
+    label: "Live status",
+    note: "A visually hidden role=status region announces the result count, and the loading and empty texts.",
     x: 50,
     y: 100,
     side: "bottom",
@@ -279,7 +285,6 @@ export function ComboboxAnatomy() {
           aria-label="Country"
           options={[]}
           defaultValue={null}
-          clearable
           readOnly
           placeholder="Search countries"
           loadingLabel="Loading"
@@ -290,7 +295,6 @@ export function ComboboxAnatomy() {
           <li data-active>Poland</li>
           <li>Panama</li>
         </ul>
-        <span className={styles.status}>3 results</span>
       </div>
     </Anatomy>
   );
@@ -299,35 +303,35 @@ export function ComboboxAnatomy() {
 const SHELL_PARTS: AnatomyPart[] = [
   {
     label: "Skip link",
-    note: "The first tab stop. It jumps past the navigation to the content.",
+    note: "The first tab stop; visible only while focused. It jumps past the navigation to the main landmark.",
     x: 3,
     y: 3,
     side: "top",
   },
   {
     label: "Sidebar",
-    note: "Grouped navigation. It collapses to a rail, and becomes a sheet on phones.",
+    note: "Brand, search entry, grouped navigation and footer. It collapses to a rail; on phones it gives way to a top bar, a floating bar and a navigation sheet.",
     x: 0,
-    y: 55,
+    y: 70,
+    side: "start",
+  },
+  {
+    label: "Search entry",
+    note: "Opens your search or command palette. In the rail it keeps its label as the accessible name.",
+    x: 22,
+    y: 24,
     side: "start",
   },
   {
     label: "Nav item",
-    note: "A link with aria-current=page on the active route; a badge is read with its label.",
+    note: "A link; the one for the current path gets aria-current=page. A badge is part of the link's text.",
     x: 22,
-    y: 33,
-    side: "start",
-  },
-  {
-    label: "Top bar",
-    note: "Page-level slots such as search and the account menu.",
-    x: 62,
-    y: 6,
-    side: "top",
+    y: 38,
+    side: "bottom",
   },
   {
     label: "Main",
-    note: "The one main landmark. Pages put their PageHeader and content here.",
+    note: "The page's one main landmark. Pages put their PageHeader and content here.",
     x: 100,
     y: 62,
     side: "end",
@@ -341,27 +345,23 @@ export function AppShellAnatomy() {
         <span className={styles.skip}>Skip to content</span>
         <aside className={styles.shellSide}>
           <span className={styles.brand} />
+          <span className={styles.search}>
+            <SearchIcon size={14} /> Search
+          </span>
           <span className={styles.navItem} data-current>
             <HomeIcon size={14} /> Overview
           </span>
           <span className={styles.navItem}>
-            <InboxIcon size={14} /> Inbox
+            <InboxIcon size={14} /> Inbox <span className={styles.count}>3</span>
           </span>
           <span className={styles.navItem}>
             <SettingsIcon size={14} /> Settings
           </span>
         </aside>
-        <div className={styles.shellMain}>
-          <div className={styles.shellTop}>
-            <span className={styles.search}>
-              <SearchIcon size={14} /> Search
-            </span>
-          </div>
-          <div className={styles.shellContent}>
-            <span className={styles.bar} data-title />
-            <span className={styles.bar} />
-            <span className={styles.bar} data-short />
-          </div>
+        <div className={styles.shellContent}>
+          <span className={styles.bar} data-title />
+          <span className={styles.bar} />
+          <span className={styles.bar} data-short />
         </div>
       </div>
     </Anatomy>

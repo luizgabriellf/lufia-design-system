@@ -1,6 +1,6 @@
 import { Unstyled } from "@storybook/addon-docs/blocks";
 import { useEffect, useState } from "react";
-import { SECTIONS, type SectionId } from "./sections";
+import { SECTIONS, sectionDomId, type SectionId } from "./sections";
 import styles from "./DocPage.module.css";
 
 /** Sticky anchor tabs. The one whose section is in view is marked `aria-current="location"`. */
@@ -15,12 +15,15 @@ export function DocTabs({ name, sections }: { name: string; sections: SectionId[
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (visible) setActive(visible.target.id as SectionId);
+        if (visible)
+          setActive(
+            sections.find((id) => sectionDomId(id) === visible.target.id) ?? sections[0] ?? "overview",
+          );
       },
       { rootMargin: "-20% 0px -65% 0px" },
     );
     for (const id of sections) {
-      const element = document.getElementById(id);
+      const element = document.getElementById(sectionDomId(id));
       if (element) observer.observe(element);
     }
     return () => observer.disconnect();
@@ -32,7 +35,7 @@ export function DocTabs({ name, sections }: { name: string; sections: SectionId[
         <ul>
           {sections.map((id) => (
             <li key={id}>
-              <a href={`#${id}`} aria-current={active === id ? "location" : undefined}>
+              <a href={`#${sectionDomId(id)}`} aria-current={active === id ? "location" : undefined}>
                 {SECTIONS[id]}
               </a>
             </li>

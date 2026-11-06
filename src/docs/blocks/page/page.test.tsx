@@ -83,12 +83,15 @@ describe("docs page template", () => {
       "href",
       expect.stringContaining("w3.org/WAI/ARIA/apg/patterns/dialog-modal"),
     );
-    expect(screen.getByRole("link", { name: "Accessibility" })).toHaveAttribute("href", "#accessibility");
+    expect(screen.getByRole("link", { name: "Accessibility" })).toHaveAttribute(
+      "href",
+      "#section-accessibility",
+    );
   });
 
   it("opens a section tab on its anchor", () => {
     render(<DocHeader name="Button" status="stable" sections={["overview", "props"]} />);
-    expect(screen.getByRole("link", { name: "Props" })).toHaveAttribute("href", "#props");
+    expect(screen.getByRole("link", { name: "Props" })).toHaveAttribute("href", "#section-props");
   });
 });
 

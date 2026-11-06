@@ -32,11 +32,11 @@ export function PatternLinks() {
       <ul className={styles.patternGrid}>
         {PATTERNS.map((pattern) => (
           <li key={pattern.id} className={styles.patternCard}>
-            <h4 className={styles.patternTitle}>
+            <h3 className={styles.patternTitle}>
               <DocsLink to={pattern.id} className={styles.patternLink}>
                 {pattern.title}
               </DocsLink>
-            </h4>
+            </h3>
             <p className={styles.patternBody}>{pattern.body}</p>
           </li>
         ))}
