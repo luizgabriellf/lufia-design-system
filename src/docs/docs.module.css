@@ -1,4 +1,4 @@
-/* Shared by the token tables and the maturity badge. Every colour is a semantic token, so the tables follow Theme and Mode. */
+/* Shared by the token tables. Every colour is a semantic token, so the tables follow Theme and Mode. */
 
 .tableWrap {
   max-inline-size: 100%;
@@ -82,30 +82,4 @@
   block-size: 0.75rem;
   background: var(--lufia-color-accent-default);
   border-radius: var(--lufia-radius-xs);
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.125rem 0.625rem;
-  font-family: var(--lufia-font-family-body);
-  font-size: var(--lufia-font-size-xs);
-  font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  vertical-align: middle;
-  border: 1px solid currentcolor;
-  border-radius: var(--lufia-radius-full);
-}
-
-.badge[data-status="beta"] {
-  color: var(--lufia-color-status-warning-fg);
-}
-
-.badge[data-status="stable"] {
-  color: var(--lufia-color-status-success-fg);
-}
-
-.badge[data-status="alpha"],
-.badge[data-status="deprecated"] {
-  color: var(--lufia-color-status-danger-fg);
 }

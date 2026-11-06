@@ -94,8 +94,12 @@
   box-shadow: none;
 }
 
-.sbdocs .docblock-source pre,
-.sbdocs .docblock-source code {
+.sbdocs .sbdocs-content .docblock-source pre {
+  padding: 1rem 1.25rem;
+}
+
+.sbdocs .sbdocs-content .docblock-source pre,
+.sbdocs .sbdocs-content .docblock-source code {
   margin: 0;
   font-family: var(--lufia-font-family-mono);
   background: none;
@@ -138,14 +142,7 @@
 }
 
 .sbdocs .docs-story > div {
-  display: flex;
-  justify-content: safe center;
   padding: 2rem 1.5rem;
-}
-
-.sbdocs .docs-story > div > * {
-  min-inline-size: 0;
-  max-inline-size: 100%;
 }
 
 /* Prose tables (key, action, API): the same look as the token tables. */
@@ -248,4 +245,24 @@
 /* The sticky section tabs sit directly in the page, so their Unstyled wrapper must not become the sticky container. */
 .sb-unstyled:has(> nav[data-doc-tabs]) {
   display: contents;
+}
+
+/* Code in table cells stays on one line; a name like "secondary" must not break mid-word on a phone. */
+.sbdocs .sbdocs-content table:not(.docblock-argstable) code {
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+/* MDX wraps a fenced block in <pre> around Storybook's own source box; only the inner box is drawn. */
+.sbdocs .sbdocs-content pre:has(> .docblock-source):not(.sb-unstyled *) {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.sbdocs .sbdocs-content .docblock-source {
+  margin-block: 1.25rem;
+  overflow: hidden;
 }

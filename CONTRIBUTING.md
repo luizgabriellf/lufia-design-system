@@ -59,7 +59,10 @@ A change that adds or alters a component is done when all of these hold. The pul
 - Keyboard behaviour matches the WAI-ARIA pattern and is written in the docs. Focus is always visible (`outline: none`
   without a replacement fails Stylelint).
 - Stories for every variant, state and edge case (long text, overflow), with the theme, mode and viewport controls working.
-- MDX docs: usage, when to use and not to use, accessibility notes, content guidelines.
+- MDX docs: usage, when to use and not to use, accessibility notes, content guidelines. Build the page with the template in
+  `src/docs/blocks/page` (`DocHeader` plus one `Section` each for overview, examples, props, accessibility and guidelines),
+  add the component to `src/docs/taxonomy.ts` (its sidebar group, one-line description and WAI-ARIA pattern) and name its
+  stories `Components/<Group>/<Name>` (or `Hooks/<Name>`). Add an anatomy figure and a Do and Don't pair for key components.
 - Tests with Testing Library and `vitest-axe`, covering behaviour and keyboard. Coverage floor is enforced.
 - Works at 320, 390, 768 and 1440 px, in light and dark, and under `forced-colors`.
 - A changeset (below) when the published package changes.

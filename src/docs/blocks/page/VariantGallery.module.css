@@ -1,6 +1,6 @@
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
   gap: 0.75rem;
   padding: 0;
   margin-block: 1.25rem;
@@ -25,7 +25,7 @@
   gap: 0.5rem;
   align-items: center;
   justify-content: center;
-  min-block-size: 6rem;
+  min-block-size: 5rem;
   padding: 1.25rem 1rem;
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-canvas);

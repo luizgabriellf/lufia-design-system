@@ -1,7 +1,7 @@
 import { Unstyled } from "@storybook/addon-docs/blocks";
 import { BookIcon, CodeIcon } from "../../demo";
 import { entryFor, sourceUrlFor, type Entry } from "../../taxonomy";
-import type { ComponentStatus } from "../../StatusBadge";
+import type { ComponentStatus } from "../../status";
 import { REPO_URL } from "../links";
 import { DocTabs } from "./DocTabs";
 import type { SectionId } from "./sections";
