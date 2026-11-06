@@ -35,8 +35,10 @@ that link's `::after` pseudo-element covers the card. This gives you:
 
 - one tab stop whose accessible name is the title, instead of a card whose whole text is read as a link;
 - a native link: middle click, open in new tab, context menu, router prefetching;
-- selectable text inside the card, because the click target is the link, not the card;
-- other controls (a button in `footer`, an element in `headerAction`) that sit above the stretched area and still work.
+- other links and controls anywhere in the card (body, `headerAction`, `footer`) that are lifted above the stretched area and still work with a mouse.
+
+The standard trade-off of the pattern: the stretched area covers the card's text, so selecting it with the mouse is limited.
+If people need to select or copy text from the card, use a plain `Card` and put a `Link` or `Button` inside it.
 
 <Canvas of={Stories.InteractiveWithFooterButton} />
 
@@ -56,6 +58,7 @@ A plain card is not focusable. The focus ring is drawn around the whole card.
 
 ## When not to use
 
+- Content people need to select or copy: use a plain `Card`.
 - Page layout or grouping that has no visual boundary: use spacing.
 - A card with several equal destinations inside: link them separately, and leave the card plain.
 - A card whose only content is a button: use `Button`.

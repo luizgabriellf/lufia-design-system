@@ -36,6 +36,8 @@ type AsLink = ButtonOwnProps &
     href: string;
     /** A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. */
     disabled?: boolean;
+    /** Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). */
+    ref?: Ref<HTMLAnchorElement>;
   };
 
 export type ButtonProps = AsButton | AsLink;

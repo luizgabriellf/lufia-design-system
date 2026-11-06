@@ -25,9 +25,10 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
 /**
  * A surface that groups related content, with optional header, body and footer slots.
  *
- * The interactive variant uses the stretched-link pattern: there is exactly one link, around the title, and its `::after`
- * covers the card. The card is therefore one tab stop with a meaningful name, not a clickable `div`, and text inside it
- * stays selectable. Other controls in the card (a button in `footer`) sit above the stretched area and stay usable.
+ * The interactive variant uses the stretched-link pattern: the card's own link is the one around the title, and its
+ * `::after` covers the card. The card is therefore one tab stop with a meaningful name, not a clickable `div`. Any other
+ * link or control anywhere in the card (body, header action, footer) is lifted above the covered area and stays usable.
+ * The trade-off is that the covered text cannot be selected with the mouse; use a plain Card where people need to select.
  */
 export function Card({
   title,

@@ -95,6 +95,12 @@
   content: "";
 }
 
+/* Anything interactive inside the card, wherever it sits, is lifted above the stretched link so a mouse reaches it. */
+.root[data-interactive] :is(a, button, input, select, textarea, summary, [tabindex]):not(.link) {
+  position: relative;
+  z-index: 1;
+}
+
 .root[data-interactive] {
   cursor: pointer;
   transition:

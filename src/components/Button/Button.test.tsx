@@ -110,6 +110,16 @@ describe("Button", () => {
       expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
+    it("forwards ref to the anchor", () => {
+      const ref = vi.fn();
+      render(
+        <Button href="/a" ref={ref}>
+          Go
+        </Button>,
+      );
+      expect(ref).toHaveBeenCalledWith(screen.getByRole("link"));
+    });
+
     it("ignores activation when disabled or loading, and says so with aria-disabled", async () => {
       const user = userEvent.setup();
       const onClick = vi.fn();

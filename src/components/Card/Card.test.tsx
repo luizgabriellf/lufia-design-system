@@ -1,8 +1,11 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { Card } from "./Card";
+
+const css = readFileSync("src/components/Card/Card.module.css", "utf8");
 
 describe("Card", () => {
   it("renders the title as a heading of the chosen level, the body and the footer", () => {
@@ -93,5 +96,20 @@ describe("Card", () => {
       </div>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("lifts nested interactive elements above the stretched link, in the body too", () => {
+    // jsdom has no hit testing, so this asserts the markup and the CSS contract; the real-browser click is checked by hand.
+    const { container } = render(
+      <Card title="Report" href="/r">
+        <button type="button">In body</button>
+      </Card>,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-interactive");
+    expect(container.firstElementChild).toContainElement(screen.getByRole("button", { name: "In body" }));
+    const rule = css.match(/\[data-interactive\] :is\(([^)]*)\):not\(\.link\) \{([^}]*)\}/);
+    expect(rule?.[1]).toMatch(/\ba\b.*\bbutton\b/);
+    expect(rule?.[2]).toMatch(/position:\s*relative/);
+    expect(rule?.[2]).toMatch(/z-index:\s*1/);
   });
 });

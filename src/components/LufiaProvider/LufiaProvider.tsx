@@ -6,10 +6,15 @@ import {
   useMemo,
   type AnchorHTMLAttributes,
   type ComponentType,
+  type Ref,
   type ReactNode,
 } from "react";
 
-export type LinkComponentProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
+export type LinkComponentProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href: string;
+  /** React 19 passes `ref` as a prop; a link component should forward it to the anchor. */
+  ref?: Ref<HTMLAnchorElement>;
+};
 
 /** Anything that renders an anchor from `href`: a router link (Next, React Router, Remix) or a plain `<a>`. */
 export type LinkComponent = ComponentType<LinkComponentProps>;
