@@ -42,7 +42,7 @@
   },
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
-    "build": "node scripts/clean.mjs && npm run tokens && node --max-old-space-size=4096 node_modules/tsup/dist/cli-default.js && node scripts/postbuild.mjs",
+    "build": "node scripts/clean.mjs && npm run tokens && node --max-old-space-size=6144 node_modules/tsup/dist/cli-default.js && node scripts/postbuild.mjs",
     "prepare": "node scripts/prepare.mjs",
     "typecheck": "npm run tokens && tsc --noEmit",
     "lint": "eslint .",
