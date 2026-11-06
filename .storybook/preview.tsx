@@ -4,6 +4,7 @@ import "../dist/tokens.css";
 import "../dist/themes/default.css";
 import "../dist/themes/example-brand.css";
 import "./preview.css";
+import { LufiaDocsContainer } from "./DocsContainer";
 
 const THEMES = ["default", "example-brand"] as const;
 const MODES = ["light", "dark"] as const;
@@ -58,6 +59,7 @@ const preview: Preview = {
   parameters: {
     layout: "centered",
     controls: { expanded: true },
+    docs: { container: LufiaDocsContainer },
     a11y: { test: "error" },
     backgrounds: { disabled: true },
     viewport: {

@@ -17,11 +17,13 @@ import { DetailList } from "@lufia/design-system/components/DetailList";
 
 <DetailList
   rows={[
-    { label: t("name"), value: person.name },
-    { label: t("id"), value: person.id, mono: true },
+    { label: "Name", value: "Ada Example" },
+    { label: "Identifier", value: "A-1042", mono: true },
   ]}
 />;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Default} />
 

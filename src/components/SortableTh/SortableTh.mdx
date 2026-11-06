@@ -16,8 +16,10 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 ```tsx
 import { SortableTh } from "@lufia/design-system/components/SortableTh";
 
-<SortableTh label={t("name")} active={sort.key === "name"} dir={sort.dir} onSort={() => toggle("name")} />;
+<SortableTh label="Name" active={sort.key === "name"} dir={sort.dir} onSort={() => toggle("name")} />;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 The component does not sort data; it reports the click and shows state. Own the sort state and the ordering yourself.
 

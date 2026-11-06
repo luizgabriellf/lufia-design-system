@@ -1,0 +1,244 @@
+/* Visual demos for the Foundations pages. Colours are semantic tokens only, so every demo follows Theme and Mode. */
+
+.muted {
+  margin: 0;
+  font-size: var(--lufia-font-size-xs);
+  color: var(--lufia-color-text-muted);
+}
+
+.token {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  color: var(--lufia-color-text-default);
+  overflow-wrap: anywhere;
+}
+
+.big {
+  font-family: var(--lufia-font-family-display);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--lufia-color-text-default);
+}
+
+.cards,
+.weights,
+.tiles,
+.elevation {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  font-family: var(--lufia-font-family-body);
+  list-style: none;
+}
+
+.cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.card {
+  display: grid;
+  gap: 0.375rem;
+  align-content: start;
+  min-inline-size: 0;
+  padding: 1.25rem;
+  margin: 0;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.cardTitle {
+  margin: 0.5rem 0 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-lg);
+  font-weight: var(--lufia-font-weight-semibold);
+  text-transform: capitalize;
+  color: var(--lufia-color-text-default);
+}
+
+.sampleLine,
+.paragraph {
+  margin: 0.5rem 0 0;
+  font-size: var(--lufia-font-size-sm);
+  color: var(--lufia-color-text-muted);
+}
+
+.paragraph {
+  margin-block-start: 0.75rem;
+  font-size: var(--lufia-font-size-md);
+  color: var(--lufia-color-text-default);
+}
+
+.scale {
+  margin: 1.5rem 0;
+  font-family: var(--lufia-font-family-body);
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.scaleRow {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 0.5rem 1.5rem;
+  align-items: baseline;
+  padding: 0.875rem 1.25rem;
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.scaleRow:last-child {
+  border-block-end: 0;
+}
+
+.scaleMeta {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.scaleSample {
+  margin: 0;
+  line-height: var(--lufia-font-line-height-tight);
+  color: var(--lufia-color-text-default);
+  overflow-wrap: anywhere;
+}
+
+.weights {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
+.weight {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  margin: 0;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+}
+
+.ruler {
+  min-inline-size: 30rem;
+  padding: 1.25rem;
+  font-family: var(--lufia-font-family-body);
+}
+
+.axis {
+  position: relative;
+  block-size: 1.5rem;
+  margin-block: 0.5rem 0.25rem;
+  margin-inline-start: 12.5rem;
+  border-block-end: 1px solid var(--lufia-color-border-strong);
+}
+
+.tick {
+  position: absolute;
+  inset-block-end: 0;
+  padding-inline-start: 0.25rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-2xs);
+  color: var(--lufia-color-text-muted);
+  border-inline-start: 1px solid var(--lufia-color-border-strong);
+}
+
+.rulerList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rulerRow {
+  display: grid;
+  grid-template-columns: 8rem 3.25rem minmax(12rem, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+  min-block-size: 2rem;
+}
+
+.rulerBar,
+.rulerTrack {
+  display: block;
+}
+
+.rulerBar {
+  block-size: 0.875rem;
+  min-inline-size: 1px;
+  background: var(--lufia-color-accent-default);
+  border-radius: 0 var(--lufia-radius-xs) var(--lufia-radius-xs) 0;
+}
+
+.tiles {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+}
+
+.elevation {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  padding: 2rem 1.5rem;
+  background: var(--lufia-color-bg-canvas);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.tile {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.shape {
+  display: block;
+  inline-size: 5rem;
+  block-size: 5rem;
+  margin-block-end: 0.5rem;
+  background: var(--lufia-color-accent-subtle);
+  border: 1px solid var(--lufia-color-accent-border);
+}
+
+.lifted {
+  display: block;
+  inline-size: 100%;
+  block-size: 5rem;
+  margin-block-end: 0.75rem;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.stack {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  font-family: var(--lufia-font-family-body);
+  list-style: none;
+}
+
+.layer {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  max-inline-size: 22rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-md);
+  box-shadow: var(--lufia-shadow-sm);
+}
+
+@media (width <= 40rem) {
+  .scaleRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .axis {
+    margin-inline-start: 11.5rem;
+  }
+
+  .rulerRow {
+    grid-template-columns: 7.5rem 3rem minmax(0, 1fr);
+  }
+}

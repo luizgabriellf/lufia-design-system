@@ -17,9 +17,11 @@ shorter `--lufia-motion-duration-exit`.
 import { Reveal } from "@lufia/design-system/motion";
 
 <Reveal show={saved} variant="rise">
-  <Banner>{t("saved")}</Banner>
+  <Banner>Changes saved</Banner>
 </Reveal>;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Default} />
 

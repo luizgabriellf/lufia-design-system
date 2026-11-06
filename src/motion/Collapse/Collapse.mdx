@@ -16,13 +16,15 @@ does so without measuring anything in JavaScript (`grid-template-rows` from `0fr
 ```tsx
 import { Collapse } from "@lufia/design-system/motion";
 
-<button aria-expanded={open} aria-controls="shipping" onClick={() => setOpen(!open)}>
-  {t("shipping")}
+<button type="button" aria-expanded={open} aria-controls="shipping" onClick={() => setOpen(!open)}>
+  Shipping details
 </button>
 <Collapse id="shipping" open={open}>
-  {t("shippingBody")}
+  Orders ship within two working days.
 </Collapse>;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Open} />
 

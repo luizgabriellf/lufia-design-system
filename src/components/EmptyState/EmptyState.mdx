@@ -16,8 +16,14 @@ step.
 ```tsx
 import { EmptyState } from "@lufia/design-system/components/EmptyState";
 
-<EmptyState title={t("noItems")} body={t("noItemsHint")} action={<Button>{t("add")}</Button>} />;
+<EmptyState
+  title="No documents yet"
+  body="Documents you upload will appear here."
+  action={<a href="/upload">Upload document</a>}
+/>;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Default} />
 

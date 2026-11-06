@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { StatusTimeline, type StatusTimelineTrack } from "./StatusTimeline";
+import { DemoButton } from "../../docs/demo";
 
 const tracks: StatusTimelineTrack[] = [
   {
@@ -27,7 +28,7 @@ const tracks: StatusTimelineTrack[] = [
         label: "Sign-off",
         state: "needsTimestamp",
         stateLabel: "Needs a date",
-        action: <button type="button">Record date</button>,
+        action: <DemoButton size="sm">Record date</DemoButton>,
       },
     ],
   },

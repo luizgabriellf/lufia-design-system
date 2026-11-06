@@ -1,5 +1,11 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 import { TokenTable } from "../TokenTable";
+import {
+  FamilySpecimens,
+  ScaleSpecimens,
+  WeightSpecimens,
+  LineHeightSpecimens,
+} from "../blocks/TypeSpecimens";
 
 <Meta title="Foundations/Typography" />
 
@@ -11,19 +17,21 @@ unconfigured apps still render legibly.
 
 ## Families
 
-<TokenTable group="font.family" preview="font-family" />
+<FamilySpecimens />
 
 ## Type scale
 
-<TokenTable group="font.size" preview="font-size" />
+<ScaleSpecimens />
+
+<TokenTable group="font.size" />
 
 ## Weights
 
-<TokenTable group="font.weight" preview="weight" />
+<WeightSpecimens />
 
 ## Line height
 
-<TokenTable group="font.line-height" />
+<LineHeightSpecimens />
 
 Body copy uses `normal` (1.5) or `relaxed` (1.6); headings use `tight`. Text must stay readable at 200% zoom and reflow
 at 320px without horizontal scrolling (WCAG 1.4.4 and 1.4.10), so prefer `rem` over `px` for type.

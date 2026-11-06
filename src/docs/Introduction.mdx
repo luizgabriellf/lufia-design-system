@@ -1,59 +1,78 @@
 import { Meta } from "@storybook/addon-docs/blocks";
+import { DocTable } from "./blocks/DocTable";
+import { Hero } from "./blocks/Hero";
+import { FeatureGrid } from "./blocks/FeatureGrid";
+import { ComponentGallery } from "./blocks/ComponentGallery";
+import { ThemeShowcase } from "./blocks/ThemeShowcase";
+import { ResourceLinks } from "./blocks/ResourceLinks";
 
-<Meta title="Introduction" />
+<Meta title="Introduction" parameters={{ layout: "fullscreen" }} />
 
-# Lufia Design System
+<Hero />
 
-Accessible, themeable React components and design tokens, built to be shared by several apps. Everything here is public
-and MIT licensed. Component status is labelled on every page (`alpha`, `beta`, `stable`, `deprecated`).
+## What's inside
 
-## Getting started
+<FeatureGrid />
 
-Until the package is on npm, install a tagged release straight from GitHub:
+## Components
+
+Every card is the real component, rendered with plain strings. Open one for usage, keyboard behaviour and accessibility
+notes. Component status is labelled on every page (`alpha`, `beta`, `stable`, `deprecated`).
+
+<ComponentGallery />
+
+## Quick start
+
+Until the package is on npm, install a tagged release straight from GitHub. The tag builds itself on install, and React 19
+and React DOM 19 are the peer dependencies.
 
 ```bash
 npm install github:luizgabriellf/lufia-design-system#v0.1.0
 ```
 
-The tag builds itself on install (`prepare` script). Peer dependencies are React 19 and React DOM 19.
-
-Import the tokens and **one** theme once, at the root of your app:
+Import the tokens and **one** theme once, at the root of your app, then pick components from the package root or from a
+per-component entry point.
 
 ```tsx
 // app/layout.tsx
 import "@lufia/design-system/tokens.css";
 import "@lufia/design-system/themes/default.css";
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
 ```
-
-Then use components from the package root or from a per-component entry point:
 
 ```tsx
 import { EmptyState } from "@lufia/design-system/components/EmptyState";
+
+<EmptyState title="No documents yet" body="Documents you upload will appear here." />;
 ```
 
-Components ship CSS Modules; your bundler (Next.js, Vite) processes them. Every user-facing string is a prop: the
-package contains no translation layer.
+Components ship CSS Modules, so your bundler (Next.js, Vite) processes them. Strings in the snippet are plain literals: in
+your app every user-facing string is a prop, and the package has no translation layer.
 
 ## Theming
 
-| Attribute                         | Values                     | Effect                                                       |
-| --------------------------------- | -------------------------- | ------------------------------------------------------------ |
-| `data-lufia-theme`                | `default`, `example-brand` | Selects a named theme. Optional for the default theme.       |
-| `data-lufia-mode`                 | `light`, `dark`            | Forces a mode. Omit it to follow `prefers-color-scheme`.     |
-| `@media (forced-colors)`          | automatic                  | Semantic tokens map to system colours in high-contrast mode. |
-| `@media (prefers-reduced-motion)` | automatic                  | Motion durations collapse.                                   |
+Light and dark follow `prefers-color-scheme`. Force one, or choose a named theme, with attributes on `<html>`. The
+same markup below is rendered under each combination.
 
-Use the **Theme** and **Mode** controls in the toolbar above to preview every story in each combination, and the
-viewport menu for the 320 / 390 / 768 / 1440 test widths. Product brands are not part of this package: each consuming app
-maps its own values onto the `--lufia-*` tokens (see "Foundations / Creating a theme").
+<ThemeShowcase />
+
+<DocTable
+  label="Theming attributes"
+  head={["Attribute", "Values", "Effect"]}
+  rows={[
+    [
+      "`data-lufia-theme`",
+      "`default`, `example-brand`",
+      "Selects a named theme. Optional for the default theme.",
+    ],
+    ["`data-lufia-mode`", "`light`, `dark`", "Forces a mode. Omit it to follow `prefers-color-scheme`."],
+    ["`@media (forced-colors)`", "automatic", "Semantic tokens map to system colours in high-contrast mode."],
+    ["`@media (prefers-reduced-motion)`", "automatic", "Motion durations collapse."],
+  ]}
+/>
+
+Use the **Theme** and **Mode** controls in the toolbar to preview every page in each combination, and the viewport menu
+for the 320 / 390 / 768 / 1440 test widths. Product brands are not part of this package: each app maps its own values onto
+the `--lufia-*` tokens (see **Foundations / Creating a theme**).
 
 ## Principles
 
@@ -61,3 +80,7 @@ maps its own values onto the `--lufia-*` tokens (see "Foundations / Creating a t
 2. **Semantic tokens only.** Components never read raw palette values, so a brand is a file, not a fork.
 3. **No app imports.** No router, i18n or data layer inside a component; apps inject them.
 4. **Small and boring.** Each component earns its place by being needed in more than one app.
+
+## Keep exploring
+
+<ResourceLinks />

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ChangeHighlight, type ChangeHighlightProps } from "./ChangeHighlight";
+import { DemoButton } from "../../docs/demo";
 
 const STATUSES = ["Pending", "Shipped", "Delivered"];
 
@@ -16,9 +17,7 @@ function Demo(args: ChangeHighlightProps) {
           <strong>{status}</strong>
         </ChangeHighlight>
       </p>
-      <button type="button" onClick={() => setIndex(index + 1)}>
-        Advance status
-      </button>
+      <DemoButton onClick={() => setIndex(index + 1)}>Advance status</DemoButton>
     </div>
   );
 }

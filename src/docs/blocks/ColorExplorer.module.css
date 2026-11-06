@@ -1,0 +1,202 @@
+.explorer {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1.5rem;
+  font-family: var(--lufia-font-family-body);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.segment {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin: 0;
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-control);
+  position: relative;
+  background: var(--lufia-color-bg-surface-solid);
+}
+
+.legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.segment button {
+  min-block-size: 2rem;
+  padding-inline: 0.875rem;
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-md);
+  transition:
+    background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.segment button:hover {
+  color: var(--lufia-color-text-default);
+}
+
+.segment button[aria-pressed="true"] {
+  color: var(--lufia-color-text-on-accent);
+  background: var(--lufia-color-accent-default);
+}
+
+.segment button:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.panel {
+  display: grid;
+  gap: 2rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-canvas);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-card);
+}
+
+.groupTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+  margin: 0 0 0.75rem;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-lg);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-default);
+}
+
+.blurb {
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-regular);
+  color: var(--lufia-color-text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.swatch {
+  display: grid;
+  min-inline-size: 0;
+  margin: 0;
+  overflow: hidden;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+}
+
+/* A checkerboard under the fill so translucent tokens read as translucent. */
+.chip {
+  background-image: conic-gradient(
+    var(--lufia-color-border-subtle) 25%,
+    transparent 0 50%,
+    var(--lufia-color-border-subtle) 0 75%,
+    transparent 0
+  );
+  background-size: 0.75rem 0.75rem;
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.chipFill {
+  display: grid;
+  place-items: center;
+  block-size: 4.5rem;
+}
+
+.sample {
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-2xl);
+  font-weight: var(--lufia-font-weight-bold);
+}
+
+.meta {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.625rem 0.75rem 0.75rem;
+}
+
+.meta code {
+  font-family: var(--lufia-font-family-mono);
+  overflow-wrap: anywhere;
+}
+
+.name {
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-default);
+}
+
+.value,
+.alias {
+  font-size: var(--lufia-font-size-2xs);
+  color: var(--lufia-color-text-muted);
+}
+
+.rating {
+  justify-self: start;
+  padding: 0.0625rem 0.5rem;
+  margin-block-start: 0.375rem;
+  font-size: var(--lufia-font-size-2xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  border: 1px solid;
+  border-radius: var(--lufia-radius-full);
+}
+
+.rating[data-tone="pass"] {
+  color: var(--lufia-color-status-success-fg);
+  background: var(--lufia-color-status-success-bg);
+  border-color: var(--lufia-color-status-success-border);
+}
+
+.rating[data-tone="fail"] {
+  color: var(--lufia-color-status-danger-fg);
+  background: var(--lufia-color-status-danger-bg);
+  border-color: var(--lufia-color-status-danger-border);
+}
+
+.rating[data-tone="neutral"] {
+  color: var(--lufia-color-status-neutral-fg);
+  background: var(--lufia-color-status-neutral-bg);
+  border-color: var(--lufia-color-border-subtle);
+}
+
+.details {
+  padding: 0.75rem 1rem;
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+}
+
+.details summary {
+  font-weight: var(--lufia-font-weight-semibold);
+  cursor: pointer;
+}
+
+.details summary:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}

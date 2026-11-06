@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useId, useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Collapse, type CollapseProps } from "./Collapse";
+import { DemoButton } from "../../docs/demo";
 
 function Demo({ open: initial, children }: CollapseProps) {
   const [open, setOpen] = useState(initial);
@@ -14,15 +15,15 @@ function Demo({ open: initial, children }: CollapseProps) {
         borderRadius: "var(--lufia-radius-card)",
       }}
     >
-      <button
-        type="button"
+      <DemoButton
+        variant="ghost"
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen(!open)}
-        style={{ inlineSize: "100%", padding: "0.75rem 1rem", textAlign: "start" }}
+        style={{ inlineSize: "100%", justifyContent: "flex-start", borderRadius: 0 }}
       >
         Shipping details
-      </button>
+      </DemoButton>
       <Collapse id={id} open={open}>
         <div style={{ padding: "0 1rem 1rem" }}>{children}</div>
       </Collapse>
@@ -46,6 +47,7 @@ const meta = {
     ),
   },
   render: (args) => <Demo {...args} />,
+  argTypes: { children: { control: false } },
 } satisfies Meta<typeof Collapse>;
 
 export default meta;

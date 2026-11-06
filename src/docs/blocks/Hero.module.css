@@ -1,0 +1,204 @@
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  margin-block-end: 1rem;
+  overflow: hidden;
+  font-family: var(--lufia-font-family-body);
+  color: var(--lufia-color-text-default);
+  background:
+    radial-gradient(60% 90% at 100% 0%, var(--lufia-color-accent-subtle), transparent 70%),
+    radial-gradient(var(--lufia-color-border-subtle) 1px, transparent 1px) 0 0 / 1.25rem 1.25rem,
+    var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-panel);
+}
+
+.copy {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  min-inline-size: 0;
+}
+
+.eyebrow {
+  padding: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  letter-spacing: 0.04em;
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border: 1px solid var(--lufia-color-accent-border);
+  border-radius: var(--lufia-radius-full);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: var(--lufia-font-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  border: 0;
+}
+
+.lede {
+  max-inline-size: 32rem;
+  margin: 0;
+  font-size: var(--lufia-font-size-lg);
+  line-height: var(--lufia-font-line-height-relaxed);
+  color: var(--lufia-color-text-muted);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.badges li {
+  margin: 0;
+}
+
+.badge {
+  display: inline-flex;
+  overflow: hidden;
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: 1.25rem;
+  text-decoration: none;
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-sm);
+}
+
+.badge:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.badgeLabel,
+.badgeValue {
+  padding-inline: 0.5rem;
+}
+
+.badgeLabel {
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.badgeValue {
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.composition {
+  min-inline-size: 0;
+  pointer-events: none;
+}
+
+.window {
+  overflow: hidden;
+  background: var(--lufia-color-bg-canvas);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-card);
+  box-shadow: var(--lufia-shadow-lg);
+}
+
+.windowBar {
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.625rem 0.875rem;
+  background: var(--lufia-color-bg-surface-raised);
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.dot {
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  background: var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+}
+
+.windowBody {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 0;
+  margin: 0 0 2rem;
+  font-family: var(--lufia-font-family-body);
+}
+
+.stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.125rem;
+  padding: 1rem 0 0;
+  border-block-start: 2px solid var(--lufia-color-accent-default);
+}
+
+.stats dt {
+  font-size: var(--lufia-font-size-sm);
+  color: var(--lufia-color-text-muted);
+}
+
+.stats dd {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-3xl);
+  font-weight: var(--lufia-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lufia-font-line-height-tight);
+  color: var(--lufia-color-text-default);
+}
+
+@media (width <= 60rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 30rem) {
+  .hero {
+    gap: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

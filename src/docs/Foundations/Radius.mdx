@@ -1,15 +1,18 @@
 import { Meta } from "@storybook/addon-docs/blocks";
-import { TokenTable } from "../TokenTable";
+import { RadiusDemo, BorderDemo } from "../blocks/ShapeDemos";
 
 <Meta title="Foundations/Radius and borders" />
 
 # Radius and borders
 
-<TokenTable group="radius" preview="radius" />
+Corners step up with the size of the surface: small for chips and badges, `control` for inputs and buttons, `card` and
+`panel` for containers, `full` for pills and avatars.
+
+<RadiusDemo />
 
 ## Border width
 
-<TokenTable group="border-width" />
+<BorderDemo />
 
 The thick width (2px) is used for focus rings. Focus indicators are never removed; a Stylelint rule forbids
 `outline: none` without a replacement.

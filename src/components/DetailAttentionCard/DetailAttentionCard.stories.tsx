@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { DetailAttentionCard } from "./DetailAttentionCard";
+import { DemoButton } from "../../docs/demo";
 
 const meta = {
   title: "Components/DetailAttentionCard",
@@ -12,9 +13,12 @@ const meta = {
     description: "Schedule the review before the deadline.",
     meta: "Last checked 2 days ago",
     toneLabel: "Warning",
-    action: <button type="button">Schedule</button>,
+    action: <DemoButton size="sm">Schedule</DemoButton>,
   },
-  argTypes: { tone: { control: "inline-radio", options: ["ok", "warn", "danger", "critical", "neutral"] } },
+  argTypes: {
+    action: { control: false },
+    tone: { control: "inline-radio", options: ["ok", "warn", "danger", "critical", "neutral"] },
+  },
   decorators: [
     (Story) => (
       <div style={{ width: "min(100%, 480px)" }}>

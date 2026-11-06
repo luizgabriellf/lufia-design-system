@@ -16,10 +16,12 @@ content area.
 ```tsx
 import { DetailSectionCard } from "@lufia/design-system/components/DetailSectionCard";
 
-<DetailSectionCard title={t("contacts")} action={<Button>{t("edit")}</Button>}>
+<DetailSectionCard title="Contact details" action={<a href="/contacts/edit">Edit</a>}>
   <DetailList rows={rows} />
 </DetailSectionCard>;
 ```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 <Controls of={Stories.Default} />
 

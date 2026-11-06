@@ -1,0 +1,46 @@
+<meta
+  name="description"
+  content="Accessible, themeable React components and W3C design tokens, with motion that respects reduced-motion."
+/>
+<meta name="theme-color" content="#1d4ed8" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Lufia Design System" />
+<meta property="og:title" content="Lufia Design System" />
+<meta
+  property="og:description"
+  content="Accessible, themeable React components and W3C design tokens, with motion that respects reduced-motion."
+/>
+<meta property="og:url" content="https://luizgabriellf.github.io/lufia-design-system/" />
+<meta property="og:image" content="https://luizgabriellf.github.io/lufia-design-system/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta
+  property="og:image:alt"
+  content="Lufia Design System: accessible, themeable React components and design tokens."
+/>
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Lufia Design System" />
+<meta
+  name="twitter:description"
+  content="Accessible, themeable React components and W3C design tokens, with motion that respects reduced-motion."
+/>
+<meta name="twitter:image" content="https://luizgabriellf.github.io/lufia-design-system/og-image.png" />
+
+<script>
+  // The manager hard-codes a "Storybook" suffix on the tab title; swap it for the brand name.
+  (function () {
+    var BRAND = "Lufia Design System";
+    function fix() {
+      var title = document.title;
+      var next = title.replace(/\s-\sStorybook$/, "");
+      if (next === title) next = title.replace(/\s⋅\sStorybook$/, " ⋅ " + BRAND);
+      if (next === "Storybook") next = BRAND;
+      if (next !== title) document.title = next;
+    }
+    new MutationObserver(fix).observe(document.head, { subtree: true, childList: true, characterData: true });
+    fix();
+  })();
+</script>
