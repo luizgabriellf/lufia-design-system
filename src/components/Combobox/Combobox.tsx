@@ -16,6 +16,7 @@ import { useFormFieldControl, useFormFieldLabelId } from "../FormField";
 import { FieldSpinner } from "../FormField/FieldSpinner";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import { useDismiss } from "../useDismiss";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./Combobox.module.css";
@@ -67,6 +68,11 @@ export type ComboboxProps = Omit<
   toggleLabel?: string;
   /** Submitted with the form as `name=value` (empty when nothing is chosen). The visible text is not submitted. */
   name?: string;
+  /**
+   * Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own
+   * "please fill out this field" in the person's language.
+   */
+  requiredMessage?: string;
   /** Marks the control invalid without a `FormField`. */
   invalid?: boolean;
   /** Goes on the root element. */
@@ -74,8 +80,14 @@ export type ComboboxProps = Omit<
   ref?: Ref<HTMLInputElement>;
 };
 
-/** Ids may not contain spaces; the encoding is deterministic, so an option keeps its id across renders. */
-const idPart = (value: string) => encodeURIComponent(value).replace(/%/g, "~");
+/**
+ * Option ids are built from the value so they survive re-renders and re-ordering. Any character outside `A-Za-z0-9-` is
+ * written as `_<hex code point>_`; `_` itself is never written raw, so two different values can never share an id.
+ */
+const idPart = (value: string) =>
+  Array.from(value)
+    .map((char) => (/[A-Za-z0-9-]/.test(char) ? char : `_${char.codePointAt(0)!.toString(16)}_`))
+    .join("");
 
 const defaultFilter = (option: ComboboxOption, query: string) =>
   normalizeForSearch(option.label).includes(normalizeForSearch(query));
@@ -107,6 +119,7 @@ export function Combobox({
   clearLabel = "Clear",
   toggleLabel = "Show options",
   name,
+  requiredMessage,
   invalid,
   className,
   placeholder,
@@ -158,12 +171,29 @@ export function Combobox({
       : undefined) ?? (auto ? firstEnabled : undefined);
   const optionId = (option: ComboboxOption) => `${baseId}-option-${idPart(option.value)}`;
 
+  // A required combobox is invalid until an option is chosen, whatever text is typed. The constraint sits on the visible
+  // input so the browser blocks submission, focuses it and shows its message there.
+  useLayoutEffect(() => {
+    const element = input.current;
+    if (!element) return;
+    if (!control.required || value !== null) return element.setCustomValidity("");
+    const probe = document.createElement("input");
+    probe.required = true;
+    element.setCustomValidity(requiredMessage ?? (probe.validationMessage || "Please fill out this field."));
+  }, [control.required, value, requiredMessage]);
+
   const close = () => {
     setOpen(false);
     setTyped(null);
     setHighlighted(null);
   };
   useDismiss(open, close, root, input);
+  useFormReset(root, () => {
+    setValue(defaultValue);
+    setChosen(null);
+    close();
+    onValueChange?.(defaultValue, options.find((option) => option.value === defaultValue) ?? null);
+  });
 
   // Open upward when the room below is short and there is more above. Viewport-based: a clipping ancestor is not measured.
   useLayoutEffect(() => {

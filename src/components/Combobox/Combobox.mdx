@@ -102,8 +102,9 @@ list autocomplete: `role="combobox"` on the input with `aria-autocomplete="list"
 - A visually hidden status region announces the empty and loading texts, and the result count when you pass `resultsLabel`.
 - A list that is empty or loading is not "expanded": there is nothing to point `aria-controls` at, so the message lives in the status region only.
 - The highlighted option is shown with a fill and a bar on its start edge, and in forced-colors with the system highlight.
-- Required adds `aria-required` (the text is not natively `required`, because the submitted value is a separate field).
-- It opens upward when there is little room below the box. The list is placed inside the field and is not portaled, so a parent with `overflow: hidden` clips it; give the field room, or render it in a dialog body that scrolls.
+- A `required` combobox is invalid until an option is chosen, whatever text is typed: the browser refuses to submit, focuses the box and shows its own message (or `requiredMessage`). It also carries `aria-required`.
+- A form `reset` returns it to `defaultValue`.
+- It opens upward when there is little room below the box. The list is placed inside the field and is not portaled, so a parent with `overflow: hidden` or `overflow: auto` (a scrollable dialog body, a table cell) clips it or makes the parent scroll. Give the field room, or place it where nothing clips. A portaled list that escapes clipping ancestors is planned as a follow-up.
 
 Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`). Combobox is the component most likely to behave
 differently across screen readers.

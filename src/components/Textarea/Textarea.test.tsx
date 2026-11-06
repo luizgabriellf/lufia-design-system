@@ -67,6 +67,20 @@ describe("Textarea", () => {
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
+  it("resets the count with the form", async () => {
+    const user = userEvent.setup();
+    render(
+      <form>
+        <Textarea aria-label="Notes" showCount maxLength={50} defaultValue="Hi" />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.type(screen.getByRole("textbox"), " there");
+    expect(screen.getByText("8 / 50")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByText("2 / 50")).toBeInTheDocument();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <FormField label="Notes" hint="Hint" error="Error">

@@ -55,3 +55,17 @@
     display: none;
   }
 }
+
+@media (forced-colors: active) {
+  .clear {
+    border: var(--lufia-border-width-thin) solid ButtonText;
+  }
+
+  .kbd {
+    border-color: CanvasText;
+  }
+
+  .clear:focus-visible {
+    outline-color: Highlight;
+  }
+}

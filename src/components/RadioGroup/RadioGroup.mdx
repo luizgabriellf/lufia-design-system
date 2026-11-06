@@ -68,6 +68,7 @@ Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/
 - In right-to-left layouts Left and Right swap.
 - `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and
   described by its description.
+- A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
 - Required adds an asterisk, the text `required` for screen readers (`requiredLabel`), and `aria-required`.
 - The error is in the group's description, with `role="alert"` and `aria-invalid`.
 

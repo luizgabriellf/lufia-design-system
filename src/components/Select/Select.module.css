@@ -24,3 +24,15 @@
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-surface-solid);
 }
+
+@media (forced-colors: active) {
+  /* The chevron is a stroke in currentcolor; keep it the text colour of the system. */
+  .chevron {
+    color: ButtonText;
+  }
+
+  .native:disabled + .chevron {
+    color: GrayText;
+    opacity: 1;
+  }
+}

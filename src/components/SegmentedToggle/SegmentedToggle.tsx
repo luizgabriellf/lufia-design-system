@@ -2,6 +2,7 @@
 
 import { useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import { useRadioKeys } from "../RadioGroup/useRadioKeys";
 import { useSlidingIndicator } from "../useSlidingIndicator";
 import styles from "./SegmentedToggle.module.css";
@@ -55,6 +56,7 @@ export function SegmentedToggle({
   const container = useRef<HTMLDivElement | null>(null);
   const fallback = defaultValue ?? options.find((option) => !option.disabled)?.value ?? "";
   const [value, setValue] = useControllableState(valueProp, fallback, onValueChange);
+  useFormReset(container, () => setValue(fallback));
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
   const keys = useRadioKeys(items, value, setValue);
   const indicator = useSlidingIndicator(container, '[aria-checked="true"]', value, { stretch: true });

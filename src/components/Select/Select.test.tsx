@@ -41,6 +41,17 @@ describe("Select", () => {
     expect(select).toHaveValue("pt");
   });
 
+  it("hides the placeholder from the list unless an empty choice is allowed", () => {
+    const { rerender } = render(
+      <Select aria-label="Country" options={options} placeholder="Choose" defaultValue="" />,
+    );
+    expect(screen.getByText("Choose")).toHaveAttribute("hidden");
+    rerender(
+      <Select aria-label="Country" options={options} placeholder="Choose" allowEmpty defaultValue="" />,
+    );
+    expect(screen.getByText("Choose")).not.toHaveAttribute("hidden");
+  });
+
   it("keeps the placeholder choosable for optional fields", () => {
     render(<Select aria-label="Country" options={options} placeholder="None" allowEmpty />);
     expect(screen.getByRole("option", { name: "None" })).toBeEnabled();

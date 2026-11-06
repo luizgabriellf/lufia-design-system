@@ -1,7 +1,8 @@
 "use client";
 
-import { useId, useState, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
+import { useId, useRef, useState, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { useFormFieldControl } from "../FormField";
+import { useFormReset } from "../FormField/useFormReset";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./Textarea.module.css";
@@ -45,6 +46,9 @@ export function Textarea({
 }: TextareaProps) {
   const countId = useId();
   const [inner, setInner] = useState(() => String(rest.value ?? rest.defaultValue ?? "").length);
+  const area = useRef<HTMLTextAreaElement | null>(null);
+  // The browser restores the text of an uncontrolled textarea on reset; the count has to follow it.
+  useFormReset(area, () => setInner(String(rest.defaultValue ?? "").length));
   const length = rest.value !== undefined ? String(rest.value).length : inner;
   const max = rest.maxLength;
   const counterId = showCount ? `counter-${countId.replace(/:/g, "")}` : undefined;
@@ -68,7 +72,11 @@ export function Textarea({
         <textarea
           {...rest}
           {...control}
-          ref={ref}
+          ref={(node) => {
+            area.current = node;
+            if (typeof ref === "function") ref(node);
+            else if (ref) ref.current = node;
+          }}
           rows={rows}
           readOnly={readOnly}
           className={[fieldStyles.native, styles.native].join(" ")}

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useId,
   useRef,
   useState,
@@ -9,9 +10,10 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
-import { useFormFieldControl } from "../FormField";
+import { useFormFieldControl, useFormFieldLabelId } from "../FormField";
 import { FieldError } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./FileField.module.css";
 import { formatFileSize, matchesAccept, sameFile } from "./fileUtils";
@@ -48,6 +50,10 @@ export type FileFieldProps = Omit<
   describeFiles?: (files: readonly File[]) => string;
   /** Locale of the sizes. The runtime's when omitted. */
   locale?: string;
+  /**
+   * Outside a `FormField`, name the field with `aria-label` or `aria-labelledby`; with neither, the button text becomes its
+   * accessible name, so it never goes unnamed.
+   */
   /** Controlled files. */
   files?: readonly File[];
   /** Called with the whole list after a pick, a drop or a removal. */
@@ -116,7 +122,21 @@ export function FileField({
   const [rejections, setRejections] = useState<FileRejection[]>([]);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement | null>(null);
+  const labelId = useFormFieldLabelId();
+  const named = Boolean(labelId || rest["aria-label"] || rest["aria-labelledby"]);
   const limits: FileLimits = { accept, maxSize, maxFiles };
+
+  // A controlled list that changes from outside (cleared after a save, say) has to reach the native input too, or the form
+  // would still submit the old files.
+  useEffect(() => {
+    if (filesProp !== undefined) syncInput(input.current, [...filesProp]);
+  }, [filesProp]);
+
+  useFormReset(input, () => {
+    setRejections([]);
+    setFiles([]);
+    onFilesChange?.([]);
+  });
 
   const commit = (next: File[]) => {
     setFiles(next);
@@ -203,7 +223,7 @@ export function FileField({
           className={styles.input}
           onChange={(event) => add(Array.from(event.target.files ?? []))}
         />
-        <label htmlFor={baseId} className={styles.trigger} aria-hidden="true">
+        <label htmlFor={baseId} className={styles.trigger} aria-hidden={named ? "true" : undefined}>
           <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false">
             <path
               d="M10 13V3m0 0L6 7m4-4 4 4M4 13v2.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V13"

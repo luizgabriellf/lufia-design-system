@@ -130,6 +130,39 @@ describe("SearchInput", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
+  it("does not search twice for the same text", () => {
+    vi.useFakeTimers();
+    const onSearch = vi.fn();
+    render(<SearchInput aria-label="Search" onSearch={onSearch} debounceMs={100} />);
+    const box = screen.getByRole("searchbox");
+    fireEvent.change(box, { target: { value: "pump" } });
+    act(() => void vi.advanceTimersByTime(150));
+    fireEvent.change(box, { target: { value: "pumpx" } });
+    fireEvent.change(box, { target: { value: "pump" } });
+    act(() => void vi.advanceTimersByTime(150));
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSearch).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("does not take an id for a name: the placeholder names the box instead", () => {
+    render(<SearchInput id="q" placeholder="Search customers" />);
+    expect(screen.getByRole("searchbox")).toHaveAccessibleName("Search customers");
+  });
+
+  it("goes back to its default when the form is reset", async () => {
+    const user = userEvent.setup();
+    render(
+      <form>
+        <SearchInput aria-label="Search" defaultValue="start" />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.type(screen.getByRole("searchbox"), "ed");
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByRole("searchbox")).toHaveValue("start");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <FormField label="Customer" hint="Hint">

@@ -74,6 +74,21 @@ describe("Switch", () => {
     expect(control).toBeInvalid();
   });
 
+  it("goes back to its default when the form is reset", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <Switch label="Alerts" name="alerts" defaultChecked />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("switch"));
+    expect(container.querySelector('input[name="alerts"]')).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "true");
+    expect(container.querySelector('input[name="alerts"]')).toHaveValue("on");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<Switch label="Alerts" hint="Hint" error="Error" defaultChecked />);
     expect(await axe(container)).toHaveNoViolations();

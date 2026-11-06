@@ -94,6 +94,61 @@ describe("RadioGroup", () => {
     expect(screen.getByText(/\(required\)/)).toBeInTheDocument();
   });
 
+  it("reverses Left and Right in a right-to-left layout", async () => {
+    const user = userEvent.setup();
+    render(<RadioGroup label="Payment" options={options} defaultValue="card" style={{ direction: "rtl" }} />);
+    screen.getByRole("radio", { name: "Card" }).focus();
+    await user.keyboard("{ArrowLeft}");
+    expect(screen.getByRole("radio", { name: "Bank transfer" })).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
+  });
+
+  it("blocks submit while required and nothing is chosen, without submitting the mirror", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <RadioGroup label="Payment" options={options} name="payment" required />
+      </form>,
+    );
+    const form = container.querySelector("form")!;
+    expect(form.checkValidity()).toBe(false);
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    expect(form.checkValidity()).toBe(true);
+    expect(new FormData(form).getAll("payment")).toEqual(["cash"]);
+    expect(Array.from(new FormData(form).keys())).toEqual(["payment"]);
+  });
+
+  it("is not validated when not required or disabled", () => {
+    const { container } = render(
+      <form>
+        <RadioGroup label="Payment" options={options} disabled required />
+      </form>,
+    );
+    expect(container.querySelector("form")!.checkValidity()).toBe(true);
+  });
+
+  it("goes back to its default when the form is reset", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <form>
+        <RadioGroup
+          label="Payment"
+          options={options}
+          name="payment"
+          defaultValue="card"
+          onValueChange={onValueChange}
+        />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveAttribute("aria-checked", "true");
+    expect(container.querySelector('input[name="payment"]')).toHaveValue("card");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <RadioGroup label="Payment" options={options} defaultValue="card" required hint="Hint" error="Error" />,

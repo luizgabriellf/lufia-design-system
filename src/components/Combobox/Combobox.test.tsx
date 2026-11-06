@@ -68,7 +68,25 @@ describe("Combobox ARIA", () => {
     const user = userEvent.setup();
     renderCombobox({ id: "c", options: [{ value: "a b/c", label: "Odd" }] });
     await user.click(box());
-    expect(screen.getByRole("option").id).toBe("c-option-a~20b~2Fc");
+    expect(screen.getByRole("option").id).toBe("c-option-a_20_b_2f_c");
+  });
+});
+
+describe("Combobox ids never collide", () => {
+  it("gives different ids to values that differ only in punctuation", async () => {
+    const user = userEvent.setup();
+    renderCombobox({
+      id: "c",
+      options: [
+        { value: "a b", label: "One" },
+        { value: "a_20_b", label: "Two" },
+        { value: "a-b", label: "Three" },
+        { value: "a.b", label: "Four" },
+      ],
+    });
+    await user.click(box());
+    const ids = screen.getAllByRole("option").map((o) => o.id);
+    expect(new Set(ids).size).toBe(4);
   });
 });
 
@@ -423,6 +441,68 @@ describe("Combobox form integration", () => {
     box().focus();
     await user.keyboard("{ArrowDown}");
     expect(box()).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("Combobox constraint validation and reset", () => {
+  it("blocks submit while required and nothing is chosen, with the browser's message", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <Combobox aria-label="City" options={options} required {...texts} />
+      </form>,
+    );
+    const form = container.querySelector("form")!;
+    expect(form.checkValidity()).toBe(false);
+    expect((box() as HTMLInputElement).validationMessage).not.toBe("");
+    await user.click(box());
+    await user.keyboard("zz");
+    expect(form.checkValidity()).toBe(false);
+    await user.keyboard("{Escape}");
+    await user.click(box());
+    await user.click(screen.getByRole("option", { name: "Paris" }));
+    expect(form.checkValidity()).toBe(true);
+    expect((box() as HTMLInputElement).validationMessage).toBe("");
+  });
+
+  it("uses requiredMessage when given, and is valid when not required", () => {
+    const { container, rerender } = render(
+      <form>
+        <Combobox aria-label="City" options={options} required requiredMessage="Pick a city" {...texts} />
+      </form>,
+    );
+    expect((box() as HTMLInputElement).validationMessage).toBe("Pick a city");
+    rerender(
+      <form>
+        <Combobox aria-label="City" options={options} {...texts} />
+      </form>,
+    );
+    expect(container.querySelector("form")!.checkValidity()).toBe(true);
+  });
+
+  it("goes back to its default value when the form is reset", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <form>
+        <Combobox
+          aria-label="City"
+          name="city"
+          options={options}
+          defaultValue="lis"
+          onValueChange={onValueChange}
+          {...texts}
+        />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(box());
+    await user.click(screen.getByRole("option", { name: "Paris" }));
+    expect(box()).toHaveValue("Paris");
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(box()).toHaveValue("Lisbon");
+    expect(container.querySelector('input[name="city"]')).toHaveValue("lis");
+    expect(onValueChange).toHaveBeenLastCalledWith("lis", options[1]);
   });
 });
 

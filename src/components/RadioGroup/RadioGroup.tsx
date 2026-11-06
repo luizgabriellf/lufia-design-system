@@ -1,8 +1,9 @@
 "use client";
 
-import { useId, type HTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./RadioGroup.module.css";
 import { useRadioKeys } from "./useRadioKeys";
@@ -69,9 +70,12 @@ export function RadioGroup({
   const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
   const keys = useRadioKeys(items, value, setValue);
+  const root = useRef<HTMLDivElement>(null);
+  useFormReset(root, () => setValue(defaultValue));
 
   return (
     <div
+      ref={root}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-invalid={error ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
@@ -141,6 +145,21 @@ export function RadioGroup({
         })}
       </div>
       {name && value ? <input type="hidden" name={name} value={value} /> : null}
+      {/*
+        Radios are buttons, which the browser never validates. A required group therefore carries an invisible text input
+        that is empty until something is chosen: it makes the form refuse to submit and shows the browser's own message.
+        It has no name, so it is not submitted, and it is hidden from assistive technology (the group has aria-required).
+      */}
+      {required && !disabled ? (
+        <input
+          className={styles.validity}
+          tabIndex={-1}
+          aria-hidden="true"
+          required
+          value={value}
+          onChange={() => {}}
+        />
+      ) : null}
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
       {error ? <FieldError id={errorId}>{error}</FieldError> : null}
     </div>

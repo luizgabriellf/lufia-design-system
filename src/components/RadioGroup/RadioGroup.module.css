@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--lufia-space-1);
@@ -99,6 +100,16 @@
 
 .root[data-invalid] .option .circle {
   border-color: var(--lufia-color-status-danger-fg);
+}
+
+/* Covers the group so the browser's validation message points at it; invisible and out of the way of the pointer. */
+.validity {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .text {

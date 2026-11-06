@@ -9,10 +9,11 @@ import {
   type KeyboardEvent,
   type Ref,
 } from "react";
-import { useFormFieldControl } from "../FormField";
+import { useFormFieldControl, useFormFieldLabelId } from "../FormField";
 import { FieldSpinner } from "../FormField/FieldSpinner";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./SearchInput.module.css";
 
@@ -78,6 +79,7 @@ export function SearchInput({
     required: rest.required,
     disabled: rest.disabled,
   });
+  const labelId = useFormFieldLabelId();
   const input = useRef<HTMLInputElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchRef = useRef(onSearch);
@@ -86,6 +88,11 @@ export function SearchInput({
     searchRef.current = onSearch;
   });
   useEffect(() => () => clearTimeout(timer.current), []);
+  useFormReset(input, () => {
+    clearTimeout(timer.current);
+    lastSearched.current = defaultValue;
+    setValue(defaultValue);
+  });
 
   const search = useCallback((text: string) => {
     clearTimeout(timer.current);
@@ -118,7 +125,8 @@ export function SearchInput({
     }
   };
 
-  const hasName = rest["aria-label"] || rest["aria-labelledby"] || control.id;
+  // Only a field label or an explicit name counts: an `id` names nothing.
+  const hasName = rest["aria-label"] || rest["aria-labelledby"] || labelId;
   const showClear = value !== "" && !control.disabled && !readOnly;
 
   return (

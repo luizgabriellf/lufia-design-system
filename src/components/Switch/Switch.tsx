@@ -1,8 +1,9 @@
 "use client";
 
-import { useId, type ButtonHTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, useRef, type ButtonHTMLAttributes, type ReactNode, type Ref } from "react";
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormReset } from "../FormField/useFormReset";
 import styles from "./Switch.module.css";
 
 export type SwitchProps = Omit<
@@ -52,9 +53,12 @@ export function Switch({
   const errorId = error ? `${baseId}-error` : undefined;
   const describedBy = [rest["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined;
   const [checked, setChecked] = useControllableState(checkedProp, defaultChecked, onCheckedChange);
+  const root = useRef<HTMLDivElement>(null);
+  useFormReset(root, () => setChecked(defaultChecked));
 
   return (
     <div
+      ref={root}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-disabled={disabled ? "" : undefined}
       data-invalid={error ? "" : undefined}

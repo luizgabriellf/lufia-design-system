@@ -215,6 +215,66 @@ describe("FileField", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2 files chosen");
   });
 
+  it("pushes a controlled list that is cleared from outside into the native input", async () => {
+    const user = userEvent.setup();
+    function Harness() {
+      const [files, setFiles] = useState<File[]>([]);
+      return (
+        <>
+          <FormField label="Attachments">
+            <FileField
+              chooseLabel="Choose"
+              formatRejection={formatRejection}
+              files={files}
+              onFilesChange={setFiles}
+            />
+          </FormField>
+          <button type="button" onClick={() => setFiles([])}>
+            Clear
+          </button>
+        </>
+      );
+    }
+    render(<Harness />);
+    await user.upload(input(), file("a.pdf"));
+    expect(input().files).toHaveLength(1);
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
+    expect(input().files).toHaveLength(0);
+  });
+
+  it("empties its list and messages when the form is reset", async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    const onFilesChange = vi.fn();
+    render(
+      <form>
+        <FormField label="Attachments">
+          <FileField
+            chooseLabel="Choose"
+            accept=".pdf"
+            formatRejection={formatRejection}
+            onFilesChange={onFilesChange}
+          />
+        </FormField>
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.upload(input(), file("a.pdf"));
+    await user.upload(input(), file("b.png", 1, "image/png"));
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(onFilesChange).toHaveBeenLastCalledWith([]);
+  });
+
+  it("is named by its button when there is no field or aria-label, and by aria-label when there is", () => {
+    const { rerender } = render(<FileField chooseLabel="Choose a file" formatRejection={formatRejection} />);
+    expect(screen.getByLabelText("Choose a file")).toHaveAttribute("type", "file");
+    rerender(<FileField chooseLabel="Choose a file" aria-label="CV" formatRejection={formatRejection} />);
+    expect(screen.getByLabelText("CV")).toHaveAttribute("type", "file");
+  });
+
   it("takes required, disabled and the error from a FormField", () => {
     render(
       <FormField label="Attachments" hint="PDF only." error="Attach a file." required disabled>

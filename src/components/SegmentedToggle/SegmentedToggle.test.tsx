@@ -86,6 +86,32 @@ describe("SegmentedToggle", () => {
     expect(container.querySelector('input[name="view"]')).toHaveValue("map");
   });
 
+  it("reverses Left and Right in a right-to-left layout", async () => {
+    const user = userEvent.setup();
+    render(
+      <SegmentedToggle label="View" options={options} defaultValue="list" style={{ direction: "rtl" }} />,
+    );
+    screen.getByRole("radio", { name: "List" }).focus();
+    await user.keyboard("{ArrowLeft}");
+    expect(screen.getByRole("radio", { name: "Board" })).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("radio", { name: "List" })).toHaveFocus();
+  });
+
+  it("goes back to its default when the form is reset", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <SegmentedToggle label="View" options={options} name="view" defaultValue="board" />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("radio", { name: "Map" }));
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "true");
+    expect(container.querySelector('input[name="view"]')).toHaveValue("board");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<SegmentedToggle label="View" options={options} />);
     expect(await axe(container)).toHaveNoViolations();

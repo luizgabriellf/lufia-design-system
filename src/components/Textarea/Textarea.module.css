@@ -27,3 +27,11 @@
   color: var(--lufia-color-status-warning-fg);
   font-weight: var(--lufia-font-weight-bold);
 }
+
+@media (forced-colors: active) {
+  /* Bold already marks the near-limit count; the system text colour keeps it readable. */
+  .count,
+  .count[data-near] {
+    color: CanvasText;
+  }
+}
