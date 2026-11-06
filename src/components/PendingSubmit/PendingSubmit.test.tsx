@@ -38,6 +38,7 @@ describe("PendingSubmit", () => {
     );
     const button = screen.getByRole("button", { name: "Save changes" });
     expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).not.toBeDisabled();
     expect(button).toHaveFocus();
     expect(screen.getByRole("status")).toHaveTextContent("Saving…");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, useRef, useState, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
@@ -37,6 +37,8 @@ export type RadioGroupProps = Omit<
   orientation?: "vertical" | "horizontal";
   /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. */
   requiredLabel?: string;
+  /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
+  requiredMessage?: string;
   ref?: Ref<HTMLDivElement>;
 };
 
@@ -57,6 +59,7 @@ export function RadioGroup({
   name,
   orientation = "vertical",
   requiredLabel = "required",
+  requiredMessage,
   className,
   id,
   ref,
@@ -65,9 +68,12 @@ export function RadioGroup({
   const generated = useId();
   const baseId = id ?? `radiogroup-${generated.replace(/:/g, "")}`;
   const labelId = `${baseId}-label`;
-  const hintId = hint ? `${baseId}-hint` : undefined;
-  const errorId = error ? `${baseId}-error` : undefined;
   const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);
+  const [missing, setMissing] = useState<string | null>(null);
+  const hintId = hint ? `${baseId}-hint` : undefined;
+  // A refused submission shows its message as an error until something is chosen.
+  const shownError = error ?? (missing && !value ? missing : null);
+  const errorId = shownError ? `${baseId}-error` : undefined;
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
   const keys = useRadioKeys(items, value, setValue);
   const root = useRef<HTMLDivElement>(null);
@@ -77,7 +83,7 @@ export function RadioGroup({
     <div
       ref={root}
       className={[styles.root, className].filter(Boolean).join(" ")}
-      data-invalid={error ? "" : undefined}
+      data-invalid={shownError ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
     >
       <span id={labelId} className={styles.legend}>
@@ -101,7 +107,7 @@ export function RadioGroup({
         aria-labelledby={labelId}
         aria-describedby={[rest["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined}
         aria-required={required || undefined}
-        aria-invalid={error ? true : undefined}
+        aria-invalid={shownError ? true : undefined}
         aria-disabled={disabled || undefined}
         className={styles.group}
         data-orientation={orientation}
@@ -158,10 +164,20 @@ export function RadioGroup({
           required
           value={value}
           onChange={() => {}}
+          onInvalid={(event) => {
+            // The browser would point its bubble at an invisible field. Show the message on the group instead, and put
+            // focus where the person chooses: the chosen radio, or the first one that can be.
+            event.preventDefault();
+            setMissing(
+              requiredMessage ??
+                (event.currentTarget.validationMessage || "Please select one of these options."),
+            );
+            root.current?.querySelector<HTMLElement>(`[data-radio-index][tabindex="0"]`)?.focus();
+          }}
         />
       ) : null}
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
-      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
+      {shownError ? <FieldError id={errorId}>{shownError}</FieldError> : null}
     </div>
   );
 }

@@ -44,7 +44,7 @@ const FOREVER_MS = 86_400_000;
  * the pending label, and moves through `progress` labels on a long wait. It reads the pending state of the enclosing
  * `<form>` through React 19's `useFormStatus`, and `pending` lets any other state drive it.
  *
- * The button stays focusable and keeps its place while pending (`aria-busy` and a cancelled click, not `disabled`), so keyboard focus is not
+ * The button stays focusable and keeps its place while pending (`aria-busy`, `aria-disabled` and a cancelled click, not `disabled`), so keyboard focus is not
  * lost. A press, and Enter inside a field, are swallowed until the form settles. Progress labels are timed in CSS, not React
  * state: a state update during a form transition would re-render the button outside the transition and drop its pending state.
  */
@@ -81,6 +81,7 @@ export function PendingSubmit({
         className={[styles.root, className].filter(Boolean).join(" ")}
         disabled={disabled}
         aria-busy={busy || undefined}
+        aria-disabled={busy || undefined}
         onClick={(event) => {
           // Cancelling the click also cancels the implicit submission that Enter in a text field performs.
           if (busy) event.preventDefault();

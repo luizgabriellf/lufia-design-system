@@ -1,6 +1,14 @@
 "use client";
 
-import { useId, useRef, useState, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
+import {
+  useCallback,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+  type Ref,
+  type TextareaHTMLAttributes,
+} from "react";
 import { useFormFieldControl } from "../FormField";
 import { useFormReset } from "../FormField/useFormReset";
 import fieldStyles from "../FormField/fieldControl.module.css";
@@ -49,6 +57,15 @@ export function Textarea({
   const area = useRef<HTMLTextAreaElement | null>(null);
   // The browser restores the text of an uncontrolled textarea on reset; the count has to follow it.
   useFormReset(area, () => setInner(String(rest.defaultValue ?? "").length));
+  // Stable, so a caller's callback ref is not called with null and the node again on every render.
+  const setRefs = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      area.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    },
+    [ref],
+  );
   const length = rest.value !== undefined ? String(rest.value).length : inner;
   const max = rest.maxLength;
   const counterId = showCount ? `counter-${countId.replace(/:/g, "")}` : undefined;
@@ -72,11 +89,7 @@ export function Textarea({
         <textarea
           {...rest}
           {...control}
-          ref={(node) => {
-            area.current = node;
-            if (typeof ref === "function") ref(node);
-            else if (ref) ref.current = node;
-          }}
+          ref={setRefs}
           rows={rows}
           readOnly={readOnly}
           className={[fieldStyles.native, styles.native].join(" ")}

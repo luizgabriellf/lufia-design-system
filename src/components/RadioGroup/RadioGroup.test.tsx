@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { RadioGroup, type RadioOption } from "./RadioGroup";
@@ -147,6 +147,47 @@ describe("RadioGroup", () => {
     await user.click(screen.getByRole("button", { name: "Reset" }));
     expect(screen.getByRole("radio", { name: "Card" })).toHaveAttribute("aria-checked", "true");
     expect(container.querySelector('input[name="payment"]')).toHaveValue("card");
+  });
+
+  it("shows the message and moves focus to the radio when the browser reports it missing", () => {
+    const { container } = render(
+      <form>
+        <RadioGroup label="Payment" options={options} required requiredMessage="Choose a payment method" />
+      </form>,
+    );
+    const mirror = container.querySelector("input[aria-hidden]")!;
+    const event = new Event("invalid", { cancelable: true });
+    act(() => void mirror.dispatchEvent(event));
+    expect(event.defaultPrevented).toBe(true);
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
+    expect(screen.getByRole("alert")).toHaveTextContent("Choose a payment method");
+    expect(screen.getByRole("radiogroup")).toBeInvalid();
+    return userEvent
+      .setup()
+      .click(screen.getByRole("radio", { name: "Cash" }))
+      .then(() => {
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      });
+  });
+
+  it("focuses the chosen radio, or skips a disabled first one", () => {
+    const { container } = render(
+      <form>
+        <RadioGroup
+          label="Payment"
+          options={[{ value: "a", label: "A", disabled: true }, ...options.slice(0, 2)]}
+          required
+          value=""
+        />
+      </form>,
+    );
+    act(
+      () =>
+        void container
+          .querySelector("input[aria-hidden]")!
+          .dispatchEvent(new Event("invalid", { cancelable: true })),
+    );
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
   });
 
   it("has no axe violations", async () => {

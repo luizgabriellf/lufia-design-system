@@ -81,6 +81,15 @@ describe("Textarea", () => {
     expect(screen.getByText("2 / 50")).toBeInTheDocument();
   });
 
+  it("does not re-run a callback ref on every render", async () => {
+    const user = userEvent.setup();
+    const ref = vi.fn();
+    render(<Textarea aria-label="Notes" ref={ref} showCount />);
+    const calls = ref.mock.calls.length;
+    await user.type(screen.getByRole("textbox"), "abc");
+    expect(ref.mock.calls.length).toBe(calls);
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <FormField label="Notes" hint="Hint" error="Error">
