@@ -1,0 +1,53 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./LufiaProvider.stories";
+
+<Meta of={Stories} />
+
+# LufiaProvider <StatusBadge status="beta" />
+
+One place to adapt the package to an app: the **link component** that navigates, and the **aria-only labels** that
+components fall back on. The package imports no router and no i18n library; this provider is the seam.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
+import NextLink from "next/link";
+
+<LufiaProvider linkComponent={NextLink} labels={{ close: "Fechar", dismiss: "Dispensar" }}>
+  {children}
+</LufiaProvider>;
+```
+
+Inside the package, components that navigate render `LufiaLink`, and components that need aria-only text read
+`useLufia().labels`. Components work without a provider (plain `<a>`, English defaults), so it is optional for a first
+try and required for a real app.
+
+| Prop            | Default     | Notes                                                                        |
+| --------------- | ----------- | ---------------------------------------------------------------------------- |
+| `linkComponent` | plain `<a>` | Any component that accepts anchor props and `href: string`.                  |
+| `labels`        | English     | Partial. `close`, `dismiss`, `notifications`. Merged over an outer provider. |
+
+## When to use
+
+- Once, at the root of every app that uses the package.
+- Nested, to change the language or the router of one subtree.
+
+## When not to use
+
+- For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns
+  them. `labels` is only text that assistive technology reads.
+
+## Accessibility
+
+- The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always
+  override them: a Portuguese page with an English "Close" button is an accessibility defect.
+- A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and
+  "open in new tab".
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

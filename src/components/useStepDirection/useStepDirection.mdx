@@ -1,0 +1,46 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./useStepDirection.stories";
+
+<Meta of={Stories} />
+
+# useStepDirection <StatusBadge status="beta" />
+
+Tells a multi-step flow which way it just moved, so the new step can slide in from the matching side.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { useStepDirection } from "@lufia/design-system/components/useStepDirection";
+
+const direction = useStepDirection(step, open);
+
+<div data-step-direction={direction}>{current}</div>;
+```
+
+```css
+.step[data-step-direction="next"] {
+  animation: step-from-right var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+.step[data-step-direction="back"] {
+  animation: step-from-left var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+```
+
+## When to use
+
+- Wizards and stepped dialogs, where direction helps people keep their place ("one direction language": forward is right,
+  back is left).
+
+## When not to use
+
+- Tabs or other non-linear navigation, where there is no forward.
+
+## Accessibility
+
+- The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens
+  so they collapse under `prefers-reduced-motion` (see Motion).
+- The direction must never be the only signal of the new step: announce it (`Stepper` does) and keep the heading current.
+- Opening the flow returns `undefined`, so a wizard never slides on first paint.

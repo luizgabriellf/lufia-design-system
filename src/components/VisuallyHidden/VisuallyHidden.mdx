@@ -1,0 +1,44 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./VisuallyHidden.stories";
+
+<Meta of={Stories} />
+
+# VisuallyHidden <StatusBadge status="beta" />
+
+Text for assistive technology that is not drawn on screen.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
+
+<button type="button">
+  <span aria-hidden="true">Delete</span>
+  <VisuallyHidden>Delete invoice 2041</VisuallyHidden>
+</button>;
+```
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- A longer or more specific name than the visible text (which row does "Delete" act on?).
+- Status text announced from a live region without a visible counterpart.
+
+## When not to use
+
+- Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.
+- To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible.
+
+## Accessibility
+
+- It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.
+- WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain
+  the visible text.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

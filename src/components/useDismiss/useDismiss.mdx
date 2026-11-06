@@ -1,0 +1,37 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./useDismiss.stories";
+
+<Meta of={Stories} />
+
+# useDismiss <StatusBadge status="beta" />
+
+Closes a non-modal popup (dropdown, menu, popover) when Escape is pressed or the pointer presses outside it.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { useDismiss } from "@lufia/design-system/components/useDismiss";
+
+useDismiss(open, () => setOpen(false), rootRef, toggleRef);
+```
+
+`rootRef` wraps the toggle and the popup, so a press on either counts as inside. Escape returns focus to `toggleRef`.
+
+## When to use
+
+- Menus, dropdowns, popovers and disclosure panels that sit over the page without blocking it.
+
+## When not to use
+
+- Modal overlays. They trap focus and own Escape: use `Modal` or `useFocusTrap`.
+
+## Accessibility
+
+- Escape closes and returns focus to the control that opened the popup (WAI-ARIA APG menu button pattern). The key is
+  ignored when another handler already used it (`defaultPrevented`), so a nested control can claim it first.
+- Tab is not intercepted: leaving the popup by keyboard is allowed, and the consumer decides whether that closes it.
+- A hidden copy of the control (same component rendered for desktop and phone, one hidden by CSS) never listens, because
+  it has no layout boxes.

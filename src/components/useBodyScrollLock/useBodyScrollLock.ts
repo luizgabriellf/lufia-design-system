@@ -20,6 +20,9 @@ import { useEffect } from "react";
  * is not itself overflowing. A short explicit allow-list is used on purpose; a generic
  * scrollable-ancestor walker risks locking a nested table or panel instead of the shell.
  *
+ * In document mode the scrollbar's width is compensated with padding on `body`, so the page behind a modal does not
+ * jump sideways when the scrollbar disappears (overlay scrollbars on touch devices have no width and need nothing).
+ *
  * Locks are reference-counted, so stacked overlays are safe.
  */
 
@@ -37,6 +40,8 @@ function findInnerScrollTarget(body: HTMLElement, selectors: readonly string[]):
 let lockCount = 0;
 let savedScrollY = 0;
 let savedOverflow = "";
+let savedPaddingRight = "";
+let savedBoxSizing = "";
 let savedHtmlOverscroll = "";
 let innerScrollMode = false;
 let lockedElement: HTMLElement | null = null;
@@ -56,6 +61,14 @@ function applyLock(selectors: readonly string[]) {
     } else {
       savedScrollY = window.scrollY;
       savedOverflow = body.style.overflow;
+      // clientWidth is 0 where there is no layout (jsdom), which must not read as a full-width scrollbar.
+      const gutter = html.clientWidth > 0 ? Math.max(0, window.innerWidth - html.clientWidth) : 0;
+      savedPaddingRight = body.style.paddingRight;
+      // `width: 100%` below must include the compensating padding; with `content-box` the page would widen and still jump.
+      savedBoxSizing = body.style.boxSizing;
+      body.style.boxSizing = "border-box";
+      if (gutter)
+        body.style.paddingRight = `${parseFloat(getComputedStyle(body).paddingRight || "0") + gutter}px`;
       body.style.overflow = "hidden";
       body.style.position = "fixed";
       body.style.top = `-${savedScrollY}px`;
@@ -78,6 +91,8 @@ function releaseLock() {
       lockedElement.scrollTo(0, savedScrollY);
     } else {
       body.style.overflow = savedOverflow;
+      body.style.paddingRight = savedPaddingRight;
+      body.style.boxSizing = savedBoxSizing;
       body.style.position = "";
       body.style.top = "";
       body.style.width = "";

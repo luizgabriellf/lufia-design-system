@@ -1,0 +1,68 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./useFocusTrap.stories";
+
+<Meta of={Stories} />
+
+# useFocusTrap <StatusBadge status="beta" />
+
+Keeps keyboard focus inside an overlay while it is open: Tab and Shift+Tab wrap, Escape can close it, focus moves in when
+it opens and returns to the opener when it closes. It is what `Modal` and `ConfirmDialog` are built on.
+
+<Canvas of={Stories.FocusContainer} />
+
+## Usage
+
+```tsx
+import { useFocusTrap } from "@lufia/design-system/components/useFocusTrap";
+
+function Panel({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, ref, { onEscape: onClose });
+  return open ? (
+    <div ref={ref} role="dialog" aria-label="Filters" tabIndex={-1}>
+      ...
+    </div>
+  ) : null;
+}
+```
+
+| Option            | Default       | Notes                                                                                              |
+| ----------------- | ------------- | -------------------------------------------------------------------------------------------------- |
+| `onEscape`        | none          | Called for Escape in the topmost trap, unless something already used the key (`defaultPrevented`). |
+| `initialFocus`    | `"container"` | `"first"` focuses the first tabbable element; a ref focuses that element.                          |
+| `restoreFocus`    | `true`        | Give focus back to the element that was focused before opening.                                    |
+| `inertBackground` | `false`       | Marks the rest of `document.body` `inert`. Elements with `data-lufia-inert-exempt` stay live.      |
+
+`getFocusableElements(root)` is exported for code that needs the same notion of "tabbable".
+
+## When to use
+
+- Any overlay that blocks the page behind it: dialogs, drawers, sheets.
+
+## When not to use
+
+- Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss
+  helper instead.
+- A native `<dialog>` opened with `showModal()`. The browser already traps focus.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) pattern.
+
+| Key                 | Behaviour                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| Tab                 | Next tabbable element; from the last one, wraps to the first.                        |
+| Shift+Tab           | Previous tabbable element; from the first (or the container), wraps to the last.     |
+| Tab with focus lost | If focus escaped (a click on the backdrop), Tab brings it back to the first element. |
+| Escape              | `onEscape`, for the topmost trap only, so stacked overlays close one at a time.      |
+
+- The default `initialFocus` is the container, which needs a name (`aria-label` or `aria-labelledby`) and `tabIndex={-1}`.
+  It avoids opening a mobile keyboard and never picks an action for the person. For a destructive confirmation, point
+  `initialFocus` at the safe button.
+- Tabbable elements are found by selector and visibility (`hidden`, `inert`, `display: none`, `visibility: hidden` are
+  skipped). Fixed-position children count.
+- On close, whatever is focused is blurred first (iOS Safari resets its zoom on a real blur), then focus is restored. If
+  something moved focus elsewhere on purpose in the meantime, it is left alone.
+- Pair it with `aria-modal="true"` on the dialog; `inertBackground` makes the effect real for browsers and assistive
+  technologies that ignore `aria-modal`.

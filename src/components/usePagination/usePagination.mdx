@@ -1,0 +1,36 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./usePagination.stories";
+
+<Meta of={Stories} />
+
+# usePagination <StatusBadge status="beta" />
+
+State for paginating a list that is already in memory: the visible slice, the page, and previous/next handlers.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { usePagination } from "@lufia/design-system/components/usePagination";
+
+const { slice, page, totalPages, hasPrev, hasNext, goPrev, goNext, show } = usePagination(rows, 10, filter);
+```
+
+The third argument is a reset key: when the filter or query changes, the list returns to page 1.
+
+## When to use
+
+- Tables and lists of up to a few thousand rows that the client already holds.
+
+## When not to use
+
+- Server-paginated data: keep the page in the URL and fetch it. This hook slices, it does not fetch.
+
+## Accessibility
+
+- Render the controls in a `nav` with a label, disable (not hide) Previous/Next at the ends, and announce the position
+  with a polite live region ("Page 2 of 3").
+- The page is clamped, so a list that shrinks while on the last page shows the new last page instead of an empty one.
+- When the page changes, keep keyboard focus on the control that was activated; do not move it into the list.

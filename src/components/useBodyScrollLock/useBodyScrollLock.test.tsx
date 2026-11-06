@@ -56,6 +56,29 @@ describe("useBodyScrollLock", () => {
     shell.remove();
   });
 
+  it("compensates the scrollbar width so the page does not shift, and restores the padding", () => {
+    const html = document.documentElement;
+    const innerWidth = vi.spyOn(window, "innerWidth", "get").mockReturnValue(1024);
+    const clientWidth = vi.spyOn(html, "clientWidth", "get").mockReturnValue(1009);
+    document.body.style.paddingRight = "4px";
+    const { unmount } = render(<Overlay locked />);
+    expect(document.body.style.paddingRight).toBe("19px");
+    // width: 100% must include that padding, or a content-box body would widen and the page would still jump.
+    expect(document.body.style.boxSizing).toBe("border-box");
+    unmount();
+    expect(document.body.style.boxSizing).toBe("");
+    expect(document.body.style.paddingRight).toBe("4px");
+    document.body.style.paddingRight = "";
+    innerWidth.mockRestore();
+    clientWidth.mockRestore();
+  });
+
+  it("adds no padding when the scrollbar takes no space", () => {
+    const { unmount } = render(<Overlay locked />);
+    expect(document.body.style.paddingRight).toBe("");
+    unmount();
+  });
+
   it("does not interfere with accessibility of the overlay", async () => {
     const { container } = render(<Overlay locked />);
     expect(await axe(container)).toHaveNoViolations();
