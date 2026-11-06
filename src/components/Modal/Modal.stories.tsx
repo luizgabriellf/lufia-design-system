@@ -85,6 +85,8 @@ const meta = {
     size: { control: "inline-radio", options: ["sm", "md", "lg", "xl"] },
     role: { control: "inline-radio", options: ["dialog", "alertdialog"] },
     initialFocus: { control: "inline-radio", options: ["container", "first"] },
+    sheetPlacement: { control: "inline-radio", options: ["bottom", "top"] },
+    titleWrap: { control: "inline-radio", options: ["wrap", "ellipsis"] },
   },
 } satisfies Meta<typeof Demo>;
 
@@ -128,6 +130,54 @@ export const StrictDismissal: Story = {
   },
 };
 export const FocusFirstElement: Story = { args: { startOpen: true, initialFocus: "first" } };
+export const TitleEllipsis: Story = {
+  args: {
+    startOpen: true,
+    titleWrap: "ellipsis",
+    title:
+      "Review the changes to the quarterly financial reporting package before it is shared with the board",
+  },
+};
+export const ScrollShadow: Story = {
+  args: { startOpen: true, scrollShadow: true, paragraphs: 14 },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The body scrolls between a fixed header and footer; a shadow shows where more content is hidden.",
+      },
+    },
+  },
+};
+export const CustomSize: Story = {
+  args: { startOpen: true, size: "min(100%, 70rem)" },
+  parameters: {
+    docs: { description: { story: "`size` also accepts any CSS length as a maximum inline size." } },
+  },
+};
+export const ThemedByVariables: Story = {
+  args: {
+    startOpen: true,
+    description: "The consuming theme sets the --lufia-modal-* variables; here they are set on the panel.",
+    titleWrap: "ellipsis",
+    style: {
+      "--lufia-modal-radius": "1.125rem",
+      "--lufia-modal-header-padding": "1.125rem 1.375rem",
+      "--lufia-modal-body-padding": "1.25rem 1.375rem",
+      "--lufia-modal-title-size": "1.05rem",
+      "--lufia-modal-close-size": "2.25rem",
+    } as CSSProperties,
+  },
+};
+export const TopSheetOnPhone: Story = {
+  args: {
+    startOpen: true,
+    sheetPlacement: "top",
+    paragraphs: 3,
+    style: { "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties,
+  },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
 export const Phone: Story = {
   args: { startOpen: true, paragraphs: 3 },
   globals: { viewport: { value: "w390", isRotated: false } },

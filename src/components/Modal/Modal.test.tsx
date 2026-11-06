@@ -221,4 +221,46 @@ describe("Modal", () => {
     await openModal();
     expect(await axe(document.body)).toHaveNoViolations();
   });
+
+  describe("theming options", () => {
+    it("marks the sheet placement, the title wrap and the scroll shadow for the stylesheet", async () => {
+      render(<Harness sheetPlacement="top" titleWrap="ellipsis" scrollShadow />);
+      const { dialog } = await openModal();
+      expect(dialog).toHaveAttribute("data-sheet", "top");
+      expect(dialog).toHaveAttribute("data-title-wrap", "ellipsis");
+      expect(dialog).toHaveAttribute("data-scroll-shadow");
+      expect(screen.getByRole("heading", { name: "Edit profile" })).toHaveAttribute("title", "Edit profile");
+    });
+
+    it("defaults to a bottom sheet with a wrapping title and no scroll shadow", async () => {
+      render(<Harness />);
+      const { dialog } = await openModal();
+      expect(dialog).toHaveAttribute("data-sheet", "bottom");
+      expect(dialog).toHaveAttribute("data-title-wrap", "wrap");
+      expect(dialog).not.toHaveAttribute("data-scroll-shadow");
+      expect(screen.getByRole("heading", { name: "Edit profile" })).not.toHaveAttribute("title");
+    });
+
+    it("makes a scrolling body focusable so the keyboard can scroll it", async () => {
+      render(<Harness scrollShadow />);
+      const { user } = await openModal();
+      await user.tab();
+      await user.tab();
+      expect(screen.getByLabelText("Name").parentElement).toHaveAttribute("tabindex", "0");
+    });
+
+    it("accepts a custom maximum inline size", async () => {
+      render(<Harness size="62rem" style={{ color: "red" }} />);
+      const { dialog } = await openModal();
+      expect(dialog).toHaveAttribute("data-size", "custom");
+      expect(dialog.style.getPropertyValue("--lufia-modal-size")).toBe("62rem");
+      expect(dialog.style.color).toBe("red");
+    });
+
+    it("leaves the size variable unset for a named step", async () => {
+      render(<Harness size="lg" />);
+      const { dialog } = await openModal();
+      expect(dialog.style.getPropertyValue("--lufia-modal-size")).toBe("");
+    });
+  });
 });
