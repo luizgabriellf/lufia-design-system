@@ -31,13 +31,16 @@ useBodyScrollLock(open, { scrollContainerSelectors: [".app-content", ".page-scro
 The first selector that matches an element that is overflowing and has a computed `overflow-y` of `auto` or `scroll`
 is locked instead of the body. The allow-list is explicit on purpose, so a nested table is never locked by accident.
 
+In document mode the width of the vanishing scrollbar is added to `body`'s right padding, so a page behind a modal does not
+shift sideways on desktop. It is removed on release.
+
 `isBodyScrollLocked()` reports whether any lock is held, for code outside the overlay's tree.
 
 ## Accessibility
 
 - Locking scroll does not move focus or trap it. Pair it with a focus trap and `aria-modal` on the dialog.
 - The previous scroll position is restored on release, so keyboard and screen-reader users return to where they were.
-- It only touches inline styles (`overflow`, `position`, `top`, `width`, `overscroll-behavior`) and removes them on cleanup,
+- It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup,
   including on unmount.
 
 ## Notes

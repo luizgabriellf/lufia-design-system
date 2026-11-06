@@ -1,0 +1,37 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./useMediaQuery.stories";
+
+<Meta of={Stories} />
+
+# useMediaQuery <StatusBadge status="beta" />
+
+Whether a CSS media query matches right now, updated when it changes. Safe to server-render.
+
+<Canvas of={Stories.Narrow} />
+
+## Usage
+
+```tsx
+import { useMediaQuery } from "@lufia/design-system/components/useMediaQuery";
+
+const compact = useMediaQuery("(max-width: 40rem)");
+const finePointer = useMediaQuery("(pointer: fine)", { defaultValue: true });
+```
+
+## When to use
+
+- Behaviour that depends on the viewport or the input device: choosing a different interaction, not a different look.
+
+## When not to use
+
+- Styling. A CSS media or container query has no flash, no hydration pass and no JavaScript.
+- Reduced motion. Use `usePrefersReducedMotion`.
+
+## Accessibility
+
+- The server cannot know the query, so it renders `defaultValue` (default `false`). On the client React re-reads the real
+  value during hydration, which can cause one extra render but never a hydration mismatch. Pick the default that is safest
+  without JavaScript.
+- Do not hide content from assistive technology based on a media query; hide it with CSS so the accessibility tree and
+  the visual result stay in step.
