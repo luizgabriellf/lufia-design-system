@@ -1,0 +1,107 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+  min-inline-size: 0;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lufia-space-3);
+  min-block-size: 2.75rem;
+  padding-block: 0.5rem;
+}
+
+.label {
+  padding-block-start: 0.125rem;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-normal);
+  cursor: pointer;
+}
+
+.root[data-disabled] .label {
+  color: var(--lufia-color-text-muted);
+  cursor: not-allowed;
+}
+
+.switch {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  inline-size: 2.75rem;
+  block-size: 1.75rem;
+  padding: 0;
+  background: var(--lufia-color-bg-surface-raised);
+  border: var(--lufia-border-width-thick) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.thumb {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0.1875rem;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin-block-start: -0.5625rem;
+  background: var(--lufia-color-text-muted);
+  border-radius: var(--lufia-radius-full);
+  transition:
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.switch[aria-checked="true"] {
+  background: var(--lufia-color-accent-default);
+  border-color: var(--lufia-color-accent-default);
+}
+
+/* The thumb travels the track's inner width minus the thumb and both insets: 2.5 - 2 x 0.1875 - 1.125. */
+.switch[aria-checked="true"] .thumb {
+  background: var(--lufia-color-text-on-accent);
+  transform: translateX(1rem);
+}
+
+.switch[aria-checked="true"]:dir(rtl) .thumb {
+  transform: translateX(-1rem);
+}
+
+.switch:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.switch:disabled {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.switch:hover:not(:disabled) {
+  border-color: var(--lufia-color-accent-default);
+}
+
+.root[data-invalid] .switch {
+  border-color: var(--lufia-color-status-danger-fg);
+}
+
+@media (forced-colors: active) {
+  .switch[aria-checked="true"] {
+    background: Highlight;
+    border-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .thumb {
+    background: CanvasText;
+  }
+
+  .switch[aria-checked="true"] .thumb {
+    background: HighlightText;
+  }
+}

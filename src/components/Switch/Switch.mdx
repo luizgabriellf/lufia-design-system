@@ -1,0 +1,70 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Switch.stories";
+
+<Meta of={Stories} />
+
+# Switch <StatusBadge status="beta" />
+
+An on/off control for a setting that takes effect immediately: a `role="switch"` button with a label, an optional hint and
+error, and a thumb that slides.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { Switch } from "@lufia/design-system/components/Switch";
+
+<Switch label="Email alerts" hint="One message a day, at most." checked={on} onCheckedChange={save} />;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+It is controlled with `checked` and `onCheckedChange`, or uncontrolled with `defaultChecked`. With `name`, it submits
+`name=on` (or `value`) while on and nothing while off, like a checkbox.
+
+<Controls of={Stories.Default} />
+
+## States
+
+<Canvas of={Stories.On} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.Controlled} />
+
+The state is read from the thumb's position **and** its track colour **and** `aria-checked`. Never label the switch with its
+state ("On"); the label names the setting, and the screen reader says on or off.
+
+## When to use
+
+- A setting that applies at once, with no Save button: notifications, dark mode, a feature flag.
+
+## When not to use
+
+- A choice that is submitted later with a form: use `Checkbox`.
+- A choice between two named options that are not on and off ("Monthly" or "Yearly"): use `SegmentedToggle`.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) pattern.
+
+| Key / action | Behaviour                   |
+| ------------ | --------------------------- |
+| Tab          | Moves focus to and from it. |
+| Space        | Toggles the switch.         |
+| Enter        | Toggles the switch.         |
+| Click label  | Toggles the switch.         |
+
+- `role="switch"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.
+- If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.
+- Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,
+  mirrored in right-to-left, and stays still under `prefers-reduced-motion`.
+
+## Content guidelines
+
+Name the setting as a noun phrase ("Email alerts", "Dark mode"). The hint says what happens when it is on. Do not use a verb
+that flips meaning with the state ("Enable alerts").
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

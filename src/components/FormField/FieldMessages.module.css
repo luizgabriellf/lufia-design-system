@@ -1,0 +1,22 @@
+.hint {
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lufia-space-2);
+  margin: 0;
+  color: var(--lufia-color-status-danger-fg);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-medium);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.errorIcon {
+  flex: 0 0 auto;
+  margin-block-start: 0.0625rem;
+}

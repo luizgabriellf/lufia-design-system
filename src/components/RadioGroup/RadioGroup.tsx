@@ -1,0 +1,148 @@
+"use client";
+
+import { useId, type HTMLAttributes, type ReactNode, type Ref } from "react";
+import { FieldError, FieldHint } from "../FormField/FieldMessages";
+import { useControllableState } from "../FormField/useControllableState";
+import { VisuallyHidden } from "../VisuallyHidden";
+import styles from "./RadioGroup.module.css";
+import { useRadioKeys } from "./useRadioKeys";
+
+export type RadioOption = {
+  value: string;
+  label: ReactNode;
+  /** A line under the label that says more about this choice. */
+  description?: ReactNode;
+  disabled?: boolean;
+};
+
+export type RadioGroupProps = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange" | "defaultValue" | "children"
+> & {
+  /** Names the group, like a `<legend>`. */
+  label: ReactNode;
+  options: readonly RadioOption[];
+  hint?: ReactNode;
+  error?: ReactNode;
+  required?: boolean;
+  disabled?: boolean;
+  /** Controlled value. `""` means nothing chosen. */
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  /** Submitted with the form as `name=value`. */
+  name?: string;
+  /** `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. */
+  orientation?: "vertical" | "horizontal";
+  /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. */
+  requiredLabel?: string;
+  ref?: Ref<HTMLDivElement>;
+};
+
+/**
+ * One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the
+ * arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description.
+ */
+export function RadioGroup({
+  label,
+  options,
+  hint,
+  error,
+  required,
+  disabled,
+  value: valueProp,
+  defaultValue = "",
+  onValueChange,
+  name,
+  orientation = "vertical",
+  requiredLabel = "required",
+  className,
+  id,
+  ref,
+  ...rest
+}: RadioGroupProps) {
+  const generated = useId();
+  const baseId = id ?? `radiogroup-${generated.replace(/:/g, "")}`;
+  const labelId = `${baseId}-label`;
+  const hintId = hint ? `${baseId}-hint` : undefined;
+  const errorId = error ? `${baseId}-error` : undefined;
+  const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);
+  const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
+  const keys = useRadioKeys(items, value, setValue);
+
+  return (
+    <div
+      className={[styles.root, className].filter(Boolean).join(" ")}
+      data-invalid={error ? "" : undefined}
+      data-disabled={disabled ? "" : undefined}
+    >
+      <span id={labelId} className={styles.legend}>
+        {label}
+        {required ? (
+          <>
+            <span className={styles.mark} aria-hidden="true">
+              *
+            </span>
+            <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
+          </>
+        ) : null}
+      </span>
+      {/* The group is not focusable by design (APG): the chosen radio is, and key events bubble up from it. */}
+      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
+      <div
+        {...rest}
+        ref={ref}
+        id={baseId}
+        role="radiogroup"
+        aria-labelledby={labelId}
+        aria-describedby={[rest["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined}
+        aria-required={required || undefined}
+        aria-invalid={error ? true : undefined}
+        aria-disabled={disabled || undefined}
+        className={styles.group}
+        data-orientation={orientation}
+        onKeyDown={(event) => {
+          rest.onKeyDown?.(event);
+          if (!event.defaultPrevented) keys.onKeyDown(event);
+        }}
+      >
+        {options.map((option, index) => {
+          const checked = option.value === value;
+          const isDisabled = disabled || option.disabled;
+          const optionId = `${baseId}-option-${index}`;
+          return (
+            <button
+              key={option.value}
+              id={optionId}
+              type="button"
+              role="radio"
+              aria-checked={checked}
+              aria-labelledby={`${optionId}-label`}
+              aria-describedby={option.description ? `${optionId}-description` : undefined}
+              data-radio-index={index}
+              disabled={isDisabled}
+              tabIndex={option.value === keys.tabbable ? 0 : -1}
+              className={styles.option}
+              onClick={() => setValue(option.value)}
+            >
+              <span className={styles.circle} aria-hidden="true" />
+              <span className={styles.text}>
+                <span id={`${optionId}-label`} className={styles.optionLabel}>
+                  {option.label}
+                </span>
+                {option.description ? (
+                  <span id={`${optionId}-description`} className={styles.description}>
+                    {option.description}
+                  </span>
+                ) : null}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {name && value ? <input type="hidden" name={name} value={value} /> : null}
+      {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
+      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
+    </div>
+  );
+}

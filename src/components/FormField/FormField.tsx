@@ -2,6 +2,7 @@
 
 import { useId, type HTMLAttributes, type ReactNode } from "react";
 import { VisuallyHidden } from "../VisuallyHidden";
+import { FieldError, FieldHint } from "./FieldMessages";
 import { FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
 import styles from "./FormField.module.css";
 
@@ -76,27 +77,8 @@ export function FormField({
       <FormFieldContext.Provider value={control}>
         {typeof children === "function" ? children(control) : children}
       </FormFieldContext.Provider>
-      {hint ? (
-        <p id={hintId} className={styles.hint}>
-          {hint}
-        </p>
-      ) : null}
-      {error ? (
-        <p id={errorId} className={styles.error} role="alert">
-          <svg
-            className={styles.errorIcon}
-            viewBox="0 0 16 16"
-            width="16"
-            height="16"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M8 4.75v3.9M8 10.9v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          </svg>
-          <span>{error}</span>
-        </p>
-      ) : null}
+      {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
+      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
     </div>
   );
 }

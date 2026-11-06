@@ -1,0 +1,77 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Checkbox.stories";
+
+<Meta of={Stories} />
+
+# Checkbox <StatusBadge status="beta" />
+
+A native checkbox with a drawn box, a label that is part of the click target, an optional hint and error, and the mixed
+(indeterminate) state.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { Checkbox } from "@lufia/design-system/components/Checkbox";
+
+<Checkbox name="terms" label="I accept the terms of service" required error={errors.terms} />;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+The component renders a real `<input type="checkbox">`, so `name`, `value`, `checked`, `defaultChecked`, `onChange` and
+`ref` behave as they do on the element, and the value submits with the form without script.
+
+<Controls of={Stories.Default} />
+
+## Mixed state
+
+`indeterminate` shows a dash for a parent whose children are partly checked. It is a display state: the browser clears it when
+the person clicks, so derive it from your data on every render, as in the story below.
+
+<Canvas of={Stories.SelectAll} />
+
+## States
+
+<Canvas of={Stories.Checked} />
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+
+An invalid checkbox has a red border, and the message below has an icon and text, so the state never relies on colour alone.
+
+## When to use
+
+- Independent yes/no choices, and consent that is submitted with a form.
+- A list where several items can be chosen at once.
+
+## When not to use
+
+- A setting that applies the moment it is flipped: use `Switch`.
+- One choice from several: use `RadioGroup`.
+- A group of checkboxes needs a group name: wrap them in a `<fieldset>` with a `<legend>`; `FormField` is for single controls.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Checkbox](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) pattern (a native input).
+
+| Key / action | Behaviour                                                       |
+| ------------ | --------------------------------------------------------------- |
+| Tab          | Moves focus to and from the checkbox.                           |
+| Space        | Toggles the checkbox. A mixed box becomes checked or unchecked. |
+| Click label  | Toggles the checkbox.                                           |
+
+- The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall.
+- A mixed box exposes `aria-checked="mixed"` through the native `indeterminate` property.
+- Hint and error are in the accessible description; the error has `role="alert"` and the input `aria-invalid`.
+- Under `forced-colors` the checked box uses `Highlight` and its mark `HighlightText`.
+
+## Content guidelines
+
+Write the label as the statement that is true when the box is checked ("Send me the weekly report"), never as a question or
+a negative ("Don't send..."). Put the long legal text in the hint or a link next to the control, not in the label.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
