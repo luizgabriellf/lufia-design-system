@@ -412,6 +412,53 @@ describe("Modal", () => {
       expect(onClose).toHaveBeenCalledTimes(2);
     });
 
+    it("ignores a late close event from its own close when the dialog was reopened meanwhile", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" keepMounted onClose={onClose} />);
+      const { trigger } = await openModal();
+      // Close and reopen in one task: the `close` event of the first close is still queued.
+      act(() => {
+        fireEvent.keyDown(document, { key: "Escape" });
+      });
+      act(() => {
+        fireEvent.click(trigger);
+      });
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+
+    it("does not pass a nested dialog's close to the outer one", async () => {
+      const outerClose = vi.fn();
+      function Nest() {
+        const [inner, setInner] = useState(false);
+        return (
+          <Modal open renderAs="dialog" keepMounted onClose={outerClose} title="Outer">
+            <button type="button" onClick={() => setInner(true)}>
+              Open inner
+            </button>
+            <Modal open={inner} renderAs="dialog" keepMounted onClose={() => setInner(false)} title="Inner">
+              Inner body
+            </Modal>
+          </Modal>
+        );
+      }
+      render(<Nest />);
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: "Open inner" }));
+      await user.keyboard("{Escape}");
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      const inner = Array.from(document.querySelectorAll("dialog")).find(
+        (dialog) => dialog.querySelector("h2")?.textContent === "Inner",
+      )!;
+      expect(inner).not.toHaveAttribute("open");
+      expect(outerClose).not.toHaveBeenCalled();
+      // The browser closing the inner one itself must not reach the outer either.
+      act(() => void inner.dispatchEvent(new Event("close", { bubbles: true })));
+      expect(outerClose).not.toHaveBeenCalled();
+    });
+
     it("opens the dialog again when the owner refuses a native close", async () => {
       render(<Harness renderAs="dialog" busy />);
       const { dialog } = await openModal();

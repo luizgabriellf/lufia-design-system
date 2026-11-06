@@ -45,8 +45,9 @@ export function useNativeDialog(
   { onCloseRequest, closeOnCancel = true, closeOnOutsideClick = true, handlers }: UseNativeDialogOptions,
 ) {
   const pressedBackdrop = useRef(false);
-  // The package closed it (`active` ended): the `close` event that follows is not a request from the person.
-  const closedByUs = useRef(false);
+  // `close()` calls the package made whose `close` event has not arrived yet. Those events are not requests from the
+  // person, and a count (not a flag) keeps a close-then-reopen from turning a late one into a request.
+  const pendingOwnCloses = useRef(0);
   const activeRef = useRef(active);
   useLayoutEffect(() => {
     activeRef.current = active;
@@ -56,11 +57,10 @@ export function useNativeDialog(
     const dialog = ref.current;
     if (!active || !dialog) return;
     const previous = document.activeElement as HTMLElement | null;
-    closedByUs.current = false;
     if (!dialog.open) dialog.showModal();
     return () => {
       if (dialog.open) {
-        closedByUs.current = true;
+        pendingOwnCloses.current += 1;
         dialog.close();
       }
       notifyTopModalDialogChanged();
@@ -103,11 +103,15 @@ export function useNativeDialog(
     onClose(event: SyntheticEvent<HTMLDialogElement>) {
       // The browser closed it without going through us: a second Escape that cannot be cancelled, or a
       // `<form method="dialog">`. Tell the owner; if it keeps the dialog open (busy, a guard), open it again.
-      if (closedByUs.current) {
-        closedByUs.current = false;
+      // `close` bubbles through React, so ignore one from a dialog nested inside this one.
+      if (event.target !== event.currentTarget) return;
+      const dialog = event.currentTarget;
+      if (pendingOwnCloses.current > 0) {
+        pendingOwnCloses.current -= 1;
         return;
       }
-      const dialog = event.currentTarget;
+      // A real native close leaves the dialog closed; one that finds it open again is stale.
+      if (dialog.open) return;
       onCloseRequest();
       setTimeout(() => {
         if (activeRef.current && dialog.isConnected && !dialog.open) dialog.showModal();
