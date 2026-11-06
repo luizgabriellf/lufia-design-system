@@ -125,7 +125,7 @@ export function CardAnatomy() {
 const MODAL_PARTS: AnatomyPart[] = [
   {
     label: "Backdrop",
-    note: "Dims the page and blocks it from pointer input; a press that begins on it dismisses unless closeOnOutsideClick is off.",
+    note: "Dims the page and blocks it from pointer input; a press that begins on it dismisses unless closeOnOutsideClick is off. While busy, dismissal is refused.",
     x: 3,
     y: 10,
     side: "start",
@@ -248,7 +248,7 @@ export function ToastAnatomy() {
 const COMBOBOX_PARTS: AnatomyPart[] = [
   {
     label: "Input",
-    note: "role=combobox. Typing filters; the value is the chosen option, not the text. A clear button appears once an option is chosen, and Escape clears too when the list is closed.",
+    note: "role=combobox. Typing filters; the value is the chosen option, not the text. With the clearable prop (off by default), a clear button appears once an option is chosen, and Escape clears too when the list is closed.",
     x: 30,
     y: 0,
     side: "top",
