@@ -1,0 +1,96 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lufia-space-2) var(--lufia-space-3);
+  padding: var(--lufia-space-2) var(--lufia-space-4);
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.summary {
+  margin: 0;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.5rem;
+  min-block-size: 2.5rem;
+  padding-inline: var(--lufia-space-2);
+  border: var(--lufia-border-width-thin) solid transparent;
+  border-radius: var(--lufia-radius-control);
+  box-sizing: border-box;
+  background: transparent;
+  color: var(--lufia-color-text-default);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.control:hover {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.control:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.control[aria-current="page"] {
+  border-color: var(--lufia-color-accent-border);
+  background: var(--lufia-color-accent-subtle);
+  color: var(--lufia-color-text-accent);
+  font-weight: var(--lufia-font-weight-semibold);
+  cursor: default;
+}
+
+.control[aria-disabled="true"] {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.control[aria-disabled="true"]:hover {
+  background: transparent;
+}
+
+.gap {
+  display: inline-flex;
+  min-inline-size: 1.5rem;
+  justify-content: center;
+  color: var(--lufia-color-text-subtle);
+}
+
+/* Phones: the status line says where you are, so the numbers give way to previous and next. */
+@media (width < 40rem) {
+  .number {
+    display: none;
+  }
+
+  .list {
+    margin-inline-start: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .control[aria-current="page"] {
+    border-color: Highlight;
+  }
+}

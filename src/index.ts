@@ -8,6 +8,7 @@ export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/SortableTh";
 export * from "./components/NavRow";
+export * from "./components/Pagination";
 export * from "./components/PeerNav";
 export * from "./components/StatusTimeline";
 export * from "./components/Stepper";

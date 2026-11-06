@@ -1,0 +1,76 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Pagination.stories";
+
+<Meta of={Stories} />
+
+# Pagination <StatusBadge status="beta" />
+
+Page navigation for a list or table: previous and next, numbered pages that collapse into an ellipsis, and a status line.
+It is the view for `usePagination`.
+
+<Canvas of={Stories.WithUsePagination} />
+
+## Usage
+
+```tsx
+import { Pagination } from "@lufia/design-system/components/Pagination";
+import { usePagination } from "@lufia/design-system/components/usePagination";
+
+const { slice, page, totalPages, total, setPage } = usePagination(rows, 10);
+
+<Pagination
+  page={page}
+  totalPages={totalPages}
+  total={total}
+  onPageChange={setPage}
+  labels={{
+    nav: "Results",
+    previous: "Previous",
+    next: "Next",
+    page: (n) => `Page ${n}`,
+    summary: (n, count, all) => `Page ${n} of ${count}, ${all} results`,
+  }}
+/>;
+```
+
+Every string, including the status line, arrives through `labels` (functions, so word order and plurals are yours). Hide
+the component when everything fits on one page (`usePagination` returns `show`).
+
+For server-side pagination or crawlable pages, pass `hrefFor` and the controls become real links rendered through the
+configured `linkComponent`.
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- Long lists or tables that are paged. Prefer it to infinite scroll when people need to return to a position.
+
+## When not to use
+
+- Fewer than two pages, or feeds without a known end.
+
+## Keyboard and accessibility
+
+| Key                          | Action                                            |
+| ---------------------------- | ------------------------------------------------- |
+| Tab / Shift+Tab              | Moves between previous, the page numbers and next |
+| Enter (and Space on buttons) | Goes to the focused page                          |
+
+- A `<nav>` landmark named by `labels.nav` holds a list. The current page has `aria-current="page"`, and its button does
+  nothing when pressed.
+- Page buttons are named "Page 3" while showing "3"; the visible text is part of the name.
+- Previous and next at the ends use `aria-disabled` instead of `disabled`, so focus is not dropped when you reach the last
+  page by pressing next. They ignore clicks.
+- The status line is a polite live region that announces the new page; on phones it is the only place the position shows,
+  because the numbers are hidden below 40rem.
+- Controls are 2.5rem square. Focus shows a 2px ring; the current page also has a border and weight, not colour alone, and
+  keeps a `Highlight` border in forced-colors mode.
+
+## Content guidelines
+
+Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
