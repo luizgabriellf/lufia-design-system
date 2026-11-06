@@ -84,11 +84,13 @@ needs time to be found.
 
 ### Accessibility
 
-- Announcing is separate from showing. Two visually hidden live regions (`aria-live="assertive"` for errors,
-  `"polite"` for the rest) stay mounted in `document.body` for the life of the provider and hold a text copy of each
-  message; a live region only announces content added after it exists. The visible stack is a labelled `region` that
-  moves into the topmost open modal `<dialog>` and back, so a toast raised as a dialog closes is still announced.
-  Errors interrupt, the rest wait for the screen reader to finish.
+- Announcing is separate from showing. Visually hidden live regions (`role="alert"` for errors, `role="status"` for the
+  rest) hold a text copy of each message. One pair lives in `document.body`; another is created inside each open modal
+  `<dialog>` for as long as it is open, because the browser makes the body inert behind it. A message goes to the
+  announcer of the topmost open dialog, or the body's, and each one exists before anything is added to it. The visible
+  stack is a labelled `region` that moves into the topmost dialog and back. Errors interrupt, the rest wait.
+- In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")`
+  (`"alert"` for errors) and query the visible toast inside the `Notifications` region.
 - Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a
   focused toast dismisses it. While a toast has focus its timer is paused.
 - The notification region stays live while a [Modal](?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest

@@ -29,6 +29,10 @@ function setup(props?: Partial<ToastProviderProps>) {
 /** Queries inside the visible stack (the announcer holds a second, screen-reader-only copy of each message). */
 const list = () => within(screen.getByRole("region", { name: "Notifications" }));
 const polite = () => document.querySelector<HTMLElement>('[aria-live="polite"]')!;
+/** The announcer of one host: the body's, or the one inside a dialog. */
+const politeIn = (host: Element) =>
+  host.querySelector<HTMLElement>(":scope > [data-lufia-announcer] [aria-live='polite']");
+const bodyPolite = () => politeIn(document.body)!;
 const assertive = () => document.querySelector<HTMLElement>('[aria-live="assertive"]')!;
 /** Runs timers and the frame that removes a toast once its exit is over (no stylesheet here, so no animation to wait for). */
 const advance = (ms: number) => act(() => void vi.advanceTimersByTime(ms));
@@ -380,7 +384,7 @@ describe("useToast", () => {
         </ToastProvider>,
       );
       await act(async () => {});
-      const region = polite();
+      const region = bodyPolite();
       const added: Node[] = [];
       new MutationObserver((records) => records.forEach((r) => added.push(...r.addedNodes))).observe(region, {
         childList: true,
@@ -392,7 +396,7 @@ describe("useToast", () => {
       );
       await act(async () => screen.getByRole("button", { name: "Save" }).click());
       await act(async () => {});
-      expect(polite()).toBe(region);
+      expect(bodyPolite()).toBe(region);
       expect(region.isConnected).toBe(true);
       expect(region).toHaveTextContent("Saved");
       expect(added.some((node) => node.textContent === "Saved")).toBe(true);
@@ -400,6 +404,46 @@ describe("useToast", () => {
       const stack = screen.getByRole("region", { name: "Notifications" });
       expect(stack.parentElement).toBe(document.body);
       expect(within(stack).getByText("Saved").closest("li")).toHaveAttribute("data-moved");
+    });
+  });
+
+  describe("announcer hosts", () => {
+    it("keeps a persistent announcer pair inside each open modal dialog and removes it when the dialog closes", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      setup();
+      expect(politeIn(dialog)).toBeNull();
+      await act(async () => dialog.showModal());
+      const inside = politeIn(dialog)!;
+      expect(inside).toHaveAttribute("role", "status");
+      expect(dialog.querySelector("[role='alert']")).not.toBeNull();
+      await act(async () => dialog.close());
+      expect(inside.isConnected).toBe(false);
+      expect(politeIn(document.body)).not.toBeNull();
+      dialog.remove();
+    });
+
+    it("announces a toast raised while a dialog stays open in that dialog's announcer, not in the body's", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      setup();
+      await act(async () => dialog.showModal());
+      act(() => void api().error("Save failed"));
+      act(() => void api().success("Saved"));
+      expect(dialog.querySelector("[role='alert']")).toHaveTextContent("Save failed");
+      expect(politeIn(dialog)).toHaveTextContent("Saved");
+      expect(bodyPolite()).toBeEmptyDOMElement();
+      dialog.remove();
+    });
+
+    it("follows a dialog that the app removes from the document while it is open", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      dialog.showModal();
+      setup();
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(dialog);
+      await act(async () => dialog.remove());
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(document.body);
     });
   });
 

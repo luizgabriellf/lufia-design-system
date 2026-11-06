@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { useTopModalDialog } from "../Modal/topModalDialog";
+import { useModalDialogs } from "../Modal/topModalDialog";
 import { usePrefersReducedMotion } from "../../motion/usePrefersReducedMotion";
 import { useLufia } from "../LufiaProvider";
 import { SuccessCheck } from "../SuccessCheck";
@@ -72,6 +72,9 @@ type Item = {
   leaving: boolean;
   /** The list changed host while it was on screen: no enter animation. */
   moved: boolean;
+  /** The container whose announcer reads this message out. */
+  announceHost: Element | null;
+  createdAt: number;
 };
 
 type Timer = {
@@ -88,6 +91,14 @@ const MIN_RESUME_MS = 1500;
 const DEFAULT_DURATION_MS = 5000;
 const noSubscription = () => () => {};
 let counter = 0;
+
+const announcerKeys = new WeakMap<Element, string>();
+/** A stable key per host, so an announcer is not recreated when another host comes or goes. */
+const announcerKey = (host: Element) => {
+  let key = announcerKeys.get(host);
+  if (!key) announcerKeys.set(host, (key = `announcer-${++counter}`));
+  return key;
+};
 
 const TONES: readonly string[] = ["info", "success", "warning", "error"];
 
@@ -125,7 +136,12 @@ export function ToastProvider({
 }: ToastProviderProps) {
   const { labels } = useLufia();
   const auto = container === "auto";
-  const dialogHost = useTopModalDialog(auto);
+  const dialogs = useModalDialogs(true);
+  const topDialog = dialogs[dialogs.length - 1] ?? null;
+  const dialogHost = auto ? topDialog : null;
+  // Messages are read out by the announcer of the topmost open modal dialog, else the body's: the browser makes everything
+  // outside an open modal dialog inert, and an inert live region says nothing.
+  const announceHostRef = useRef<Element | null>(null);
   const host = auto ? (dialogHost ?? undefined) : (container ?? undefined);
   const mounted = useSyncExternalStore(
     noSubscription,
@@ -148,6 +164,21 @@ export function ToastProvider({
     lastHost.current = host;
     commit(itemsRef.current.map((item) => ({ ...item, moved: true })));
   }, [host, commit]);
+
+  useLayoutEffect(() => {
+    announceHostRef.current = topDialog ?? document.body;
+    // A toast raised in the same tick as its dialog closed was queued for an announcer that is gone: hand it to the one
+    // that is topmost now. Older toasts were already heard; they stay where they were.
+    const now = Date.now();
+    let changed = false;
+    const next = itemsRef.current.map((item) => {
+      if (item.leaving || !item.announceHost || item.announceHost.isConnected || now - item.createdAt > 1000)
+        return item;
+      changed = true;
+      return { ...item, announceHost: announceHostRef.current };
+    });
+    if (changed) commit(next);
+  }, [topDialog, dialogs, commit]);
 
   const dropTimer = useCallback((id: string) => {
     const timer = timers.current.get(id);
@@ -221,6 +252,8 @@ export function ToastProvider({
         action: options.action,
         leaving: false,
         moved: false,
+        announceHost: announceHostRef.current ?? document.body,
+        createdAt: Date.now(),
       };
       const next = [...itemsRef.current, item];
       // Past the limit the oldest visible toasts leave.
@@ -270,10 +303,14 @@ export function ToastProvider({
     [show, dismiss, clear],
   );
 
-  const announce = (assertive: boolean) =>
+  const announce = (host: Element, assertive: boolean) =>
     items
-      .filter((item) => !item.leaving && (item.tone === "error") === assertive)
+      .filter((item) => !item.leaving && item.announceHost === host && (item.tone === "error") === assertive)
       .map((item) => <div key={item.uid}>{item.message}</div>);
+
+  // One persistent pair per host: the body, and each open modal dialog from the moment it opens until it closes. Each one
+  // exists before any message is added to it, which is what makes a live region announce.
+  const announcerHosts: Element[] = mounted ? [document.body, ...dialogs] : [];
 
   const render = (assertive: boolean) =>
     items
@@ -295,19 +332,19 @@ export function ToastProvider({
       {children}
       {mounted ? (
         <>
-          {createPortal(
-            // The announcer is long-lived and always in the body: a live region only announces content added after it
-            // exists, so it must not be recreated when the visible list changes host (a dialog closing as a toast is raised).
-            // Errors are assertive, everything else polite.
-            <div className={styles.announcer} data-lufia-inert-exempt="">
-              <div aria-live="assertive" aria-atomic="false" aria-relevant="additions">
-                {announce(true)}
-              </div>
-              <div aria-live="polite" aria-atomic="false" aria-relevant="additions">
-                {announce(false)}
-              </div>
-            </div>,
-            document.body,
+          {announcerHosts.map((announcerHost) =>
+            createPortal(
+              <div className={styles.announcer} data-lufia-inert-exempt="" data-lufia-announcer="">
+                <div role="alert" aria-live="assertive" aria-atomic="false" aria-relevant="additions">
+                  {announce(announcerHost, true)}
+                </div>
+                <div role="status" aria-live="polite" aria-atomic="false" aria-relevant="additions">
+                  {announce(announcerHost, false)}
+                </div>
+              </div>,
+              announcerHost,
+              announcerKey(announcerHost),
+            ),
           )}
           {createPortal(
             // The visible stack. `data-lufia-inert-exempt` keeps it reachable while a modal is open.
