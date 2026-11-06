@@ -109,6 +109,13 @@
   display: none;
 }
 
+/* When every item is narrow-only the button itself is needed on narrow pages only. */
+@media (width >= 48rem) {
+  .root[data-narrow-only] {
+    display: none;
+  }
+}
+
 @media (width < 48rem) {
   .entry[data-narrow-only] {
     display: block;

@@ -36,12 +36,12 @@ render as links through the `linkComponent` set on `LufiaProvider`.
 | -------------------------- | ------- | ----------------------------------------------------------------------- |
 | Enter / Space / Down arrow | Trigger | Opens the menu and focuses the first item                               |
 | Up arrow                   | Trigger | Opens the menu and focuses the last item                                |
-| Down / Up arrow            | Menu    | Next / previous item, wrapping; disabled items are skipped              |
+| Down / Up arrow            | Menu    | Next / previous item, wrapping; disabled items are included             |
 | Home / End                 | Menu    | First / last item                                                       |
 | A letter or letters        | Menu    | Typeahead: jumps to the next item starting with them; resets after 0.5s |
 | Enter / Space              | Item    | Activates the item, closes the menu, and returns focus to the trigger   |
 | Escape                     | Menu    | Closes the menu and returns focus to the trigger                        |
-| Tab                        | Menu    | Closes the menu and moves on                                            |
+| Tab                        | Menu    | Closes the menu, returns focus to the button, moves on from it          |
 
 A press outside closes the menu. Escape and outside presses go through `useDismiss` and the shared layer stack, so inside a
 dialog Escape closes the menu first and the dialog on the next press. The component adds no document listeners of its own.
@@ -63,7 +63,8 @@ dialog Escape closes the menu first and the dialog on the next press. The compon
 - The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
 - The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
   trigger on close or selection.
-- Disabled items are `aria-disabled` and skipped by keys; they are still read when browsing.
+- Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.
+- Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.
 - A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
   never carries the meaning alone.
 - Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.

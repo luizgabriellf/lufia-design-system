@@ -3,6 +3,7 @@
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type HTMLAttributes,
@@ -76,6 +77,7 @@ export function MoreActions({
   ...rest
 }: MoreActionsProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [flipped, setFlipped] = useState(false);
   const skipFocus = useRef(defaultOpen);
   const [initial, setInitial] = useState<"first" | "last">("first");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -88,9 +90,10 @@ export function MoreActions({
   useDismiss(open, close, rootRef, triggerRef);
 
   // Items that are shown right now and can take focus. Layout decides, because some items are hidden by CSS on wide pages.
-  const enabled = () =>
+  // Disabled items stay in the list: they are focusable and readable (APG), they just cannot be activated.
+  const focusable = () =>
     Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []).filter(
-      (el) => el.getAttribute("aria-disabled") !== "true" && el.getClientRects().length > 0,
+      (el) => el.getClientRects().length > 0,
     );
 
   useEffect(() => {
@@ -99,9 +102,28 @@ export function MoreActions({
       skipFocus.current = false;
       return;
     }
-    const list = enabled();
+    const list = focusable();
     (initial === "last" ? list[list.length - 1] : list[0])?.focus();
   }, [open, initial]);
+
+  // Checked once when the menu opens: if it runs past the viewport on the aligned side, line it up with the other edge.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const menu = menuRef.current;
+    const trigger = triggerRef.current;
+    if (!menu || !trigger) return;
+    const box = menu.getBoundingClientRect();
+    const anchor = trigger.getBoundingClientRect();
+    const viewport = document.documentElement.clientWidth;
+    if (box.width === 0 || (box.left >= 0 && box.right <= viewport)) return;
+    // The other alignment puts the menu's edge on the opposite edge of the trigger.
+    const other =
+      box.left < 0
+        ? { left: anchor.left, right: anchor.left + box.width }
+        : { left: anchor.right - box.width, right: anchor.right };
+    // Measuring the laid-out menu and correcting its side before paint is what a layout effect is for.
+    if (other.left >= 0 && other.right <= viewport) setFlipped(true);
+  }, [open]);
 
   useEffect(() => {
     const state = typed.current;
@@ -109,6 +131,7 @@ export function MoreActions({
   }, []);
 
   const openAt = (where: "first" | "last") => {
+    setFlipped(false);
     setInitial(where);
     setOpen(true);
   };
@@ -124,7 +147,7 @@ export function MoreActions({
   };
 
   const onMenuKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
-    const list = enabled();
+    const list = focusable();
     if (list.length === 0) return;
     const at = list.indexOf(document.activeElement as HTMLElement);
     const go = (index: number) => {
@@ -135,7 +158,11 @@ export function MoreActions({
     if (event.key === "ArrowUp") return go(at - 1);
     if (event.key === "Home") return go(0);
     if (event.key === "End") return go(list.length - 1);
-    if (event.key === "Tab") return close();
+    if (event.key === "Tab") {
+      // Focus goes back to the button first, so the Tab that follows moves on from it and the order stays predictable.
+      triggerRef.current?.focus();
+      return close();
+    }
     if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey || event.key === " ") return;
     // Typeahead: a growing prefix, forgotten after a pause. The same letter repeated cycles through that letter's items.
     event.preventDefault();
@@ -157,12 +184,15 @@ export function MoreActions({
     item.onSelect?.();
   };
 
+  if (items.length === 0) return null;
+  const resolved = flipped ? (align === "end" ? "start" : "end") : align;
   return (
     <div
       {...rest}
       ref={rootRef}
       className={[styles.root, className].filter(Boolean).join(" ")}
-      data-align={align}
+      data-align={resolved}
+      data-narrow-only={items.every((item) => item.narrowOnly) || undefined}
     >
       <IconButton
         ref={triggerRef}
@@ -221,6 +251,7 @@ export function MoreActions({
                     onClick={(event) => {
                       if (item.disabled) return event.preventDefault();
                       close();
+                      triggerRef.current?.focus();
                       item.onSelect?.();
                     }}
                   >

@@ -74,11 +74,13 @@ describe("MoreActions", () => {
     expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
   });
 
-  it("moves with arrows (wrapping, skipping disabled), Home and End", async () => {
+  it("moves with arrows (wrapping, disabled items included), Home and End", async () => {
     const { user, trigger } = setup();
     await user.click(trigger);
     await user.keyboard("{ArrowDown}");
     expect(screen.getByRole("menuitem", { name: /Export/ })).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Archive" })).toHaveFocus();
     await user.keyboard("{ArrowDown}");
     expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
     await user.keyboard("{ArrowDown}");
@@ -91,7 +93,7 @@ describe("MoreActions", () => {
     expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
   });
 
-  it("typeahead jumps to the item starting with the typed letter after the pause, and ignores disabled ones", async () => {
+  it("typeahead jumps to the item starting with the typed letter after the pause, including disabled ones", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const { user, trigger } = setup();
     await user.click(trigger);
@@ -101,8 +103,8 @@ describe("MoreActions", () => {
     await user.keyboard("d");
     expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
     await act(async () => vi.advanceTimersByTime(600));
-    await user.keyboard("a"); // Archive is disabled: focus stays
-    expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
+    await user.keyboard("a"); // Archive is disabled but focusable
+    expect(screen.getByRole("menuitem", { name: "Archive" })).toHaveFocus();
     vi.useRealTimers();
   });
 
@@ -133,11 +135,15 @@ describe("MoreActions", () => {
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
   });
 
-  it("closes on Tab without trapping focus", async () => {
+  it("Tab returns focus to the button first, so the next stop follows from it", async () => {
     const { user, trigger } = setup();
     await user.click(trigger);
     await user.tab();
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "After" })).toHaveFocus();
+    await user.click(trigger);
+    await user.tab({ shift: true });
+    expect(screen.getByRole("button", { name: "Before" })).toHaveFocus();
   });
 
   it("toggles closed when the trigger is pressed again", async () => {
@@ -163,11 +169,14 @@ describe("MoreActions", () => {
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 
-  it("does not select a disabled item", async () => {
+  it("keeps a disabled item focusable but does not activate it", async () => {
     const { user, trigger } = setup();
     await user.click(trigger);
     const archive = screen.getByRole("menuitem", { name: "Archive" });
     expect(archive).toHaveAttribute("aria-disabled", "true");
+    archive.focus();
+    expect(archive).toHaveFocus();
+    await user.keyboard("{Enter}");
     await user.click(archive);
     expect(onSelect).not.toHaveBeenCalled();
     expect(screen.getByRole("menu")).toBeInTheDocument();
@@ -220,6 +229,60 @@ describe("MoreActions", () => {
     removeLayer(above);
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
+  it("returns focus to the button after a link item is chosen", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    render(<MoreActions label="More" items={[{ key: "a", label: "Open", href: "#open" }]} />);
+    const trigger = screen.getByRole("button", { name: "More" });
+    await user.click(trigger);
+    await user.click(screen.getByRole("menuitem", { name: "Open" }));
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("renders no menu button when there are no items", () => {
+    render(<MoreActions label="More" items={[]} />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  describe("alignment", () => {
+    const box = (left: number, width: number) =>
+      ({ left, right: left + width, width, top: 0, bottom: 10, height: 10, x: left, y: 0 }) as DOMRect;
+
+    function measure(menuLeft: number, triggerLeft: number) {
+      withLayout();
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
+        this: HTMLElement,
+      ) {
+        return this.getAttribute("role") === "menu" ? box(menuLeft, 200) : box(triggerLeft, 40);
+      });
+      Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: 300 });
+    }
+
+    it("flips to the other edge when the menu would run past the viewport and the other edge fits", async () => {
+      measure(-60, 20); // end-aligned menu hangs 60px off the left; start-aligned (left 20, right 220) fits
+      const user = userEvent.setup();
+      const { container } = render(<MoreActions label="More" items={items} align="end" />);
+      expect(container.firstElementChild).toHaveAttribute("data-align", "end");
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(container.firstElementChild).toHaveAttribute("data-align", "start");
+    });
+
+    it("keeps the alignment when it fits, or when the other edge would not fit either", async () => {
+      const user = userEvent.setup();
+      measure(10, 20);
+      const first = render(<MoreActions label="More" items={items} align="end" />);
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(first.container.firstElementChild).toHaveAttribute("data-align", "end");
+      first.unmount();
+      vi.restoreAllMocks();
+      measure(-60, 200); // flipping would put the menu at 200..400, past the 300px viewport
+      const second = render(<MoreActions label="More" items={items} align="end" />);
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(second.container.firstElementChild).toHaveAttribute("data-align", "end");
+    });
   });
 
   it("has no axe violations, closed and open", async () => {

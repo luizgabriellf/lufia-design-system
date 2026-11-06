@@ -11,10 +11,3 @@
     display: none;
   }
 }
-
-/* With no always-on overflow items the menu button is needed on narrow screens only. */
-@media (width >= 48rem) {
-  .root > .narrowOnly {
-    display: none;
-  }
-}

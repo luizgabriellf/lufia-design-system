@@ -68,14 +68,7 @@ export function PageActions({
           {item.label}
         </Button>
       ))}
-      {menu.length > 0 ? (
-        <MoreActions
-          className={overflow.length === 0 ? styles.narrowOnly : undefined}
-          label={moreLabel}
-          items={menu}
-          variant="secondary"
-        />
-      ) : null}
+      {menu.length > 0 ? <MoreActions label={moreLabel} items={menu} variant="secondary" /> : null}
     </div>
   );
 }
