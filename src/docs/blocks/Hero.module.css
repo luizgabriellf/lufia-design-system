@@ -76,9 +76,14 @@
 }
 
 .badge {
-  display: block;
-  line-height: 0;
-  border-radius: var(--lufia-radius-xs);
+  display: inline-flex;
+  overflow: hidden;
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: 1.25rem;
+  text-decoration: none;
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-sm);
 }
 
 .badge:focus-visible {
@@ -86,9 +91,19 @@
   outline-offset: 2px;
 }
 
-.badge img {
-  display: block;
-  min-block-size: 1.25rem;
+.badgeLabel,
+.badgeValue {
+  padding-inline: 0.5rem;
+}
+
+.badgeLabel {
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.badgeValue {
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
 }
 
 .srOnly {

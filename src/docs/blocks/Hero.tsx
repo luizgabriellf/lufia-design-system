@@ -10,22 +10,11 @@ import { REPO_URL } from "./links";
 import { landingStats } from "./stats";
 import styles from "./Hero.module.css";
 
+/** Static badges: no remote image requests, so loading the docs tells no third party who is reading them. */
 const BADGES = [
-  {
-    label: "CI status",
-    href: `${REPO_URL}/actions/workflows/ci.yml`,
-    src: `https://img.shields.io/github/actions/workflow/status/luizgabriellf/lufia-design-system/ci.yml?branch=main&label=CI&style=flat-square`,
-  },
-  {
-    label: "MIT licence",
-    href: `${REPO_URL}/blob/main/LICENSE`,
-    src: "https://img.shields.io/github/license/luizgabriellf/lufia-design-system?style=flat-square&label=licence",
-  },
-  {
-    label: "Package version",
-    href: `${REPO_URL}/blob/main/CHANGELOG.md`,
-    src: `https://img.shields.io/badge/version-${pkg.version}-1d4ed8?style=flat-square`,
-  },
+  { label: "CI", value: "GitHub Actions", href: `${REPO_URL}/actions/workflows/ci.yml` },
+  { label: "licence", value: "MIT", href: `${REPO_URL}/blob/main/LICENSE` },
+  { label: "version", value: pkg.version, href: `${REPO_URL}/blob/main/CHANGELOG.md` },
 ];
 
 const noop = () => {};
@@ -113,7 +102,9 @@ export function Hero() {
             {BADGES.map((badge) => (
               <li key={badge.label}>
                 <a href={badge.href} target="_blank" rel="noreferrer noopener" className={styles.badge}>
-                  <img src={badge.src} alt={badge.label} height={20} />
+                  <span className={styles.badgeLabel}>{badge.label}</span>
+                  <span className={styles.badgeValue}>{badge.value}</span>
+                  <span className={styles.srOnly}> (opens in a new tab)</span>
                 </a>
               </li>
             ))}
