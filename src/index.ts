@@ -18,6 +18,7 @@ export * from "./components/useFocusTrap";
 export * from "./components/useMediaQuery";
 export * from "./components/useModalState";
 export * from "./components/usePagination";
+export * from "./components/useSlidingIndicator";
 export * from "./components/useStepDirection";
 export * from "./components/VisuallyHidden";
 export * from "./motion";
