@@ -1,0 +1,191 @@
+/* The viewport is a fixed corner. Clicks pass through everything but the toasts themselves. */
+.viewport {
+  --toast-enter-y: var(--lufia-motion-distance-slide);
+
+  position: fixed;
+  z-index: var(--lufia-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-3);
+  max-inline-size: calc(100% - 2 * var(--lufia-space-4));
+  inline-size: 24rem;
+  pointer-events: none;
+}
+
+.viewport[data-placement^="bottom"] {
+  /* An app that floats its own bar at the bottom lifts the stack above it with this property. */
+  inset-block-end: calc(
+    var(--lufia-toast-offset-block, 0rem) + var(--lufia-space-6) + env(safe-area-inset-bottom)
+  );
+  justify-content: flex-end;
+}
+
+.viewport[data-placement^="top"] {
+  --toast-enter-y: calc(-1 * var(--lufia-motion-distance-slide));
+
+  inset-block-start: calc(
+    var(--lufia-toast-offset-block, 0rem) + var(--lufia-space-6) + env(safe-area-inset-top)
+  );
+}
+
+.viewport[data-placement$="end"] {
+  inset-inline-end: var(--lufia-space-5);
+}
+
+.viewport[data-placement$="start"] {
+  inset-inline-start: var(--lufia-space-5);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  --toast-tone: var(--lufia-color-text-muted);
+  --toast-tone-bg: var(--lufia-color-status-neutral-bg);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lufia-space-3);
+  padding: var(--lufia-space-3) var(--lufia-space-3) var(--lufia-space-3) var(--lufia-space-4);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-solid);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-inline-start: 0.25rem solid var(--toast-tone);
+  border-radius: var(--lufia-radius-card);
+  box-shadow: var(--lufia-shadow-md);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-normal);
+  pointer-events: auto;
+
+  /* Animates `from` only: the resting state is the end state, and a disabled animation leaves the toast visible. */
+  animation: toast-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.item[data-tone="info"] {
+  --toast-tone: var(--lufia-color-accent-default);
+  --toast-tone-bg: var(--lufia-color-accent-subtle);
+}
+
+.item[data-tone="success"] {
+  --toast-tone: var(--lufia-color-status-success-fg);
+  --toast-tone-bg: var(--lufia-color-status-success-bg);
+}
+
+.item[data-tone="warning"] {
+  --toast-tone: var(--lufia-color-status-warning-fg);
+  --toast-tone-bg: var(--lufia-color-status-warning-bg);
+}
+
+.item[data-tone="error"] {
+  --toast-tone: var(--lufia-color-status-danger-fg);
+  --toast-tone-bg: var(--lufia-color-status-danger-bg);
+}
+
+.item[data-state="leaving"] {
+  animation: toast-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  color: var(--toast-tone);
+  background: var(--toast-tone-bg);
+  border-radius: var(--lufia-radius-full);
+}
+
+.message {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  padding-block: 0.125rem;
+  overflow-wrap: anywhere;
+}
+
+.action,
+.dismiss {
+  flex: none;
+  min-block-size: 1.75rem;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-md);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.action {
+  padding: 0 var(--lufia-space-3);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.dismiss {
+  display: grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  color: var(--lufia-color-text-muted);
+}
+
+.action:focus-visible,
+.dismiss:focus-visible {
+  outline: 2px solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.action:hover,
+.dismiss:hover {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--toast-enter-y));
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(var(--toast-enter-y));
+  }
+}
+
+@media (width <= 30rem) {
+  .viewport {
+    inset-inline: var(--lufia-space-3);
+    inline-size: auto;
+    max-inline-size: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .item[data-state="leaving"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .item {
+    border-color: CanvasText;
+    border-inline-start-color: Highlight;
+  }
+
+  .icon {
+    border: var(--lufia-border-width-thin) solid CanvasText;
+  }
+}

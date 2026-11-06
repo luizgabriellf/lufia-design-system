@@ -1,0 +1,17 @@
+/* The keyframes animate `from` only, so the resting state is a fully drawn check and a disabled animation leaves it visible. */
+.path {
+  stroke-dasharray: 1;
+  animation: check-draw var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) 80ms both;
+}
+
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path {
+    animation: none;
+  }
+}

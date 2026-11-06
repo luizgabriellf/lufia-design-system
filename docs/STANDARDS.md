@@ -30,12 +30,11 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
   - `ref` as a prop (React 19);
   - state exposed as `data-*` attributes;
   - no boolean-prop explosion.
-- [ ] Every user-facing string comes in through props (i18n stays in the apps). English defaults are allowed only for aria-only text.
-- [ ] No app imports (`@/`, next-intl, Supabase, routes). Navigation goes through a `LinkComponent` adapter, set once by a `LufiaProvider`.
+- [~] Every user-facing string comes in through props (i18n stays in the apps). English defaults are allowed only for aria-only text. (Holds for everything shipped so far; aria-only defaults live in `LufiaProvider` `labels`.)
+- [~] No app imports (`@/`, next-intl, Supabase, routes). Navigation goes through a `LinkComponent` adapter, set once by a `LufiaProvider`. (`LufiaProvider`, `useLufia` and `LufiaLink` exist; navigation components that consume them come next.)
 - [ ] RSC-safe: static components carry no `"use client"`; interactive ones do. CI checks this by building a tiny Next app.
-- [ ] **DECISION:** build the complex widgets (Combobox, Modal/Dialog, Toast, Menu, Popover, Tabs) on an accessibility primitives library, or keep them custom.
-  - **Recommendation: React Aria Components.** It is the market standard for strict WAI-ARIA behaviour, has i18n-aware internals and is unstyled. Radix is the alternative.
-  - Custom focus-trap and combobox code is where accessibility bugs usually live.
+- [x] **DECISION (ADR 0003):** the complex widgets (Combobox, Modal/Dialog, Toast, Menu, Popover, Tabs) stay custom, hardened with tests against the WAI-ARIA APG patterns. Revisit React Aria if maintenance cost grows.
+  - Custom focus-trap and combobox code is where accessibility bugs usually live, so each widget needs its keyboard table in the docs and its keyboard tests.
 - [ ] Component status labels: `alpha` / `beta` / `stable` / `deprecated`, shown in docs.
 
 ## 4. Accessibility (gate, not nice-to-have)
