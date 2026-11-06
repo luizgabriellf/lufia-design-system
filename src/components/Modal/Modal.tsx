@@ -3,6 +3,7 @@
 import {
   useId,
   useRef,
+  useState,
   useSyncExternalStore,
   type CSSProperties,
   type HTMLAttributes,
@@ -14,6 +15,7 @@ import { Reveal } from "../../motion/Reveal";
 import { useLufia } from "../LufiaProvider";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
+import { useTopModalDialog } from "./topModalDialog";
 import { useNativeDialog } from "./useNativeDialog";
 import { useMediaQuery } from "../useMediaQuery";
 import styles from "./Modal.module.css";
@@ -132,6 +134,12 @@ export function Modal({
     () => false,
   );
   const visible = mounted && open;
+  // A portal layer outside the top layer would sit behind an open native dialog and, with the page made inert, leave both
+  // unusable. Opened over one, it renders inside that dialog instead (unless the caller chose a `container`).
+  const liveHost = useTopModalDialog(!native && container === undefined && open);
+  // Kept while closing, so the exit animation does not move the layer.
+  const [hostDialog, setHostDialog] = useState<HTMLDialogElement | null>(null);
+  if (open && liveHost !== hostDialog) setHostDialog(liveHost);
 
   const requestClose = () => {
     if (!busy) onClose();
@@ -141,6 +149,7 @@ export function Modal({
     onCloseRequest: requestClose,
     closeOnCancel: closeOnEscape,
     closeOnOutsideClick,
+    handlers: { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
   });
 
   useBodyScrollLock(visible, { scrollContainerSelectors });
@@ -220,7 +229,7 @@ export function Modal({
     </>
   );
 
-  const target = container ?? document.body;
+  const target = container ?? hostDialog ?? document.body;
 
   if (native) {
     if (!open && !keepMounted) return null;

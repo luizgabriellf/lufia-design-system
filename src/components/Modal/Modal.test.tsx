@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
@@ -6,6 +6,7 @@ import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { isBodyScrollLocked } from "../useBodyScrollLock";
 import { LufiaProvider } from "../LufiaProvider";
+import { ConfirmDialog } from "../ConfirmDialog";
 import { Modal, type ModalProps } from "./Modal";
 
 beforeEach(() => {
@@ -394,6 +395,45 @@ describe("Modal", () => {
       expect(onClose).not.toHaveBeenCalled();
     });
 
+    it("tells the owner when the browser closes the dialog by itself, once and only then", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" keepMounted onClose={onClose} />);
+      const { user, dialog } = await openModal();
+      // A <form method="dialog"> or an uncancellable Escape: closed natively, then the event.
+      dialog.removeAttribute("open");
+      act(() => void dialog.dispatchEvent(new Event("close")));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+      // Closing from React fires the same event later; that one is not a request.
+      await user.click(screen.getByRole("button", { name: "Open modal" }));
+      await user.keyboard("{Escape}");
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(onClose).toHaveBeenCalledTimes(2);
+    });
+
+    it("opens the dialog again when the owner refuses a native close", async () => {
+      render(<Harness renderAs="dialog" busy />);
+      const { dialog } = await openModal();
+      dialog.removeAttribute("open");
+      act(() => void dialog.dispatchEvent(new Event("close")));
+      await waitFor(() => expect(dialogMock.showModal).toHaveBeenCalledTimes(2));
+      expect(dialog).toHaveAttribute("open");
+    });
+
+    it("runs the caller's own onClick and onPointerDown besides closing on the backdrop", async () => {
+      const onClick = vi.fn();
+      const onPointerDown = vi.fn();
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClick={onClick} onPointerDown={onPointerDown} onClose={onClose} />);
+      const { dialog } = await openModal();
+      fireEvent.pointerDown(dialog, { clientX: 9, clientY: 9 });
+      fireEvent.click(dialog, { clientX: 9, clientY: 9 });
+      expect(onPointerDown).toHaveBeenCalledTimes(1);
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
     it("stays in the document, closed, with keepMounted", async () => {
       render(<Harness renderAs="dialog" keepMounted />);
       const closed = document.querySelector("dialog")!;
@@ -411,6 +451,66 @@ describe("Modal", () => {
       render(<Harness renderAs="dialog" description="Changes apply to everyone." />);
       await openModal();
       expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("nesting", () => {
+    let dialogMock: ReturnType<typeof mockDialog>;
+    beforeEach(() => {
+      dialogMock = mockDialog();
+    });
+    afterEach(() => {
+      cleanup();
+      dialogMock.restore();
+    });
+
+    function Nested({ onConfirm }: { onConfirm: () => void }) {
+      const [confirming, setConfirming] = useState(false);
+      return (
+        <Modal open renderAs="dialog" onClose={() => {}} title="Outer">
+          <button type="button" onClick={() => setConfirming(true)}>
+            Delete
+          </button>
+          <ConfirmDialog
+            open={confirming}
+            title="Delete?"
+            message="This cannot be undone."
+            confirmLabel="Yes, delete"
+            cancelLabel="Keep"
+            onConfirm={onConfirm}
+            onCancel={() => setConfirming(false)}
+          />
+        </Modal>
+      );
+    }
+
+    it("renders a portal modal opened over a native dialog inside it, and leaves that dialog usable", async () => {
+      const onConfirm = vi.fn();
+      render(<Nested onConfirm={onConfirm} />);
+      const outer = screen.getByRole("dialog", { name: "Outer" });
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: "Delete" }));
+      const inner = screen.getByRole("alertdialog", { name: "Delete?" });
+      expect(outer).toContainElement(inner);
+      expect(outer).not.toHaveAttribute("inert");
+      expect(inner.closest("[inert]")).toBeNull();
+      await user.click(screen.getByRole("button", { name: "Yes, delete" }));
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+    });
+
+    it("closes the inner layer first on Escape, then the outer dialog on the next", async () => {
+      render(<Nested onConfirm={() => {}} />);
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: "Delete" }));
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+      expect(screen.getByRole("dialog", { name: "Outer" })).toBeInTheDocument();
+    });
+
+    it("keeps a portal modal in the body when no native dialog is open", async () => {
+      render(<Harness />);
+      const { dialog } = await openModal();
+      expect(dialog.parentElement?.parentElement?.parentElement).toBe(document.body);
     });
   });
 });

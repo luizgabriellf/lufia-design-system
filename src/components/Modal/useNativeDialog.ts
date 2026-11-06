@@ -4,6 +4,8 @@ import {
   useLayoutEffect,
   useRef,
   type MouseEvent,
+  type MouseEventHandler,
+  type PointerEventHandler,
   type PointerEvent,
   type RefObject,
   type SyntheticEvent,
@@ -17,6 +19,12 @@ export type UseNativeDialogOptions = {
   closeOnCancel?: boolean;
   /** A press on the backdrop counts as a dismissal. Default `true`. */
   closeOnOutsideClick?: boolean;
+  /** The caller's own handlers for the same events: they run first and are not replaced. */
+  handlers?: {
+    onClick?: MouseEventHandler<HTMLDialogElement & HTMLDivElement>;
+    onPointerDown?: PointerEventHandler<HTMLDialogElement & HTMLDivElement>;
+    onCancel?: (event: SyntheticEvent<HTMLDialogElement>) => void;
+  };
 };
 
 /**
@@ -34,17 +42,27 @@ export type UseNativeDialogOptions = {
 export function useNativeDialog(
   ref: RefObject<HTMLDialogElement | null>,
   active: boolean,
-  { onCloseRequest, closeOnCancel = true, closeOnOutsideClick = true }: UseNativeDialogOptions,
+  { onCloseRequest, closeOnCancel = true, closeOnOutsideClick = true, handlers }: UseNativeDialogOptions,
 ) {
   const pressedBackdrop = useRef(false);
+  // The package closed it (`active` ended): the `close` event that follows is not a request from the person.
+  const closedByUs = useRef(false);
+  const activeRef = useRef(active);
+  useLayoutEffect(() => {
+    activeRef.current = active;
+  });
 
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (!active || !dialog) return;
     const previous = document.activeElement as HTMLElement | null;
+    closedByUs.current = false;
     if (!dialog.open) dialog.showModal();
     return () => {
-      if (dialog.open) dialog.close();
+      if (dialog.open) {
+        closedByUs.current = true;
+        dialog.close();
+      }
       notifyTopModalDialogChanged();
       // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
       const focused = document.activeElement;
@@ -66,18 +84,34 @@ export function useNativeDialog(
 
   return {
     onCancel(event: SyntheticEvent<HTMLDialogElement>) {
+      handlers?.onCancel?.(event);
       // Escape is handled by the layer stack and its keydown is prevented, so this only arrives for a close request that
       // has no key (a platform back gesture). The dialog is never closed by the browser; the owner closes it.
       event.preventDefault();
       if (closeOnCancel) onCloseRequest();
     },
     onPointerDown(event: PointerEvent<HTMLDialogElement>) {
+      handlers?.onPointerDown?.(event as PointerEvent<HTMLDialogElement & HTMLDivElement>);
       pressedBackdrop.current = event.target === event.currentTarget && outside(event);
     },
     onClick(event: MouseEvent<HTMLDialogElement>) {
+      handlers?.onClick?.(event as MouseEvent<HTMLDialogElement & HTMLDivElement>);
       // The native backdrop reports clicks on the dialog itself; only a press that began outside the panel counts.
       if (pressedBackdrop.current && closeOnOutsideClick && outside(event)) onCloseRequest();
       pressedBackdrop.current = false;
+    },
+    onClose(event: SyntheticEvent<HTMLDialogElement>) {
+      // The browser closed it without going through us: a second Escape that cannot be cancelled, or a
+      // `<form method="dialog">`. Tell the owner; if it keeps the dialog open (busy, a guard), open it again.
+      if (closedByUs.current) {
+        closedByUs.current = false;
+        return;
+      }
+      const dialog = event.currentTarget;
+      onCloseRequest();
+      setTimeout(() => {
+        if (activeRef.current && dialog.isConnected && !dialog.open) dialog.showModal();
+      }, 0);
     },
   };
 }

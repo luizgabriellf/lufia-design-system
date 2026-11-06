@@ -1,6 +1,6 @@
 /**
  * Test helper: jsdom does not implement `<dialog>` modal behaviour. Installs a `showModal` and a `close` that toggle the
- * `open` attribute, makes `:modal` match a dialog opened with `showModal()`, and returns the spies.
+ * `open` attribute (`close` fires the `close` event later, as a browser does), makes `:modal` match a dialog opened with `showModal()`, and returns the spies.
  * Call `restore()` in `afterEach`.
  */
 export function mockDialog() {
@@ -12,8 +12,11 @@ export function mockDialog() {
     modal.add(this);
   });
   const close = vi.fn(function (this: HTMLDialogElement) {
+    const wasOpen = this.hasAttribute("open");
     this.removeAttribute("open");
     modal.delete(this);
+    // A real dialog fires `close` in a task after closing.
+    if (wasOpen) setTimeout(() => this.dispatchEvent(new Event("close")), 0);
   });
   const matches = Element.prototype.matches;
   proto.showModal = showModal;

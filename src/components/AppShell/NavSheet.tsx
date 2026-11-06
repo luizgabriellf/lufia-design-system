@@ -75,7 +75,10 @@ export function NavSheet({
   // A native dialog is shown for exactly as long as `open`; a portal sheet also stays for its exit animation.
   const shown = native ? open : phase !== "unmounted";
   const trapped = native ? open : phase === "open";
-  const nativeDialog = useNativeDialog(panel, native && open && client, { onCloseRequest: close });
+  const nativeDialog = useNativeDialog(panel, native && open && client, {
+    onCloseRequest: close,
+    handlers: { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
+  });
   useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
   useBodyScrollLock(shown);
   const drag = useSheetDrag(close, swipeToDismiss);
