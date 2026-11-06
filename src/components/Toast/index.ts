@@ -8,4 +8,5 @@ export {
   type ToastPlacement,
   type ToastProviderProps,
   type ToastTone,
+  type ToastToneName,
 } from "./Toast";

@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { useEffect } from "react";
 import { axe } from "../../test/axe";
+import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { LufiaProvider } from "../LufiaProvider";
 import { ToastProvider, useOptionalToast, useToast, type ToastApi, type ToastProviderProps } from "./Toast";
@@ -35,9 +36,14 @@ const advanceAndSettle = (ms: number) => {
 };
 
 beforeEach(() => vi.useFakeTimers());
+let dialogMock: ReturnType<typeof mockDialog>;
+beforeEach(() => {
+  dialogMock = mockDialog();
+});
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  dialogMock.restore();
 });
 
 describe("ToastProvider", () => {
@@ -269,5 +275,118 @@ describe("useToast", () => {
     expect(screen.getByText("none")).toBeInTheDocument();
     expect(() => render(<Capture />)).toThrow(/ToastProvider/);
     quiet.mockRestore();
+  });
+
+  describe("hosting", () => {
+    it("renders in document.body by default", () => {
+      setup();
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(document.body);
+    });
+
+    it("renders in the element given as container", () => {
+      const host = document.createElement("div");
+      document.body.append(host);
+      setup({ container: host });
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(host);
+      host.remove();
+    });
+
+    it("hosts the region inside the topmost modal dialog, and moves back to the body when it closes", async () => {
+      const first = document.createElement("dialog");
+      const second = document.createElement("dialog");
+      document.body.append(first, second);
+      setup();
+      const region = () => screen.getByRole("region", { name: "Notifications" });
+      expect(region().parentElement).toBe(document.body);
+
+      await act(async () => {
+        first.showModal();
+        second.showModal();
+      });
+      expect(region().parentElement).toBe(second);
+
+      await act(async () => second.close());
+      expect(region().parentElement).toBe(first);
+
+      await act(async () => first.close());
+      expect(region().parentElement).toBe(document.body);
+      first.remove();
+      second.remove();
+    });
+
+    it("does not follow a non-modal dialog", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      setup();
+      await act(async () => dialog.setAttribute("open", ""));
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(document.body);
+      dialog.remove();
+    });
+
+    it("follows a dialog that is removed while open", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      dialog.showModal();
+      setup();
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(dialog);
+      await act(async () => dialog.remove());
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(document.body);
+    });
+
+    it("keeps toasts raised before a dialog opened", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      setup();
+      act(() => void api().error("Upload failed"));
+      await act(async () => dialog.showModal());
+      expect(within(dialog).getByText("Upload failed")).toBeInTheDocument();
+      dialog.remove();
+    });
+
+    it("ignores dialogs when container is null", async () => {
+      const dialog = document.createElement("dialog");
+      document.body.append(dialog);
+      setup({ container: null });
+      await act(async () => dialog.showModal());
+      expect(screen.getByRole("region", { name: "Notifications" }).parentElement).toBe(document.body);
+      dialog.remove();
+    });
+  });
+
+  describe("tone aliases", () => {
+    it("maps an app's tone names onto the built-in tones", () => {
+      setup({ toneAliases: { ok: "success", warn: "warning", bad: "error" } });
+      act(() => {
+        api().show({ message: "Done", tone: "ok" });
+        api().show({ message: "Careful", tone: "warn" });
+        api().show({ message: "Broken", tone: "bad" });
+      });
+      expect(screen.getByText("Done").closest("li")).toHaveAttribute("data-tone", "success");
+      expect(screen.getByText("Careful").closest("li")).toHaveAttribute("data-tone", "warning");
+      // An aliased error is still announced assertively and stays until dismissed.
+      expect(within(assertive()).getByText("Broken").closest("li")).toHaveAttribute("data-tone", "error");
+      advance(60_000);
+      expect(screen.getByText("Broken")).toBeInTheDocument();
+    });
+
+    it("de-duplicates by resolved tone and falls back to info for an unknown name", () => {
+      setup({ toneAliases: { ok: "success" } });
+      act(() => {
+        api().show({ message: "Saved", tone: "ok" });
+        api().success("Saved");
+        api().show({ message: "Mystery", tone: "nope" });
+      });
+      expect(screen.getAllByText("Saved")).toHaveLength(1);
+      expect(screen.getByText("Mystery").closest("li")).toHaveAttribute("data-tone", "info");
+    });
+  });
+
+  it("uses the provider's default duration", () => {
+    setup({ duration: 3500 });
+    act(() => void api().success("Saved"));
+    advance(3499);
+    expect(screen.getByText("Saved")).toBeInTheDocument();
+    advanceAndSettle(1);
+    expect(screen.queryByText("Saved")).not.toBeInTheDocument();
   });
 });

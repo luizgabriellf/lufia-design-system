@@ -37,16 +37,20 @@ The action button's text (`action.label`) and the message are yours; only the di
 region's name are aria-only labels with English defaults (`labels.dismiss`, `labels.notifications` of
 [LufiaProvider](?path=/docs/components-utilities-lufiaprovider--docs)).
 
-| API                                                   | Notes                                                                          |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `show({ message, tone, action, duration, id })`       | The general form; returns the toast's id.                                      |
-| `info / success / warning / error(message, options?)` | Shorthands for the four tones.                                                 |
-| `dismiss(id)` / `clear()`                             | Close one toast or all of them.                                                |
-| `ToastProvider` `placement`                           | `bottom-end` (default), `bottom-start`, `top-end`, `top-start`.                |
-| `ToastProvider` `limit` / `duration`                  | Most toasts at once (5) and default time in ms (5000).                         |
-| `useOptionalToast()`                                  | The same API, or `null` outside a provider, for code that may run without one. |
+| API                                                   | Notes                                                                                    |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `show({ message, tone, action, duration, id })`       | The general form; returns the toast's id.                                                |
+| `info / success / warning / error(message, options?)` | Shorthands for the four tones.                                                           |
+| `dismiss(id)` / `clear()`                             | Close one toast or all of them.                                                          |
+| `ToastProvider` `placement`                           | `bottom-end` (default), `bottom-start`, `top-end`, `top-start`.                          |
+| `ToastProvider` `limit` / `duration`                  | Most toasts at once (5) and default time in ms (5000).                                   |
+| `ToastProvider` `container`                           | `"auto"` (default) hosts the region in the topmost open modal `<dialog>`; or an element. |
+| `ToastProvider` `toneAliases`                         | Maps your own tone names onto the four tones: `{ ok: "success" }`.                       |
+| `useOptionalToast()`                                  | The same API, or `null` outside a provider, for code that may run without one.           |
 
-To keep the stack clear of other fixed UI (a floating action bar), set `--lufia-toast-offset-block` on `:root`.
+To keep the stack clear of other fixed UI (a floating action bar), set `--lufia-toast-offset-block` on `:root`. The icon
+size, the corner radius and the width of the tone stripe are `--lufia-toast-icon-size`, `--lufia-toast-radius` and
+`--lufia-toast-border-width`.
 
 ### Timing
 

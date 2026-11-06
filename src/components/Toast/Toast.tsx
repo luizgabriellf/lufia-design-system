@@ -18,6 +18,8 @@ import { SuccessCheck } from "../SuccessCheck";
 import styles from "./Toast.module.css";
 
 export type ToastTone = "info" | "success" | "warning" | "error";
+/** A built-in tone, or a name the app maps onto one with the provider's `toneAliases`. */
+export type ToastToneName = ToastTone | (string & {});
 export type ToastPlacement = "bottom-end" | "bottom-start" | "top-end" | "top-start";
 
 export type ToastAction = {
@@ -29,8 +31,11 @@ export type ToastAction = {
 
 export type ToastOptions = {
   message: ReactNode;
-  /** Default `info`. `error` is announced assertively and never closes by itself unless `duration` says so. */
-  tone?: ToastTone;
+  /**
+   * Default `info`. `error` is announced assertively and never closes by itself unless `duration` says so. An alias from the
+   * provider's `toneAliases` resolves to its built-in tone; an unknown name falls back to `info`.
+   */
+  tone?: ToastToneName;
   action?: ToastAction;
   /**
    * Milliseconds before it closes on its own. `null` keeps it until dismissed. Defaults to the provider's `duration`;
@@ -80,14 +85,45 @@ const DEFAULT_DURATION_MS = 5000;
 const noSubscription = () => () => {};
 let counter = 0;
 
+const TONES: readonly string[] = ["info", "success", "warning", "error"];
+
+/** The topmost open modal `<dialog>` (the last one in the document), or `null`. Browsers without `:modal` see any open dialog. */
+function topmostModalDialog(): HTMLDialogElement | null {
+  const open = document.querySelectorAll<HTMLDialogElement>("dialog[open]");
+  for (let index = open.length - 1; index >= 0; index -= 1) {
+    const dialog = open[index]!;
+    try {
+      if (dialog.matches(":modal")) return dialog;
+    } catch {
+      return dialog;
+    }
+  }
+  return null;
+}
+
+/** Calls back when a dialog opens or closes or is added or removed, so the host can follow the top layer. */
+function watchDialogs(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+  return () => observer.disconnect();
+}
+
 export type ToastProviderProps = {
   children: ReactNode;
   /** Corner of the viewport the stack sits in. Default `bottom-end`. */
   placement?: ToastPlacement;
   /** The most toasts shown at once; older ones leave first. Default 5. */
   limit?: number;
-  /** Default time before a toast closes, in ms. Default 5000. */
+  /** Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. */
   duration?: number;
+  /**
+   * Where the notification region is rendered. `"auto"` (default) hosts it inside the topmost open modal `<dialog>` while
+   * there is one, so toasts stay visible above a native top-layer dialog (a `Modal` with `renderAs="dialog"`), and in
+   * `document.body` otherwise. Pass an element to always render there, or `null` for `document.body` only.
+   */
+  container?: "auto" | Element | null;
+  /** Names an app uses for tones, mapped to built-in ones: `{ ok: "success", warn: "warning" }`. */
+  toneAliases?: Readonly<Record<string, ToastTone>>;
 };
 
 /**
@@ -101,8 +137,17 @@ export function ToastProvider({
   placement = "bottom-end",
   limit = 5,
   duration = DEFAULT_DURATION_MS,
+  container = "auto",
+  toneAliases,
 }: ToastProviderProps) {
   const { labels } = useLufia();
+  const auto = container === "auto";
+  const dialogHost = useSyncExternalStore(
+    auto ? watchDialogs : noSubscription,
+    () => (auto ? topmostModalDialog() : null),
+    () => null,
+  );
+  const host = auto ? (dialogHost ?? undefined) : (container ?? undefined);
   const mounted = useSyncExternalStore(
     noSubscription,
     () => true,
@@ -168,7 +213,9 @@ export function ToastProvider({
 
   const show = useCallback(
     (options: ToastOptions) => {
-      const tone = options.tone ?? "info";
+      const requested = options.tone ?? "info";
+      const named = toneAliases?.[requested] ?? requested;
+      const tone: ToastTone = TONES.includes(named) ? (named as ToastTone) : "info";
       const key =
         options.id ?? (typeof options.message === "string" ? `${tone}:${options.message}` : undefined);
       const existing = key ? itemsRef.current.find((item) => item.key === key && !item.leaving) : undefined;
@@ -206,7 +253,7 @@ export function ToastProvider({
       }
       return id;
     },
-    [arm, commit, dropTimer, duration, limit],
+    [arm, commit, dropTimer, duration, limit, toneAliases],
   );
 
   const clear = useCallback(() => {
@@ -271,7 +318,7 @@ export function ToastProvider({
                 {render(false)}
               </ol>
             </div>,
-            document.body,
+            host ?? document.body,
           )
         : null}
     </ToastContext.Provider>

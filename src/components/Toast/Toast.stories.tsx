@@ -132,6 +132,55 @@ function AboveModal() {
   );
 }
 
+function AboveNativeDialog() {
+  const toast = useToast();
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open dialog</Button>
+      <Modal
+        open={open}
+        renderAs="dialog"
+        onClose={() => setOpen(false)}
+        title="Share report"
+        footer={
+          <Button variant="primary" onClick={() => toast.success("Link copied.", { duration: null })}>
+            Copy link
+          </Button>
+        }
+      >
+        The region is hosted inside this native dialog, so toasts sit in the top layer with it.
+      </Modal>
+    </>
+  );
+}
+
+export const AboveANativeDialog: Story = {
+  render: () => (
+    <ToastProvider>
+      <AboveNativeDialog />
+    </ToastProvider>
+  ),
+};
+
+function AliasButtons() {
+  const toast = useToast();
+  return (
+    <div style={{ display: "flex", gap: "0.5rem" }}>
+      <Button onClick={() => toast.show({ message: "Saved.", tone: "ok" })}>ok</Button>
+      <Button onClick={() => toast.show({ message: "Check the date.", tone: "warn" })}>warn</Button>
+    </div>
+  );
+}
+
+export const ToneAliases: Story = {
+  render: () => (
+    <ToastProvider toneAliases={{ ok: "success", warn: "warning" }} duration={3500}>
+      <AliasButtons />
+    </ToastProvider>
+  ),
+};
+
 export const AboveAModal: Story = {
   render: () => (
     <ToastProvider>
