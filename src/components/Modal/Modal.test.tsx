@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
+import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { isBodyScrollLocked } from "../useBodyScrollLock";
 import { LufiaProvider } from "../LufiaProvider";
@@ -261,6 +262,155 @@ describe("Modal", () => {
       render(<Harness size="lg" />);
       const { dialog } = await openModal();
       expect(dialog.style.getPropertyValue("--lufia-modal-size")).toBe("");
+    });
+  });
+
+  describe("keepMounted", () => {
+    it("keeps children mounted, hidden and inert while closed, and typed input survives a close and reopen", async () => {
+      render(<Harness keepMounted />);
+      const closed = screen.getByLabelText("Name", { selector: "input" });
+      expect(closed).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(closed.closest("[role=dialog]")).toHaveAttribute("hidden");
+      expect(closed.closest("[role=dialog]")).toHaveAttribute("inert");
+
+      const { user, dialog } = await openModal();
+      expect(dialog).not.toHaveAttribute("hidden");
+      await user.type(screen.getByLabelText("Name"), "Ada");
+      await user.keyboard("{Escape}");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(isBodyScrollLocked()).toBe(false);
+
+      await user.click(screen.getByRole("button", { name: "Open modal" }));
+      expect(screen.getByLabelText("Name")).toHaveValue("Ada");
+    });
+
+    it("still traps focus, restores it and closes from the backdrop", async () => {
+      const onClose = vi.fn();
+      render(<Harness keepMounted onClose={onClose} />);
+      const { user, trigger, dialog } = await openModal();
+      expect(dialog).toHaveFocus();
+      const backdrop = document.querySelector<HTMLElement>('[aria-hidden="true"][data-state]')!;
+      fireEvent.pointerDown(backdrop);
+      fireEvent.click(backdrop);
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(trigger).toHaveFocus();
+      await user.click(trigger);
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+
+    it("has no axe violations while open", async () => {
+      render(<Harness keepMounted />);
+      await openModal();
+      expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe('renderAs="dialog"', () => {
+    let dialogMock: ReturnType<typeof mockDialog>;
+    beforeEach(() => {
+      dialogMock = mockDialog();
+    });
+    afterEach(() => {
+      cleanup();
+      dialogMock.restore();
+    });
+
+    it("renders a native dialog that is opened with showModal and closed with close", async () => {
+      render(<Harness renderAs="dialog" />);
+      expect(document.querySelector("dialog")).toBeNull();
+      const { user, dialog } = await openModal();
+      expect(dialog.tagName).toBe("DIALOG");
+      expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+      expect(dialog).toHaveAccessibleName("Edit profile");
+      expect(dialog).toHaveFocus();
+      await user.keyboard("{Escape}");
+      expect(dialogMock.close).toHaveBeenCalled();
+      expect(document.querySelector("dialog")).toBeNull();
+    });
+
+    it("keeps the layer stack: Escape closes only the topmost, the page is not made inert by the package", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { user, trigger } = await openModal();
+      expect(trigger.parentElement).not.toHaveAttribute("inert");
+      expect(isBodyScrollLocked()).toBe(true);
+      await user.keyboard("{Escape}");
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(isBodyScrollLocked()).toBe(false);
+      expect(trigger).toHaveFocus();
+    });
+
+    it("traps Tab inside the dialog", async () => {
+      render(<Harness renderAs="dialog" />);
+      const { user } = await openModal();
+      await user.tab();
+      expect(screen.getByRole("button", { name: "Close" })).toHaveFocus();
+      await user.tab({ shift: true });
+      expect(screen.getByRole("button", { name: "Save" })).toHaveFocus();
+    });
+
+    it("turns the native cancel event into a close request, once", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { dialog } = await openModal();
+      const event = new Event("cancel", { cancelable: true });
+      dialog.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not close on cancel when Escape is off or the dialog is busy", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} closeOnEscape={false} />);
+      const { dialog } = await openModal();
+      const event = new Event("cancel", { cancelable: true });
+      dialog.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+      expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it("closes only when the press began and ended outside the panel", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { dialog } = await openModal();
+      // jsdom has no layout: the panel box is all zeros, so any positive coordinate is outside it.
+      fireEvent.click(dialog, { clientX: 9, clientY: 9 });
+      expect(onClose).not.toHaveBeenCalled();
+      fireEvent.pointerDown(dialog, { clientX: 0, clientY: 0 });
+      fireEvent.click(dialog, { clientX: 9, clientY: 9 });
+      expect(onClose).not.toHaveBeenCalled();
+      fireEvent.pointerDown(dialog, { clientX: 9, clientY: 9 });
+      fireEvent.click(dialog, { clientX: 9, clientY: 9 });
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores outside presses when closeOnOutsideClick is off", async () => {
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} closeOnOutsideClick={false} />);
+      const { dialog } = await openModal();
+      fireEvent.pointerDown(dialog, { clientX: 9, clientY: 9 });
+      fireEvent.click(dialog, { clientX: 9, clientY: 9 });
+      expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it("stays in the document, closed, with keepMounted", async () => {
+      render(<Harness renderAs="dialog" keepMounted />);
+      const closed = document.querySelector("dialog")!;
+      expect(closed).not.toHaveAttribute("open");
+      expect(closed).toContainElement(within(closed).getByLabelText("Name"));
+      const { user, dialog } = await openModal();
+      await user.type(screen.getByLabelText("Name"), "Ada");
+      await user.keyboard("{Escape}");
+      expect(dialog).not.toHaveAttribute("open");
+      await user.click(screen.getByRole("button", { name: "Open modal" }));
+      expect(screen.getByLabelText("Name")).toHaveValue("Ada");
+    });
+
+    it("has no axe violations while open", async () => {
+      render(<Harness renderAs="dialog" description="Changes apply to everyone." />);
+      await openModal();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
   });
 });

@@ -17,6 +17,11 @@
   background: var(--lufia-modal-backdrop, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
 }
 
+.backdrop[hidden],
+.frame[hidden] {
+  display: none;
+}
+
 /* The frame centres the panel and lets clicks through to the backdrop around it. */
 .frame {
   position: fixed;
@@ -75,6 +80,29 @@
 
 .panel[data-size="custom"] {
   max-inline-size: var(--lufia-modal-size);
+}
+
+/* Keep-mounted panels play the enter themselves: they are never unmounted, so there is no exit to wait for. */
+.panel[data-kept][data-state="open"] {
+  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.native[open] {
+  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.native::backdrop {
+  background: var(--lufia-modal-backdrop, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+}
+
+/* A native dialog is shown by the browser (`display: none` until `showModal()`); the panel rules must not override that. */
+.native {
+  padding: 0;
+  margin: auto;
+}
+
+.native:not([open]) {
+  display: none;
 }
 
 .header {
@@ -260,6 +288,16 @@
     );
   }
 
+  .native {
+    inline-size: 100%;
+    margin-block: auto 0;
+    margin-inline: 0;
+  }
+
+  .native[data-sheet="top"] {
+    margin-block: var(--lufia-modal-sheet-offset, 0) auto;
+  }
+
   .close {
     inline-size: var(--lufia-modal-close-size, 2.75rem);
     block-size: var(--lufia-modal-close-size, 2.75rem);
@@ -274,6 +312,20 @@
   .footer {
     flex-direction: column-reverse;
     align-items: stretch;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-rise)) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel[data-kept][data-state="open"],
+  .native[open] {
+    animation: none;
   }
 }
 

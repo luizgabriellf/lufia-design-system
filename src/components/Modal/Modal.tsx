@@ -2,6 +2,7 @@
 
 import {
   useId,
+  useLayoutEffect,
   useRef,
   useSyncExternalStore,
   type CSSProperties,
@@ -41,6 +42,18 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   titleWrap?: "wrap" | "ellipsis";
   /** Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. */
   scrollShadow?: boolean;
+  /**
+   * Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is
+   * hidden and inert; it has no exit animation.
+   */
+  keepMounted?: boolean;
+  /**
+   * `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with
+   * `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape,
+   * scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made
+   * inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`.
+   */
+  renderAs?: "portal" | "dialog";
   /** Extra controls placed beside the close button in the header. */
   headerAction?: ReactNode;
   /** Content of the footer bar, usually the actions. The bar is left out when this is empty. */
@@ -86,6 +99,8 @@ export function Modal({
   sheetPlacement = "bottom",
   titleWrap = "wrap",
   scrollShadow = false,
+  keepMounted = false,
+  renderAs = "portal",
   headerAction,
   footer,
   closeLabel,
@@ -105,9 +120,11 @@ export function Modal({
   const { labels } = useLufia();
   const titleId = useId();
   const descriptionId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
+  // The panel is a `div` in portal mode and a `dialog` in native mode; the intersection lets one ref serve both.
+  const panelRef = useRef<HTMLDivElement & HTMLDialogElement>(null);
   const pressedBackdrop = useRef(false);
   const phone = useMediaQuery(PHONE);
+  const native = renderAs === "dialog";
   // The portal target exists only on the client: false during SSR and hydration.
   const mounted = useSyncExternalStore(
     noSubscription,
@@ -116,11 +133,27 @@ export function Modal({
   );
   const visible = mounted && open;
 
+  // Declared before the focus trap so the native dialog is open (and focusable) when the trap moves focus into it.
+  useLayoutEffect(() => {
+    const dialog = panelRef.current;
+    if (!native || !visible || !dialog) return;
+    const previous = document.activeElement as HTMLElement | null;
+    if (!dialog.open) dialog.showModal();
+    return () => {
+      if (dialog.open) dialog.close();
+      // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
+      const active = document.activeElement;
+      if (previous?.isConnected && (!active || active === document.body || dialog.contains(active)))
+        previous.focus({ preventScroll: true });
+    };
+  }, [native, visible]);
+
   useBodyScrollLock(visible, { scrollContainerSelectors });
   useFocusTrap(visible, panelRef, {
     onEscape: closeOnEscape && !busy ? onClose : undefined,
     initialFocus,
-    inertBackground: true,
+    inertBackground: !native,
+    restoreFocus: !native,
   });
 
   if (!mounted) return null;
@@ -145,7 +178,7 @@ export function Modal({
     "data-title-wrap": titleWrap,
     "data-scroll-shadow": scrollShadow ? "" : undefined,
     style: customSize ? ({ ...style, "--lufia-modal-size": customSize } as CSSProperties) : style,
-    className: [styles.panel, className].filter(Boolean).join(" "),
+    className: [styles.panel, native ? styles.native : null, className].filter(Boolean).join(" "),
   };
 
   // A scrolling region must be reachable by keyboard (WCAG 2.1.1), so the body gets a tab stop only when it scrolls.
@@ -196,6 +229,72 @@ export function Modal({
     </>
   );
 
+  const target = container ?? document.body;
+
+  if (native) {
+    if (!open && !keepMounted) return null;
+    const outside = (event: { clientX: number; clientY: number }) => {
+      const rect = panelRef.current?.getBoundingClientRect();
+      return (
+        !!rect &&
+        (event.clientX < rect.left ||
+          event.clientX > rect.right ||
+          event.clientY < rect.top ||
+          event.clientY > rect.bottom)
+      );
+    };
+    return createPortal(
+      // The click is the native backdrop's (it targets the dialog itself); Escape is handled by the layer stack.
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+      <dialog
+        {...(panelProps as HTMLAttributes<HTMLDialogElement>)}
+        ref={panelRef}
+        onCancel={(event) => {
+          // Escape is handled by the layer stack; a close request that arrives without a key (a platform back gesture) lands here.
+          event.preventDefault();
+          if (closeOnEscape) requestClose();
+        }}
+        onPointerDown={(event) => {
+          pressedBackdrop.current = event.target === event.currentTarget && outside(event);
+        }}
+        onClick={(event) => {
+          // The native backdrop reports clicks on the dialog itself; only a press that began outside the panel counts.
+          if (pressedBackdrop.current && closeOnOutsideClick && outside(event)) requestClose();
+          pressedBackdrop.current = false;
+        }}
+      >
+        {content}
+      </dialog>,
+      target,
+    );
+  }
+
+  if (keepMounted) {
+    return createPortal(
+      <div className={styles.layer}>
+        <div
+          className={styles.backdrop}
+          data-state={open ? "open" : "closed"}
+          hidden={!open}
+          aria-hidden="true"
+          onPointerDown={() => {
+            pressedBackdrop.current = true;
+          }}
+          onClick={() => {
+            if (pressedBackdrop.current && closeOnOutsideClick) requestClose();
+            pressedBackdrop.current = false;
+          }}
+        />
+        <div className={styles.frame} data-sheet={sheetPlacement} hidden={!open}>
+          <div {...(panelProps as HTMLAttributes<HTMLDivElement>)} ref={panelRef} data-kept="" hidden={!open}>
+            {content}
+          </div>
+        </div>
+      </div>,
+      target,
+    );
+  }
+
   return createPortal(
     <div className={styles.layer}>
       <Reveal
@@ -225,6 +324,6 @@ export function Modal({
         </div>
       </Reveal>
     </div>,
-    container ?? document.body,
+    target,
   );
 }

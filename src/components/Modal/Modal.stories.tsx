@@ -87,6 +87,7 @@ const meta = {
     initialFocus: { control: "inline-radio", options: ["container", "first"] },
     sheetPlacement: { control: "inline-radio", options: ["bottom", "top"] },
     titleWrap: { control: "inline-radio", options: ["wrap", "ellipsis"] },
+    renderAs: { control: "inline-radio", options: ["portal", "dialog"] },
   },
 } satisfies Meta<typeof Demo>;
 
@@ -177,6 +178,33 @@ export const TopSheetOnPhone: Story = {
     style: { "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties,
   },
   globals: { viewport: { value: "w390", isRotated: false } },
+};
+export const NativeTopLayer: Story = {
+  args: {
+    startOpen: true,
+    renderAs: "dialog",
+    description: "A native dialog opened with showModal(), in the top layer.",
+  },
+};
+export const NativeKeepMounted: Story = {
+  args: { renderAs: "dialog", keepMounted: true },
+  parameters: {
+    docs: {
+      description: {
+        story: "Type in the field, close the dialog and reopen it: the typed text is still there.",
+      },
+    },
+  },
+};
+export const KeepMounted: Story = {
+  args: { keepMounted: true },
+  parameters: {
+    docs: {
+      description: {
+        story: "Type in the field, close the modal and reopen it: the typed text is still there.",
+      },
+    },
+  },
 };
 export const Phone: Story = {
   args: { startOpen: true, paragraphs: 3 },
