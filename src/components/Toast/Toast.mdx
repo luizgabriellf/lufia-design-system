@@ -1,0 +1,100 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Toast.stories";
+
+<Meta of={Stories} />
+
+# Toast <StatusBadge status="beta" />
+
+Short, non-blocking notifications that stack in a corner of the screen, are announced to screen readers, close by
+themselves and wait while they are hovered or focused. Mount `ToastProvider` once, call `useToast()` anywhere below.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { ToastProvider, useToast } from "@lufia/design-system/components/Toast";
+
+// once, near the root (inside LufiaProvider if you translate the aria labels)
+<ToastProvider placement="bottom-end">{children}</ToastProvider>;
+
+// anywhere below
+const toast = useToast();
+toast.success("Changes saved.");
+toast.error("Upload failed.");
+toast.info("Invoice moved to the trash.", { action: { label: "Undo", onAction: restore } });
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+The action button's text (`action.label`) and the message are yours; only the dismiss button's accessible name and the
+region's name are aria-only labels with English defaults (`labels.dismiss`, `labels.notifications` of
+[LufiaProvider](?path=/docs/components-lufiaprovider--docs)).
+
+| API                                                   | Notes                                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `show({ message, tone, action, duration, id })`       | The general form; returns the toast's id.                                      |
+| `info / success / warning / error(message, options?)` | Shorthands for the four tones.                                                 |
+| `dismiss(id)` / `clear()`                             | Close one toast or all of them.                                                |
+| `ToastProvider` `placement`                           | `bottom-end` (default), `bottom-start`, `top-end`, `top-start`.                |
+| `ToastProvider` `limit` / `duration`                  | Most toasts at once (5) and default time in ms (5000).                         |
+| `useOptionalToast()`                                  | The same API, or `null` outside a provider, for code that may run without one. |
+
+To keep the stack clear of other fixed UI (a floating action bar), set `--lufia-toast-offset-block` on `:root`.
+
+## Tones
+
+<Canvas of={Stories.AllTones} />
+
+## When to use
+
+- Confirming something the person just did that needs no decision: saved, copied, sent, restored.
+- Reporting a background result they might have missed: sync finished, upload failed.
+- Offering **Undo** right after a reversible action. It is better than a confirmation dialog.
+
+## When not to use
+
+- Anything that must be answered or read before moving on: use [ConfirmDialog](?path=/docs/components-confirmdialog--docs)
+  or an inline message. A toast disappears, so a form's validation errors do not belong in one.
+- Information the person will need again (instructions, a long explanation). Put it on the page.
+- More than one at a time for the same outcome: identical string messages are de-duplicated, and `limit` caps the stack.
+
+## Timing
+
+| Toast                         | Closes by itself?                                       |
+| ----------------------------- | ------------------------------------------------------- |
+| `info`, `success`, `warning`  | After `duration` (5 s).                                 |
+| `error`                       | Never, unless `duration` says so.                       |
+| Any toast with an `action`    | Never, unless `duration` says so.                       |
+| Any toast, hovered or focused | Paused; resumes with at least 1.5 s left when released. |
+
+This follows WCAG 2.2.1 (Timing Adjustable): errors carry the most important and often the longest text, and an action
+needs time to be found.
+
+## Accessibility
+
+- Two live regions are always mounted inside a labelled `region`: `aria-live="assertive"` for errors and
+  `aria-live="polite"` for the rest. A live region only announces content added after it exists, which is why they stay
+  mounted while empty. Errors interrupt, the rest wait for the screen reader to finish.
+- Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a
+  focused toast dismisses it. While a toast has focus its timer is paused.
+- The notification region stays live while a [Modal](?path=/docs/components-modal--docs) is open (the modal marks the rest
+  of the page `inert`, except `data-lufia-inert-exempt`), though Tab cycles only inside the modal while it is open.
+- Targets: the dismiss button and action are at least 28 px tall (WCAG 2.5.8 asks for 24 px).
+- Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under
+  `prefers-reduced-motion` toasts appear and disappear at once. The success check (`SuccessCheck`) stops drawing.
+- Colour is never the only signal: each tone has its own icon, and the message says what happened. Under `forced-colors`
+  the border uses system colours.
+- Not recorded yet: a manual VoiceOver and NVDA pass (required before `stable`).
+
+## Content guidelines
+
+One sentence, past tense for results ("Changes saved."), the object for failures ("Upload failed. Check your connection
+and try again."). Say what to do after an error. Actions are a verb ("Undo", "Retry"). Never put a link that leads
+somewhere in a toast that vanishes.
+
+## Examples
+
+<Canvas of={Stories.LongMessage} />
+
+<Canvas of={Stories.AboveAModal} />

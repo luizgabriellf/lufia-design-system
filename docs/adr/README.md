@@ -7,7 +7,7 @@ Significant, hard-to-reverse decisions are recorded here so the reasoning outliv
 | ---------------------------------- | --------------------------------------- | -------- |
 | [0001](0001-token-format.md)       | Token format: DTCG and Style Dictionary | Accepted |
 | [0002](0002-distribution.md)       | Distribution: git tag now, npm on hold  | Accepted |
-| [0003](0003-primitives-library.md) | Accessibility primitives library        | Proposed |
+| [0003](0003-primitives-library.md) | Accessibility primitives library        | Accepted |
 
 Statuses: `Proposed`, `Accepted`, `Superseded by NNNN`, `Rejected`. Accepted ADRs are not edited; write a new one that
 supersedes them. Copy the structure of an existing record (Context, Decision, Consequences, Alternatives).

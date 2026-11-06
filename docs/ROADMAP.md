@@ -31,4 +31,7 @@ The first components come from existing production React code that had been copi
   - the `lufia-verify-motion` CLI with a shrink-only baseline, run on this repo in `npm run check`.
   - Still open: consuming apps adopting the primitives and the CLI (phase P1/P3 sweeps).
 - **P3 – Diverged components:** one cluster at a time (overlays: Modal, ConfirmDialog, Toast, focus trap; inputs; tables; navigation). Each cluster is merged into a single API, consumers migrate, and they are swept at 4 widths.
+  - **Foundations: done** (`beta`): `LufiaProvider`, `useFocusTrap`, `useMediaQuery`, `useModalState`, `useDismiss`, `usePagination`, `useStepDirection`, `VisuallyHidden`, and `useBodyScrollLock` with scrollbar compensation.
+  - **Overlays: done** (`beta`): `Modal`, `ConfirmDialog`, `Toast`, `SuccessCheck`. One overlay architecture (a portaled dialog), no native `<dialog>` variant ([ADR 0003](adr/0003-primitives-library.md)). Consumers still have to migrate and be swept at 4 widths.
+  - Still open: inputs, tables, navigation (including a bottom sheet with a drag gesture).
 - **P4 – Hardening:** a screen-reader pass for every component, stable labels, an adoption tracker, and removal of the legacy copies in consuming apps.

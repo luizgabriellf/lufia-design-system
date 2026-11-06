@@ -1,0 +1,104 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./ConfirmDialog.stories";
+
+<Meta of={Stories} />
+
+# ConfirmDialog <StatusBadge status="beta" />
+
+A question that has to be answered before anything else can happen: "Delete invoice 2041?" It is a [Modal](?path=/docs/components-modal--docs)
+with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+As a component, when you own the open state:
+
+```tsx
+import { ConfirmDialog } from "@lufia/design-system/components/ConfirmDialog";
+
+<ConfirmDialog
+  open={open}
+  title="Delete invoice 2041?"
+  message="The invoice and its payment history are removed. This cannot be undone."
+  confirmLabel="Delete invoice"
+  cancelLabel="Keep invoice"
+  destructive
+  busy={deleting}
+  onConfirm={deleteInvoice}
+  onCancel={() => setOpen(false)}
+/>;
+```
+
+As a promise, a drop-in for `window.confirm()`:
+
+```tsx
+const { confirm, confirmDialog } = useConfirmDialog();
+
+async function remove() {
+  const yes = await confirm({ title, message, confirmLabel, cancelLabel, destructive: true });
+  if (yes) await deleteInvoice();
+}
+
+// render {confirmDialog} once in the component's JSX
+```
+
+Strings in the snippets are plain literals. In your app they arrive through props from whatever copy or i18n layer you use;
+there are no built-in "OK" or "Cancel" defaults, because those are visible text.
+
+<Controls of={Stories.OpenByDefault} />
+
+## Destructive
+
+`destructive` styles the confirm button as dangerous and starts focus on **Cancel**, so a reflexive Enter keeps the data.
+Without it, focus starts on the confirm button.
+
+<Canvas of={Stories.Destructive} />
+
+## Busy
+
+While `busy` the dialog refuses to close: Escape, a click outside and Cancel do nothing, and the confirm button shows a
+spinner and `aria-busy="true"`. The buttons use `aria-disabled` rather than `disabled`, so focus stays where the person
+left it instead of falling back to the page. Clear `busy` when the action settles, and close the dialog yourself.
+
+<Canvas of={Stories.Busy} />
+
+## When to use
+
+- An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard,
+  publish, remove access.
+
+## When not to use
+
+- Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](?path=/docs/components-toast--docs): it is
+  faster and does not train people to click through confirmations.
+- Collecting input. Use a Modal with a form.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Alert Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/) pattern.
+
+| Key       | Behaviour                                                                                    |
+| --------- | -------------------------------------------------------------------------------------------- |
+| Tab       | Cycles between Cancel and Confirm only; the page behind is inert.                            |
+| Shift+Tab | Cycles backwards.                                                                            |
+| Escape    | Cancels (unless busy).                                                                       |
+| Enter     | Activates the focused button. With `destructive`, the focused button is Cancel at the start. |
+
+- `role="alertdialog"`, named by the title and described by the message, so a screen reader reads both when it opens.
+- No close button: the two explicit choices are the way out. Escape still cancels.
+- Focus returns to the control that opened it.
+- Under `prefers-reduced-motion` the dialog appears at once and the busy spinner stops (the dimmed button and `aria-busy`
+  still carry the state).
+
+Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`).
+
+## Content guidelines
+
+Title: the question, with the object ("Delete invoice 2041?"). Message: the consequence, one or two sentences. Buttons:
+the verb ("Delete invoice" / "Keep invoice"), never "Yes" / "No" or "OK".
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

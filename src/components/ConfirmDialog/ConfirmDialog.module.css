@@ -1,0 +1,91 @@
+/* Internal buttons: the package has no Button yet, and a confirmation always needs exactly these two. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lufia-space-2);
+  min-block-size: 2.5rem;
+  padding: var(--lufia-space-2) var(--lufia-space-4);
+  font: inherit;
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+  border: var(--lufia-border-width-thin) solid transparent;
+  border-radius: var(--lufia-radius-control);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.button[data-variant="secondary"] {
+  color: var(--lufia-color-text-default);
+  background: transparent;
+  border-color: var(--lufia-color-border-strong);
+}
+
+.button[data-variant="primary"] {
+  color: var(--lufia-color-text-on-accent);
+  background: var(--lufia-color-accent-default);
+}
+
+.button[data-variant="danger"] {
+  color: var(--lufia-color-status-danger-on-solid);
+  background: var(--lufia-color-status-danger-solid);
+}
+
+.button[data-variant="secondary"]:hover {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.button[data-variant="primary"]:hover {
+  background: var(--lufia-color-accent-hover);
+}
+
+.button[aria-disabled="true"] {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.button[aria-busy="true"] {
+  cursor: progress;
+}
+
+.spinner {
+  inline-size: 1rem;
+  block-size: 1rem;
+  border: 2px solid currentcolor;
+  border-inline-end-color: transparent;
+  border-radius: var(--lufia-radius-full);
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An endless loop is stopped under reduced motion, not shortened; the busy state is still carried by aria-busy and the dimming. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-inline-end-color: currentcolor;
+  }
+}
+
+@media (forced-colors: active) {
+  .button[data-variant="secondary"] {
+    border-color: ButtonText;
+  }
+
+  .button[data-variant="primary"],
+  .button[data-variant="danger"] {
+    border-color: ButtonText;
+  }
+}

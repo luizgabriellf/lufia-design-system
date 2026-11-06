@@ -1,0 +1,44 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./SuccessCheck.stories";
+
+<Meta of={Stories} />
+
+# SuccessCheck <StatusBadge status="beta" />
+
+A check mark whose stroke draws in once as it appears. The shared "it worked" mark: toasts use it for the success tone.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
+
+<p style={{ color: "var(--lufia-color-status-success-fg)" }}>
+  <SuccessCheck /> Changes saved
+</p>;
+```
+
+It draws with `currentColor`, so colour comes from the surrounding text. Replay the animation by remounting it (a changed
+`key`).
+
+<Controls of={Stories.Default} />
+
+## When to use
+
+- Confirming that something completed, next to text that says what.
+
+## When not to use
+
+- As the only signal of success, or as a status icon in a list (it animates every time it mounts). Use a status badge.
+
+## Accessibility
+
+- Decorative: `aria-hidden="true"` and `focusable="false"`. The adjacent text carries the meaning, so the check is never
+  the only cue.
+- The draw uses `--lufia-motion-duration-enter` and stops under `prefers-reduced-motion`, leaving the finished check.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
