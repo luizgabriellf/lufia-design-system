@@ -42,11 +42,19 @@ function ExternalIcon() {
  */
 export function Link({ externalLabel, className, children, ...rest }: LinkProps) {
   const external = externalLabel !== undefined;
+  const target = external ? "_blank" : rest.target;
+  // Any link that opens a new tab gets noopener and noreferrer, merged with the caller's own rel tokens.
+  const rel =
+    target === "_blank"
+      ? [...new Set(`${rest.rel ?? ""} noopener noreferrer`.split(/\s+/).filter(Boolean))].join(" ")
+      : rest.rel;
   return (
     <LufiaLink
       {...rest}
+      target={target}
+      rel={rel}
       className={[styles.root, className].filter(Boolean).join(" ")}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer", "data-external": "" } : {})}
+      data-external={external ? "" : undefined}
     >
       {children}
       {external ? (

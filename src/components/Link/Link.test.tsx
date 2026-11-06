@@ -37,6 +37,25 @@ describe("Link", () => {
     expect(link.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
 
+  it("adds noopener noreferrer to any target=_blank link and merges the caller's rel", () => {
+    render(
+      <>
+        <Link href="/a" target="_blank">
+          Plain
+        </Link>
+        <Link href="/b" target="_blank" rel="author noopener">
+          Merged
+        </Link>
+        <Link href="/c" rel="author">
+          Same tab
+        </Link>
+      </>,
+    );
+    expect(screen.getByRole("link", { name: "Plain" })).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByRole("link", { name: "Merged" })).toHaveAttribute("rel", "author noopener noreferrer");
+    expect(screen.getByRole("link", { name: "Same tab" })).toHaveAttribute("rel", "author");
+  });
+
   it("internal: no indicator and no hidden label", () => {
     render(<Link href="/a">A</Link>);
     expect(screen.getByRole("link").querySelector("svg")).toBeNull();
