@@ -149,4 +149,98 @@ describe("Pagination", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  describe("compact variant", () => {
+    it("shows the status line with previous and next only", () => {
+      render(
+        <Pagination
+          page={3}
+          totalPages={9}
+          total={87}
+          variant="compact"
+          onPageChange={() => {}}
+          labels={labels}
+        />,
+      );
+      expect(numbers()).toEqual(["Previous", "Next"]);
+      expect(screen.getByText("Page 3 of 9, 87 results")).toHaveAttribute("aria-live", "polite");
+      expect(screen.getByRole("navigation")).toHaveAttribute("data-variant", "compact");
+    });
+
+    it("steps through the pages and keeps the boundary controls inert", async () => {
+      const user = userEvent.setup();
+      const onPageChange = vi.fn();
+      const { rerender } = render(
+        <Pagination page={2} totalPages={3} variant="compact" onPageChange={onPageChange} labels={labels} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Previous" }));
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(onPageChange.mock.calls).toEqual([[1], [3]]);
+      rerender(
+        <Pagination page={3} totalPages={3} variant="compact" onPageChange={onPageChange} labels={labels} />,
+      );
+      expect(screen.getByRole("button", { name: "Next" })).toHaveAttribute("aria-disabled", "true");
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(onPageChange).toHaveBeenCalledTimes(2);
+    });
+
+    it("renders links through hrefFor", () => {
+      render(
+        <Pagination
+          page={2}
+          totalPages={3}
+          variant="compact"
+          hrefFor={(n) => `/list?page=${n}`}
+          onPageChange={() => {}}
+          labels={labels}
+        />,
+      );
+      expect(screen.getByRole("link", { name: "Next" })).toHaveAttribute("href", "/list?page=3");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <Pagination page={2} totalPages={3} variant="compact" onPageChange={() => {}} labels={labels} />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  describe("buttonClassName", () => {
+    it("puts the class on every control and drops the built-in look", () => {
+      render(
+        <Pagination
+          page={2}
+          totalPages={4}
+          buttonClassName="app-btn"
+          onPageChange={() => {}}
+          labels={labels}
+        />,
+      );
+      for (const button of screen.getAllByRole("button")) {
+        expect(button).toHaveClass("app-btn", "bare");
+        expect(button).not.toHaveClass("control");
+      }
+    });
+
+    it("applies to links as well", () => {
+      render(
+        <Pagination
+          page={1}
+          totalPages={2}
+          variant="compact"
+          buttonClassName="app-btn"
+          hrefFor={(n) => `#${n}`}
+          onPageChange={() => {}}
+          labels={labels}
+        />,
+      );
+      for (const link of screen.getAllByRole("link")) expect(link).toHaveClass("app-btn");
+    });
+
+    it("keeps the built-in look without it", () => {
+      render(<Pagination page={1} totalPages={2} onPageChange={() => {}} labels={labels} />);
+      expect(screen.getByRole("button", { name: "Next" })).toHaveClass("control");
+    });
+  });
 });

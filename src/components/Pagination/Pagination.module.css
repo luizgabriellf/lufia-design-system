@@ -46,6 +46,13 @@
     border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
+/* With a `buttonClassName` the app supplies the look; only what the states need stays. */
+.bare {
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
 .control:hover {
   background: var(--lufia-color-bg-surface-raised);
 }
@@ -55,7 +62,8 @@
   outline-offset: 2px;
 }
 
-.control[aria-current="page"] {
+.control[aria-current="page"],
+.bare[aria-current="page"] {
   border-color: var(--lufia-color-accent-border);
   background: var(--lufia-color-accent-subtle);
   color: var(--lufia-color-text-accent);
@@ -63,7 +71,8 @@
   cursor: default;
 }
 
-.control[aria-disabled="true"] {
+.control[aria-disabled="true"],
+.bare[aria-disabled="true"] {
   opacity: var(--lufia-opacity-disabled);
   cursor: not-allowed;
 }
@@ -79,6 +88,11 @@
   color: var(--lufia-color-text-subtle);
 }
 
+/* Compact: previous and next only, the status line carries the position. */
+.root[data-variant="compact"] .list {
+  margin-inline-start: auto;
+}
+
 /* Narrow containers (a phone, a side panel): the status line says where you are, so the numbers give way to previous and next. */
 @container (width < 40rem) {
   .number {
@@ -91,7 +105,8 @@
 }
 
 @media (forced-colors: active) {
-  .control[aria-current="page"] {
+  .control[aria-current="page"],
+  .bare[aria-current="page"] {
     border-color: Highlight;
   }
 }
