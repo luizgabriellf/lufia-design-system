@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useRef, useState } from "react";
 import { userEvent, within } from "storybook/test";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { FormField, type FormFieldProps } from "../FormField";
 import { Modal } from "../Modal";
 import { Combobox, type ComboboxOption, type ComboboxProps } from "./Combobox";
@@ -137,9 +137,9 @@ export const InsideDialog: Story = {
     const [open, setOpen] = useState(false);
     return (
       <>
-        <DemoButton variant="primary" onClick={() => setOpen(true)}>
+        <Button variant="primary" onClick={() => setOpen(true)}>
           Open dialog
-        </DemoButton>
+        </Button>
         <Modal open={open} onClose={() => setOpen(false)} title="Where do you live?">
           <Demo {...args} />
         </Modal>
