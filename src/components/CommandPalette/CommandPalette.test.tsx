@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
@@ -163,13 +163,80 @@ describe("CommandPalette", () => {
     expect(screen.getByRole("button", { name: "Open" })).toHaveFocus();
   });
 
-  it("toggles with Ctrl+K and Cmd+K", async () => {
+  it("opens with Ctrl+K and Cmd+K", async () => {
     const user = userEvent.setup();
     render(<Harness initial={false} />);
     await user.keyboard("{Control>}k{/Control}");
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    await user.keyboard("{Meta>}k{/Meta}");
+    await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await user.keyboard("{Meta>}k{/Meta}");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("does not close when the shortcut is pressed while open", async () => {
+    render(<Harness />);
+    await userEvent.setup().keyboard("{Control>}k{/Control}");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  describe("the shortcut leaves the key alone", () => {
+    const press = (init: KeyboardEventInit) =>
+      fireEvent.keyDown(document.body, { key: "k", ctrlKey: true, ...init });
+
+    it("when something already handled it", () => {
+      const handler = (event: KeyboardEvent) => event.preventDefault();
+      window.addEventListener("keydown", handler, true);
+      render(<Harness initial={false} />);
+      press({ cancelable: true });
+      window.removeEventListener("keydown", handler, true);
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("during IME composition", () => {
+      render(<Harness initial={false} />);
+      press({ isComposing: true });
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("on key repeat", () => {
+      render(<Harness initial={false} />);
+      press({ repeat: true });
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("while another modal is open", () => {
+      render(
+        <>
+          <div role="dialog" aria-modal="true" aria-label="Other" />
+          <Harness initial={false} />
+        </>,
+      );
+      press({});
+      expect(screen.queryByRole("dialog", { name: labels.title })).toBeNull();
+    });
+
+    it("opens on a plain press", () => {
+      render(<Harness initial={false} />);
+      press({});
+      expect(screen.getByRole("dialog", { name: labels.title })).toBeInTheDocument();
+    });
+  });
+
+  it("names a multi-word group by its heading", () => {
+    render(<Harness />);
+    expect(screen.getByRole("group", { name: "Go to" })).toBeInTheDocument();
+  });
+
+  it("derives option ids from the command key, so the active id follows the option", async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    const before = field().getAttribute("aria-activedescendant");
+    await user.type(field(), "settings");
+    const after = field().getAttribute("aria-activedescendant");
+    expect(before).toContain("option-new");
+    expect(after).toContain("option-settings");
+    expect(document.getElementById(after!)).toHaveAttribute("role", "option");
   });
 
   it("ignores the shortcut when turned off", async () => {

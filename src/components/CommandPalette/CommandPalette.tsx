@@ -57,7 +57,7 @@ export type CommandPaletteProps = {
   filter?: (item: CommandItem, query: string) => boolean;
   /** Called as the person types, for searches that ask a server. */
   onQueryChange?: (query: string) => void;
-  /** Open and close on Ctrl+K and Cmd+K. Default `true`. */
+  /** Open on Ctrl+K and Cmd+K. Default `true`. */
   shortcut?: boolean;
   /** Where the palette is mounted. Defaults to `document.body`. */
   container?: HTMLElement | null;
@@ -134,34 +134,34 @@ export function CommandPalette({
   // The flat reading order is the order of the groups, which can differ from `results` when groups interleave.
   const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const activeIndex = Math.min(active, Math.max(flat.length - 1, 0));
-  const optionId = (index: number) => `${id}-option-${index}`;
+  // Derived from the command's key, not its position, so the id (and `aria-activedescendant`) follows the option.
+  const optionIdOf = (item: CommandItem) => `${id}-option-${item.key.replace(/\s/g, "_")}`;
+  const activeId = flat[activeIndex] ? optionIdOf(flat[activeIndex]) : undefined;
 
   const close = () => onOpenChange(false);
   useFocusTrap(phase === "open", panel, { onEscape: close, initialFocus: field, inertBackground: true });
 
-  // Ctrl+K / Cmd+K toggles the palette from anywhere.
-  const openRef = useRef(open);
+  // Ctrl+K / Cmd+K opens the palette from anywhere. It leaves the key alone when something else already handled it (an
+  // editor's "insert link"), during IME composition, on key repeat, and while another modal is open. It does not toggle:
+  // Escape closes, and handling it is the focus trap's job.
   useEffect(() => {
-    openRef.current = open;
-  });
-  useEffect(() => {
-    if (!shortcut) return;
+    if (!shortcut || open) return;
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        onOpenChange(!openRef.current);
-      }
+      if (event.defaultPrevented || event.isComposing || event.repeat) return;
+      if (!(event.metaKey || event.ctrlKey) || event.altKey || event.key.toLowerCase() !== "k") return;
+      if (document.querySelector('[aria-modal="true"]')) return;
+      event.preventDefault();
+      onOpenChange(true);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [shortcut, onOpenChange]);
+  }, [shortcut, open, onOpenChange]);
 
   // Keep the highlighted option in sight.
   useEffect(() => {
     if (phase !== "open") return;
-    document.getElementById(optionId(activeIndex))?.scrollIntoView?.({ block: "nearest" });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- the id is derived from `id` and the index
-  }, [activeIndex, phase, results]);
+    if (activeId) document.getElementById(activeId)?.scrollIntoView?.({ block: "nearest" });
+  }, [activeId, phase]);
 
   const run = (item: CommandItem) => {
     if (!item.keepOpen) close();
@@ -229,7 +229,7 @@ export function CommandPalette({
             aria-label={labels.title}
             aria-expanded={expanded}
             aria-controls={expanded ? listId : undefined}
-            aria-activedescendant={expanded ? optionId(activeIndex) : undefined}
+            aria-activedescendant={expanded ? activeId : undefined}
             aria-autocomplete="list"
             autoComplete="off"
             spellCheck={false}
@@ -264,8 +264,8 @@ export function CommandPalette({
         <div className={styles.body}>
           {expanded ? (
             <div id={listId} role="listbox" aria-label={labels.title} className={styles.list}>
-              {groups.map((group) => {
-                const headingId = `${id}-group-${group.name}`;
+              {groups.map((group, groupIndex) => {
+                const headingId = `${id}-group-${groupIndex}`;
                 return (
                   <div
                     key={group.name}
@@ -287,7 +287,7 @@ export function CommandPalette({
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
                         <div
                           key={item.key}
-                          id={optionId(position)}
+                          id={optionIdOf(item)}
                           role="option"
                           aria-selected={position === activeIndex}
                           data-active={position === activeIndex || undefined}
