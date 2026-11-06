@@ -48,6 +48,7 @@ export function ShellNavigation({
               <SidebarItem
                 key={item.key}
                 label={item.label}
+                ariaLabel={item.ariaLabel}
                 href={item.href}
                 icon={item.icon}
                 badge={item.badge}

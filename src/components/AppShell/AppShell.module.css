@@ -21,7 +21,20 @@
   border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
 
+/* The column beside the sidebar: the optional bars, then the page. */
+.content {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.contextBar,
+.statusRow {
+  min-inline-size: 0;
+}
+
 .main {
+  flex: 1 1 auto;
   min-inline-size: 0;
   padding: var(--lufia-space-8);
 }
@@ -101,6 +114,11 @@
   color: var(--lufia-color-text-subtle);
 }
 
+/* Wide screens only: the floating bar carries the primary action on phones. */
+.primarySlot {
+  flex: none;
+}
+
 .sheetNav {
   display: flex;
   flex-direction: column;
@@ -140,6 +158,14 @@
 
   .float {
     display: flex;
+  }
+
+  .primarySlot {
+    display: none;
+  }
+
+  .content {
+    display: block;
   }
 
   .main {

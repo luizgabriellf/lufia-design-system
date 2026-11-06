@@ -16,7 +16,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function Demo({ initialOpen = false, swipe = true }: { initialOpen?: boolean; swipe?: boolean }) {
+function Demo({
+  initialOpen = false,
+  swipe = true,
+  renderAs,
+}: {
+  initialOpen?: boolean;
+  swipe?: boolean;
+  renderAs?: "portal" | "dialog";
+}) {
   const [open, setOpen] = useState(initialOpen);
   const [openGroups, setOpenGroups] = useState<readonly string[]>(["workspace", "insights"]);
   return (
@@ -29,6 +37,7 @@ function Demo({ initialOpen = false, swipe = true }: { initialOpen?: boolean; sw
         header={<DemoBrand />}
         footer={<DemoFooter />}
         swipeToDismiss={swipe}
+        renderAs={renderAs}
       >
         <nav aria-label={demoLabels.navigation}>
           <ShellNavigation
@@ -49,6 +58,8 @@ function Demo({ initialOpen = false, swipe = true }: { initialOpen?: boolean; sw
 /** Drag the grabber or the header down to dismiss, or press Escape, or use the close button. */
 export const Default: Story = { render: () => <Demo /> };
 export const OpenOnLoad: Story = { render: () => <Demo initialOpen /> };
+/** A native `<dialog>` opened with `showModal()`: top layer, native backdrop, no exit animation. */
+export const NativeDialog: Story = { render: () => <Demo initialOpen renderAs="dialog" /> };
 export const WithoutSwipe: Story = { render: () => <Demo initialOpen swipe={false} /> };
 export const SmallPhone: Story = {
   render: () => <Demo initialOpen />,

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
+import { useNativeDialog } from "../Modal/useNativeDialog";
 import { CloseGlyph } from "./icons";
 import { NavSurfaceContext } from "./navigation";
 import { usePresence } from "./usePresence";
@@ -26,6 +27,13 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   swipeToDismiss?: boolean;
   /** Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. */
   container?: HTMLElement | null;
+  /**
+   * `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native
+   * `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the
+   * browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to
+   * dismiss and the layer stack work the same in both.
+   */
+  renderAs?: "portal" | "dialog";
   children: ReactNode;
 };
 
@@ -47,12 +55,15 @@ export function NavSheet({
   closeLabel,
   swipeToDismiss = true,
   container,
+  renderAs = "portal",
   className,
   children,
   ...rest
 }: NavSheetProps) {
   const { labels } = useLufia();
-  const panel = useRef<HTMLDivElement>(null);
+  // The panel is a `div` in portal mode and a `dialog` in native mode; the intersection lets one ref serve both.
+  const panel = useRef<HTMLDivElement & HTMLDialogElement>(null);
+  const native = renderAs === "dialog";
   const client = useSyncExternalStore(
     subscribeNothing,
     () => true,
@@ -61,12 +72,61 @@ export function NavSheet({
   const { phase, finish } = usePresence(open, panel);
 
   const close = () => onOpenChange(false);
-  useFocusTrap(phase === "open", panel, { onEscape: close, inertBackground: true });
-  useBodyScrollLock(phase !== "unmounted");
+  // A native dialog is shown for exactly as long as `open`; a portal sheet also stays for its exit animation.
+  const shown = native ? open : phase !== "unmounted";
+  const trapped = native ? open : phase === "open";
+  const nativeDialog = useNativeDialog(panel, native && open && client, { onCloseRequest: close });
+  useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
+  useBodyScrollLock(shown);
   const drag = useSheetDrag(close, swipeToDismiss);
 
   const target = container ?? (client ? document.body : null);
-  if (phase === "unmounted" || !target) return null;
+  if (!shown || !target) return null;
+
+  const sheet = (
+    <>
+      <div
+        className={styles.dragZone}
+        data-swipe={swipeToDismiss || undefined}
+        {...(swipeToDismiss ? drag : {})}
+      >
+        <span className={styles.grabber} aria-hidden="true" />
+        <div className={styles.head}>
+          <div className={styles.headContent}>{header}</div>
+          <button
+            type="button"
+            className={styles.close}
+            aria-label={closeLabel ?? labels.close}
+            onClick={close}
+          >
+            <CloseGlyph />
+          </button>
+        </div>
+      </div>
+      <div className={styles.body}>{children}</div>
+      {footer ? <div className={styles.foot}>{footer}</div> : null}
+    </>
+  );
+
+  if (native) {
+    return createPortal(
+      <NavSurfaceContext.Provider value={{ collapsed: false }}>
+        <dialog
+          {...(rest as HTMLAttributes<HTMLDialogElement>)}
+          {...nativeDialog}
+          ref={panel}
+          aria-modal="true"
+          aria-label={label}
+          tabIndex={-1}
+          data-state="open"
+          className={[styles.panel, styles.native, className].filter(Boolean).join(" ")}
+        >
+          {sheet}
+        </dialog>
+      </NavSurfaceContext.Provider>,
+      target,
+    );
+  }
 
   return createPortal(
     <NavSurfaceContext.Provider value={{ collapsed: false }}>
@@ -84,26 +144,7 @@ export function NavSheet({
             if (event.target === event.currentTarget) finish();
           }}
         >
-          <div
-            className={styles.dragZone}
-            data-swipe={swipeToDismiss || undefined}
-            {...(swipeToDismiss ? drag : {})}
-          >
-            <span className={styles.grabber} aria-hidden="true" />
-            <div className={styles.head}>
-              <div className={styles.headContent}>{header}</div>
-              <button
-                type="button"
-                className={styles.close}
-                aria-label={closeLabel ?? labels.close}
-                onClick={close}
-              >
-                <CloseGlyph />
-              </button>
-            </div>
-          </div>
-          <div className={styles.body}>{children}</div>
-          {footer ? <div className={styles.foot}>{footer}</div> : null}
+          {sheet}
         </div>
       </div>
     </NavSurfaceContext.Provider>,

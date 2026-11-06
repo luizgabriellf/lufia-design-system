@@ -2,14 +2,15 @@ export {
   AppShell,
   APP_SHELL_BREAKPOINT,
   type AppShellLabels,
-  type AppShellPrimaryAction,
   type AppShellProps,
   type AppShellSearch,
 } from "./AppShell";
+export { ShellPrimaryActionSlot, useShellPrimaryAction, type AppShellPrimaryAction } from "./primaryAction";
 export {
   MobileFloatBar,
   MobileFloatBarButton,
   MobileFloatBarSeparator,
+  type FloatBarDataAttributes,
   type MobileFloatBarButtonProps,
   type MobileFloatBarProps,
 } from "./MobileFloatBar";

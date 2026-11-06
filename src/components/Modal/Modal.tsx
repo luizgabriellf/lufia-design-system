@@ -2,7 +2,6 @@
 
 import {
   useId,
-  useLayoutEffect,
   useRef,
   useSyncExternalStore,
   type CSSProperties,
@@ -15,6 +14,7 @@ import { Reveal } from "../../motion/Reveal";
 import { useLufia } from "../LufiaProvider";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
+import { useNativeDialog } from "./useNativeDialog";
 import { useMediaQuery } from "../useMediaQuery";
 import styles from "./Modal.module.css";
 
@@ -133,20 +133,15 @@ export function Modal({
   );
   const visible = mounted && open;
 
+  const requestClose = () => {
+    if (!busy) onClose();
+  };
   // Declared before the focus trap so the native dialog is open (and focusable) when the trap moves focus into it.
-  useLayoutEffect(() => {
-    const dialog = panelRef.current;
-    if (!native || !visible || !dialog) return;
-    const previous = document.activeElement as HTMLElement | null;
-    if (!dialog.open) dialog.showModal();
-    return () => {
-      if (dialog.open) dialog.close();
-      // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
-      const active = document.activeElement;
-      if (previous?.isConnected && (!active || active === document.body || dialog.contains(active)))
-        previous.focus({ preventScroll: true });
-    };
-  }, [native, visible]);
+  const nativeDialog = useNativeDialog(panelRef, native && visible, {
+    onCloseRequest: requestClose,
+    closeOnCancel: closeOnEscape,
+    closeOnOutsideClick,
+  });
 
   useBodyScrollLock(visible, { scrollContainerSelectors });
   useFocusTrap(visible, panelRef, {
@@ -157,10 +152,6 @@ export function Modal({
   });
 
   if (!mounted) return null;
-
-  const requestClose = () => {
-    if (!busy) onClose();
-  };
 
   const customSize = SIZE_STEPS.includes(size) ? undefined : size;
   const panelProps = {
@@ -233,36 +224,8 @@ export function Modal({
 
   if (native) {
     if (!open && !keepMounted) return null;
-    const outside = (event: { clientX: number; clientY: number }) => {
-      const rect = panelRef.current?.getBoundingClientRect();
-      return (
-        !!rect &&
-        (event.clientX < rect.left ||
-          event.clientX > rect.right ||
-          event.clientY < rect.top ||
-          event.clientY > rect.bottom)
-      );
-    };
     return createPortal(
-      // The click is the native backdrop's (it targets the dialog itself); Escape is handled by the layer stack.
-      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
-      <dialog
-        {...(panelProps as HTMLAttributes<HTMLDialogElement>)}
-        ref={panelRef}
-        onCancel={(event) => {
-          // Escape is handled by the layer stack; a close request that arrives without a key (a platform back gesture) lands here.
-          event.preventDefault();
-          if (closeOnEscape) requestClose();
-        }}
-        onPointerDown={(event) => {
-          pressedBackdrop.current = event.target === event.currentTarget && outside(event);
-        }}
-        onClick={(event) => {
-          // The native backdrop reports clicks on the dialog itself; only a press that began outside the panel counts.
-          if (pressedBackdrop.current && closeOnOutsideClick && outside(event)) requestClose();
-          pressedBackdrop.current = false;
-        }}
-      >
+      <dialog {...(panelProps as HTMLAttributes<HTMLDialogElement>)} ref={panelRef} {...nativeDialog}>
         {content}
       </dialog>,
       target,

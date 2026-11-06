@@ -3,8 +3,18 @@
 import { useId, useState, type HTMLAttributes, type ReactNode } from "react";
 import { useMediaQuery } from "../useMediaQuery";
 import { MenuGlyph, SearchGlyph } from "./icons";
-import { MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator } from "./MobileFloatBar";
+import {
+  MobileFloatBar,
+  MobileFloatBarButton,
+  MobileFloatBarSeparator,
+  type FloatBarDataAttributes,
+} from "./MobileFloatBar";
 import { NavSheet } from "./NavSheet";
+import {
+  ShellPrimaryActionContext,
+  useShellPrimaryActionRegistry,
+  type AppShellPrimaryAction,
+} from "./primaryAction";
 import { findActiveNavKey, type ShellNavGroup, type ShellNavItem } from "./navigation";
 import { ShellNavigation, useGroupDisclosure } from "./ShellNavigation";
 import { Sidebar } from "./Sidebar";
@@ -33,16 +43,17 @@ export type AppShellSearch = {
   label: string;
   /** Opens the app's search or command palette. */
   onSelect: () => void;
-  /** Keyboard hint shown on the desktop entry, such as "Ctrl K". */
+  /** Keyboard hint shown in a `<kbd>` on the desktop entry, such as "Ctrl K". */
   shortcut?: string;
+  /** The shortcut as `aria-keyshortcuts` ("Control+K"), so assistive technology can announce it. */
+  keyShortcuts?: string;
+  /** The entry opens a dialog (a palette): sets `aria-haspopup="dialog"`. */
+  opensDialog?: boolean;
+  /** `data-*` attributes for the floating-bar button (analytics hooks, guided-tour anchors). */
+  data?: FloatBarDataAttributes;
 };
 
-export type AppShellPrimaryAction = {
-  label: string;
-  icon?: ReactNode;
-  href?: string;
-  onSelect?: () => void;
-};
+export type { AppShellPrimaryAction };
 
 type SlotState = { collapsed: boolean };
 type Slot = ReactNode | ((state: SlotState) => ReactNode);
@@ -65,8 +76,29 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   topBarEnd?: ReactNode;
   /** A search entry in the sidebar and on the floating bar. */
   search?: AppShellSearch;
-  /** The page's one main action, on the floating bar. Desktop pages put it in their own header. */
+  /**
+   * Replaces the sidebar's search entry with your own (a function gets the rail state). The floating bar's entry still
+   * comes from `search`.
+   */
+  searchTrigger?: Slot;
+  /**
+   * The main action when no page registers its own with `useShellPrimaryAction`: on the floating bar, and in any
+   * `ShellPrimaryActionSlot`.
+   */
   primaryAction?: AppShellPrimaryAction;
+  /** `data-*` attributes for the floating bar's menu button. */
+  menuData?: FloatBarDataAttributes;
+  /**
+   * Shown in place of the navigation, in the sidebar and in the sheet, while the next route loads: a skeleton. The
+   * navigation landmarks are `aria-busy` meanwhile. Leave it out when the navigation is ready.
+   */
+  navigationPending?: ReactNode;
+  /** A bar above the page, beside the sidebar, at every width: a unit or context picker. */
+  topBar?: ReactNode;
+  /** A row between `topBar` and the page: sync state, a notice. Give it the live-region semantics it needs. */
+  statusRow?: ReactNode;
+  /** `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). */
+  sheetAs?: "portal" | "dialog";
   /** Sidebar as a rail. Controlled. */
   collapsed?: boolean;
   defaultCollapsed?: boolean;
@@ -99,7 +131,13 @@ export function AppShell({
   footer,
   topBarEnd,
   search,
-  primaryAction,
+  searchTrigger,
+  primaryAction: primaryActionProp,
+  menuData,
+  navigationPending,
+  topBar,
+  statusRow,
+  sheetAs = "portal",
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
@@ -139,7 +177,14 @@ export function AppShell({
     setSheetOpen(false);
   };
 
-  const navigation = (
+  const registry = useShellPrimaryActionRegistry(primaryActionProp);
+  const primaryAction = registry.action;
+  const pendingNavigation =
+    navigationPending !== undefined && navigationPending !== null && navigationPending !== false;
+
+  const navigation = pendingNavigation ? (
+    navigationPending
+  ) : (
     <ShellNavigation
       groups={groups}
       currentPath={currentPath}
@@ -151,11 +196,13 @@ export function AppShell({
     />
   );
 
-  const searchEntry = search ? (
+  const defaultSearchEntry = search ? (
     <button
       type="button"
       className={styles.search}
       onClick={search.onSelect}
+      aria-keyshortcuts={search.keyShortcuts}
+      aria-haspopup={search.opensDialog ? "dialog" : undefined}
       // A rail has room for the icon only: the label stays as the name and the tooltip.
       aria-label={collapsed ? search.label : undefined}
       title={collapsed ? search.label : undefined}
@@ -167,94 +214,113 @@ export function AppShell({
     </button>
   ) : null;
 
+  const searchEntry =
+    searchTrigger !== undefined ? resolve(searchTrigger, { collapsed }) : defaultSearchEntry;
+
   const openState: SlotState = { collapsed: false };
   return (
-    <div
-      {...rest}
-      className={[styles.shell, className].filter(Boolean).join(" ")}
-      data-collapsed={collapsed || undefined}
-    >
-      <a className={styles.skip} href={`#${mainId}`}>
-        {labels.skipToContent}
-      </a>
-      <header className={styles.topBar}>
-        <div className={styles.topBrand}>{resolve(brand, openState)}</div>
-        {topBarEnd ? <div className={styles.topEnd}>{topBarEnd}</div> : null}
-      </header>
-      <div className={styles.sidebarSlot}>
-        <Sidebar
-          label={labels.navigation}
-          collapsed={collapsed}
-          onCollapsedChange={
-            fixedSidebar
-              ? undefined
-              : (next) => {
-                  if (collapsedProp === undefined) setInnerCollapsed(next);
-                  onCollapsedChange?.(next);
-                }
-          }
-          collapseLabel={labels.collapseSidebar}
-          expandLabel={labels.expandSidebar}
-          header={resolve(brand, { collapsed })}
-          search={searchEntry}
-          footer={resolve(footer, { collapsed })}
-        >
-          {navigation}
-        </Sidebar>
-      </div>
-      <main id={mainId} className={styles.main}>
-        {children}
-      </main>
-      <MobileFloatBar label={labels.floatBar} className={styles.float}>
-        {search ? (
-          <>
-            <MobileFloatBarButton
-              variant="search"
-              label={search.label}
-              icon={<SearchGlyph width={18} height={18} />}
-              onClick={search.onSelect}
-            />
-            <MobileFloatBarSeparator />
-          </>
-        ) : null}
-        {primaryAction ? (
-          primaryAction.href !== undefined ? (
-            <MobileFloatBarButton
-              variant="primary"
-              label={primaryAction.label}
-              icon={primaryAction.icon}
-              href={primaryAction.href}
-              onClick={primaryAction.onSelect}
-            />
-          ) : (
-            <MobileFloatBarButton
-              variant="primary"
-              label={primaryAction.label}
-              icon={primaryAction.icon}
-              onClick={primaryAction.onSelect}
-            />
-          )
-        ) : null}
-        <MobileFloatBarButton
-          variant="icon"
-          label={labels.menu}
-          icon={<MenuGlyph width={19} height={19} />}
-          aria-haspopup="dialog"
-          aria-expanded={sheetOpen}
-          onClick={() => setSheetOpen(true)}
-        />
-      </MobileFloatBar>
-      <NavSheet
-        open={sheetOpen && !wide}
-        onOpenChange={setSheetOpen}
-        label={labels.menu}
-        header={resolve(brand, openState)}
-        footer={resolve(footer, openState)}
+    <ShellPrimaryActionContext.Provider value={registry}>
+      <div
+        {...rest}
+        className={[styles.shell, className].filter(Boolean).join(" ")}
+        data-collapsed={collapsed || undefined}
       >
-        <nav aria-label={labels.navigation} className={styles.sheetNav}>
-          {navigation}
-        </nav>
-      </NavSheet>
-    </div>
+        <a className={styles.skip} href={`#${mainId}`}>
+          {labels.skipToContent}
+        </a>
+        <header className={styles.topBar}>
+          <div className={styles.topBrand}>{resolve(brand, openState)}</div>
+          {topBarEnd ? <div className={styles.topEnd}>{topBarEnd}</div> : null}
+        </header>
+        <div className={styles.sidebarSlot}>
+          <Sidebar
+            label={labels.navigation}
+            collapsed={collapsed}
+            onCollapsedChange={
+              fixedSidebar
+                ? undefined
+                : (next) => {
+                    if (collapsedProp === undefined) setInnerCollapsed(next);
+                    onCollapsedChange?.(next);
+                  }
+            }
+            collapseLabel={labels.collapseSidebar}
+            expandLabel={labels.expandSidebar}
+            header={resolve(brand, { collapsed })}
+            search={searchEntry}
+            footer={resolve(footer, { collapsed })}
+            busy={pendingNavigation}
+          >
+            {navigation}
+          </Sidebar>
+        </div>
+        <div className={styles.content}>
+          {topBar ? <div className={styles.contextBar}>{topBar}</div> : null}
+          {statusRow ? <div className={styles.statusRow}>{statusRow}</div> : null}
+          <main id={mainId} className={styles.main}>
+            {children}
+          </main>
+        </div>
+        <MobileFloatBar label={labels.floatBar} className={styles.float}>
+          {search ? (
+            <>
+              <MobileFloatBarButton
+                variant="search"
+                label={search.label}
+                icon={<SearchGlyph width={18} height={18} />}
+                onClick={search.onSelect}
+                {...search.data}
+              />
+              <MobileFloatBarSeparator />
+            </>
+          ) : null}
+          {primaryAction ? (
+            primaryAction.href !== undefined ? (
+              <MobileFloatBarButton
+                variant="primary"
+                label={primaryAction.label}
+                icon={primaryAction.icon}
+                href={primaryAction.href}
+                onClick={primaryAction.onSelect}
+                {...primaryAction.data}
+              />
+            ) : (
+              <MobileFloatBarButton
+                variant="primary"
+                label={primaryAction.label}
+                icon={primaryAction.icon}
+                onClick={primaryAction.onSelect}
+                {...primaryAction.data}
+              />
+            )
+          ) : null}
+          <MobileFloatBarButton
+            variant="icon"
+            label={labels.menu}
+            icon={<MenuGlyph width={19} height={19} />}
+            aria-haspopup="dialog"
+            aria-expanded={sheetOpen}
+            onClick={() => setSheetOpen(true)}
+            {...menuData}
+          />
+        </MobileFloatBar>
+        <NavSheet
+          open={sheetOpen && !wide}
+          onOpenChange={setSheetOpen}
+          label={labels.menu}
+          renderAs={sheetAs}
+          header={resolve(brand, openState)}
+          footer={resolve(footer, openState)}
+        >
+          <nav
+            aria-label={labels.navigation}
+            className={styles.sheetNav}
+            aria-busy={pendingNavigation || undefined}
+          >
+            {navigation}
+          </nav>
+        </NavSheet>
+      </div>
+    </ShellPrimaryActionContext.Provider>
   );
 }

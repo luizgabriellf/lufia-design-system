@@ -18,6 +18,8 @@ export type SidebarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   collapseLabel?: string;
   /** Accessible name of that button while it is a rail ("Expand sidebar"). */
   expandLabel?: string;
+  /** The navigation is being replaced (a route is loading): `aria-busy` on the landmark. Pass the skeleton as `children`. */
+  busy?: boolean;
   /** Above the navigation: a brand, an account or workspace switcher. */
   header?: ReactNode;
   /** Between the header and the navigation: a search entry. */
@@ -42,6 +44,7 @@ export function Sidebar({
   header,
   search,
   footer,
+  busy = false,
   className,
   children,
   ...rest
@@ -67,7 +70,7 @@ export function Sidebar({
           ) : null}
         </div>
         {search ? <div className={styles.search}>{search}</div> : null}
-        <nav className={styles.nav} aria-label={label}>
+        <nav className={styles.nav} aria-label={label} aria-busy={busy || undefined}>
           {children}
         </nav>
         {footer ? <div className={styles.foot}>{footer}</div> : null}
@@ -159,6 +162,8 @@ export function SidebarGroup({
 
 export type SidebarItemProps = {
   label: string;
+  /** Accessible name when it should differ from the visible label. Keep the visible label in it (WCAG 2.5.3). */
+  ariaLabel?: string;
   /** Makes the item a link, rendered through the configured `linkComponent`. */
   href?: string;
   icon?: ReactNode;
@@ -175,6 +180,7 @@ export type SidebarItemProps = {
 /** One destination. A link when it has an `href`, otherwise a button. In a rail only the icon shows. */
 export function SidebarItem({
   label,
+  ariaLabel,
   href,
   icon,
   badge,
@@ -191,6 +197,7 @@ export function SidebarItem({
     className: [styles.item, className].filter(Boolean).join(" "),
     "data-active": looksActive || undefined,
     "aria-current": active ? ("page" as const) : undefined,
+    "aria-label": ariaLabel,
     // The label stays in the DOM as a rail's accessible name; the native tooltip tells sighted people what the icon is.
     title: collapsed ? label : undefined,
   };

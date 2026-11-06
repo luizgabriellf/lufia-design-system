@@ -32,7 +32,10 @@ export function MobileFloatBar({ label, className, children, ...rest }: MobileFl
   );
 }
 
-type FloatButtonBase = {
+/** `data-*` attributes, passed through to the control: analytics hooks, guided-tour anchors. */
+export type FloatBarDataAttributes = { [name: `data-${string}`]: string | number | boolean | undefined };
+
+type FloatButtonBase = FloatBarDataAttributes & {
   /** The accessible name. Shown as text on `search` and `primary`, hidden on `icon`. */
   label: string;
   /** `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. */
@@ -70,9 +73,10 @@ export function MobileFloatBarButton({
     </>
   );
   if (href !== undefined) {
-    const { onClick } = rest as { onClick?: () => void };
+    const { onClick, ...others } = rest as { onClick?: () => void } & Record<string, unknown>;
+    const data = Object.fromEntries(Object.entries(others).filter(([name]) => name.startsWith("data-")));
     return (
-      <Link href={href} className={classes} data-variant={variant} onClick={onClick}>
+      <Link {...data} href={href} className={classes} data-variant={variant} onClick={onClick}>
         {content}
       </Link>
     );
