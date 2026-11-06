@@ -14,6 +14,7 @@ export * from "./components/Link";
 export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/NavRow";
+export * from "./components/PageHeader";
 export * from "./components/Pagination";
 export * from "./components/PeerNav";
 export * from "./components/SortableTh";
