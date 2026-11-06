@@ -1,8 +1,8 @@
 "use client";
 
 import type { HTMLAttributes, ReactNode } from "react";
-import { Button } from "../Button";
 import { MoreActions, type MoreActionItem } from "../MoreActions";
+import { Button } from "../Button";
 import styles from "./PageActions.module.css";
 
 export type PageActionItem = {

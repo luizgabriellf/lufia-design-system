@@ -1,5 +1,5 @@
 import { Unstyled } from "@storybook/addon-docs/blocks";
-import { DemoButton } from "../demo";
+import { Button } from "../../components/Button";
 import styles from "./ThemeShowcase.module.css";
 
 const THEMES = ["default", "example-brand"] as const;
@@ -33,9 +33,9 @@ export function ThemeShowcase() {
                   Due soon
                 </span>
               </span>
-              <DemoButton variant="primary" size="sm" tabIndex={-1}>
+              <Button variant="primary" size="sm" tabIndex={-1}>
                 Continue
-              </DemoButton>
+              </Button>
             </figure>
           )),
         )}

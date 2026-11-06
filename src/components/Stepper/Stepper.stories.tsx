@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../Button";
 import { Stepper } from "./Stepper";
-import { DemoButton } from "../../docs/demo";
 
 const steps = [
   { key: "details", label: "Details" },
@@ -44,12 +44,12 @@ function Flow() {
     <div style={{ display: "grid", gap: 16 }}>
       <Stepper steps={steps} current={current} onStepClick={setCurrent} />
       <div style={{ display: "flex", gap: 8 }}>
-        <DemoButton disabled={current === 0} onClick={() => setCurrent((c) => c - 1)}>
+        <Button disabled={current === 0} onClick={() => setCurrent((c) => c - 1)}>
           Back
-        </DemoButton>
-        <DemoButton disabled={current === steps.length - 1} onClick={() => setCurrent((c) => c + 1)}>
+        </Button>
+        <Button disabled={current === steps.length - 1} onClick={() => setCurrent((c) => c + 1)}>
           Next
-        </DemoButton>
+        </Button>
       </div>
     </div>
   );

@@ -1,14 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import {
-  DemoButton,
-  DocumentIcon,
-  HomeIcon,
-  PlusIcon,
-  SettingsIcon,
-  UploadIcon,
-  UsersIcon,
-} from "../../docs/demo";
+import { DocumentIcon, HomeIcon, PlusIcon, SettingsIcon, UploadIcon, UsersIcon } from "../../docs/demo";
+import { Button } from "../Button";
 import { CommandPalette, type CommandItem, type CommandPaletteLabels } from "./CommandPalette";
 
 const labels: CommandPaletteLabels = {
@@ -76,7 +69,7 @@ function Demo({
   const [open, setOpen] = useState(initialOpen);
   return (
     <div style={{ padding: "1rem", display: "grid", gap: "0.75rem", justifyItems: "start" }}>
-      <DemoButton onClick={() => setOpen(true)}>Open the palette</DemoButton>
+      <Button onClick={() => setOpen(true)}>Open the palette</Button>
       <p style={{ margin: 0, color: "var(--lufia-color-text-muted)" }}>
         Or press <kbd>Ctrl</kbd> + <kbd>K</kbd> (<kbd>Cmd</kbd> + <kbd>K</kbd> on a Mac).
       </p>

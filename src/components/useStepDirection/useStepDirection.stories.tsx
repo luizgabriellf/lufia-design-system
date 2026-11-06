@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { useStepDirection } from "./useStepDirection";
 
 function Demo() {
@@ -15,12 +15,12 @@ function Demo() {
         The container would carry <code>data-step-direction=&quot;{direction ?? ""}&quot;</code>.
       </p>
       <div style={{ display: "flex", gap: "0.5rem" }}>
-        <DemoButton disabled={step === 0} onClick={() => setStep((s) => s - 1)}>
+        <Button disabled={step === 0} onClick={() => setStep((s) => s - 1)}>
           Back
-        </DemoButton>
-        <DemoButton disabled={step === 3} onClick={() => setStep((s) => s + 1)}>
+        </Button>
+        <Button disabled={step === 3} onClick={() => setStep((s) => s + 1)}>
           Next
-        </DemoButton>
+        </Button>
       </div>
     </div>
   );

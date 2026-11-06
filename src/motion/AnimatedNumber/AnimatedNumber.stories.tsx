@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../../components/Button";
 import { AnimatedNumber, type AnimatedNumberProps } from "./AnimatedNumber";
-import { DemoButton } from "../../docs/demo";
 
 const euros = (n: number) => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(n);
 
@@ -13,7 +13,7 @@ function Demo(args: AnimatedNumberProps) {
       <p style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600 }}>
         <AnimatedNumber {...args} value={value} />
       </p>
-      <DemoButton onClick={() => setValue(Math.round(Math.random() * 5000))}>Change value</DemoButton>
+      <Button onClick={() => setValue(Math.round(Math.random() * 5000))}>Change value</Button>
     </div>
   );
 }

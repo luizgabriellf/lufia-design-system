@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { LufiaLink, LufiaProvider, useLufia, type LinkComponent } from "./LufiaProvider";
 
 /** Stands in for a router link: it intercepts the click and reports the target instead of leaving the page. */
@@ -55,7 +55,7 @@ function Demo({ translated }: { translated: boolean }) {
             ? `Router navigated to ${last}`
             : "Activate the link: the adapter handles it, the page does not reload."}
         </p>
-        {last ? <DemoButton onClick={() => setLast(null)}>Reset</DemoButton> : null}
+        {last ? <Button onClick={() => setLast(null)}>Reset</Button> : null}
       </div>
     </LufiaProvider>
   );

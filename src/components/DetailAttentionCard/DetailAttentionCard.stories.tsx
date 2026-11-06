@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../Button";
 import { DetailAttentionCard } from "./DetailAttentionCard";
-import { DemoButton } from "../../docs/demo";
 
 const meta = {
   title: "Components/DetailAttentionCard",
@@ -13,7 +13,7 @@ const meta = {
     description: "Schedule the review before the deadline.",
     meta: "Last checked 2 days ago",
     toneLabel: "Warning",
-    action: <DemoButton size="sm">Schedule</DemoButton>,
+    action: <Button size="sm">Schedule</Button>,
   },
   argTypes: {
     action: { control: false },

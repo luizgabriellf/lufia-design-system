@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { ConfirmDialog, useConfirmDialog, type ConfirmDialogProps } from "./ConfirmDialog";
 
 type DemoProps = Pick<
@@ -20,13 +20,13 @@ function Demo({ startOpen = false, slow = false, stuckBusy = false, ...args }: D
   const [busy, setBusy] = useState(false);
   return (
     <>
-      <DemoButton
+      <Button
         variant={args.destructive ? "secondary" : "primary"}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
         {args.destructive ? "Delete invoice" : "Publish"}
-      </DemoButton>
+      </Button>
       <ConfirmDialog
         {...args}
         open={open}
@@ -108,7 +108,7 @@ function PromiseDemo() {
   const [result, setResult] = useState("Nothing asked yet.");
   return (
     <div style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>
-      <DemoButton
+      <Button
         onClick={async () => {
           const yes = await confirm({
             title: "Discard changes?",
@@ -121,7 +121,7 @@ function PromiseDemo() {
         }}
       >
         Discard changes
-      </DemoButton>
+      </Button>
       <p style={{ margin: 0 }} aria-live="polite">
         {result}
       </p>
