@@ -55,10 +55,6 @@
   outline-offset: 2px;
 }
 
-.sidebarSearch {
-  padding-block-end: var(--lufia-space-2);
-}
-
 .search {
   display: flex;
   align-items: center;
@@ -85,6 +81,11 @@
 .search:focus-visible {
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: 2px;
+}
+
+.search[data-rail] {
+  justify-content: center;
+  padding: 0;
 }
 
 .searchLabel {

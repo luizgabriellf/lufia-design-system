@@ -152,10 +152,18 @@ export function AppShell({
   );
 
   const searchEntry = search ? (
-    <button type="button" className={styles.search} onClick={search.onSelect}>
+    <button
+      type="button"
+      className={styles.search}
+      onClick={search.onSelect}
+      // A rail has room for the icon only: the label stays as the name and the tooltip.
+      aria-label={collapsed ? search.label : undefined}
+      title={collapsed ? search.label : undefined}
+      data-rail={collapsed || undefined}
+    >
       <SearchGlyph width={16} height={16} />
-      <span className={styles.searchLabel}>{search.label}</span>
-      {search.shortcut ? <kbd className={styles.shortcut}>{search.shortcut}</kbd> : null}
+      {collapsed ? null : <span className={styles.searchLabel}>{search.label}</span>}
+      {search.shortcut && !collapsed ? <kbd className={styles.shortcut}>{search.shortcut}</kbd> : null}
     </button>
   ) : null;
 
@@ -188,12 +196,8 @@ export function AppShell({
           collapseLabel={labels.collapseSidebar}
           expandLabel={labels.expandSidebar}
           header={resolve(brand, { collapsed })}
-          footer={
-            <>
-              {searchEntry && !collapsed ? <div className={styles.sidebarSearch}>{searchEntry}</div> : null}
-              {resolve(footer, { collapsed })}
-            </>
-          }
+          search={searchEntry}
+          footer={resolve(footer, { collapsed })}
         >
           {navigation}
         </Sidebar>

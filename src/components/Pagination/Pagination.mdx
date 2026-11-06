@@ -63,7 +63,7 @@ configured `linkComponent`.
 - Previous and next at the ends use `aria-disabled` instead of `disabled`, so focus is not dropped when you reach the last
   page by pressing next. They ignore clicks.
 - The status line is a polite live region that announces the new page; on phones it is the only place the position shows,
-  because the numbers are hidden below 40rem.
+  because the numbers are hidden when the component itself is narrower than 40rem (a container query, so it also holds in a side panel).
 - Controls are 2.5rem square. Focus shows a 2px ring; the current page also has a border and weight, not colour alone, and
   keeps a `Highlight` border in forced-colors mode.
 

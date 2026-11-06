@@ -13,6 +13,7 @@
 
 /* Header and footer keep their size; only the navigation gives way. */
 .head,
+.search,
 .foot {
   flex: none;
 }
@@ -76,6 +77,10 @@
 
 .sidebar[data-collapsed] .collapseButton:dir(rtl) svg {
   transform: none;
+}
+
+.search {
+  padding-block-start: var(--lufia-space-2);
 }
 
 .nav {

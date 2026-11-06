@@ -20,6 +20,8 @@ export type SidebarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   expandLabel?: string;
   /** Above the navigation: a brand, an account or workspace switcher. */
   header?: ReactNode;
+  /** Between the header and the navigation: a search entry. */
+  search?: ReactNode;
   /** Below the navigation, pinned to the bottom: account and help links. */
   footer?: ReactNode;
   /** One or more `SidebarGroup`. */
@@ -38,6 +40,7 @@ export function Sidebar({
   collapseLabel,
   expandLabel,
   header,
+  search,
   footer,
   className,
   children,
@@ -63,6 +66,7 @@ export function Sidebar({
             </button>
           ) : null}
         </div>
+        {search ? <div className={styles.search}>{search}</div> : null}
         <nav className={styles.nav} aria-label={label}>
           {children}
         </nav>
