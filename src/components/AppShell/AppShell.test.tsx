@@ -222,6 +222,28 @@ describe("AppShell slots", () => {
       expect(status.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
+    it("can be added and removed at runtime without remounting the page", () => {
+      const view = (bars: boolean) => (
+        <AppShell
+          groups={groups}
+          labels={labels}
+          topBar={bars ? <div>Unit bar</div> : undefined}
+          statusRow={bars ? <div>All synced</div> : undefined}
+        >
+          <input aria-label="Draft" />
+        </AppShell>
+      );
+      const { rerender } = render(view(false));
+      const main = screen.getByRole("main");
+      const input = screen.getByLabelText("Draft");
+      rerender(view(true));
+      expect(screen.getByText("Unit bar")).toBeInTheDocument();
+      expect(screen.getByRole("main")).toBe(main);
+      expect(screen.getByLabelText("Draft")).toBe(input);
+      rerender(view(false));
+      expect(screen.getByRole("main")).toBe(main);
+    });
+
     it("leave no empty wrappers when omitted, and keep main a direct child of the shell", () => {
       const { container } = setup();
       expect(container.querySelector(".contextBar, .statusRow, .content")).toBeNull();

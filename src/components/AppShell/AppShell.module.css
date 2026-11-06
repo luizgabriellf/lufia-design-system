@@ -13,6 +13,8 @@
 }
 
 .sidebarSlot {
+  grid-column: 1;
+  grid-row: 1 / span 3;
   position: sticky;
   inset-block-start: 0;
   align-self: start;
@@ -21,20 +23,15 @@
   border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
 
-/* The column beside the sidebar: the optional bars, then the page. */
-.content {
-  display: flex;
-  flex-direction: column;
-  min-inline-size: 0;
-}
-
+/* The optional bars and the page share the column beside the sidebar; the sidebar spans the rows they fill. */
 .contextBar,
 .statusRow {
+  grid-column: 2;
   min-inline-size: 0;
 }
 
 .main {
-  flex: 1 1 auto;
+  grid-column: 2;
   min-inline-size: 0;
   padding: var(--lufia-space-8);
 }
@@ -162,10 +159,6 @@
 
   .primarySlot {
     display: none;
-  }
-
-  .content {
-    display: block;
   }
 
   .main {

@@ -254,20 +254,12 @@ export function AppShell({
             {navigation}
           </Sidebar>
         </div>
-        {topBar || statusRow ? (
-          // The column wrapper exists only when a bar needs it; without bars `<main>` stays a direct child of the shell.
-          <div className={styles.content}>
-            {topBar ? <div className={styles.contextBar}>{topBar}</div> : null}
-            {statusRow ? <div className={styles.statusRow}>{statusRow}</div> : null}
-            <main id={mainId} className={styles.main}>
-              {children}
-            </main>
-          </div>
-        ) : (
-          <main id={mainId} className={styles.main}>
-            {children}
-          </main>
-        )}
+        {/* Siblings of <main>, not a wrapper: adding or removing a bar at runtime never remounts the page. */}
+        {topBar ? <div className={styles.contextBar}>{topBar}</div> : null}
+        {statusRow ? <div className={styles.statusRow}>{statusRow}</div> : null}
+        <main id={mainId} className={styles.main}>
+          {children}
+        </main>
         <MobileFloatBar label={labels.floatBar} className={styles.float}>
           {search ? (
             <>
