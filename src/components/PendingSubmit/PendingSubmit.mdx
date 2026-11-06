@@ -1,0 +1,93 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./PendingSubmit.stories";
+
+<Meta of={Stories} />
+
+# PendingSubmit <StatusBadge status="beta" />
+
+The submit button of a form that takes a moment. While the form is pending it cannot be submitted again, shows a ring and a
+pending label, and for a long wait moves through further labels.
+
+<Canvas of={Stories.InAForm} />
+
+## Usage
+
+```tsx
+import { PendingSubmit } from "@lufia/design-system/components/PendingSubmit";
+
+<form action={saveProject}>
+  {/* fields */}
+  <PendingSubmit pendingLabel="Saving…" progress={[[4000, "Still saving, this can take a moment…"]]}>
+    Save changes
+  </PendingSubmit>
+</form>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+
+<Controls of={Stories.Default} />
+
+## Where the pending state comes from
+
+- **The form.** Inside a `<form>` whose `action` is a function (React 19, including Server Actions), the button reads the
+  form's state through `useFormStatus` and needs nothing else. The package's peer dependency is React 19; if an older
+  `react-dom` is resolved, the lookup degrades and only `pending` works.
+- **The `pending` prop.** Drive it from `useActionState`, a `useTransition` or your own request state when the form is not an
+  action form, or to cover a step before the action starts. It is combined with the form's state: either one makes it pending.
+
+<Canvas of={Stories.Pending} />
+
+## Progress labels
+
+`progress` is a list of `[afterMs, label]`. The first label (`pendingLabel`) shows at once and each later one replaces the
+previous after its delay. They are timed in CSS, not in React state, on purpose: a state update during a form transition
+re-renders the button outside the transition and loses `useFormStatus().pending`. Only `pendingLabel` is announced, once.
+
+<Canvas of={Stories.WithProgress} />
+
+## No double submit
+
+While pending, the button is `aria-busy` and `aria-disabled`, and its click is cancelled, which also cancels the implicit submission of Enter in
+a text field. It is deliberately **not** `disabled`: a disabled button drops keyboard focus, and a person who pressed it with
+the keyboard would lose their place. A genuinely `disabled` button (`disabled` prop) is also supported.
+
+## States
+
+<Canvas of={Stories.Secondary} />
+<Canvas of={Stories.PendingSecondary} />
+<Canvas of={Stories.Disabled} />
+
+## When to use
+
+- The primary submit action of any form that waits for a server, so it never looks idle while it works.
+
+## When not to use
+
+- A button that is not a form submit: it does not read form state. Use a regular button.
+- Actions that need a determinate progress bar (uploads): show the bar next to the form and use `pending` for the button.
+
+## Accessibility
+
+| Key / action  | Behaviour                                                    |
+| ------------- | ------------------------------------------------------------ |
+| Tab           | Focuses the button. It stays in the tab order while pending. |
+| Enter / Space | Submits when idle. While pending nothing happens.            |
+
+- `aria-busy` and `aria-disabled` are set while pending (Button dims it, which is right while it waits). The button keeps its accessible name (the idle label).
+- A live region next to the button (`role="status"`) announces `pendingLabel` when the wait starts and clears afterwards.
+  It sits outside the button because a live region inside a button is often ignored.
+- The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under
+  `prefers-reduced-motion` and the label still changes.
+- The button keeps the width of its longest label (invisible copies reserve it), so it does not jump when the label changes.
+- Target height is at least 44px; focus is a 2px ring.
+
+## Content guidelines
+
+The idle label says what happens ("Save changes"), the pending label is the same verb in progress ("Saving…"), and a
+progress label reassures ("Still saving, this can take a moment…"). Do not change the meaning between them, and do not leave the
+button without a pending label.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

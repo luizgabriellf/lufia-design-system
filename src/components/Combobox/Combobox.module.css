@@ -1,0 +1,173 @@
+.root {
+  position: relative;
+  display: block;
+  min-inline-size: 0;
+}
+
+.box {
+  gap: var(--lufia-space-1);
+  padding-inline-end: var(--lufia-space-2);
+}
+
+.native {
+  padding-inline-end: var(--lufia-space-2);
+}
+
+.spinner {
+  margin-inline-end: var(--lufia-space-1);
+}
+
+.button {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  color: var(--lufia-color-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-full);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.button:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 0;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.chevron {
+  transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.button[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* The list is absolutely placed in the field, so it follows the field when the page scrolls. */
+.popup {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: calc(100% + var(--lufia-space-1));
+  z-index: var(--lufia-z-dropdown);
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-solid);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-control);
+  box-shadow: var(--lufia-shadow-md);
+  animation: popup-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) both;
+}
+
+.root[data-placement="top"] .popup {
+  inset-block: auto calc(100% + var(--lufia-space-1));
+  animation-name: popup-in-top;
+}
+
+.list {
+  max-block-size: 15rem;
+  margin: 0;
+  padding: var(--lufia-space-1);
+  overflow-y: auto;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lufia-space-3);
+  min-block-size: 2.5rem;
+  box-sizing: border-box;
+  padding-block: var(--lufia-space-2);
+  padding-inline: var(--lufia-space-3);
+  border-radius: var(--lufia-radius-md);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-tight);
+  cursor: pointer;
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.optionLabel {
+  overflow-wrap: anywhere;
+}
+
+.optionDescription {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+}
+
+.check {
+  flex: 0 0 auto;
+  color: var(--lufia-color-text-accent);
+}
+
+/* The highlight is a fill plus an inset bar, so it never depends on colour alone (also in forced colours). */
+.option[data-active="true"] {
+  background: var(--lufia-color-accent-subtle);
+  box-shadow: inset var(--lufia-border-width-thick) 0 0 var(--lufia-color-accent-default);
+}
+
+.option[aria-selected="true"] {
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.option[aria-disabled="true"] {
+  color: var(--lufia-color-text-muted);
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-3);
+  margin: 0;
+  padding: var(--lufia-space-3) var(--lufia-space-4);
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+}
+
+/* Keyframes animate one end only, so the resting state is the end state and a disabled animation leaves it visible. */
+@keyframes popup-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
+}
+
+@keyframes popup-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-nudge));
+  }
+}
+
+@media (forced-colors: active) {
+  .option[data-active="true"] {
+    outline: var(--lufia-border-width-thin) solid Highlight;
+    outline-offset: -2px;
+    forced-color-adjust: none;
+    color: HighlightText;
+    background: Highlight;
+  }
+}

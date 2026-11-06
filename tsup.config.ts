@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   bundle: false,
   format: ["esm"],
-  dts: true,
+  dts: false, // declarations come from `tsc -p tsconfig.types.json` (see the build script): far less memory than the dts bundler
   clean: false,
   sourcemap: false,
   target: "es2022",

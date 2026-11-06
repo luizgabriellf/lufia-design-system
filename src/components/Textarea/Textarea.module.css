@@ -1,0 +1,37 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+  min-inline-size: 0;
+}
+
+.box {
+  align-items: stretch;
+}
+
+.native {
+  min-block-size: 5rem;
+  resize: vertical;
+}
+
+.count {
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* Close to the limit the count gets heavier, so the warning is not only a change of colour. */
+.count[data-near] {
+  color: var(--lufia-color-status-warning-fg);
+  font-weight: var(--lufia-font-weight-bold);
+}
+
+@media (forced-colors: active) {
+  /* Bold already marks the near-limit count; the system text colour keeps it readable. */
+  .count,
+  .count[data-near] {
+    color: CanvasText;
+  }
+}

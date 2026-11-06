@@ -1,0 +1,121 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Combobox.stories";
+
+<Meta of={Stories} />
+
+# Combobox <StatusBadge status="beta" />
+
+A searchable single select. The person types to narrow a list and picks one option. Options can arrive asynchronously, and
+the empty and loading states are part of the component.
+
+<Canvas of={Stories.Open} />
+
+## Usage
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { Combobox } from "@lufia/design-system/components/Combobox";
+
+<FormField label="City" error={errors.city}>
+  <Combobox
+    name="city"
+    options={cities}
+    placeholder="Search for a city"
+    emptyLabel="No city matches that search."
+    loadingLabel="Loading cities…"
+    onValueChange={(value) => setCity(value)}
+  />
+</FormField>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+`emptyLabel` and `loadingLabel` are required because a list without them fails silently. Each option has a `value`, a `label`
+and optionally a `description` and `disabled`. With `name`, the chosen **value** is submitted (not the text).
+
+<Controls of={Stories.Default} />
+
+## Filtering
+
+By default the label must contain the typed text, ignoring case and diacritics ("sao" finds "São Paulo"), and options keep
+the order you gave them. Typing highlights the first enabled match, so Enter picks it. Pass `filter={(option, query) => boolean}`
+to match another way, or `filter={false}` to show `options` as given.
+
+## Async options
+
+Listen to `onQueryChange`, set `loading` while you fetch, and replace `options` when results arrive. Use `filter={false}` so the
+component trusts the list it is given. The label of the chosen option is remembered even when a later search replaces it; for
+a value set before any options loaded, pass `valueLabel`. `onQueryChange` also fires with `""` after a choice or a clear, so
+you can reset the list.
+
+<Canvas of={Stories.AsyncOptions} />
+
+## States
+
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.Loading} />
+<Canvas of={Stories.Clearable} />
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.ReadOnly} />
+
+## Inside a dialog
+
+The list is dismissed through the package's layer stack (`useDismiss`), the same one `Modal` uses, so only the topmost layer
+reacts to Escape and to an outside press. Escape closes the list; the next Escape closes the dialog. The component adds no
+document listeners of its own.
+
+<Canvas of={Stories.InsideDialog} />
+
+## When to use
+
+- A list too long to scan (more than about fifteen options), or one where people know what they are looking for.
+- Data that is loaded as the person types.
+
+## When not to use
+
+- A short list: use `Select` (native, with the platform's picker on phones) or `RadioGroup`.
+- A free-text field with suggestions: the box here only accepts a listed option.
+- Several choices at once: this is a single select.
+- A search that opens a results page: use `SearchInput`.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) pattern with a listbox popup and
+list autocomplete: `role="combobox"` on the input with `aria-autocomplete="list"`, `aria-expanded`, `aria-controls` and
+`aria-activedescendant`. DOM focus stays in the input; the highlight is virtual.
+
+| Key / action    | Behaviour                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Typing          | Opens the list and narrows it by the text. The first enabled match is highlighted.               |
+| Down arrow      | Closed: opens on the chosen option, or the first. Open: next enabled option, wrapping.           |
+| Up arrow        | Closed: opens on the chosen option, or the last. Open: previous enabled option, wrapping.        |
+| Enter           | Chooses the highlighted option, closes the list and does not submit the form. With none, native. |
+| Escape          | Open: closes the list and restores the chosen text. Closed and `clearable`: clears the choice.   |
+| Tab             | Closes the list without choosing; focus moves on.                                                |
+| Home / End      | Move the caret in the text, as in any text field.                                                |
+| Click an option | Chooses it. Focus stays in the input. A disabled option ignores the click.                       |
+| Click the box   | Opens the list and selects the text, so typing replaces it.                                      |
+
+- Option ids come from their `value` and do not change between renders, so assistive technology keeps its place when the list updates.
+- A visually hidden status region announces the empty and loading texts, and the result count when you pass `resultsLabel`.
+- A list that is empty or loading is not "expanded": there is nothing to point `aria-controls` at, so the message lives in the status region only.
+- The highlighted option is shown with a fill and a bar on its start edge, and in forced-colors with the system highlight.
+- A `required` combobox is invalid until an option is chosen, whatever text is typed: the browser refuses to submit, focuses the box and shows its own message (or `requiredMessage`). It also carries `aria-required`.
+- A form `reset` returns it to `defaultValue`.
+- It opens upward when there is little room below the box. The list is placed inside the field and is not portaled, so a parent with `overflow: hidden` or `overflow: auto` (a scrollable dialog body, a table cell) clips it or makes the parent scroll. Give the field room, or place it where nothing clips. A portaled list that escapes clipping ancestors is planned as a follow-up.
+
+Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`). Combobox is the component most likely to behave
+differently across screen readers.
+
+## Content guidelines
+
+Labels are the thing being chosen ("City", "Assignee"), the placeholder says how ("Search for a city"). The empty text says
+what to do next ("No city matches that search. Try another name."), and the loading text names what loads. Keep option labels
+short and put the secondary detail (country, e-mail, code) in the description. Do not include the description in what must be
+unique to tell options apart.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

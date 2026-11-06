@@ -1,0 +1,23 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.label {
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.root[data-disabled] .label {
+  color: var(--lufia-color-text-muted);
+}
+
+/* An asterisk is a shape, so the requirement never relies on colour. The accessible text sits next to it. */
+.mark {
+  margin-inline-start: var(--lufia-space-1);
+  color: var(--lufia-color-status-danger-fg);
+}

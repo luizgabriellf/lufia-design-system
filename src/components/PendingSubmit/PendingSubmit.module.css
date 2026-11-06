@@ -1,0 +1,80 @@
+/* The look comes from Button. This module only holds the label layers, which share one grid cell. */
+.cell {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 0;
+}
+
+/* Every layer shares one grid cell, so the button is as wide as the widest of them. */
+.label,
+.sizer,
+.pending {
+  grid-area: 1 / 1;
+  min-inline-size: 0;
+}
+
+.sizer {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+.pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lufia-space-2);
+}
+
+.spinner {
+  border-color: currentcolor;
+  border-block-start-color: transparent;
+}
+
+.steps {
+  display: inline-grid;
+}
+
+.step,
+.only {
+  grid-area: 1 / 1;
+}
+
+/* The button keeps its size and focus ring; only the label layer fades out in favour of the pending one. */
+.cell[data-pending] .label {
+  opacity: 0;
+}
+
+/*
+ * Timed steps. Each one is hidden, appears after --on and is gone after --off. The delays are the only timing; the 1ms
+ * durations just flip the state, so there is no motion to reduce.
+ */
+.step {
+  opacity: 0;
+  animation:
+    step-show 1ms linear var(--on) forwards,
+    step-hide 1ms linear var(--off) forwards;
+}
+
+/* The first label is visible at rest, so it still shows if a user agent switches animations off. */
+.step:first-child {
+  opacity: 1;
+  animation: step-hide 1ms linear var(--off) forwards;
+}
+
+@keyframes step-show {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes step-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Busy is not disabled: the button keeps its colours and its focus, and only the cursor says to wait. */
+.root[aria-busy="true"] {
+  cursor: progress;
+}

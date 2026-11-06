@@ -1,0 +1,137 @@
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+  min-inline-size: 0;
+}
+
+.legend {
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.mark {
+  margin-inline-start: var(--lufia-space-1);
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+}
+
+.group[data-orientation="horizontal"] {
+  flex-flow: row wrap;
+  column-gap: var(--lufia-space-6);
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lufia-space-3);
+  min-block-size: 2.75rem;
+  margin: 0;
+  padding-block: 0.625rem;
+  padding-inline: 0;
+  color: var(--lufia-color-text-default);
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-control);
+  font: inherit;
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-normal);
+  text-align: start;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.circle {
+  display: grid;
+  flex: 0 0 auto;
+  place-content: center;
+  box-sizing: border-box;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+  margin-block-start: 0.0625rem;
+  background: var(--lufia-color-bg-field);
+  border: var(--lufia-border-width-thick) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+  transition:
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.circle::after {
+  content: "";
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  background: var(--lufia-color-text-on-accent);
+  border-radius: var(--lufia-radius-full);
+  opacity: 0;
+}
+
+.option[aria-checked="true"] .circle {
+  background: var(--lufia-color-accent-default);
+  border-color: var(--lufia-color-accent-default);
+}
+
+.option[aria-checked="true"] .circle::after {
+  opacity: 1;
+}
+
+.option:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.option:disabled {
+  color: var(--lufia-color-text-muted);
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.option:hover:not(:disabled) .circle {
+  border-color: var(--lufia-color-accent-default);
+}
+
+.root[data-invalid] .option .circle {
+  border-color: var(--lufia-color-status-danger-fg);
+}
+
+/* Covers the group so the browser's validation message points at it; invisible and out of the way of the pointer. */
+.validity {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+}
+
+@media (forced-colors: active) {
+  .option[aria-checked="true"] .circle {
+    background: Highlight;
+    border-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .option[aria-checked="true"] .circle::after {
+    background: HighlightText;
+  }
+}

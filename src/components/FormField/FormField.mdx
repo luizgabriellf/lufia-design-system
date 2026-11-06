@@ -1,0 +1,93 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./FormField.stories";
+import * as Composed from "./Forms.stories";
+
+<Meta of={Stories} />
+
+# FormField <StatusBadge status="beta" />
+
+The wrapper that turns a bare control into a field: a label, an optional hint, an optional error, and the wiring between
+them. It generates the ids, points the label at the control, links the hint and the error with `aria-describedby`, sets
+`aria-invalid` when there is an error, and marks a required field in text.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { TextInput } from "@lufia/design-system/components/TextInput";
+
+<FormField label="Project name" hint="Shown on invoices." required error={errors.name}>
+  <TextInput name="name" />
+</FormField>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+
+<Controls of={Stories.Default} />
+
+## Two ways to reach the control
+
+- **Context.** `TextInput`, `Textarea`, `Select`, `Combobox`, `SearchInput` and `FileField` read the field's ids from context,
+  so you nest them and nothing else. A control can still set its own `aria-describedby`; the two lists are merged.
+- **Render prop.** For any other control (a native element, a third-party picker) pass a function. It receives
+  `{ id, aria-describedby, aria-invalid, required, disabled }` to spread on the focusable element.
+
+```tsx
+<FormField label="Due date">{(control) => <input type="date" {...control} />}</FormField>
+```
+
+Building your own control? `useFormFieldControl(props)` merges a control's own props with the field's.
+
+## States
+
+<Canvas of={Stories.WithHint} />
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+
+An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears.
+A required field has an asterisk (a shape) and the accessible text `required`, set with `requiredLabel` for other languages.
+
+## A whole form
+
+Every control of the cluster in one form, with errors coming back from a pending action.
+
+<Canvas of={Composed.Default} />
+
+## When to use
+
+- Every single-value control that has a label of its own: text, select, search, file, combobox.
+
+## When not to use
+
+- A group of checkboxes or radios. Those have a legend, not a label: use `RadioGroup`, or a native `<fieldset>`.
+- A checkbox or switch on its own line. They carry their own label.
+- A placeholder in place of a label. A placeholder disappears as soon as the person types.
+
+## Accessibility
+
+Follows the WAI-ARIA [Forms tutorial](https://www.w3.org/WAI/tutorials/forms/) guidance for labels and instructions.
+
+| Key / action | Behaviour                                                          |
+| ------------ | ------------------------------------------------------------------ |
+| Click label  | Moves focus to the control (native `for`/`id` association).        |
+| Tab          | The wrapper is not a tab stop; focus goes straight to the control. |
+
+- The label is a real `<label for>`, so the control's accessible name is the label text.
+- The control's accessible description is the hint followed by the error.
+- `aria-invalid="true"` is present only while there is an error, so a pristine field is not announced as invalid.
+- Validate on blur or on submit, not on every keystroke, so the alert does not interrupt typing.
+
+## Content guidelines
+
+Labels are nouns, short, in sentence case: "Project name", not "Please enter the name of your project". Hints say what is
+allowed or why it is asked ("Up to 40 characters"). Errors say what to do, not what went wrong: "Enter a project name to
+continue", not "Invalid input". Never rely on "required" in colour; do not write "(required)" yourself, the component adds it
+for assistive technology.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

@@ -1,0 +1,31 @@
+.ring {
+  display: inline-block;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  inline-size: 1rem;
+  block-size: 1rem;
+  border: var(--lufia-border-width-thick) solid var(--lufia-color-border-strong);
+  border-block-start-color: var(--lufia-color-accent-default);
+  border-radius: var(--lufia-radius-full);
+  animation: field-spin 800ms linear infinite;
+}
+
+@keyframes field-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An endless loop is stopped, not shortened. The ring stays, with its accent arc, so the state is still visible. */
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .ring {
+    border-color: GrayText;
+    border-block-start-color: Highlight;
+  }
+}

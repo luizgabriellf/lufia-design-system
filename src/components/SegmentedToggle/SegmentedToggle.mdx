@@ -1,0 +1,76 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./SegmentedToggle.stories";
+
+<Meta of={Stories} />
+
+# SegmentedToggle <StatusBadge status="beta" />
+
+Two to four compact choices in one bordered group, where exactly one is always chosen. An indicator slides behind the chosen
+segment.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { SegmentedToggle } from "@lufia/design-system/components/SegmentedToggle";
+
+<SegmentedToggle
+  label="View"
+  value={view}
+  onValueChange={setView}
+  options={[
+    { value: "list", label: "List" },
+    { value: "board", label: "Board" },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+With `name`, the chosen value is submitted with the form.
+
+<Controls of={Stories.Default} />
+
+## States
+
+<Canvas of={Stories.WithIcons} />
+<Canvas of={Stories.DisabledSegment} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.Fill} />
+
+## When to use
+
+- Switching how the same content is shown or sourced: list or board, upload or link, monthly or yearly.
+
+## When not to use
+
+- Moving between pages or sibling views with their own content: use `PeerNav` (links or tabs).
+- On and off: use `Switch`.
+- More than four options, or long labels: use `RadioGroup` or `Select`.
+
+## Accessibility
+
+Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) pattern with a visual treatment of
+segments. It is a radiogroup and not a tablist because it chooses a value and does not control panels.
+
+| Key / action       | Behaviour                                                                                |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| Tab / Shift+Tab    | Enters the group at the chosen segment; leaves it. One tab stop.                         |
+| Right / Down arrow | Moves to the next enabled segment and chooses it. Wraps. Reversed in RTL for Left/Right. |
+| Left / Up arrow    | Moves to the previous enabled segment and chooses it. Wraps.                             |
+| Space / click      | Chooses the focused segment.                                                             |
+
+- `label` names the group and is required. Icons are decorative.
+- The indicator animates `transform` only, jumps on resize, and does not animate under `prefers-reduced-motion`.
+- Before scripts run the chosen segment paints its own border and fill, so the choice is visible without the indicator.
+- Under `forced-colors` the chosen segment keeps a `Highlight` border.
+
+## Content guidelines
+
+Labels are one or two words and parallel ("List", "Board"). They name what is shown, not the action. The group `label` names
+the dimension being chosen ("View", "Billing period").
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

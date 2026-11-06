@@ -1,0 +1,102 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./FileField.stories";
+
+<Meta of={Stories} />
+
+# FileField <StatusBadge status="beta" />
+
+A file picker with a drop area. The native `<input type="file">` stays in the form, limits on type, size and count are checked
+with messages you provide, and the chosen files are listed with a remove button each.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { FileField } from "@lufia/design-system/components/FileField";
+
+<FormField label="Attachments" hint="PDF, PNG or JPG, up to 5 MB each.">
+  <FileField
+    name="attachments"
+    multiple
+    accept=".pdf,.png,.jpg"
+    maxSize={5 * 1024 * 1024}
+    maxFiles={4}
+    chooseLabel="Choose files"
+    dropLabel="or drop files here"
+    emptyLabel="No file chosen"
+    formatRejection={({ file, reason }, limits) => messages[reason](file.name, limits)}
+    onFilesChange={setFiles}
+  />
+</FormField>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+`formatRejection` is required: every refusal reaches the person in your wording. It gets `{ file, reason }`, where `reason` is
+`"type"`, `"size"` or `"count"`, and the limits in force, so the message can name them.
+
+<Controls of={Stories.Default} />
+
+## How files are handled
+
+- **Picked or dropped, same rules.** A dropped file bypasses the native `accept` attribute, so the component applies it again
+  (`matchesAccept` is exported if you need it elsewhere), then `maxSize`, then `maxFiles`.
+- **Single or multiple.** Without `multiple`, a new file replaces the old one and only the first dropped file is used. With it,
+  new files are added, a file already in the list is ignored, and files past `maxFiles` are refused.
+- **The form submits what the list shows.** After every change the native input is updated, so removing a file removes it from
+  the submission too (browsers without `DataTransfer` fall back to clearing the input).
+- **Controlled or not.** Pass `files` and `onFilesChange` to own the list, or only `onFilesChange` to observe it. `onReject`
+  receives the refused files.
+- Files are never uploaded or read by the component. Sizes use `locale` (`formatFileSize` is exported).
+
+<Canvas of={Stories.WithFiles} />
+<Canvas of={Stories.Rejected} />
+
+## States
+
+<Canvas of={Stories.SingleFile} />
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+
+Uploading and its progress belong to your app, which knows the request. Show progress next to the list or in the hint, and
+disable the field with `disabled` while files are in flight if removing them would be wrong.
+
+## When to use
+
+- Attachments, documents and images that are submitted with a form, where people may have the files on their desktop.
+
+## When not to use
+
+- Importing data that needs a preview and column mapping: build that flow around a plain file input.
+- Large or resumable uploads: use a dedicated uploader and show its progress.
+
+## Accessibility
+
+| Key / action     | Behaviour                                                                      |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Tab              | Moves to the (visually hidden) file input, then through the remove buttons.    |
+| Enter / Space    | On the input, opens the file picker. On a remove button, removes that file.    |
+| Click the button | Opens the file picker (the button is the input's label).                       |
+| Drop files       | Adds them after the same checks as a pick. A mouse and touch convenience only. |
+
+- The real input is the control: it has the field's accessible name and description, `aria-invalid`, and `required`.
+  The visible button is its label and is hidden from assistive technology, so the name is not read twice.
+- Focus on the input draws the focus ring on the button.
+- Refusals use `role="alert"` and are part of the input's description. Several are shown as a list.
+- Each remove button is named after its file ("Remove report.pdf"; change it with `removeLabel`). After a removal focus returns
+  to the input.
+- Pass `describeFiles` to have a polite status announce the new count ("2 files chosen") after a pick.
+- The drop area is a dashed border that fills with the accent when files are dragged over it, which is not colour alone.
+
+## Content guidelines
+
+Say what is accepted before the person chooses, in the hint: types and the size limit. Refusals say which file and why, and
+what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than 5 MB.". Keep the button a verb phrase
+("Choose files") and the drop text secondary ("or drop files here"), since many people will not drag.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

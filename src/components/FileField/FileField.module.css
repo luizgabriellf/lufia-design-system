@@ -1,0 +1,182 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-3);
+  min-inline-size: 0;
+}
+
+.zone {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-space-3) var(--lufia-space-4);
+  box-sizing: border-box;
+  padding: var(--lufia-space-4);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-field);
+  border: var(--lufia-border-width-thick) dashed var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-card);
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.zone[data-dragging] {
+  background: var(--lufia-color-accent-subtle);
+  border-color: var(--lufia-color-accent-default);
+}
+
+.root[data-invalid] .zone {
+  border-color: var(--lufia-color-status-danger-fg);
+}
+
+.root[data-disabled] .zone {
+  background: var(--lufia-color-bg-surface);
+  border-color: var(--lufia-color-border-subtle);
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* The native input stays in the form and in the tab order, visually hidden; its button is the label next to it. */
+.input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  min-block-size: 2.75rem;
+  box-sizing: border-box;
+  padding-inline: var(--lufia-space-4);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-raised);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-control);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.trigger:hover {
+  border-color: var(--lufia-color-accent-default);
+}
+
+.input:focus-visible + .trigger {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.input:disabled + .trigger {
+  cursor: not-allowed;
+}
+
+.drop {
+  min-inline-size: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-3);
+  min-block-size: 2.75rem;
+  box-sizing: border-box;
+  padding-block: var(--lufia-space-1);
+  padding-inline: var(--lufia-space-3) var(--lufia-space-1);
+  background: var(--lufia-color-bg-surface);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+}
+
+.name {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.size {
+  flex: 0 0 auto;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.remove {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lufia-space-2);
+  min-inline-size: 2.25rem;
+  min-block-size: 2.25rem;
+  padding-inline: var(--lufia-space-2);
+  color: var(--lufia-color-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-md);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.remove:hover {
+  color: var(--lufia-color-status-danger-fg);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.remove:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 0;
+}
+
+.remove:disabled {
+  cursor: not-allowed;
+}
+
+.empty {
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.messages {
+  margin: 0;
+  padding-inline-start: var(--lufia-space-4);
+}
+
+@media (forced-colors: active) {
+  .zone[data-dragging] {
+    border-color: Highlight;
+  }
+
+  .input:focus-visible + .trigger {
+    outline-color: Highlight;
+  }
+}
