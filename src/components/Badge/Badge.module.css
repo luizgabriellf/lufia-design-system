@@ -1,0 +1,67 @@
+.root {
+  display: inline-flex;
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  align-items: center;
+  gap: 0.375rem;
+  padding-block: 0.125rem;
+  padding-inline: 0.625rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-status-neutral-bg);
+  color: var(--lufia-color-status-neutral-fg);
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-normal);
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+.root[data-tone="info"] {
+  background: var(--lufia-color-accent-subtle);
+  border-color: var(--lufia-color-accent-border);
+  color: var(--lufia-color-text-accent);
+}
+
+.root[data-tone="success"] {
+  background: var(--lufia-color-status-success-bg);
+  border-color: var(--lufia-color-status-success-border);
+  color: var(--lufia-color-status-success-fg);
+}
+
+.root[data-tone="warning"] {
+  background: var(--lufia-color-status-warning-bg);
+  border-color: var(--lufia-color-status-warning-border);
+  color: var(--lufia-color-status-warning-fg);
+}
+
+.root[data-tone="danger"] {
+  background: var(--lufia-color-status-danger-bg);
+  border-color: var(--lufia-color-status-danger-border);
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.root[data-tone="ai"] {
+  background: var(--lufia-color-status-ai-bg);
+  border-color: var(--lufia-color-status-ai-border);
+  color: var(--lufia-color-status-ai-fg);
+}
+
+.dot {
+  flex: none;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--lufia-radius-full);
+  background: currentcolor;
+}
+
+@media (forced-colors: active) {
+  .root {
+    border-color: CanvasText;
+  }
+
+  .dot {
+    background: CanvasText;
+  }
+}

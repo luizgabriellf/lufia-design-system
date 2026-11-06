@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState, type CSSProperties } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { Modal, type ModalProps } from "./Modal";
 
 type DemoProps = Partial<Omit<ModalProps, "open" | "onClose">> & {
@@ -36,9 +36,9 @@ function Demo({ startOpen = false, paragraphs = 0, slowSave = false, footer, ...
 
   return (
     <>
-      <DemoButton variant="primary" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <Button variant="primary" aria-haspopup="dialog" onClick={() => setOpen(true)}>
         Open modal
-      </DemoButton>
+      </Button>
       <Modal
         title="Edit project"
         {...rest}
@@ -48,12 +48,12 @@ function Demo({ startOpen = false, paragraphs = 0, slowSave = false, footer, ...
         footer={
           footer ?? (
             <>
-              <DemoButton disabled={busy} onClick={() => setOpen(false)}>
+              <Button disabled={busy} onClick={() => setOpen(false)}>
                 Cancel
-              </DemoButton>
-              <DemoButton variant="primary" aria-busy={busy || undefined} onClick={save}>
-                {busy ? "Saving…" : "Save changes"}
-              </DemoButton>
+              </Button>
+              <Button variant="primary" loading={busy} onClick={save}>
+                Save changes
+              </Button>
             </>
           )
         }
@@ -108,7 +108,7 @@ export const LongTitle: Story = {
   },
 };
 export const HeaderAction: Story = {
-  args: { startOpen: true, headerAction: <DemoButton size="sm">Help</DemoButton> },
+  args: { startOpen: true, headerAction: <Button size="sm">Help</Button> },
 };
 export const NoCloseButton: Story = { args: { startOpen: true, hideCloseButton: true } };
 export const BusyWhileSaving: Story = {
@@ -138,14 +138,14 @@ function Stacked() {
   const [second, setSecond] = useState(false);
   return (
     <>
-      <DemoButton variant="primary" onClick={() => setFirst(true)}>
+      <Button variant="primary" onClick={() => setFirst(true)}>
         Open modal
-      </DemoButton>
+      </Button>
       <Modal
         open={first}
         onClose={() => setFirst(false)}
         title="Invite people"
-        footer={<DemoButton onClick={() => setSecond(true)}>Review permissions</DemoButton>}
+        footer={<Button onClick={() => setSecond(true)}>Review permissions</Button>}
       >
         Escape closes only the top dialog, and focus returns to the control that opened it.
       </Modal>
@@ -180,9 +180,9 @@ function ModalInCell() {
   const [cell, setCell] = useState<HTMLElement | null>(null);
   return (
     <div ref={setCell}>
-      <DemoButton variant="primary" onClick={() => setOpen(true)}>
+      <Button variant="primary" onClick={() => setOpen(true)}>
         Open modal
-      </DemoButton>
+      </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -191,10 +191,10 @@ function ModalInCell() {
         description="Rename the project or change who can see it."
         footer={
           <>
-            <DemoButton onClick={() => setOpen(false)}>Cancel</DemoButton>
-            <DemoButton variant="primary" onClick={() => setOpen(false)}>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button variant="primary" onClick={() => setOpen(false)}>
               Save changes
-            </DemoButton>
+            </Button>
           </>
         }
       >

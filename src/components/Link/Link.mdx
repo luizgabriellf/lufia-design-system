@@ -1,0 +1,60 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Link.stories";
+
+<Meta of={Stories} />
+
+# Link <StatusBadge status="beta" />
+
+An inline text link. It goes through the app's router link, and an external one says that it leaves the page.
+
+<Canvas of={Stories.External} />
+
+## Usage
+
+```tsx
+import { Link } from "@lufia/design-system/components/Link";
+
+<Link href="/guide">read the guide</Link>
+<Link href="https://example.com" externalLabel="(opens in new tab)">the specification</Link>
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Internal links render
+through the `linkComponent` set on `LufiaProvider`, so client-side routing works.
+
+<Controls of={Stories.Default} />
+
+## Keyboard
+
+| Key   | Action                  |
+| ----- | ----------------------- |
+| Tab   | Moves focus to the link |
+| Enter | Follows the link        |
+
+## When to use
+
+- A link inside a sentence or a short block of text.
+- Any link to another site, with `externalLabel`.
+
+## When not to use
+
+- An action that does something on the page: use `Button`.
+- A call to action that looks like a button but navigates: use `Button` with `href`.
+- A whole clickable surface: use `Card` with `href`.
+
+## Accessibility
+
+- Links are underlined, so colour is not the only cue (WCAG 1.4.1).
+- `externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new
+  tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.
+- External links get `rel="noopener noreferrer"`.
+- Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`.
+
+## Content guidelines
+
+Make the link text meaningful on its own ("read the migration guide", not "click here"). Do not put the destination's URL in
+the text unless the URL is the content.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

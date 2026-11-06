@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { usePagination } from "./usePagination";
 
 const items = Array.from({ length: 23 }, (_, index) => `Item ${index + 1}`);
@@ -15,15 +15,15 @@ function Demo({ pageSize }: { pageSize: number }) {
       </ul>
       {show ? (
         <nav aria-label="Pagination" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <DemoButton disabled={!hasPrev} onClick={goPrev}>
+          <Button disabled={!hasPrev} onClick={goPrev}>
             Previous
-          </DemoButton>
+          </Button>
           <span aria-live="polite">
             Page {page} of {totalPages}
           </span>
-          <DemoButton disabled={!hasNext} onClick={goNext}>
+          <Button disabled={!hasNext} onClick={goNext}>
             Next
-          </DemoButton>
+          </Button>
         </nav>
       ) : null}
     </div>

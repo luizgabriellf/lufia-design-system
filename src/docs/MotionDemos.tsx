@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { DemoButton } from "./demo";
 import { usePrefersReducedMotion } from "../motion/usePrefersReducedMotion";
+import { Button } from "../components/Button";
 import styles from "./MotionDemos.module.css";
 import { sharedGroup } from "./tokensData";
 import type { CSSProperties } from "react";
@@ -34,9 +34,9 @@ export function TrackDemo({ kind }: { kind: "duration" | "easing" }) {
         </div>
       ))}
       <div className={styles.actions}>
-        <DemoButton variant="primary" size="sm" onClick={() => setEnd(!end)}>
+        <Button variant="primary" size="sm" onClick={() => setEnd(!end)}>
           Play
-        </DemoButton>
+        </Button>
       </div>
     </div>
   );
@@ -64,9 +64,9 @@ export function DistanceDemo() {
         ))}
       </div>
       <div className={styles.actions}>
-        <DemoButton variant="primary" size="sm" onClick={() => setEnd(!end)}>
+        <Button variant="primary" size="sm" onClick={() => setEnd(!end)}>
           Play
-        </DemoButton>
+        </Button>
       </div>
     </div>
   );

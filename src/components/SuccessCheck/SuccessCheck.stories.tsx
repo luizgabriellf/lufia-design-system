@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { SuccessCheck } from "./SuccessCheck";
 
 function Demo({ size }: { size: number }) {
@@ -17,9 +17,9 @@ function Demo({ size }: { size: number }) {
     >
       <SuccessCheck key={run} size={size} />
       <span style={{ color: "var(--lufia-color-text-default)" }}>Saved</span>
-      <DemoButton size="sm" onClick={() => setRun((n) => n + 1)}>
+      <Button size="sm" onClick={() => setRun((n) => n + 1)}>
         Replay
-      </DemoButton>
+      </Button>
     </div>
   );
 }

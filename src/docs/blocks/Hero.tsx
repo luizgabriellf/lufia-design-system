@@ -5,7 +5,8 @@ import { DetailList } from "../../components/DetailList";
 import { DetailSectionCard } from "../../components/DetailSectionCard";
 import { Stepper } from "../../components/Stepper";
 import { TableToolbar } from "../../components/TableToolbar";
-import { ArrowRightIcon, DemoButton, DemoLinkButton, GitHubIcon } from "../demo";
+import { ArrowRightIcon, GitHubIcon } from "../demo";
+import { Button } from "../../components/Button";
 import { REPO_URL } from "./links";
 import { landingStats } from "./stats";
 import styles from "./Hero.module.css";
@@ -44,9 +45,9 @@ function Composition() {
             title="Review due in 5 days"
             description="Schedule it before the deadline."
             action={
-              <DemoButton size="sm" variant="primary">
+              <Button size="sm" variant="primary">
                 Schedule
-              </DemoButton>
+              </Button>
             }
           />
           <DetailSectionCard title="Contact details">
@@ -85,18 +86,18 @@ export function Hero() {
             and a brand that is a file, not a fork.
           </p>
           <div className={styles.actions}>
-            <DemoLinkButton variant="primary" href="#quick-start" icon={<ArrowRightIcon size={18} />}>
+            <Button variant="primary" href="#quick-start" iconStart={<ArrowRightIcon size={18} />}>
               Get started
-            </DemoLinkButton>
-            <DemoLinkButton
+            </Button>
+            <Button
               href={REPO_URL}
               target="_blank"
               rel="noreferrer noopener"
-              icon={<GitHubIcon size={18} />}
+              iconStart={<GitHubIcon size={18} />}
             >
               GitHub
               <span className={styles.srOnly}> (opens in a new tab)</span>
-            </DemoLinkButton>
+            </Button>
           </div>
           <ul className={styles.badges}>
             {BADGES.map((badge) => (

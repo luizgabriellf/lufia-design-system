@@ -16,7 +16,8 @@ import { StatusTimeline } from "../../components/StatusTimeline";
 import { Stepper } from "../../components/Stepper";
 import { TableToolbar } from "../../components/TableToolbar";
 import { AnimatedNumber, ChangeHighlight, Collapse, Reveal, Skeleton } from "../../motion";
-import { DemoButton, DocumentIcon } from "../demo";
+import { DocumentIcon } from "../demo";
+import { Button } from "../../components/Button";
 import styles from "./ComponentGallery.module.css";
 
 export type GalleryEntry = {
@@ -43,7 +44,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
         icon={<DocumentIcon size={32} />}
         title="No documents yet"
         body="Documents you upload will appear here."
-        action={<DemoButton size="sm">Upload</DemoButton>}
+        action={<Button size="sm">Upload</Button>}
         className={styles.emptyState}
       />
     ),
@@ -59,7 +60,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
         toneLabel="Warning"
         title="Review due in 5 days"
         description="Schedule it before the deadline."
-        action={<DemoButton size="sm">Schedule</DemoButton>}
+        action={<Button size="sm">Schedule</Button>}
       />
     ),
   },
@@ -84,11 +85,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
     docsId: "components-detailsectioncard",
     summary: "A section container with a consistent heading, action slot and content area.",
     preview: (
-      <DetailSectionCard
-        title="Contact details"
-        icon={<EditIcon />}
-        action={<DemoButton size="sm">Edit</DemoButton>}
-      >
+      <DetailSectionCard title="Contact details" icon={<EditIcon />} action={<Button size="sm">Edit</Button>}>
         <DetailList rows={[{ label: "Email", value: "ada@example.com" }]} />
       </DetailSectionCard>
     ),

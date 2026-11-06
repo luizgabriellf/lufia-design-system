@@ -62,6 +62,8 @@ pairs.push(
   },
   { id: "focus.ring on canvas (UI)", fg: "focus.ring", bg: ["bg.canvas"], min: 3 },
   { id: "focus.ring on surface (UI)", fg: "focus.ring", bg: ["bg.canvas", "bg.surface"], min: 3 },
+  { id: "focus.ring on field (UI)", fg: "focus.ring", bg: ["bg.canvas", "bg.field"], min: 3 },
+  { id: "focus.ring on surface-solid (UI)", fg: "focus.ring", bg: ["bg.canvas", "bg.surface-solid"], min: 3 },
   { id: "accent.default on canvas (UI)", fg: "accent.default", bg: ["bg.canvas"], min: 3 },
 );
 

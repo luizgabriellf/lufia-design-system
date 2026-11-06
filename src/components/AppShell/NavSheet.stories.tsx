@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { DemoBrand, DemoFooter, demoGroups, demoLabels } from "../../docs/demo/AppShellDemo";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { NavSheet } from "./NavSheet";
 import { ShellNavigation } from "./ShellNavigation";
 
@@ -21,7 +21,7 @@ function Demo({ initialOpen = false, swipe = true }: { initialOpen?: boolean; sw
   const [openGroups, setOpenGroups] = useState<readonly string[]>(["workspace", "insights"]);
   return (
     <div style={{ padding: "1rem" }}>
-      <DemoButton onClick={() => setOpen(true)}>Open the menu</DemoButton>
+      <Button onClick={() => setOpen(true)}>Open the menu</Button>
       <NavSheet
         open={open}
         onOpenChange={setOpen}

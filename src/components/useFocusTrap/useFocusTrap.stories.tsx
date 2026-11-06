@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef, useState } from "react";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { useFocusTrap, type UseFocusTrapOptions } from "./useFocusTrap";
 
 const panel = {
@@ -20,10 +20,10 @@ function Demo({ initialFocus, restoreFocus }: Pick<UseFocusTrapOptions, "initial
   useFocusTrap(open, ref, { onEscape: () => setOpen(false), initialFocus, restoreFocus });
   return (
     <div style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>
-      <DemoButton aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <Button aria-haspopup="dialog" onClick={() => setOpen(true)}>
         Open trap
-      </DemoButton>
-      <DemoButton>Another control on the page</DemoButton>
+      </Button>
+      <Button>Another control on the page</Button>
       {open ? (
         <div ref={ref} role="dialog" aria-label="Focus trap demo" tabIndex={-1} style={panel}>
           <p style={{ margin: 0 }}>
@@ -34,10 +34,10 @@ function Demo({ initialFocus, restoreFocus }: Pick<UseFocusTrapOptions, "initial
             <input style={{ font: "inherit", padding: "0.5rem" }} />
           </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <DemoButton onClick={() => setOpen(false)}>Cancel</DemoButton>
-            <DemoButton variant="primary" onClick={() => setOpen(false)}>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button variant="primary" onClick={() => setOpen(false)}>
               Save
-            </DemoButton>
+            </Button>
           </div>
         </div>
       ) : null}

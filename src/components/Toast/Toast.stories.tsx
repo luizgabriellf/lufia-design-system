@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
-import { DemoButton } from "../../docs/demo";
 import { Modal } from "../Modal";
+import { Button } from "../Button";
 import { ToastProvider, useToast, type ToastPlacement } from "./Toast";
 
 type DemoProps = {
@@ -30,13 +30,11 @@ function Controls({ showAll }: { showAll: boolean }) {
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", maxInlineSize: "34rem" }}>
-      <DemoButton onClick={() => toast.success("Changes saved.")}>Success</DemoButton>
-      <DemoButton onClick={() => toast.info("A new version is available.")}>Info</DemoButton>
-      <DemoButton onClick={() => toast.warning("Storage is 90% full.")}>Warning</DemoButton>
-      <DemoButton onClick={() => toast.error("Upload failed. It stays until you dismiss it.")}>
-        Error
-      </DemoButton>
-      <DemoButton
+      <Button onClick={() => toast.success("Changes saved.")}>Success</Button>
+      <Button onClick={() => toast.info("A new version is available.")}>Info</Button>
+      <Button onClick={() => toast.warning("Storage is 90% full.")}>Warning</Button>
+      <Button onClick={() => toast.error("Upload failed. It stays until you dismiss it.")}>Error</Button>
+      <Button
         onClick={() =>
           toast.info("Invoice moved to the trash.", {
             action: { label: "Undo", onAction: () => toast.success("Invoice restored.") },
@@ -44,16 +42,16 @@ function Controls({ showAll }: { showAll: boolean }) {
         }
       >
         With action
-      </DemoButton>
-      <DemoButton
+      </Button>
+      <Button
         onClick={() => {
           toast.success(`Saved (${count + 1})`);
           setCount((n) => n + 1);
         }}
       >
         Stack another
-      </DemoButton>
-      <DemoButton onClick={() => toast.clear()}>Clear all</DemoButton>
+      </Button>
+      <Button onClick={() => toast.clear()}>Clear all</Button>
     </div>
   );
 }
@@ -99,7 +97,7 @@ export const Phone: Story = {
 function LongMessageButton() {
   const toast = useToast();
   return (
-    <DemoButton
+    <Button
       onClick={() =>
         toast.error(
           "The report could not be exported because the selected date range contains more rows than the export limit allows. Narrow the range and try again.",
@@ -108,7 +106,7 @@ function LongMessageButton() {
       }
     >
       Show a long message
-    </DemoButton>
+    </Button>
   );
 }
 
@@ -117,15 +115,15 @@ function AboveModal() {
   const [open, setOpen] = useState(true);
   return (
     <>
-      <DemoButton onClick={() => setOpen(true)}>Open modal</DemoButton>
+      <Button onClick={() => setOpen(true)}>Open modal</Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
         title="Share report"
         footer={
-          <DemoButton variant="primary" onClick={() => toast.success("Link copied.", { duration: null })}>
+          <Button variant="primary" onClick={() => toast.success("Link copied.", { duration: null })}>
             Copy link
-          </DemoButton>
+          </Button>
         }
       >
         Toasts stay visible and reachable above an open modal.

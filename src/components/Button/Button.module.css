@@ -1,0 +1,180 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  box-sizing: border-box;
+  min-block-size: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.375rem;
+  padding-inline: 1rem;
+  border: var(--lufia-border-width-thin) solid transparent;
+  border-radius: var(--lufia-radius-control);
+  background: transparent;
+  color: var(--lufia-color-text-default);
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.root:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.root:disabled,
+.root[aria-disabled="true"]:not([data-loading]) {
+  cursor: not-allowed;
+  opacity: var(--lufia-opacity-disabled);
+}
+
+.root[data-loading] {
+  cursor: progress;
+}
+
+.root:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(1px);
+}
+
+/* Variants */
+.root[data-variant="primary"] {
+  background: var(--lufia-color-accent-default);
+  border-color: var(--lufia-color-accent-default);
+  color: var(--lufia-color-text-on-accent);
+}
+
+.root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--lufia-color-accent-hover);
+  border-color: var(--lufia-color-accent-hover);
+}
+
+.root[data-variant="secondary"] {
+  background: var(--lufia-color-bg-field);
+  border-color: var(--lufia-color-border-strong);
+}
+
+.root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
+  background: var(--lufia-color-accent-subtle);
+}
+
+.root[data-variant="danger"] {
+  background: var(--lufia-color-status-danger-solid);
+  border-color: var(--lufia-color-status-danger-solid);
+  color: var(--lufia-color-status-danger-on-solid);
+}
+
+.root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
+  filter: brightness(0.9);
+}
+
+/* Sizes */
+.root[data-size="sm"] {
+  min-block-size: 2rem;
+  padding-inline: 0.75rem;
+  border-radius: var(--lufia-radius-sm);
+  font-size: var(--lufia-font-size-xs);
+}
+
+.root[data-size="lg"] {
+  min-block-size: 3rem;
+  padding-inline: 1.25rem;
+  font-size: var(--lufia-font-size-md);
+}
+
+.root[data-full-width] {
+  display: flex;
+  inline-size: 100%;
+}
+
+/* Icon-only (IconButton): a square target. */
+.root[data-icon-only] {
+  inline-size: 2.5rem;
+  padding-inline: 0;
+}
+
+.root[data-icon-only][data-size="sm"] {
+  inline-size: 2rem;
+}
+
+.root[data-icon-only][data-size="lg"] {
+  inline-size: 3rem;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Loading: the content stays in the layout (so the width holds and the name is kept) but is not painted. */
+.root[data-loading] > :not(.spinner) {
+  opacity: 0;
+}
+
+.spinner {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  box-sizing: border-box;
+  inline-size: 1.125em;
+  block-size: 1.125em;
+  margin-block-start: -0.5625em;
+  margin-inline-start: -0.5625em;
+  border: var(--lufia-border-width-thick) solid currentcolor;
+  border-block-start-color: transparent;
+  border-radius: var(--lufia-radius-full);
+  animation: button-spin var(--lufia-motion-duration-slow) linear infinite;
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (pointer: coarse) {
+  .root {
+    min-block-size: 2.75rem;
+  }
+
+  .root[data-icon-only] {
+    inline-size: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root {
+    border-color: ButtonText;
+  }
+
+  .root:disabled,
+  .root[aria-disabled="true"] {
+    border-color: GrayText;
+    color: GrayText;
+  }
+}

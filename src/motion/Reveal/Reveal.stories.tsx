@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../../components/Button";
 import { Reveal, type RevealProps } from "./Reveal";
-import { DemoButton } from "../../docs/demo";
 
 const card = {
   padding: "1rem",
@@ -15,9 +15,9 @@ function Demo(args: RevealProps) {
   const [show, setShow] = useState(args.show);
   return (
     <div style={{ display: "grid", gap: "0.75rem", inlineSize: "min(100%, 22rem)" }}>
-      <DemoButton aria-expanded={show} onClick={() => setShow(!show)}>
+      <Button aria-expanded={show} onClick={() => setShow(!show)}>
         {show ? "Hide" : "Show"} details
-      </DemoButton>
+      </Button>
       <div style={{ minBlockSize: "5rem" }}>
         <Reveal {...args} show={show}>
           <div style={card}>Your changes were saved. This panel enters in 240 ms and leaves in 160 ms.</div>

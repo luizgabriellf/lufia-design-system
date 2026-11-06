@@ -1,0 +1,143 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+
+  /* An explicit height stops a stretching flex parent from making the root taller than the button, which the menu hangs from. */
+  block-size: fit-content;
+}
+
+.menu {
+  position: absolute;
+  inset-block-start: calc(100% + 0.5rem);
+  z-index: var(--lufia-z-dropdown);
+  box-sizing: border-box;
+  min-inline-size: 13.75rem;
+  max-inline-size: min(20rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 0.375rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-md);
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  list-style: none;
+  animation: menu-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.root[data-align="end"] .menu {
+  inset-inline-end: 0;
+}
+
+.root[data-align="start"] .menu {
+  inset-inline-start: 0;
+}
+
+/* The keyframes animate `from` only, so the resting state is the open menu and a disabled animation leaves it visible. */
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
+}
+
+.item {
+  display: flex;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 2.5rem;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: var(--lufia-radius-sm);
+  background: transparent;
+  color: var(--lufia-color-text-default);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item:hover,
+.item:focus-visible {
+  background: var(--lufia-color-accent-subtle);
+}
+
+.item:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.item[data-tone="danger"] {
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.item[data-tone="danger"]:hover,
+.item[data-tone="danger"]:focus-visible {
+  background: var(--lufia-color-status-danger-bg);
+}
+
+.item[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--lufia-opacity-disabled);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 1.25rem;
+}
+
+.text {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: 0.125rem;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.entry[data-narrow-only] {
+  display: none;
+}
+
+/* When every item is narrow-only the button itself is needed on narrow pages only. */
+@media (width >= 48rem) {
+  .root[data-narrow-only] {
+    display: none;
+  }
+}
+
+@media (width < 48rem) {
+  .entry[data-narrow-only] {
+    display: block;
+  }
+
+  .item {
+    min-block-size: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .menu {
+    border-color: CanvasText;
+  }
+
+  .item:focus-visible {
+    outline-color: Highlight;
+  }
+}

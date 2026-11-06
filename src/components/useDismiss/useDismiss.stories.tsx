@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef, useState } from "react";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { useDismiss } from "./useDismiss";
 
 function Demo() {
@@ -10,7 +10,7 @@ function Demo() {
   useDismiss(open, () => setOpen(false), root, toggle);
   return (
     <div ref={root} style={{ position: "relative", display: "inline-block" }}>
-      <DemoButton
+      <Button
         aria-expanded={open}
         aria-haspopup="true"
         onClick={(event) => {
@@ -19,7 +19,7 @@ function Demo() {
         }}
       >
         Options
-      </DemoButton>
+      </Button>
       {open ? (
         <ul
           aria-label="Options"

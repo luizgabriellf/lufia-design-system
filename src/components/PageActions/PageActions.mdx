@@ -1,0 +1,69 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./PageActions.stories";
+
+<Meta of={Stories} />
+
+# PageActions <StatusBadge status="beta" />
+
+The action row of a page: one primary action, a few secondary ones, and an overflow menu. It is meant for the `actions` slot
+of `PageHeader`.
+
+<Canvas of={Stories.InPageHeader} />
+
+## Usage
+
+```tsx
+import { PageActions } from "@lufia/design-system/components/PageActions";
+
+<PageActions
+  moreLabel="More actions"
+  primary={{ key: "new", label: "New report", onSelect: create }}
+  secondary={[{ key: "share", label: "Share", onSelect: share }]}
+  overflow={[{ key: "del", label: "Delete all", tone: "danger", onSelect: confirmDeleteAll }]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
+
+<Controls of={Stories.Default} />
+
+## Responsive behaviour
+
+| Width        | Primary | Secondary actions   | Overflow menu button                       |
+| ------------ | ------- | ------------------- | ------------------------------------------ |
+| 48rem and up | Button  | Buttons             | Shown when `overflow` has items            |
+| Below 48rem  | Button  | Moved into the menu | Always shown, with secondary then overflow |
+
+The switch is pure CSS, so there is no flash on first paint. Secondary actions exist in both places; the menu entries are
+flagged and hidden on wide screens, and keyboard navigation skips what is hidden.
+
+<Canvas of={Stories.Phone390} />
+
+## Keyboard
+
+Buttons follow `Button`; the menu follows `MoreActions` (arrow keys, Home, End, typeahead, Escape). See both pages.
+
+## When to use
+
+- The actions that apply to the whole page: create, import, share, export.
+
+## When not to use
+
+- Actions on one row or card: use `IconButton` or `MoreActions` there.
+- More than one primary action.
+- Navigation between views: use `PeerNav`.
+
+## Accessibility
+
+- Every control is a native button or link, or the menu from `MoreActions`; the menu button is named by `moreLabel`.
+- On narrow screens an action is reachable in the menu only, so keep labels meaningful out of context.
+- The row does not wrap, so it never pushes content around when it collapses.
+
+## Content guidelines
+
+Verbs first, one to three words. Put the destructive action last in the menu and label it explicitly.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />

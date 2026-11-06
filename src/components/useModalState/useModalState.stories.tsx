@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useMemo, useState } from "react";
-import { DemoButton } from "../../docs/demo";
+import { Button } from "../Button";
 import { useModalState, type ModalStateAdapter } from "./useModalState";
 
 /** An in-memory "URL", so the demo works inside Storybook's iframe without touching its real address bar. */
@@ -21,11 +21,11 @@ function Demo({ initial }: { initial: string }) {
       <code>?{search || "(empty)"}</code>
       <p style={{ margin: 0 }}>{modal ? `Open: ${modal}${id ? ` #${id}` : ""}` : "No modal is open."}</p>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <DemoButton onClick={() => open("detail", "42")}>Open detail</DemoButton>
-        <DemoButton onClick={() => open("history", "42")}>Open history</DemoButton>
-        <DemoButton onClick={close} disabled={!modal}>
+        <Button onClick={() => open("detail", "42")}>Open detail</Button>
+        <Button onClick={() => open("history", "42")}>Open history</Button>
+        <Button onClick={close} disabled={!modal}>
           Close
-        </DemoButton>
+        </Button>
       </div>
     </div>
   );
