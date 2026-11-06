@@ -44,7 +44,7 @@ describe("docs blocks", () => {
   it("links every gallery card to a docs page", () => {
     render(<ComponentGallery />);
     const link = screen.getByRole("link", { name: "EmptyState" });
-    expect(link).toHaveAttribute("href", "./?path=/docs/components-emptystate--docs");
+    expect(link).toHaveAttribute("href", "./?path=/docs/components-feedback-emptystate--docs");
   });
 
   it("opens external links safely and says so", () => {

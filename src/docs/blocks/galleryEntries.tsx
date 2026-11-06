@@ -23,8 +23,6 @@ import styles from "./ComponentGallery.module.css";
 export type GalleryEntry = {
   name: string;
   group: "Components" | "Motion";
-  /** Storybook docs id of the page the card links to. */
-  docsId: string;
   summary: string;
   preview: ReactNode;
 };
@@ -37,7 +35,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "EmptyState",
     group: "Components",
-    docsId: "components-emptystate",
     summary: "What to show when a list or panel has nothing yet, with the one next step.",
     preview: (
       <EmptyState
@@ -52,7 +49,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "DetailAttentionCard",
     group: "Components",
-    docsId: "components-detailattentioncard",
     summary: "A high-signal card for deadlines and risk, with a tone mark and an optional action.",
     preview: (
       <DetailAttentionCard
@@ -67,7 +63,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "DetailList",
     group: "Components",
-    docsId: "components-detaillist",
     summary: "Key and value rows in a native description list.",
     preview: (
       <DetailList
@@ -82,7 +77,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "DetailSectionCard",
     group: "Components",
-    docsId: "components-detailsectioncard",
     summary: "A section container with a consistent heading, action slot and content area.",
     preview: (
       <DetailSectionCard title="Contact details" icon={<EditIcon />} action={<Button size="sm">Edit</Button>}>
@@ -93,7 +87,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "SortableTh",
     group: "Components",
-    docsId: "components-sortableth",
     summary: "A column header with a real button and aria-sort on the cell.",
     preview: (
       <table className={styles.miniTable}>
@@ -109,7 +102,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "StatusTimeline",
     group: "Components",
-    docsId: "components-statustimeline",
     summary: "A connected timeline of steps grouped into tracks, each with a state pill.",
     preview: (
       <StatusTimeline
@@ -141,7 +133,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Stepper",
     group: "Components",
-    docsId: "components-stepper",
     summary: "A mobile-first step indicator that expands into a numbered row from 600px.",
     preview: (
       <Stepper
@@ -157,7 +148,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "TableToolbar",
     group: "Components",
-    docsId: "components-tabletoolbar",
     summary: "Filter chips and an optional search box for the top of a table or list.",
     preview: (
       <TableToolbar
@@ -174,7 +164,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "ActionIcons",
     group: "Components",
-    docsId: "components-actionicons",
     summary: "Six small outline icons that inherit the colour of their text.",
     preview: (
       <div className={styles.iconRow}>
@@ -189,7 +178,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "useBodyScrollLock",
     group: "Components",
-    docsId: "components-usebodyscrolllock",
     summary: "Locks page scroll under an overlay and restores it. Stacked overlays are safe.",
     preview: (
       <pre className={styles.snippet}>
@@ -200,7 +188,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Reveal",
     group: "Motion",
-    docsId: "motion-reveal",
     summary: "Mount and unmount content with an enter and an exit animation.",
     preview: (
       <Reveal show variant="rise">
@@ -211,7 +198,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Collapse",
     group: "Motion",
-    docsId: "motion-collapse",
     summary: "Animate height with CSS grid rows. No measuring in JavaScript.",
     preview: (
       <div className={styles.disclosure}>
@@ -225,7 +211,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Skeleton",
     group: "Motion",
-    docsId: "motion-skeleton",
     summary: "Loading placeholders shaped like the content that replaces them.",
     preview: (
       <div className={styles.skeletons} aria-hidden="true">
@@ -240,7 +225,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "AnimatedNumber",
     group: "Motion",
-    docsId: "motion-animatednumber",
     summary: "A number that counts to its new value, with no animation library.",
     preview: (
       <p className={styles.bigNumber}>
@@ -251,7 +235,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "ChangeHighlight",
     group: "Motion",
-    docsId: "motion-changehighlight",
     summary: "A soft wash behind a value that changed while it was on screen. Never on mount.",
     preview: (
       <p className={styles.statusLine}>
@@ -265,7 +248,6 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "usePrefersReducedMotion",
     group: "Motion",
-    docsId: "motion-useprefersreducedmotion",
     summary: "Returns true while the system asks for reduced motion, and follows changes.",
     preview: (
       <pre className={styles.snippet}>

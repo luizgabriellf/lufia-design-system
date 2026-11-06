@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./PendingSubmit.stories";
 
 <Meta of={Stories} />
 
-# PendingSubmit <StatusBadge status="beta" />
+<DocHeader
+  name="PendingSubmit"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 The submit button of a form that takes a moment. While the form is pending it cannot be submitted again, shows a ring and a
 pending label, and for a long wait moves through further labels.
 
 <Canvas of={Stories.InAForm} />
 
-## Usage
+### Usage
 
 ```tsx
 import { PendingSubmit } from "@lufia/design-system/components/PendingSubmit";
@@ -26,9 +32,17 @@ import { PendingSubmit } from "@lufia/design-system/components/PendingSubmit";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 
-<Controls of={Stories.Default} />
+### No double submit
 
-## Where the pending state comes from
+While pending, the button is `aria-busy` and `aria-disabled`, and its click is cancelled, which also cancels the implicit submission of Enter in
+a text field. It is deliberately **not** `disabled`: a disabled button drops keyboard focus, and a person who pressed it with
+the keyboard would lose their place. A genuinely `disabled` button (`disabled` prop) is also supported.
+
+</Section>
+
+<Section id="examples">
+
+### Where the pending state comes from
 
 - **The form.** Inside a `<form>` whose `action` is a function (React 19, including Server Actions), the button reads the
   form's state through `useFormStatus` and needs nothing else. The package's peer dependency is React 19; if an older
@@ -38,7 +52,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 <Canvas of={Stories.Pending} />
 
-## Progress labels
+### Progress labels
 
 `progress` is a list of `[afterMs, label]`. The first label (`pendingLabel`) shows at once and each later one replaces the
 previous after its delay. They are timed in CSS, not in React state, on purpose: a state update during a form transition
@@ -46,28 +60,27 @@ re-renders the button outside the transition and loses `useFormStatus().pending`
 
 <Canvas of={Stories.WithProgress} />
 
-## No double submit
-
-While pending, the button is `aria-busy` and `aria-disabled`, and its click is cancelled, which also cancels the implicit submission of Enter in
-a text field. It is deliberately **not** `disabled`: a disabled button drops keyboard focus, and a person who pressed it with
-the keyboard would lose their place. A genuinely `disabled` button (`disabled` prop) is also supported.
-
-## States
+### States
 
 <Canvas of={Stories.Secondary} />
 <Canvas of={Stories.PendingSecondary} />
 <Canvas of={Stories.Disabled} />
 
-## When to use
+### All themes
 
-- The primary submit action of any form that waits for a server, so it never looks idle while it works.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- A button that is not a form submit: it does not read form state. Use a regular button.
-- Actions that need a determinate progress bar (uploads): show the bar next to the form and use `pending` for the button.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 | Key / action  | Behaviour                                                    |
 | ------------- | ------------------------------------------------------------ |
@@ -82,12 +95,23 @@ the keyboard would lose their place. A genuinely `disabled` button (`disabled` p
 - The button keeps the width of its longest label (invisible copies reserve it), so it does not jump when the label changes.
 - Target height is at least 44px; focus is a 2px ring.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The primary submit action of any form that waits for a server, so it never looks idle while it works.
+
+### When not to use
+
+- A button that is not a form submit: it does not read form state. Use a regular button.
+- Actions that need a determinate progress bar (uploads): show the bar next to the form and use `pending` for the button.
+
+### Content guidelines
 
 The idle label says what happens ("Save changes"), the pending label is the same verb in progress ("Saving…"), and a
 progress label reassures ("Still saving, this can take a moment…"). Do not change the meaning between them, and do not leave the
 button without a pending label.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

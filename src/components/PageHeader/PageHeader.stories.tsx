@@ -11,7 +11,7 @@ const actions = (
 );
 
 const meta = {
-  title: "Components/PageHeader",
+  title: "Components/Navigation/PageHeader",
   component: PageHeader,
   parameters: { layout: "padded" },
   args: {

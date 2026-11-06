@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./DetailSectionCard.stories";
 
 <Meta of={Stories} />
 
-# DetailSectionCard <StatusBadge status="beta" />
+<DocHeader
+  name="DetailSectionCard"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A section container for detail pages and modals with a consistent heading, optional description, icon, header action and
 content area.
 
 <Canvas of={Stories.WithIconAndAction} />
 
-## Usage
+### Usage
 
 ```tsx
 import { DetailSectionCard } from "@lufia/design-system/components/DetailSectionCard";
@@ -23,27 +29,45 @@ import { DetailSectionCard } from "@lufia/design-system/components/DetailSection
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Group related read-only or editable details under one heading on a detail view.
+<Section id="accessibility">
 
-## When not to use
-
-- Page-level layout (it is not a page shell) or a single value (use `DetailList`).
-
-## Accessibility
+### Accessibility
 
 - A `<section>` with an `<h3>` title. Mind the heading level in the host page; it is fixed at 3 today.
 - The icon is decorative and hidden from assistive technology; the title carries the meaning.
 - The header action wraps below the title on narrow screens (`flex-wrap`) and stays reachable in tab order after the title.
 - Long titles and descriptions use `overflow-wrap: anywhere`, so content reflows at 320px with no horizontal scrolling.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Group related read-only or editable details under one heading on a detail view.
+
+### When not to use
+
+- Page-level layout (it is not a page shell) or a single value (use `DetailList`).
+
+### Content guidelines
 
 Strings arrive localised through props. Titles are nouns ("Contacts"), not sentences.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

@@ -16,7 +16,7 @@ const overflow: MoreActionItem[] = [
 ];
 
 const meta = {
-  title: "Components/PageActions",
+  title: "Components/Actions/PageActions",
   component: PageActions,
   parameters: { layout: "padded" },
   args: { primary, secondary, overflow, moreLabel: "More actions" },

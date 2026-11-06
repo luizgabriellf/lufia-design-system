@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Switch.stories";
 
 <Meta of={Stories} />
 
-# Switch <StatusBadge status="beta" />
+<DocHeader
+  name="Switch"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 An on/off control for a setting that takes effect immediately: a `role="switch"` button with a label, an optional hint and
 error, and a thumb that slides.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Switch } from "@lufia/design-system/components/Switch";
@@ -23,9 +29,11 @@ Strings in the snippet are plain literals. In your app they arrive through props
 It is controlled with `checked` and `onCheckedChange`, or uncontrolled with `defaultChecked`. With `name`, it submits
 `name=on` (or `value`) while on and nothing while off, like a checkbox.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## States
+<Section id="examples">
+
+### States
 
 <Canvas of={Stories.On} />
 <Canvas of={Stories.Invalid} />
@@ -35,16 +43,21 @@ It is controlled with `checked` and `onCheckedChange`, or uncontrolled with `def
 The state is read from the thumb's position **and** its track colour **and** `aria-checked`. Never label the switch with its
 state ("On"); the label names the setting, and the screen reader says on or off.
 
-## When to use
+### All themes
 
-- A setting that applies at once, with no Save button: notifications, dark mode, a feature flag.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- A choice that is submitted later with a form: use `Checkbox`.
-- A choice between two named options that are not on and off ("Monthly" or "Yearly"): use `SegmentedToggle`.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 Follows the WAI-ARIA APG [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) pattern.
 
@@ -60,11 +73,22 @@ Follows the WAI-ARIA APG [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switc
 - Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,
   mirrored in right-to-left, and stays still under `prefers-reduced-motion`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A setting that applies at once, with no Save button: notifications, dark mode, a feature flag.
+
+### When not to use
+
+- A choice that is submitted later with a form: use `Checkbox`.
+- A choice between two named options that are not on and off ("Monthly" or "Yearly"): use `SegmentedToggle`.
+
+### Content guidelines
 
 Name the setting as a noun phrase ("Email alerts", "Dark mode"). The hint says what happens when it is on. Do not use a verb
 that flips meaning with the state ("Enable alerts").
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

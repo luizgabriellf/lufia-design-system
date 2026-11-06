@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Textarea.stories";
 
 <Meta of={Stories} />
 
-# Textarea <StatusBadge status="beta" />
+<DocHeader
+  name="Textarea"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A multi-line text control with the same box as `TextInput`, vertical resizing and an optional character count.
 
 <Canvas of={Stories.WithCount} />
 
-## Usage
+### Usage
 
 ```tsx
 import { FormField } from "@lufia/design-system/components/FormField";
@@ -23,9 +29,11 @@ import { Textarea } from "@lufia/design-system/components/Textarea";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## Character count
+<Section id="examples">
+
+### Character count
 
 `showCount` renders the count under the box, as `12 / 200` when `maxLength` is set. It is added to the control's
 `aria-describedby`, so a screen reader reads it with the field's description when the control is focused. It is **not** a live
@@ -38,23 +46,28 @@ yourself, showing the error in the `FormField`.
 <Canvas of={Stories.NearLimit} />
 <Canvas of={Stories.CustomCount} />
 
-## States
+### States
 
 <Canvas of={Stories.Required} />
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.ReadOnly} />
 
-## When to use
+### All themes
 
-- Free text that may run past one line: notes, descriptions, messages.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- A short value: use `TextInput`. Do not stretch a textarea to look like an input.
-- Formatted text. This is plain text only.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 | Key / action | Behaviour                                                                |
 | ------------ | ------------------------------------------------------------------------ |
@@ -65,11 +78,22 @@ yourself, showing the error in the `FormField`.
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Free text that may run past one line: notes, descriptions, messages.
+
+### When not to use
+
+- A short value: use `TextInput`. Do not stretch a textarea to look like an input.
+- Formatted text. This is plain text only.
+
+### Content guidelines
 
 Say how much is expected in the hint ("A sentence or two is enough"). Show the count only when a limit exists or matters.
 Phrase `formatCount` as what is left ("12 characters left") when the limit is tight.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

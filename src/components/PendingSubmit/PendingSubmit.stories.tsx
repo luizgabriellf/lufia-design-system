@@ -4,7 +4,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { PendingSubmit } from "./PendingSubmit";
 
 const meta = {
-  title: "Forms/PendingSubmit",
+  title: "Components/Forms/PendingSubmit",
   component: PendingSubmit,
   parameters: { layout: "padded" },
   args: { children: "Save changes", pendingLabel: "Saving…" },

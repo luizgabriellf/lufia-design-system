@@ -30,7 +30,7 @@ function Demo({ stretch = false }: { stretch?: boolean }) {
 }
 
 const meta = {
-  title: "Components/useSlidingIndicator",
+  title: "Hooks/useSlidingIndicator",
   component: Demo,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Demo>;

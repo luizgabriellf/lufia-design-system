@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./IconButton.stories";
 
 <Meta of={Stories} />
 
-# IconButton <StatusBadge status="beta" />
+<DocHeader
+  name="IconButton"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A `Button` that shows only an icon. The accessible name is required by the types, and a tooltip comes with it.
 
 <Canvas of={Stories.AllVariantsAndSizes} />
 
-## Usage
+### Usage
 
 ```tsx
 import { IconButton } from "@lufia/design-system/components/IconButton";
@@ -21,26 +27,39 @@ import { IconButton } from "@lufia/design-system/components/IconButton";
 The string in the snippet is a plain literal. In your app it arrives through props from your copy layer. Omitting `aria-label`
 is a type error.
 
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Primary} />
+<Canvas of={Stories.Loading} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.AsLink} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## Keyboard
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 | Key           | Action                                                |
 | ------------- | ----------------------------------------------------- |
 | Tab           | Moves focus to the button (a disabled one is skipped) |
 | Enter / Space | Activates a button; Enter activates a link            |
 
-## When to use
-
-- Compact, well-known actions where the icon is unambiguous: close, search, settings, overflow.
-- Toolbars and table rows where a text label would not fit.
-
-## When not to use
-
-- Actions whose icon is not obvious. Use a `Button` with a label instead.
-- The primary action of a view: it deserves a visible label.
-
-## Accessibility
+### Accessibility
 
 - `aria-label` is the accessible name. `title` shows the same text as a tooltip for mouse users; it is not relied on as the name.
 - The title tooltip is not shown on touch or to keyboard users, which is why the name must not depend on it.
@@ -48,17 +67,22 @@ is a type error.
 - The target is 2.5rem square at the default size (2rem at `sm`, 2.75rem on coarse pointers), above the WCAG 2.5.8 minimum.
 - Focus ring, loading and forced-colors behaviour are those of `Button`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Compact, well-known actions where the icon is unambiguous: close, search, settings, overflow.
+- Toolbars and table rows where a text label would not fit.
+
+### When not to use
+
+- Actions whose icon is not obvious. Use a `Button` with a label instead.
+- The primary action of a view: it deserves a visible label.
+
+### Content guidelines
 
 Name the action, not the picture: "Open settings", not "Cog". Keep it to two or three words.
 
-## States
-
-<Canvas of={Stories.Primary} />
-<Canvas of={Stories.Loading} />
-<Canvas of={Stories.Disabled} />
-<Canvas of={Stories.AsLink} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

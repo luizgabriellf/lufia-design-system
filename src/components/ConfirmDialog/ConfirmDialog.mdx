@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./ConfirmDialog.stories";
 
 <Meta of={Stories} />
 
-# ConfirmDialog <StatusBadge status="beta" />
+<DocHeader
+  name="ConfirmDialog"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
 
-A question that has to be answered before anything else can happen: "Delete invoice 2041?" It is a [Modal](?path=/docs/components-modal--docs)
+<Section id="overview">
+
+A question that has to be answered before anything else can happen: "Delete invoice 2041?" It is a [Modal](?path=/docs/components-overlays-modal--docs)
 with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 As a component, when you own the open state:
 
@@ -47,16 +53,18 @@ async function remove() {
 Strings in the snippets are plain literals. In your app they arrive through props from whatever copy or i18n layer you use;
 there are no built-in "OK" or "Cancel" defaults, because those are visible text.
 
-<Controls of={Stories.OpenByDefault} />
+</Section>
 
-## Destructive
+<Section id="examples">
+
+### Destructive
 
 `destructive` styles the confirm button as dangerous and starts focus on **Cancel**, so a reflexive Enter keeps the data.
 Without it, focus starts on the confirm button.
 
 <Canvas of={Stories.Destructive} />
 
-## Busy
+### Busy
 
 While `busy` the dialog refuses to close: Escape, a click outside and Cancel do nothing, and the confirm button shows a
 spinner and `aria-busy="true"`. The buttons use `aria-disabled` rather than `disabled`, so focus stays where the person
@@ -64,18 +72,21 @@ left it instead of falling back to the page. Clear `busy` when the action settle
 
 <Canvas of={Stories.Busy} />
 
-## When to use
+### All themes
 
-- An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard,
-  publish, remove access.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](?path=/docs/components-toast--docs): it is
-  faster and does not train people to click through confirmations.
-- Collecting input. Use a Modal with a form.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.OpenByDefault} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 Follows the WAI-ARIA APG [Alert Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/) pattern.
 
@@ -94,11 +105,24 @@ Follows the WAI-ARIA APG [Alert Dialog](https://www.w3.org/WAI/ARIA/apg/patterns
 
 Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`).
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard,
+  publish, remove access.
+
+### When not to use
+
+- Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](?path=/docs/components-feedback-toast--docs): it is
+  faster and does not train people to click through confirmations.
+- Collecting input. Use a Modal with a form.
+
+### Content guidelines
 
 Title: the question, with the object ("Delete invoice 2041?"). Message: the consequence, one or two sentences. Buttons:
 the verb ("Delete invoice" / "Keep invoice"), never "Yes" / "No" or "OK".
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

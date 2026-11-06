@@ -1,5 +1,5 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./AppShell.stories";
 import * as SidebarStories from "./Sidebar.stories";
 import * as FloatBarStories from "./MobileFloatBar.stories";
@@ -7,7 +7,13 @@ import * as SheetStories from "./NavSheet.stories";
 
 <Meta of={Stories} />
 
-# AppShell <StatusBadge status="beta" />
+<DocHeader
+  name="AppShell"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 The frame of an application. On wide screens a sidebar with groups that open and close and that can shrink to a rail. On
 phones a sticky top bar, a floating bar within thumb reach, and a navigation sheet that rises from the bottom. The
@@ -15,7 +21,7 @@ navigation is data, so both layouts always agree.
 
 <Canvas of={Stories.Desktop} />
 
-## Usage
+### Usage
 
 ```tsx
 import { AppShell } from "@lufia/design-system/components/AppShell";
@@ -58,9 +64,7 @@ import { AppShell } from "@lufia/design-system/components/AppShell";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Links render through the
 `linkComponent` of `LufiaProvider`, so a router's client-side navigation works; pass `currentPath` from its hook.
 
-<Controls of={Stories.Desktop} />
-
-## Parts
+### Parts
 
 The shell is built from parts that are exported, so an app with another arrangement composes its own.
 
@@ -75,7 +79,7 @@ The shell is built from parts that are exported, so an app with another arrangem
 
 <Canvas of={SidebarStories.Composition} />
 
-### Marking the current page
+#### Marking the current page
 
 `currentPath` makes the item whose `href` equals it, or contains it, current. The most specific item wins, so
 `/settings/billing` is never current together with `/settings`; `exact: true` limits an item to its own path. Query strings
@@ -84,7 +88,7 @@ and hashes are ignored. Pass `isActive` instead when your routes do not map to p
 A click on a link makes it look current at once and closes the sheet; `aria-current` stays on the real page until
 `currentPath` changes.
 
-### Groups, the rail and slots
+#### Groups, the rail and slots
 
 - A group with `collapsible` and a `label` is a disclosure button over its items. Groups marked `defaultOpen`, and the one
   holding the current page, start open; arriving on a page inside a closed group opens it. Own the state with `openGroups`
@@ -97,14 +101,18 @@ A click on a link makes it look current at once and closes the sheet; `aria-curr
 
 <Canvas of={Stories.Rail} />
 
-## Phones
+</Section>
+
+<Section id="examples">
+
+### Phones
 
 Below `60rem` (the `--lufia-breakpoint-medium` token) the sidebar gives way to the top bar, the floating bar and the sheet.
 The page gets bottom padding and `scroll-padding` so nothing hides under the bar.
 
 <Canvas of={Stories.Phone} />
 
-### Floating bar
+#### Floating bar
 
 <Canvas of={FloatBarStories.Default} />
 
@@ -113,14 +121,35 @@ where `backdrop-filter` is missing). It holds a search entry, the page's one mai
 entry gives way first when the bar is crowded; the main action then ends in an ellipsis, and below 22.5rem it shows only
 its icon. All keep their accessible names.
 
-### Navigation sheet
+#### Navigation sheet
 
 <Canvas of={SheetStories.Default} />
 
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
 made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
 
-## Keyboard and accessibility
+### All states
+
+<Canvas of={Stories.GroupOpenOnArrival} />
+<Canvas of={Stories.PhoneWithoutPrimaryAction} />
+<Canvas of={Stories.RightToLeft} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Desktop} />
+
+### Data attributes
+
+`data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-open` on an open group,
+`data-state="open|closed"` on the sheet and `data-dragging` while it is dragged. Use them to style slot content.
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard and accessibility
 
 | Key             | Where              | Action                                                         |
 | --------------- | ------------------ | -------------------------------------------------------------- |
@@ -150,26 +179,21 @@ made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
   without animation, on purpose: animating it would animate layout.
 - **Right to left.** Logical properties throughout; chevrons mirror.
 
-## Data attributes
+</Section>
 
-`data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-open` on an open group,
-`data-state="open|closed"` on the sheet and `data-dragging` while it is dragged. Use them to style slot content.
+<Section id="guidelines">
 
-## When to use
+### When to use
 
 - A signed-in application with a handful of top-level areas, on both phones and desktops.
 
-## When not to use
+### When not to use
 
 - A marketing site (use a header), or navigation that is only a few peer views of one page (use `PeerNav`).
 
-## Content guidelines
+### Content guidelines
 
 Item labels are one or two words. Put the rarely used areas in a collapsible group and the one thing the page is for in
 `primaryAction`. The search label is a verb phrase ("Search…").
 
-## All states
-
-<Canvas of={Stories.GroupOpenOnArrival} />
-<Canvas of={Stories.PhoneWithoutPrimaryAction} />
-<Canvas of={Stories.RightToLeft} />
+</Section>

@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Checkbox.stories";
 
 <Meta of={Stories} />
 
-# Checkbox <StatusBadge status="beta" />
+<DocHeader
+  name="Checkbox"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A native checkbox with a drawn box, a label that is part of the click target, an optional hint and error, and the mixed
 (indeterminate) state.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Checkbox } from "@lufia/design-system/components/Checkbox";
@@ -23,16 +29,18 @@ Strings in the snippet are plain literals. In your app they arrive through props
 The component renders a real `<input type="checkbox">`, so `name`, `value`, `checked`, `defaultChecked`, `onChange` and
 `ref` behave as they do on the element, and the value submits with the form without script.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## Mixed state
+<Section id="examples">
+
+### Mixed state
 
 `indeterminate` shows a dash for a parent whose children are partly checked. It is a display state: the browser clears it when
 the person clicks, so derive it from your data on every render, as in the story below.
 
 <Canvas of={Stories.SelectAll} />
 
-## States
+### States
 
 <Canvas of={Stories.Checked} />
 <Canvas of={Stories.Required} />
@@ -41,18 +49,21 @@ the person clicks, so derive it from your data on every render, as in the story 
 
 An invalid checkbox has a red border, and the message below has an icon and text, so the state never relies on colour alone.
 
-## When to use
+### All themes
 
-- Independent yes/no choices, and consent that is submitted with a form.
-- A list where several items can be chosen at once.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- A setting that applies the moment it is flipped: use `Switch`.
-- One choice from several: use `RadioGroup`.
-- A group of checkboxes needs a group name: wrap them in a `<fieldset>` with a `<legend>`; `FormField` is for single controls.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 Follows the WAI-ARIA APG [Checkbox](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) pattern (a native input).
 
@@ -67,11 +78,24 @@ Follows the WAI-ARIA APG [Checkbox](https://www.w3.org/WAI/ARIA/apg/patterns/che
 - Hint and error are in the accessible description; the error has `role="alert"` and the input `aria-invalid`.
 - Under `forced-colors` the checked box uses `Highlight` and its mark `HighlightText`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Independent yes/no choices, and consent that is submitted with a form.
+- A list where several items can be chosen at once.
+
+### When not to use
+
+- A setting that applies the moment it is flipped: use `Switch`.
+- One choice from several: use `RadioGroup`.
+- A group of checkboxes needs a group name: wrap them in a `<fieldset>` with a `<legend>`; `FormField` is for single controls.
+
+### Content guidelines
 
 Write the label as the statement that is true when the box is checked ("Send me the weekly report"), never as a question or
 a negative ("Don't send..."). Put the long legal text in the hint or a link next to the control, not in the label.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

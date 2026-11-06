@@ -3,7 +3,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Link } from "./Link";
 
 const meta = {
-  title: "Components/Link",
+  title: "Components/Actions/Link",
   component: Link,
   parameters: { layout: "padded" },
   args: { href: "#guide", children: "read the guide" },

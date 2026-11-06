@@ -25,7 +25,7 @@ function Demo({ size }: { size: number }) {
 }
 
 const meta = {
-  title: "Components/SuccessCheck",
+  title: "Components/Feedback/SuccessCheck",
   component: Demo,
   parameters: { layout: "padded" },
   args: { size: 16 },

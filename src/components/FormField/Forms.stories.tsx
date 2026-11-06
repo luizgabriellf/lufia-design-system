@@ -137,7 +137,7 @@ function ProjectForm({ withErrors = false }: { withErrors?: boolean }) {
 }
 
 const meta = {
-  title: "Forms/Composed form",
+  title: "Components/Forms/Composed form",
   component: ProjectForm,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof ProjectForm>;

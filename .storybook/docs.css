@@ -1,0 +1,242 @@
+/* Docs chrome for the preview iframe. Every colour is a --lufia-* token, so Theme and Mode restyle the page itself, not
+   only the canvases. Storybook's own docs styles are emotion classes of lower specificity; these selectors outrank
+   them, so the specificity-order rule would only fight the override. */
+/* stylelint-disable no-descending-specificity */
+
+.sbdocs.sbdocs-wrapper {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  padding-inline: clamp(1rem, 4vw, 4rem);
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-canvas);
+  font-family: var(--lufia-font-family-body);
+}
+
+.sbdocs .sbdocs-content {
+  min-inline-size: 0;
+  max-inline-size: 64rem;
+  font-size: var(--lufia-font-size-md);
+  line-height: 1.7;
+  color: var(--lufia-color-text-default);
+}
+
+.sbdocs .sbdocs-content :is(p, li):not(.sb-unstyled *) {
+  line-height: 1.7;
+  color: var(--lufia-color-text-default);
+}
+
+.sbdocs .sbdocs-content :is(h1, h2, h3, h4):not(.sb-unstyled *) {
+  font-family: var(--lufia-font-family-display);
+  letter-spacing: -0.02em;
+  color: var(--lufia-color-text-default);
+  text-wrap: balance;
+}
+
+.sbdocs .sbdocs-content h1:not(.sb-unstyled *) {
+  margin-block: 2rem 1rem;
+  font-size: clamp(1.75rem, 6vw, 2.5rem);
+  font-weight: var(--lufia-font-weight-bold);
+  letter-spacing: -0.035em;
+}
+
+.sbdocs .sbdocs-content h2:not(.sb-unstyled *) {
+  padding-block-end: 0.625rem;
+  margin-block: 3rem 1rem;
+  font-size: var(--lufia-font-size-2xl);
+  font-weight: var(--lufia-font-weight-bold);
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.sbdocs .sbdocs-content h3:not(.sb-unstyled *) {
+  margin-block: 2rem 0.5rem;
+  font-size: var(--lufia-font-size-lg);
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.sbdocs .sbdocs-content h4:not(.sb-unstyled *) {
+  margin-block: 1.5rem 0.5rem;
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-muted);
+}
+
+/* Sections own their heading; the first block inside needs no extra top margin. */
+.sbdocs .sbdocs-content section > :is(h3, h4):first-of-type:not(.sb-unstyled *) {
+  margin-block-start: 0.5rem;
+}
+
+.sbdocs .sbdocs-content a:not(.sb-unstyled a) {
+  color: var(--lufia-color-text-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.sbdocs .sbdocs-content :not(pre, .sb-unstyled *) > code {
+  padding: 0.125rem 0.375rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: 0.85em;
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-raised);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-xs);
+}
+
+/* Code blocks: a quiet surface, mono type, and a copy button that reads as part of the block. */
+.sbdocs .sbdocs-content pre:not(.sb-unstyled *),
+.sbdocs .docblock-source {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-sm);
+  line-height: 1.65;
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  box-shadow: none;
+}
+
+.sbdocs .docblock-source pre,
+.sbdocs .docblock-source code {
+  font-family: var(--lufia-font-family-mono);
+  background: none;
+  border: 0;
+}
+
+.sbdocs .docblock-source button {
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-medium);
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-field);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+  box-shadow: none;
+}
+
+.sbdocs .docblock-source button:hover {
+  color: var(--lufia-color-text-accent);
+  border-color: var(--lufia-color-accent-border);
+}
+
+/* Canvases: a dotted stage that gives sparse demos room, with the toolbar and code flush to the frame. */
+.sbdocs .sbdocs-preview {
+  max-inline-size: 100%;
+  margin-block: 1.25rem;
+  overflow: hidden;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  box-shadow: none;
+}
+
+.sbdocs .docs-story {
+  min-block-size: 9rem;
+  background:
+    radial-gradient(var(--lufia-color-border-subtle) 1px, transparent 1px) 0 0 / 1rem 1rem,
+    var(--lufia-color-bg-canvas);
+}
+
+.sbdocs .docs-story > div {
+  padding: 1.5rem;
+}
+
+/* Prose tables (key, action, API): the same look as the token tables. */
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) {
+  inline-size: 100%;
+  margin-block: 1rem;
+  overflow: hidden;
+  font-size: var(--lufia-font-size-sm);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+}
+
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) :is(th, td) {
+  padding: 0.625rem 0.875rem;
+  text-align: start;
+  vertical-align: top;
+  border: 0;
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) tr:last-child td {
+  border-block-end: 0;
+}
+
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) th {
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) tbody tr {
+  background: none;
+}
+
+/* Props table: calmer header, mono names, a type chip, and room to read. */
+.sbdocs .docblock-argstable {
+  display: block;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  box-shadow: none;
+}
+
+.sbdocs .docblock-argstable td {
+  overflow-wrap: anywhere;
+}
+
+.sbdocs .docblock-argstable :is(th, td) {
+  padding: 0.75rem 0.875rem;
+  vertical-align: top;
+  color: var(--lufia-color-text-default);
+  background: none;
+  border: 0;
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.sbdocs .docblock-argstable thead th {
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lufia-color-text-muted);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.sbdocs .docblock-argstable tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.sbdocs .docblock-argstable td:first-child span {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-default);
+}
+
+.sbdocs .docblock-argstable td code {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border: 1px solid var(--lufia-color-accent-border);
+  border-radius: var(--lufia-radius-xs);
+}
+
+.sbdocs .docblock-argstable td button {
+  font-family: var(--lufia-font-family-body);
+}
+
+/* The sticky section tabs sit directly in the page, so their Unstyled wrapper must not become the sticky container. */
+.sb-unstyled:has(> nav[data-doc-tabs]) {
+  display: contents;
+}

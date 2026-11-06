@@ -10,7 +10,7 @@ import {
 import { AppShell } from "./AppShell";
 
 const meta = {
-  title: "Components/AppShell",
+  title: "Components/Navigation/AppShell",
   component: AppShell,
   parameters: {
     layout: "fullscreen",

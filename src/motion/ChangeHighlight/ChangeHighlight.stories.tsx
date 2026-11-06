@@ -23,7 +23,7 @@ function Demo(args: ChangeHighlightProps) {
 }
 
 const meta = {
-  title: "Motion/ChangeHighlight",
+  title: "Components/Motion/ChangeHighlight",
   component: ChangeHighlight,
   parameters: { layout: "padded" },
   args: { value: "Pending" },

@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./Collapse.stories";
 
 <Meta of={Stories} />
 
-# Collapse <StatusBadge status="beta" />
+<DocHeader
+  name="Collapse"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Expands and collapses content to its natural height. It is the one place the package animates a layout property, and it
 does so without measuring anything in JavaScript (`grid-template-rows` from `0fr` to `1fr`).
 
 <Canvas of={Stories.Open} />
 
-## Usage
+### Usage
 
 ```tsx
 import { Collapse } from "@lufia/design-system/motion";
@@ -26,19 +32,25 @@ import { Collapse } from "@lufia/design-system/motion";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Open} />
 
-## When to use
+</Section>
 
-- Disclosures, accordions, "show more" areas, inline filter panels.
+<Section id="accessibility">
 
-## When not to use
-
-- Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the
-  approved route.
-- Content that should leave the page entirely: use [Reveal](?path=/docs/motion-reveal--docs).
-
-## Accessibility
+### Accessibility
 
 - The trigger is yours. It must be a button with `aria-expanded` and `aria-controls` pointing at the `id` you pass.
 - While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen
@@ -47,6 +59,18 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - The inner wrapper clips overflow while animating and when open; leave room for focus rings of controls at its edge.
 - Browsers without `grid-template-rows` transitions (older than 2023) still work: the panel snaps open and closed.
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- Disclosures, accordions, "show more" areas, inline filter panels.
+
+### When not to use
+
+- Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the
+  approved route.
+- Content that should leave the page entirely: use [Reveal](?path=/docs/components-motion-reveal--docs).
+
+</Section>

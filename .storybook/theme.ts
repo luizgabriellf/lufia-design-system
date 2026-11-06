@@ -7,15 +7,20 @@ type TokenMap = Record<string, { value: string }>;
 const themes = tokens.themes as unknown as Record<string, Record<Mode, TokenMap>>;
 const shared = tokens.shared as unknown as TokenMap;
 
-/** Reads one semantic colour of the default theme, so the Storybook chrome is derived from the package tokens. */
-const colorOf = (mode: Mode, path: string): string => {
-  const value = themes["default"]?.[mode]?.[`color.${path}`]?.value;
+/**
+ * Reads one semantic colour of a theme, so the Storybook chrome is derived from the package tokens. A theme that does
+ * not override a token inherits the default theme's value, the same way the CSS cascade does.
+ */
+const colorOf = (theme: string, mode: Mode, path: string): string => {
+  const key = `color.${path}`;
+  const value = themes[theme]?.[mode]?.[key]?.value ?? themes["default"]?.[mode]?.[key]?.value;
   if (!value) throw new Error(`Missing token color.${path} in default/${mode}; run "npm run tokens".`);
   return value;
 };
 
-const fontBase = shared["font.family.body"]?.value ?? "system-ui, sans-serif";
-const fontCode = shared["font.family.mono"]?.value ?? "ui-monospace, monospace";
+// The docs site sets its own type (self-hosted Geist, see public/fonts); the package's font tokens stay system stacks.
+const fontBase = `"Geist Variable", ${shared["font.family.body"]?.value ?? "system-ui, sans-serif"}`;
+const fontCode = `"Geist Mono Variable", ${shared["font.family.mono"]?.value ?? "ui-monospace, monospace"}`;
 
 export const REPO_URL = "https://github.com/luizgabriellf/lufia-design-system";
 
@@ -26,39 +31,53 @@ const brand = (mode: Mode) => ({
   brandImage: mode === "dark" ? "./logo-dark.svg" : "./logo.svg",
 });
 
-const build = (mode: Mode) =>
-  create({
+const build = (theme: string, mode: Mode) => {
+  const color = (path: string) => colorOf(theme, mode, path);
+  return create({
     base: mode,
     ...brand(mode),
-    colorPrimary: colorOf(mode, "accent.default"),
-    colorSecondary: colorOf(mode, "accent.default"),
-    appBg: colorOf(mode, mode === "light" ? "bg.surface" : "bg.surface-solid"),
-    appContentBg: colorOf(mode, "bg.canvas"),
-    appPreviewBg: colorOf(mode, "bg.canvas"),
-    appHoverBg: colorOf(mode, "bg.surface-raised"),
-    appBorderColor: colorOf(mode, "border.subtle"),
+    colorPrimary: color("accent.default"),
+    colorSecondary: color("accent.default"),
+    appBg: color(mode === "light" ? "bg.surface" : "bg.surface-solid"),
+    appContentBg: color("bg.canvas"),
+    appPreviewBg: color("bg.canvas"),
+    appHoverBg: color("bg.surface-raised"),
+    appBorderColor: color("border.subtle"),
     appBorderRadius: 11,
     fontBase,
     fontCode,
-    textColor: colorOf(mode, "text.default"),
-    textInverseColor: colorOf(mode, "text.on-accent"),
-    textMutedColor: colorOf(mode, "text.muted"),
-    barTextColor: colorOf(mode, "text.muted"),
-    barHoverColor: colorOf(mode, "text.accent"),
-    barSelectedColor: colorOf(mode, "text.accent"),
-    barBg: colorOf(mode, mode === "light" ? "bg.surface" : "bg.surface-solid"),
-    buttonBg: colorOf(mode, "bg.field"),
-    buttonBorder: colorOf(mode, "border.strong"),
-    booleanBg: colorOf(mode, "bg.surface-raised"),
-    booleanSelectedBg: colorOf(mode, "bg.field"),
-    inputBg: colorOf(mode, "bg.field"),
-    inputBorder: colorOf(mode, "border.strong"),
-    inputTextColor: colorOf(mode, "text.default"),
+    textColor: color("text.default"),
+    textInverseColor: color("text.on-accent"),
+    textMutedColor: color("text.muted"),
+    barTextColor: color("text.muted"),
+    barHoverColor: color("text.accent"),
+    barSelectedColor: color("text.accent"),
+    barBg: color(mode === "light" ? "bg.surface" : "bg.surface-solid"),
+    buttonBg: color("bg.field"),
+    buttonBorder: color("border.strong"),
+    booleanBg: color("bg.surface-raised"),
+    booleanSelectedBg: color("bg.field"),
+    inputBg: color("bg.field"),
+    inputBorder: color("border.strong"),
+    inputTextColor: color("text.default"),
     inputBorderRadius: 9,
   });
+};
 
-export const lightTheme = build("light");
-export const darkTheme = build("dark");
+const cache = new Map<string, ReturnType<typeof build>>();
 
-/** The mode a toolbar value selects; anything unknown falls back to light. */
-export const themeFor = (mode: unknown) => (mode === "dark" ? darkTheme : lightTheme);
+/** The chrome theme for a Theme and Mode toolbar value; anything unknown falls back to default and light. */
+export const themeFor = (mode: unknown, theme?: unknown) => {
+  const themeName = typeof theme === "string" && themes[theme] ? theme : "default";
+  const resolved: Mode = mode === "dark" ? "dark" : "light";
+  const key = `${themeName}/${resolved}`;
+  let built = cache.get(key);
+  if (!built) {
+    built = build(themeName, resolved);
+    cache.set(key, built);
+  }
+  return built;
+};
+
+export const lightTheme = themeFor("light");
+export const darkTheme = themeFor("dark");

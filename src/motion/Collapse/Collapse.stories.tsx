@@ -32,7 +32,7 @@ function Demo({ open: initial, children }: CollapseProps) {
 }
 
 const meta = {
-  title: "Motion/Collapse",
+  title: "Components/Motion/Collapse",
   component: Collapse,
   parameters: { layout: "padded" },
   args: {

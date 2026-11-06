@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./RadioGroup.stories";
 
 <Meta of={Stories} />
 
-# RadioGroup <StatusBadge status="beta" />
+<DocHeader
+  name="RadioGroup"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 One choice from a short, visible list. Each option has a label and may have a description. The group has a roving tab stop
 and arrow-key navigation.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { RadioGroup } from "@lufia/design-system/components/RadioGroup";
@@ -32,9 +38,11 @@ import { RadioGroup } from "@lufia/design-system/components/RadioGroup";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 With `name`, the chosen value is submitted with the form.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## States
+<Section id="examples">
+
+### States
 
 <Canvas of={Stories.NothingChosen} />
 <Canvas of={Stories.Required} />
@@ -44,17 +52,21 @@ With `name`, the chosen value is submitted with the form.
 
 `orientation="horizontal"` lays the options in a wrapping row. The keys do not change: ArrowDown and ArrowRight both mean next.
 
-## When to use
+### All themes
 
-- Two to six mutually exclusive options, where seeing them all helps the decision.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- Seven or more options: use `Select` or `Combobox`.
-- On/off: use `Switch` or `Checkbox`.
-- A compact two-or-three-way view switch: use `SegmentedToggle`.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) pattern.
 
@@ -72,12 +84,24 @@ Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/
 - Required adds an asterisk, the text `required` for screen readers (`requiredLabel`), and `aria-required`.
 - The error is in the group's description, with `role="alert"` and `aria-invalid`.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Two to six mutually exclusive options, where seeing them all helps the decision.
+
+### When not to use
+
+- Seven or more options: use `Select` or `Combobox`.
+- On/off: use `Switch` or `Checkbox`.
+- A compact two-or-three-way view switch: use `SegmentedToggle`.
+
+### Content guidelines
 
 The group label is the question or the noun ("Payment method"). Options are parallel, short and sentence case. Describe the
 consequence in the description, not the label. Pre-select the safe default when there is one; otherwise leave nothing chosen
 and require a choice.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

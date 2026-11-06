@@ -11,7 +11,7 @@ function Readout() {
 }
 
 const meta = {
-  title: "Motion/usePrefersReducedMotion",
+  title: "Hooks/usePrefersReducedMotion",
   component: Readout,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Readout>;

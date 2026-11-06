@@ -1,4 +1,5 @@
 import { DocsLink } from "./DocsLink";
+import { docsIdFor } from "../taxonomy";
 import { GALLERY_ENTRIES, type GalleryEntry } from "./galleryEntries";
 import { Unstyled } from "@storybook/addon-docs/blocks";
 import styles from "./ComponentGallery.module.css";
@@ -14,7 +15,7 @@ function Card({ entry }: { entry: GalleryEntry }) {
       </div>
       <div className={styles.body}>
         <h4 className={styles.name}>
-          <DocsLink to={entry.docsId} className={styles.link}>
+          <DocsLink to={docsIdFor(entry.name)} className={styles.link}>
             {entry.name}
           </DocsLink>
         </h4>

@@ -1,17 +1,19 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./useBodyScrollLock.stories";
 
 <Meta of={Stories} />
 
-# useBodyScrollLock <StatusBadge status="beta" />
+<DocHeader name="useBodyScrollLock" status="beta" sections={["overview", "accessibility"]} />
+
+<Section id="overview">
 
 A hook that locks page scroll while an overlay (modal, drawer, sheet) is open, and restores the scroll position when it
 closes. Locks are reference counted, so stacked overlays are safe.
 
 <Canvas of={Stories.DocumentScroll} />
 
-## Usage
+### Usage
 
 ```tsx
 import { useBodyScrollLock } from "@lufia/design-system/components/useBodyScrollLock";
@@ -36,14 +38,20 @@ shift sideways on desktop. It is removed on release.
 
 `isBodyScrollLocked()` reports whether any lock is held, for code outside the overlay's tree.
 
-## Accessibility
+### Notes
+
+Client-only (`"use client"`). In document mode `body` becomes `position: fixed`; avoid reading `window.scrollY` while
+locked.
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 - Locking scroll does not move focus or trap it. Pair it with a focus trap and `aria-modal` on the dialog.
 - The previous scroll position is restored on release, so keyboard and screen-reader users return to where they were.
 - It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup,
   including on unmount.
 
-## Notes
-
-Client-only (`"use client"`). In document mode `body` becomes `position: fixed`; avoid reading `window.scrollY` while
-locked.
+</Section>

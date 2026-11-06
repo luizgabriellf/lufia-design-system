@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./MoreActions.stories";
 
 <Meta of={Stories} />
 
-# MoreActions <StatusBadge status="beta" />
+<DocHeader
+  name="MoreActions"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 An overflow menu: a button that opens a list of less frequent actions. It follows the WAI-ARIA menu button pattern.
 
 <Canvas of={Stories.Open} />
 
-## Usage
+### Usage
 
 ```tsx
 import { MoreActions } from "@lufia/design-system/components/MoreActions";
@@ -28,9 +34,30 @@ import { MoreActions } from "@lufia/design-system/components/MoreActions";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Items with `href`
 render as links through the `linkComponent` set on `LufiaProvider`.
 
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.AlignedToStart} />
+<Canvas of={Stories.LongLabels} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## Keyboard
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 | Key                        | Where   | Action                                                                  |
 | -------------------------- | ------- | ----------------------------------------------------------------------- |
@@ -46,19 +73,7 @@ render as links through the `linkComponent` set on `LufiaProvider`.
 A press outside closes the menu. Escape and outside presses go through `useDismiss` and the shared layer stack, so inside a
 dialog Escape closes the menu first and the dialog on the next press. The component adds no document listeners of its own.
 
-## When to use
-
-- Infrequent or secondary actions for a record, a row or a page, behind one button.
-- Page actions that no longer fit on a narrow screen (`PageActions` does this for you).
-
-## When not to use
-
-- Navigation between pages: use `PeerNav` or the app shell.
-- Two or three actions that fit: show them as buttons.
-- Choosing a value (a select or combobox) or a form's submit.
-- The only way to reach an important action. Keep the main action visible.
-
-## Accessibility
+### Accessibility
 
 - The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
 - The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
@@ -71,16 +86,25 @@ dialog Escape closes the menu first and the dialog on the next press. The compon
 - In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears
   without the fade.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Infrequent or secondary actions for a record, a row or a page, behind one button.
+- Page actions that no longer fit on a narrow screen (`PageActions` does this for you).
+
+### When not to use
+
+- Navigation between pages: use `PeerNav` or the app shell.
+- Two or three actions that fit: show them as buttons.
+- Choosing a value (a select or combobox) or a form's submit.
+- The only way to reach an important action. Keep the main action visible.
+
+### Content guidelines
 
 Items start with a verb and are one to three words. Put the destructive item last. Descriptions are optional and one short
 phrase.
 
-## States
-
-<Canvas of={Stories.AlignedToStart} />
-<Canvas of={Stories.LongLabels} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

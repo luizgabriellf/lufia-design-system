@@ -19,7 +19,7 @@ function Demo(args: AnimatedNumberProps) {
 }
 
 const meta = {
-  title: "Motion/AnimatedNumber",
+  title: "Components/Motion/AnimatedNumber",
   component: AnimatedNumber,
   parameters: { layout: "padded" },
   args: { value: 1280 },

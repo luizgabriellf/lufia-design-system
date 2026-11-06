@@ -28,7 +28,7 @@ function Demo(args: RevealProps) {
 }
 
 const meta = {
-  title: "Motion/Reveal",
+  title: "Components/Motion/Reveal",
   component: Reveal,
   parameters: { layout: "padded" },
   args: { show: true, variant: "rise", appear: false },

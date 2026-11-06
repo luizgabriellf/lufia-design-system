@@ -62,7 +62,7 @@ function Demo({ translated }: { translated: boolean }) {
 }
 
 const meta = {
-  title: "Components/LufiaProvider",
+  title: "Components/Utilities/LufiaProvider",
   component: Demo,
   parameters: { layout: "padded" },
   args: { translated: false },

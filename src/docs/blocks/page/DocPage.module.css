@@ -1,0 +1,221 @@
+/* Header, anchored tabs and section frame shared by every component page. Semantic tokens only, so Theme and Mode apply. */
+
+.header {
+  position: relative;
+  display: grid;
+  gap: 0.875rem;
+  justify-items: start;
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
+  margin-block: 0.5rem 0;
+  overflow: hidden;
+  font-family: var(--lufia-font-family-body);
+  color: var(--lufia-color-text-default);
+  background:
+    radial-gradient(50% 120% at 100% 0%, var(--lufia-color-accent-subtle), transparent 70%),
+    radial-gradient(var(--lufia-color-border-subtle) 1px, transparent 1px) 0 0 / 1.25rem 1.25rem,
+    var(--lufia-color-bg-surface-solid);
+  border: 1px solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-panel);
+}
+
+.crumb {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lufia-color-text-muted);
+}
+
+.crumbSep {
+  color: var(--lufia-color-text-subtle);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--lufia-font-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+  border: 0;
+}
+
+.status {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--lufia-color-bg-field);
+  border: 1px solid currentcolor;
+  border-radius: var(--lufia-radius-full);
+}
+
+.statusDot {
+  inline-size: 0.4375rem;
+  block-size: 0.4375rem;
+  background: currentcolor;
+  border-radius: var(--lufia-radius-full);
+}
+
+.status[data-status="beta"] {
+  color: var(--lufia-color-status-warning-fg);
+}
+
+.status[data-status="stable"] {
+  color: var(--lufia-color-status-success-fg);
+}
+
+.status[data-status="alpha"],
+.status[data-status="deprecated"] {
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.summary {
+  max-inline-size: 40rem;
+  margin: 0;
+  font-size: var(--lufia-font-size-lg);
+  line-height: var(--lufia-font-line-height-relaxed);
+  color: var(--lufia-color-text-muted);
+  text-wrap: pretty;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.links li {
+  margin: 0;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-block-size: 2rem;
+  padding-inline: 0.75rem;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  color: var(--lufia-color-text-default);
+  text-decoration: none;
+  background: var(--lufia-color-bg-field);
+  border: 1px solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-full);
+  transition: border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.chip:hover {
+  color: var(--lufia-color-text-accent);
+  border-color: var(--lufia-color-accent-border);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabs {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--lufia-z-sticky);
+  margin-block: 0.75rem 0;
+  font-family: var(--lufia-font-family-body);
+  background: var(--lufia-color-bg-canvas);
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.tabs ul {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.tabs li {
+  margin: 0;
+}
+
+.tabs a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: 0.875rem;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  color: var(--lufia-color-text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tabs a:hover {
+  color: var(--lufia-color-text-default);
+}
+
+.tabs a[aria-current="location"] {
+  color: var(--lufia-color-text-accent);
+}
+
+.tabs a[aria-current="location"]::after {
+  position: absolute;
+  inset-block-end: -1px;
+  inset-inline: 0.5rem;
+  block-size: 2px;
+  content: "";
+  background: var(--lufia-color-accent-default);
+  border-radius: var(--lufia-radius-full);
+}
+
+.section {
+  scroll-margin-block-start: 4rem;
+  padding-block-start: 2rem;
+}
+
+.sectionTitle {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding-block-end: 0.75rem;
+  margin: 0 0 1rem;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-2xl);
+  font-weight: var(--lufia-font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--lufia-color-text-default);
+  border-block-end: 1px solid var(--lufia-color-border-subtle);
+}
+
+.sectionIndex {
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-medium);
+  letter-spacing: 0.08em;
+  color: var(--lufia-color-text-accent);
+}

@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./NavRow.stories";
 
 <Meta of={Stories} />
 
-# NavRow <StatusBadge status="beta" />
+<DocHeader
+  name="NavRow"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A compact, clickable list row: an optional icon, a title with an optional badge, a description and a meta line, and a
 trailing chevron. It is the row used to open a detail, a sub-page or a modal from a list of destinations.
 
 <Canvas of={Stories.InAList} />
 
-## Usage
+### Usage
 
 ```tsx
 import { NavRow } from "@lufia/design-system/components/NavRow";
@@ -41,17 +47,25 @@ Strings in the snippet are plain literals. In your app they arrive through props
 | `onClick` (no `href`) | A `<button type="button">`, with a chevron                    |
 | neither               | A `<div>`: no chevron and nothing to activate                 |
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.AsLink} />
 
-## When to use
+</Section>
 
-- A list of destinations where each needs a title and a sentence of context.
+<Section id="accessibility">
 
-## When not to use
-
-- Tabular data (use a table), or a row with several independent actions (a row can only have one target).
-
-## Accessibility
+### Accessibility
 
 - A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading
   order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own
@@ -63,11 +77,21 @@ Strings in the snippet are plain literals. In your app they arrive through props
   height is 3.5rem, well above the 24px target size.
 - Put rows in a `ul` so a screen reader announces the count.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A list of destinations where each needs a title and a sentence of context.
+
+### When not to use
+
+- Tabular data (use a table), or a row with several independent actions (a row can only have one target).
+
+### Content guidelines
 
 Titles are a noun or a short verb phrase. The description adds context and is never the only place for essential
 information. Meta is for facts that change (a date, a count in words).
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

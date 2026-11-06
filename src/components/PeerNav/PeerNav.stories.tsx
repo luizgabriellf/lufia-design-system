@@ -51,7 +51,7 @@ function Stateful(props: PeerNavProps) {
 }
 
 const meta = {
-  title: "Components/PeerNav",
+  title: "Components/Navigation/PeerNav",
   component: PeerNav,
   parameters: { layout: "padded" },
   args: { label: "Dashboard views", items: linkItems, value: "overview" },

@@ -18,7 +18,7 @@ function Field(props: Omit<FormFieldProps, "children">) {
 }
 
 const meta = {
-  title: "Forms/FormField",
+  title: "Components/Forms/FormField",
   component: FormField,
   parameters: { layout: "padded" },
   args: { label: "Project name", children: null },

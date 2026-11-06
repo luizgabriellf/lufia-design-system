@@ -41,7 +41,7 @@ function Demo({ scrollContainerSelectors }: { scrollContainerSelectors?: string[
 }
 
 const meta = {
-  title: "Components/useBodyScrollLock",
+  title: "Hooks/useBodyScrollLock",
   component: Demo,
 } satisfies Meta<typeof Demo>;
 

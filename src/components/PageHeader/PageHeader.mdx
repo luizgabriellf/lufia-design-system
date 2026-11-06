@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./PageHeader.stories";
 
 <Meta of={Stories} />
 
-# PageHeader <StatusBadge status="beta" />
+<DocHeader
+  name="PageHeader"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 The top of a page: an optional eyebrow, the title as a heading, a description, and the page's actions.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { PageHeader } from "@lufia/design-system/components/PageHeader";
@@ -25,45 +31,63 @@ import { PageHeader } from "@lufia/design-system/components/PageHeader";
 
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
 
-<Controls of={Stories.Default} />
-
-## Layout
+### Layout
 
 On wide screens the text takes the available width and the actions sit at the end of the row, aligned with the bottom of the
 text. When the row is too narrow the actions wrap under the text, start-aligned. The wrap depends on the room the header
 has, not on the screen, and the layout uses logical properties, so it mirrors in right-to-left.
 
-## Keyboard
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.TitleOnly} />
+<Canvas of={Stories.LongText} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
 
 The header is not interactive. Its actions follow the keyboard behaviour of the controls you pass.
 
-## When to use
-
-- The first element of the main content of a page.
-- A section heading with its own actions (`headingLevel={2}`).
-
-## When not to use
-
-- The heading of a card or dialog: `Card` and `Modal` have their own.
-- A marketing hero.
-
-## Accessibility
+### Accessibility
 
 - The title is a real heading. A page should have one level 1; use `headingLevel` for secondary headers so the outline stays in
   order.
 - The eyebrow is a paragraph above the heading, not part of its name.
 - Text contrast is checked in every theme. At 320px the title wraps instead of overflowing.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The first element of the main content of a page.
+- A section heading with its own actions (`headingLevel={2}`).
+
+### When not to use
+
+- The heading of a card or dialog: `Card` and `Modal` have their own.
+- A marketing hero.
+
+### Content guidelines
 
 A title names the page in one to four words. The description is one sentence of context, not instructions. Put at most one
 primary action in `actions`.
 
-## States
-
-<Canvas of={Stories.TitleOnly} />
-<Canvas of={Stories.LongText} />
-
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

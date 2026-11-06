@@ -4,7 +4,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { SortableTh, type SortDirection } from "./SortableTh";
 
 const meta = {
-  title: "Components/SortableTh",
+  title: "Components/Data display/SortableTh",
   component: SortableTh,
   parameters: { layout: "padded" },
   args: { label: "Name", active: true, dir: "asc", onSort: () => {} },

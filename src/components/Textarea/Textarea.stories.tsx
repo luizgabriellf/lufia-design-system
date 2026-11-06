@@ -15,7 +15,7 @@ function Demo({ label, hint, error, required, disabled, ...input }: DemoProps) {
 }
 
 const meta = {
-  title: "Forms/Textarea",
+  title: "Components/Forms/Textarea",
   component: Demo,
   parameters: { layout: "padded" },
   args: { label: "Notes", placeholder: "Anything the team should know" },

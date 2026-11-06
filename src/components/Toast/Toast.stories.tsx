@@ -65,7 +65,7 @@ function Demo({ showAll = false, ...provider }: DemoProps) {
 }
 
 const meta = {
-  title: "Components/Toast",
+  title: "Components/Feedback/Toast",
   component: Demo,
   parameters: { layout: "padded" },
   args: {},

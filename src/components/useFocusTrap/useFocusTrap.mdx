@@ -1,17 +1,19 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./useFocusTrap.stories";
 
 <Meta of={Stories} />
 
-# useFocusTrap <StatusBadge status="beta" />
+<DocHeader name="useFocusTrap" status="beta" sections={["overview", "accessibility", "guidelines"]} />
+
+<Section id="overview">
 
 Keeps keyboard focus inside an overlay while it is open: Tab and Shift+Tab wrap, Escape can close it, focus moves in when
 it opens and returns to the opener when it closes. It is what `Modal` and `ConfirmDialog` are built on.
 
 <Canvas of={Stories.FocusContainer} />
 
-## Usage
+### Usage
 
 ```tsx
 import { useFocusTrap } from "@lufia/design-system/components/useFocusTrap";
@@ -36,17 +38,11 @@ function Panel({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 `getFocusableElements(root)` is exported for code that needs the same notion of "tabbable".
 
-## When to use
+</Section>
 
-- Any overlay that blocks the page behind it: dialogs, drawers, sheets.
+<Section id="accessibility">
 
-## When not to use
-
-- Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss
-  helper instead.
-- A native `<dialog>` opened with `showModal()`. The browser already traps focus.
-
-## Accessibility
+### Accessibility
 
 Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) pattern.
 
@@ -66,3 +62,19 @@ Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patter
   something moved focus elsewhere on purpose in the meantime, it is left alone.
 - Pair it with `aria-modal="true"` on the dialog; `inertBackground` makes the effect real for browsers and assistive
   technologies that ignore `aria-modal`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Any overlay that blocks the page behind it: dialogs, drawers, sheets.
+
+### When not to use
+
+- Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss
+  helper instead.
+- A native `<dialog>` opened with `showModal()`. The browser already traps focus.
+
+</Section>

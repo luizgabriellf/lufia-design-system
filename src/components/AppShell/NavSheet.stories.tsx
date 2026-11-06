@@ -6,7 +6,7 @@ import { NavSheet } from "./NavSheet";
 import { ShellNavigation } from "./ShellNavigation";
 
 const meta = {
-  title: "Components/AppShell/NavSheet",
+  title: "Components/Navigation/AppShell/NavSheet",
   component: NavSheet,
   parameters: { layout: "fullscreen", docs: { story: { inline: false, iframeHeight: 560 } } },
   args: { open: false, onOpenChange: () => {}, label: "Menu", children: null },

@@ -6,7 +6,7 @@ import { Button } from "../Button";
 import { DetailSectionCard } from "./DetailSectionCard";
 
 const meta = {
-  title: "Components/DetailSectionCard",
+  title: "Components/Data display/DetailSectionCard",
   component: DetailSectionCard,
   parameters: { layout: "padded" },
   args: {

@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./VisuallyHidden.stories";
 
 <Meta of={Stories} />
 
-# VisuallyHidden <StatusBadge status="beta" />
+<DocHeader
+  name="VisuallyHidden"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Text for assistive technology that is not drawn on screen.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
@@ -21,24 +27,42 @@ import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
 </button>;
 ```
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- A longer or more specific name than the visible text (which row does "Delete" act on?).
-- Status text announced from a live region without a visible counterpart.
+<Section id="accessibility">
 
-## When not to use
-
-- Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.
-- To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible.
-
-## Accessibility
+### Accessibility
 
 - It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.
 - WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain
   the visible text.
 
-## All themes
+</Section>
 
-<Canvas of={Stories.AllThemes} />
+<Section id="guidelines">
+
+### When to use
+
+- A longer or more specific name than the visible text (which row does "Delete" act on?).
+- Status text announced from a live region without a visible counterpart.
+
+### When not to use
+
+- Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.
+- To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible.
+
+</Section>

@@ -1,16 +1,22 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./DetailList.stories";
 
 <Meta of={Stories} />
 
-# DetailList <StatusBadge status="beta" />
+<DocHeader
+  name="DetailList"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 Key-value rows for detail panels and modals, rendered as a native description list.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { DetailList } from "@lufia/design-system/components/DetailList";
@@ -25,28 +31,46 @@ import { DetailList } from "@lufia/design-system/components/DetailList";
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
 <Controls of={Stories.Default} />
 
-## When to use
+</Section>
 
-- Several short label/value facts about one record.
+<Section id="accessibility">
 
-## When not to use
-
-- Tabular data with many records (use a table) or editable fields (use a form).
-
-## Accessibility
+### Accessibility
 
 - Uses `<dl>`, `<dt>` and `<dd>`, which expose the label-value relationship to screen readers without extra ARIA.
 - The label column is capped at 40% and wraps. A long label never pushes values out of their container, so the layout
   reflows at 320px.
 - Values may be any React node; links and buttons inside keep their own focus behaviour.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Several short label/value facts about one record.
+
+### When not to use
+
+- Tabular data with many records (use a table) or editable fields (use a form).
+
+### Content guidelines
 
 Labels are short nouns without trailing colons (the grid provides the separation). Use `mono` for dates, counts and
 identifiers so digits align. Localise and format values (dates, numbers) in the app: locales differ in both.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

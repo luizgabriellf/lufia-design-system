@@ -46,7 +46,7 @@ function Demo({ startOpen = false, slow = false, stuckBusy = false, ...args }: D
 }
 
 const meta = {
-  title: "Components/ConfirmDialog",
+  title: "Components/Overlays/ConfirmDialog",
   component: Demo,
   parameters: { layout: "padded" },
   args: {

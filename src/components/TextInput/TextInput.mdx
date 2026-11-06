@@ -1,17 +1,23 @@
 import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import { StatusBadge } from "../../docs/StatusBadge";
+import { DocHeader, Section } from "../../docs/blocks/page";
 import * as Stories from "./TextInput.stories";
 
 <Meta of={Stories} />
 
-# TextInput <StatusBadge status="beta" />
+<DocHeader
+  name="TextInput"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
 
 A single-line text control: a native `<input>` in a bordered box, with optional prefix and suffix slots for units, signs and
 icons.
 
 <Canvas of={Stories.Default} />
 
-## Usage
+### Usage
 
 ```tsx
 import { FormField } from "@lufia/design-system/components/FormField";
@@ -25,9 +31,11 @@ import { TextInput } from "@lufia/design-system/components/TextInput";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 Rest props, `type` and `ref` go to the native input; `className` goes to the box.
 
-<Controls of={Stories.Default} />
+</Section>
 
-## States
+<Section id="examples">
+
+### States
 
 <Canvas of={Stories.WithHint} />
 <Canvas of={Stories.Required} />
@@ -40,7 +48,7 @@ Rest props, `type` and `ref` go to the native input; `className` goes to the box
   can see and copy but not change.
 - **Invalid** adds a second line inside the border and, through `FormField`, the error message with an icon.
 
-## Prefix and suffix
+### Prefix and suffix
 
 <Canvas of={Stories.PrefixAndSuffix} />
 
@@ -48,18 +56,21 @@ Slots hold short text or an icon. A prefix or suffix that carries meaning ("EUR"
 it is read with the control's description; mark a purely decorative icon `aria-hidden`. A suffix may contain a button, which
 is then its own tab stop.
 
-## When to use
+### All themes
 
-- Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
-- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
+<Canvas of={Stories.AllThemes} />
 
-## When not to use
+</Section>
 
-- More than one line of text: use `Textarea`.
-- A choice from a known list: use `Select` or `Combobox`.
-- Searching: use `SearchInput`, which adds a clear button and debouncing.
+<Section id="props">
 
-## Accessibility
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
 
 | Key / action | Behaviour                                                              |
 | ------------ | ---------------------------------------------------------------------- |
@@ -71,11 +82,24 @@ is then its own tab stop.
   the ring uses `Highlight`, and an invalid control gets a thicker border.
 - Height is at least 44px; the text is 16px so iOS does not zoom on focus.
 
-## Content guidelines
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
+- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
+
+### When not to use
+
+- More than one line of text: use `Textarea`.
+- A choice from a known list: use `Select` or `Combobox`.
+- Searching: use `SearchInput`, which adds a clear button and debouncing.
+
+### Content guidelines
 
 Placeholders show an example ("Quarterly report"), never an instruction and never the label again. Units go in the prefix or
 suffix, not in the label. Keep error text next to the field, in the `FormField`.
 
-## All themes
-
-<Canvas of={Stories.AllThemes} />
+</Section>

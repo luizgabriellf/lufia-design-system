@@ -30,7 +30,7 @@ function Demo({ label, hint, error, required, disabled, ...input }: DemoProps) {
 }
 
 const meta = {
-  title: "Forms/FileField",
+  title: "Components/Forms/FileField",
   component: Demo,
   parameters: { layout: "padded" },
   args: {

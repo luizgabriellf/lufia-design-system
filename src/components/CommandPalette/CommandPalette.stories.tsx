@@ -85,7 +85,7 @@ function Demo({
 }
 
 const meta = {
-  title: "Components/CommandPalette",
+  title: "Components/Overlays/CommandPalette",
   component: Demo,
   parameters: { layout: "fullscreen", docs: { story: { inline: false, iframeHeight: 520 } } },
 } satisfies Meta<typeof Demo>;

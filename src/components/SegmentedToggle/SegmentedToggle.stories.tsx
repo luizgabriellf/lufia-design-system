@@ -10,7 +10,7 @@ const options: SegmentedToggleOption[] = [
 ];
 
 const meta = {
-  title: "Forms/SegmentedToggle",
+  title: "Components/Forms/SegmentedToggle",
   component: SegmentedToggle,
   parameters: { layout: "padded" },
   args: { label: "View", options, defaultValue: "board" },

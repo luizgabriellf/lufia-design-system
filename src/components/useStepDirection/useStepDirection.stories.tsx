@@ -27,7 +27,7 @@ function Demo() {
 }
 
 const meta = {
-  title: "Components/useStepDirection",
+  title: "Hooks/useStepDirection",
   component: Demo,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Demo>;
