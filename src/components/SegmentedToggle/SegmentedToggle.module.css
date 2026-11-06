@@ -2,6 +2,7 @@
   position: relative;
   display: inline-flex;
   box-sizing: border-box;
+  inline-size: fit-content;
   max-inline-size: 100%;
   padding: 0.1875rem;
   background: var(--lufia-color-bg-surface);

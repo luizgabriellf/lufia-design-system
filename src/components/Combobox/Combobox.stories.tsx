@@ -33,6 +33,12 @@ const openList = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   await userEvent.click(within(canvasElement).getByRole("combobox"));
 };
 
+/** Opens the list and moves the keyboard highlight to the first enabled option. */
+const openAndHighlight = async (context: { canvasElement: HTMLElement }) => {
+  await openList(context);
+  await userEvent.keyboard("{ArrowDown}");
+};
+
 const meta = {
   title: "Forms/Combobox",
   component: Demo,
@@ -57,8 +63,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-/** The list is open: options with a description, a disabled option, and the first enabled one highlighted by the keyboard. */
-export const Open: Story = { play: openList };
+/** The list is open: options with a description, a disabled option, and the first enabled one highlighted by the arrow key. */
+export const Open: Story = { play: openAndHighlight };
 export const WithValue: Story = { args: { defaultValue: "lis" }, play: openList };
 export const WithHint: Story = { args: { hint: "Start typing to narrow the list." } };
 export const Required: Story = { args: { required: true } };
