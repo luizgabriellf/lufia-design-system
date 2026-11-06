@@ -1,0 +1,128 @@
+.root {
+  --card-padding: 1.25rem;
+
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  flex-direction: column;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  background: var(--lufia-color-bg-surface);
+  color: var(--lufia-color-text-default);
+  box-shadow: var(--lufia-shadow-sm);
+}
+
+.root[data-padding="none"] {
+  --card-padding: 0;
+}
+
+.root[data-padding="sm"] {
+  --card-padding: 0.75rem;
+}
+
+.root[data-padding="lg"] {
+  --card-padding: 1.75rem;
+}
+
+.header,
+.body,
+.footer {
+  padding: var(--card-padding);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.title {
+  min-inline-size: 0;
+  margin: 0;
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.action {
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+
+.body {
+  min-inline-size: 0;
+  flex: 1;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.header + .body {
+  padding-block-start: 0;
+}
+
+.footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+/* The stretched link: its pseudo-element covers the card, so the whole surface is the link's hit area. */
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The ring is drawn on the card (below); the link keeps a transparent one so it shows in forced-colors mode. */
+.link:focus-visible {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.link::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  content: "";
+}
+
+.root[data-interactive] {
+  cursor: pointer;
+  transition:
+    border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    box-shadow var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.root[data-interactive]:hover {
+  border-color: var(--lufia-color-accent-border);
+  box-shadow: var(--lufia-shadow-md);
+}
+
+.root[data-interactive]:hover .link {
+  text-decoration: underline;
+}
+
+/* The ring goes on the card, not on the title text, because the whole card is the focus target. */
+.root:has(.link:focus-visible) {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .root {
+    border-color: CanvasText;
+  }
+
+  .root:has(.link:focus-visible) {
+    outline-color: Highlight;
+  }
+}
