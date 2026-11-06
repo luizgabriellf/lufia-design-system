@@ -62,7 +62,7 @@ describe("NavRow", () => {
 
   it("shows a badge of 0", () => {
     render(<NavRow title="Inbox" href="/i" badge={0} />);
-    expect(screen.getByRole("link")).toHaveTextContent("Inbox0");
+    expect(screen.getByRole("link")).toHaveTextContent("Inbox 0");
   });
 
   it("has no axe violations in each form", async () => {

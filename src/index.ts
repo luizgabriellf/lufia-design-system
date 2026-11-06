@@ -1,4 +1,5 @@
 export * from "./components/ActionIcons";
+export * from "./components/AppShell";
 export * from "./components/ConfirmDialog";
 export * from "./components/DetailAttentionCard";
 export * from "./components/DetailList";
@@ -6,10 +7,10 @@ export * from "./components/DetailSectionCard";
 export * from "./components/EmptyState";
 export * from "./components/LufiaProvider";
 export * from "./components/Modal";
-export * from "./components/SortableTh";
 export * from "./components/NavRow";
 export * from "./components/Pagination";
 export * from "./components/PeerNav";
+export * from "./components/SortableTh";
 export * from "./components/StatusTimeline";
 export * from "./components/Stepper";
 export * from "./components/SuccessCheck";

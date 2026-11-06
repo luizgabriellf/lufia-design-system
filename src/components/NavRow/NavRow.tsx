@@ -73,7 +73,7 @@ export function NavRow({
       ) : null}
       <span className={styles.copy}>
         <span className={styles.topline}>
-          <span className={styles.title}>{title}</span>
+          <span className={styles.title}>{title}</span>{" "}
           {badge !== undefined && badge !== null ? <span className={styles.badge}>{badge}</span> : null}
         </span>
         {description ? <span className={styles.description}>{description}</span> : null}

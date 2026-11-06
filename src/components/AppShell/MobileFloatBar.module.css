@@ -1,0 +1,148 @@
+.bar {
+  position: fixed;
+  z-index: var(--lufia-z-sticky);
+  inset-inline: 0;
+  inset-block-end: calc(var(--lufia-space-3) + env(safe-area-inset-bottom));
+  inline-size: fit-content;
+  max-inline-size: calc(100vw - var(--lufia-space-5));
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-1);
+  padding: 0.375rem 0.375rem 0.375rem var(--lufia-space-4);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-full);
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--lufia-color-bg-surface-solid) 72%, transparent);
+  backdrop-filter: blur(1.375rem) saturate(1.35);
+  box-shadow: var(--lufia-shadow-lg);
+  white-space: nowrap;
+  isolation: isolate;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  font-size: var(--lufia-font-size-md);
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.button:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.glyph {
+  display: inline-flex;
+  flex: none;
+}
+
+.text {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The quiet search entry gives way first when the bar is crowded. */
+.button[data-variant="search"] {
+  flex: 0 4 auto;
+  min-inline-size: 2.75rem;
+  padding-inline: 0.125rem;
+  overflow: hidden;
+}
+
+.button[data-variant="search"]:active {
+  opacity: 0.55;
+}
+
+.button[data-variant="primary"] {
+  flex: 0 1 auto;
+  min-inline-size: 2.75rem;
+  max-inline-size: 62vw;
+  margin-inline-end: var(--lufia-space-1);
+  padding-inline: var(--lufia-space-3);
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-accent-default);
+  color: var(--lufia-color-text-on-accent);
+  font-weight: var(--lufia-font-weight-bold);
+}
+
+.button[data-variant="icon"] {
+  flex: none;
+  justify-content: center;
+  inline-size: 2.75rem;
+  border-radius: var(--lufia-radius-full);
+  background: color-mix(in srgb, var(--lufia-color-text-default) 9%, transparent);
+  color: var(--lufia-color-text-default);
+}
+
+.button[data-variant="primary"]:active,
+.button[data-variant="icon"]:active {
+  transform: scale(0.94);
+}
+
+.button[data-variant="icon"] .text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  clip-path: inset(50%);
+}
+
+.separator {
+  flex: none;
+  inline-size: var(--lufia-border-width-thin);
+  block-size: 1.375rem;
+  margin-inline: var(--lufia-space-1);
+  background: var(--lufia-color-border-strong);
+}
+
+/* Very narrow phones: the main action keeps its name for assistive technology and shows only its icon. */
+@media (width < 22.5rem) {
+  .button[data-variant="primary"] {
+    inline-size: 2.75rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .button[data-variant="primary"] .text {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    clip-path: inset(50%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bar {
+    background: var(--lufia-color-bg-surface-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    backdrop-filter: none;
+    background: var(--lufia-color-bg-surface-solid);
+  }
+}
+
+@media (forced-colors: active) {
+  .bar {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  .button[data-variant="primary"] {
+    border: var(--lufia-border-width-thin) solid ButtonText;
+  }
+}
