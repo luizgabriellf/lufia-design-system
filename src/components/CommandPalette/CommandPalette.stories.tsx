@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { DocumentIcon, HomeIcon, PlusIcon, SettingsIcon, UploadIcon, UsersIcon } from "../../docs/demo";
 import { Button } from "../Button";
-import { CommandPalette, type CommandItem, type CommandPaletteLabels } from "./CommandPalette";
+import {
+  CommandPalette,
+  type CommandItem,
+  type CommandPaletteLabels,
+  type CommandPaletteProps,
+} from "./CommandPalette";
 
 const labels: CommandPaletteLabels = {
   title: "Search or run a command",
@@ -62,10 +67,11 @@ const items: CommandItem[] = [
 function Demo({
   initialOpen = false,
   commands = items,
+  ...extra
 }: {
   initialOpen?: boolean;
   commands?: CommandItem[];
-}) {
+} & Partial<CommandPaletteProps>) {
   const [open, setOpen] = useState(initialOpen);
   return (
     <div style={{ padding: "1rem", display: "grid", gap: "0.75rem", justifyItems: "start" }}>
@@ -79,6 +85,7 @@ function Demo({
         items={commands}
         labels={labels}
         hint="Search by name, or choose an action."
+        {...extra}
       />
     </div>
   );
@@ -121,3 +128,80 @@ export const Phone320: Story = {
   args: { initialOpen: true },
   globals: { viewport: { value: "w320", isRotated: false } },
 };
+
+/** `groupOrder` lists the sections in a fixed order whatever the order of the items. */
+export const FixedSectionOrder: Story = { args: { initialOpen: true, groupOrder: ["Go to", "Actions"] } };
+
+function AnswerMode() {
+  const [open, setOpen] = useState(true);
+  const [answering, setAnswering] = useState(false);
+  const commands: CommandItem[] = [
+    {
+      key: "ask",
+      label: "Ask about this page",
+      group: "Assistant",
+      keepOpen: true,
+      onSelect: () => setAnswering(true),
+    },
+    ...items,
+  ];
+  return (
+    <CommandPalette
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setAnswering(false);
+      }}
+      items={commands}
+      labels={labels}
+      groupOrder={["Assistant"]}
+      bodyOverride={
+        answering
+          ? ({ query }) => (
+              <p style={{ padding: "1rem", margin: 0 }}>
+                An answer to “{query || "your question"}”. Escape returns to the results; a second Escape
+                closes the palette.
+              </p>
+            )
+          : undefined
+      }
+      onEscape={() => {
+        if (!answering) return false;
+        setAnswering(false);
+        return true;
+      }}
+    />
+  );
+}
+
+/** Choose "Ask about this page": the answer replaces the results, the first Escape leaves it, the second closes. */
+export const AnswerReplacesResults: Story = { render: () => <AnswerMode /> };
+
+function ServerSearch() {
+  const [rows, setRows] = useState<CommandItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  return (
+    <CommandPalette
+      open
+      onOpenChange={() => {}}
+      items={rows}
+      labels={labels}
+      filter={() => true}
+      loading={loading}
+      onQueryChange={(query) => {
+        setLoading(true);
+        setTimeout(() => {
+          setRows(
+            query
+              ? [{ key: query, label: `Record matching “${query}”`, group: "Records", onSelect: noop }]
+              : [],
+          );
+          setLoading(false);
+        }, 600);
+      }}
+    />
+  );
+}
+
+/** `onQueryChange` with `filter={() => true}` and `loading`: results come from a server; "No results" waits for the answer. */
+export const ServerSideSearch: Story = { render: () => <ServerSearch /> };

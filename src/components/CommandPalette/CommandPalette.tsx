@@ -55,8 +55,32 @@ export type CommandPaletteProps = {
    * comes filtered (a server search driven by `onQueryChange`).
    */
   filter?: (item: CommandItem, query: string) => boolean;
-  /** Called as the person types, for searches that ask a server. */
+  /**
+   * Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}`
+   * so the palette does not filter it again, and set `loading` while the request runs.
+   */
   onQueryChange?: (query: string) => void;
+  /**
+   * A search is in flight: `aria-busy` on the results, and the empty message waits, so "No results" does not flash before the
+   * server answers.
+   */
+  loading?: boolean;
+  /**
+   * The order of the group headings, by name. Groups not listed follow, in the order they are first used; listed groups with
+   * no results are left out. Default: the order of first use.
+   */
+  groupOrder?: readonly string[];
+  /**
+   * Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function
+   * gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are
+   * not announced. The field keeps focus.
+   */
+  bodyOverride?: ReactNode | ((state: { query: string }) => ReactNode);
+  /**
+   * Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the
+   * palette then stays open, and the next Escape closes it. Return anything else to close.
+   */
+  onEscape?: () => boolean | void;
   /** Open on Ctrl+K and Cmd+K. Default `true`. */
   shortcut?: boolean;
   /** Where the palette is mounted. Defaults to `document.body`. */
@@ -91,6 +115,10 @@ export function CommandPalette({
   hint,
   filter = filterCommands,
   onQueryChange,
+  loading = false,
+  groupOrder,
+  bodyOverride,
+  onEscape,
   shortcut = true,
   container,
 }: CommandPaletteProps) {
@@ -129,8 +157,10 @@ export function CommandPalette({
       }
       byGroup.get(name)!.push(item);
     }
-    return order.map((name) => ({ name, items: byGroup.get(name)! }));
-  }, [results]);
+    const ranked = groupOrder ? groupOrder.filter((name) => byGroup.has(name)) : [];
+    const rest = order.filter((name) => !ranked.includes(name));
+    return [...ranked, ...rest].map((name) => ({ name, items: byGroup.get(name)! }));
+  }, [results, groupOrder]);
   // The flat reading order is the order of the groups, which can differ from `results` when groups interleave.
   const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const activeIndex = Math.min(active, Math.max(flat.length - 1, 0));
@@ -139,7 +169,14 @@ export function CommandPalette({
   const activeId = flat[activeIndex] ? optionIdOf(flat[activeIndex]) : undefined;
 
   const close = () => onOpenChange(false);
-  useFocusTrap(phase === "open", panel, { onEscape: close, initialFocus: field, inertBackground: true });
+  const overridden = bodyOverride !== undefined && bodyOverride !== null && bodyOverride !== false;
+  useFocusTrap(phase === "open", panel, {
+    onEscape: () => {
+      if (onEscape?.() !== true) close();
+    },
+    initialFocus: field,
+    inertBackground: true,
+  });
 
   // Ctrl+K / Cmd+K opens the palette from anywhere. It leaves the key alone when something else already handled it (an
   // editor's "insert link"), during IME composition, on key repeat, and while another modal is open. It does not toggle:
@@ -169,6 +206,7 @@ export function CommandPalette({
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (overridden) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setActive(flat.length ? (activeIndex + 1) % flat.length : 0);
@@ -188,7 +226,7 @@ export function CommandPalette({
   if (phase === "unmounted" || !target) return null;
 
   const listId = `${id}-list`;
-  const expanded = flat.length > 0;
+  const expanded = flat.length > 0 && !overridden;
   let index = -1;
 
   return createPortal(
@@ -261,8 +299,14 @@ export function CommandPalette({
             </svg>
           </button>
         </div>
-        <div className={styles.body}>
-          {expanded ? (
+        <div className={styles.body} aria-busy={loading || undefined}>
+          {overridden ? (
+            typeof bodyOverride === "function" ? (
+              bodyOverride({ query })
+            ) : (
+              bodyOverride
+            )
+          ) : expanded ? (
             <div id={listId} role="listbox" aria-label={labels.title} className={styles.list}>
               {groups.map((group, groupIndex) => {
                 const headingId = `${id}-group-${groupIndex}`;
@@ -313,13 +357,13 @@ export function CommandPalette({
                 );
               })}
             </div>
-          ) : (
+          ) : loading ? null : (
             <p className={styles.empty}>{labels.empty(query.trim())}</p>
           )}
-          {!query.trim() && hint ? <p className={styles.hint}>{hint}</p> : null}
+          {!overridden && !query.trim() && hint ? <p className={styles.hint}>{hint}</p> : null}
         </div>
         <p className={styles.status} role="status">
-          {query.trim() ? labels.resultCount(flat.length) : ""}
+          {query.trim() && !overridden && !loading ? labels.resultCount(flat.length) : ""}
         </p>
       </div>
     </div>,

@@ -25,11 +25,12 @@ function Harness({
   commands = items(),
   initial = true,
   shortcut = true,
+  ...extra
 }: {
   commands?: CommandItem[];
   initial?: boolean;
   shortcut?: boolean;
-}) {
+} & Partial<CommandPaletteProps>) {
   const [open, setOpen] = useState(initial);
   return (
     <>
@@ -43,6 +44,7 @@ function Harness({
         labels={labels}
         hint="Tip"
         shortcut={shortcut}
+        {...extra}
       />
     </>
   );
@@ -279,5 +281,144 @@ describe("CommandPalette", () => {
     expect(await axe(document.body)).toHaveNoViolations();
     await user.type(field(), "zzz");
     expect(await axe(document.body)).toHaveNoViolations();
+  });
+});
+
+describe("CommandPalette extension points", () => {
+  beforeEach(() => mockReducedMotion(true));
+  afterEach(() => vi.unstubAllGlobals());
+
+  const headings = () => Array.from(document.querySelectorAll('[role="presentation"]'), (n) => n.textContent);
+
+  describe("groupOrder", () => {
+    it("lists the named groups first, in that order, then the rest in order of first use", () => {
+      render(<Harness groupOrder={["Go to"]} />);
+      expect(headings()).toEqual(["Go to", "Actions"]);
+    });
+
+    it("keeps the order of first use by default and ignores named groups with no results", async () => {
+      const { rerender } = render(<Harness />);
+      expect(headings()).toEqual(["Actions", "Go to"]);
+      rerender(<Harness groupOrder={["Nowhere", "Go to", "Actions"]} />);
+      expect(headings()).toEqual(["Go to", "Actions"]);
+    });
+
+    it("moves the highlight through the groups in the shown order", async () => {
+      const user = userEvent.setup();
+      render(<Harness groupOrder={["Go to"]} />);
+      expect(field()).toHaveAttribute("aria-activedescendant", expect.stringContaining("settings"));
+      await user.keyboard("{ArrowDown}{ArrowDown}");
+      expect(field()).toHaveAttribute("aria-activedescendant", expect.stringContaining("new"));
+    });
+  });
+
+  describe("bodyOverride", () => {
+    it("replaces the results, the empty message and the hint, and ends the listbox", () => {
+      render(<Harness bodyOverride={<p>An answer</p>} />);
+      expect(screen.getByText("An answer")).toBeInTheDocument();
+      expect(screen.queryByRole("listbox")).toBeNull();
+      expect(screen.queryByText("Tip")).toBeNull();
+      expect(field()).toHaveAttribute("aria-expanded", "false");
+      expect(field()).not.toHaveAttribute("aria-activedescendant");
+      expect(field()).toHaveFocus();
+    });
+
+    it("takes a function that gets the query", async () => {
+      const user = userEvent.setup();
+      render(<Harness bodyOverride={({ query }) => <p>Answer to {query}</p>} />);
+      await user.type(field(), "why");
+      expect(screen.getByText("Answer to why")).toBeInTheDocument();
+    });
+
+    it("leaves arrows and Enter alone, and does not announce a count", async () => {
+      const user = userEvent.setup();
+      const onSelect = vi.fn();
+      render(<Harness commands={items(onSelect)} bodyOverride={<p>An answer</p>} />);
+      await user.type(field(), "new");
+      await user.keyboard("{ArrowDown}{Enter}");
+      expect(onSelect).not.toHaveBeenCalled();
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    });
+
+    it("brings the results back when it goes away", () => {
+      const { rerender } = render(<Harness bodyOverride={<p>An answer</p>} />);
+      rerender(<Harness bodyOverride={undefined} />);
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+      expect(screen.queryByText("An answer")).toBeNull();
+    });
+
+    it("has no axe violations", async () => {
+      render(<Harness bodyOverride={<p>An answer</p>} />);
+      expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("onEscape", () => {
+    it("closes the palette when the hook returns nothing or something other than true", async () => {
+      const user = userEvent.setup();
+      const onEscape = vi.fn();
+      render(<Harness onEscape={onEscape} />);
+      await user.keyboard("{Escape}");
+      expect(onEscape).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("keeps it open when the hook handled the key, so a second Escape closes it", async () => {
+      const user = userEvent.setup();
+      function Sub() {
+        const [answer, setAnswer] = useState(true);
+        return (
+          <Harness
+            bodyOverride={answer ? <p>An answer</p> : undefined}
+            onEscape={() => {
+              if (!answer) return false;
+              setAnswer(false);
+              return true;
+            }}
+          />
+        );
+      }
+      render(<Sub />);
+      await user.keyboard("{Escape}");
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.queryByText("An answer")).toBeNull();
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+  });
+
+  describe("server search", () => {
+    it("holds the empty message back while loading and marks the body busy", () => {
+      const { rerender } = render(<Harness commands={[]} loading />);
+      expect(screen.queryByText(/No results/)).toBeNull();
+      expect(document.querySelector('[aria-busy="true"]')).not.toBeNull();
+      rerender(<Harness commands={[]} loading={false} />);
+      expect(screen.getByText("No results for “”")).toBeInTheDocument();
+      expect(document.querySelector('[aria-busy="true"]')).toBeNull();
+    });
+
+    it("lists what the server returned without filtering it again", async () => {
+      const user = userEvent.setup();
+      const onQueryChange = vi.fn();
+      function Server() {
+        const [rows, setRows] = useState<CommandItem[]>([]);
+        return (
+          <Harness
+            commands={rows}
+            filter={() => true}
+            onQueryChange={(query) => {
+              onQueryChange(query);
+              setRows([{ key: "r1", label: `Record for ${query}`, onSelect: () => {} }]);
+            }}
+          />
+        );
+      }
+      render(<Server />);
+      await user.type(field(), "ab");
+      expect(onQueryChange).toHaveBeenLastCalledWith("ab");
+      expect(screen.getByRole("option", { name: "Record for ab" })).toBeInTheDocument();
+    });
   });
 });
