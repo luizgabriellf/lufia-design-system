@@ -11,6 +11,7 @@ export * from "./components/DetailAttentionCard";
 export * from "./components/DetailList";
 export * from "./components/DetailSectionCard";
 export * from "./components/EmptyState";
+export * from "./components/FileField";
 export * from "./components/FormField";
 export * from "./components/IconButton";
 export * from "./components/Link";

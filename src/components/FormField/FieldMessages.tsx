@@ -13,7 +13,7 @@ export function FieldHint({ id, children }: { id?: string; children: ReactNode }
 /** An error under a control: an icon and text, announced when it appears. Internal. */
 export function FieldError({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <p id={id} className={styles.error} role="alert">
+    <div id={id} className={styles.error} role="alert">
       <svg
         className={styles.errorIcon}
         viewBox="0 0 16 16"
@@ -25,7 +25,7 @@ export function FieldError({ id, children }: { id?: string; children: ReactNode 
         <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
         <path d="M8 4.75v3.9M8 10.9v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
-      <span>{children}</span>
-    </p>
+      <div>{children}</div>
+    </div>
   );
 }
