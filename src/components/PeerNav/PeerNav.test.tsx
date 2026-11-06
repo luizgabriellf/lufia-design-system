@@ -169,6 +169,39 @@ describe("PeerNav onItemClick", () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 
+  it("takes over for links: a prevented click skips onValueChange and the pending state", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <PeerNav
+        label="Views"
+        items={links}
+        value="a"
+        onValueChange={onValueChange}
+        onItemClick={(_, event) => event.preventDefault()}
+      />,
+    );
+    await user.click(screen.getByRole("link", { name: /Work/ }));
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("takes over for tabs: a prevented click selects nothing", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <PeerNav
+        label="Views"
+        items={tabs}
+        defaultValue="a"
+        onValueChange={onValueChange}
+        onItemClick={(_, event) => event.preventDefault()}
+      />,
+    );
+    await user.click(screen.getByRole("tab", { name: /Work/ }));
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("tab", { name: /Work/ })).toHaveAttribute("aria-selected", "false");
+  });
+
   it("does not fire for a disabled item", async () => {
     const user = userEvent.setup();
     const onItemClick = vi.fn();

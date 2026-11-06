@@ -39,9 +39,14 @@ export function useShellPrimaryActionRegistry(
   fallback: AppShellPrimaryAction | undefined,
 ): ShellPrimaryActionRegistry {
   const [registered, setRegistered] = useState<readonly Registration[]>([]);
+  // A page that is already registered is updated where it stands; only a new registrant goes to the end (and wins).
   const register = useCallback(
     (id: symbol, action: AppShellPrimaryAction) =>
-      setRegistered((all) => [...all.filter((entry) => entry.id !== id), { id, action }]),
+      setRegistered((all) =>
+        all.some((entry) => entry.id === id)
+          ? all.map((entry) => (entry.id === id ? { id, action } : entry))
+          : [...all, { id, action }],
+      ),
     [],
   );
   const unregister = useCallback(
@@ -72,12 +77,18 @@ export function useShellPrimaryAction(action: AppShellPrimaryAction | null): boo
   const label = action?.label;
   const href = action?.href;
 
+  // Registering again on a change updates the entry in place; unregistering is tied to the page going away (or to having
+  // no action), so a label change does not send the page to the back of the line.
   useEffect(() => {
-    if (!register || !unregister || label === undefined) return;
+    if (!register || label === undefined) return;
     const { icon, data } = latest.current ?? {};
     register(id, { label, href, icon, data, onSelect: () => latest.current?.onSelect?.() });
+  }, [register, id, label, href]);
+  const present = label !== undefined;
+  useEffect(() => {
+    if (!unregister || !present) return;
     return () => unregister(id);
-  }, [register, unregister, id, label, href]);
+  }, [unregister, id, present]);
 
   return shell !== null && action !== null;
 }
@@ -92,6 +103,7 @@ export function ShellPrimaryActionSlot({ className }: { className?: string }) {
   const classes = [styles.primarySlot, className].filter(Boolean).join(" ");
   return action.href !== undefined ? (
     <Button
+      {...action.data}
       variant="primary"
       href={action.href}
       iconStart={action.icon}

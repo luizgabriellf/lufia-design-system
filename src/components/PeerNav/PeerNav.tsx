@@ -50,7 +50,8 @@ export type PeerNavProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onCha
   /**
    * Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button)
    * included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change.
-   * Call `event.preventDefault()` to take over; the indicator then stays where it is. Links and tabs.
+   * Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not
+   * followed and a tab is not selected. Links and tabs.
    */
   onItemClick?: (key: string, event: MouseEvent<HTMLElement>) => void;
   /**
@@ -174,6 +175,7 @@ export function PeerNav({
                   return;
                 }
                 onItemClick?.(item.key, event);
+                if (event.defaultPrevented) return;
                 if (isCurrent || !isPlainClick(event)) return;
                 onValueChange?.(item.key, event);
                 if (!event.defaultPrevented) setPending({ key: item.key, from: current });
@@ -234,7 +236,7 @@ export function PeerNav({
             tabIndex={item.key === tabbable ? 0 : -1}
             onClick={(event) => {
               onItemClick?.(item.key, event);
-              select(item.key);
+              if (!event.defaultPrevented) select(item.key);
             }}
           >
             {content(item)}

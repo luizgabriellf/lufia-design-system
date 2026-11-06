@@ -222,9 +222,10 @@ describe("AppShell slots", () => {
       expect(status.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
-    it("leave no empty wrappers when omitted", () => {
+    it("leave no empty wrappers when omitted, and keep main a direct child of the shell", () => {
       const { container } = setup();
-      expect(container.querySelector(".contextBar, .statusRow")).toBeNull();
+      expect(container.querySelector(".contextBar, .statusRow, .content")).toBeNull();
+      expect(screen.getByRole("main").parentElement).toBe(container.firstElementChild);
     });
   });
 
@@ -388,6 +389,34 @@ describe("AppShell slots", () => {
       );
       await user.click(within(floatBar()).getByRole("button", { name: "First" }));
       expect(first).toHaveBeenCalledTimes(1);
+    });
+
+    it("updates a registration in place: the newer page keeps winning when the older one changes", () => {
+      const view = (first: string) => (
+        <AppShell groups={groups} labels={labels}>
+          <Page action={{ label: first }} />
+          <Page action={{ label: "Second" }} />
+        </AppShell>
+      );
+      const { rerender } = render(view("First"));
+      expect(within(floatBar()).getByRole("button", { name: "Second" })).toBeInTheDocument();
+      rerender(view("First, renamed"));
+      expect(within(floatBar()).getByRole("button", { name: "Second" })).toBeInTheDocument();
+      expect(within(floatBar()).queryByRole("button", { name: "First, renamed" })).toBeNull();
+    });
+
+    it("forwards the action's data attributes in the desktop slot, as a button and as a link", () => {
+      const { unmount } = renderShell(<Page action={{ label: "New", data: { "data-tour": "x" } }} />);
+      expect(within(screen.getByRole("main")).getByRole("button", { name: "New" })).toHaveAttribute(
+        "data-tour",
+        "x",
+      );
+      unmount();
+      renderShell(<Page action={{ label: "New", href: "/new", data: { "data-tour": "y" } }} />);
+      expect(within(screen.getByRole("main")).getByRole("link", { name: "New" })).toHaveAttribute(
+        "data-tour",
+        "y",
+      );
     });
 
     it("updates when the label changes and unregisters on unmount", () => {
