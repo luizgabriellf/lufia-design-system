@@ -25,6 +25,8 @@ export * from "./components/StatusTimeline";
 export * from "./components/Stepper";
 export * from "./components/SuccessCheck";
 export * from "./components/TableToolbar";
+export * from "./components/TextInput";
+export * from "./components/Textarea";
 export * from "./components/Toast";
 export * from "./components/useBodyScrollLock";
 export * from "./components/useDismiss";
