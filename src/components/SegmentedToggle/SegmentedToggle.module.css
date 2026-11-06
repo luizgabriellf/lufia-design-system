@@ -1,0 +1,113 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  padding: 0.1875rem;
+  background: var(--lufia-color-bg-surface);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-control);
+}
+
+.root[data-width="fill"] {
+  display: flex;
+  inline-size: 100%;
+}
+
+/* Slides behind the chosen segment (useSlidingIndicator, stretched with scaleX so only transform animates). */
+.indicator {
+  position: absolute;
+  inset-block-start: 0;
+  left: 0; /* positioned with measured, physical coordinates */
+  z-index: 0;
+  box-sizing: border-box;
+  background: var(--lufia-color-accent-subtle);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-accent-border);
+  border-radius: var(--lufia-radius-md);
+  box-shadow: var(--lufia-shadow-sm);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.indicator[data-ready] {
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
+.segment {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lufia-space-2);
+  box-sizing: border-box;
+  min-inline-size: 0;
+  min-block-size: 2.25rem;
+  margin: 0;
+  padding-block: 0.375rem;
+  padding-inline: var(--lufia-space-4);
+  color: var(--lufia-color-text-muted);
+  background: transparent;
+  border: var(--lufia-border-width-thin) solid transparent;
+  border-radius: var(--lufia-radius-md);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+/* Without script (or before the indicator is placed) the chosen segment paints its own chrome. */
+.segment[aria-checked="true"] {
+  color: var(--lufia-color-text-accent);
+  background: var(--lufia-color-accent-subtle);
+  border-color: var(--lufia-color-accent-border);
+}
+
+.root:has(> .indicator:not([hidden])) .segment[aria-checked="true"] {
+  background: transparent;
+  border-color: transparent;
+}
+
+.segment:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.segment:disabled {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.segment:hover:not(:disabled, [aria-checked="true"]) {
+  color: var(--lufia-color-text-default);
+}
+
+.root[data-width="fill"] .segment {
+  flex: 1 1 0;
+}
+
+@media (forced-colors: active) {
+  .indicator {
+    border-color: Highlight;
+  }
+
+  .segment[aria-checked="true"] {
+    border-color: Highlight;
+  }
+}

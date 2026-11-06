@@ -24,6 +24,7 @@ export * from "./components/PeerNav";
 export * from "./components/RadioGroup";
 export * from "./components/SearchInput";
 export * from "./components/Select";
+export * from "./components/SegmentedToggle";
 export * from "./components/SortableTh";
 export * from "./components/StatusTimeline";
 export * from "./components/Stepper";
