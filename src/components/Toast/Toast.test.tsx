@@ -447,6 +447,50 @@ describe("useToast", () => {
     });
   });
 
+  describe("a kept-mounted dialog", () => {
+    it("announces a toast raised as it closes in the body's announcer, not in the closed dialog", async () => {
+      vi.useRealTimers();
+      function Screen() {
+        const [open, setOpen] = useState(true);
+        return (
+          <Modal
+            open={open}
+            renderAs="dialog"
+            keepMounted
+            onClose={() => setOpen(false)}
+            title="Edit"
+            footer={
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  api().success("Saved");
+                }}
+              >
+                Save
+              </button>
+            }
+          >
+            Body
+          </Modal>
+        );
+      }
+      render(
+        <ToastProvider>
+          <Capture />
+          <Screen />
+        </ToastProvider>,
+      );
+      await act(async () => {});
+      await act(async () => screen.getByRole("button", { name: "Save" }).click());
+      await act(async () => {});
+      const holders = Array.from(document.querySelectorAll("[data-lufia-announcer] [aria-live]")).filter(
+        (region) => region.textContent?.includes("Saved"),
+      );
+      expect(holders.map((region) => (region.closest("dialog") ? "dialog" : "body"))).toEqual(["body"]);
+    });
+  });
+
   describe("tone aliases", () => {
     it("maps an app's tone names onto the built-in tones", () => {
       setup({ toneAliases: { ok: "success", warn: "warning", bad: "error" } });

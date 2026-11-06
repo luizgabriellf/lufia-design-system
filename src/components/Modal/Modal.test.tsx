@@ -459,6 +459,62 @@ describe("Modal", () => {
       expect(outerClose).not.toHaveBeenCalled();
     });
 
+    it("closing an inner and an outer dialog together does not call the outer onClose", async () => {
+      const outerClose = vi.fn();
+      const flush = () => act(() => new Promise<void>((resolve) => setTimeout(resolve, 20)));
+      function Nest() {
+        const [outer, setOuter] = useState(true);
+        const [inner, setInner] = useState(true);
+        return (
+          <Modal open={outer} renderAs="dialog" keepMounted onClose={outerClose} title="Outer">
+            <Modal open={inner} renderAs="dialog" keepMounted onClose={() => setInner(false)} title="Inner">
+              <button
+                type="button"
+                onClick={() => {
+                  setInner(false);
+                  setOuter(false);
+                }}
+              >
+                Done
+              </button>
+            </Modal>
+          </Modal>
+        );
+      }
+      render(<Nest />);
+      await flush();
+      await userEvent.setup().click(screen.getByRole("button", { name: "Done" }));
+      await flush();
+      const outerDialog = Array.from(document.querySelectorAll("dialog")).find(
+        (dialog) => dialog.querySelector("h2")?.textContent === "Outer",
+      )!;
+      expect(outerDialog).not.toHaveAttribute("open");
+      expect(outerClose).not.toHaveBeenCalled();
+    });
+
+    it("does not pass the inner dialog's non-bubbling close to a closed outer one", async () => {
+      const outerClose = vi.fn();
+      function Nest() {
+        const [inner, setInner] = useState(true);
+        return (
+          <Modal open={false} renderAs="dialog" keepMounted onClose={outerClose} title="Outer">
+            <Modal open={inner} renderAs="dialog" keepMounted onClose={() => setInner(false)} title="Inner">
+              x
+            </Modal>
+          </Modal>
+        );
+      }
+      render(<Nest />);
+      await act(async () => {});
+      const inner = Array.from(document.querySelectorAll("dialog")).find(
+        (dialog) => dialog.querySelector("h2")?.textContent === "Inner",
+      )!;
+      inner.removeAttribute("open"); // the browser closed it, for example a form with method="dialog"
+      act(() => void inner.dispatchEvent(new Event("close", { bubbles: false })));
+      await act(() => new Promise<void>((resolve) => setTimeout(resolve, 20)));
+      expect(outerClose).not.toHaveBeenCalled();
+    });
+
     it("opens the dialog again when the owner refuses a native close", async () => {
       render(<Harness renderAs="dialog" busy />);
       const { dialog } = await openModal();

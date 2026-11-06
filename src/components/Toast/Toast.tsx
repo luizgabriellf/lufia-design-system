@@ -168,11 +168,17 @@ export function ToastProvider({
   useLayoutEffect(() => {
     announceHostRef.current = topDialog ?? document.body;
     // A toast raised in the same tick as its dialog closed was queued for an announcer that is gone: hand it to the one
-    // that is topmost now. Older toasts were already heard; they stay where they were.
+    // that is topmost now (a kept-mounted dialog is still in the document but no longer open). Older toasts were already heard; they stay where they were.
     const now = Date.now();
     let changed = false;
     const next = itemsRef.current.map((item) => {
-      if (item.leaving || !item.announceHost || item.announceHost.isConnected || now - item.createdAt > 1000)
+      if (
+        item.leaving ||
+        !item.announceHost ||
+        item.announceHost === document.body ||
+        (dialogs as readonly Element[]).includes(item.announceHost) ||
+        now - item.createdAt > 1000
+      )
         return item;
       changed = true;
       return { ...item, announceHost: announceHostRef.current };
