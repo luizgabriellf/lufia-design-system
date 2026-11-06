@@ -1,0 +1,20 @@
+.root {
+  display: flex;
+  max-inline-size: 100%;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Below this width the secondary actions live in the overflow menu (they are flagged `narrowOnly` there). */
+@media (width < 48rem) {
+  .root > .secondary {
+    display: none;
+  }
+}
+
+/* With no always-on overflow items the menu button is needed on narrow screens only. */
+@media (width >= 48rem) {
+  .root > .narrowOnly {
+    display: none;
+  }
+}

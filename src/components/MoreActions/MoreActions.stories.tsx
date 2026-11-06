@@ -1,0 +1,91 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { DocumentIcon, SettingsIcon, UploadIcon } from "../../docs/demo";
+import { MoreActions, type MoreActionItem } from "./MoreActions";
+
+const items: MoreActionItem[] = [
+  { key: "dup", label: "Duplicate", icon: <DocumentIcon size={16} />, description: "Copy this record" },
+  { key: "exp", label: "Export", icon: <UploadIcon size={16} />, description: "As CSV or PDF" },
+  { key: "set", label: "Settings", icon: <SettingsIcon size={16} />, href: "#settings" },
+  { key: "arc", label: "Archive", disabled: true },
+  { key: "del", label: "Delete record", tone: "danger" },
+];
+
+const meta = {
+  title: "Components/MoreActions",
+  component: MoreActions,
+  parameters: { layout: "padded" },
+  args: { label: "More actions", items },
+  argTypes: {
+    align: { control: "inline-radio", options: ["start", "end"] },
+    size: { control: "inline-radio", options: ["sm", "md", "lg"] },
+  },
+  decorators: [
+    (Story) => (
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "22rem", maxInlineSize: "24rem" }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof MoreActions>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/** Closed. Press Enter, Space or the arrow keys on it; type a letter inside the menu to jump to an item. */
+export const Default: Story = {};
+export const Open: Story = { args: { defaultOpen: true } };
+export const AlignedToStart: Story = {
+  args: { defaultOpen: true, align: "start" },
+  decorators: [
+    (Story) => (
+      <div style={{ display: "flex", justifyContent: "flex-start", minBlockSize: "22rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const Secondary: Story = { args: { variant: "secondary", size: "sm" } };
+export const LongLabels: Story = {
+  args: {
+    defaultOpen: true,
+    items: [
+      {
+        key: "a",
+        label: "An action label long enough that it has to wrap inside the menu",
+        description: "And a description that is just as long, so the item grows instead of clipping",
+      },
+      { key: "b", label: "Short" },
+    ],
+  },
+};
+export const Phone320: Story = {
+  args: { defaultOpen: true },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+export const Phone390: Story = {
+  args: { defaultOpen: true },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+export const RightToLeft: Story = {
+  args: { defaultOpen: true },
+  decorators: [
+    (Story) => (
+      <div dir="rtl" style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "22rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const AllThemes: Story = {
+  args: { defaultOpen: true },
+  render: (args) => (
+    <ThemeMatrix>
+      <div style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "20rem" }}>
+        <MoreActions {...args} />
+      </div>
+    </ThemeMatrix>
+  ),
+};

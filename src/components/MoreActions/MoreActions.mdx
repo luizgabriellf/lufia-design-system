@@ -1,0 +1,85 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./MoreActions.stories";
+
+<Meta of={Stories} />
+
+# MoreActions <StatusBadge status="beta" />
+
+An overflow menu: a button that opens a list of less frequent actions. It follows the WAI-ARIA menu button pattern.
+
+<Canvas of={Stories.Open} />
+
+## Usage
+
+```tsx
+import { MoreActions } from "@lufia/design-system/components/MoreActions";
+
+<MoreActions
+  label="More actions"
+  items={[
+    { key: "dup", label: "Duplicate", onSelect: duplicate },
+    { key: "settings", label: "Settings", href: "/settings" },
+    { key: "del", label: "Delete record", tone: "danger", onSelect: confirmDelete },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Items with `href`
+render as links through the `linkComponent` set on `LufiaProvider`.
+
+<Controls of={Stories.Default} />
+
+## Keyboard
+
+| Key                        | Where   | Action                                                                  |
+| -------------------------- | ------- | ----------------------------------------------------------------------- |
+| Enter / Space / Down arrow | Trigger | Opens the menu and focuses the first item                               |
+| Up arrow                   | Trigger | Opens the menu and focuses the last item                                |
+| Down / Up arrow            | Menu    | Next / previous item, wrapping; disabled items are skipped              |
+| Home / End                 | Menu    | First / last item                                                       |
+| A letter or letters        | Menu    | Typeahead: jumps to the next item starting with them; resets after 0.5s |
+| Enter / Space              | Item    | Activates the item, closes the menu, and returns focus to the trigger   |
+| Escape                     | Menu    | Closes the menu and returns focus to the trigger                        |
+| Tab                        | Menu    | Closes the menu and moves on                                            |
+
+A press outside closes the menu. Escape and outside presses go through `useDismiss` and the shared layer stack, so inside a
+dialog Escape closes the menu first and the dialog on the next press. The component adds no document listeners of its own.
+
+## When to use
+
+- Infrequent or secondary actions for a record, a row or a page, behind one button.
+- Page actions that no longer fit on a narrow screen (`PageActions` does this for you).
+
+## When not to use
+
+- Navigation between pages: use `PeerNav` or the app shell.
+- Two or three actions that fit: show them as buttons.
+- Choosing a value (a select or combobox) or a form's submit.
+- The only way to reach an important action. Keep the main action visible.
+
+## Accessibility
+
+- The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
+- The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
+  trigger on close or selection.
+- Disabled items are `aria-disabled` and skipped by keys; they are still read when browsing.
+- A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
+  never carries the meaning alone.
+- Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.
+- In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears
+  without the fade.
+
+## Content guidelines
+
+Items start with a verb and are one to three words. Put the destructive item last. Descriptions are optional and one short
+phrase.
+
+## States
+
+<Canvas of={Stories.AlignedToStart} />
+<Canvas of={Stories.LongLabels} />
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
