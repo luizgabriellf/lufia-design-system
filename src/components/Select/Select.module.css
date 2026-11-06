@@ -1,0 +1,26 @@
+.native {
+  appearance: none;
+  cursor: pointer;
+
+  /* Room for the chevron, which sits over the end of the box. */
+  padding-inline-end: 2.5rem;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  padding-inline: 0 var(--lufia-space-3);
+  pointer-events: none;
+}
+
+.native:disabled + .chevron {
+  opacity: var(--lufia-opacity-disabled);
+}
+
+/* The open list is drawn by the browser; give it the field colours where it lets us. */
+.native option {
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-solid);
+}

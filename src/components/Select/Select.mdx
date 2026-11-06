@@ -1,0 +1,84 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { StatusBadge } from "../../docs/StatusBadge";
+import * as Stories from "./Select.stories";
+
+<Meta of={Stories} />
+
+# Select <StatusBadge status="beta" />
+
+A native `<select>` in the shared field box, with a drawn chevron. The browser keeps its own list, keyboard handling,
+typeahead and mobile picker.
+
+<Canvas of={Stories.Default} />
+
+## Usage
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { Select } from "@lufia/design-system/components/Select";
+
+<FormField label="Country" error={errors.country}>
+  <Select
+    name="country"
+    placeholder="Choose a country"
+    defaultValue=""
+    options={[
+      { value: "pt", label: "Portugal" },
+      { value: "es", label: "Spain" },
+    ]}
+  />
+</FormField>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+Pass `<option>` and `<optgroup>` elements as `children` when you need groups.
+
+<Controls of={Stories.Default} />
+
+## Placeholder
+
+`placeholder` adds an empty first choice. It is shown while nothing is chosen and then drops out of the list, so a required
+field cannot be put back to empty. Set `allowEmpty` for an optional field where "no preference" is a valid answer.
+
+<Canvas of={Stories.WithPlaceholder} />
+<Canvas of={Stories.OptionalWithEmptyChoice} />
+
+## States
+
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+
+## When to use
+
+- Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).
+
+## When not to use
+
+- Fewer than four options that matter equally: a `RadioGroup` shows them all at once.
+- Long lists, search, async data or options with more than text: use `Combobox`.
+
+## Accessibility
+
+A native `<select>`, so the platform's behaviour applies.
+
+| Key / action         | Behaviour                                                    |
+| -------------------- | ------------------------------------------------------------ |
+| Tab                  | Moves focus to and from the select.                          |
+| Space / Enter / Down | Opens the list (browser dependent).                          |
+| Up / Down arrow      | Changes the option, or moves in the open list.               |
+| Typing               | Jumps to the next option that starts with the typed letters. |
+| Escape               | Closes the list.                                             |
+
+- Always inside a `FormField`, or give `aria-label`.
+- The chevron is decorative and does not take clicks; the whole box opens the list.
+- Under `forced-colors` the box and focus ring use system colours.
+
+## Content guidelines
+
+Options are sentence case, parallel and sorted in a way that fits the data (alphabetical for names, natural order for
+ranges). The placeholder is an instruction, "Choose a country", never the label again.
+
+## All themes
+
+<Canvas of={Stories.AllThemes} />
