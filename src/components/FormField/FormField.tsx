@@ -63,7 +63,7 @@ export function FormField({
       data-invalid={error ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
     >
-      <label htmlFor={baseId} className={styles.label}>
+      <label id={`${baseId}-label`} htmlFor={baseId} className={styles.label}>
         {label}
         {required ? (
           <>

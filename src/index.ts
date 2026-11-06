@@ -5,6 +5,7 @@ export * from "./components/Button";
 export * from "./components/Card";
 export * from "./components/CommandPalette";
 export * from "./components/Checkbox";
+export * from "./components/Combobox";
 export * from "./components/ConfirmDialog";
 export * from "./components/DetailAttentionCard";
 export * from "./components/DetailList";

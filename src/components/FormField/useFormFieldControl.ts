@@ -29,3 +29,12 @@ export function useFormFieldControl(own: OwnProps = {}) {
     disabled: field?.disabled || own.disabled || undefined,
   };
 }
+
+/**
+ * The id of the surrounding `FormField`'s label element, for widgets that need to name a second element (a listbox, a
+ * popup) after the field. `undefined` outside a field.
+ */
+export function useFormFieldLabelId(): string | undefined {
+  const field = useContext(FormFieldContext);
+  return field ? `${field.id}-label` : undefined;
+}
