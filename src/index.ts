@@ -23,6 +23,7 @@ export * from "./components/PageActions";
 export * from "./components/PageHeader";
 export * from "./components/Pagination";
 export * from "./components/PeerNav";
+export * from "./components/PendingSubmit";
 export * from "./components/RadioGroup";
 export * from "./components/SearchInput";
 export * from "./components/Select";
