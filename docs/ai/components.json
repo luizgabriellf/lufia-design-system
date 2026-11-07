@@ -6848,6 +6848,647 @@
       ]
     },
     {
+      "name": "NotificationCenter",
+      "category": "Overlays",
+      "summary": "A bell with an unread count that opens a panel of notifications: a popover on wide pages, a sheet on narrow ones.",
+      "status": "beta",
+      "source": "src/components/NotificationCenter",
+      "entry": {
+        "subpath": "@lufia/design-system/components/NotificationCenter",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "NotificationCenter",
+          "kind": "component",
+          "description": "A bell button with an unread count that opens a `NotificationPanel`: a popover hung from the bell on wide pages, a modal bottom sheet on narrow ones. The popover is a non-modal dialog: focus moves into it, Escape or a press outside closes it, and Escape returns focus to the bell. The sheet moves to a portal, traps focus, makes the page behind inert and closes on Escape or a tap on the backdrop. The sheet's stacking order is `--lufia-overlay-z`, which an app raises to clear a fixed dock or bar of its own. The bell's accessible name carries the count (\"Notifications, 4 unread\") and a polite live region announces changes of it.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "The panel's heading and, on a landmark panel, its accessible name (\"Notifications\")."
+            },
+            {
+              "name": "unreadCount",
+              "type": "number",
+              "required": true,
+              "default": null,
+              "description": "How many notifications are unread, across every tab. Drives the badge, \"Mark all as read\" and the live region."
+            },
+            {
+              "name": "unreadLabel",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Read before the title of an unread row, so the state is not carried by the dot alone (\"unread\")."
+            },
+            {
+              "name": "unreadCountLabel",
+              "type": "(count: number) => string",
+              "required": true,
+              "default": null,
+              "description": "Says a count in words (\"4 unread\"). Used for the hidden text of the badge and the live region."
+            },
+            {
+              "name": "tabs",
+              "type": "readonly NotificationTab[]",
+              "required": false,
+              "default": null,
+              "description": "The tabs, in order. Without them the panel is one list. Tabs are the caller's: \"All\", \"Approvals\", \"Stock\"."
+            },
+            {
+              "name": "activeTab",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Key of the chosen tab. Controlled."
+            },
+            {
+              "name": "defaultActiveTab",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Initial tab when `activeTab` is not given. Defaults to the first."
+            },
+            {
+              "name": "onTabChange",
+              "type": "(key: string) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the key of the tab the person chose."
+            },
+            {
+              "name": "items",
+              "type": "readonly NotificationItem[]",
+              "required": true,
+              "default": null,
+              "description": "Every notification, newest first. Tabs and groups pick from this one list."
+            },
+            {
+              "name": "groups",
+              "type": "readonly NotificationGroup[]",
+              "required": false,
+              "default": null,
+              "description": "The headings, in order. Items are placed by `NotificationItem.group`. Without groups the list has no headings."
+            },
+            {
+              "name": "summary",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A highlight above the list, usually a `NotificationSummary`. It shows under every tab."
+            },
+            {
+              "name": "onMarkAllRead",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Runs when \"Mark all as read\" is pressed. The button shows when this and `markAllLabel` are set."
+            },
+            {
+              "name": "markAllLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Text of the mark-all action (\"Mark all as read\")."
+            },
+            {
+              "name": "footer",
+              "type": "NotificationFooter",
+              "required": false,
+              "default": null,
+              "description": "The link or button at the bottom (\"Notification settings\"), with a chevron."
+            },
+            {
+              "name": "loading",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Shows skeleton rows in place of the list."
+            },
+            {
+              "name": "loadingLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Name of the loading state, read once as a polite status (\"Loading notifications\")."
+            },
+            {
+              "name": "empty",
+              "type": "NotificationEmpty",
+              "required": false,
+              "default": null,
+              "description": "What to show when the chosen tab has no items. A tab's own `empty` wins."
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Replaces the list when loading failed. It is announced as an alert; include the way to retry."
+            },
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Open state. Controlled: pair it with `onOpenChange`."
+            },
+            {
+              "name": "defaultOpen",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Initial open state when `open` is not given. For documentation and tests; people open it themselves."
+            },
+            {
+              "name": "onOpenChange",
+              "type": "(open: boolean) => void",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "presentation",
+              "type": "\"popover\" | \"auto\" | \"sheet\"",
+              "required": false,
+              "default": "\"auto\"",
+              "description": "How the open panel is shown. `\"popover\"` hangs it from the bell as a non-modal dialog. `\"sheet\"` shows it as a modal bottom sheet over a backdrop that covers the page. `\"auto\"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up."
+            },
+            {
+              "name": "align",
+              "type": "\"end\" | \"start\"",
+              "required": false,
+              "default": "\"end\"",
+              "description": "Which edge of the bell the popover lines up with. Defaults to the end."
+            },
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\" | \"lg\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": ""
+            },
+            {
+              "name": "variant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "required": false,
+              "default": "\"ghost\"",
+              "description": ""
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Replaces the default bell icon."
+            },
+            {
+              "name": "maxCount",
+              "type": "number",
+              "required": false,
+              "default": "99",
+              "description": "Counts above this show as \"99+\". Default 99."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "NotificationCenterProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "NotificationContentProps",
+          "kind": "type",
+          "description": "What a notification centre shows: shared by `NotificationPanel` and `NotificationCenter`.",
+          "definition": null
+        },
+        {
+          "name": "NotificationEmpty",
+          "kind": "type",
+          "description": "",
+          "definition": "{ title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; }"
+        },
+        {
+          "name": "NotificationFooter",
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; href?: string | undefined; onSelect?: (() => void) | undefined; }"
+        },
+        {
+          "name": "NotificationGroup",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; }"
+        },
+        {
+          "name": "NotificationItem",
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; group?: string | undefined; tab?: string | undefined; title: string; meta?: ReactNode; time?: ReactNode; icon?: ReactNode; avatar?: ReactNode; unread?: boolean | undefined; href?: string | undefined; onSelect?: (() => void) | undefined; }"
+        },
+        {
+          "name": "NotificationPanel",
+          "kind": "component",
+          "description": "The content of a notification centre, without the bell: a header with the unread count and \"Mark all as read\", tabs, an optional highlight, grouped rows, a footer link, and the loading, empty and error states. `NotificationCenter` shows it in a popover or a sheet; mount it directly to host it in a page. The tabs follow the WAI-ARIA tabs pattern (automatic activation) and share one tab panel, whose list is filtered by the chosen tab. Rows are links or buttons, in lists under a heading per group; an unread row says so in text.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "The panel's heading and, on a landmark panel, its accessible name (\"Notifications\")."
+            },
+            {
+              "name": "unreadCount",
+              "type": "number",
+              "required": true,
+              "default": null,
+              "description": "How many notifications are unread, across every tab. Drives the badge, \"Mark all as read\" and the live region."
+            },
+            {
+              "name": "unreadLabel",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Read before the title of an unread row, so the state is not carried by the dot alone (\"unread\")."
+            },
+            {
+              "name": "unreadCountLabel",
+              "type": "(count: number) => string",
+              "required": true,
+              "default": null,
+              "description": "Says a count in words (\"4 unread\"). Used for the hidden text of the badge and the live region."
+            },
+            {
+              "name": "tabs",
+              "type": "readonly NotificationTab[]",
+              "required": false,
+              "default": null,
+              "description": "The tabs, in order. Without them the panel is one list. Tabs are the caller's: \"All\", \"Approvals\", \"Stock\"."
+            },
+            {
+              "name": "activeTab",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Key of the chosen tab. Controlled."
+            },
+            {
+              "name": "defaultActiveTab",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Initial tab when `activeTab` is not given. Defaults to the first."
+            },
+            {
+              "name": "onTabChange",
+              "type": "(key: string) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the key of the tab the person chose."
+            },
+            {
+              "name": "items",
+              "type": "readonly NotificationItem[]",
+              "required": true,
+              "default": null,
+              "description": "Every notification, newest first. Tabs and groups pick from this one list."
+            },
+            {
+              "name": "groups",
+              "type": "readonly NotificationGroup[]",
+              "required": false,
+              "default": null,
+              "description": "The headings, in order. Items are placed by `NotificationItem.group`. Without groups the list has no headings."
+            },
+            {
+              "name": "summary",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A highlight above the list, usually a `NotificationSummary`. It shows under every tab."
+            },
+            {
+              "name": "onMarkAllRead",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Runs when \"Mark all as read\" is pressed. The button shows when this and `markAllLabel` are set."
+            },
+            {
+              "name": "markAllLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Text of the mark-all action (\"Mark all as read\")."
+            },
+            {
+              "name": "footer",
+              "type": "NotificationFooter",
+              "required": false,
+              "default": null,
+              "description": "The link or button at the bottom (\"Notification settings\"), with a chevron."
+            },
+            {
+              "name": "loading",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Shows skeleton rows in place of the list."
+            },
+            {
+              "name": "loadingLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Name of the loading state, read once as a polite status (\"Loading notifications\")."
+            },
+            {
+              "name": "empty",
+              "type": "NotificationEmpty",
+              "required": false,
+              "default": null,
+              "description": "What to show when the chosen tab has no items. A tab's own `empty` wins."
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Replaces the list when loading failed. It is announced as an alert; include the way to retry."
+            },
+            {
+              "name": "onClose",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Adds a close button to the header, for a panel shown as a sheet."
+            },
+            {
+              "name": "onItemActivate",
+              "type": "(item: NotificationItem) => void",
+              "required": false,
+              "default": null,
+              "description": "Called after a row is activated, so a host can close itself."
+            },
+            {
+              "name": "titleId",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Id of the heading, for a host that names its dialog with it. Generated when omitted."
+            },
+            {
+              "name": "landmark",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether the root is a labelled region (`<section>`). Default `true`. A host that already names the panel, such as the dialog of `NotificationCenter`, sets `false` to get a plain element."
+            },
+            {
+              "name": "announce",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Renders the polite live region that announces changes of `unreadCount`. Default `true`; a host that has its own turns it off."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "NotificationPanelProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "NotificationSummary",
+          "kind": "component",
+          "description": "A highlight card for the top of a `NotificationPanel`: a headline, a segmented progress bar, one primary action and a footnote. It inverts the page colours, so it stands out in both light and dark mode.",
+          "props": [
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "The headline (\"2 proposals due today\")."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "One line under the headline."
+            },
+            {
+              "name": "progress",
+              "type": "{ done: number; total: number; label: string; valueText?: string | undefined; }",
+              "required": false,
+              "default": null,
+              "description": "A segmented bar: `done` of `total` segments are filled. It is a native `progressbar`, so `label` names it."
+            },
+            {
+              "name": "action",
+              "type": "{ label: string; href?: string | undefined; onSelect?: (() => void) | undefined; }",
+              "required": false,
+              "default": null,
+              "description": "The one primary action: a link with `href`, a button otherwise."
+            },
+            {
+              "name": "footnote",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Small print under the action (\"2 due today · 6 later this week\")."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "NotificationSummaryProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "NotificationTab",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; count?: number | undefined; all?: boolean | undefined; empty?: NotificationEmpty | undefined; }"
+        }
+      ],
+      "aliases": {
+        "NotificationEmpty": "{ title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; }",
+        "NotificationFooter": "{ label: string; href?: string | undefined; onSelect?: (() => void) | undefined; }",
+        "NotificationGroup": "{ key: string; label: string; }",
+        "NotificationItem": "{ id: string; group?: string | undefined; tab?: string | undefined; title: string; meta?: ReactNode; time?: ReactNode; icon?: ReactNode; avatar?: ReactNode; unread?: boolean | undefined; href?: string | undefined; onSelect?: (() => void) | undefined; }",
+        "NotificationTab": "{ key: string; label: string; count?: number | undefined; all?: boolean | undefined; empty?: NotificationEmpty | undefined; }"
+      },
+      "story": {
+        "docsId": "components-overlays-notificationcenter--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-overlays-notificationcenter--default"
+          },
+          {
+            "export": "Open",
+            "id": "components-overlays-notificationcenter--open"
+          },
+          {
+            "export": "WithSummary",
+            "id": "components-overlays-notificationcenter--with-summary"
+          },
+          {
+            "export": "Loading",
+            "id": "components-overlays-notificationcenter--loading"
+          },
+          {
+            "export": "Empty",
+            "id": "components-overlays-notificationcenter--empty"
+          },
+          {
+            "export": "Failed",
+            "id": "components-overlays-notificationcenter--failed"
+          },
+          {
+            "export": "ManyItems",
+            "id": "components-overlays-notificationcenter--many-items"
+          },
+          {
+            "export": "SheetPhone390",
+            "id": "components-overlays-notificationcenter--sheet-phone-390"
+          },
+          {
+            "export": "SheetPhone320",
+            "id": "components-overlays-notificationcenter--sheet-phone-320"
+          },
+          {
+            "export": "SheetOverDock",
+            "id": "components-overlays-notificationcenter--sheet-over-dock"
+          },
+          {
+            "export": "Dark",
+            "id": "components-overlays-notificationcenter--dark"
+          },
+          {
+            "export": "Interactive",
+            "id": "components-overlays-notificationcenter--interactive"
+          },
+          {
+            "export": "PanelOnly",
+            "id": "components-overlays-notificationcenter--panel-only"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/NotificationCenter/NotificationCenter.mdx",
+        "overview": "A bell button with an unread count that opens a panel of notifications. On wide pages the panel hangs from the bell as a\nnon-modal popover; below 60rem it is a modal bottom sheet. The data and every string come from the caller: the package has\nno i18n and no data layer.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { NotificationCenter, NotificationSummary } from \"@lufia/design-system/components/NotificationCenter\";\n\n<NotificationCenter\n  label=\"Notifications\"\n  unreadCount={5}\n  unreadLabel=\"unread\"\n  unreadCountLabel={(count) => `${count} unread`}\n  tabs={[\n    { key: \"all\", label: \"All\", count: 8, all: true },\n    { key: \"approvals\", label: \"Approvals\", count: 5 },\n  ]}\n  groups={[\n    { key: \"today\", label: \"Today\" },\n    { key: \"earlier\", label: \"Earlier\" },\n  ]}\n  items={[\n    {\n      id: \"1\",\n      group: \"today\",\n      tab: \"approvals\",\n      title: \"Supplier proposal needs your review\",\n      meta: \"Procurement assistant\",\n      time: \"07:52\",\n      unread: true,\n      href: \"/proposals/1\",\n    },\n  ]}\n  summary={\n    <NotificationSummary title=\"2 proposals due today\" action={{ label: \"Review\", href: \"/review\" }} />\n  }\n  markAllLabel=\"Mark all as read\"\n  onMarkAllRead={markAllRead}\n  footer={{ label: \"Notification settings\", href: \"/settings\" }}\n  empty={{ title: \"You are all caught up\" }}\n/>;"
+        },
+        "whenToUse": [
+          "A feed of things that happened or need a decision, with an unread state, reachable from anywhere in an app."
+        ],
+        "whenNotToUse": [
+          "A single transient confirmation: use `Toast`.",
+          "Blocking questions: use `Modal` or `ConfirmDialog`.",
+          "A page-length activity log with no unread state: use `ActivityList`."
+        ],
+        "contentGuidelines": "Titles say what happened in one line. The meta line names the source; the time is formatted for the locale by the caller.\nKeep tab labels to one word and the number of tabs to four or five. The `unreadLabel` is one word (\"unread\")."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Tabs",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+        },
+        "keyboard": [
+          {
+            "keys": "Enter / Space",
+            "action": "Bell | Opens or closes the panel; focus moves into the panel"
+          },
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Popover | Moves through the panel's controls in order; the popover stays open"
+          },
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Sheet | Moves through the sheet's controls, wrapping: focus stays in the sheet"
+          },
+          {
+            "keys": "Left / Right arrow",
+            "action": "Tabs | Previous / next tab, wrapping; the tab is chosen as it takes focus"
+          },
+          {
+            "keys": "Home / End",
+            "action": "Tabs | First / last tab"
+          },
+          {
+            "keys": "Enter / Space",
+            "action": "Row, buttons | Activates the row (and closes the panel), \"Mark all as read\" or the footer"
+          },
+          {
+            "keys": "Escape",
+            "action": "Popover, sheet | Closes the panel and returns focus to the bell"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The bell is a button named by `label` and the count, \"Notifications, 4 unread\", with `aria-haspopup=\"dialog\"`,",
+          "The popover is a non-modal `role=\"dialog\"` labelled by its heading. Focus moves to it on open; Escape returns focus to the",
+          "Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items.",
+          "Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the",
+          "A polite live region announces changes of `unreadCount` (\"Notifications, 5 unread\"). It says nothing on first paint.",
+          "\"Mark all as read\" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is",
+          "Loading is one polite status with skeleton rows; a failure is an alert.",
+          "In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the"
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": "Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under\n`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.\n\n| Moment                         | What happens                                                                                                   |\n| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |\n| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet |\n| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`), then it unmounts; it is inert meanwhile   |\n| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps             |\n| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter          |\n| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`     |\n| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                 |\n| \"Mark all as read\"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                   |\n| The highlight card first shows | Its progress segments fill one after another                                                                   |\n\nNothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open\nthe panel, switch tabs, mark everything read and simulate an arrival."
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-bg-canvas",
+        "--lufia-color-bg-surface-solid",
+        "--lufia-color-border-strong",
+        "--lufia-color-border-subtle",
+        "--lufia-color-text-on-accent",
+        "--lufia-font-family-body",
+        "--lufia-font-size-2xs",
+        "--lufia-font-weight-bold",
+        "--lufia-motion-distance-nudge",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-easing-in",
+        "--lufia-motion-easing-out",
+        "--lufia-overlay-z",
+        "--lufia-radius-full",
+        "--lufia-radius-panel",
+        "--lufia-shadow-lg",
+        "--lufia-sheet-backdrop",
+        "--lufia-sheet-max-block-size",
+        "--lufia-sheet-max-inline-size",
+        "--lufia-z-dropdown",
+        "--lufia-z-modal"
+      ]
+    },
+    {
       "name": "PageActions",
       "category": "Actions",
       "summary": "The action bar of a page: one primary action, the rest collapsed on narrow screens.",

@@ -30,6 +30,12 @@
     "gzip": true
   },
   {
+    "name": "NotificationCenter",
+    "path": "dist/components/NotificationCenter/**/*.{js,css}",
+    "limit": "13 kB",
+    "gzip": true
+  },
+  {
     "name": "Toast",
     "path": "dist/components/Toast/**/*.{js,css}",
     "limit": "6.2 kB",

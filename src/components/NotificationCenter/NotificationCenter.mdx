@@ -1,0 +1,200 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./NotificationCenter.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="NotificationCenter"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A bell button with an unread count that opens a panel of notifications. On wide pages the panel hangs from the bell as a
+non-modal popover; below 60rem it is a modal bottom sheet. The data and every string come from the caller: the package has
+no i18n and no data layer.
+
+<Canvas of={Stories.WithSummary} story={{ inline: false, height: "46rem" }} />
+
+### Usage
+
+```tsx
+import { NotificationCenter, NotificationSummary } from "@lufia/design-system/components/NotificationCenter";
+
+<NotificationCenter
+  label="Notifications"
+  unreadCount={5}
+  unreadLabel="unread"
+  unreadCountLabel={(count) => `${count} unread`}
+  tabs={[
+    { key: "all", label: "All", count: 8, all: true },
+    { key: "approvals", label: "Approvals", count: 5 },
+  ]}
+  groups={[
+    { key: "today", label: "Today" },
+    { key: "earlier", label: "Earlier" },
+  ]}
+  items={[
+    {
+      id: "1",
+      group: "today",
+      tab: "approvals",
+      title: "Supplier proposal needs your review",
+      meta: "Procurement assistant",
+      time: "07:52",
+      unread: true,
+      href: "/proposals/1",
+    },
+  ]}
+  summary={
+    <NotificationSummary title="2 proposals due today" action={{ label: "Review", href: "/review" }} />
+  }
+  markAllLabel="Mark all as read"
+  onMarkAllRead={markAllRead}
+  footer={{ label: "Notification settings", href: "/settings" }}
+  empty={{ title: "You are all caught up" }}
+/>;
+```
+
+Strings in the snippet are plain literals; in your app they arrive through props from your copy layer. Rows with `href` render
+through the `linkComponent` set on `LufiaProvider`.
+
+`NotificationPanel` is the same content without the bell, for an app that hosts it elsewhere, such as a page. It renders a
+labelled region by default; set `landmark={false}` when a host already names it.
+
+<Canvas of={Stories.PanelOnly} story={{ inline: false, height: "42rem" }} />
+
+</Section>
+
+<Section id="examples">
+
+### Data model
+
+- **Tabs** are the caller's. A tab with `all` shows every item; any other tab shows the items whose `tab` equals its `key`.
+  The count beside a tab is whatever the caller passes. `activeTab` makes the tab controlled, `defaultActiveTab` seeds it.
+- **Groups** are the caller's too ("Today", "Earlier"). An item names its group with `group`; items without a known group come
+  first, under no heading.
+- **Items** have a title, a `meta` line ("Supplier intelligence") and a `time` ("07:52"), a leading `icon` or `avatar`, and
+  are links (`href`) or buttons (`onSelect`). Activating a row closes the panel.
+- **Open state** is controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`.
+
+### Highlight card
+
+`summary` takes any node. `NotificationSummary` is the ready-made card: a headline, a segmented progress bar (a native
+`progressbar`), one primary action and a footnote. It inverts the page colours, so it is a dark card in light mode and a
+light one in dark mode.
+
+<Canvas of={Stories.WithSummary} story={{ inline: false, height: "46rem" }} />
+
+### States
+
+Loading shows skeleton rows shaped like the rows that replace them. An empty tab shows an `EmptyState`; a tab can carry its
+own `empty` content. An `error` node replaces the list and is announced as an alert.
+
+<Canvas of={Stories.Loading} story={{ inline: false, height: "30rem" }} />
+<Canvas of={Stories.Empty} story={{ inline: false, height: "30rem" }} />
+<Canvas of={Stories.Failed} story={{ inline: false, height: "30rem" }} />
+
+A long list scrolls inside the panel. The header, the tabs and the footer stay in place.
+
+<Canvas of={Stories.ManyItems} story={{ inline: false, height: "46rem" }} />
+
+### Sheet presentation
+
+`presentation="auto"` (the default) is a sheet below 60rem and a popover from there up. The sheet is rendered in a portal on
+`document.body`, over a backdrop that covers the viewport, with the page behind made `inert` and page scroll locked, and a
+close button in its header. It uses the same layer as the `MoreActions` sheet, so `--lufia-overlay-z` raises it above an
+app's fixed dock or bar. Optional hooks: `--lufia-sheet-backdrop`, `--lufia-sheet-max-block-size`,
+`--lufia-sheet-max-inline-size`, and `--lufia-notification-unread-bg` for the tint of unread rows.
+
+<Canvas of={Stories.SheetPhone390} story={{ inline: false, height: "52rem" }} />
+<Canvas of={Stories.SheetOverDock} story={{ inline: false, height: "52rem" }} />
+
+### Motion
+
+Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under
+`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.
+
+| Moment                         | What happens                                                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet |
+| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`), then it unmounts; it is inert meanwhile   |
+| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps             |
+| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter          |
+| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`     |
+| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                 |
+| "Mark all as read"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                   |
+| The highlight card first shows | Its progress segments fill one after another                                                                   |
+
+Nothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open
+the panel, switch tabs, mark everything read and simulate an arrival.
+
+<Canvas of={Stories.Interactive} story={{ inline: false, height: "46rem" }} />
+
+### Dark
+
+<Canvas of={Stories.Dark} story={{ inline: false, height: "46rem" }} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key                | Where          | Action                                                                     |
+| ------------------ | -------------- | -------------------------------------------------------------------------- |
+| Enter / Space      | Bell           | Opens or closes the panel; focus moves into the panel                      |
+| Tab / Shift+Tab    | Popover        | Moves through the panel's controls in order; the popover stays open        |
+| Tab / Shift+Tab    | Sheet          | Moves through the sheet's controls, wrapping: focus stays in the sheet     |
+| Left / Right arrow | Tabs           | Previous / next tab, wrapping; the tab is chosen as it takes focus         |
+| Home / End         | Tabs           | First / last tab                                                           |
+| Enter / Space      | Row, buttons   | Activates the row (and closes the panel), "Mark all as read" or the footer |
+| Escape             | Popover, sheet | Closes the panel and returns focus to the bell                             |
+
+A press outside closes the popover; a tap on the backdrop closes the sheet. The popover goes through `useDismiss` and the sheet
+through `useFocusTrap`, so inside a dialog Escape closes one layer at a time.
+
+### Accessibility
+
+- The bell is a button named by `label` and the count, "Notifications, 4 unread", with `aria-haspopup="dialog"`,
+  `aria-expanded` and `aria-controls`. The visible count repeats the name and is hidden from assistive technology.
+- The popover is a non-modal `role="dialog"` labelled by its heading. Focus moves to it on open; Escape returns focus to the
+  bell. The sheet is `aria-modal`, traps focus and makes the page behind inert.
+- Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items.
+- Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the
+  tint alone. Rows are links or buttons, so the whole row is the target and is at least 3.5rem tall.
+- A polite live region announces changes of `unreadCount` ("Notifications, 5 unread"). It says nothing on first paint.
+- "Mark all as read" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is
+  read.
+- Loading is one polite status with skeleton rows; a failure is an alert.
+- In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the
+  summary's progress segments draw with borders.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A feed of things that happened or need a decision, with an unread state, reachable from anywhere in an app.
+
+### When not to use
+
+- A single transient confirmation: use `Toast`.
+- Blocking questions: use `Modal` or `ConfirmDialog`.
+- A page-length activity log with no unread state: use `ActivityList`.
+
+### Content guidelines
+
+Titles say what happened in one line. The meta line names the source; the time is formatted for the locale by the caller.
+Keep tab labels to one word and the number of tabs to four or five. The `unreadLabel` is one word ("unread").
+
+</Section>
