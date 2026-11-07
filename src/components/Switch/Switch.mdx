@@ -42,7 +42,7 @@ It is controlled with `checked` and `onCheckedChange`, or uncontrolled with `def
 
 ### In a form: `SwitchInput`
 
-`SwitchInput` is the same switch on a native `<input type="checkbox" role="switch">`. The browser owns the state, so the value is read from the form (`FormData`, `form.elements`), a form reset restores `defaultChecked`, and `required` and `form="id"` work as on a checkbox. It submits `name=value` (default `on`) while on. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and `onCheckedChange`. `Switch` stays the choice for a setting that applies at once; it is unchanged.
+`SwitchInput` is the same switch on a native `<input type="checkbox" role="switch">`. The browser owns the state, so the value is read from the form (`FormData`, `form.elements`), a form reset restores `defaultChecked`, and `required` and `form="id"` work as on a checkbox. It submits `name=value` (default `on`) while on. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and `onCheckedChange` (a `checked` without a handler warns once in development). Controlled caveat: a form reset restores the DOM default, not your state, so reset your state from the form's `reset` event too. `Switch` stays the choice for a setting that applies at once; it is unchanged.
 
 ```tsx
 import { SwitchInput } from "@lufia/design-system/components/Switch";

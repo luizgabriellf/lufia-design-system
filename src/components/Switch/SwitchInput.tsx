@@ -4,6 +4,22 @@ import { useId, type ChangeEvent, type InputHTMLAttributes, type ReactNode, type
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import styles from "./Switch.module.css";
 
+let warned = false;
+
+function warnControlledWithoutHandler() {
+  if (warned) return;
+  warned = true;
+  console.warn(
+    "SwitchInput: `checked` was passed without `onCheckedChange` or `onChange`, so the switch cannot be toggled. " +
+      "Pass a handler, or use `defaultChecked` for an uncontrolled switch.",
+  );
+}
+
+/** Test helper: lets the one-time warning fire again. Not exported from the package. */
+export function resetControlledWarning() {
+  warned = false;
+}
+
 export type SwitchInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type" | "role" | "size" | "children" | "className" | "value" | "defaultValue"
@@ -24,7 +40,8 @@ export type SwitchInputProps = Omit<
 /**
  * The form-submitting `Switch`: a native `<input type="checkbox" role="switch">`, so the browser owns the state. Its value is
  * read from the form (`FormData`, `form.elements`), a `form` reset restores `defaultChecked`, and `required` and
- * `form="id"` work as on a checkbox. Leave it uncontrolled with `defaultChecked`, or control it with `checked`.
+ * `form="id"` work as on a checkbox. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and a handler (a `checked` without `onCheckedChange` or `onChange` warns once in development).
+ * A form reset restores the DOM default, not your state: when controlled, also reset your state from the form's `reset` event.
  *
  * Use it in a form that is saved with a submit button; for a setting that takes effect at once, use `Switch`.
  */
@@ -42,6 +59,14 @@ export function SwitchInput({
   ...rest
 }: SwitchInputProps) {
   const generated = useId();
+  if (
+    process.env.NODE_ENV !== "production" &&
+    rest.checked !== undefined &&
+    !onCheckedChange &&
+    !onChange &&
+    !rest.readOnly
+  )
+    warnControlledWithoutHandler();
   const baseId = id ?? `switch-${generated.replace(/:/g, "")}`;
   const hintId = hint ? `${baseId}-hint` : undefined;
   const errorId = error ? `${baseId}-error` : undefined;

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
 import { Switch } from "./Switch";
-import { SwitchInput } from "./SwitchInput";
+import { SwitchInput, resetControlledWarning } from "./SwitchInput";
 
 describe("Switch", () => {
   it("is a switch button named by its label, off by default", () => {
@@ -145,6 +145,19 @@ describe("SwitchInput", () => {
     expect(screen.getByRole("switch")).toBeChecked();
     await user.click(screen.getByRole("switch"));
     expect(screen.getByRole("switch")).not.toBeChecked();
+  });
+
+  it("warns once in development when checked has no handler", () => {
+    resetControlledWarning();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { rerender } = render(<SwitchInput label="A" checked />);
+    rerender(<SwitchInput label="A" checked />);
+    expect(warn).toHaveBeenCalledTimes(1);
+    resetControlledWarning();
+    render(<SwitchInput label="B" checked onCheckedChange={() => {}} />);
+    render(<SwitchInput label="C" defaultChecked />);
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
   });
 
   it("goes back to its default when the form is reset", async () => {
