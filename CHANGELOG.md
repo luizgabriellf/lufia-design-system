@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.12.0
+
+### Minor Changes
+
+- [#52](https://github.com/luizgabriellf/lufia-design-system/pull/52) [`bfffd2d`](https://github.com/luizgabriellf/lufia-design-system/commit/bfffd2d1805cdda6a52406f90354dbe3f96be21d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `MoreActions` gains `presentation="auto" | "popover" | "sheet"`: a full-width bottom sheet in a portal, over a backdrop that covers the viewport, with focus trap, inert page, scroll lock and a `--lufia-overlay-z` stacking hook. `PageActions` uses `auto`, so its menu is a sheet below 60rem. Items without an icon now keep a leading slot when others have one.
+
 ## 0.11.0
 
 ### Minor Changes
