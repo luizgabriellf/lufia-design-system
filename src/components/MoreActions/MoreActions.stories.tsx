@@ -89,3 +89,83 @@ export const AllThemes: Story = {
     </ThemeMatrix>
   ),
 };
+
+const manyItems: MoreActionItem[] = Array.from({ length: 14 }, (_, index) => ({
+  key: `item-${index}`,
+  label: `Action number ${index + 1}`,
+  description: index % 3 === 0 ? "A short description" : undefined,
+}));
+
+/** A bottom sheet over a backdrop that covers the page. Escape, a tap on the backdrop or choosing an item closes it. */
+export const Sheet: Story = { args: { defaultOpen: true, presentation: "sheet" } };
+/** Items without an icon keep a leading slot, so labels line up with the ones that have one. */
+export const SheetMixedIcons: Story = {
+  args: { defaultOpen: true, presentation: "sheet", items: items.slice(0, 4) },
+};
+export const SheetWithoutIcons: Story = {
+  args: {
+    defaultOpen: true,
+    presentation: "sheet",
+    items: [
+      { key: "a", label: "Duplicate" },
+      { key: "b", label: "Export", description: "As CSV or PDF" },
+      { key: "c", label: "Delete record", tone: "danger" },
+    ],
+  },
+};
+/** Past the sheet's maximum height the list scrolls inside the sheet, and the page behind does not. */
+export const SheetManyItems: Story = {
+  args: { defaultOpen: true, presentation: "sheet", items: manyItems },
+};
+/** `presentation="auto"` is a popover on wide pages and a sheet below 60rem. */
+export const AutoPhone390: Story = {
+  args: { defaultOpen: true, presentation: "auto" },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+export const SheetPhone320: Story = {
+  args: { defaultOpen: true, presentation: "sheet" },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+/** A fixed dock with a high z-index. The app raises `--lufia-overlay-z` on the root above it, and the sheet clears the dock. */
+export const SheetOverDock: Story = {
+  args: { defaultOpen: true, presentation: "sheet" },
+  globals: { viewport: { value: "w390", isRotated: false } },
+  decorators: [
+    (Story) => (
+      <>
+        <style>{":root { --lufia-overlay-z: 9999; }"}</style>
+        <div
+          data-testid="header"
+          style={{
+            position: "fixed",
+            insetInline: 0,
+            insetBlockStart: 0,
+            blockSize: "3rem",
+            zIndex: 9000,
+            background: "var(--lufia-color-bg-surface-solid)",
+            borderBlockEnd: "1px solid var(--lufia-color-border-strong)",
+          }}
+        />
+        <div
+          data-testid="dock"
+          style={{
+            position: "fixed",
+            insetInline: 0,
+            insetBlockEnd: 0,
+            blockSize: "4rem",
+            zIndex: 9000,
+            background: "var(--lufia-color-bg-surface-solid)",
+            borderBlockStart: "1px solid var(--lufia-color-border-strong)",
+          }}
+        />
+        {/* A transformed ancestor makes a stacking context; the sheet is portaled to the body so it is not trapped in it. */}
+        <div
+          data-testid="transformed"
+          style={{ transform: "translateZ(0)", position: "relative", zIndex: 1 }}
+        >
+          <Story />
+        </div>
+      </>
+    ),
+  ],
+};

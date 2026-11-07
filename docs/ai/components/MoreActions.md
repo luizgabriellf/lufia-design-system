@@ -37,14 +37,14 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
-| `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. |
+| `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
+| `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
 - `MoreActionItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: "danger" | "default" | undefined; narrowOnly?: boolean | undefined; }`
-- `MoreActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; items: readonly MoreActionItem[]; align?: "end" | "start" | undefined; size?: "sm" | "md" | "lg" | undefined; variant?: ButtonVariant | undefined; icon?: ReactNode; defaultOpen?: boolean | undefined; }`
 
 ## Example
 
@@ -77,12 +77,14 @@ Keyboard:
 | Enter / Space | Item \| Activates the item, closes the menu, and returns focus to the trigger |
 | Escape | Menu \| Closes the menu and returns focus to the trigger |
 | Tab | Menu \| Closes the menu, returns focus to the button, moves on from it |
+| Tab / Shift+Tab | Sheet \| Next / previous item, wrapping: focus stays in the sheet |
 
 - The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
 - The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
 - Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.
 - Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.
 - A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
+- A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's
 - Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.
 - In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears
 
@@ -92,7 +94,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-enter`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-md`, `--lufia-radius-sm`, `--lufia-shadow-lg`, `--lufia-z-dropdown`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-subtle`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-enter`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-overlay-z`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-radius-sm`, `--lufia-shadow-lg`, `--lufia-sheet-backdrop`, `--lufia-sheet-max-block-size`, `--lufia-sheet-max-inline-size`, `--lufia-z-dropdown`, `--lufia-z-modal`.
 
 ## Content guidelines
 
@@ -110,3 +112,10 @@ phrase.
 - `components-actions-moreactions--phone-390`
 - `components-actions-moreactions--right-to-left`
 - `components-actions-moreactions--all-themes`
+- `components-actions-moreactions--sheet`
+- `components-actions-moreactions--sheet-mixed-icons`
+- `components-actions-moreactions--sheet-without-icons`
+- `components-actions-moreactions--sheet-many-items`
+- `components-actions-moreactions--auto-phone-390`
+- `components-actions-moreactions--sheet-phone-320`
+- `components-actions-moreactions--sheet-over-dock`

@@ -89,6 +89,7 @@
   align-items: center;
   justify-content: center;
   min-block-size: 1.25rem;
+  min-inline-size: 1.25rem;
 }
 
 .text {
@@ -126,14 +127,95 @@
   }
 }
 
+/* Sheet presentation. The layer is portaled to the body and covers the whole viewport, so the backdrop leaves no gap for an
+   app's dock or bar. Stacking is `--lufia-overlay-z`: an app that has a fixed element above the modal layer sets it on :root
+   to a value above that element. Theming hooks, all optional: --lufia-overlay-z, --lufia-sheet-backdrop,
+   --lufia-sheet-max-block-size, --lufia-sheet-max-inline-size. */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--lufia-overlay-z, calc(var(--lufia-z-modal) + 1));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--lufia-sheet-backdrop, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+  animation: sheet-fade var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.sheet {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  inline-size: 100%;
+  max-inline-size: var(--lufia-sheet-max-inline-size, 36rem);
+  max-block-size: var(--lufia-sheet-max-block-size, min(70dvh, 32.5rem));
+  flex-direction: column;
+  padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-block-end: 0;
+  border-start-start-radius: var(--lufia-radius-panel);
+  border-start-end-radius: var(--lufia-radius-panel);
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.sheet:focus {
+  outline: 2px solid transparent;
+}
+
+.heading {
+  flex: none;
+  padding: 0.5rem 0.625rem 0.625rem;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sheetList {
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.sheetList .item {
+  min-block-size: 3rem;
+  font-size: var(--lufia-font-size-md);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .menu {
+  .menu,
+  .backdrop,
+  .sheet {
     animation: none;
   }
 }
 
 @media (forced-colors: active) {
-  .menu {
+  .menu,
+  .sheet {
     border-color: CanvasText;
   }
 

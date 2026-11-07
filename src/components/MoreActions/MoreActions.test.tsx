@@ -1,5 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
+import { configureAxe } from "vitest-axe";
 import { axe } from "../../test/axe";
 import { pushLayer, removeLayer } from "../useFocusTrap/layerStack";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
@@ -290,5 +293,194 @@ describe("MoreActions", () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.click(trigger);
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("sheet presentation", () => {
+    function setupSheet(presentation: "sheet" | "auto" = "sheet", list: readonly MoreActionItem[] = items) {
+      withLayout();
+      const user = userEvent.setup();
+      const view = render(
+        <>
+          <button type="button">Before</button>
+          <MoreActions label="More actions" items={list} presentation={presentation} />
+        </>,
+      );
+      return { user, view, trigger: screen.getByRole("button", { name: "More actions" }) };
+    }
+
+    it("portals the menu to the body, over a backdrop, and makes the page behind inert", async () => {
+      const { user, view, trigger } = setupSheet();
+      await user.click(trigger);
+      const menu = screen.getByRole("menu", { name: "More actions" });
+      expect(view.container.contains(menu)).toBe(false);
+      expect(document.body.contains(menu)).toBe(true);
+      expect(view.container).toHaveAttribute("inert");
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+    });
+
+    it("closes on Escape and returns focus to the trigger, leaving the page live", async () => {
+      const { user, view, trigger } = setupSheet();
+      await user.click(trigger);
+      await user.keyboard("{Escape}");
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+      expect(view.container).not.toHaveAttribute("inert");
+    });
+
+    it("closes on a tap on the backdrop but not on a press on the sheet", async () => {
+      const { user, trigger } = setupSheet();
+      await user.click(trigger);
+      await user.click(screen.getByRole("menuitem", { name: "Archive" }));
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      const backdrop = document.body.querySelector<HTMLElement>('[aria-hidden="true"][class*="backdrop"]')!;
+      await user.click(backdrop);
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+    });
+
+    it("keeps Tab inside the sheet", async () => {
+      const { user, trigger } = setupSheet();
+      await user.click(trigger);
+      await user.keyboard("{Tab}");
+      expect(screen.getByRole("menuitem", { name: /Export/ })).toHaveFocus();
+      await user.keyboard("{Shift>}{Tab}{/Shift}{Shift>}{Tab}{/Shift}");
+      expect(screen.getByRole("menuitem", { name: "Delete" })).toHaveFocus();
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+    });
+
+    it("runs the chosen action after the sheet has closed and focus is back on the trigger", async () => {
+      const { user, trigger } = setupSheet();
+      let focusedAtCall: Element | null = null;
+      onSelect.mockImplementation(() => {
+        focusedAtCall = document.activeElement;
+      });
+      await user.click(trigger);
+      await user.click(screen.getByRole("menuitem", { name: "Duplicate" }));
+      expect(onSelect).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(focusedAtCall).toBe(trigger);
+      onSelect.mockReset();
+    });
+
+    it("gives every item a leading slot when only some have an icon", async () => {
+      const { user, trigger } = setupSheet("sheet", [
+        { key: "a", label: "With", icon: <svg /> },
+        { key: "b", label: "Without" },
+      ]);
+      await user.click(trigger);
+      expect(
+        screen.getByRole("menuitem", { name: "Without" }).querySelectorAll('[aria-hidden="true"]'),
+      ).toHaveLength(1);
+    });
+
+    it("adds no leading slot when no item has an icon", async () => {
+      const { user, trigger } = setupSheet("sheet", [{ key: "a", label: "Plain" }]);
+      await user.click(trigger);
+      expect(
+        screen.getByRole("menuitem", { name: "Plain" }).querySelectorAll('[aria-hidden="true"]'),
+      ).toHaveLength(0);
+    });
+
+    it('"auto" is a popover on a wide page and a sheet on a narrow one', async () => {
+      const match = (matches: boolean) =>
+        vi.stubGlobal("matchMedia", (query: string) => ({
+          matches,
+          media: query,
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        }));
+      match(false);
+      const wide = setupSheet("auto");
+      await wide.user.click(wide.trigger);
+      expect(wide.view.container.contains(screen.getByRole("menu"))).toBe(true);
+      wide.view.unmount();
+      match(true);
+      const narrow = setupSheet("auto");
+      await narrow.user.click(narrow.trigger);
+      expect(narrow.view.container.contains(screen.getByRole("menu"))).toBe(false);
+      vi.unstubAllGlobals();
+    });
+
+    it("moves focus to the first item with defaultOpen, so the keys work", async () => {
+      withLayout();
+      render(<MoreActions label="More actions" items={items} presentation="sheet" defaultOpen />);
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      await userEvent.keyboard("{ArrowDown}");
+      expect(screen.getByRole("menuitem", { name: /Export/ })).toHaveFocus();
+    });
+
+    it("renders on the server without touching the document", () => {
+      const html = renderToString(
+        <MoreActions label="More actions" items={items} presentation="sheet" defaultOpen />,
+      );
+      expect(html).toContain("More actions");
+    });
+
+    it("moves focus into the new presentation when the breakpoint is crossed while open", async () => {
+      withLayout();
+      let narrow = true;
+      const listeners = new Set<() => void>();
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        get matches() {
+          return narrow;
+        },
+        media: query,
+        addEventListener: (_: string, fn: () => void) => listeners.add(fn),
+        removeEventListener: (_: string, fn: () => void) => listeners.delete(fn),
+      }));
+      const user = userEvent.setup();
+      const view = render(<MoreActions label="More actions" items={items} presentation="auto" />);
+      await user.click(screen.getByRole("button", { name: "More actions" }));
+      expect(view.container.contains(screen.getByRole("menu"))).toBe(false);
+      await user.keyboard("{ArrowDown}");
+      narrow = false;
+      act(() => listeners.forEach((fn) => fn()));
+      expect(view.container.contains(screen.getByRole("menu"))).toBe(true);
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      vi.unstubAllGlobals();
+    });
+
+    it("has no axe violations while open", async () => {
+      const { user, trigger } = setupSheet();
+      await user.click(trigger);
+      // The sheet is a body-level overlay, outside any landmark by design: the page-level `region` rule does not apply to it.
+      const noRegion = configureAxe({
+        rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
+      });
+      expect(await noRegion(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("hydration with defaultOpen", () => {
+    async function hydrate(presentation: "popover" | "sheet") {
+      withLayout();
+      const element = (
+        <MoreActions label="More actions" items={items} presentation={presentation} defaultOpen />
+      );
+      const host = document.createElement("div");
+      document.body.append(host);
+      host.innerHTML = renderToString(element);
+      let root!: ReturnType<typeof hydrateRoot>;
+      await act(async () => {
+        root = hydrateRoot(host, element);
+      });
+      return () => {
+        act(() => root.unmount());
+        host.remove();
+      };
+    }
+
+    it("leaves focus alone for a popover", async () => {
+      const cleanup = await hydrate("popover");
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      expect(document.activeElement?.getAttribute("role")).not.toBe("menuitem");
+      cleanup();
+    });
+
+    it("moves focus to the first item for a sheet", async () => {
+      const cleanup = await hydrate("sheet");
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      cleanup();
+    });
   });
 });
