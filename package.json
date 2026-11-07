@@ -55,7 +55,7 @@
     "verify:motion": "tsx src/cli/verify-motion/cli.ts src",
     "build:ai-docs": "tsx scripts/ai/build.mjs",
     "verify:ai-docs": "tsx scripts/ai/verify.mjs",
-    "storybook": "npm run tokens && storybook dev -p 6006",
+    "storybook": "npm run tokens && storybook dev -p 6006 --host 127.0.0.1",
     "build-storybook": "npm run tokens && storybook build -o storybook-static && tsx scripts/ai/publish.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",

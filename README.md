@@ -36,7 +36,7 @@ accessibility note.
 
 Lufia exposes machine-readable component specs through `llms.txt`, `components.json`, and per-component docs on GitHub Pages. From a source checkout, use `npm run ai:search -- "searchable selector"` and `npm run ai:show -- Combobox` to retrieve only the real documented APIs.
 
-For local coding agents, `npm run storybook` exposes the official Storybook MCP server at `http://localhost:6006/mcp`. The published GitHub Pages site provides static manifests, **not** a live MCP endpoint. See [the consuming guide](docs/ai/CONSUMING.md).
+For local coding agents, `npm run storybook` exposes the official Storybook MCP server at `http://127.0.0.1:6006/mcp`. The published GitHub Pages site provides static manifests, **not** a live MCP endpoint. See [the consuming guide](docs/ai/CONSUMING.md).
 
 ## Install
 
