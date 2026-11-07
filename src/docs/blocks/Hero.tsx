@@ -1,3 +1,4 @@
+import type { MouseEvent } from "react";
 import { Unstyled } from "@storybook/addon-docs/blocks";
 import pkg from "../../../package.json";
 import { DetailAttentionCard } from "../../components/DetailAttentionCard";
@@ -19,6 +20,18 @@ const BADGES = [
 ];
 
 const noop = () => {};
+
+/**
+ * Scroll to the Quick start heading in place. Left to the browser, `#quick-start` navigates the top window to the bare
+ * preview iframe and the Storybook chrome disappears.
+ */
+function scrollToQuickStart(event: MouseEvent<HTMLAnchorElement>) {
+  const target = document.getElementById("quick-start");
+  if (!target) return;
+  event.preventDefault();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
 
 /** A small, real composition of the components, shown as decoration next to the headline. */
 function Composition() {
@@ -86,7 +99,12 @@ export function Hero() {
             and a brand that is a file, not a fork.
           </p>
           <div className={styles.actions}>
-            <Button variant="primary" href="#quick-start" iconStart={<ArrowRightIcon size={18} />}>
+            <Button
+              variant="primary"
+              href="#quick-start"
+              onClick={scrollToQuickStart}
+              iconStart={<ArrowRightIcon size={18} />}
+            >
               Get started
             </Button>
             <Button
