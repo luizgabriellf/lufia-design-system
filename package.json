@@ -65,7 +65,7 @@
     "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test && npm run contrast && npm run verify:motion && npm run verify:ai-docs",
     "release": "npm run build && changeset tag",
     "commitlint": "commitlint",
-    "verify:package": "publint && attw --pack . --profile esm-only --exclude-entrypoints ./tokens.json ./tokens.css ./themes/default.css ./themes/example-brand.css",
+    "verify:package": "node scripts/verify-package.mjs",
     "verify:changeset": "node scripts/check-changeset.mjs",
     "verify:size": "size-limit",
     "test:browser": "playwright test",
