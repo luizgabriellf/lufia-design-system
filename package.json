@@ -60,9 +60,10 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "test:coverage": "vitest run --passWithNoTests --coverage",
-    "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test && npm run contrast && npm run verify:motion && npm run verify:ai-docs",
+    "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test && npm run contrast && npm run verify:motion && npm run verify:ai-docs && npm run verify:ai-quality",
     "release": "npm run build && changeset tag",
-    "commitlint": "commitlint"
+    "commitlint": "commitlint",
+    "verify:ai-quality": "node goal/verify-ai-layer.mjs"
   },
   "license": "MIT",
   "repository": {

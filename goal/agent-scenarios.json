@@ -1,0 +1,249 @@
+[
+  {
+    "id": "primary-action",
+    "prompt": "Create one primary save action with an in-flight state and an optional leading icon. Use Lufia, no custom button.",
+    "components": [
+      "Button"
+    ],
+    "requiredProps": {
+      "Button": [
+        "variant",
+        "loading",
+        "iconStart"
+      ]
+    },
+    "forbiddenProps": {
+      "Button": [
+        "appearance",
+        "isLoading"
+      ]
+    },
+    "checks": [
+      "Imports from the documented Button subpath",
+      "No invented Button properties",
+      "Keyboard focus and pending semantics stay intact"
+    ]
+  },
+  {
+    "id": "navigation-action",
+    "prompt": "Create a Lufia link styled as a button that navigates to a report without using a click handler for routing.",
+    "components": [
+      "Button"
+    ],
+    "requiredProps": {
+      "Button": [
+        "href",
+        "iconEnd"
+      ]
+    },
+    "forbiddenProps": {
+      "Button": [
+        "to",
+        "asChild"
+      ]
+    },
+    "checks": [
+      "Uses href instead of router-specific props",
+      "Preserves link semantics"
+    ]
+  },
+  {
+    "id": "async-combobox",
+    "prompt": "Build a searchable city selector with remotely loaded options, an empty state and loading announcements.",
+    "components": [
+      "Combobox",
+      "FormField"
+    ],
+    "requiredProps": {
+      "Combobox": [
+        "options",
+        "onQueryChange",
+        "loadingLabel",
+        "emptyLabel"
+      ],
+      "FormField": [
+        "label"
+      ]
+    },
+    "forbiddenProps": {
+      "Combobox": [
+        "items",
+        "onSelect"
+      ]
+    },
+    "checks": [
+      "Options are validated against documented ComboboxOption shape",
+      "Loading and empty states remain screen-reader accessible"
+    ]
+  },
+  {
+    "id": "destructive-modal",
+    "prompt": "Compose a confirmation modal with a meaningful title, busy-state handling and safe dismissal.",
+    "components": [
+      "Modal"
+    ],
+    "requiredProps": {
+      "Modal": [
+        "open",
+        "onClose",
+        "title",
+        "busy"
+      ]
+    },
+    "forbiddenProps": {
+      "Modal": [
+        "isOpen",
+        "onOpenChange"
+      ]
+    },
+    "checks": [
+      "Uses real Modal prop names",
+      "Busy and focus behavior are verified"
+    ]
+  },
+  {
+    "id": "dashboard-metric",
+    "prompt": "Show a dashboard KPI with a label, value, trend and a compact sparkline.",
+    "components": [
+      "StatTile"
+    ],
+    "requiredProps": {
+      "StatTile": [
+        "label",
+        "value",
+        "sparkline"
+      ]
+    },
+    "forbiddenProps": {
+      "StatTile": [
+        "data",
+        "chartType"
+      ]
+    },
+    "checks": [
+      "Uses the shared metric primitive",
+      "Does not invent a chart API"
+    ]
+  },
+  {
+    "id": "app-navigation",
+    "prompt": "Build the navigation skeleton of a responsive Lufia application.",
+    "components": [
+      "AppShell"
+    ],
+    "requiredProps": {
+      "AppShell": [
+        "groups",
+        "currentPath",
+        "children"
+      ]
+    },
+    "forbiddenProps": {
+      "AppShell": [
+        "routes",
+        "pathname"
+      ]
+    },
+    "checks": [
+      "Uses the documented navigation model",
+      "Application routing stays outside the library"
+    ]
+  },
+  {
+    "id": "icon-only-action",
+    "prompt": "Make an icon-only delete action with a clear accessible label.",
+    "components": [
+      "IconButton"
+    ],
+    "requiredProps": {
+      "IconButton": [
+        "aria-label",
+        "icon",
+        "size"
+      ]
+    },
+    "forbiddenProps": {
+      "IconButton": [
+        "tooltipText"
+      ]
+    },
+    "checks": [
+      "Accessible name is explicit",
+      "No invented tooltip prop"
+    ]
+  },
+  {
+    "id": "reduced-motion",
+    "prompt": "Reveal supplemental content with the documented motion primitive and respect reduced-motion preferences.",
+    "components": [
+      "Reveal"
+    ],
+    "requiredProps": {
+      "Reveal": [
+        "show",
+        "appear"
+      ]
+    },
+    "forbiddenProps": {
+      "Reveal": [
+        "animateFrom"
+      ]
+    },
+    "checks": [
+      "Uses the motion entrypoint",
+      "Respects prefers-reduced-motion"
+    ]
+  },
+  {
+    "id": "container-branding",
+    "prompt": "Build a themed detail card without hardcoded brand colors.",
+    "components": [
+      "Card"
+    ],
+    "requiredProps": {
+      "Card": [
+        "title",
+        "padding"
+      ]
+    },
+    "forbiddenProps": {
+      "Card": [
+        "colorScheme",
+        "variant"
+      ]
+    },
+    "checks": [
+      "Uses semantic tokens in consuming CSS",
+      "No per-component hardcoded branding"
+    ]
+  },
+  {
+    "id": "form-errors",
+    "prompt": "Create a text field with accessible label, error and prefix using Lufia primitives.",
+    "components": [
+      "FormField",
+      "TextInput"
+    ],
+    "requiredProps": {
+      "FormField": [
+        "label",
+        "error",
+        "hint"
+      ],
+      "TextInput": [
+        "prefix",
+        "invalid"
+      ]
+    },
+    "forbiddenProps": {
+      "TextInput": [
+        "errorText",
+        "helperText"
+      ]
+    },
+    "checks": [
+      "Error is connected through FormField",
+      "Does not invent TextInput-specific validation copy"
+    ]
+  }
+]
