@@ -224,6 +224,86 @@ describe("Modal", () => {
     expect(await axe(document.body)).toHaveNoViolations();
   });
 
+  describe("header block size", () => {
+    type Entry = { borderBoxSize: { blockSize: number }[] };
+    let observers: { callback: (entries: Entry[]) => void; observed: Element[]; disconnected: boolean }[];
+    let headerHeight: number;
+
+    beforeEach(() => {
+      observers = [];
+      headerHeight = 64;
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          record: (typeof observers)[number];
+          constructor(callback: (entries: Entry[]) => void) {
+            this.record = { callback, observed: [], disconnected: false };
+            observers.push(this.record);
+          }
+          observe(target: Element) {
+            this.record.observed.push(target);
+          }
+          unobserve() {}
+          disconnect() {
+            this.record.disconnected = true;
+          }
+        },
+      );
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
+        this: HTMLElement,
+      ) {
+        return { height: this.tagName === "HEADER" ? headerHeight : 0 } as DOMRect;
+      });
+    });
+    afterEach(() => vi.restoreAllMocks());
+
+    const property = (dialog: HTMLElement) =>
+      dialog.style.getPropertyValue("--lufia-modal-header-block-size");
+
+    it("publishes the header height on the panel and follows it as the header resizes", async () => {
+      render(<Harness />);
+      const { dialog } = await openModal();
+      expect(property(dialog)).toBe("64px");
+      const header = dialog.querySelector("[data-lufia-part='header']")!;
+      const observer = observers.find((o) => o.observed.includes(header))!;
+      expect(observer).toBeDefined();
+      act(() => observer.callback([{ borderBoxSize: [{ blockSize: 92.5 }] }]));
+      expect(property(dialog)).toBe("92.5px");
+    });
+
+    it("is 0px when the body is the scroller, because the header does not overlap it", async () => {
+      render(<Harness scrollShadow />);
+      const { dialog } = await openModal();
+      expect(property(dialog)).toBe("0px");
+    });
+
+    it("measures once without ResizeObserver", async () => {
+      vi.stubGlobal("ResizeObserver", undefined);
+      render(<Harness />);
+      const { dialog } = await openModal();
+      expect(property(dialog)).toBe("64px");
+    });
+
+    it("stops observing when the modal closes", async () => {
+      render(<Harness />);
+      const { user } = await openModal();
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(observers.every((o) => o.disconnected)).toBe(true));
+    });
+
+    it("is published in the native dialog mode too", async () => {
+      const restore = mockDialog();
+      try {
+        const { unmount } = render(<Harness renderAs="dialog" />);
+        const { dialog } = await openModal();
+        expect(property(dialog)).toBe("64px");
+        unmount();
+      } finally {
+        restore.restore();
+      }
+    });
+  });
+
   describe("theming options", () => {
     it("marks the sheet placement, the title wrap and the scroll shadow for the stylesheet", async () => {
       render(<Harness sheetPlacement="top" titleWrap="ellipsis" scrollShadow />);

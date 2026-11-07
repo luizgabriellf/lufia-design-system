@@ -17,6 +17,7 @@ import { useLufia } from "../LufiaProvider";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
 import { useTopModalDialog } from "./topModalDialog";
+import { useHeaderBlockSize } from "./useHeaderBlockSize";
 import { useNativeDialog } from "./useNativeDialog";
 import { useMediaQuery } from "../useMediaQuery";
 import styles from "./Modal.module.css";
@@ -119,6 +120,10 @@ const PHONE = "(max-width: 37.5rem)";
  * close, and enters and leaves with the package's motion (scale on larger screens, a sheet rising from the bottom on phones).
  *
  * Follows the WAI-ARIA APG Dialog (Modal) pattern; with `role="alertdialog"`, the Alert Dialog pattern.
+ *
+ * The panel publishes the height its sticky header covers as `--lufia-modal-header-block-size`, kept current with a
+ * `ResizeObserver`, so sticky content in the body can use `top: var(--lufia-modal-header-block-size, 0px)` instead of a
+ * hand-tuned number. It is `0px` with `scrollShadow`, where the body scrolls below the header.
  */
 export function Modal({
   open,
@@ -153,6 +158,7 @@ export function Modal({
   const descriptionId = useId();
   // The panel is a `div` in portal mode and a `dialog` in native mode; the intersection lets one ref serve both.
   const panelRef = useRef<HTMLDivElement & HTMLDialogElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const pressedBackdrop = useRef(false);
   const phone = useMediaQuery(PHONE);
   const native = renderAs === "dialog";
@@ -194,6 +200,10 @@ export function Modal({
     handlers: { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
   });
 
+  useHeaderBlockSize(panelRef, headerRef, {
+    watch: mounted && (open || keepMounted),
+    overlaps: !scrollShadow,
+  });
   useBodyScrollLock(visible, { scrollContainerSelectors });
   useFocusTrap(visible, panelRef, {
     onEscape: closeOnEscape && !busy ? onClose : undefined,
@@ -229,7 +239,7 @@ export function Modal({
 
   const content = (
     <>
-      <header className={cx(styles.header, classNames?.header)} data-lufia-part="header">
+      <header ref={headerRef} className={cx(styles.header, classNames?.header)} data-lufia-part="header">
         <h2
           id={titleId}
           className={cx(styles.title, classNames?.title)}
