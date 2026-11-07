@@ -5,6 +5,7 @@ import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
 import { useSubmitIntent } from "../FormField/useSubmitIntent";
+import { useLufia } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./RadioGroup.module.css";
 import { useRadioKeys } from "./useRadioKeys";
@@ -36,7 +37,7 @@ export type RadioGroupProps = Omit<
   name?: string;
   /** `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. */
   orientation?: "vertical" | "horizontal";
-  /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. */
+  /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. */
   requiredLabel?: string;
   /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
   requiredMessage?: string;
@@ -59,7 +60,7 @@ export function RadioGroup({
   onValueChange,
   name,
   orientation = "vertical",
-  requiredLabel = "required",
+  requiredLabel: requiredLabelProp,
   requiredMessage,
   className,
   id,
@@ -67,6 +68,8 @@ export function RadioGroup({
   ...rest
 }: RadioGroupProps) {
   const generated = useId();
+  const { labels } = useLufia();
+  const requiredLabel = requiredLabelProp ?? labels.required;
   const baseId = id ?? `radiogroup-${generated.replace(/:/g, "")}`;
   const labelId = `${baseId}-label`;
   const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);

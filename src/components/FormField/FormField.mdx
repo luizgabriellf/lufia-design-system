@@ -59,9 +59,20 @@ Building your own control? `useFormFieldControl(props)` merges a control's own p
 <Canvas of={Stories.Required} />
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
+<Canvas of={Stories.RequiredFromProvider} />
 
 An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears.
-A required field has an asterisk (a shape) and the accessible text `required`, set with `requiredLabel` for other languages.
+A required field has an asterisk (a shape) and the accessible text `required`, defaults to the `required` label of `LufiaProvider`, so an app sets the localized word once. `requiredLabel` overrides it for one field.
+
+### Styling hooks
+
+The parts carry stable attributes for app-level styling and tests: `data-lufia-part="field"` (the root), `"label"`, `"hint"`, `"error"` and `"control"`. `control` wraps the children with `display: contents`, so it adds no box and the control stays a direct item of the field.
+
+```css
+[data-lufia-part="field"][data-invalid] [data-lufia-part="label"] {
+  color: var(--lufia-color-status-danger-fg);
+}
+```
 
 ### A whole form
 

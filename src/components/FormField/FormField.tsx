@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, type HTMLAttributes, type ReactNode } from "react";
+import { useLufia } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
 import { FieldError, FieldHint } from "./FieldMessages";
 import { FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
@@ -16,7 +17,10 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
   /** Marks the control required and shows an asterisk plus text for assistive technology. */
   required?: boolean;
   disabled?: boolean;
-  /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. */
+  /**
+   * Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of
+   * `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given.
+   */
   requiredLabel?: string;
   /** Base id of the control; the hint and error ids derive from it. Generated when omitted. */
   id?: string;
@@ -31,6 +35,9 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
  * Wires a label, a hint and an error to one control: the label targets it, the hint and error describe it, an error sets
  * `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up
  * from context; anything else takes them from the render prop.
+ *
+ * The parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`) for app-level styling and
+ * tests. `control` is a layout-neutral wrapper (`display: contents`) around the children.
  */
 export function FormField({
   label,
@@ -38,13 +45,15 @@ export function FormField({
   error,
   required,
   disabled,
-  requiredLabel = "required",
+  requiredLabel: requiredLabelProp,
   id,
   className,
   children,
   ...rest
 }: FormFieldProps) {
   const generated = useId();
+  const { labels } = useLufia();
+  const requiredLabel = requiredLabelProp ?? labels.required;
   const baseId = id ?? `field-${generated.replace(/:/g, "")}`;
   const hintId = hint ? `${baseId}-hint` : undefined;
   const errorId = error ? `${baseId}-error` : undefined;
@@ -62,8 +71,9 @@ export function FormField({
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-invalid={error ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
+      data-lufia-part="field"
     >
-      <label id={`${baseId}-label`} htmlFor={baseId} className={styles.label}>
+      <label id={`${baseId}-label`} htmlFor={baseId} className={styles.label} data-lufia-part="label">
         {label}
         {required ? (
           <>
@@ -74,9 +84,11 @@ export function FormField({
           </>
         ) : null}
       </label>
-      <FormFieldContext.Provider value={control}>
-        {typeof children === "function" ? children(control) : children}
-      </FormFieldContext.Provider>
+      <div className={styles.control} data-lufia-part="control">
+        <FormFieldContext.Provider value={control}>
+          {typeof children === "function" ? children(control) : children}
+        </FormFieldContext.Provider>
+      </div>
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
       {error ? <FieldError id={errorId}>{error}</FieldError> : null}
     </div>
