@@ -122,7 +122,7 @@
 
 .label {
   min-inline-size: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 /* Loading: the content stays in the layout (so the width holds and the name is kept) but is not painted. */
