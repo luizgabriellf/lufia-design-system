@@ -44,6 +44,22 @@ usePagination<T>(items: readonly T[], pageSize?: number, resetKey?: string): { p
 | `pageSize` | `number` | no |  |
 | `resetKey` | `string` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `page` | `number` | yes |  |
+| `pageSize` | `number` | yes |  |
+| `total` | `number` | yes |  |
+| `totalPages` | `number` | yes |  |
+| `slice` | `T[]` | yes |  |
+| `setPage` | `Dispatch<SetStateAction<number>>` | yes |  |
+| `hasPrev` | `boolean` | yes |  |
+| `hasNext` | `boolean` | yes |  |
+| `goPrev` | `() => void` | yes |  |
+| `goNext` | `() => void` | yes |  |
+| `show` | `boolean` | yes | False when everything fits on one page, so a pager can be left out. |
+
 ## Example
 
 ```tsx

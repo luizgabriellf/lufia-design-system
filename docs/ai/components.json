@@ -708,7 +708,57 @@
               "description": ""
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "href",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "href: undefined",
+                "props": [
+                  {
+                    "name": "href",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "onClick",
+                    "type": "MouseEventHandler<HTMLButtonElement>",
+                    "required": false,
+                    "description": "",
+                    "native": true,
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "type",
+                    "type": "\"submit\" | \"reset\" | \"button\"",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  }
+                ]
+              },
+              {
+                "name": "href: string",
+                "props": [
+                  {
+                    "name": "href",
+                    "type": "string",
+                    "required": true,
+                    "description": ""
+                  },
+                  {
+                    "name": "onClick",
+                    "type": "(() => void)",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "MobileFloatBarButtonProps",
@@ -1166,7 +1216,33 @@
               "description": ""
             }
           ],
-          "returns": "{ onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }"
+          "returns": "{ onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }",
+          "returnMembers": [
+            {
+              "name": "onPointerDown",
+              "type": "(event: PointerEvent<HTMLElement>) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "onPointerMove",
+              "type": "(event: PointerEvent<HTMLElement>) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "onPointerUp",
+              "type": "(event: PointerEvent<HTMLElement>) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "onPointerCancel",
+              "type": "(event: PointerEvent<HTMLElement>) => void",
+              "required": true,
+              "description": ""
+            }
+          ]
         },
         {
           "name": "useShellPrimaryAction",
@@ -1181,7 +1257,8 @@
               "description": ""
             }
           ],
-          "returns": "boolean"
+          "returns": "boolean",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -2133,7 +2210,147 @@
               "description": "A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation."
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "href",
+            "nativeTypesDiffer": true,
+            "branches": [
+              {
+                "name": "AsButton",
+                "props": [
+                  {
+                    "name": "form",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formAction",
+                    "type": "string | ((formData: FormData) => void | Promise<void>)",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formEncType",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formMethod",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formNoValidate",
+                    "type": "boolean",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formTarget",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "href",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ref",
+                    "type": "Ref<HTMLButtonElement>",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "value",
+                    "type": "string | number | readonly string[]",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  }
+                ]
+              },
+              {
+                "name": "AsLink",
+                "props": [
+                  {
+                    "name": "download",
+                    "type": "any",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "href",
+                    "type": "string",
+                    "required": true,
+                    "description": "When present the button renders as a link (through the `LufiaProvider` link component)."
+                  },
+                  {
+                    "name": "hrefLang",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "media",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ping",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ref",
+                    "type": "Ref<HTMLAnchorElement>",
+                    "required": false,
+                    "description": "Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do).",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "referrerPolicy",
+                    "type": "\"\" | \"origin\" | \"no-referrer\" | \"no-referrer-when-downgrade\" | \"origin-when-cross-origin\" | \"same-origin\" | \"strict-origin\" | \"strict-origin-when-cross-origin\" | \"unsafe-url\"",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "target",
+                    "type": "HTMLAttributeAnchorTarget",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "ButtonProps",
@@ -3264,7 +3481,7 @@
     {
       "name": "Combobox",
       "category": "Forms",
-      "summary": "A searchable single-select input with async options, following the APG combobox pattern.",
+      "summary": "A searchable single-select dropdown input with async options, following the APG combobox pattern.",
       "status": "beta",
       "source": "src/components/Combobox",
       "entry": {
@@ -3992,7 +4209,21 @@
           "description": "A promise-based replacement for `window.confirm()`: ```tsx const { confirm, confirmDialog } = useConfirmDialog(); if (!(await confirm({ title, message, confirmLabel, cancelLabel, destructive: true }))) return; // render {confirmDialog} once in the component's JSX ``` One at a time: a new `confirm()` while one is open settles the first with `false`. Unmounting settles it with `false`.",
           "signature": "(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }",
           "parameters": [],
-          "returns": "{ confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }"
+          "returns": "{ confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }",
+          "returnMembers": [
+            {
+              "name": "confirm",
+              "type": "(next: ConfirmOptions) => Promise<boolean>",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "confirmDialog",
+              "type": "Element | null",
+              "required": true,
+              "description": ""
+            }
+          ]
         }
       ],
       "aliases": {
@@ -5008,7 +5239,39 @@
               "description": ""
             }
           ],
-          "returns": "{ id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; disabled: true | undefined; }"
+          "returns": "{ id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; disabled: true | undefined; }",
+          "returnMembers": [
+            {
+              "name": "id",
+              "type": "string | undefined",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "aria-describedby",
+              "type": "string | undefined",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "aria-invalid",
+              "type": "true | undefined",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "required",
+              "type": "true | undefined",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "disabled",
+              "type": "true | undefined",
+              "required": true,
+              "description": ""
+            }
+          ]
         },
         {
           "name": "useFormFieldLabelId",
@@ -5016,7 +5279,8 @@
           "description": "The id of the surrounding `FormField`'s label element, for widgets that need to name a second element (a listbox, a popup) after the field. `undefined` outside a field.",
           "signature": "(): string | undefined",
           "parameters": [],
-          "returns": "string | undefined"
+          "returns": "string | undefined",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -5190,7 +5454,147 @@
               "description": "A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation."
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "href",
+            "nativeTypesDiffer": true,
+            "branches": [
+              {
+                "name": "href: undefined",
+                "props": [
+                  {
+                    "name": "form",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formAction",
+                    "type": "string | ((formData: FormData) => void | Promise<void>)",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formEncType",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formMethod",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formNoValidate",
+                    "type": "boolean",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "formTarget",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "href",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ref",
+                    "type": "Ref<HTMLButtonElement>",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "value",
+                    "type": "string | number | readonly string[]",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  }
+                ]
+              },
+              {
+                "name": "href: string",
+                "props": [
+                  {
+                    "name": "download",
+                    "type": "any",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "href",
+                    "type": "string",
+                    "required": true,
+                    "description": "When present the button renders as a link (through the `LufiaProvider` link component)."
+                  },
+                  {
+                    "name": "hrefLang",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "media",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ping",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "ref",
+                    "type": "Ref<HTMLAnchorElement>",
+                    "required": false,
+                    "description": "Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do).",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "referrerPolicy",
+                    "type": "\"\" | \"origin\" | \"no-referrer\" | \"no-referrer-when-downgrade\" | \"origin-when-cross-origin\" | \"same-origin\" | \"strict-origin\" | \"strict-origin-when-cross-origin\" | \"unsafe-url\"",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "target",
+                    "type": "HTMLAttributeAnchorTarget",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "IconButtonProps",
@@ -5523,7 +5927,21 @@
           "description": "The link component and labels in effect. Safe outside a provider: it returns the defaults.",
           "signature": "(): LufiaContextValue",
           "parameters": [],
-          "returns": "LufiaContextValue"
+          "returns": "LufiaContextValue",
+          "returnMembers": [
+            {
+              "name": "linkComponent",
+              "type": "LinkComponent",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "labels",
+              "type": "LufiaLabels",
+              "required": true,
+              "description": ""
+            }
+          ]
         }
       ],
       "aliases": {
@@ -8600,7 +9018,7 @@
     {
       "name": "Select",
       "category": "Forms",
-      "summary": "A native select styled with tokens, for choosing one option from a short list.",
+      "summary": "A native select (dropdown) styled with tokens, for choosing one option from a short list.",
       "status": "beta",
       "source": "src/components/Select",
       "entry": {
@@ -10884,7 +11302,51 @@
           "description": "The toast API when rendered inside a `ToastProvider`, otherwise `null`: for code that may run outside one.",
           "signature": "(): ToastApi | null",
           "parameters": [],
-          "returns": "ToastApi | null"
+          "returns": "ToastApi | null",
+          "returnMembers": [
+            {
+              "name": "show",
+              "type": "(options: ToastOptions) => string",
+              "required": true,
+              "description": "Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice."
+            },
+            {
+              "name": "info",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "success",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "warning",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "error",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "dismiss",
+              "type": "(id: string) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "clear",
+              "type": "() => void",
+              "required": true,
+              "description": "Dismisses every toast."
+            }
+          ]
         },
         {
           "name": "useToast",
@@ -10892,7 +11354,51 @@
           "description": "Show and dismiss notifications. Must be used inside a `ToastProvider`.",
           "signature": "(): ToastApi",
           "parameters": [],
-          "returns": "ToastApi"
+          "returns": "ToastApi",
+          "returnMembers": [
+            {
+              "name": "show",
+              "type": "(options: ToastOptions) => string",
+              "required": true,
+              "description": "Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice."
+            },
+            {
+              "name": "info",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "success",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "warning",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "error",
+              "type": "(message: ReactNode, options?: Omit<ToastOptions, \"message\" | \"tone\"> | undefined) => string",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "dismiss",
+              "type": "(id: string) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "clear",
+              "type": "() => void",
+              "required": true,
+              "description": "Dismisses every toast."
+            }
+          ]
         }
       ],
       "aliases": {
@@ -11153,7 +11659,8 @@
               "description": ""
             }
           ],
-          "returns": "void"
+          "returns": "void",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -11241,7 +11748,8 @@
               "description": ""
             }
           ],
-          "returns": "void"
+          "returns": "void",
+          "returnMembers": null
         }
       ],
       "aliases": {},
@@ -11363,7 +11871,8 @@
               "description": ""
             }
           ],
-          "returns": "void"
+          "returns": "void",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -11456,7 +11965,8 @@
               "description": ""
             }
           ],
-          "returns": "boolean"
+          "returns": "boolean",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -11575,7 +12085,45 @@
               "description": ""
             }
           ],
-          "returns": "{ readonly modal: string | null; readonly id: string | null; readonly returnModal: string | null; readonly returnId: string | null; readonly open: (name: string, itemId?: string | undefined, options?: ModalOpenOptions | undefined) => void; readonly close: () => void; }"
+          "returns": "{ readonly modal: string | null; readonly id: string | null; readonly returnModal: string | null; readonly returnId: string | null; readonly open: (name: string, itemId?: string | undefined, options?: ModalOpenOptions | undefined) => void; readonly close: () => void; }",
+          "returnMembers": [
+            {
+              "name": "modal",
+              "type": "string | null",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "id",
+              "type": "string | null",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "returnModal",
+              "type": "string | null",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "returnId",
+              "type": "string | null",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "open",
+              "type": "(name: string, itemId?: string | undefined, options?: ModalOpenOptions | undefined) => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "close",
+              "type": "() => void",
+              "required": true,
+              "description": ""
+            }
+          ]
         }
       ],
       "aliases": {
@@ -11675,7 +12223,75 @@
               "description": ""
             }
           ],
-          "returns": "{ page: number; pageSize: number; total: number; totalPages: number; slice: T[]; setPage: Dispatch<SetStateAction<number>>; hasPrev: boolean; hasNext: boolean; goPrev: () => void; goNext: () => void; show: boolean; }"
+          "returns": "{ page: number; pageSize: number; total: number; totalPages: number; slice: T[]; setPage: Dispatch<SetStateAction<number>>; hasPrev: boolean; hasNext: boolean; goPrev: () => void; goNext: () => void; show: boolean; }",
+          "returnMembers": [
+            {
+              "name": "page",
+              "type": "number",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "pageSize",
+              "type": "number",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "total",
+              "type": "number",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "totalPages",
+              "type": "number",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "slice",
+              "type": "T[]",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "setPage",
+              "type": "Dispatch<SetStateAction<number>>",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "hasPrev",
+              "type": "boolean",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "hasNext",
+              "type": "boolean",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "goPrev",
+              "type": "() => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "goNext",
+              "type": "() => void",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "show",
+              "type": "boolean",
+              "required": true,
+              "description": "False when everything fits on one page, so a pager can be left out."
+            }
+          ]
         }
       ],
       "aliases": {},
@@ -11740,7 +12356,8 @@
           "description": "Whether the user asked the system for reduced motion (`prefers-reduced-motion: reduce`). Follows runtime changes. Use it for motion that CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, or deciding whether to wait for an exit animation before unmounting.",
           "signature": "(): boolean",
           "parameters": [],
-          "returns": "boolean"
+          "returns": "boolean",
+          "returnMembers": null
         }
       ],
       "aliases": {},
@@ -11832,7 +12449,8 @@
               "description": ""
             }
           ],
-          "returns": "RefObject<HTMLSpanElement | null>"
+          "returns": "RefObject<HTMLSpanElement | null>",
+          "returnMembers": null
         }
       ],
       "aliases": {
@@ -11923,7 +12541,8 @@
               "description": ""
             }
           ],
-          "returns": "StepDirection | undefined"
+          "returns": "StepDirection | undefined",
+          "returnMembers": null
         }
       ],
       "aliases": {

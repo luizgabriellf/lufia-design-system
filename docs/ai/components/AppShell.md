@@ -95,6 +95,25 @@ Other native element attributes pass through to the root element.
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+##### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
+| `type` | `"submit" \| "reset" \| "button"` | no | Native attribute in this form. |
+
+##### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | yes |  |
+| `onClick` | `(() => void)` | no | In every form; only its type differs. |
+
 ### `MobileFloatBarSeparator`
 
 No props of its own.
@@ -201,6 +220,15 @@ useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: P
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `onPointerDown` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 
 ### `useShellPrimaryAction`
 

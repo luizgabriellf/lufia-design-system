@@ -26,12 +26,48 @@ function table(headers, rows) {
   ].join("\n");
 }
 
+/** The "Variants" block of a discriminated-union props type; empty for plain props. */
+function variantsBlock(variants) {
+  if (!variants) return "";
+  const lines = ["", "", "#### Variants", ""];
+  lines.push(
+    `The props are a union of forms${variants.discriminant ? `; ${code(variants.discriminant)} selects the form` : ""}. ` +
+      "Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated." +
+      (variants.nativeTypesDiffer
+        ? " Native element attributes (event handlers, for instance) are typed for each form's element."
+        : ""),
+  );
+  for (const branch of variants.branches) {
+    lines.push("", `##### ${code(branch.name)}`, "");
+    lines.push(
+      branch.props.length === 0
+        ? "No props of its own beyond the shared ones."
+        : table(
+            ["Prop", "Type", "Required", "Description"],
+            branch.props.map((p) => [
+              code(p.name),
+              code(p.type),
+              p.required ? "yes" : "no",
+              [
+                p.description,
+                p.native ? "Native attribute in this form." : "",
+                p.onlyTypeDiffers ? "In every form; only its type differs." : "",
+              ]
+                .filter(Boolean)
+                .join(" "),
+            ]),
+          ),
+    );
+  }
+  return lines.join("\n");
+}
+
 function propsSection(component) {
   const parts = [];
   const seen = new Map();
   for (const item of component.exports) {
     if (item.kind === "component") {
-      const key = JSON.stringify(item.props);
+      const key = JSON.stringify([item.props, item.variants ?? null]);
       if (seen.has(key)) {
         seen.get(key).names.push(item.name);
         continue;
@@ -61,7 +97,7 @@ function propsSection(component) {
       ? "\n\nOther native element attributes pass through to the root element."
       : "";
     out.push(
-      `### ${heading}\n\n${table(["Prop", "Type", "Required", "Default", "Description"], rows)}${note}`,
+      `### ${heading}\n\n${table(["Prop", "Type", "Required", "Default", "Description"], rows)}${note}${variantsBlock(item.variants)}`,
     );
   }
   for (const { hook } of parts) {
@@ -74,6 +110,22 @@ function propsSection(component) {
         table(
           ["Parameter", "Type", "Required", "Description"],
           hook.parameters.map((p) => [code(p.name), code(p.type), p.required ? "yes" : "no", p.description]),
+        ),
+      );
+    }
+    if (hook.returnMembers?.length) {
+      lines.push(
+        "",
+        "Returned members:",
+        "",
+        table(
+          ["Member", "Type", "Required", "Description"],
+          hook.returnMembers.map((m) => [
+            code(m.name),
+            code(m.type),
+            m.required ? "yes" : "no",
+            m.description,
+          ]),
         ),
       );
     }

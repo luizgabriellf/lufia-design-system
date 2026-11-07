@@ -70,11 +70,15 @@ export const ENTRIES: Entry[] = [
   ),
   c("TextInput", "Forms", "A single-line text field with optional prefix and suffix."),
   c("Textarea", "Forms", "A multi-line text field that can show a character count."),
-  c("Select", "Forms", "A native select styled with tokens, for choosing one option from a short list."),
+  c(
+    "Select",
+    "Forms",
+    "A native select (dropdown) styled with tokens, for choosing one option from a short list.",
+  ),
   c(
     "Combobox",
     "Forms",
-    "A searchable single-select input with async options, following the APG combobox pattern.",
+    "A searchable single-select dropdown input with async options, following the APG combobox pattern.",
     apg("Combobox", "combobox"),
   ),
   c(

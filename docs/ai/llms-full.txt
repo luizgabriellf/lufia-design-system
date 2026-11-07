@@ -612,6 +612,25 @@ Other native element attributes pass through to the root element.
 
 Other native element attributes pass through to the root element.
 
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+###### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
+| `type` | `"submit" \| "reset" \| "button"` | no | Native attribute in this form. |
+
+###### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | yes |  |
+| `onClick` | `(() => void)` | no | In every form; only its type differs. |
+
 #### `MobileFloatBarSeparator`
 
 No props of its own.
@@ -718,6 +737,15 @@ useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: P
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `onPointerDown` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 
 #### `useShellPrimaryAction`
 
@@ -1248,6 +1276,38 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated. Native element attributes (event handlers, for instance) are typed for each form's element.
+
+###### `AsButton`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `form` | `string` | no | Native attribute in this form. |
+| `formAction` | `string \| ((formData: FormData) => void \| Promise<void>)` | no | Native attribute in this form. |
+| `formEncType` | `string` | no | Native attribute in this form. |
+| `formMethod` | `string` | no | Native attribute in this form. |
+| `formNoValidate` | `boolean` | no | Native attribute in this form. |
+| `formTarget` | `string` | no | Native attribute in this form. |
+| `href` | `undefined` | no |  |
+| `name` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLButtonElement>` | no | In every form; only its type differs. |
+| `value` | `string \| number \| readonly string[]` | no | Native attribute in this form. |
+
+###### `AsLink`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `download` | `any` | no | Native attribute in this form. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `hrefLang` | `string` | no | Native attribute in this form. |
+| `media` | `string` | no | Native attribute in this form. |
+| `ping` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). In every form; only its type differs. |
+| `referrerPolicy` | `"" \| "origin" \| "no-referrer" \| "no-referrer-when-downgrade" \| "origin-when-cross-origin" \| "same-origin" \| "strict-origin" \| "strict-origin-when-cross-origin" \| "unsafe-url"` | no | Native attribute in this form. |
+| `target` | `HTMLAttributeAnchorTarget` | no | Native attribute in this form. |
 
 ### Types
 
@@ -1840,7 +1900,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 
 ## Combobox
 
-> A searchable single-select input with async options, following the APG combobox pattern.
+> A searchable single-select dropdown input with async options, following the APG combobox pattern.
 
 - Status: beta
 - Category: Forms
@@ -2158,6 +2218,13 @@ A promise-based replacement for `window.confirm()`: ```tsx const { confirm, conf
 ```ts
 useConfirmDialog(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `confirm` | `(next: ConfirmOptions) => Promise<boolean>` | yes |  |
+| `confirmDialog` | `Element \| null` | yes |  |
 
 ### Types
 
@@ -2754,6 +2821,16 @@ useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby
 | --- | --- | --- | --- |
 | `own` | `OwnProps` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string \| undefined` | yes |  |
+| `aria-describedby` | `string \| undefined` | yes |  |
+| `aria-invalid` | `true \| undefined` | yes |  |
+| `required` | `true \| undefined` | yes |  |
+| `disabled` | `true \| undefined` | yes |  |
+
 #### `useFormFieldLabelId`
 
 The id of the surrounding `FormField`'s label element, for widgets that need to name a second element (a listbox, a popup) after the field. `undefined` outside a field.
@@ -2854,6 +2931,38 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated. Native element attributes (event handlers, for instance) are typed for each form's element.
+
+###### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `form` | `string` | no | Native attribute in this form. |
+| `formAction` | `string \| ((formData: FormData) => void \| Promise<void>)` | no | Native attribute in this form. |
+| `formEncType` | `string` | no | Native attribute in this form. |
+| `formMethod` | `string` | no | Native attribute in this form. |
+| `formNoValidate` | `boolean` | no | Native attribute in this form. |
+| `formTarget` | `string` | no | Native attribute in this form. |
+| `href` | `undefined` | no |  |
+| `name` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLButtonElement>` | no | In every form; only its type differs. |
+| `value` | `string \| number \| readonly string[]` | no | Native attribute in this form. |
+
+###### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `download` | `any` | no | Native attribute in this form. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `hrefLang` | `string` | no | Native attribute in this form. |
+| `media` | `string` | no | Native attribute in this form. |
+| `ping` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). In every form; only its type differs. |
+| `referrerPolicy` | `"" \| "origin" \| "no-referrer" \| "no-referrer-when-downgrade" \| "origin-when-cross-origin" \| "same-origin" \| "strict-origin" \| "strict-origin-when-cross-origin" \| "unsafe-url"` | no | Native attribute in this form. |
+| `target` | `HTMLAttributeAnchorTarget` | no | Native attribute in this form. |
 
 ### Types
 
@@ -3055,6 +3164,13 @@ The link component and labels in effect. Safe outside a provider: it returns the
 ```ts
 useLufia(): LufiaContextValue
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `linkComponent` | `LinkComponent` | yes |  |
+| `labels` | `LufiaLabels` | yes |  |
 
 ### Types
 
@@ -4597,7 +4713,7 @@ the dimension being chosen ("View", "Billing period").
 
 ## Select
 
-> A native select styled with tokens, for choosing one option from a short list.
+> A native select (dropdown) styled with tokens, for choosing one option from a short list.
 
 - Status: beta
 - Category: Forms
@@ -5824,6 +5940,18 @@ The toast API when rendered inside a `ToastProvider`, otherwise `null`: for code
 useOptionalToast(): ToastApi | null
 ```
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
+
 #### `useToast`
 
 Show and dismiss notifications. Must be used inside a `ToastProvider`.
@@ -5831,6 +5959,18 @@ Show and dismiss notifications. Must be used inside a `ToastProvider`.
 ```ts
 useToast(): ToastApi
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
 
 ### Types
 
@@ -6382,6 +6522,17 @@ useModalState({ adapter, keys, onNavigate, }?: UseModalStateOptions): { readonly
 | --- | --- | --- | --- |
 | `__0` | `UseModalStateOptions` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modal` | `string \| null` | yes |  |
+| `id` | `string \| null` | yes |  |
+| `returnModal` | `string \| null` | yes |  |
+| `returnId` | `string \| null` | yes |  |
+| `open` | `(name: string, itemId?: string \| undefined, options?: ModalOpenOptions \| undefined) => void` | yes |  |
+| `close` | `() => void` | yes |  |
+
 ### Types
 
 - `ModalOpenOptions`: `{ consumeKeys?: readonly string[] | undefined; }`
@@ -6467,6 +6618,22 @@ usePagination<T>(items: readonly T[], pageSize?: number, resetKey?: string): { p
 | `items` | `readonly T[]` | yes |  |
 | `pageSize` | `number` | no |  |
 | `resetKey` | `string` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `page` | `number` | yes |  |
+| `pageSize` | `number` | yes |  |
+| `total` | `number` | yes |  |
+| `totalPages` | `number` | yes |  |
+| `slice` | `T[]` | yes |  |
+| `setPage` | `Dispatch<SetStateAction<number>>` | yes |  |
+| `hasPrev` | `boolean` | yes |  |
+| `hasNext` | `boolean` | yes |  |
+| `goPrev` | `() => void` | yes |  |
+| `goNext` | `() => void` | yes |  |
+| `show` | `boolean` | yes | False when everything fits on one page, so a pager can be left out. |
 
 ### Example
 
