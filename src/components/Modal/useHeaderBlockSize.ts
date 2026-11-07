@@ -16,7 +16,7 @@ export const HEADER_BLOCK_SIZE_PROPERTY = "--lufia-modal-header-block-size";
 export function useHeaderBlockSize(
   panelRef: RefObject<HTMLElement | null>,
   headerRef: RefObject<HTMLElement | null>,
-  { watch, overlaps }: { watch: boolean; overlaps: boolean },
+  { watch, overlaps, target }: { watch: boolean; overlaps: boolean; target?: unknown },
 ) {
   useEffect(() => {
     const panel = panelRef.current;
@@ -32,5 +32,6 @@ export function useHeaderBlockSize(
     });
     observer.observe(header);
     return () => observer.disconnect();
-  }, [panelRef, headerRef, watch, overlaps]);
+    // `target` is the portal target: when it changes the panel and header remount, so the old observer is stale.
+  }, [panelRef, headerRef, watch, overlaps, target]);
 }

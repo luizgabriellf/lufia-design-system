@@ -203,6 +203,7 @@ export function Modal({
   useHeaderBlockSize(panelRef, headerRef, {
     watch: mounted && (open || keepMounted),
     overlaps: !scrollShadow,
+    target: container ?? hostDialog,
   });
   useBodyScrollLock(visible, { scrollContainerSelectors });
   useFocusTrap(visible, panelRef, {

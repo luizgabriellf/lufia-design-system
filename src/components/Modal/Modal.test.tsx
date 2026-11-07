@@ -284,6 +284,23 @@ describe("Modal", () => {
       expect(property(dialog)).toBe("64px");
     });
 
+    it("re-observes the new header when the portal target changes while open", () => {
+      const first = document.body.appendChild(document.createElement("div"));
+      const second = document.body.appendChild(document.createElement("div"));
+      const { rerender } = render(<Modal open onClose={() => {}} title="T" container={first} />);
+      const dialog = () => screen.getByRole("dialog");
+      expect(dialog().style.getPropertyValue("--lufia-modal-header-block-size")).toBe("64px");
+      headerHeight = 80;
+      rerender(<Modal open onClose={() => {}} title="T" container={second} />);
+      expect(second.contains(dialog())).toBe(true);
+      expect(dialog().style.getPropertyValue("--lufia-modal-header-block-size")).toBe("80px");
+      const header = dialog().querySelector("[data-lufia-part='header']")!;
+      const live = observers.filter((o) => !o.disconnected && o.observed.length > 0);
+      expect(live.map((o) => o.observed[0])).toEqual([header]);
+      act(() => live[0]!.callback([{ borderBoxSize: [{ blockSize: 100 }] }]));
+      expect(dialog().style.getPropertyValue("--lufia-modal-header-block-size")).toBe("100px");
+    });
+
     it("stops observing when the modal closes", async () => {
       render(<Harness />);
       const { user } = await openModal();
