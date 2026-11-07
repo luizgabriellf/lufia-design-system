@@ -12,7 +12,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatedNumber } from "../../motion";
-import { usePresence } from "../AppShell/usePresence";
+import { usePresence } from "../internal/usePresence";
 import { IconButton } from "../IconButton";
 import type { ButtonVariant } from "../Button";
 import { useBodyScrollLock } from "../useBodyScrollLock";
