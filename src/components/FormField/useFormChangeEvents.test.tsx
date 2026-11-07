@@ -12,6 +12,12 @@ const options = [
 ];
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 20));
+/** Waits for React to commit and the effects to run, however slow the machine is, then a little longer to catch extras. */
+async function settle(done: () => boolean) {
+  for (let waited = 0; !done() && waited < 2000; waited += 10)
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  await wait();
+}
 
 type Mode = "uncontrolled" | "controlled" | "transition";
 
@@ -66,7 +72,7 @@ describe("form change events without act", () => {
 
   async function mount(kind: "radio" | "segmented", mode: Mode) {
     startTransition(() => root.render(<Parent kind={kind} mode={mode} />));
-    await wait();
+    await settle(() => host.querySelector("form") !== null);
     host.querySelector("form")!.addEventListener("change", listener);
     host.querySelector("form")!.addEventListener("input", listener);
   }
@@ -79,7 +85,7 @@ describe("form change events without act", () => {
       it("fires input and change once for a click", async () => {
         await mount(kind, mode);
         radio("Beta").click();
-        await wait();
+        await settle(() => events.length >= 2);
         expect(events).toEqual(["input:b", "change:b"]);
       });
 
@@ -89,7 +95,7 @@ describe("form change events without act", () => {
         radio("Alpha").dispatchEvent(
           new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }),
         );
-        await wait();
+        await settle(() => events.length >= 2);
         expect(events).toEqual(["input:b", "change:b"]);
       });
     });
