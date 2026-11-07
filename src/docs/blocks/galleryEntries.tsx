@@ -53,7 +53,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Badge",
     preview: (
-      <div className={styles.iconRow}>
+      <div className={styles.chipRow}>
         <Badge tone="success" dot>
           Done
         </Badge>

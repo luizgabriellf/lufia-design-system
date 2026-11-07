@@ -14,10 +14,7 @@
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
   line-height: var(--lufia-font-line-height-normal);
-
-  /* break-word, not anywhere: a short label never splits mid-word when its row is tight,
-     and an unbroken long string still wraps instead of overflowing. */
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   vertical-align: middle;
 }
 
