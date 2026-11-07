@@ -1753,6 +1753,13 @@
               "required": false,
               "default": "\"visible\"",
               "description": "`\"hidden\"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `\"visible\"`."
+            },
+            {
+              "name": "valueWrap",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Lets `value` wrap onto several lines (and break inside a long word) instead of staying on one line, for a value that is text rather than a number (\"12 of 40 sites checked\", a range of dates). The value column then takes at most half the row and the name keeps the rest. Off by default, so numbers stay on one line. A very long note belongs in `detail`, which always wraps."
             }
           ],
           "nativeProps": true
@@ -1761,7 +1768,7 @@
           "name": "BarListProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: \"hidden\" | \"visible\" | undefined; }"
+          "definition": null
         },
         {
           "name": "BarListRow",
@@ -1771,7 +1778,6 @@
         }
       ],
       "aliases": {
-        "BarListProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: \"hidden\" | \"visible\" | undefined; }",
         "BarListRow": "{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }"
       },
       "story": {
@@ -1792,6 +1798,14 @@
           {
             "export": "LongNames",
             "id": "components-data-display-barlist--long-names"
+          },
+          {
+            "export": "LongValues",
+            "id": "components-data-display-barlist--long-values"
+          },
+          {
+            "export": "LongValuesPhone320",
+            "id": "components-data-display-barlist--long-values-phone-320"
           },
           {
             "export": "WithReference",
@@ -2947,7 +2961,7 @@
         {
           "name": "ColumnChart",
           "kind": "component",
-          "description": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.",
+          "description": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the drawing is `aria-hidden` shape on top of it (unless `interactive`, which exposes the columns). One scale for the whole chart, so columns compare. A zero column keeps its slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead. Opt-in: `interactive` makes each column focusable with a tooltip (hover, focus, tap; Escape dismisses), `printValues` prints the totals above the columns, a column `band` draws an error bar, and a series `pattern` adds a non-colour cue.",
           "props": [
             {
               "name": "title",
@@ -2997,6 +3011,34 @@
               "required": false,
               "default": "\"auto\"",
               "description": "The legend of a stacked chart. `\"auto\"` (default) shows it when there is more than one series."
+            },
+            {
+              "name": "interactive",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Makes every column a focusable element named \"<column label>: <values> · <detail>\" that shows a tooltip on hover, focus and tap. Escape dismisses the tooltip. Off by default: the chart is then static and needs no client code."
+            },
+            {
+              "name": "printValues",
+              "type": "boolean | \"auto\"",
+              "required": false,
+              "default": "false",
+              "description": "Prints the formatted total above each column. `\"auto\"` prints it when there are 6 columns or fewer, so a long strip does not crowd; `true` always and `false` (default) never. The numbers repeat the data table, so they are hidden from assistive technology."
+            },
+            {
+              "name": "bandLabel",
+              "type": "string",
+              "required": false,
+              "default": "\"Range\"",
+              "description": "Names the range row of the data table and the range in the tooltip, when a column has a `band`. Aria and tooltip text, so it has an English default. Defaults to `\"Range\"`."
+            },
+            {
+              "name": "columnLabel",
+              "type": "string",
+              "required": false,
+              "default": "\"column\"",
+              "description": "What a screen reader calls each column when `interactive` is set (`aria-roledescription`), so it is announced as a \"column\", not as an image, which tells people the arrow keys move between columns. Aria-only text, so it has an English default. Defaults to `\"column\"`."
             }
           ],
           "nativeProps": true
@@ -3005,7 +3047,7 @@
           "name": "ColumnChartColumn",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: ReactNode; values: readonly number[]; }"
+          "definition": "{ key: string; label: ReactNode; values: readonly number[]; detail?: string | undefined; band?: { low: number; high: number; } | undefined; }"
         },
         {
           "name": "ColumnChartProps",
@@ -3017,12 +3059,12 @@
           "name": "ColumnChartSeries",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: string; tone?: ChartTone | undefined; }"
+          "definition": "{ key: string; label: string; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
         }
       ],
       "aliases": {
-        "ColumnChartColumn": "{ key: string; label: ReactNode; values: readonly number[]; }",
-        "ColumnChartSeries": "{ key: string; label: string; tone?: ChartTone | undefined; }"
+        "ColumnChartColumn": "{ key: string; label: ReactNode; values: readonly number[]; detail?: string | undefined; band?: { low: number; high: number; } | undefined; }",
+        "ColumnChartSeries": "{ key: string; label: string; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
       },
       "story": {
         "docsId": "components-data-display-columnchart--docs",
@@ -3068,6 +3110,50 @@
             "id": "components-data-display-columnchart--long-portuguese-text"
           },
           {
+            "export": "Interactive",
+            "id": "components-data-display-columnchart--interactive"
+          },
+          {
+            "export": "InteractiveStacked",
+            "id": "components-data-display-columnchart--interactive-stacked"
+          },
+          {
+            "export": "InteractiveLongPortugueseText",
+            "id": "components-data-display-columnchart--interactive-long-portuguese-text"
+          },
+          {
+            "export": "InteractivePhone320",
+            "id": "components-data-display-columnchart--interactive-phone-320"
+          },
+          {
+            "export": "InteractiveRightToLeft",
+            "id": "components-data-display-columnchart--interactive-right-to-left"
+          },
+          {
+            "export": "PrintedValues",
+            "id": "components-data-display-columnchart--printed-values"
+          },
+          {
+            "export": "PrintedValuesAuto",
+            "id": "components-data-display-columnchart--printed-values-auto"
+          },
+          {
+            "export": "PrintedValuesStacked",
+            "id": "components-data-display-columnchart--printed-values-stacked"
+          },
+          {
+            "export": "WithBand",
+            "id": "components-data-display-columnchart--with-band"
+          },
+          {
+            "export": "HatchedSeries",
+            "id": "components-data-display-columnchart--hatched-series"
+          },
+          {
+            "export": "EverythingOn",
+            "id": "components-data-display-columnchart--everything-on"
+          },
+          {
             "export": "Phone320",
             "id": "components-data-display-columnchart--phone-320"
           },
@@ -3093,6 +3179,7 @@
           "code": "import { ColumnChart } from \"@lufia/design-system/components/ColumnChart\";\n\n// A weekly strip: one series\n<ColumnChart\n  title=\"Deliveries this week\"\n  series={[{ key: \"done\", label: \"Deliveries\" }]}\n  columns={[\n    { key: \"mon\", label: \"Mon\", values: [4] },\n    { key: \"tue\", label: \"Tue\", values: [8] },\n  ]}\n/>\n\n// Stacked columns: one number per series, the first series at the bottom\n<ColumnChart\n  title=\"Orders by delivery state\"\n  series={[\n    { key: \"ok\", label: \"On time\", tone: \"success\" },\n    { key: \"late\", label: \"Late\", tone: \"danger\" },\n  ]}\n  columns={[{ key: \"w1\", label: \"Week 1\", values: [6, 2] }]}\n  formatValue={(value) => value.toLocaleString(\"en\")}\n/>;"
         },
         "whenToUse": [
+          "Hovering or tapping a column should explain it (a holiday, an outlier): `interactive` with `detail`.",
           "A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts."
         ],
         "whenNotToUse": [
@@ -3105,16 +3192,37 @@
       },
       "a11y": {
         "pattern": null,
-        "keyboard": [],
+        "keyboard": [
+          {
+            "keys": "`Tab`",
+            "action": "Enters the columns at the last one focused (the first at first), and leaves them on the next press"
+          },
+          {
+            "keys": "`Arrow Right` / `Arrow Left`",
+            "action": "Next or previous column and shows its tooltip (swapped in right-to-left)"
+          },
+          {
+            "keys": "`Home` / `End`",
+            "action": "First or last column"
+          },
+          {
+            "keys": "`Escape`",
+            "action": "Dismisses the tooltip; focus stays on the column"
+          }
+        ],
         "keyboardNotes": null,
         "notes": [
-          "The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.",
+          "The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it, except when `interactive` is set, where the columns are exposed as named images. Write the numbers with `formatValue`.",
           "The `figure` is named by its `title`; `titleVisibility=\"hidden\"` keeps that name for screen readers only. A written `summary` says what the columns show.",
           "Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.",
           "The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.",
           "Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.",
           "Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.",
-          "Print the figures people need as text beside the chart: the drawing has no value labels."
+          "Print the figures people need as text beside the chart: the drawing has no value labels, unless you set `printValues`.",
+          "`interactive`: each column is a focusable `role=\"img\"` named `<column label>: <values> · <detail>` and announced as a \"column\" (`aria-roledescription`, set with `columnLabel`, so people know the arrow keys move between columns) (a series is named when there are several; a `band` adds \"`bandLabel` low – high\"). The tooltip repeats that text visually, so it is hidden from assistive technology and there is no `aria-describedby`; the detail would be read twice. It follows the WCAG 1.4.13 conditions: Escape dismisses it (and stops there, so a dialog around the chart stays open), the pointer can move onto it, and it stays until the pointer or focus leaves. It is at most two thirds of the plot wide and anchored to the plot edge on the outer thirds, so it does not overflow, down to 320px. It fades in on `opacity`, and not at all under `prefers-reduced-motion`. A column label that is not text names the column from the label element and its values.",
+          "`printValues`: the printed totals repeat the data table, so they are hidden from assistive technology.",
+          "`band`: counted in the scale maximum and listed in the data table, under `bandLabel` (an English default, as it is aria text; set it in your language). It is drawn as a stem with two caps; in `forced-colors` mode it uses `CanvasText`.",
+          "`pattern=\"hatch\"`: diagonal stripes in the card colour over the series colour, in the columns and in the legend. In `forced-colors` mode every series already has its own fill pattern, which replaces the hatch."
         ]
       },
       "motion": {
@@ -3122,10 +3230,13 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-bg-surface",
+        "--lufia-color-bg-surface-raised",
         "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
         "--lufia-color-status-danger-solid",
         "--lufia-color-status-success-fg",
         "--lufia-color-status-warning-fg",
@@ -3141,8 +3252,13 @@
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
+        "--lufia-motion-duration-instant",
         "--lufia-motion-duration-medium",
-        "--lufia-motion-easing-out"
+        "--lufia-motion-easing-out",
+        "--lufia-radius-md",
+        "--lufia-radius-sm",
+        "--lufia-shadow-md",
+        "--lufia-z-dropdown"
       ]
     },
     {
@@ -7428,7 +7544,7 @@
         {
           "name": "RadioGroup",
           "kind": "component",
-          "description": "One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description, and the `card` variant draws the options as bordered rows with room for `meta` and `content`.",
+          "description": "One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description, and the `card` variant draws the options as bordered rows with room for `meta` and `content`. When the user chooses an option (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from the hidden input (from the group when there is no `name`), so a native `addEventListener(\"change\")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there. A `value` set by the parent, a form reset and choosing the option already chosen dispatch nothing.",
           "props": [
             {
               "name": "label",
@@ -8292,7 +8408,7 @@
         {
           "name": "SegmentedToggle",
           "kind": "component",
-          "description": "Two to four compact choices where exactly one is always chosen, such as a view or a mode, as a WAI-ARIA radio group with roving arrow keys. An indicator slides behind the chosen segment. It is a choice that applies to what is shown, not a navigation (use `PeerNav`) and not on/off (use `Switch`).",
+          "description": "Two to four compact choices where exactly one is always chosen, such as a view or a mode, as a WAI-ARIA radio group with roving arrow keys. An indicator slides behind the chosen segment. It is a choice that applies to what is shown, not a navigation (use `PeerNav`) and not on/off (use `Switch`). When the user chooses a segment (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from the hidden input (from the group when there is no `name`), so a native `addEventListener(\"change\")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there. A `value` set by the parent, a form reset and choosing the segment already chosen dispatch nothing.",
           "props": [
             {
               "name": "label",
@@ -11195,7 +11311,7 @@
         {
           "name": "getFocusableElements",
           "kind": "function",
-          "description": "The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that is `null` for fixed-position children.",
+          "description": "The tabbable descendants of `root`, in keyboard Tab order. Not `offsetParent`-based: that is `null` for fixed-position children. Positive tabindex values precede the natural DOM order; negative tabindex values are only programmatically focusable.",
           "signature": "(root: HTMLElement): HTMLElement[]"
         },
         {
