@@ -96,6 +96,12 @@ With `name`, the chosen value is submitted with the form.
 
 <Section id="accessibility">
 
+### Form events
+
+When the user chooses an option (a click or an arrow key), a bubbling `input` Event and then a bubbling `change` Event are dispatched from the hidden input (from the group itself when there is no `name`), after the new value is in the DOM. A listener on the `<form>` can tell that the user edited it, as with native radios. Nothing is dispatched for a `value` that the parent sets, for a form reset, or for choosing what is already chosen. A controlled parent must accept the value in the same update as `onValueChange`.
+
+A form reset restores the `defaultValue` of the latest render, as native fields do, including when a form action has just changed it.
+
 ### Accessibility
 
 Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) pattern.

@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { FieldError, FieldHint } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormChangeEvents } from "../FormField/useFormChangeEvents";
 import { useFormReset } from "../FormField/useFormReset";
 import { useSubmitIntent } from "../FormField/useSubmitIntent";
 import { useLufia } from "../LufiaProvider";
@@ -64,6 +65,10 @@ export type RadioGroupProps = Omit<
  * One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the
  * arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description, and the `card`
  * variant draws the options as bordered rows with room for `meta` and `content`.
+ *
+ * When the user chooses an option (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from
+ * the hidden input (from the group when there is no `name`), so a form-level listener sees it as it would a native radio.
+ * A `value` set by the parent, a form reset and choosing the option already chosen dispatch nothing.
  */
 export function RadioGroup({
   label,
@@ -98,12 +103,15 @@ export function RadioGroup({
   const errorId = shownError ? `${baseId}-error` : undefined;
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
   // Choosing something settles a refused submission.
+  const root = useRef<HTMLDivElement>(null);
+  const field = useRef<HTMLInputElement>(null);
+  const announce = useFormChangeEvents(value, () => field.current ?? root.current);
   const choose = (next: string) => {
     setMissing(null);
+    announce(next);
     setValue(next);
   };
   const keys = useRadioKeys(items, value, choose);
-  const root = useRef<HTMLDivElement>(null);
   const submitting = useSubmitIntent(root);
   useFormReset(root, () => {
     setMissing(null);
@@ -200,7 +208,7 @@ export function RadioGroup({
           );
         })}
       </div>
-      {name && value ? <input type="hidden" name={name} value={value} /> : null}
+      {name && value ? <input ref={field} type="hidden" name={name} value={value} /> : null}
       {/*
         Radios are buttons, which the browser never validates. A required group therefore carries an invisible text input
         that is empty until something is chosen: it makes the form refuse to submit and shows the browser's own message.

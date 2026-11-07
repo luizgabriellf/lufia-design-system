@@ -11,8 +11,11 @@ export function useFormReset(ref: RefObject<HTMLElement | null>, onReset: () => 
   const latest = useRef(onReset);
   const attached = useRef<HTMLFormElement | null>(null);
   const listener = useRef(() => latest.current());
+  // Saved during render, not in an effect: React 19 resets a form in the commit of its action, before any effect of that
+  // commit runs, so a callback saved by an effect would still carry the defaults of the previous render.
+  // eslint-disable-next-line react-hooks/refs
+  latest.current = onReset;
   useEffect(() => {
-    latest.current = onReset;
     // Checked after every render: the `form` attribute of a control can point it at another form at any time.
     const element = ref.current;
     const form = (element as HTMLInputElement | null)?.form ?? element?.closest("form") ?? null;
