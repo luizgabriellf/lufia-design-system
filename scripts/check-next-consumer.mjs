@@ -55,11 +55,11 @@ try {
   cpSync(fixture, app, { recursive: true });
 
   // Install exactly the public package surface: a packed tarball, not source files.
-  const packOutput = execFileSync(
-    "npm",
-    ["pack", "--json", "--ignore-scripts", "--pack-destination", app],
-    { cwd: root, env: environment, encoding: "utf8" },
-  );
+  const packOutput = execFileSync("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", app], {
+    cwd: root,
+    env: environment,
+    encoding: "utf8",
+  });
   const [{ filename }] = JSON.parse(packOutput);
   const pkgPath = join(app, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
