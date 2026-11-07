@@ -12,7 +12,7 @@ npm run storybook  # http://127.0.0.1:6006
 npm run check      # typecheck, lint, stylelint, format, tests, contrast, motion rules
 ```
 
-Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browser` (Playwright against Storybook; see `docs/PLAYWRIGHT.md`), `test:consumer:next` (run `build` first; builds a Next.js app against the packed package), `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
+Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browser` (Playwright against Storybook; see `docs/PLAYWRIGHT.md`), `test:consumer:next` (run `build` first; builds a Next.js app against the packed package), `check:static` (`check` without the unit tests), `verify:package` and `verify:size` (run `build` first), `verify:changeset`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
 
 ## Workflow
 
@@ -33,8 +33,10 @@ Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browse
 
 ### Required checks
 
-`Verify` (typecheck, lint, stylelint, format, tests with coverage, WCAG contrast, package build, Storybook build),
-`PR title`, and `CodeQL`. Run `npm run check` locally to catch most of them before pushing.
+`CI gate`, which aggregates `Verify` (typecheck, lint, stylelint, format, tests with coverage, WCAG contrast, package
+build, publint and are-the-types-wrong, size budget, Storybook build), the Next.js consumer smoke, the browser tests, the
+changeset check (a pull request that changes published source adds a `.changeset/*.md`) and the dependency review, plus
+`PR title` and `CodeQL`. Run `npm run check` locally to catch most of them before pushing.
 
 ## Proposing a component (RFC)
 

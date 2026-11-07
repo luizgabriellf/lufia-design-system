@@ -42,7 +42,11 @@ nvm use                      # Node version from .nvmrc
 npm ci                       # install and set up git hooks
 npm run storybook            # http://127.0.0.1:6006 (bound to loopback; also serves the MCP endpoint)
 npm run check                # the gate ladder below, minus build and build-storybook
+npm run check:static         # npm run check without the unit tests (CI runs it, then test:coverage)
 npm run test:browser         # Playwright (Chromium, WebKit) against Storybook; docs/PLAYWRIGHT.md
+npm run verify:package       # publint plus are-the-types-wrong on the packed package (needs npm run build first)
+npm run verify:size          # gzip budget per entry from .size-limit.json (needs npm run build first)
+npm run verify:changeset     # published source changed without a new changeset? (pull requests; needs BASE_REF)
 npm run test:consumer:next   # pack the build, install it in a Next.js app, assert SSR (needs npm run build first)
 npm run build:ai-docs        # regenerate docs/ai (manifest, specs, llms files)
 npm run ai:search -- "task"  # find components for a UI task (read-only; ai:show -- Name, ai:list)
@@ -52,7 +56,7 @@ Run heavy commands one at a time; `build` and `build-storybook` are memory hungr
 
 ## Gate ladder
 
-Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI also runs 8 (build), 10 (build-storybook), 11 (coverage), 12 (Next.js consumer smoke) and 13 (browser tests).
+Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI also runs 8 (build), 10 (build-storybook), 11 (coverage), 12 (Next.js consumer smoke) and 13 (browser tests). CI runs `check:static` plus `test:coverage` so the unit tests run once, and adds `verify:package` and `verify:size` (after 8), the changeset check and the dependency review (pull requests).
 
 1. `npm run typecheck` (builds tokens, then `tsc --noEmit`)
 2. `npm run lint` (ESLint with React, hooks, jsx-a11y)
@@ -67,6 +71,17 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
 12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app)
 13. `npm run test:browser` (Playwright in Chromium and WebKit; CI only, see `docs/PLAYWRIGHT.md`)
+
+## CI
+
+`.github/workflows/ci.yml` builds once. The `verify` job runs the static gates, coverage, the build, `verify:package`
+(publint and are-the-types-wrong, `--profile esm-only`; the four asset entrypoints without types are excluded by name),
+`verify:size` (gzip budgets in `.size-limit.json`, about 10% above measured; raise one only with a reason) and the
+Storybook build, then uploads `dist/` and `storybook-static/` as artifacts. `consumer` (Next.js smoke) and `browser`
+(Playwright) need `verify` and download them; Playwright serves the built Storybook with `scripts/serve-static.mjs` in CI
+or with `PW_STATIC=1`, and runs `storybook dev` otherwise. Pull requests also run `changeset` (`scripts/check-changeset.mjs`)
+and `dependency-review` (fails at moderate severity). The `gate` job needs all of them and fails unless each succeeded or
+was skipped by design: **`CI gate` is the single check to require in branch protection** (a repository owner action).
 
 ## Package rules
 
@@ -128,21 +143,22 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 
 ## Where to look: task to doc
 
-| Task                                    | Read first                                                                                          |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Use a component in an app               | `docs/ai/CONSUMING.md`, then `docs/ai/components/<Name>.md`                                         |
-| Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                       |
-| Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md` |
-| Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`            |
-| Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                            |
-| Write or fix stories and docs pages     | `src/docs/blocks/`, `src/docs/taxonomy.ts`, an existing `.mdx` of the same shape                    |
-| Change distribution or exports          | `docs/adr/0002-distribution.md`, `package.json` `exports`, `tsup.config.ts`                         |
-| Why widgets are custom, not a library   | `docs/adr/0003-primitives-library.md`                                                               |
-| Cut or understand a release             | "Release process" above, `.changeset/`, `.github/workflows/release.yml`                             |
-| Write or fix browser (Playwright) tests | `docs/PLAYWRIGHT.md`, `tests/browser/`, `playwright.config.ts`                                      |
-| Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`), `.github/workflows/pages.yml`    |
-| Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                  |
-| Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                |
+| Task                                    | Read first                                                                                               |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Use a component in an app               | `docs/ai/CONSUMING.md`, then `docs/ai/components/<Name>.md`                                              |
+| Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                            |
+| Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md`      |
+| Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`                 |
+| Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                                 |
+| Write or fix stories and docs pages     | `src/docs/blocks/`, `src/docs/taxonomy.ts`, an existing `.mdx` of the same shape                         |
+| Change distribution or exports          | `docs/adr/0002-distribution.md`, `package.json` `exports`, `tsup.config.ts`                              |
+| Why widgets are custom, not a library   | `docs/adr/0003-primitives-library.md`                                                                    |
+| Cut or understand a release             | "Release process" above, `.changeset/`, `.github/workflows/release.yml`                                  |
+| Write or fix browser (Playwright) tests | `docs/PLAYWRIGHT.md`, `tests/browser/`, `playwright.config.ts`                                           |
+| Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`, `gate`), `.github/workflows/pages.yml` |
+| Package exports, types or size budgets  | `package.json` `exports`, `npm run verify:package`, `.size-limit.json`, `npm run verify:size`            |
+| Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                       |
+| Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                     |
 
 ## Leak gate
 

@@ -10,7 +10,9 @@ npx playwright install chromium webkit
 npm run test:browser
 ```
 
-The test runner starts Storybook on port 6006. An already running local server is reused.
+The test runner starts Storybook on port 6006. An already running local server is reused. In CI it serves the
+`storybook-static` the verify job built (`scripts/serve-static.mjs`); set `PW_STATIC=1` after `npm run build-storybook`
+to do the same locally.
 Use `npm run test:browser:ui` for interactive debugging.
 
 ## Coverage
@@ -28,4 +30,5 @@ Everything runs in Chromium and WebKit. Failing tests upload screenshots and tra
 - No `toHaveScreenshot` baselines are committed. Pixels depend on the OS, fonts and browser build, so a baseline captured
   locally would fail on CI runners. Computed-style and geometry assertions are deterministic and fail on real regressions.
   Add screenshot baselines only if they are generated in CI itself.
-- The suite runs against `storybook dev`, with a 15 s expect timeout for the cold start.
+- Locally the suite runs against `storybook dev`, with a 15 s expect timeout for the cold start. CI and `PW_STATIC=1` use the
+  built Storybook, which has no cold compile, so the expect timeout is 5 s.
