@@ -40,6 +40,10 @@ A native checkbox with a drawn box, a label that is part of the click target, an
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `CheckboxProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type" | "size"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
+
 ## Example
 
 ```tsx

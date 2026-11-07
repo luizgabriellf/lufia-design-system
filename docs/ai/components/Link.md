@@ -36,6 +36,10 @@ An inline text link. It goes through the app's router link, and an external one 
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }`
+
 ## Example
 
 ```tsx

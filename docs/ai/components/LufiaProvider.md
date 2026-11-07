@@ -59,6 +59,14 @@ The link component and labels in effect. Safe outside a provider: it returns the
 useLufia(): LufiaContextValue
 ```
 
+## Types
+
+- `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`
+- `LinkComponentProps`: `AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }`
+- `LufiaContextValue`: `{ linkComponent: LinkComponent; labels: LufiaLabels; }`
+- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; }`
+- `LufiaProviderProps`: `{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }`
+
 ## Example
 
 ```tsx

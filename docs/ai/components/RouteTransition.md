@@ -35,6 +35,10 @@ The content region of an app: when the page changes, the new content enters with
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `RouteTransitionProps`: `HTMLAttributes<HTMLDivElement> & { transitionKey: string | number; variant?: "fade" | "rise" | undefined; }`
+
 ## Example
 
 ```tsx

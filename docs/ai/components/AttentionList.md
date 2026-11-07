@@ -31,8 +31,16 @@ A short list of things that need a decision: each row has a tone bar, a title, a
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `items` | `readonly AttentionItem[]` | yes |  |  |
+| `barStyle` | `"edge" \| "inset"` | no | `"edge"` | `edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `AttentionBarStyle`: `"edge" | "inset"`
+- `AttentionItem`: `{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }`
+- `AttentionListProps`: `Omit<HTMLAttributes<HTMLUListElement>, "children"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }`
+- `AttentionTone`: `"danger" | "warning" | "info" | "neutral"`
 
 ## Example
 
@@ -71,7 +79,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`.
+Reads these semantic tokens: `--lufia-attention-list-bar-inset`, `--lufia-attention-list-bar-width`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-radius-full`.
 
 ## Stories
 
@@ -79,6 +87,8 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-attentionlist--single-item`
 - `components-data-display-attentionlist--no-actions`
 - `components-data-display-attentionlist--long-text`
+- `components-data-display-attentionlist--inset-bar`
+- `components-data-display-attentionlist--thick-bar`
 - `components-data-display-attentionlist--empty`
 - `components-data-display-attentionlist--inside-card`
 - `components-data-display-attentionlist--phone-320`

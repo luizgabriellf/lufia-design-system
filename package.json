@@ -34,7 +34,8 @@
   },
   "files": [
     "dist",
-    "docs"
+    "docs/*.md",
+    "docs/adr"
   ],
   "peerDependencies": {
     "react": "^19.0.0",

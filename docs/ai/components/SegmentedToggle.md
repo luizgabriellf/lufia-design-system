@@ -42,6 +42,10 @@ segment.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SegmentedToggleOption`: `{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

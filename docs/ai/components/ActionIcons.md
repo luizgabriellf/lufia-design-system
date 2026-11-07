@@ -45,6 +45,10 @@ Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIco
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `IconProps`: `Omit<SVGProps<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
+
 ## Example
 
 ```tsx

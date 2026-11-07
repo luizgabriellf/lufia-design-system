@@ -4,7 +4,7 @@
 
 - Status: beta
 - Category: Navigation
-- Import: `import { APP_SHELL_BREAKPOINT, AppShell, findActiveNavKey, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
+- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, findActiveNavKey, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/AppShell](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/AppShell)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-navigation-appshell--docs)
@@ -29,7 +29,6 @@ navigation is data, so both layouts always agree.
 | --- | --- |
 | `APP_SHELL_BREAKPOINT` | constant |
 | `AppShell` | component |
-| `findActiveNavKey` | function |
 | `MobileFloatBar` | component |
 | `MobileFloatBarButton` | component |
 | `MobileFloatBarSeparator` | component |
@@ -39,6 +38,7 @@ navigation is data, so both layouts always agree.
 | `Sidebar` | component |
 | `SidebarGroup` | component |
 | `SidebarItem` | component |
+| `findActiveNavKey` | function |
 | `useSheetDrag` | hook |
 | `useShellPrimaryAction` | hook |
 
@@ -213,6 +213,16 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `action` | `AppShellPrimaryAction \| null` | yes |  |
+
+## Types
+
+- `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
+- `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
+- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; }`
+- `ShellNavGroup`: `{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }`
+- `ShellNavItem`: `{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }`
 
 ## Example
 

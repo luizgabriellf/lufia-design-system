@@ -31,6 +31,10 @@ A check mark whose stroke draws in once as it appears. The shared "it worked" ma
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SuccessCheckProps`: `Omit<SVGAttributes<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
+
 ## Example
 
 ```tsx

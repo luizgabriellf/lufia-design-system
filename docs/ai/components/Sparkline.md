@@ -30,11 +30,16 @@ A word-sized chart with no axes: the trend that sits next to a figure. Drawn in 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `values` | `readonly number[]` | yes |  | The series, oldest first. Non-finite numbers count as 0. |
-| `variant` | `SparklineVariant` | no | `"columns"` | `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. |
-| `tone` | `ChartTone` | no | `"accent"` |  |
+| `variant` | `"columns" \| "line"` | no | `"columns"` | `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `label` | `string \| null` | yes |  | Accessible name: a sentence that carries the numbers ("Deliveries per week: 3, 5, 4, 8"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `SparklineProps`: `Omit<SVGAttributes<SVGSVGElement>, "children" | "role" | "values" | "aria-label"> & { values: readonly number[]; variant?: SparklineVariant | undefined; tone?: ChartTone | undefined; label: string | null; }`
+- `SparklineVariant`: `"columns" | "line"`
 
 ## Example
 

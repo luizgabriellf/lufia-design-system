@@ -47,7 +47,7 @@ Run heavy commands one at a time; `build` and `build-storybook` are memory hungr
 
 ## Gate ladder
 
-Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI adds coverage, 10 and 11.
+Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI also runs 8 (build), 10 (build-storybook) and 11 (coverage).
 
 1. `npm run typecheck` (builds tokens, then `tsc --noEmit`)
 2. `npm run lint` (ESLint with React, hooks, jsx-a11y)
@@ -78,7 +78,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
   visible focus, and works at 320 / 390 / 768 / 1440 px, at 200% zoom, in light and dark, and under `forced-colors`.
 - **Reduced motion.** Honour `prefers-reduced-motion`; animate only `transform` and `opacity`; nothing over 300 ms. Rules in
   `docs/MOTION.md`.
-- **Status labels.** Every component page declares `alpha`, `beta` or `stable` in its `DocHeader`.
+- **Status labels.** Every component page declares `alpha`, `beta`, `stable` or `deprecated` in its `DocHeader`.
 
 ## Adding or changing a component
 

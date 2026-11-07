@@ -47,6 +47,10 @@ and arrow-key navigation.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `RadioOption`: `{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

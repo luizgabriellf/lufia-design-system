@@ -36,6 +36,10 @@ useStepDirection(step: number, active?: boolean): StepDirection | undefined
 | `step` | `number` | yes |  |
 | `active` | `boolean` | no |  |
 
+## Types
+
+- `StepDirection`: `"next" | "back"`
+
 ## Example
 
 ```tsx

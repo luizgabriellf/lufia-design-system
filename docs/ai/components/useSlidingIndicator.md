@@ -38,6 +38,10 @@ useSlidingIndicator(container: RefObject<HTMLElement | null>, activeSelector: st
 | `key` | `unknown` | yes |  |
 | `__3` | `UseSlidingIndicatorOptions` | no |  |
 
+## Types
+
+- `UseSlidingIndicatorOptions`: `{ stretch?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

@@ -32,11 +32,11 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | --- | --- | --- | --- | --- |
 | `label` | `ReactNode` | yes |  | What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. |
 | `value` | `ReactNode` | yes |  | The figure, already formatted. Pass an `AnimatedNumber` to count it up. |
-| `tone` | `StatTileTone` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
+| `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
 | `delta` | `ReactNode` | no |  | The change, already formatted ("+12% vs last week"). |
-| `trend` | `StatTileTrend` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
+| `trend` | `"up" \| "down" \| "flat"` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
 | `trendLabel` | `string` | no |  | Direction in words for screen readers ("Up"). Read before `delta`. |
-| `deltaTone` | `StatTileTone` | no | `"neutral"` | Colour of `delta`. A rise is not always good news, so it is independent of `trend`. |
+| `deltaTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `delta`. A rise is not always good news, so it is independent of `trend`. |
 | `hint` | `ReactNode` | no |  | A line of context under the figure. |
 | `sparkline` | `ReactNode` | no |  | A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. |
 | `href` | `string` | no |  | Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. |
@@ -45,6 +45,11 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | `loadingLabel` | `string` | no |  | Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
+- `StatTileTrend`: `"up" | "down" | "flat"`
 
 ## Example
 
@@ -89,11 +94,12 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`.
 
 ## Stories
 
 - `components-data-display-stattile--default`
+- `components-data-display-stattile--themed-by-tokens`
 - `components-data-display-stattile--with-delta`
 - `components-data-display-stattile--falling-is-good`
 - `components-data-display-stattile--flat`

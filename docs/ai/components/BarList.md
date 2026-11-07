@@ -38,6 +38,11 @@ Horizontal bars with the name and the value as text above each track. One scale 
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }`
+- `BarListRow`: `{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }`
+
 ## Example
 
 ```tsx

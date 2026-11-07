@@ -39,6 +39,10 @@ icons.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `TextInputProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "prefix" | "size"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
+
 ## Example
 
 ```tsx

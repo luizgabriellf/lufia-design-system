@@ -36,6 +36,10 @@ shorter `--lufia-motion-duration-exit`.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `RevealProps`: `HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

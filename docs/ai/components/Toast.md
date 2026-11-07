@@ -41,7 +41,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  |  |
-| `placement` | `ToastPlacement` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
+| `placement` | `"bottom-end" \| "bottom-start" \| "top-end" \| "top-start"` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
 | `limit` | `number` | no | `5` | The most toasts shown at once; older ones leave first. Default 5. |
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |
 | `container` | `Element \| "auto" \| null` | no | `"auto"` | Where the notification region is rendered. `"auto"` (default) hosts it inside the topmost open modal `<dialog>` while there is one, so toasts stay visible above a native top-layer dialog (a `Modal` with `renderAs="dialog"`), and in `document.body` otherwise. Pass an element to always render there, or `null` for `document.body` only. |
@@ -62,6 +62,15 @@ Show and dismiss notifications. Must be used inside a `ToastProvider`.
 ```ts
 useToast(): ToastApi
 ```
+
+## Types
+
+- `ToastAction`: `{ label: string; onAction: () => void; }`
+- `ToastOptions`: `{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }`
+- `ToastPlacement`: `"bottom-end" | "bottom-start" | "top-end" | "top-start"`
+- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }`
+- `ToastTone`: `"info" | "success" | "warning" | "error"`
+- `ToastToneName`: `(string & {}) | ToastTone`
 
 ## Example
 

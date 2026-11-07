@@ -81,21 +81,20 @@ function propsSection(component) {
   return out.length ? out.join("\n\n") : "No runtime exports with props or parameters.";
 }
 
+function importLine(c) {
+  const values = c.exports.filter((e) => e.kind !== "type").map((e) => e.name);
+  if (values.length > 0) return `import { ${values.join(", ")} } from "${c.entry.subpath}"`;
+  const types = c.exports.map((e) => e.name);
+  return `import type { ${types.join(", ")} } from "${c.entry.subpath}"`;
+}
+
 export function renderSpec(component) {
   const c = component;
   const lines = [`# ${c.name}`, "", `> ${c.summary}`, ""];
   const meta = [
     ["Status", c.status ?? "unlabelled"],
     ["Category", c.category],
-    [
-      "Import",
-      code(
-        `import { ${c.exports
-          .filter((e) => e.kind !== "type")
-          .map((e) => e.name)
-          .join(", ")} } from "${c.entry.subpath}"`,
-      ),
-    ],
+    ["Import", code(importLine(c))],
     ["Also from", code(c.entry.root)],
     ["Source", `[${c.source}](${REPO_BLOB}/${c.source})`],
   ];
@@ -131,6 +130,10 @@ export function renderSpec(component) {
     );
   }
   lines.push("## API", "", propsSection(c), "");
+  const aliasNames = Object.keys(c.aliases);
+  if (aliasNames.length > 0) {
+    lines.push("## Types", "", ...aliasNames.map((name) => `- ${code(name)}: ${code(c.aliases[name])}`), "");
+  }
 
   if (c.docs?.usage)
     lines.push("## Example", "", `\`\`\`${c.docs.usage.language}`, c.docs.usage.code, "```", "");

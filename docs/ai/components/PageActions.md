@@ -37,6 +37,11 @@ of `PageHeader`.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; }`
+- `PageActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { primary?: PageActionItem | undefined; secondary?: readonly PageActionItem[] | undefined; overflow?: readonly MoreActionItem[] | undefined; moreLabel: string; }`
+
 ## Example
 
 ```tsx

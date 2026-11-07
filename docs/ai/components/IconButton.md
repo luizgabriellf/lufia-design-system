@@ -33,13 +33,17 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `aria-label` | `string` | yes |  | Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one. |
 | `ref` | `Ref<HTMLButtonElement> \| Ref<HTMLAnchorElement>` | no |  | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
 | `title` | `string` | no |  | Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name. |
-| `variant` | `ButtonVariant` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `ButtonSize` | no |  |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
 | `loading` | `boolean` | no |  | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `icon` | `ReactNode` | yes |  | The icon. Decorative: the name comes from `aria-label`. |
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `IconButtonProps`: `(Omit<AsButton, "children" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "fullWidth" | "iconStart" | "iconEnd">) & { "aria-label": string; icon: ReactNode; title?: string | undefined; }`
 
 ## Example
 

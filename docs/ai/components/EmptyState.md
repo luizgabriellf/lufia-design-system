@@ -35,6 +35,10 @@ step.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `EmptyStateProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; }`
+
 ## Example
 
 ```tsx

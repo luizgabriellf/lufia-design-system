@@ -36,6 +36,10 @@ A placeholder that holds the shape of content while it loads, with a calm shimme
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SkeletonProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { variant?: "text" | "rect" | "circle" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }`
+
 ## Example
 
 ```tsx

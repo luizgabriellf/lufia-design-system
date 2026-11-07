@@ -36,6 +36,10 @@ content area.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `DetailSectionCardProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; children: ReactNode; }`
+
 ## Example
 
 ```tsx

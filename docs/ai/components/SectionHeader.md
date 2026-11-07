@@ -37,6 +37,10 @@ The title row of one section of a page: a heading, an optional description and t
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SectionHeaderProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | undefined; description?: ReactNode; actions?: ReactNode; titleId?: string | undefined; }`
+
 ## Example
 
 ```tsx

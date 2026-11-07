@@ -33,12 +33,16 @@ pending label, and for a long wait moves through further labels.
 | `pendingLabel` | `string` | yes |  | The label while the form is submitting ("Saving…"). It is announced to assistive technology. |
 | `progress` | `PendingProgress` | no | `[]` | Labels that replace `pendingLabel` after a delay, for actions that can take long. |
 | `pending` | `boolean` | no | `false` | Treat the button as pending although the form is not (yet). Use it to drive the button from `useActionState`, a `useTransition` or your own request state. It is combined with the form's own pending state. |
-| `variant` | `ButtonVariant` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. |
-| `size` | `ButtonSize` | no |  |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
 | `fullWidth` | `boolean` | no |  |  |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `PendingProgress`: `readonly (readonly [afterMs: number, label: string])[]`
 
 ## Example
 

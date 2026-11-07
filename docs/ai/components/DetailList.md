@@ -31,6 +31,11 @@ Key-value rows for detail panels and modals, rendered as a native description li
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `DetailListProps`: `HTMLAttributes<HTMLDListElement> & { rows: DetailListRow[]; }`
+- `DetailListRow`: `{ label: string; value: ReactNode; mono?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

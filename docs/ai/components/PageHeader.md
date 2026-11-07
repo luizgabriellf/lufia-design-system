@@ -37,6 +37,10 @@ The top of a page: an optional eyebrow, the title as a heading, a description, a
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `PageHeaderProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { eyebrow?: ReactNode; title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | 1 | undefined; description?: ReactNode; actions?: ReactNode; }`
+
 ## Example
 
 ```tsx
@@ -66,7 +70,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-page-header-eyebrow-color`, `--lufia-page-header-eyebrow-dash-gap`, `--lufia-page-header-eyebrow-dash-size`, `--lufia-page-header-eyebrow-tracking`, `--lufia-page-header-title-size`, `--lufia-page-header-title-tracking`.
 
 ## Content guidelines
 
@@ -81,6 +85,7 @@ primary action in `actions`.
 - `components-navigation-pageheader--without-eyebrow`
 - `components-navigation-pageheader--section-heading`
 - `components-navigation-pageheader--long-text`
+- `components-navigation-pageheader--themed-by-tokens`
 - `components-navigation-pageheader--phone-320`
 - `components-navigation-pageheader--phone-390`
 - `components-navigation-pageheader--right-to-left`

@@ -30,8 +30,8 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `variant` | `ButtonVariant` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `ButtonSize` | no | `"md"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `loading` | `boolean` | no | `false` | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `fullWidth` | `boolean` | no | `false` | Stretches to the full width of its container. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
@@ -41,6 +41,12 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `ButtonProps`: `AsButton | AsLink`
+- `ButtonSize`: `"sm" | "md" | "lg"`
+- `ButtonVariant`: `"primary" | "secondary" | "ghost" | "danger"`
 
 ## Example
 

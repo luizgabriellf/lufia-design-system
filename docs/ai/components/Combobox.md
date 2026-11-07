@@ -54,6 +54,10 @@ the empty and loading states are part of the component.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `ComboboxOption`: `{ value: string; label: string; description?: string | undefined; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

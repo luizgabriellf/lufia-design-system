@@ -29,6 +29,10 @@ Text for assistive technology that is not drawn on screen.
 
 No props of its own. Native element attributes pass through.
 
+## Types
+
+- `VisuallyHiddenProps`: `HTMLAttributes<HTMLSpanElement>`
+
 ## Example
 
 ```tsx

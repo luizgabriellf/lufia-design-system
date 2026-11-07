@@ -33,6 +33,10 @@ does so without measuring anything in JavaScript (`grid-template-rows` from `0fr
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `CollapseProps`: `HTMLAttributes<HTMLDivElement> & { open: boolean; }`
+
 ## Example
 
 ```tsx

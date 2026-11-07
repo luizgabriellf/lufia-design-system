@@ -57,6 +57,11 @@ The default matcher: every word of `query` appears, ignoring case and accents, i
 filterCommands(item: CommandItem, query: string): boolean
 ```
 
+## Types
+
+- `CommandItem`: `{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }`
+- `CommandPaletteLabels`: `{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }`
+
 ## Example
 
 ```tsx

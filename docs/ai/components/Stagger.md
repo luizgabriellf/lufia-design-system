@@ -34,6 +34,10 @@ Children that enter in sequence on mount: each fades in and rises a few pixels, 
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `StaggerProps`: `HTMLAttributes<HTMLDivElement> & { limit?: number | undefined; }`
+
 ## Example
 
 ```tsx

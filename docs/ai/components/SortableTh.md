@@ -35,6 +35,11 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SortDirection`: `"asc" | "desc"`
+- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }`
+
 ## Example
 
 ```tsx

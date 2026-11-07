@@ -126,6 +126,13 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
 
 - **Token-driven CSS needs no extra work.** The end state is reached at once. The duration is `0.01ms` and not `0` so that
   `transitionend` and `animationend` still fire.
+- **Entrances fill `backwards`, never `both` or `forwards`.** A forwards fill keeps the animation's `transform` applied
+  after it ends, even as an identity matrix. That makes the element the containing block and a stacking context for any
+  `position: fixed` descendant rendered inside it, so a sheet or popover is positioned against the element and not the
+  viewport. `backwards` applies the first frame during the delay and nothing afterwards, so the resting state is
+  `transform: none`. The one exception is `NavSheet`, which rests on its own drag transform
+  (`translateY(var(--lufia-sheet-drag, 0))`); it sits inside a fixed root, so nothing is affected. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
+  (`src/test/animationFill.test.ts`) fails on any entrance that animates `transform` and fills forwards.
 - **Keyframes animate `from` only**, so the resting state is the end state and a disabled animation leaves the content
   visible.
 - **Endless loops (spinners, shimmer) are stopped, not shortened.** A near-zero endless loop is a strobe. Give them a
@@ -279,6 +286,10 @@ Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIco
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `IconProps`: `Omit<SVGProps<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
+
 ### Example
 
 ```tsx
@@ -352,6 +363,12 @@ A feed of what happened, newest first: a title, a line of context, the time and 
 | `timeline` | `boolean` | no | `false` | Draws a rail with a marker per entry, for a feed read as a sequence. Plain rows by default. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `ActivityItem`: `{ id: string; title: ReactNode; meta?: ReactNode; time: ReactNode; dateTime?: string | undefined; tone?: ActivityTone | undefined; toneLabel?: string | undefined; action?: ReactNode; }`
+- `ActivityListProps`: `Omit<HTMLAttributes<HTMLOListElement>, "children"> & { items: readonly ActivityItem[]; timeline?: boolean | undefined; }`
+- `ActivityTone`: `"neutral" | "success" | "warning" | "danger" | "info"`
 
 ### Example
 
@@ -438,6 +455,10 @@ A number that counts to its new value when `value` changes. It uses `requestAnim
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `AnimatedNumberProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { value: number; format?: ((value: number) => string) | undefined; duration?: number | undefined; }`
+
 ### Example
 
 ```tsx
@@ -475,7 +496,7 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 
 - Status: beta
 - Category: Navigation
-- Import: `import { APP_SHELL_BREAKPOINT, AppShell, findActiveNavKey, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
+- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, findActiveNavKey, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/AppShell](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/AppShell)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-navigation-appshell--docs)
@@ -500,7 +521,6 @@ navigation is data, so both layouts always agree.
 | --- | --- |
 | `APP_SHELL_BREAKPOINT` | constant |
 | `AppShell` | component |
-| `findActiveNavKey` | function |
 | `MobileFloatBar` | component |
 | `MobileFloatBarButton` | component |
 | `MobileFloatBarSeparator` | component |
@@ -510,6 +530,7 @@ navigation is data, so both layouts always agree.
 | `Sidebar` | component |
 | `SidebarGroup` | component |
 | `SidebarItem` | component |
+| `findActiveNavKey` | function |
 | `useSheetDrag` | hook |
 | `useShellPrimaryAction` | hook |
 
@@ -685,6 +706,16 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 | --- | --- | --- | --- |
 | `action` | `AppShellPrimaryAction \| null` | yes |  |
 
+### Types
+
+- `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
+- `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
+- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; }`
+- `ShellNavGroup`: `{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }`
+- `ShellNavItem`: `{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }`
+
 ### Example
 
 ```tsx
@@ -802,8 +833,16 @@ A short list of things that need a decision: each row has a tone bar, a title, a
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `items` | `readonly AttentionItem[]` | yes |  |  |
+| `barStyle` | `"edge" \| "inset"` | no | `"edge"` | `edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `AttentionBarStyle`: `"edge" | "inset"`
+- `AttentionItem`: `{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }`
+- `AttentionListProps`: `Omit<HTMLAttributes<HTMLUListElement>, "children"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }`
+- `AttentionTone`: `"danger" | "warning" | "info" | "neutral"`
 
 ### Example
 
@@ -842,7 +881,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`.
+Reads these semantic tokens: `--lufia-attention-list-bar-inset`, `--lufia-attention-list-bar-width`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-radius-full`.
 
 ### Stories
 
@@ -850,6 +889,8 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-attentionlist--single-item`
 - `components-data-display-attentionlist--no-actions`
 - `components-data-display-attentionlist--long-text`
+- `components-data-display-attentionlist--inset-bar`
+- `components-data-display-attentionlist--thick-bar`
 - `components-data-display-attentionlist--empty`
 - `components-data-display-attentionlist--inside-card`
 - `components-data-display-attentionlist--phone-320`
@@ -897,7 +938,7 @@ dot on by default.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `BadgeTone` | no | `"neutral"` |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 
 Other native element attributes pass through to the root element.
@@ -907,10 +948,15 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `BadgeTone` | no |  |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }`
+- `BadgeTone`: `"neutral" | "info" | "success" | "warning" | "danger" | "ai"`
 
 ### Example
 
@@ -996,6 +1042,11 @@ Horizontal bars with the name and the value as text above each track. One scale 
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }`
+- `BarListRow`: `{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }`
+
 ### Example
 
 ```tsx
@@ -1074,10 +1125,14 @@ A value as a bar against a target tick. The scale is the target, so the tick sit
 | `value` | `number` | yes |  |  |
 | `target` | `number` | yes |  | Where the tick sits. The scale is the target, so bars of different rows share one "percent of target" axis. |
 | `headroom` | `number` | no | `1.25` | Room past the target, as a multiple of it. Defaults to 1.25. |
-| `tone` | `ChartTone` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `label` | `string \| null` | yes |  | Accessible name stating the value, the target and what they mean ("Delivered 80 of 100"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `BulletBarProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children" | "role" | "aria-label"> & { value: number; target: number; headroom?: number | undefined; tone?: ChartTone | undefined; label: string | null; }`
 
 ### Example
 
@@ -1145,8 +1200,8 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `variant` | `ButtonVariant` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `ButtonSize` | no | `"md"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `loading` | `boolean` | no | `false` | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `fullWidth` | `boolean` | no | `false` | Stretches to the full width of its container. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
@@ -1156,6 +1211,12 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `ButtonProps`: `AsButton | AsLink`
+- `ButtonSize`: `"sm" | "md" | "lg"`
+- `ButtonVariant`: `"primary" | "secondary" | "ghost" | "danger"`
 
 ### Example
 
@@ -1257,10 +1318,15 @@ is clickable through one link.
 | `headerAction` | `ReactNode` | no |  | Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. |
 | `footer` | `ReactNode` | no |  | Pinned to the bottom of the card, separated from the body. |
 | `href` | `string` | no |  | Makes the whole card clickable through one link: the `title` renders as a link whose hit area is stretched over the card. Needs a `title`, which is the link's accessible name. |
-| `padding` | `CardPadding` | no | `"md"` | Inner spacing of every slot. Defaults to `md`. |
+| `padding` | `"none" \| "sm" \| "md" \| "lg"` | no | `"md"` | Inner spacing of every slot. Defaults to `md`. |
 | `flush` | `boolean` | no | `false` | Lets the body span the full width of the card while the header and footer keep their padding. For lists and tables that draw their own row padding and dividers. |
+| `divider` | `boolean` | no | `false` | Draws a rule under the header, between it and the body. Its colour is `--lufia-card-divider-color`. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ### Example
 
@@ -1294,7 +1360,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-padding`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ### Content guidelines
 
@@ -1308,6 +1374,8 @@ body.
 - `components-data-display-card--with-footer`
 - `components-data-display-card--with-description`
 - `components-data-display-card--flush`
+- `components-data-display-card--divider`
+- `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
 - `components-data-display-card--interactive-with-footer-button`
@@ -1354,6 +1422,10 @@ Flashes a soft background behind its children when `value` changes while they ar
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `ChangeHighlightProps`: `HTMLAttributes<HTMLSpanElement> & { value: string | number | boolean | null | undefined; }`
+
 ### Example
 
 ```tsx
@@ -1384,17 +1456,17 @@ Reads these semantic tokens: `--lufia-color-accent-subtle`, `--lufia-motion-dura
 
 ## ChartKit
 
-> 
+> Colour of a chart mark. The tone only reinforces: the value is always printed as text next to the drawing, so a tone is never the only carrier of meaning (WCAG 1.4.1).
 
-- Status: unlabelled
+- Status: beta
 - Category: Utilities
-- Import: `import {  } from "@lufia/design-system/components/ChartKit"`
+- Import: `import type { ChartTone } from "@lufia/design-system/components/ChartKit"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/ChartKit](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/ChartKit)
 
 ### Purpose
 
-
+Colour of a chart mark. The tone only reinforces: the value is always printed as text next to the drawing, so a tone is never the only carrier of meaning (WCAG 1.4.1).
 
 ### When to use
 
@@ -1407,6 +1479,10 @@ Reads these semantic tokens: `--lufia-color-accent-subtle`, `--lufia-motion-dura
 ### API
 
 No runtime exports with props or parameters.
+
+### Types
+
+- `ChartTone`: `"accent" | "success" | "warning" | "danger" | "neutral"`
 
 ### Accessibility
 
@@ -1461,6 +1537,10 @@ A native checkbox with a drawn box, a label that is part of the click target, an
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `CheckboxProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type" | "size"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
 
 ### Example
 
@@ -1542,6 +1622,10 @@ does so without measuring anything in JavaScript (`grid-template-rows` from `0fr
 | `open` | `boolean` | yes |  | Whether the content is expanded. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `CollapseProps`: `HTMLAttributes<HTMLDivElement> & { open: boolean; }`
 
 ### Example
 
@@ -1634,6 +1718,10 @@ the empty and loading states are part of the component.
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `ComboboxOption`: `{ value: string; label: string; description?: string | undefined; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -1759,6 +1847,11 @@ The default matcher: every word of `query` appears, ignoring case and accents, i
 ```ts
 filterCommands(item: CommandItem, query: string): boolean
 ```
+
+### Types
+
+- `CommandItem`: `{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }`
+- `CommandPaletteLabels`: `{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }`
 
 ### Example
 
@@ -1888,6 +1981,11 @@ A promise-based replacement for `window.confirm()`: ```tsx const { confirm, conf
 useConfirmDialog(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }
 ```
 
+### Types
+
+- `ConfirmDialogProps`: `Pick<ModalProps, "className" | "open" | "closeLabel" | "container"> & { title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; onConfirm: () => void; onCancel: () => void; destructive?: boolean | undefined; busy?: boolean | undefined; }`
+- `ConfirmOptions`: `{ title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; destructive?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -1971,7 +2069,7 @@ and meta line, and an optional call to action.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tone` | `DetailAttentionTone` | yes |  |  |
+| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  |  |
 | `title` | `string` | yes |  |  |
 | `description` | `string` | no |  |  |
 | `meta` | `string` | no |  |  |
@@ -1979,6 +2077,11 @@ and meta line, and an optional call to action.
 | `toneLabel` | `string` | no |  | Text that names the tone for assistive technology (for example "Overdue"). The tone is otherwise conveyed by colour and a glyph only, so pass it whenever the tone carries meaning. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `DetailAttentionCardProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { tone: DetailAttentionTone; title: string; description?: string | undefined; meta?: string | undefined; action?: ReactNode; toneLabel?: string | undefined; }`
+- `DetailAttentionTone`: `"ok" | "warn" | "danger" | "critical" | "neutral"`
 
 ### Example
 
@@ -2056,6 +2159,11 @@ Key-value rows for detail panels and modals, rendered as a native description li
 | `rows` | `DetailListRow[]` | yes |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `DetailListProps`: `HTMLAttributes<HTMLDListElement> & { rows: DetailListRow[]; }`
+- `DetailListRow`: `{ label: string; value: ReactNode; mono?: boolean | undefined; }`
 
 ### Example
 
@@ -2135,6 +2243,10 @@ content area.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `DetailSectionCardProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; children: ReactNode; }`
+
 ### Example
 
 ```tsx
@@ -2208,6 +2320,10 @@ step.
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `EmptyStateProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; }`
 
 ### Example
 
@@ -2323,6 +2439,12 @@ The rule of the native `accept` attribute (extensions, MIME types and `type/*` w
 ```ts
 matchesAccept(file: Pick<File, "name" | "type">, accept?: string | undefined): boolean
 ```
+
+### Types
+
+- `FileLimits`: `{ accept?: string | undefined; maxSize?: number | undefined; maxFiles?: number | undefined; }`
+- `FileRejection`: `{ file: File; reason: FileRejectionReason; }`
+- `FileRejectionReason`: `"type" | "size" | "count"`
 
 ### Example
 
@@ -2460,6 +2582,10 @@ The id of the surrounding `FormField`'s label element, for widgets that need to 
 useFormFieldLabelId(): string | undefined
 ```
 
+### Types
+
+- `FormFieldControlProps`: `{ id: string; "aria-describedby"?: string | undefined; "aria-invalid"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -2540,13 +2666,17 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `aria-label` | `string` | yes |  | Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one. |
 | `ref` | `Ref<HTMLButtonElement> \| Ref<HTMLAnchorElement>` | no |  | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
 | `title` | `string` | no |  | Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name. |
-| `variant` | `ButtonVariant` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `ButtonSize` | no |  |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
 | `loading` | `boolean` | no |  | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `icon` | `ReactNode` | yes |  | The icon. Decorative: the name comes from `aria-label`. |
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `IconButtonProps`: `(Omit<AsButton, "children" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "fullWidth" | "iconStart" | "iconEnd">) & { "aria-label": string; icon: ReactNode; title?: string | undefined; }`
 
 ### Example
 
@@ -2634,6 +2764,10 @@ An inline text link. It goes through the app's router link, and an external one 
 | `externalLabel` | `string` | no |  | Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an indicator. The value is the visually hidden text read after the link text, such as "(opens in new tab)", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }`
 
 ### Example
 
@@ -2741,6 +2875,14 @@ The link component and labels in effect. Safe outside a provider: it returns the
 useLufia(): LufiaContextValue
 ```
 
+### Types
+
+- `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`
+- `LinkComponentProps`: `AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }`
+- `LufiaContextValue`: `{ linkComponent: LinkComponent; labels: LufiaLabels; }`
+- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; }`
+- `LufiaProviderProps`: `{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }`
+
 ### Example
 
 ```tsx
@@ -2827,6 +2969,10 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `scrollContainerSelectors` | `readonly string[]` | no |  | Inner scroll containers to lock instead of the document, for app shells that scroll an inner pane. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `ModalSize`: `"sm" | "md" | "lg" | "xl"`
 
 ### Example
 
@@ -2938,11 +3084,16 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `items` | `readonly MoreActionItem[]` | yes |  |  |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the trigger the menu lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `ButtonVariant` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `MoreActionItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: "danger" | "default" | undefined; narrowOnly?: boolean | undefined; }`
+- `MoreActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; items: readonly MoreActionItem[]; align?: "end" | "start" | undefined; size?: "sm" | "md" | "lg" | undefined; variant?: ButtonVariant | undefined; icon?: ReactNode; defaultOpen?: boolean | undefined; }`
 
 ### Example
 
@@ -3145,6 +3296,11 @@ of `PageHeader`.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; }`
+- `PageActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { primary?: PageActionItem | undefined; secondary?: readonly PageActionItem[] | undefined; overflow?: readonly MoreActionItem[] | undefined; moreLabel: string; }`
+
 ### Example
 
 ```tsx
@@ -3233,6 +3389,10 @@ The top of a page: an optional eyebrow, the title as a heading, a description, a
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `PageHeaderProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { eyebrow?: ReactNode; title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | 1 | undefined; description?: ReactNode; actions?: ReactNode; }`
+
 ### Example
 
 ```tsx
@@ -3262,7 +3422,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-page-header-eyebrow-color`, `--lufia-page-header-eyebrow-dash-gap`, `--lufia-page-header-eyebrow-dash-size`, `--lufia-page-header-eyebrow-tracking`, `--lufia-page-header-title-size`, `--lufia-page-header-title-tracking`.
 
 ### Content guidelines
 
@@ -3277,6 +3437,7 @@ primary action in `actions`.
 - `components-navigation-pageheader--without-eyebrow`
 - `components-navigation-pageheader--section-heading`
 - `components-navigation-pageheader--long-text`
+- `components-navigation-pageheader--themed-by-tokens`
 - `components-navigation-pageheader--phone-320`
 - `components-navigation-pageheader--phone-390`
 - `components-navigation-pageheader--right-to-left`
@@ -3323,6 +3484,10 @@ It is the view for `usePagination`.
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }`
 
 ### Example
 
@@ -3426,6 +3591,10 @@ a description and an icon. An indicator slides to the chosen one.
 | `phoneGrid` | `"row" \| "2x2"` | no | `"row"` | What four items do on a phone (narrower than 35rem, `fit` layout). `"row"` (default) keeps them in one row with the icon above the label; `"2x2"` wraps them into two rows of two so each label keeps its width. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -3532,12 +3701,16 @@ pending label, and for a long wait moves through further labels.
 | `pendingLabel` | `string` | yes |  | The label while the form is submitting ("Saving…"). It is announced to assistive technology. |
 | `progress` | `PendingProgress` | no | `[]` | Labels that replace `pendingLabel` after a delay, for actions that can take long. |
 | `pending` | `boolean` | no | `false` | Treat the button as pending although the form is not (yet). Use it to drive the button from `useActionState`, a `useTransition` or your own request state. It is combined with the form's own pending state. |
-| `variant` | `ButtonVariant` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. |
-| `size` | `ButtonSize` | no |  |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
 | `fullWidth` | `boolean` | no |  |  |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `PendingProgress`: `readonly (readonly [afterMs: number, label: string])[]`
 
 ### Example
 
@@ -3622,10 +3795,14 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `max` | `number` | no | `100` | The value that means done. Defaults to 100. |
 | `label` | `string` | yes |  | Accessible name of the bar ("Storage used"). Required: a progress bar without a name is announced as a bare number. |
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
-| `tone` | `ChartTone` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `size` | `"sm" \| "md"` | no | `"md"` |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; }`
 
 ### Example
 
@@ -3713,6 +3890,10 @@ and arrow-key navigation.
 | `ref` | `Ref<HTMLDivElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `RadioOption`: `{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -3808,6 +3989,10 @@ shorter `--lufia-motion-duration-exit`.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `RevealProps`: `HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -3878,6 +4063,10 @@ The content region of an app: when the page changes, the new content enters with
 | `variant` | `"fade" \| "rise"` | no | `"rise"` | `rise` fades in and lifts a few pixels, `fade` only changes opacity (for a page that replaces a skeleton). |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `RouteTransitionProps`: `HTMLAttributes<HTMLDivElement> & { transitionKey: string | number; variant?: "fade" | "rise" | undefined; }`
 
 ### Example
 
@@ -4048,6 +4237,10 @@ The title row of one section of a page: a heading, an optional description and t
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `SectionHeaderProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | undefined; description?: ReactNode; actions?: ReactNode; titleId?: string | undefined; }`
+
 ### Example
 
 ```tsx
@@ -4132,6 +4325,10 @@ segment.
 | `ref` | `Ref<HTMLDivElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `SegmentedToggleOption`: `{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -4225,6 +4422,10 @@ typeahead and mobile picker.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `SelectOption`: `{ value: string; label: string; disabled?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -4316,6 +4517,10 @@ A placeholder that holds the shape of content while it loads, with a calm shimme
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `SkeletonProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { variant?: "text" | "rect" | "circle" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }`
+
 ### Example
 
 ```tsx
@@ -4395,6 +4600,11 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `SortDirection`: `"asc" | "desc"`
+- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }`
+
 ### Example
 
 ```tsx
@@ -4464,11 +4674,16 @@ A word-sized chart with no axes: the trend that sits next to a figure. Drawn in 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `values` | `readonly number[]` | yes |  | The series, oldest first. Non-finite numbers count as 0. |
-| `variant` | `SparklineVariant` | no | `"columns"` | `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. |
-| `tone` | `ChartTone` | no | `"accent"` |  |
+| `variant` | `"columns" \| "line"` | no | `"columns"` | `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `label` | `string \| null` | yes |  | Accessible name: a sentence that carries the numbers ("Deliveries per week: 3, 5, 4, 8"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `SparklineProps`: `Omit<SVGAttributes<SVGSVGElement>, "children" | "role" | "values" | "aria-label"> & { values: readonly number[]; variant?: SparklineVariant | undefined; tone?: ChartTone | undefined; label: string | null; }`
+- `SparklineVariant`: `"columns" | "line"`
 
 ### Example
 
@@ -4548,6 +4763,10 @@ Children that enter in sequence on mount: each fades in and rises a few pixels, 
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `StaggerProps`: `HTMLAttributes<HTMLDivElement> & { limit?: number | undefined; }`
+
 ### Example
 
 ```tsx
@@ -4617,11 +4836,11 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | --- | --- | --- | --- | --- |
 | `label` | `ReactNode` | yes |  | What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. |
 | `value` | `ReactNode` | yes |  | The figure, already formatted. Pass an `AnimatedNumber` to count it up. |
-| `tone` | `StatTileTone` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
+| `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
 | `delta` | `ReactNode` | no |  | The change, already formatted ("+12% vs last week"). |
-| `trend` | `StatTileTrend` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
+| `trend` | `"up" \| "down" \| "flat"` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
 | `trendLabel` | `string` | no |  | Direction in words for screen readers ("Up"). Read before `delta`. |
-| `deltaTone` | `StatTileTone` | no | `"neutral"` | Colour of `delta`. A rise is not always good news, so it is independent of `trend`. |
+| `deltaTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `delta`. A rise is not always good news, so it is independent of `trend`. |
 | `hint` | `ReactNode` | no |  | A line of context under the figure. |
 | `sparkline` | `ReactNode` | no |  | A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. |
 | `href` | `string` | no |  | Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. |
@@ -4630,6 +4849,11 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | `loadingLabel` | `string` | no |  | Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
+- `StatTileTrend`: `"up" | "down" | "flat"`
 
 ### Example
 
@@ -4674,11 +4898,12 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`.
 
 ### Stories
 
 - `components-data-display-stattile--default`
+- `components-data-display-stattile--themed-by-tokens`
 - `components-data-display-stattile--with-delta`
 - `components-data-display-stattile--falling-is-good`
 - `components-data-display-stattile--flat`
@@ -4730,6 +4955,13 @@ optional timestamp or deadline, a hint, and an optional inline action.
 | `tracks` | `StatusTimelineTrack[]` | yes |  |  |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `StatusTimelineNode`: `{ id: string; label: string; state: StatusTimelineNodeState; stateLabel: string; timestampLabel?: string | undefined; deadlineLabel?: string | undefined; hint?: string | undefined; action?: ReactNode; }`
+- `StatusTimelineNodeState`: `"needsTimestamp" | "pending" | "overdue" | "done" | "notApplicable"`
+- `StatusTimelineProps`: `HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[]; }`
+- `StatusTimelineTrack`: `{ id: string; title: string; nodes: StatusTimelineNode[]; }`
 
 ### Example
 
@@ -4821,6 +5053,11 @@ expands into a numbered row with connectors that fill as the user progresses.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `StepDef`: `{ key: string; label: string; }`
+- `StepperProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { steps: StepDef[]; current: number; onStepClick?: ((index: number) => void) | undefined; }`
+
 ### Example
 
 ```tsx
@@ -4892,6 +5129,10 @@ A check mark whose stroke draws in once as it appears. The shared "it worked" ma
 | `size` | `number` | no | `16` | Rendered width and height, in px. |
 
 Other native element attributes pass through to the root element.
+
+### Types
+
+- `SuccessCheckProps`: `Omit<SVGAttributes<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
 
 ### Example
 
@@ -5051,6 +5292,10 @@ open-ended filter) go in as children.
 
 Other native element attributes pass through to the root element.
 
+### Types
+
+- `FilterOption`: `{ key: string; label: string; }`
+
 ### Example
 
 ```tsx
@@ -5100,6 +5345,100 @@ Chip labels are one or two words. Do not put counts in colour alone; include the
 - `components-data-display-tabletoolbar--many-filters`
 - `components-data-display-tabletoolbar--interactive`
 - `components-data-display-tabletoolbar--all-themes`
+
+## TextInput
+
+> A single-line text field with optional prefix and suffix.
+
+- Status: beta
+- Category: Forms
+- Import: `import { TextInput } from "@lufia/design-system/components/TextInput"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/TextInput](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/TextInput)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-forms-textinput--docs)
+
+### Purpose
+
+A single-line text control: a native `<input>` in a bordered box, with optional prefix and suffix slots for units, signs and
+icons.
+
+### When to use
+
+- Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
+- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
+
+### When not to use
+
+- More than one line of text: use `Textarea`.
+- A choice from a known list: use `Select` or `Combobox`.
+- Searching: use `SearchInput`, which adds a clear button and debouncing.
+
+### API
+
+#### `TextInput`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `prefix` | `ReactNode` | no |  | Content before the text: a unit, a currency sign, a decorative icon (give an icon `aria-hidden`). |
+| `suffix` | `ReactNode` | no |  | Content after the text: a unit, a button. |
+| `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
+| `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
+| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `TextInputProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "prefix" | "size"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
+
+### Example
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { TextInput } from "@lufia/design-system/components/TextInput";
+
+<FormField label="Amount" hint="Without tax." error={errors.amount}>
+  <TextInput name="amount" prefix="EUR" inputMode="decimal" />
+</FormField>;
+```
+
+### Accessibility
+
+- Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.
+- The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`
+- Height is at least 44px; the text is 16px so iOS does not zoom on focus.
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
+
+### Content guidelines
+
+Placeholders show an example ("Quarterly report"), never an instruction and never the label again. Units go in the prefix or
+suffix, not in the label. Keep error text next to the field, in the `FormField`.
+
+### Stories
+
+- `components-forms-textinput--default`
+- `components-forms-textinput--with-value`
+- `components-forms-textinput--with-hint`
+- `components-forms-textinput--required`
+- `components-forms-textinput--invalid`
+- `components-forms-textinput--disabled`
+- `components-forms-textinput--read-only`
+- `components-forms-textinput--prefix`
+- `components-forms-textinput--suffix`
+- `components-forms-textinput--prefix-and-suffix`
+- `components-forms-textinput--with-icon`
+- `components-forms-textinput--password`
+- `components-forms-textinput--long-text`
+- `components-forms-textinput--phone-320`
+- `components-forms-textinput--right-to-left`
+- `components-forms-textinput--all-themes`
 
 ## Textarea
 
@@ -5187,96 +5526,6 @@ Phrase `formatCount` as what is left ("12 characters left") when the limit is ti
 - `components-forms-textarea--right-to-left`
 - `components-forms-textarea--all-themes`
 
-## TextInput
-
-> A single-line text field with optional prefix and suffix.
-
-- Status: beta
-- Category: Forms
-- Import: `import { TextInput } from "@lufia/design-system/components/TextInput"`
-- Also from: `@lufia/design-system`
-- Source: [src/components/TextInput](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/TextInput)
-- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-forms-textinput--docs)
-
-### Purpose
-
-A single-line text control: a native `<input>` in a bordered box, with optional prefix and suffix slots for units, signs and
-icons.
-
-### When to use
-
-- Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
-- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
-
-### When not to use
-
-- More than one line of text: use `Textarea`.
-- A choice from a known list: use `Select` or `Combobox`.
-- Searching: use `SearchInput`, which adds a clear button and debouncing.
-
-### API
-
-#### `TextInput`
-
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `prefix` | `ReactNode` | no |  | Content before the text: a unit, a currency sign, a decorative icon (give an icon `aria-hidden`). |
-| `suffix` | `ReactNode` | no |  | Content after the text: a unit, a button. |
-| `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
-| `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
-
-Other native element attributes pass through to the root element.
-
-### Example
-
-```tsx
-import { FormField } from "@lufia/design-system/components/FormField";
-import { TextInput } from "@lufia/design-system/components/TextInput";
-
-<FormField label="Amount" hint="Without tax." error={errors.amount}>
-  <TextInput name="amount" prefix="EUR" inputMode="decimal" />
-</FormField>;
-```
-
-### Accessibility
-
-- Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.
-- The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`
-- Height is at least 44px; the text is 16px so iOS does not zoom on focus.
-
-### Motion
-
-Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
-
-### Tokens
-
-Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
-
-### Content guidelines
-
-Placeholders show an example ("Quarterly report"), never an instruction and never the label again. Units go in the prefix or
-suffix, not in the label. Keep error text next to the field, in the `FormField`.
-
-### Stories
-
-- `components-forms-textinput--default`
-- `components-forms-textinput--with-value`
-- `components-forms-textinput--with-hint`
-- `components-forms-textinput--required`
-- `components-forms-textinput--invalid`
-- `components-forms-textinput--disabled`
-- `components-forms-textinput--read-only`
-- `components-forms-textinput--prefix`
-- `components-forms-textinput--suffix`
-- `components-forms-textinput--prefix-and-suffix`
-- `components-forms-textinput--with-icon`
-- `components-forms-textinput--password`
-- `components-forms-textinput--long-text`
-- `components-forms-textinput--phone-320`
-- `components-forms-textinput--right-to-left`
-- `components-forms-textinput--all-themes`
-
 ## Toast
 
 > A transient message that confirms an action without taking focus.
@@ -5320,7 +5569,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  |  |
-| `placement` | `ToastPlacement` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
+| `placement` | `"bottom-end" \| "bottom-start" \| "top-end" \| "top-start"` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
 | `limit` | `number` | no | `5` | The most toasts shown at once; older ones leave first. Default 5. |
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |
 | `container` | `Element \| "auto" \| null` | no | `"auto"` | Where the notification region is rendered. `"auto"` (default) hosts it inside the topmost open modal `<dialog>` while there is one, so toasts stay visible above a native top-layer dialog (a `Modal` with `renderAs="dialog"`), and in `document.body` otherwise. Pass an element to always render there, or `null` for `document.body` only. |
@@ -5341,6 +5590,15 @@ Show and dismiss notifications. Must be used inside a `ToastProvider`.
 ```ts
 useToast(): ToastApi
 ```
+
+### Types
+
+- `ToastAction`: `{ label: string; onAction: () => void; }`
+- `ToastOptions`: `{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }`
+- `ToastPlacement`: `"bottom-end" | "bottom-start" | "top-end" | "top-start"`
+- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }`
+- `ToastTone`: `"info" | "success" | "warning" | "error"`
+- `ToastToneName`: `(string & {}) | ToastTone`
 
 ### Example
 
@@ -5405,6 +5663,70 @@ somewhere in a toast that vanishes.
 - `components-feedback-toast--tone-aliases`
 - `components-feedback-toast--above-a-modal`
 
+## VisuallyHidden
+
+> Hides text visually and keeps it for assistive technology.
+
+- Status: beta
+- Category: Utilities
+- Import: `import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/VisuallyHidden](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/VisuallyHidden)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-utilities-visuallyhidden--docs)
+
+### Purpose
+
+Text for assistive technology that is not drawn on screen.
+
+### When to use
+
+- A longer or more specific name than the visible text (which row does "Delete" act on?).
+- Status text announced from a live region without a visible counterpart.
+
+### When not to use
+
+- Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.
+- To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible.
+
+### API
+
+#### `VisuallyHidden`
+
+No props of its own. Native element attributes pass through.
+
+### Types
+
+- `VisuallyHiddenProps`: `HTMLAttributes<HTMLSpanElement>`
+
+### Example
+
+```tsx
+import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
+
+<button type="button">
+  <span aria-hidden="true">Delete</span>
+  <VisuallyHidden>Delete invoice 2041</VisuallyHidden>
+</button>;
+```
+
+### Accessibility
+
+- It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.
+- WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
+
+### Stories
+
+- `components-utilities-visuallyhidden--default`
+- `components-utilities-visuallyhidden--all-themes`
+
 ## useBodyScrollLock
 
 > Locks page scrolling while an overlay is open, without layout shift.
@@ -5456,6 +5778,10 @@ useBodyScrollLock(locked: boolean, options?: UseBodyScrollLockOptions): void
 | --- | --- | --- | --- |
 | `locked` | `boolean` | yes |  |
 | `options` | `UseBodyScrollLockOptions` | no |  |
+
+### Types
+
+- `UseBodyScrollLockOptions`: `{ scrollContainerSelectors?: readonly string[] | undefined; }`
 
 ### Example
 
@@ -5609,6 +5935,10 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 | `ref` | `RefObject<HTMLElement \| null>` | yes |  |
 | `__2` | `UseFocusTrapOptions` | no |  |
 
+### Types
+
+- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: "container" | "first" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -5684,6 +6014,10 @@ useMediaQuery(query: string, { defaultValue }?: UseMediaQueryOptions): boolean
 | --- | --- | --- | --- |
 | `query` | `string` | yes |  |
 | `__1` | `UseMediaQueryOptions` | no |  |
+
+### Types
+
+- `UseMediaQueryOptions`: `{ defaultValue?: boolean | undefined; }`
 
 ### Example
 
@@ -5767,6 +6101,14 @@ useModalState({ adapter, keys, onNavigate, }?: UseModalStateOptions): { readonly
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `__0` | `UseModalStateOptions` | no |  |
+
+### Types
+
+- `ModalOpenOptions`: `{ consumeKeys?: readonly string[] | undefined; }`
+- `ModalStateAdapter`: `{ get: () => SearchParamsReader; set: (params: URLSearchParams, mode: "push" | "replace") => void; subscribe?: ((onChange: () => void) => () => void) | undefined; }`
+- `ModalStateKeys`: `{ modal: string; id: string; returnModal: string; returnId: string; }`
+- `SearchParamsReader`: `{ get(name: string): string | null; forEach(callback: (value: string, key: string) => void): void; toString(): string; }`
+- `UseModalStateOptions`: `{ adapter?: ModalStateAdapter | undefined; keys?: Partial<ModalStateKeys> | undefined; onNavigate?: (() => void) | undefined; }`
 
 ### Example
 
@@ -5974,6 +6316,10 @@ useSlidingIndicator(container: RefObject<HTMLElement | null>, activeSelector: st
 | `key` | `unknown` | yes |  |
 | `__3` | `UseSlidingIndicatorOptions` | no |  |
 
+### Types
+
+- `UseSlidingIndicatorOptions`: `{ stretch?: boolean | undefined; }`
+
 ### Example
 
 ```tsx
@@ -6047,6 +6393,10 @@ useStepDirection(step: number, active?: boolean): StepDirection | undefined
 | `step` | `number` | yes |  |
 | `active` | `boolean` | no |  |
 
+### Types
+
+- `StepDirection`: `"next" | "back"`
+
 ### Example
 
 ```tsx
@@ -6074,63 +6424,3 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 ### Stories
 
 - `hooks-usestepdirection--default`
-
-## VisuallyHidden
-
-> Hides text visually and keeps it for assistive technology.
-
-- Status: beta
-- Category: Utilities
-- Import: `import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden"`
-- Also from: `@lufia/design-system`
-- Source: [src/components/VisuallyHidden](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/VisuallyHidden)
-- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-utilities-visuallyhidden--docs)
-
-### Purpose
-
-Text for assistive technology that is not drawn on screen.
-
-### When to use
-
-- A longer or more specific name than the visible text (which row does "Delete" act on?).
-- Status text announced from a live region without a visible counterpart.
-
-### When not to use
-
-- Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.
-- To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible.
-
-### API
-
-#### `VisuallyHidden`
-
-No props of its own. Native element attributes pass through.
-
-### Example
-
-```tsx
-import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
-
-<button type="button">
-  <span aria-hidden="true">Delete</span>
-  <VisuallyHidden>Delete invoice 2041</VisuallyHidden>
-</button>;
-```
-
-### Accessibility
-
-- It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.
-- WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain
-
-### Motion
-
-Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
-
-### Tokens
-
-Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
-
-### Stories
-
-- `components-utilities-visuallyhidden--default`
-- `components-utilities-visuallyhidden--all-themes`

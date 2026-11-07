@@ -40,6 +40,10 @@ open-ended filter) go in as children.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `FilterOption`: `{ key: string; label: string; }`
+
 ## Example
 
 ```tsx

@@ -34,6 +34,10 @@ A number that counts to its new value when `value` changes. It uses `requestAnim
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `AnimatedNumberProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { value: number; format?: ((value: number) => string) | undefined; duration?: number | undefined; }`
+
 ## Example
 
 ```tsx

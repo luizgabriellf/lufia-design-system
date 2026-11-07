@@ -53,6 +53,14 @@ useModalState({ adapter, keys, onNavigate, }?: UseModalStateOptions): { readonly
 | --- | --- | --- | --- |
 | `__0` | `UseModalStateOptions` | no |  |
 
+## Types
+
+- `ModalOpenOptions`: `{ consumeKeys?: readonly string[] | undefined; }`
+- `ModalStateAdapter`: `{ get: () => SearchParamsReader; set: (params: URLSearchParams, mode: "push" | "replace") => void; subscribe?: ((onChange: () => void) => () => void) | undefined; }`
+- `ModalStateKeys`: `{ modal: string; id: string; returnModal: string; returnId: string; }`
+- `SearchParamsReader`: `{ get(name: string): string | null; forEach(callback: (value: string, key: string) => void): void; toString(): string; }`
+- `UseModalStateOptions`: `{ adapter?: ModalStateAdapter | undefined; keys?: Partial<ModalStateKeys> | undefined; onNavigate?: (() => void) | undefined; }`
+
 ## Example
 
 ```tsx

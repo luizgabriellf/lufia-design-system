@@ -55,6 +55,10 @@ containment, scroll lock, an inert background and an enter/exit motion.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `ModalSize`: `"sm" | "md" | "lg" | "xl"`
+
 ## Example
 
 ```tsx

@@ -75,6 +75,10 @@ The id of the surrounding `FormField`'s label element, for widgets that need to 
 useFormFieldLabelId(): string | undefined
 ```
 
+## Types
+
+- `FormFieldControlProps`: `{ id: string; "aria-describedby"?: string | undefined; "aria-invalid"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

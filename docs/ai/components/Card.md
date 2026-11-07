@@ -38,10 +38,15 @@ is clickable through one link.
 | `headerAction` | `ReactNode` | no |  | Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. |
 | `footer` | `ReactNode` | no |  | Pinned to the bottom of the card, separated from the body. |
 | `href` | `string` | no |  | Makes the whole card clickable through one link: the `title` renders as a link whose hit area is stretched over the card. Needs a `title`, which is the link's accessible name. |
-| `padding` | `CardPadding` | no | `"md"` | Inner spacing of every slot. Defaults to `md`. |
+| `padding` | `"none" \| "sm" \| "md" \| "lg"` | no | `"md"` | Inner spacing of every slot. Defaults to `md`. |
 | `flush` | `boolean` | no | `false` | Lets the body span the full width of the card while the header and footer keep their padding. For lists and tables that draw their own row padding and dividers. |
+| `divider` | `boolean` | no | `false` | Draws a rule under the header, between it and the body. Its colour is `--lufia-card-divider-color`. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ## Example
 
@@ -75,7 +80,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-padding`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ## Content guidelines
 
@@ -89,6 +94,8 @@ body.
 - `components-data-display-card--with-footer`
 - `components-data-display-card--with-description`
 - `components-data-display-card--flush`
+- `components-data-display-card--divider`
+- `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
 - `components-data-display-card--interactive-with-footer-button`

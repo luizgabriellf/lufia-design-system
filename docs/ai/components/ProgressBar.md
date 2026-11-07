@@ -32,10 +32,14 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `max` | `number` | no | `100` | The value that means done. Defaults to 100. |
 | `label` | `string` | yes |  | Accessible name of the bar ("Storage used"). Required: a progress bar without a name is announced as a bare number. |
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
-| `tone` | `ChartTone` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `size` | `"sm" \| "md"` | no | `"md"` |  |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; }`
 
 ## Example
 

@@ -54,6 +54,10 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 | `ref` | `RefObject<HTMLElement \| null>` | yes |  |
 | `__2` | `UseFocusTrapOptions` | no |  |
 
+## Types
+
+- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: "container" | "first" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

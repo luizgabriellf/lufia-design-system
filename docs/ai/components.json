@@ -65,7 +65,9 @@
         },
         {
           "name": "IconProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
         },
         {
           "name": "OpenIcon",
@@ -113,6 +115,9 @@
           "nativeProps": true
         }
       ],
+      "aliases": {
+        "IconProps": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+      },
       "story": {
         "docsId": "components-actions-actionicons--docs",
         "stories": [
@@ -184,7 +189,9 @@
       "exports": [
         {
           "name": "ActivityItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; title: ReactNode; meta?: ReactNode; time: ReactNode; dateTime?: string | undefined; tone?: ActivityTone | undefined; toneLabel?: string | undefined; action?: ReactNode; }"
         },
         {
           "name": "ActivityList",
@@ -210,13 +217,22 @@
         },
         {
           "name": "ActivityListProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLOListElement>, \"children\"> & { items: readonly ActivityItem[]; timeline?: boolean | undefined; }"
         },
         {
           "name": "ActivityTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"neutral\" | \"success\" | \"warning\" | \"danger\" | \"info\""
         }
       ],
+      "aliases": {
+        "ActivityItem": "{ id: string; title: ReactNode; meta?: ReactNode; time: ReactNode; dateTime?: string | undefined; tone?: ActivityTone | undefined; toneLabel?: string | undefined; action?: ReactNode; }",
+        "ActivityListProps": "Omit<HTMLAttributes<HTMLOListElement>, \"children\"> & { items: readonly ActivityItem[]; timeline?: boolean | undefined; }",
+        "ActivityTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\" | \"info\""
+      },
       "story": {
         "docsId": "components-data-display-activitylist--docs",
         "stories": [
@@ -353,9 +369,14 @@
         },
         {
           "name": "AnimatedNumberProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { value: number; format?: ((value: number) => string) | undefined; duration?: number | undefined; }"
         }
       ],
+      "aliases": {
+        "AnimatedNumberProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { value: number; format?: ((value: number) => string) | undefined; duration?: number | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-animatednumber--docs",
         "stories": [
@@ -596,29 +617,33 @@
         },
         {
           "name": "AppShellLabels",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }"
         },
         {
           "name": "AppShellPrimaryAction",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }"
         },
         {
           "name": "AppShellProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "AppShellSearch",
-          "kind": "type"
-        },
-        {
-          "name": "findActiveNavKey",
-          "kind": "function",
-          "description": "The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.",
-          "signature": "(groups: readonly ShellNavGroup[], currentPath: string | undefined, isActive?: ((item: ShellNavItem) => boolean) | undefined): string | undefined"
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }"
         },
         {
           "name": "FloatBarDataAttributes",
-          "kind": "type"
+          "kind": "type",
+          "description": "`data-*` attributes, passed through to the control: analytics hooks, guided-tour anchors.",
+          "definition": "{ [name: `data-${string}`]: string | number | boolean | undefined; }"
         },
         {
           "name": "MobileFloatBar",
@@ -687,11 +712,15 @@
         },
         {
           "name": "MobileFloatBarButtonProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "MobileFloatBarProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }"
         },
         {
           "name": "MobileFloatBarSeparator",
@@ -780,11 +809,21 @@
         },
         {
           "name": "NavSheetProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "ShellNavGroup",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }"
+        },
+        {
+          "name": "ShellNavItem",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }"
         },
         {
           "name": "ShellNavigation",
@@ -845,11 +884,9 @@
         },
         {
           "name": "ShellNavigationProps",
-          "kind": "type"
-        },
-        {
-          "name": "ShellNavItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "ShellPrimaryActionSlot",
@@ -1010,7 +1047,9 @@
         },
         {
           "name": "SidebarGroupProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "SidebarItem",
@@ -1092,11 +1131,21 @@
         },
         {
           "name": "SidebarItemProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "SidebarProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "findActiveNavKey",
+          "kind": "function",
+          "description": "The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.",
+          "signature": "(groups: readonly ShellNavGroup[], currentPath: string | undefined, isActive?: ((item: ShellNavItem) => boolean) | undefined): string | undefined"
         },
         {
           "name": "useSheetDrag",
@@ -1135,6 +1184,15 @@
           "returns": "boolean"
         }
       ],
+      "aliases": {
+        "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
+        "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
+        "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }",
+        "ShellNavGroup": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }",
+        "ShellNavItem": "{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }"
+      },
       "story": {
         "docsId": "components-navigation-appshell--docs",
         "stories": [
@@ -1290,8 +1348,16 @@
       },
       "exports": [
         {
+          "name": "AttentionBarStyle",
+          "kind": "type",
+          "description": "",
+          "definition": "\"edge\" | \"inset\""
+        },
+        {
           "name": "AttentionItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }"
         },
         {
           "name": "AttentionList",
@@ -1304,19 +1370,36 @@
               "required": true,
               "default": null,
               "description": ""
+            },
+            {
+              "name": "barStyle",
+              "type": "\"edge\" | \"inset\"",
+              "required": false,
+              "default": "\"edge\"",
+              "description": "`edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`."
             }
           ],
           "nativeProps": true
         },
         {
           "name": "AttentionListProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }"
         },
         {
           "name": "AttentionTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"danger\" | \"warning\" | \"info\" | \"neutral\""
         }
       ],
+      "aliases": {
+        "AttentionBarStyle": "\"edge\" | \"inset\"",
+        "AttentionItem": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }",
+        "AttentionListProps": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }",
+        "AttentionTone": "\"danger\" | \"warning\" | \"info\" | \"neutral\""
+      },
       "story": {
         "docsId": "components-data-display-attentionlist--docs",
         "stories": [
@@ -1335,6 +1418,14 @@
           {
             "export": "LongText",
             "id": "components-data-display-attentionlist--long-text"
+          },
+          {
+            "export": "InsetBar",
+            "id": "components-data-display-attentionlist--inset-bar"
+          },
+          {
+            "export": "ThickBar",
+            "id": "components-data-display-attentionlist--thick-bar"
           },
           {
             "export": "Empty",
@@ -1392,6 +1483,8 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-attention-list-bar-inset",
+        "--lufia-attention-list-bar-width",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-accent-subtle",
@@ -1405,7 +1498,8 @@
         "--lufia-color-text-muted",
         "--lufia-font-line-height-normal",
         "--lufia-font-size-sm",
-        "--lufia-font-size-xs"
+        "--lufia-font-size-xs",
+        "--lufia-radius-full"
       ]
     },
     {
@@ -1433,7 +1527,7 @@
             },
             {
               "name": "tone",
-              "type": "BadgeTone",
+              "type": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\"",
               "required": false,
               "default": "\"neutral\"",
               "description": ""
@@ -1450,11 +1544,15 @@
         },
         {
           "name": "BadgeProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }"
         },
         {
           "name": "BadgeTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\""
         },
         {
           "name": "StatusBadge",
@@ -1470,7 +1568,7 @@
             },
             {
               "name": "tone",
-              "type": "BadgeTone",
+              "type": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\"",
               "required": false,
               "default": null,
               "description": ""
@@ -1486,6 +1584,10 @@
           "nativeProps": true
         }
       ],
+      "aliases": {
+        "BadgeProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }",
+        "BadgeTone": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\""
+      },
       "story": {
         "docsId": "components-data-display-badge--docs",
         "stories": [
@@ -1632,13 +1734,21 @@
         },
         {
           "name": "BarListProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }"
         },
         {
           "name": "BarListRow",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }"
         }
       ],
+      "aliases": {
+        "BarListProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }",
+        "BarListRow": "{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }"
+      },
       "story": {
         "docsId": "components-data-display-barlist--docs",
         "stories": [
@@ -1777,7 +1887,7 @@
             },
             {
               "name": "tone",
-              "type": "ChartTone",
+              "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
               "description": ""
@@ -1794,9 +1904,14 @@
         },
         {
           "name": "BulletBarProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\" | \"role\" | \"aria-label\"> & { value: number; target: number; headroom?: number | undefined; tone?: ChartTone | undefined; label: string | null; }"
         }
       ],
+      "aliases": {
+        "BulletBarProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\" | \"role\" | \"aria-label\"> & { value: number; target: number; headroom?: number | undefined; tone?: ChartTone | undefined; label: string | null; }"
+      },
       "story": {
         "docsId": "components-data-display-bulletbar--docs",
         "stories": [
@@ -1899,14 +2014,14 @@
           "props": [
             {
               "name": "variant",
-              "type": "ButtonVariant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
               "required": false,
               "default": "\"secondary\"",
               "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
             },
             {
               "name": "size",
-              "type": "ButtonSize",
+              "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": "\"md\"",
               "description": ""
@@ -1965,17 +2080,28 @@
         },
         {
           "name": "ButtonProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "AsButton | AsLink"
         },
         {
           "name": "ButtonSize",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"sm\" | \"md\" | \"lg\""
         },
         {
           "name": "ButtonVariant",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
         }
       ],
+      "aliases": {
+        "ButtonProps": "AsButton | AsLink",
+        "ButtonSize": "\"sm\" | \"md\" | \"lg\"",
+        "ButtonVariant": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
+      },
       "story": {
         "docsId": "components-actions-button--docs",
         "stories": [
@@ -2178,7 +2304,7 @@
             },
             {
               "name": "padding",
-              "type": "CardPadding",
+              "type": "\"none\" | \"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": "\"md\"",
               "description": "Inner spacing of every slot. Defaults to `md`."
@@ -2189,19 +2315,33 @@
               "required": false,
               "default": "false",
               "description": "Lets the body span the full width of the card while the header and footer keep their padding. For lists and tables that draw their own row padding and dividers."
+            },
+            {
+              "name": "divider",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Draws a rule under the header, between it and the body. Its colour is `--lufia-card-divider-color`."
             }
           ],
           "nativeProps": true
         },
         {
           "name": "CardPadding",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"none\" | \"sm\" | \"md\" | \"lg\""
         },
         {
           "name": "CardProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "CardPadding": "\"none\" | \"sm\" | \"md\" | \"lg\""
+      },
       "story": {
         "docsId": "components-data-display-card--docs",
         "stories": [
@@ -2224,6 +2364,14 @@
           {
             "export": "Flush",
             "id": "components-data-display-card--flush"
+          },
+          {
+            "export": "Divider",
+            "id": "components-data-display-card--divider"
+          },
+          {
+            "export": "ThemedByTokens",
+            "id": "components-data-display-card--themed-by-tokens"
           },
           {
             "export": "BodyOnly",
@@ -2317,6 +2465,11 @@
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
+        "--lufia-card-body-padding",
+        "--lufia-card-divider-color",
+        "--lufia-card-header-padding",
+        "--lufia-card-shadow",
+        "--lufia-card-shadow-hover",
         "--lufia-color-accent-border",
         "--lufia-color-bg-surface",
         "--lufia-color-border-subtle",
@@ -2364,9 +2517,14 @@
         },
         {
           "name": "ChangeHighlightProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLSpanElement> & { value: string | number | boolean | null | undefined; }"
         }
       ],
+      "aliases": {
+        "ChangeHighlightProps": "HTMLAttributes<HTMLSpanElement> & { value: string | number | boolean | null | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-changehighlight--docs",
         "stories": [
@@ -2419,8 +2577,8 @@
     {
       "name": "ChartKit",
       "category": "Utilities",
-      "summary": "",
-      "status": null,
+      "summary": "Colour of a chart mark. The tone only reinforces: the value is always printed as text next to the drawing, so a tone is never the only carrier of meaning (WCAG 1.4.1).",
+      "status": "beta",
       "source": "src/components/ChartKit",
       "entry": {
         "subpath": "@lufia/design-system/components/ChartKit",
@@ -2429,9 +2587,14 @@
       "exports": [
         {
           "name": "ChartTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "Colour of a chart mark. The tone only reinforces: the value is always printed as text next to the drawing, so a tone is never the only carrier of meaning (WCAG 1.4.1).",
+          "definition": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\""
         }
       ],
+      "aliases": {
+        "ChartTone": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\""
+      },
       "story": null,
       "docs": null,
       "a11y": {
@@ -2509,9 +2672,14 @@
         },
         {
           "name": "CheckboxProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
         }
       ],
+      "aliases": {
+        "CheckboxProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-checkbox--docs",
         "stories": [
@@ -2653,9 +2821,14 @@
         },
         {
           "name": "CollapseProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { open: boolean; }"
         }
       ],
+      "aliases": {
+        "CollapseProps": "HTMLAttributes<HTMLDivElement> & { open: boolean; }"
+      },
       "story": {
         "docsId": "components-motion-collapse--docs",
         "stories": [
@@ -2869,13 +3042,20 @@
         },
         {
           "name": "ComboboxOption",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ value: string; label: string; description?: string | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "ComboboxProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "ComboboxOption": "{ value: string; label: string; description?: string | undefined; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-combobox--docs",
         "stories": [
@@ -3039,7 +3219,9 @@
       "exports": [
         {
           "name": "CommandItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }"
         },
         {
           "name": "CommandPalette",
@@ -3142,11 +3324,15 @@
         },
         {
           "name": "CommandPaletteLabels",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }"
         },
         {
           "name": "CommandPaletteProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "filterCommands",
@@ -3155,6 +3341,10 @@
           "signature": "(item: CommandItem, query: string): boolean"
         }
       ],
+      "aliases": {
+        "CommandItem": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }",
+        "CommandPaletteLabels": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }"
+      },
       "story": {
         "docsId": "components-overlays-commandpalette--docs",
         "stories": [
@@ -3386,11 +3576,15 @@
         },
         {
           "name": "ConfirmDialogProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Pick<ModalProps, \"className\" | \"open\" | \"closeLabel\" | \"container\"> & { title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; onConfirm: () => void; onCancel: () => void; destructive?: boolean | undefined; busy?: boolean | undefined; }"
         },
         {
           "name": "ConfirmOptions",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; destructive?: boolean | undefined; }"
         },
         {
           "name": "useConfirmDialog",
@@ -3401,6 +3595,10 @@
           "returns": "{ confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }"
         }
       ],
+      "aliases": {
+        "ConfirmDialogProps": "Pick<ModalProps, \"className\" | \"open\" | \"closeLabel\" | \"container\"> & { title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; onConfirm: () => void; onCancel: () => void; destructive?: boolean | undefined; busy?: boolean | undefined; }",
+        "ConfirmOptions": "{ title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; destructive?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-overlays-confirmdialog--docs",
         "stories": [
@@ -3516,7 +3714,7 @@
           "props": [
             {
               "name": "tone",
-              "type": "DetailAttentionTone",
+              "type": "\"ok\" | \"warn\" | \"danger\" | \"critical\" | \"neutral\"",
               "required": true,
               "default": null,
               "description": ""
@@ -3561,13 +3759,21 @@
         },
         {
           "name": "DetailAttentionCardProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { tone: DetailAttentionTone; title: string; description?: string | undefined; meta?: string | undefined; action?: ReactNode; toneLabel?: string | undefined; }"
         },
         {
           "name": "DetailAttentionTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"ok\" | \"warn\" | \"danger\" | \"critical\" | \"neutral\""
         }
       ],
+      "aliases": {
+        "DetailAttentionCardProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { tone: DetailAttentionTone; title: string; description?: string | undefined; meta?: string | undefined; action?: ReactNode; toneLabel?: string | undefined; }",
+        "DetailAttentionTone": "\"ok\" | \"warn\" | \"danger\" | \"critical\" | \"neutral\""
+      },
       "story": {
         "docsId": "components-data-display-detailattentioncard--docs",
         "stories": [
@@ -3670,13 +3876,21 @@
         },
         {
           "name": "DetailListProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDListElement> & { rows: DetailListRow[]; }"
         },
         {
           "name": "DetailListRow",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; value: ReactNode; mono?: boolean | undefined; }"
         }
       ],
+      "aliases": {
+        "DetailListProps": "HTMLAttributes<HTMLDListElement> & { rows: DetailListRow[]; }",
+        "DetailListRow": "{ label: string; value: ReactNode; mono?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-data-display-detaillist--docs",
         "stories": [
@@ -3795,9 +4009,14 @@
         },
         {
           "name": "DetailSectionCardProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; children: ReactNode; }"
         }
       ],
+      "aliases": {
+        "DetailSectionCardProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: string; description?: string | undefined; icon?: ReactNode; action?: ReactNode; children: ReactNode; }"
+      },
       "story": {
         "docsId": "components-data-display-detailsectioncard--docs",
         "stories": [
@@ -3904,9 +4123,14 @@
         },
         {
           "name": "EmptyStateProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; }"
         }
       ],
+      "aliases": {
+        "EmptyStateProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; }"
+      },
       "story": {
         "docsId": "components-feedback-emptystate--docs",
         "stories": [
@@ -4117,19 +4341,27 @@
         },
         {
           "name": "FileFieldProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "FileLimits",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ accept?: string | undefined; maxSize?: number | undefined; maxFiles?: number | undefined; }"
         },
         {
           "name": "FileRejection",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ file: File; reason: FileRejectionReason; }"
         },
         {
           "name": "FileRejectionReason",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"type\" | \"size\" | \"count\""
         },
         {
           "name": "formatFileSize",
@@ -4144,6 +4376,11 @@
           "signature": "(file: Pick<File, \"name\" | \"type\">, accept?: string | undefined): boolean"
         }
       ],
+      "aliases": {
+        "FileLimits": "{ accept?: string | undefined; maxSize?: number | undefined; maxFiles?: number | undefined; }",
+        "FileRejection": "{ file: File; reason: FileRejectionReason; }",
+        "FileRejectionReason": "\"type\" | \"size\" | \"count\""
+      },
       "story": {
         "docsId": "components-forms-filefield--docs",
         "stories": [
@@ -4340,11 +4577,15 @@
         },
         {
           "name": "FormFieldControlProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "What a control needs from the field around it.",
+          "definition": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "FormFieldProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "useFormFieldControl",
@@ -4370,6 +4611,9 @@
           "returns": "string | undefined"
         }
       ],
+      "aliases": {
+        "FormFieldControlProps": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-formfield--docs",
         "stories": [
@@ -4500,14 +4744,14 @@
             },
             {
               "name": "variant",
-              "type": "ButtonVariant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
               "required": false,
               "default": "\"ghost\"",
               "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
             },
             {
               "name": "size",
-              "type": "ButtonSize",
+              "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": null,
               "description": ""
@@ -4538,9 +4782,14 @@
         },
         {
           "name": "IconButtonProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "(Omit<AsButton, \"children\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\"> | Omit<AsLink, \"children\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\">) & { \"aria-label\": string; icon: ReactNode; title?: string | undefined; }"
         }
       ],
+      "aliases": {
+        "IconButtonProps": "(Omit<AsButton, \"children\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\"> | Omit<AsLink, \"children\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\">) & { \"aria-label\": string; icon: ReactNode; title?: string | undefined; }"
+      },
       "story": {
         "docsId": "components-actions-iconbutton--docs",
         "stories": [
@@ -4671,9 +4920,14 @@
         },
         {
           "name": "LinkProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
         }
       ],
+      "aliases": {
+        "LinkProps": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
+      },
       "story": {
         "docsId": "components-actions-link--docs",
         "stories": [
@@ -4772,19 +5026,27 @@
         },
         {
           "name": "LinkComponent",
-          "kind": "type"
+          "kind": "type",
+          "description": "Anything that renders an anchor from `href`: a router link (Next, React Router, Remix) or a plain `<a>`.",
+          "definition": "ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>"
         },
         {
           "name": "LinkComponentProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }"
         },
         {
           "name": "LufiaContextValue",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ linkComponent: LinkComponent; labels: LufiaLabels; }"
         },
         {
           "name": "LufiaLabels",
-          "kind": "type"
+          "kind": "type",
+          "description": "Text that only assistive technology reads. Visible copy never lives here: it arrives through each component's props. Every key has a neutral English default, so a missing provider is harmless; override them for the app's language.",
+          "definition": "{ close: string; dismiss: string; notifications: string; }"
         },
         {
           "name": "LufiaLink",
@@ -4839,7 +5101,9 @@
         },
         {
           "name": "LufiaProviderProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }"
         },
         {
           "name": "useLufia",
@@ -4850,6 +5114,13 @@
           "returns": "LufiaContextValue"
         }
       ],
+      "aliases": {
+        "LinkComponent": "ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>",
+        "LinkComponentProps": "AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }",
+        "LufiaContextValue": "{ linkComponent: LinkComponent; labels: LufiaLabels; }",
+        "LufiaLabels": "{ close: string; dismiss: string; notifications: string; }",
+        "LufiaProviderProps": "{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }"
+      },
       "story": {
         "docsId": "components-utilities-lufiaprovider--docs",
         "stories": [
@@ -5066,13 +5337,20 @@
         },
         {
           "name": "ModalProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "ModalSize",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"sm\" | \"md\" | \"lg\" | \"xl\""
         }
       ],
+      "aliases": {
+        "ModalSize": "\"sm\" | \"md\" | \"lg\" | \"xl\""
+      },
       "story": {
         "docsId": "components-overlays-modal--docs",
         "stories": [
@@ -5269,7 +5547,9 @@
       "exports": [
         {
           "name": "MoreActionItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: \"danger\" | \"default\" | undefined; narrowOnly?: boolean | undefined; }"
         },
         {
           "name": "MoreActions",
@@ -5306,7 +5586,7 @@
             },
             {
               "name": "variant",
-              "type": "ButtonVariant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
               "required": false,
               "default": "\"ghost\"",
               "description": ""
@@ -5330,9 +5610,15 @@
         },
         {
           "name": "MoreActionsProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; items: readonly MoreActionItem[]; align?: \"end\" | \"start\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; variant?: ButtonVariant | undefined; icon?: ReactNode; defaultOpen?: boolean | undefined; }"
         }
       ],
+      "aliases": {
+        "MoreActionItem": "{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: \"danger\" | \"default\" | undefined; narrowOnly?: boolean | undefined; }",
+        "MoreActionsProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; items: readonly MoreActionItem[]; align?: \"end\" | \"start\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; variant?: ButtonVariant | undefined; icon?: ReactNode; defaultOpen?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-actions-moreactions--docs",
         "stories": [
@@ -5548,9 +5834,12 @@
         },
         {
           "name": "NavRowProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "components-navigation-navrow--docs",
         "stories": [
@@ -5662,7 +5951,9 @@
       "exports": [
         {
           "name": "PageActionItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "PageActions",
@@ -5702,9 +5993,15 @@
         },
         {
           "name": "PageActionsProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { primary?: PageActionItem | undefined; secondary?: readonly PageActionItem[] | undefined; overflow?: readonly MoreActionItem[] | undefined; moreLabel: string; }"
         }
       ],
+      "aliases": {
+        "PageActionItem": "{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; }",
+        "PageActionsProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { primary?: PageActionItem | undefined; secondary?: readonly PageActionItem[] | undefined; overflow?: readonly MoreActionItem[] | undefined; moreLabel: string; }"
+      },
       "story": {
         "docsId": "components-actions-pageactions--docs",
         "stories": [
@@ -5843,9 +6140,14 @@
         },
         {
           "name": "PageHeaderProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { eyebrow?: ReactNode; title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | 1 | undefined; description?: ReactNode; actions?: ReactNode; }"
         }
       ],
+      "aliases": {
+        "PageHeaderProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { eyebrow?: ReactNode; title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | 1 | undefined; description?: ReactNode; actions?: ReactNode; }"
+      },
       "story": {
         "docsId": "components-navigation-pageheader--docs",
         "stories": [
@@ -5872,6 +6174,10 @@
           {
             "export": "LongText",
             "id": "components-navigation-pageheader--long-text"
+          },
+          {
+            "export": "ThemedByTokens",
+            "id": "components-navigation-pageheader--themed-by-tokens"
           },
           {
             "export": "Phone320",
@@ -5923,6 +6229,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thin",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
@@ -5935,7 +6242,13 @@
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
-        "--lufia-font-weight-semibold"
+        "--lufia-font-weight-semibold",
+        "--lufia-page-header-eyebrow-color",
+        "--lufia-page-header-eyebrow-dash-gap",
+        "--lufia-page-header-eyebrow-dash-size",
+        "--lufia-page-header-eyebrow-tracking",
+        "--lufia-page-header-title-size",
+        "--lufia-page-header-title-tracking"
       ]
     },
     {
@@ -6022,13 +6335,20 @@
         },
         {
           "name": "PaginationLabels",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }"
         },
         {
           "name": "PaginationProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "PaginationLabels": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }"
+      },
       "story": {
         "docsId": "components-navigation-pagination--docs",
         "stories": [
@@ -6229,13 +6549,20 @@
         },
         {
           "name": "PeerNavItem",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "PeerNavProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "PeerNavItem": "{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-navigation-peernav--docs",
         "stories": [
@@ -6406,7 +6733,9 @@
       "exports": [
         {
           "name": "PendingProgress",
-          "kind": "type"
+          "kind": "type",
+          "description": "Later labels for a long action: `[[4000, \"Still working…\"]]` shows that text after four seconds of waiting.",
+          "definition": "readonly (readonly [afterMs: number, label: string])[]"
         },
         {
           "name": "PendingSubmit",
@@ -6443,14 +6772,14 @@
             },
             {
               "name": "variant",
-              "type": "ButtonVariant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
               "required": false,
               "default": "\"primary\"",
               "description": "Look of the underlying `Button`. Default `\"primary\"`."
             },
             {
               "name": "size",
-              "type": "ButtonSize",
+              "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": null,
               "description": ""
@@ -6474,9 +6803,14 @@
         },
         {
           "name": "PendingSubmitProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "PendingProgress": "readonly (readonly [afterMs: number, label: string])[]"
+      },
       "story": {
         "docsId": "components-forms-pendingsubmit--docs",
         "stories": [
@@ -6608,7 +6942,7 @@
             },
             {
               "name": "tone",
-              "type": "ChartTone",
+              "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
               "description": ""
@@ -6625,9 +6959,14 @@
         },
         {
           "name": "ProgressBarProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; }"
         }
       ],
+      "aliases": {
+        "ProgressBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; }"
+      },
       "story": {
         "docsId": "components-data-display-progressbar--docs",
         "stories": [
@@ -6837,13 +7176,20 @@
         },
         {
           "name": "RadioGroupProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "RadioOption",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }"
         }
       ],
+      "aliases": {
+        "RadioOption": "{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-radiogroup--docs",
         "stories": [
@@ -6997,9 +7343,14 @@
         },
         {
           "name": "RevealProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; }"
         }
       ],
+      "aliases": {
+        "RevealProps": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-reveal--docs",
         "stories": [
@@ -7104,9 +7455,14 @@
         },
         {
           "name": "RouteTransitionProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { transitionKey: string | number; variant?: \"fade\" | \"rise\" | undefined; }"
         }
       ],
+      "aliases": {
+        "RouteTransitionProps": "HTMLAttributes<HTMLDivElement> & { transitionKey: string | number; variant?: \"fade\" | \"rise\" | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-routetransition--docs",
         "stories": [
@@ -7269,9 +7625,12 @@
         },
         {
           "name": "SearchInputProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "components-forms-searchinput--docs",
         "stories": [
@@ -7434,9 +7793,14 @@
         },
         {
           "name": "SectionHeaderProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | undefined; description?: ReactNode; actions?: ReactNode; titleId?: string | undefined; }"
         }
       ],
+      "aliases": {
+        "SectionHeaderProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { title: ReactNode; headingLevel?: 2 | 3 | 4 | 5 | 6 | undefined; description?: ReactNode; actions?: ReactNode; titleId?: string | undefined; }"
+      },
       "story": {
         "docsId": "components-navigation-sectionheader--docs",
         "stories": [
@@ -7600,13 +7964,20 @@
         },
         {
           "name": "SegmentedToggleOption",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }"
         },
         {
           "name": "SegmentedToggleProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "SegmentedToggleOption": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-segmentedtoggle--docs",
         "stories": [
@@ -7782,13 +8153,20 @@
         },
         {
           "name": "SelectOption",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ value: string; label: string; disabled?: boolean | undefined; }"
         },
         {
           "name": "SelectProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "SelectOption": "{ value: string; label: string; disabled?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-select--docs",
         "stories": [
@@ -7935,9 +8313,14 @@
         },
         {
           "name": "SkeletonProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"text\" | \"rect\" | \"circle\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
         }
       ],
+      "aliases": {
+        "SkeletonProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"text\" | \"rect\" | \"circle\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-skeleton--docs",
         "stories": [
@@ -8019,6 +8402,12 @@
       },
       "exports": [
         {
+          "name": "SortDirection",
+          "kind": "type",
+          "description": "",
+          "definition": "\"asc\" | \"desc\""
+        },
+        {
           "name": "SortableTh",
           "kind": "component",
           "description": "Sortable column header. A real `<button>` sits inside the `<th>` so keyboard users can focus and activate it, and `aria-sort` stays on the `<th>` as WAI-ARIA requires.",
@@ -8056,13 +8445,15 @@
         },
         {
           "name": "SortableThProps",
-          "kind": "type"
-        },
-        {
-          "name": "SortDirection",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }"
         }
       ],
+      "aliases": {
+        "SortDirection": "\"asc\" | \"desc\"",
+        "SortableThProps": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }"
+      },
       "story": {
         "docsId": "components-data-display-sortableth--docs",
         "stories": [
@@ -8152,14 +8543,14 @@
             },
             {
               "name": "variant",
-              "type": "SparklineVariant",
+              "type": "\"columns\" | \"line\"",
               "required": false,
               "default": "\"columns\"",
               "description": "`columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range."
             },
             {
               "name": "tone",
-              "type": "ChartTone",
+              "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
               "description": ""
@@ -8176,13 +8567,21 @@
         },
         {
           "name": "SparklineProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<SVGAttributes<SVGSVGElement>, \"children\" | \"role\" | \"values\" | \"aria-label\"> & { values: readonly number[]; variant?: SparklineVariant | undefined; tone?: ChartTone | undefined; label: string | null; }"
         },
         {
           "name": "SparklineVariant",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"columns\" | \"line\""
         }
       ],
+      "aliases": {
+        "SparklineProps": "Omit<SVGAttributes<SVGSVGElement>, \"children\" | \"role\" | \"values\" | \"aria-label\"> & { values: readonly number[]; variant?: SparklineVariant | undefined; tone?: ChartTone | undefined; label: string | null; }",
+        "SparklineVariant": "\"columns\" | \"line\""
+      },
       "story": {
         "docsId": "components-data-display-sparkline--docs",
         "stories": [
@@ -8304,9 +8703,14 @@
         },
         {
           "name": "StaggerProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { limit?: number | undefined; }"
         }
       ],
+      "aliases": {
+        "StaggerProps": "HTMLAttributes<HTMLDivElement> & { limit?: number | undefined; }"
+      },
       "story": {
         "docsId": "components-motion-stagger--docs",
         "stories": [
@@ -8404,7 +8808,7 @@
             },
             {
               "name": "tone",
-              "type": "StatTileTone",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
               "description": "`warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why."
@@ -8418,7 +8822,7 @@
             },
             {
               "name": "trend",
-              "type": "StatTileTrend",
+              "type": "\"up\" | \"down\" | \"flat\"",
               "required": false,
               "default": null,
               "description": "Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`."
@@ -8432,7 +8836,7 @@
             },
             {
               "name": "deltaTone",
-              "type": "StatTileTone",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
               "description": "Colour of `delta`. A rise is not always good news, so it is independent of `trend`."
@@ -8484,23 +8888,37 @@
         },
         {
           "name": "StatTileProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "StatTileTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"neutral\" | \"success\" | \"warning\" | \"danger\""
         },
         {
           "name": "StatTileTrend",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"up\" | \"down\" | \"flat\""
         }
       ],
+      "aliases": {
+        "StatTileTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
+        "StatTileTrend": "\"up\" | \"down\" | \"flat\""
+      },
       "story": {
         "docsId": "components-data-display-stattile--docs",
         "stories": [
           {
             "export": "Default",
             "id": "components-data-display-stattile--default"
+          },
+          {
+            "export": "ThemedByTokens",
+            "id": "components-data-display-stattile--themed-by-tokens"
           },
           {
             "export": "WithDelta",
@@ -8650,7 +9068,12 @@
         "--lufia-motion-easing-out",
         "--lufia-radius-md",
         "--lufia-shadow-md",
-        "--lufia-shadow-sm"
+        "--lufia-shadow-sm",
+        "--lufia-stat-tile-label-color",
+        "--lufia-stat-tile-label-size",
+        "--lufia-stat-tile-label-tracking",
+        "--lufia-stat-tile-value-size",
+        "--lufia-stat-tile-value-size-narrow"
       ]
     },
     {
@@ -8681,21 +9104,35 @@
         },
         {
           "name": "StatusTimelineNode",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; label: string; state: StatusTimelineNodeState; stateLabel: string; timestampLabel?: string | undefined; deadlineLabel?: string | undefined; hint?: string | undefined; action?: ReactNode; }"
         },
         {
           "name": "StatusTimelineNodeState",
-          "kind": "type"
+          "kind": "type",
+          "description": "Generic obligation-tracking vocabulary. Consumers can pass their own domain state values straight through without a mapping layer.",
+          "definition": "\"needsTimestamp\" | \"pending\" | \"overdue\" | \"done\" | \"notApplicable\""
         },
         {
           "name": "StatusTimelineProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[]; }"
         },
         {
           "name": "StatusTimelineTrack",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; title: string; nodes: StatusTimelineNode[]; }"
         }
       ],
+      "aliases": {
+        "StatusTimelineNode": "{ id: string; label: string; state: StatusTimelineNodeState; stateLabel: string; timestampLabel?: string | undefined; deadlineLabel?: string | undefined; hint?: string | undefined; action?: ReactNode; }",
+        "StatusTimelineNodeState": "\"needsTimestamp\" | \"pending\" | \"overdue\" | \"done\" | \"notApplicable\"",
+        "StatusTimelineProps": "HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[]; }",
+        "StatusTimelineTrack": "{ id: string; title: string; nodes: StatusTimelineNode[]; }"
+      },
       "story": {
         "docsId": "components-data-display-statustimeline--docs",
         "stories": [
@@ -8794,7 +9231,9 @@
       "exports": [
         {
           "name": "StepDef",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; }"
         },
         {
           "name": "Stepper",
@@ -8827,9 +9266,15 @@
         },
         {
           "name": "StepperProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { steps: StepDef[]; current: number; onStepClick?: ((index: number) => void) | undefined; }"
         }
       ],
+      "aliases": {
+        "StepDef": "{ key: string; label: string; }",
+        "StepperProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { steps: StepDef[]; current: number; onStepClick?: ((index: number) => void) | undefined; }"
+      },
       "story": {
         "docsId": "components-navigation-stepper--docs",
         "stories": [
@@ -8943,9 +9388,14 @@
         },
         {
           "name": "SuccessCheckProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<SVGAttributes<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
         }
       ],
+      "aliases": {
+        "SuccessCheckProps": "Omit<SVGAttributes<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+      },
       "story": {
         "docsId": "components-feedback-successcheck--docs",
         "stories": [
@@ -9087,9 +9537,12 @@
         },
         {
           "name": "SwitchProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "components-forms-switch--docs",
         "stories": [
@@ -9206,7 +9659,9 @@
       "exports": [
         {
           "name": "FilterOption",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; }"
         },
         {
           "name": "TableToolbar",
@@ -9281,9 +9736,14 @@
         },
         {
           "name": "TableToolbarProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         }
       ],
+      "aliases": {
+        "FilterOption": "{ key: string; label: string; }"
+      },
       "story": {
         "docsId": "components-data-display-tabletoolbar--docs",
         "stories": [
@@ -9376,174 +9836,6 @@
       ]
     },
     {
-      "name": "Textarea",
-      "category": "Forms",
-      "summary": "A multi-line text field that can show a character count.",
-      "status": "beta",
-      "source": "src/components/Textarea",
-      "entry": {
-        "subpath": "@lufia/design-system/components/Textarea",
-        "root": "@lufia/design-system"
-      },
-      "exports": [
-        {
-          "name": "Textarea",
-          "kind": "component",
-          "description": "A multi-line text control with an optional character count. The count is part of the control's description. It is announced only close to the limit, so it does not read out on every keystroke. Inside a `FormField` the field's ids and states apply.",
-          "props": [
-            {
-              "name": "invalid",
-              "type": "boolean",
-              "required": false,
-              "default": null,
-              "description": "Marks the control invalid without a `FormField`. Inside a field the error does it."
-            },
-            {
-              "name": "showCount",
-              "type": "boolean",
-              "required": false,
-              "default": null,
-              "description": "Shows a character count under the box. With `maxLength` it reads \"12 / 200\"."
-            },
-            {
-              "name": "formatCount",
-              "type": "((length: number, max: number | undefined) => ReactNode)",
-              "required": false,
-              "default": "defaultCount",
-              "description": "Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword."
-            },
-            {
-              "name": "formatCountAnnouncement",
-              "type": "((length: number, max: number) => string)",
-              "required": false,
-              "default": "defaultAnnouncement",
-              "description": "Text read out when the person is close to the limit (the last tenth) or over it. Aria-only."
-            },
-            {
-              "name": "className",
-              "type": "string",
-              "required": false,
-              "default": null,
-              "description": "Goes on the box that draws the border; the native textarea gets the rest props."
-            },
-            {
-              "name": "ref",
-              "type": "Ref<HTMLTextAreaElement>",
-              "required": false,
-              "default": null,
-              "description": ""
-            }
-          ],
-          "nativeProps": true
-        },
-        {
-          "name": "TextareaProps",
-          "kind": "type"
-        }
-      ],
-      "story": {
-        "docsId": "components-forms-textarea--docs",
-        "stories": [
-          {
-            "export": "Default",
-            "id": "components-forms-textarea--default"
-          },
-          {
-            "export": "WithHint",
-            "id": "components-forms-textarea--with-hint"
-          },
-          {
-            "export": "Required",
-            "id": "components-forms-textarea--required"
-          },
-          {
-            "export": "Invalid",
-            "id": "components-forms-textarea--invalid"
-          },
-          {
-            "export": "Disabled",
-            "id": "components-forms-textarea--disabled"
-          },
-          {
-            "export": "ReadOnly",
-            "id": "components-forms-textarea--read-only"
-          },
-          {
-            "export": "WithCount",
-            "id": "components-forms-textarea--with-count"
-          },
-          {
-            "export": "NearLimit",
-            "id": "components-forms-textarea--near-limit"
-          },
-          {
-            "export": "CountWithoutLimit",
-            "id": "components-forms-textarea--count-without-limit"
-          },
-          {
-            "export": "CustomCount",
-            "id": "components-forms-textarea--custom-count"
-          },
-          {
-            "export": "Controlled",
-            "id": "components-forms-textarea--controlled"
-          },
-          {
-            "export": "LongText",
-            "id": "components-forms-textarea--long-text"
-          },
-          {
-            "export": "Phone320",
-            "id": "components-forms-textarea--phone-320"
-          },
-          {
-            "export": "RightToLeft",
-            "id": "components-forms-textarea--right-to-left"
-          },
-          {
-            "export": "AllThemes",
-            "id": "components-forms-textarea--all-themes"
-          }
-        ]
-      },
-      "docs": {
-        "mdx": "src/components/Textarea/Textarea.mdx",
-        "overview": "A multi-line text control with the same box as `TextInput`, vertical resizing and an optional character count.",
-        "usage": {
-          "language": "tsx",
-          "code": "import { FormField } from \"@lufia/design-system/components/FormField\";\nimport { Textarea } from \"@lufia/design-system/components/Textarea\";\n\n<FormField label=\"Notes\" hint=\"Visible to everyone on the project.\">\n  <Textarea name=\"notes\" rows={5} maxLength={500} showCount />\n</FormField>;"
-        },
-        "whenToUse": [
-          "Free text that may run past one line: notes, descriptions, messages."
-        ],
-        "whenNotToUse": [
-          "A short value: use `TextInput`. Do not stretch a textarea to look like an input.",
-          "Formatted text. This is plain text only."
-        ],
-        "contentGuidelines": "Say how much is expected in the hint (\"A sentence or two is enough\"). Show the count only when a limit exists or matters.\nPhrase `formatCount` as what is left (\"12 characters left\") when the limit is tight."
-      },
-      "a11y": {
-        "pattern": null,
-        "keyboard": [],
-        "keyboardNotes": null,
-        "notes": [
-          "The resize handle is vertical only, so the box cannot grow wider than its container at 320px.",
-          "Focus ring, forced-colors and invalid styling match `TextInput`."
-        ]
-      },
-      "motion": {
-        "respectsReducedMotion": false,
-        "notes": null
-      },
-      "tokens": [
-        "--lufia-color-status-warning-fg",
-        "--lufia-color-text-muted",
-        "--lufia-font-size-xs",
-        "--lufia-font-weight-bold",
-        "--lufia-space-1"
-      ]
-    },
-    {
       "name": "TextInput",
       "category": "Forms",
       "summary": "A single-line text field with optional prefix and suffix.",
@@ -9599,9 +9891,14 @@
         },
         {
           "name": "TextInputProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
         }
       ],
+      "aliases": {
+        "TextInputProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+      },
       "story": {
         "docsId": "components-forms-textinput--docs",
         "stories": [
@@ -9706,6 +10003,177 @@
       "tokens": []
     },
     {
+      "name": "Textarea",
+      "category": "Forms",
+      "summary": "A multi-line text field that can show a character count.",
+      "status": "beta",
+      "source": "src/components/Textarea",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Textarea",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Textarea",
+          "kind": "component",
+          "description": "A multi-line text control with an optional character count. The count is part of the control's description. It is announced only close to the limit, so it does not read out on every keystroke. Inside a `FormField` the field's ids and states apply.",
+          "props": [
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks the control invalid without a `FormField`. Inside a field the error does it."
+            },
+            {
+              "name": "showCount",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Shows a character count under the box. With `maxLength` it reads \"12 / 200\"."
+            },
+            {
+              "name": "formatCount",
+              "type": "((length: number, max: number | undefined) => ReactNode)",
+              "required": false,
+              "default": "defaultCount",
+              "description": "Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword."
+            },
+            {
+              "name": "formatCountAnnouncement",
+              "type": "((length: number, max: number) => string)",
+              "required": false,
+              "default": "defaultAnnouncement",
+              "description": "Text read out when the person is close to the limit (the last tenth) or over it. Aria-only."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Goes on the box that draws the border; the native textarea gets the rest props."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLTextAreaElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TextareaProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        }
+      ],
+      "aliases": {},
+      "story": {
+        "docsId": "components-forms-textarea--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-forms-textarea--default"
+          },
+          {
+            "export": "WithHint",
+            "id": "components-forms-textarea--with-hint"
+          },
+          {
+            "export": "Required",
+            "id": "components-forms-textarea--required"
+          },
+          {
+            "export": "Invalid",
+            "id": "components-forms-textarea--invalid"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-forms-textarea--disabled"
+          },
+          {
+            "export": "ReadOnly",
+            "id": "components-forms-textarea--read-only"
+          },
+          {
+            "export": "WithCount",
+            "id": "components-forms-textarea--with-count"
+          },
+          {
+            "export": "NearLimit",
+            "id": "components-forms-textarea--near-limit"
+          },
+          {
+            "export": "CountWithoutLimit",
+            "id": "components-forms-textarea--count-without-limit"
+          },
+          {
+            "export": "CustomCount",
+            "id": "components-forms-textarea--custom-count"
+          },
+          {
+            "export": "Controlled",
+            "id": "components-forms-textarea--controlled"
+          },
+          {
+            "export": "LongText",
+            "id": "components-forms-textarea--long-text"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-forms-textarea--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-forms-textarea--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-forms-textarea--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Textarea/Textarea.mdx",
+        "overview": "A multi-line text control with the same box as `TextInput`, vertical resizing and an optional character count.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { FormField } from \"@lufia/design-system/components/FormField\";\nimport { Textarea } from \"@lufia/design-system/components/Textarea\";\n\n<FormField label=\"Notes\" hint=\"Visible to everyone on the project.\">\n  <Textarea name=\"notes\" rows={5} maxLength={500} showCount />\n</FormField>;"
+        },
+        "whenToUse": [
+          "Free text that may run past one line: notes, descriptions, messages."
+        ],
+        "whenNotToUse": [
+          "A short value: use `TextInput`. Do not stretch a textarea to look like an input.",
+          "Formatted text. This is plain text only."
+        ],
+        "contentGuidelines": "Say how much is expected in the hint (\"A sentence or two is enough\"). Show the count only when a limit exists or matters.\nPhrase `formatCount` as what is left (\"12 characters left\") when the limit is tight."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The resize handle is vertical only, so the box cannot grow wider than its container at 320px.",
+          "Focus ring, forced-colors and invalid styling match `TextInput`."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-muted",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-bold",
+        "--lufia-space-1"
+      ]
+    },
+    {
       "name": "Toast",
       "category": "Feedback",
       "summary": "A transient message that confirms an action without taking focus.",
@@ -9718,19 +10186,27 @@
       "exports": [
         {
           "name": "ToastAction",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; onAction: () => void; }"
         },
         {
           "name": "ToastApi",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "ToastOptions",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }"
         },
         {
           "name": "ToastPlacement",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"bottom-end\" | \"bottom-start\" | \"top-end\" | \"top-start\""
         },
         {
           "name": "ToastProvider",
@@ -9746,7 +10222,7 @@
             },
             {
               "name": "placement",
-              "type": "ToastPlacement",
+              "type": "\"bottom-end\" | \"bottom-start\" | \"top-end\" | \"top-start\"",
               "required": false,
               "default": "\"bottom-end\"",
               "description": "Corner of the viewport the stack sits in. Default `bottom-end`."
@@ -9784,15 +10260,21 @@
         },
         {
           "name": "ToastProviderProps",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | \"auto\" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }"
         },
         {
           "name": "ToastTone",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"info\" | \"success\" | \"warning\" | \"error\""
         },
         {
           "name": "ToastToneName",
-          "kind": "type"
+          "kind": "type",
+          "description": "A built-in tone, or a name the app maps onto one with the provider's `toneAliases`.",
+          "definition": "(string & {}) | ToastTone"
         },
         {
           "name": "useOptionalToast",
@@ -9811,6 +10293,14 @@
           "returns": "ToastApi"
         }
       ],
+      "aliases": {
+        "ToastAction": "{ label: string; onAction: () => void; }",
+        "ToastOptions": "{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }",
+        "ToastPlacement": "\"bottom-end\" | \"bottom-start\" | \"top-end\" | \"top-start\"",
+        "ToastProviderProps": "{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | \"auto\" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }",
+        "ToastTone": "\"info\" | \"success\" | \"warning\" | \"error\"",
+        "ToastToneName": "(string & {}) | ToastTone"
+      },
       "story": {
         "docsId": "components-feedback-toast--docs",
         "stories": [
@@ -9932,6 +10422,79 @@
       ]
     },
     {
+      "name": "VisuallyHidden",
+      "category": "Utilities",
+      "summary": "Hides text visually and keeps it for assistive technology.",
+      "status": "beta",
+      "source": "src/components/VisuallyHidden",
+      "entry": {
+        "subpath": "@lufia/design-system/components/VisuallyHidden",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "VisuallyHidden",
+          "kind": "component",
+          "description": "Content that screen readers read and sighted users never see. It takes no space in the layout.",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "VisuallyHiddenProps",
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLSpanElement>"
+        }
+      ],
+      "aliases": {
+        "VisuallyHiddenProps": "HTMLAttributes<HTMLSpanElement>"
+      },
+      "story": {
+        "docsId": "components-utilities-visuallyhidden--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-utilities-visuallyhidden--default"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-utilities-visuallyhidden--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/VisuallyHidden/VisuallyHidden.mdx",
+        "overview": "Text for assistive technology that is not drawn on screen.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { VisuallyHidden } from \"@lufia/design-system/components/VisuallyHidden\";\n\n<button type=\"button\">\n  <span aria-hidden=\"true\">Delete</span>\n  <VisuallyHidden>Delete invoice 2041</VisuallyHidden>\n</button>;"
+        },
+        "whenToUse": [
+          "A longer or more specific name than the visible text (which row does \"Delete\" act on?).",
+          "Status text announced from a live region without a visible counterpart."
+        ],
+        "whenNotToUse": [
+          "Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.",
+          "To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.",
+          "WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain"
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": []
+    },
+    {
       "name": "useBodyScrollLock",
       "category": "Hooks",
       "summary": "Locks page scrolling while an overlay is open, without layout shift.",
@@ -9942,6 +10505,12 @@
         "root": "@lufia/design-system"
       },
       "exports": [
+        {
+          "name": "UseBodyScrollLockOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ scrollContainerSelectors?: readonly string[] | undefined; }"
+        },
         {
           "name": "isBodyScrollLocked",
           "kind": "function",
@@ -9968,12 +10537,11 @@
             }
           ],
           "returns": "void"
-        },
-        {
-          "name": "UseBodyScrollLockOptions",
-          "kind": "type"
         }
       ],
+      "aliases": {
+        "UseBodyScrollLockOptions": "{ scrollContainerSelectors?: readonly string[] | undefined; }"
+      },
       "story": {
         "docsId": "hooks-usebodyscrolllock--docs",
         "stories": [
@@ -10059,6 +10627,7 @@
           "returns": "void"
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "hooks-usedismiss--docs",
         "stories": [
@@ -10111,6 +10680,12 @@
       },
       "exports": [
         {
+          "name": "UseFocusTrapOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ onEscape?: (() => void) | undefined; initialFocus?: \"container\" | \"first\" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+        },
+        {
           "name": "getFocusableElements",
           "kind": "function",
           "description": "The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that is `null` for fixed-position children.",
@@ -10142,12 +10717,11 @@
             }
           ],
           "returns": "void"
-        },
-        {
-          "name": "UseFocusTrapOptions",
-          "kind": "type"
         }
       ],
+      "aliases": {
+        "UseFocusTrapOptions": "{ onEscape?: (() => void) | undefined; initialFocus?: \"container\" | \"first\" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "hooks-usefocustrap--docs",
         "stories": [
@@ -10210,6 +10784,12 @@
       },
       "exports": [
         {
+          "name": "UseMediaQueryOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ defaultValue?: boolean | undefined; }"
+        },
+        {
           "name": "useMediaQuery",
           "kind": "hook",
           "description": "Whether a CSS media query currently matches, following changes. SSR-safe: the server renders `defaultValue`, and React re-reads the real value on hydration without a mismatch warning. Without `matchMedia` it returns `defaultValue`. Prefer CSS media queries for styling; use this when behaviour, not appearance, depends on the viewport.",
@@ -10229,12 +10809,11 @@
             }
           ],
           "returns": "boolean"
-        },
-        {
-          "name": "UseMediaQueryOptions",
-          "kind": "type"
         }
       ],
+      "aliases": {
+        "UseMediaQueryOptions": "{ defaultValue?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "hooks-usemediaquery--docs",
         "stories": [
@@ -10295,6 +10874,36 @@
       },
       "exports": [
         {
+          "name": "ModalOpenOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ consumeKeys?: readonly string[] | undefined; }"
+        },
+        {
+          "name": "ModalStateAdapter",
+          "kind": "type",
+          "description": "How the hook talks to the URL, so it is tied to no router. - `get` returns the current search params. It is called during render and again at the moment of every `open`/`close`. - `set` writes the next search params with `push` (a new history entry) or `replace`. - `subscribe` (optional) tells the hook when the URL changed from outside the app's router, e.g. the back button. Routers that re-render their consumers on navigation (Next's `useSearchParams`) do not need it.",
+          "definition": "{ get: () => SearchParamsReader; set: (params: URLSearchParams, mode: \"push\" | \"replace\") => void; subscribe?: ((onChange: () => void) => () => void) | undefined; }"
+        },
+        {
+          "name": "ModalStateKeys",
+          "kind": "type",
+          "description": "The query parameters this hook owns. Rename them if they collide with the app's own.",
+          "definition": "{ modal: string; id: string; returnModal: string; returnId: string; }"
+        },
+        {
+          "name": "SearchParamsReader",
+          "kind": "type",
+          "description": "The read side of a URL. `URLSearchParams` and Next's `ReadonlyURLSearchParams` both satisfy it.",
+          "definition": "{ get(name: string): string | null; forEach(callback: (value: string, key: string) => void): void; toString(): string; }"
+        },
+        {
+          "name": "UseModalStateOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ adapter?: ModalStateAdapter | undefined; keys?: Partial<ModalStateKeys> | undefined; onNavigate?: (() => void) | undefined; }"
+        },
+        {
           "name": "browserHistoryAdapter",
           "kind": "constant",
           "type": "ModalStateAdapter"
@@ -10304,22 +10913,6 @@
           "kind": "function",
           "description": "Decodes a composite modal id (`item::42`) that was stored URI-encoded; malformed input is returned as is.",
           "signature": "(id: string | null): string | null"
-        },
-        {
-          "name": "ModalOpenOptions",
-          "kind": "type"
-        },
-        {
-          "name": "ModalStateAdapter",
-          "kind": "type"
-        },
-        {
-          "name": "ModalStateKeys",
-          "kind": "type"
-        },
-        {
-          "name": "SearchParamsReader",
-          "kind": "type"
         },
         {
           "name": "useModalState",
@@ -10335,12 +10928,15 @@
             }
           ],
           "returns": "{ readonly modal: string | null; readonly id: string | null; readonly returnModal: string | null; readonly returnId: string | null; readonly open: (name: string, itemId?: string | undefined, options?: ModalOpenOptions | undefined) => void; readonly close: () => void; }"
-        },
-        {
-          "name": "UseModalStateOptions",
-          "kind": "type"
         }
       ],
+      "aliases": {
+        "ModalOpenOptions": "{ consumeKeys?: readonly string[] | undefined; }",
+        "ModalStateAdapter": "{ get: () => SearchParamsReader; set: (params: URLSearchParams, mode: \"push\" | \"replace\") => void; subscribe?: ((onChange: () => void) => () => void) | undefined; }",
+        "ModalStateKeys": "{ modal: string; id: string; returnModal: string; returnId: string; }",
+        "SearchParamsReader": "{ get(name: string): string | null; forEach(callback: (value: string, key: string) => void): void; toString(): string; }",
+        "UseModalStateOptions": "{ adapter?: ModalStateAdapter | undefined; keys?: Partial<ModalStateKeys> | undefined; onNavigate?: (() => void) | undefined; }"
+      },
       "story": {
         "docsId": "hooks-usemodalstate--docs",
         "stories": [
@@ -10434,6 +11030,7 @@
           "returns": "{ page: number; pageSize: number; total: number; totalPages: number; slice: T[]; setPage: Dispatch<SetStateAction<number>>; hasPrev: boolean; hasNext: boolean; goPrev: () => void; goNext: () => void; show: boolean; }"
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "hooks-usepagination--docs",
         "stories": [
@@ -10498,6 +11095,7 @@
           "returns": "boolean"
         }
       ],
+      "aliases": {},
       "story": {
         "docsId": "hooks-useprefersreducedmotion--docs",
         "stories": [
@@ -10550,6 +11148,12 @@
       },
       "exports": [
         {
+          "name": "UseSlidingIndicatorOptions",
+          "kind": "type",
+          "description": "",
+          "definition": "{ stretch?: boolean | undefined; }"
+        },
+        {
           "name": "useSlidingIndicator",
           "kind": "hook",
           "description": "Slides a decorative indicator behind the active item of `container`. Only `transform` animates; the items themselves never move, so their markup, focus and state are untouched. - `container` must be `position: relative`; the indicator is `position: absolute` at its top-left corner. Positions are measured physical coordinates, so the indicator uses `left: 0` rather than a logical inset. - `activeSelector` finds the active item inside the container. `key` re-measures when it changes (usually the active id). - The indicator starts `hidden` (server render, no script): the active item keeps its own styling until the hook shows the indicator, and CSS can hand the chrome over with `:has(> .indicator:not([hidden]))`. - The slide is enabled by `data-ready` after the first position, so the indicator never glides in from the corner. A resize jumps to the new spot instead of sliding, which would leave it at the old layout's offset for a moment. Returns the ref to put on the indicator element. Give the indicator a `transition` on `transform` under `[data-ready]`, with `--lufia-motion-*` tokens.",
@@ -10581,12 +11185,11 @@
             }
           ],
           "returns": "RefObject<HTMLSpanElement | null>"
-        },
-        {
-          "name": "UseSlidingIndicatorOptions",
-          "kind": "type"
         }
       ],
+      "aliases": {
+        "UseSlidingIndicatorOptions": "{ stretch?: boolean | undefined; }"
+      },
       "story": {
         "docsId": "hooks-useslidingindicator--docs",
         "stories": [
@@ -10649,7 +11252,9 @@
       "exports": [
         {
           "name": "StepDirection",
-          "kind": "type"
+          "kind": "type",
+          "description": "",
+          "definition": "\"next\" | \"back\""
         },
         {
           "name": "useStepDirection",
@@ -10673,6 +11278,9 @@
           "returns": "StepDirection | undefined"
         }
       ],
+      "aliases": {
+        "StepDirection": "\"next\" | \"back\""
+      },
       "story": {
         "docsId": "hooks-usestepdirection--docs",
         "stories": [
@@ -10705,74 +11313,6 @@
           "The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens",
           "The direction must never be the only signal of the new step: announce it (`Stepper` does) and keep the heading current.",
           "Opening the flow returns `undefined`, so a wizard never slides on first paint."
-        ]
-      },
-      "motion": {
-        "respectsReducedMotion": false,
-        "notes": null
-      },
-      "tokens": []
-    },
-    {
-      "name": "VisuallyHidden",
-      "category": "Utilities",
-      "summary": "Hides text visually and keeps it for assistive technology.",
-      "status": "beta",
-      "source": "src/components/VisuallyHidden",
-      "entry": {
-        "subpath": "@lufia/design-system/components/VisuallyHidden",
-        "root": "@lufia/design-system"
-      },
-      "exports": [
-        {
-          "name": "VisuallyHidden",
-          "kind": "component",
-          "description": "Content that screen readers read and sighted users never see. It takes no space in the layout.",
-          "props": [],
-          "nativeProps": true
-        },
-        {
-          "name": "VisuallyHiddenProps",
-          "kind": "type"
-        }
-      ],
-      "story": {
-        "docsId": "components-utilities-visuallyhidden--docs",
-        "stories": [
-          {
-            "export": "Default",
-            "id": "components-utilities-visuallyhidden--default"
-          },
-          {
-            "export": "AllThemes",
-            "id": "components-utilities-visuallyhidden--all-themes"
-          }
-        ]
-      },
-      "docs": {
-        "mdx": "src/components/VisuallyHidden/VisuallyHidden.mdx",
-        "overview": "Text for assistive technology that is not drawn on screen.",
-        "usage": {
-          "language": "tsx",
-          "code": "import { VisuallyHidden } from \"@lufia/design-system/components/VisuallyHidden\";\n\n<button type=\"button\">\n  <span aria-hidden=\"true\">Delete</span>\n  <VisuallyHidden>Delete invoice 2041</VisuallyHidden>\n</button>;"
-        },
-        "whenToUse": [
-          "A longer or more specific name than the visible text (which row does \"Delete\" act on?).",
-          "Status text announced from a live region without a visible counterpart."
-        ],
-        "whenNotToUse": [
-          "Instead of `aria-label` on an element that has no text of its own: the attribute is simpler.",
-          "To hide content that should be visible. Never put focusable elements inside it: they would be reachable but invisible."
-        ],
-        "contentGuidelines": null
-      },
-      "a11y": {
-        "pattern": null,
-        "keyboard": [],
-        "keyboardNotes": null,
-        "notes": [
-          "It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.",
-          "WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain"
         ]
       },
       "motion": {

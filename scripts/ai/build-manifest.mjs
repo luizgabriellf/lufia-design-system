@@ -111,14 +111,9 @@ function propsOf(checker, parameter, defaults) {
       }
       const entry = merged.get(prop.name);
       const required = !(prop.flags & ts.SymbolFlags.Optional);
-      const typeText = oneLine(
-        stripUndefined(
-          checker.typeToString(
-            checker.getTypeOfSymbolAtLocation(prop, decls[0] ?? declaration),
-            undefined,
-            FORMAT,
-          ),
-        ),
+      const typeText = resolvedTypeText(
+        checker,
+        checker.getTypeOfSymbolAtLocation(prop, decls[0] ?? declaration),
       );
       const description = oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker)));
       if (entry) {
@@ -153,10 +148,78 @@ function propsOf(checker, parameter, defaults) {
   return { props, nativeProps };
 }
 
+/** Code-point comparison: stable under every locale, unlike a bare `localeCompare`. */
+const compareByName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * Type text with string and number literal unions written out, so `variant: ButtonVariant` reads
+ * `"primary" | "secondary" | ...`. Other types print as TypeScript writes them.
+ */
+function resolvedTypeText(checker, type) {
+  const parts = type.isUnion() ? type.types : [type];
+  const rest = parts.filter((part) => !(part.flags & ts.TypeFlags.Undefined));
+  if (rest.length > 1 && rest.every((part) => part.isStringLiteral() || part.isNumberLiteral())) {
+    return literalUnion(rest.map((part) => part.value));
+  }
+  return oneLine(stripUndefined(checker.typeToString(type, undefined, FORMAT)));
+}
+
+/**
+ * TypeScript orders union members by internal type id, which depends on what the program loaded first. The order the
+ * author wrote is stable and reads better, so literal unions declared by an exported alias are remembered by their
+ * value set and written in that order wherever the same set appears.
+ */
+const DECLARED_ORDER = new Map();
+const orderKey = (values) => JSON.stringify(values.map(String).sort(compareText));
+const literalUnion = (values) =>
+  (DECLARED_ORDER.get(orderKey(values)) ?? values.map((v) => JSON.stringify(v))).join(" | ");
+
+function declaredOrder(symbol) {
+  const decl = symbol.declarations?.[0];
+  if (!decl || !ts.isTypeAliasDeclaration(decl) || !ts.isUnionTypeNode(decl.type)) return null;
+  const items = decl.type.types;
+  if (
+    !items.every(
+      (node) =>
+        ts.isLiteralTypeNode(node) && (ts.isStringLiteral(node.literal) || ts.isNumericLiteral(node.literal)),
+    )
+  )
+    return null;
+  return items.map((node) =>
+    ts.isStringLiteral(node.literal) ? JSON.stringify(node.literal.text) : node.literal.text,
+  );
+}
+
+const MAX_DEFINITION = 300;
+
+/** What an exported type alias stands for, or null when it is an interface or too large to be useful inline. */
+function describeType(checker, resolved) {
+  const declared = checker.getDeclaredTypeOfSymbol(resolved);
+  if (
+    declared.isUnion() &&
+    declared.types.every((part) => part.isStringLiteral() || part.isNumberLiteral())
+  ) {
+    const written = declaredOrder(resolved);
+    const values = declared.types.map((part) => part.value);
+    if (written) DECLARED_ORDER.set(orderKey(values), written);
+    return literalUnion(values);
+  }
+  if (!(resolved.flags & ts.SymbolFlags.TypeAlias)) return null;
+  const text = oneLine(checker.typeToString(declared, undefined, FORMAT | ts.TypeFormatFlags.InTypeAlias));
+  return text.length <= MAX_DEFINITION ? text : null;
+}
+
 function describeExport(checker, sourceFile, symbol) {
   const name = symbol.name;
   const resolved = symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol;
-  if (!(resolved.flags & ts.SymbolFlags.Value)) return { name, kind: "type" };
+  if (!(resolved.flags & ts.SymbolFlags.Value))
+    return {
+      name,
+      kind: "type",
+      description: oneLine(ts.displayPartsToString(resolved.getDocumentationComment(checker))),
+      definition: describeType(checker, resolved),
+    };
   const declaration = resolved.valueDeclaration ?? resolved.declarations?.[0];
   const type = checker.getTypeOfSymbolAtLocation(resolved, declaration ?? sourceFile);
   const signatures = type.getCallSignatures();
@@ -175,11 +238,7 @@ function describeExport(checker, sourceFile, symbol) {
         const decl = param.valueDeclaration;
         return {
           name: param.name,
-          type: oneLine(
-            stripUndefined(
-              checker.typeToString(checker.getTypeOfSymbolAtLocation(param, decl), undefined, FORMAT),
-            ),
-          ),
+          type: resolvedTypeText(checker, checker.getTypeOfSymbolAtLocation(param, decl)),
           required:
             !(param.flags & ts.SymbolFlags.Optional) &&
             !(decl && ts.isParameter(decl) && (decl.questionToken || decl.initializer)),
@@ -322,8 +381,18 @@ export function buildManifest() {
   const program = createProgram(files);
   const checker = program.getTypeChecker();
 
+  // First pass: learn the declared order of every exported literal union before any prop type is written.
+  for (const file of files) {
+    const source = program.getSourceFile(file);
+    const symbol = source && checker.getSymbolAtLocation(source);
+    for (const exported of symbol ? checker.getExportsOfModule(symbol) : []) {
+      const target = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported;
+      if (!(target.flags & ts.SymbolFlags.Value)) describeType(checker, target);
+    }
+  }
+
   const components = [];
-  for (const [name, dir] of [...dirs].sort(([a], [b]) => a.localeCompare(b))) {
+  for (const [name, dir] of [...dirs].sort(([a], [b]) => compareText(a, b))) {
     const entry = byName.get(name);
     const indexPath = path.join(ROOT, "src", dir, name, "index.ts");
     const sourceFile = program.getSourceFile(indexPath);
@@ -332,12 +401,15 @@ export function buildManifest() {
     const exports = checker
       .getExportsOfModule(moduleSymbol)
       .map((symbol) => describeExport(checker, sourceFile, symbol))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort(compareByName);
 
     const dirRel = `src/${dir}/${name}`;
     const mdxPath = `${dirRel}/${name}.mdx`;
     const mdx = existsSync(path.join(ROOT, mdxPath)) ? parseMdx(read(mdxPath)) : null;
-    const status = mdx ? (/status="(alpha|beta|stable|deprecated)"/.exec(read(mdxPath))?.[1] ?? null) : null;
+    // A directory with no docs page (types only) is labelled like the rest of the pre-1.0 package.
+    const status = mdx
+      ? (/status="(alpha|beta|stable|deprecated)"/.exec(read(mdxPath))?.[1] ?? null)
+      : "beta";
     const category = entry?.category ?? "Utilities";
     const docsId = entry ? docsIdFor(name) : null;
     const stories = storyExports(path.join(ROOT, dirRel, `${name}.stories.tsx`));
@@ -353,6 +425,9 @@ export function buildManifest() {
       source: dirRel,
       entry: { subpath: importPath, root: PACKAGE_NAME },
       exports,
+      aliases: Object.fromEntries(
+        exports.filter((e) => e.kind === "type" && e.definition).map((e) => [e.name, e.definition]),
+      ),
       story: docsId
         ? {
             docsId: `${docsId}--docs`,

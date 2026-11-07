@@ -39,6 +39,10 @@ a description and an icon. An indicator slides to the chosen one.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

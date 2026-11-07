@@ -34,6 +34,11 @@ expands into a numbered row with connectors that fill as the user progresses.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `StepDef`: `{ key: string; label: string; }`
+- `StepperProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { steps: StepDef[]; current: number; onStepClick?: ((index: number) => void) | undefined; }`
+
 ## Example
 
 ```tsx

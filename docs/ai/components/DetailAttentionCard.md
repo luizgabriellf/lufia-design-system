@@ -29,7 +29,7 @@ and meta line, and an optional call to action.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tone` | `DetailAttentionTone` | yes |  |  |
+| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  |  |
 | `title` | `string` | yes |  |  |
 | `description` | `string` | no |  |  |
 | `meta` | `string` | no |  |  |
@@ -37,6 +37,11 @@ and meta line, and an optional call to action.
 | `toneLabel` | `string` | no |  | Text that names the tone for assistive technology (for example "Overdue"). The tone is otherwise conveyed by colour and a glyph only, so pass it whenever the tone carries meaning. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `DetailAttentionCardProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { tone: DetailAttentionTone; title: string; description?: string | undefined; meta?: string | undefined; action?: ReactNode; toneLabel?: string | undefined; }`
+- `DetailAttentionTone`: `"ok" | "warn" | "danger" | "critical" | "neutral"`
 
 ## Example
 

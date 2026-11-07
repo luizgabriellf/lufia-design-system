@@ -50,6 +50,10 @@ useBodyScrollLock(locked: boolean, options?: UseBodyScrollLockOptions): void
 | `locked` | `boolean` | yes |  |
 | `options` | `UseBodyScrollLockOptions` | no |  |
 
+## Types
+
+- `UseBodyScrollLockOptions`: `{ scrollContainerSelectors?: readonly string[] | undefined; }`
+
 ## Example
 
 ```tsx

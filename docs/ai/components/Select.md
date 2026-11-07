@@ -39,6 +39,10 @@ typeahead and mobile picker.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `SelectOption`: `{ value: string; label: string; disabled?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

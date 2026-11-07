@@ -37,6 +37,10 @@ useMediaQuery(query: string, { defaultValue }?: UseMediaQueryOptions): boolean
 | `query` | `string` | yes |  |
 | `__1` | `UseMediaQueryOptions` | no |  |
 
+## Types
+
+- `UseMediaQueryOptions`: `{ defaultValue?: boolean | undefined; }`
+
 ## Example
 
 ```tsx

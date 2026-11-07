@@ -35,6 +35,12 @@ A feed of what happened, newest first: a title, a line of context, the time and 
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `ActivityItem`: `{ id: string; title: ReactNode; meta?: ReactNode; time: ReactNode; dateTime?: string | undefined; tone?: ActivityTone | undefined; toneLabel?: string | undefined; action?: ReactNode; }`
+- `ActivityListProps`: `Omit<HTMLAttributes<HTMLOListElement>, "children"> & { items: readonly ActivityItem[]; timeline?: boolean | undefined; }`
+- `ActivityTone`: `"neutral" | "success" | "warning" | "danger" | "info"`
+
 ## Example
 
 ```tsx

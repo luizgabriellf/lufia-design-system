@@ -32,6 +32,10 @@ Flashes a soft background behind its children when `value` changes while they ar
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `ChangeHighlightProps`: `HTMLAttributes<HTMLSpanElement> & { value: string | number | boolean | null | undefined; }`
+
 ## Example
 
 ```tsx

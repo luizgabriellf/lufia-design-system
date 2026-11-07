@@ -40,6 +40,10 @@ It is the view for `usePagination`.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }`
+
 ## Example
 
 ```tsx

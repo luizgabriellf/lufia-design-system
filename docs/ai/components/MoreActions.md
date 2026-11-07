@@ -35,11 +35,16 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `items` | `readonly MoreActionItem[]` | yes |  |  |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the trigger the menu lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `ButtonVariant` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. |
 
 Other native element attributes pass through to the root element.
+
+## Types
+
+- `MoreActionItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: "danger" | "default" | undefined; narrowOnly?: boolean | undefined; }`
+- `MoreActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; items: readonly MoreActionItem[]; align?: "end" | "start" | undefined; size?: "sm" | "md" | "lg" | undefined; variant?: ButtonVariant | undefined; icon?: ReactNode; defaultOpen?: boolean | undefined; }`
 
 ## Example
 

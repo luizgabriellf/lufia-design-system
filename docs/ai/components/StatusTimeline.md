@@ -32,6 +32,13 @@ optional timestamp or deadline, a hint, and an optional inline action.
 
 Other native element attributes pass through to the root element.
 
+## Types
+
+- `StatusTimelineNode`: `{ id: string; label: string; state: StatusTimelineNodeState; stateLabel: string; timestampLabel?: string | undefined; deadlineLabel?: string | undefined; hint?: string | undefined; action?: ReactNode; }`
+- `StatusTimelineNodeState`: `"needsTimestamp" | "pending" | "overdue" | "done" | "notApplicable"`
+- `StatusTimelineProps`: `HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[]; }`
+- `StatusTimelineTrack`: `{ id: string; title: string; nodes: StatusTimelineNode[]; }`
+
 ## Example
 
 ```tsx

@@ -73,6 +73,12 @@ The rule of the native `accept` attribute (extensions, MIME types and `type/*` w
 matchesAccept(file: Pick<File, "name" | "type">, accept?: string | undefined): boolean
 ```
 
+## Types
+
+- `FileLimits`: `{ accept?: string | undefined; maxSize?: number | undefined; maxFiles?: number | undefined; }`
+- `FileRejection`: `{ file: File; reason: FileRejectionReason; }`
+- `FileRejectionReason`: `"type" | "size" | "count"`
+
 ## Example
 
 ```tsx
