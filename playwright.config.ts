@@ -1,4 +1,10 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+
+// CI serves the Storybook the verify job already built; locally the default is `storybook dev`.
+// Set PW_STATIC=1 to test a local `npm run build-storybook` output instead.
+const useStatic =
+  process.env.PW_STATIC === "1" || (Boolean(process.env.CI) && existsSync("storybook-static/iframe.html"));
 
 export default defineConfig({
   testDir: "./tests/browser",
@@ -10,8 +16,8 @@ export default defineConfig({
   reporter: process.env.CI
     ? [["github"], ["html", { open: "never" }]]
     : [["list"], ["html", { open: "never" }]],
-  // Storybook dev compiles stories on first request, so allow for a slow cold start.
-  expect: { timeout: 15_000 },
+  // `storybook dev` compiles stories on first request, so allow for a slow cold start there.
+  expect: { timeout: useStatic ? 5_000 : 15_000 },
   use: {
     baseURL: "http://127.0.0.1:6006",
     trace: "retain-on-failure",
@@ -22,7 +28,9 @@ export default defineConfig({
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
   webServer: {
-    command: "npm run storybook -- --ci --no-open",
+    command: useStatic
+      ? "node scripts/serve-static.mjs storybook-static 6006"
+      : "npm run storybook -- --ci --no-open",
     url: "http://127.0.0.1:6006/iframe.html",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

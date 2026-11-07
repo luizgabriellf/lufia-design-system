@@ -48,9 +48,24 @@ jobs:
         run: |
           test -s storybook-static/manifests/components.json
           node -e "const m = JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8')); if (!Object.values(m.components ?? {}).some((c) => c.name === 'Button')) { console.error('Button missing from the Storybook components manifest'); process.exit(1); }"
+      - name: Upload built package for downstream jobs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload built Storybook for downstream jobs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: storybook-static
+          path: storybook-static/
+          if-no-files-found: error
+          retention-days: 1
 
   consumer:
     name: Next.js App Router consumer smoke
+    needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -64,8 +79,11 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Build distributable package
-        run: npm run build
+      - name: Download the package built by the verify job
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
       - name: Test packed package in Next.js
         run: npm run test:consumer:next
         env:
@@ -87,9 +105,14 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
+      - name: Download the Storybook built by the verify job
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: storybook-static
+          path: storybook-static/
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
-      - name: Run Storybook browser tests
+      - name: Run Storybook browser tests (against the built Storybook)
         run: npm run test:browser
         env:
           CI: "true"

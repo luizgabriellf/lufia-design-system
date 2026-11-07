@@ -49,7 +49,8 @@ let server;
 
 try {
   if (!existsSync(join(root, "dist/index.js"))) {
-    throw new Error("Run npm run build before the Next.js consumer smoke test");
+    // CI downloads the dist/ the verify job built; locally run npm run build first.
+    throw new Error("dist/ is missing: run npm run build (or download the build artifact) first");
   }
 
   cpSync(fixture, app, { recursive: true });
