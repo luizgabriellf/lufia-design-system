@@ -41,4 +41,4 @@ jobs:
       - name: Verify Storybook AI manifest
         run: |
           test -s storybook-static/manifests/components.json
-          node -e "JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8'))"
+          node -e "const m = JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8')); if (!Object.values(m.components ?? {}).some((c) => c.name === 'Button')) { console.error('Button missing from the Storybook components manifest'); process.exit(1); }"
