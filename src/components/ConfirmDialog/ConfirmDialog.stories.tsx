@@ -6,7 +6,14 @@ import { ConfirmDialog, useConfirmDialog, type ConfirmDialogProps } from "./Conf
 
 type DemoProps = Pick<
   ConfirmDialogProps,
-  "destructive" | "title" | "message" | "confirmLabel" | "cancelLabel"
+  | "destructive"
+  | "title"
+  | "message"
+  | "confirmLabel"
+  | "cancelLabel"
+  | "size"
+  | "sheetPlacement"
+  | "classNames"
 > & {
   startOpen?: boolean;
   /** Confirming keeps the dialog busy for a moment, as a real request would. */
@@ -71,6 +78,18 @@ const destructiveArgs = {
 };
 
 export const Destructive: Story = { args: { ...destructiveArgs, startOpen: true } };
+/** `size` and `sheetPlacement` mirror `Modal`; the default is a small bottom sheet. */
+export const WideTopSheet: Story = {
+  args: { ...destructiveArgs, size: "md", sheetPlacement: "top", startOpen: true },
+};
+/** The buttons and every `Modal` part carry `data-lufia-part`; `classNames` adds your own classes to them. */
+export const PartClassNames: Story = {
+  args: {
+    ...destructiveArgs,
+    startOpen: true,
+    classNames: { panel: "app-confirm", cancel: "app-confirm__cancel", confirm: "app-confirm__confirm" },
+  },
+};
 export const Busy: Story = {
   args: { ...destructiveArgs, startOpen: true, stuckBusy: true },
   parameters: {

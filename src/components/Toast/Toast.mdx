@@ -72,6 +72,14 @@ needs time to be found.
 
 <Canvas of={Stories.AllTones} />
 
+### Layout hooks
+
+`viewportClassName` on `ToastProvider` puts a class on the notification region (it also has `data-lufia-part="viewport"`).
+The layout tokens are listed on [Theming components](?path=/docs/foundations-theming-components--docs); every one defaults to
+the current value, so nothing changes until you set it.
+
+<Canvas of={Stories.ThemedByTokens} />
+
 ### Examples
 
 <Canvas of={Stories.LongMessage} />
@@ -89,6 +97,11 @@ needs time to be found.
   `<dialog>` for as long as it is open, because the browser makes the body inert behind it. A message goes to the
   announcer of the topmost open dialog, or the body's, and each one exists before anything is added to it. The visible
   stack is a labelled `region` that moves into the topmost dialog and back. Errors interrupt, the rest wait.
+- The announcer regions keep `role="alert"` and `role="status"` while empty, on purpose. A live region only announces
+  content added after it exists, so both must be mounted first. `aria-live` alone is meant to be enough, but the explicit
+  role is what the screen reader and browser pairs we know of announce most reliably (older VoiceOver and JAWS builds are
+  the usual failures with a bare `aria-live`), and `role="alert"` is what marks the assertive region as errors. An empty
+  live region is not read out, so the node costs nothing to users. We kept the roles rather than risk a silent toast.
 - In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")`
   (`"alert"` for errors) and query the visible toast inside the `Notifications` region.
 - Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a

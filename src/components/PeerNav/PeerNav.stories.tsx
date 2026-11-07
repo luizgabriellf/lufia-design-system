@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState, type CSSProperties } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ChartIcon, GridIcon, InboxIcon, SettingsIcon, UsersIcon } from "../../docs/demo";
+import { LufiaProvider } from "../LufiaProvider";
 import { PeerNav, type PeerNavItem, type PeerNavProps } from "./PeerNav";
 
 const tabItems: PeerNavItem[] = [
@@ -36,7 +37,7 @@ const manyItems: PeerNavItem[] = [
 ];
 
 /** Keeps the chosen key in state so the stories behave like a router would. */
-function Stateful(props: PeerNavProps) {
+function Stateful(props: PeerNavProps<unknown>) {
   const [value, setValue] = useState(props.value);
   return (
     <PeerNav
@@ -72,6 +73,28 @@ type Story = StoryObj<typeof meta>;
 export const Links: Story = {};
 /** An item without an `href` makes the whole set a tablist with arrow-key navigation. */
 export const Tabs: Story = { args: { items: tabItems } };
+/**
+ * `href` can be any value the `linkComponent` on `LufiaProvider` accepts, such as a typed route object. The provider's link
+ * receives it unchanged; this one turns it into a string.
+ */
+export const ObjectHref: Story = {
+  args: {
+    items: tabItems.map((item) => ({ ...item, href: { pathname: `/${item.key}` } })),
+  },
+  decorators: [
+    (Story) => (
+      <LufiaProvider
+        linkComponent={({ href, children, ...rest }) => (
+          <a {...rest} href={`#${(href as unknown as { pathname: string }).pathname}`}>
+            {children}
+          </a>
+        )}
+      >
+        <Story />
+      </LufiaProvider>
+    ),
+  ],
+};
 export const WithoutDescriptions: Story = {
   args: { items: linkItems.map((item) => ({ ...item, description: undefined })) },
 };

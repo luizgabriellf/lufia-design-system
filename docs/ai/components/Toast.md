@@ -46,6 +46,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |
 | `container` | `Element \| "auto" \| null` | no | `"auto"` | Where the notification region is rendered. `"auto"` (default) hosts it inside the topmost open modal `<dialog>` while there is one, so toasts stay visible above a native top-layer dialog (a `Modal` with `renderAs="dialog"`), and in `document.body` otherwise. Pass an element to always render there, or `null` for `document.body` only. |
 | `toneAliases` | `Readonly<Record<string, ToastTone>>` | no |  | Names an app uses for tones, mapped to built-in ones: `{ ok: "success", warn: "warning" }`. |
+| `viewportClassName` | `string` | no |  | A class for the notification region (the fixed viewport that holds the stacks), for an app's own placement or width rules. |
 
 ### `useOptionalToast`
 
@@ -68,7 +69,7 @@ useToast(): ToastApi
 - `ToastAction`: `{ label: string; onAction: () => void; }`
 - `ToastOptions`: `{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }`
 - `ToastPlacement`: `"bottom-end" | "bottom-start" | "top-end" | "top-start"`
-- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }`
+- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; viewportClassName?: string | undefined; }`
 - `ToastTone`: `"info" | "success" | "warning" | "error"`
 - `ToastToneName`: `(string & {}) | ToastTone`
 
@@ -92,6 +93,7 @@ toast.info("Invoice moved to the trash.", { action: { label: "Undo", onAction: r
 Follows the WAI-ARIA Authoring Practices pattern: [Alert](https://www.w3.org/WAI/ARIA/apg/patterns/alert/).
 
 - Announcing is separate from showing. Visually hidden live regions (`role="alert"` for errors, `role="status"` for the
+- The announcer regions keep `role="alert"` and `role="status"` while empty, on purpose. A live region only announces
 - In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")`
 - Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a
 - The notification region stays live while a [Modal](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest
@@ -116,7 +118,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-slide`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-space-6`, `--lufia-toast-border-width`, `--lufia-toast-icon-size`, `--lufia-toast-offset-block`, `--lufia-toast-radius`, `--lufia-z-toast`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-slide`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-space-6`, `--lufia-toast-align-items`, `--lufia-toast-border-width`, `--lufia-toast-gap`, `--lufia-toast-icon-size`, `--lufia-toast-line-height`, `--lufia-toast-max-width`, `--lufia-toast-min-width`, `--lufia-toast-offset-block`, `--lufia-toast-padding-block`, `--lufia-toast-padding-inline`, `--lufia-toast-padding-inline-end`, `--lufia-toast-padding-inline-start`, `--lufia-toast-radius`, `--lufia-toast-width`, `--lufia-z-toast`.
 
 ## Content guidelines
 
@@ -132,5 +134,6 @@ somewhere in a toast that vanishes.
 - `components-feedback-toast--long-message`
 - `components-feedback-toast--phone`
 - `components-feedback-toast--above-a-native-dialog`
+- `components-feedback-toast--themed-by-tokens`
 - `components-feedback-toast--tone-aliases`
 - `components-feedback-toast--above-a-modal`

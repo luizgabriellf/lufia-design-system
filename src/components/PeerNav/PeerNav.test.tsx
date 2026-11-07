@@ -253,3 +253,25 @@ describe("PeerNav phoneGrid", () => {
     expect(screen.getByRole("navigation")).not.toHaveAttribute("data-phone-grid");
   });
 });
+
+describe("PeerNav href values", () => {
+  it("hands a non-string href to the configured link component unchanged", () => {
+    type Route = { pathname: string };
+    const routes: PeerNavItem<Route>[] = [
+      { key: "a", label: "Overview", href: { pathname: "/a" } },
+      { key: "b", label: "Work", href: { pathname: "/b" } },
+    ];
+    const Custom: LinkComponent = ({ href, children, ...rest }) => (
+      <a {...rest} href={(href as unknown as Route).pathname}>
+        {children}
+      </a>
+    );
+    render(
+      <LufiaProvider linkComponent={Custom}>
+        <PeerNav<Route> label="Views" items={routes} value="a" />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("navigation", { name: "Views" })).toHaveAttribute("data-mode", "links");
+    expect(screen.getByRole("link", { name: "Work" })).toHaveAttribute("href", "/b");
+  });
+});

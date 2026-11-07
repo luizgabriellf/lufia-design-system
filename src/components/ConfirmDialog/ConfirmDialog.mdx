@@ -64,6 +64,16 @@ Without it, focus starts on the confirm button.
 
 <Canvas of={Stories.Destructive} story={{ inline: false, height: "26rem" }} />
 
+### Size, sheet placement and class names
+
+`size` and `sheetPlacement` work as on [Modal](?path=/docs/components-overlays-modal--docs); the default is `sm` and a bottom
+sheet. `className` and `classNames` put your own classes on the panel and its parts, and every part has a stable
+`data-lufia-part` (those of `Modal`, plus `cancel` and `confirm` on the buttons). `useConfirmDialog().confirm()` accepts the
+same four options.
+
+<Canvas of={Stories.WideTopSheet} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.PartClassNames} story={{ inline: false, height: "26rem" }} />
+
 ### Busy
 
 While `busy` the dialog refuses to close: Escape, a click outside and Cancel do nothing, and the confirm button shows a

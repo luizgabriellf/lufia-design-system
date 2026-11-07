@@ -156,6 +156,21 @@ export const CustomSize: Story = {
     docs: { description: { story: "`size` also accepts any CSS length as a maximum inline size." } },
   },
 };
+/** Each part carries a stable `data-lufia-part` and takes an extra class through `classNames`, for an app's own styles or test selectors. */
+export const PartClassNames: Story = {
+  args: {
+    startOpen: true,
+    description: "Inspect the panel: every part has data-lufia-part and the class names below.",
+    classNames: {
+      panel: "app-modal",
+      header: "app-modal__header",
+      body: "app-modal__body",
+      footer: "app-modal__footer",
+      close: "app-modal__close",
+      backdrop: "app-modal__backdrop",
+    },
+  },
+};
 export const ThemedByVariables: Story = {
   args: {
     startOpen: true,

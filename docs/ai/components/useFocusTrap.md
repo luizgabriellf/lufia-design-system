@@ -4,7 +4,7 @@
 
 - Status: beta
 - Category: Hooks
-- Import: `import { getFocusableElements, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
+- Import: `import { getFocusableElements, isTopOverlayLayer, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/useFocusTrap](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/useFocusTrap)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/hooks-usefocustrap--docs)
@@ -28,6 +28,8 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 | Name | Kind |
 | --- | --- |
 | `getFocusableElements` | function |
+| `isTopOverlayLayer` | function |
+| `registerOverlayLayer` | function |
 | `useFocusTrap` | hook |
 
 ## API
@@ -38,6 +40,22 @@ The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that
 
 ```ts
 getFocusableElements(root: HTMLElement): HTMLElement[]
+```
+
+### `isTopOverlayLayer`
+
+Whether `layer` is the topmost registered layer. Same as `layer.isTop()`.
+
+```ts
+isTopOverlayLayer(layer: OverlayLayer): boolean
+```
+
+### `registerOverlayLayer`
+
+Pushes a layer onto the stack shared by `useFocusTrap`, `useDismiss` and every other overlay that registers here, and returns a handle. Use it to make an overlay the package does not own (an app's legacy modal or trap) take part: the package's traps then leave Escape and Tab alone while it is on top, and it can ask `isTop()` before handling them itself. Release it when the overlay closes. Registering again moves a layer to the top, so register once per open (an effect keyed on `open` only), not on every render. A legacy overlay portaled into `document.body` above a package `Modal` must carry `data-lufia-inert-exempt`, otherwise the Modal makes it `inert` with the rest of the page.
+
+```ts
+registerOverlayLayer(): OverlayLayer
 ```
 
 ### `useFocusTrap`
@@ -56,6 +74,7 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 
 ## Types
 
+- `OverlayLayer`: `{ isTop: () => boolean; release: () => void; }`
 - `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: "container" | "first" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
 
 ## Example

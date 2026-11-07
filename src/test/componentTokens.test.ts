@@ -52,6 +52,18 @@ const CONTRACT: [string, string][] = [
     "calc(var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem)) + var(--attention-bar-width) + 0.75rem)",
   ],
   ["AttentionList", "--attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem)"],
+  ["Toast", "inline-size: var(--lufia-toast-width, 24rem)"],
+  ["Toast", "min-inline-size: var(--lufia-toast-min-width, auto)"],
+  ["Toast", "max-inline-size: var(--lufia-toast-max-width, calc(100% - 2 * var(--lufia-space-4)))"],
+  ["Toast", "gap: var(--lufia-toast-gap, var(--lufia-space-3))"],
+  ["Toast", "flex-direction: column; gap: var(--lufia-toast-gap, var(--lufia-space-3)); max-inline-size"],
+  ["Toast", "align-items: var(--lufia-toast-align-items, flex-start)"],
+  ["Toast", "line-height: var(--lufia-toast-line-height, var(--lufia-font-line-height-normal))"],
+  ["Toast", "padding-block: var(--lufia-toast-padding-block, var(--lufia-space-3))"],
+  [
+    "Toast",
+    "padding-inline: var(--lufia-toast-padding-inline-start, var(--lufia-toast-padding-inline, var(--lufia-space-4))) var(--lufia-toast-padding-inline-end, var(--lufia-toast-padding-inline, var(--lufia-space-3)))",
+  ],
 ];
 
 describe("component tokens", () => {

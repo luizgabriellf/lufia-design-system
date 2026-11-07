@@ -243,4 +243,45 @@ describe("Pagination", () => {
       expect(screen.getByRole("button", { name: "Next" })).toHaveClass("control");
     });
   });
+
+  it("renders a real disabled attribute on the boundary controls with disabledMode native", async () => {
+    const onPageChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Pagination
+        page={1}
+        totalPages={3}
+        variant="compact"
+        disabledMode="native"
+        onPageChange={onPageChange}
+        labels={labels}
+      />,
+    );
+    const previous = screen.getByRole("button", { name: "Previous" });
+    expect(previous).toBeDisabled();
+    expect(previous).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("button", { name: "Next" })).toBeEnabled();
+    await user.click(previous);
+    expect(onPageChange).not.toHaveBeenCalled();
+    expect(await axe(document.body)).toHaveNoViolations();
+  });
+
+  it("keeps aria-disabled and no disabled attribute by default and for links", () => {
+    const { rerender } = render(
+      <Pagination page={1} totalPages={3} onPageChange={() => {}} labels={labels} />,
+    );
+    expect(screen.getByRole("button", { name: "Previous" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Previous" })).not.toBeDisabled();
+    rerender(
+      <Pagination
+        page={1}
+        totalPages={3}
+        disabledMode="native"
+        hrefFor={(page) => `/p/${page}`}
+        onPageChange={() => {}}
+        labels={labels}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute("aria-disabled", "true");
+  });
 });

@@ -37,6 +37,7 @@ It is the view for `usePagination`.
 | `labels` | `PaginationLabels` | yes |  |  |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
+| `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |
 
 Other native element attributes pass through to the root element.
 
@@ -97,6 +98,7 @@ Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
 - `components-navigation-pagination--many-pages`
 - `components-navigation-pagination--without-total`
 - `components-navigation-pagination--more-siblings`
+- `components-navigation-pagination--native-disabled`
 - `components-navigation-pagination--compact`
 - `components-navigation-pagination--compact-links`
 - `components-navigation-pagination--custom-button-class`

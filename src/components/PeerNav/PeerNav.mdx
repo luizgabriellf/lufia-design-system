@@ -41,6 +41,14 @@ import { PeerNav } from "@lufia/design-system/components/PeerNav";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Links render through
 the `linkComponent` set on `LufiaProvider`, so client-side routing works.
 
+### The `href` type
+
+`href` is a string by default. `PeerNav` is generic over it: `PeerNavItem<Route>` and `<PeerNav<Route> ... />` accept any value
+the `linkComponent` on `LufiaProvider` understands (a router's typed route, a URL object). The value reaches that component
+unchanged. Whether an item counts as a link only depends on `href` being present.
+
+<Canvas of={Stories.ObjectHref} />
+
 ### Links or tabs
 
 The semantics depend on what the items are, and the component derives it so the markup cannot lie.

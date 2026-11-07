@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Modal } from "../Modal";
 import { Button } from "../Button";
 import { ToastProvider, useToast, type ToastPlacement } from "./Toast";
@@ -10,6 +10,7 @@ type DemoProps = {
   duration?: number;
   /** Show all four tones on mount, kept until dismissed (for visual review). */
   showAll?: boolean;
+  viewportClassName?: string;
 };
 
 function Controls({ showAll }: { showAll: boolean }) {
@@ -172,6 +173,37 @@ function AliasButtons() {
     </div>
   );
 }
+
+/** Sets the layout tokens on `:root` (the stack is portaled to the body), as a consuming theme would. */
+function TokenTheme({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    const root = document.documentElement;
+    const tokens = {
+      "--lufia-toast-width": "30rem",
+      "--lufia-toast-gap": "0.5rem",
+      "--lufia-toast-padding-block": "0.5rem",
+      "--lufia-toast-padding-inline": "1rem",
+      "--lufia-toast-align-items": "center",
+      "--lufia-toast-line-height": "1.3",
+    };
+    for (const [name, value] of Object.entries(tokens)) root.style.setProperty(name, value);
+    return () => {
+      for (const name of Object.keys(tokens)) root.style.removeProperty(name);
+    };
+  }, []);
+  return children;
+}
+
+/** The layout tokens (`--lufia-toast-width`, `-gap`, `-padding-block`, `-padding-inline`, `-align-items`, `-line-height`) and `viewportClassName`. */
+export const ThemedByTokens: Story = {
+  render: () => (
+    <TokenTheme>
+      <ToastProvider viewportClassName="app-toast-viewport">
+        <Controls showAll />
+      </ToastProvider>
+    </TokenTheme>
+  ),
+};
 
 export const ToneAliases: Story = {
   render: () => (

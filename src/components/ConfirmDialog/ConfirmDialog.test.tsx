@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { axe } from "../../test/axe";
+import { registerOverlayLayer, type OverlayLayer } from "../useFocusTrap";
 import { ConfirmDialog, useConfirmDialog, type ConfirmDialogProps } from "./ConfirmDialog";
 
 beforeEach(() => {
@@ -165,5 +166,182 @@ describe("useConfirmDialog", () => {
     await user.click(screen.getByRole("button", { name: "Ask" }));
     unmount();
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false));
+  });
+});
+
+/** Legacy layers registered by a test are released afterwards, so a failing test cannot leak one into the next. */
+const legacyLayers: OverlayLayer[] = [];
+const track = (layer: OverlayLayer) => {
+  legacyLayers.push(layer);
+  return layer;
+};
+afterEach(() => {
+  for (const layer of legacyLayers.splice(0)) layer.release();
+});
+
+describe("ConfirmDialog migration hooks", () => {
+  it("carries stable part hooks and the per-part class names", async () => {
+    render(
+      <ConfirmDialog
+        {...base}
+        className="legacy-panel"
+        classNames={{
+          layer: "legacy-layer",
+          backdrop: "legacy-backdrop",
+          header: "legacy-header",
+          body: "legacy-body",
+          footer: "legacy-footer",
+          cancel: "legacy-cancel",
+          confirm: "legacy-confirm",
+        }}
+      />,
+    );
+    const part = (name: string) => document.querySelector<HTMLElement>(`[data-lufia-part="${name}"]`)!;
+    expect(part("panel")).toBe(screen.getByRole("alertdialog"));
+    expect(part("panel")).toHaveClass("legacy-panel");
+    expect(part("layer")).toHaveClass("legacy-layer");
+    expect(part("backdrop")).toHaveClass("legacy-backdrop");
+    expect(part("header")).toHaveClass("legacy-header");
+    expect(part("title")).toHaveTextContent("Delete invoice 2041?");
+    expect(part("body")).toHaveClass("legacy-body");
+    expect(part("footer")).toHaveClass("legacy-footer");
+    expect(part("cancel")).toHaveClass("legacy-cancel");
+    expect(part("confirm")).toHaveClass("legacy-confirm");
+    expect(await axe(document.body)).toHaveNoViolations();
+  });
+
+  it("takes size and sheetPlacement, defaulting to a small bottom sheet", () => {
+    const { rerender } = render(<ConfirmDialog {...base} />);
+    expect(screen.getByRole("alertdialog")).toHaveAttribute("data-size", "sm");
+    expect(screen.getByRole("alertdialog")).toHaveAttribute("data-sheet", "bottom");
+    rerender(<ConfirmDialog {...base} size="lg" sheetPlacement="top" />);
+    expect(screen.getByRole("alertdialog")).toHaveAttribute("data-size", "lg");
+    expect(screen.getByRole("alertdialog")).toHaveAttribute("data-sheet", "top");
+  });
+
+  it("passes the options of useConfirmDialog through", async () => {
+    const user = userEvent.setup();
+    function Host() {
+      const { confirm, confirmDialog } = useConfirmDialog();
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() =>
+              void confirm({
+                title: "Remove?",
+                message: "Gone for good.",
+                confirmLabel: "Remove",
+                cancelLabel: "Keep",
+                size: "xl",
+                className: "legacy-panel",
+                classNames: { confirm: "legacy-confirm" },
+              })
+            }
+          >
+            Ask
+          </button>
+          {confirmDialog}
+        </>
+      );
+    }
+    render(<Host />);
+    await user.click(screen.getByRole("button", { name: "Ask" }));
+    expect(screen.getByRole("alertdialog")).toHaveAttribute("data-size", "xl");
+    expect(screen.getByRole("alertdialog")).toHaveClass("legacy-panel");
+    expect(screen.getByRole("button", { name: "Remove" })).toHaveClass("legacy-confirm");
+  });
+
+  it("closes only the topmost layer on Escape when a legacy layer sits under it, then the next one", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    const onLegacyEscape = vi.fn();
+    // A legacy trap registered through the public API, with its own Escape listener.
+    const legacy = track(registerOverlayLayer());
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && legacy.isTop()) onLegacyEscape();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    try {
+      render(<ConfirmDialog {...base} onCancel={onCancel} />);
+      await user.keyboard("{Escape}");
+      expect(onCancel).toHaveBeenCalledTimes(1);
+      expect(onLegacyEscape).not.toHaveBeenCalled();
+      cleanup();
+
+      await user.keyboard("{Escape}");
+      expect(onLegacyEscape).toHaveBeenCalledTimes(1);
+    } finally {
+      document.removeEventListener("keydown", onKeyDown);
+    }
+  });
+
+  it("leaves Escape to a legacy layer registered above the dialog", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    render(<ConfirmDialog {...base} onCancel={onCancel} />);
+    const legacy = track(registerOverlayLayer());
+    await user.keyboard("{Escape}");
+    expect(onCancel).not.toHaveBeenCalled();
+    legacy.release();
+    await user.keyboard("{Escape}");
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the dialog on top, with Escape and Tab, when the legacy host re-renders", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    const onLegacyKey = vi.fn();
+
+    // A legacy host following the documented pattern: it registers once per open, `onEscape` goes through a ref.
+    function LegacyHost({ onEscape, children }: { onEscape: () => void; children?: ReactNode }) {
+      const ref = useRef(onEscape);
+      useEffect(() => {
+        ref.current = onEscape;
+      });
+      useEffect(() => {
+        const layer = registerOverlayLayer();
+        const onKeyDown = (event: KeyboardEvent) => {
+          if (!layer.isTop()) return;
+          onLegacyKey(event.key);
+          if (event.key === "Escape") ref.current();
+        };
+        document.addEventListener("keydown", onKeyDown);
+        return () => {
+          document.removeEventListener("keydown", onKeyDown);
+          layer.release();
+        };
+      }, []);
+      return <div>{children}</div>;
+    }
+
+    // The host mounts first, so its layer is under the dialog that opens afterwards.
+    const tree = (tick: number, withDialog: boolean) => (
+      <LegacyHost onEscape={() => void tick}>
+        {withDialog ? <ConfirmDialog {...base} destructive onCancel={onCancel} /> : null}
+      </LegacyHost>
+    );
+    const { rerender } = render(tree(0, false));
+    rerender(tree(1, true));
+    rerender(tree(2, true));
+    rerender(tree(3, true));
+
+    await user.keyboard("{Escape}");
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Delete invoice" })).toHaveFocus();
+    expect(onLegacyKey).not.toHaveBeenCalled();
+  });
+
+  it("shares the stack through globalThis, so another module copy agrees", () => {
+    const stack = (globalThis as { __lufiaOverlayStack?: symbol[] }).__lufiaOverlayStack;
+    const before = stack?.length ?? 0;
+    const layer = track(registerOverlayLayer());
+    const shared = (globalThis as { __lufiaOverlayStack?: symbol[] }).__lufiaOverlayStack!;
+    expect(shared).toHaveLength(before + 1);
+    expect(layer.isTop()).toBe(true);
+    layer.release();
+    layer.release();
+    expect(shared).toHaveLength(before);
   });
 });
