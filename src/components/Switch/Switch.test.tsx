@@ -90,6 +90,23 @@ describe("Switch", () => {
     expect(container.querySelector('input[name="alerts"]')).toHaveValue("on");
   });
 
+  it("resets to the latest default after a form action changes it", async () => {
+    const user = userEvent.setup();
+    function Settings() {
+      const [initial, setInitial] = useState(false);
+      return (
+        <form action={() => setInitial(true)}>
+          <Switch label="Alerts" defaultChecked={initial} />
+          <button type="submit">Save</button>
+        </form>
+      );
+    }
+    render(<Settings />);
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "false");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "true");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<Switch label="Alerts" hint="Hint" error="Error" defaultChecked />);
     expect(await axe(container)).toHaveNoViolations();

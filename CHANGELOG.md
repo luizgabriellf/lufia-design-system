@@ -1,5 +1,17 @@
 # @lufia/design-system
 
+## 0.10.0
+
+### Minor Changes
+
+- [#39](https://github.com/luizgabriellf/lufia-design-system/pull/39) [`3995d63`](https://github.com/luizgabriellf/lufia-design-system/commit/3995d6355a9d8144dc9accac8b6d37161ce03787) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Forms: `RadioGroup` and `SegmentedToggle` dispatch a bubbling `input` and then `change` Event from their hidden input (from the group when there is no `name`) when the user chooses an option by click or arrow key, so a native `change` listener on the form, or a React `onInput`, sees them like native radios (a React `onChange` does not: React ignores hidden inputs). A parent-set `value`, a form reset and choosing what is already chosen dispatch nothing. Charts: `ColumnChart` gets opt-in `interactive` with `columns[].detail` (the columns are one tab stop with arrow keys, Home and End between them, announced as a `columnLabel` ("column"), named "label: values · detail", with a tooltip on hover, focus and tap that Escape dismisses), `printValues` (`"auto"` prints totals for 6 columns or fewer), `columns[].band` (an error bar counted in the scale and listed in the data table, named by `bandLabel`) and `series[].pattern="hatch"` (a non-colour cue in the columns and legend). `BarList` gets opt-in `valueWrap`, which lets a long `value` wrap. All off by default.
+
+### Patch Changes
+
+- [#39](https://github.com/luizgabriellf/lufia-design-system/pull/39) [`3995d63`](https://github.com/luizgabriellf/lufia-design-system/commit/3995d6355a9d8144dc9accac8b6d37161ce03787) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix a form reset after a form action restoring the previous default. `RadioGroup`, `SegmentedToggle`, `Switch`, `SearchInput`, `Combobox`, `Textarea` and `FileField` reset to the `defaultValue` or `defaultChecked` of the latest render, like native fields do, when React 19 resets the form right after an action commits and the action changed the default. `Checkbox`, `Select` and `SwitchInput` are native inputs and were not affected.
+
+- [#40](https://github.com/luizgabriellf/lufia-design-system/pull/40) [`0032d7b`](https://github.com/luizgabriellf/lufia-design-system/commit/0032d7b81b019e67ec12fe5a74288db4a6c8f8f1) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `useFocusTrap` (and so `Modal`, `ConfirmDialog` and every component built on it) now follows the browser's keyboard Tab order: elements with a negative `tabindex` (for example the inactive items of a roving tab stop) and disabled controls are no longer tab stops inside a trap, and positive `tabindex` values come before the natural DOM order. `getFocusableElements` returns the elements in that order.
+
 ## 0.9.0
 
 ### Minor Changes

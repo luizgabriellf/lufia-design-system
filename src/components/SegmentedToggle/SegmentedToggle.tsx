@@ -2,6 +2,7 @@
 
 import { useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { useControllableState } from "../FormField/useControllableState";
+import { useFormChangeEvents } from "../FormField/useFormChangeEvents";
 import { useFormReset } from "../FormField/useFormReset";
 import { useRadioKeys } from "../RadioGroup/useRadioKeys";
 import { useSlidingIndicator } from "../useSlidingIndicator";
@@ -39,6 +40,10 @@ export type SegmentedToggleProps = Omit<
  * Two to four compact choices where exactly one is always chosen, such as a view or a mode, as a WAI-ARIA radio group with
  * roving arrow keys. An indicator slides behind the chosen segment. It is a choice that applies to what is shown, not a
  * navigation (use `PeerNav`) and not on/off (use `Switch`).
+ *
+ * When the user chooses a segment (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from
+ * the hidden input (from the group when there is no `name`), so a native `addEventListener("change")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there.
+ * A `value` set by the parent, a form reset and choosing the segment already chosen dispatch nothing.
  */
 export function SegmentedToggle({
   label,
@@ -58,7 +63,13 @@ export function SegmentedToggle({
   const [value, setValue] = useControllableState(valueProp, fallback, onValueChange);
   useFormReset(container, () => setValue(fallback));
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
-  const keys = useRadioKeys(items, value, setValue);
+  const field = useRef<HTMLInputElement>(null);
+  const announce = useFormChangeEvents(value, () => field.current ?? container.current);
+  const choose = (next: string) => {
+    announce(next);
+    setValue(next);
+  };
+  const keys = useRadioKeys(items, value, choose);
   const indicator = useSlidingIndicator(container, '[aria-checked="true"]', value, { stretch: true });
 
   return (
@@ -91,7 +102,7 @@ export function SegmentedToggle({
           disabled={items[index]?.disabled}
           tabIndex={option.value === keys.tabbable ? 0 : -1}
           className={styles.segment}
-          onClick={() => setValue(option.value)}
+          onClick={() => choose(option.value)}
         >
           {option.icon ? (
             <span className={styles.icon} aria-hidden="true">
@@ -102,7 +113,7 @@ export function SegmentedToggle({
         </button>
       ))}
       <span ref={indicator} className={styles.indicator} hidden aria-hidden="true" />
-      {name ? <input type="hidden" name={name} value={value} /> : null}
+      {name ? <input ref={field} type="hidden" name={name} value={value} /> : null}
     </div>
   );
 }

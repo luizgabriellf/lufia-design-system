@@ -112,6 +112,70 @@ describe("SegmentedToggle", () => {
     expect(container.querySelector('input[name="view"]')).toHaveValue("board");
   });
 
+  it("dispatches bubbling input and change events to the form for a click and for an arrow key", async () => {
+    const user = userEvent.setup();
+    const seen: string[] = [];
+    render(
+      <form
+        ref={(form) => {
+          for (const type of ["input", "change"]) {
+            form?.addEventListener(type, (event) => {
+              const target = event.target as HTMLInputElement;
+              seen.push(`${event.type}:${target.name}=${target.value}`);
+            });
+          }
+        }}
+      >
+        <SegmentedToggle label="View" options={options} name="view" defaultValue="list" />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("radio", { name: "Board" }));
+    expect(seen).toEqual(["input:view=board", "change:view=board"]);
+    await user.keyboard("{ArrowRight}");
+    expect(seen.slice(2)).toEqual(["input:view=map", "change:view=map"]);
+    await user.click(screen.getByRole("radio", { name: "Map" }));
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(seen).toHaveLength(4);
+  });
+
+  it("dispatches from the group when it has no name, and not when the parent sets the value", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const ui = (value: string, onValueChange?: (v: string) => void) => (
+      <form ref={(form) => form?.addEventListener("change", onChange)}>
+        <SegmentedToggle label="View" options={options} value={value} onValueChange={onValueChange} />
+      </form>
+    );
+    const { rerender } = render(ui("list"));
+    rerender(ui("board"));
+    expect(onChange).not.toHaveBeenCalled();
+    function Parent() {
+      const [value, setValue] = useState("list");
+      return ui(value, setValue);
+    }
+    render(<Parent />);
+    await user.click(screen.getAllByRole("radio", { name: "Map" })[1]!);
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("resets to the latest default after a form action changes it", async () => {
+    const user = userEvent.setup();
+    function View() {
+      const [initial, setInitial] = useState("list");
+      return (
+        <form action={() => setInitial("map")}>
+          <SegmentedToggle label="View" options={options} defaultValue={initial} />
+          <button type="submit">Save</button>
+        </form>
+      );
+    }
+    render(<View />);
+    await user.click(screen.getByRole("radio", { name: "Board" }));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(screen.getByRole("radio", { name: "Map" })).toHaveAttribute("aria-checked", "true");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<SegmentedToggle label="View" options={options} />);
     expect(await axe(container)).toHaveNoViolations();

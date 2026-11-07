@@ -27,6 +27,21 @@ component changes. `scripts/ai/render.mjs` turns the manifest into the specs and
 
 To improve a spec, improve its source: JSDoc on the props, or a section in the MDX. Never edit the generated files.
 
+## Query CLI
+
+`scripts/ai/query.mjs` is a read-only lookup over `docs/ai/components.json`, so an agent does not have to load the whole
+manifest:
+
+```bash
+npm run ai:list                          # every component, one line each (--json for structured output)
+npm run ai:search -- "confirm deleting"  # ranked matches (--limit 1..20, --json)
+npm run ai:show -- Button                # imports, props, example, accessibility, Storybook link
+```
+
+Search terms are OR-ed and weighted by where they match (name, summary, guidance, category, prop names). Stopwords and
+terms under two characters are dropped, a component matching more terms ranks higher, and an exact component name always
+comes first. It never infers anything: every prop, type and import comes from the manifest.
+
 ## Regenerate
 
 ```bash
@@ -48,3 +63,13 @@ npm run verify:ai-docs    # the drift gate
 `npm run build-storybook` ends with `scripts/ai/publish.mjs`, which copies the files into `storybook-static`, so the GitHub
 Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `components.json`, plus `/ai/CONSUMING.md` and
 `/ai/components/<Name>.md` (the targets of the links in `llms.txt`). The generated `docs/ai` files are not published in the npm package; they live in the repo and on Pages.
+
+Storybook's own native components manifest (`features.componentsManifest` in `.storybook/main.ts`) is also built into
+`storybook-static/manifests/components.json`, so Pages serves it at `/manifests/components.json`. It is independent of
+`docs/ai/components.json`; CI asserts that it contains a known component.
+
+## Storybook MCP (local only)
+
+`.storybook/main.ts` registers `@storybook/addon-mcp` (docs and dev toolsets). While `npm run storybook` runs, coding agents
+can reach `http://127.0.0.1:6006/mcp` (`docs-list`, `docs-show`). The script passes `--host 127.0.0.1`, so the dev server and
+its MCP endpoint are not exposed on the network. The published Pages site is static and has no MCP endpoint.

@@ -64,6 +64,17 @@
   white-space: nowrap;
 }
 
+/* Opt-in: the value may wrap. It takes its content width up to half the row, and the name keeps the rest. */
+.row[data-value-wrap] {
+  grid-template-columns: minmax(0, 1fr) fit-content(50%);
+}
+
+.row[data-value-wrap] .value {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .small {
   display: block;
   color: var(--lufia-color-text-muted);

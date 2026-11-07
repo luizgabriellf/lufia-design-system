@@ -37,12 +37,12 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
 | `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
 | `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |
+| `valueWrap` | `boolean` | no | `false` | Lets `value` wrap onto several lines (and break inside a long word) instead of staying on one line, for a value that is text rather than a number ("12 of 40 sites checked", a range of dates). The value column then takes at most half the row and the name keeps the rest. Off by default, so numbers stay on one line. A very long note belongs in `detail`, which always wraps. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: "hidden" | "visible" | undefined; }`
 - `BarListRow`: `{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }`
 
 ## Example
@@ -85,6 +85,8 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-barlist--with-total`
 - `components-data-display-barlist--tones`
 - `components-data-display-barlist--long-names`
+- `components-data-display-barlist--long-values`
+- `components-data-display-barlist--long-values-phone-320`
 - `components-data-display-barlist--with-reference`
 - `components-data-display-barlist--reference-above-every-bar`
 - `components-data-display-barlist--reference-long-text`

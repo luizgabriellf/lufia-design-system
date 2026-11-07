@@ -77,6 +77,17 @@ describe("BarList", () => {
     expect(screen.getByTestId("b")).toHaveClass("extra");
   });
 
+  it("lets the value wrap only when asked, by capping its column at half the row", async () => {
+    const long = [{ key: "a", name: "North", value: "12 of 40 sites checked, 3 critical", amount: 12 }];
+    const { container, rerender } = render(<BarList title="Items" rows={long} />);
+    expect(container.querySelector("[data-value-wrap]")).toBeNull();
+    rerender(<BarList title="Items" rows={long} valueWrap />);
+    expect(container.querySelectorAll("[data-value-wrap]")).toHaveLength(1);
+    expect(css).toMatch(/\.row\[data-value-wrap\] \{[^}]*fit-content\(50%\)/);
+    expect(css).toMatch(/\.row\[data-value-wrap\] \.value \{[^}]*white-space: normal/);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <BarList title="Items" summary="Summary" rows={rows} total={{ label: "Total", value: "1,800" }} />,
