@@ -32,7 +32,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
   - no boolean-prop explosion.
 - [~] Every user-facing string comes in through props (i18n stays in the apps). English defaults are allowed only for aria-only text. (Holds for everything shipped so far; aria-only defaults live in `LufiaProvider` `labels`.)
 - [~] No app imports (`@/`, next-intl, Supabase, routes). Navigation goes through a `LinkComponent` adapter, set once by a `LufiaProvider`. (`LufiaProvider`, `useLufia` and `LufiaLink` exist; navigation components that consume them come next.)
-- [ ] RSC-safe: static components carry no `"use client"`; interactive ones do. CI checks this by building a tiny Next app.
+- [~] RSC-safe: static components carry no `"use client"`; interactive ones do. CI checks this by building a tiny Next app. (`npm run test:consumer:next` renders `Switch` from a Server Component and `LufiaProvider` from a server layout, and fails without `"use client"`; only these two components are covered so far.)
 - [x] **DECISION (ADR 0003):** the complex widgets (Combobox, Modal/Dialog, Toast, Menu, Popover, Tabs) stay custom, hardened with tests against the WAI-ARIA APG patterns. Revisit React Aria if maintenance cost grows.
   - Custom focus-trap and combobox code is where accessibility bugs usually live, so each widget needs its keyboard table in the docs and its keyboard tests.
 - [ ] Component status labels: `alpha` / `beta` / `stable` / `deprecated`, shown in docs.
@@ -72,7 +72,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 - [ ] TypeScript `strict`, ESLint (react, jsx-a11y, react-hooks), Prettier, Stylelint for the CSS modules.
 - [ ] Unit/interaction tests: vitest + Testing Library + user-event, and a coverage floor for the package.
 - [ ] **Visual regression:** Playwright screenshots of every story × theme, compared in CI. This is free; Chromatic is the paid alternative.
-- [ ] A smoke-test app in CI (minimal Next 15 app) that imports the built package, which proves that RSC, CSS import and tree-shaking work.
+- [~] A smoke-test app in CI (minimal Next 15 app) that imports the built package, which proves that RSC, CSS import and tree-shaking work. (The `consumer` job uses Next 16 and proves RSC and CSS import from the packed tarball; tree-shaking is not asserted yet.)
 - [ ] Bundle budget with `size-limit` per entry point.
 
 ## 8. Packaging and release
