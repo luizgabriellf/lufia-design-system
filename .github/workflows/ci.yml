@@ -38,3 +38,7 @@ jobs:
         run: npm run build-storybook
         env:
           STORYBOOK_DISABLE_TELEMETRY: "1"
+      - name: Verify Storybook AI manifest
+        run: |
+          test -s storybook-static/manifests/components.json
+          node -e "JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8'))"
