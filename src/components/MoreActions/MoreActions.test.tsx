@@ -1,5 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { configureAxe } from "vitest-axe";
 import { axe } from "../../test/axe";
@@ -447,6 +448,39 @@ describe("MoreActions", () => {
         rules: { "color-contrast": { enabled: false }, region: { enabled: false } },
       });
       expect(await noRegion(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("hydration with defaultOpen", () => {
+    async function hydrate(presentation: "popover" | "sheet") {
+      withLayout();
+      const element = (
+        <MoreActions label="More actions" items={items} presentation={presentation} defaultOpen />
+      );
+      const host = document.createElement("div");
+      document.body.append(host);
+      host.innerHTML = renderToString(element);
+      let root!: ReturnType<typeof hydrateRoot>;
+      await act(async () => {
+        root = hydrateRoot(host, element);
+      });
+      return () => {
+        act(() => root.unmount());
+        host.remove();
+      };
+    }
+
+    it("leaves focus alone for a popover", async () => {
+      const cleanup = await hydrate("popover");
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      expect(document.activeElement?.getAttribute("role")).not.toBe("menuitem");
+      cleanup();
+    });
+
+    it("moves focus to the first item for a sheet", async () => {
+      const cleanup = await hydrate("sheet");
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      cleanup();
     });
   });
 });

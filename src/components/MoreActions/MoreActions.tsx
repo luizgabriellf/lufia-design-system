@@ -133,7 +133,8 @@ export function MoreActions({
     );
 
   useEffect(() => {
-    if (!open) return;
+    // Not before mount: the first pass of a hydrating tree must not consume the skip below.
+    if (!open || !mounted) return;
     // A sheet is modal and always moves focus in, `defaultOpen` included; a popover left open for documentation does not.
     if (skipFocus.current) {
       skipFocus.current = false;
