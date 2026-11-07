@@ -1,0 +1,44 @@
+[
+  {
+    "name": "index barrel",
+    "path": "dist/index.js",
+    "limit": "530 B",
+    "gzip": true
+  },
+  {
+    "name": "Modal",
+    "path": "dist/components/Modal/**/*.{js,css}",
+    "limit": "8 kB",
+    "gzip": true
+  },
+  {
+    "name": "Combobox",
+    "path": "dist/components/Combobox/**/*.{js,css}",
+    "limit": "5.7 kB",
+    "gzip": true
+  },
+  {
+    "name": "CommandPalette",
+    "path": "dist/components/CommandPalette/**/*.{js,css}",
+    "limit": "5.4 kB",
+    "gzip": true
+  },
+  {
+    "name": "AppShell",
+    "path": "dist/components/AppShell/**/*.{js,css}",
+    "limit": "17 kB",
+    "gzip": true
+  },
+  {
+    "name": "Toast",
+    "path": "dist/components/Toast/**/*.{js,css}",
+    "limit": "6.2 kB",
+    "gzip": true
+  },
+  {
+    "name": "tokens.css",
+    "path": "dist/tokens.css",
+    "limit": "1.1 kB",
+    "gzip": true
+  }
+]
