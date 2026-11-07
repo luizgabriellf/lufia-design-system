@@ -41,6 +41,23 @@ export const LongText: Story = {
   ],
 };
 
+/** In a squeezed auto-layout table column the badge keeps its word whole instead of breaking it mid-word. */
+export const InNarrowTableCell: Story = {
+  render: () => (
+    <table style={{ inlineSize: "16rem", borderCollapse: "collapse" }}>
+      <tbody>
+        <tr>
+          <td>A worker name that takes most of the row</td>
+          <td>A long team and site description</td>
+          <td data-testid="badge-cell">
+            <StatusBadge tone="success">Active</StatusBadge>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  ),
+};
+
 function Tones({ dot }: { dot?: boolean }) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>

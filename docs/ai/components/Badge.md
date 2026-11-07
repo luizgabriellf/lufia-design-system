@@ -98,6 +98,7 @@ truncating.
 - `components-data-display-badge--with-dot`
 - `components-data-display-badge--status`
 - `components-data-display-badge--long-text`
+- `components-data-display-badge--in-narrow-table-cell`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`
 - `components-data-display-badge--square-by-token`
