@@ -44,17 +44,19 @@ const SHORTHAND_KEYWORDS = new Set([
   "paused",
 ]);
 
-/** The keyframes name in one `animation` shorthand part: the token that is no time, easing, count, direction, fill mode or play state. */
+/**
+ * The keyframes name in one `animation` shorthand part: the token that is no time, easing, count, direction, fill mode or
+ * play state. A `var(...)` token (a duration or easing held in a custom property) is skipped when another candidate
+ * exists, because it cannot be told apart from a name.
+ */
 function shorthandName(part: string): string {
   const tokens = part
     .trim()
-    .replace(/(cubic-bezier|steps|linear)\([^)]*\)/g, "")
-    .split(/\s+/);
-  return (
-    tokens.find(
-      (token) => token && !TIME.test(token) && !COUNT.test(token) && !SHORTHAND_KEYWORDS.has(token),
-    ) ?? ""
-  );
+    .replace(/[\w-]+\((?:[^()]|\([^()]*\))*\)/g, (call) => call.replace(/\s+/g, ""))
+    .split(/\s+/)
+    .filter((token) => token && !TIME.test(token) && !COUNT.test(token) && !SHORTHAND_KEYWORDS.has(token))
+    .filter((token) => !/^(cubic-bezier|steps|linear)\(/.test(token));
+  return tokens.find((token) => !token.startsWith("var(")) ?? tokens[0] ?? "";
 }
 
 /** Every animation of every rule in one stylesheet: its keyframes name and the fill mode it ends up with. */
@@ -122,6 +124,8 @@ describe("animation fill mode", () => {
     expect(names("rise 1s ease")).toEqual(["rise"]);
     expect(names("1s ease rise both")).toEqual(["rise"]);
     expect(names("ease-in 200ms 2 alternate paused rise")).toEqual(["rise"]);
+    expect(names("var(--d, 1s) var(--e, ease) rise both")).toEqual(["rise"]);
+    expect(names("var(--d) rise")).toEqual(["rise"]);
     expect(names(".5s cubic-bezier(0.2, 0, 0, 1) infinite rise-in, 1s steps(4, end) fade")).toEqual([
       "rise-in",
       "fade",
