@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  inspectComponent,
-  listComponents,
-  loadManifest,
-  searchComponents,
-} from "./query.mjs";
+import { inspectComponent, listComponents, loadManifest, searchComponents } from "./query.mjs";
 
 const manifest = loadManifest();
 
@@ -46,9 +41,7 @@ describe("AI component discovery", () => {
 
   it("does not manufacture undocumented properties", () => {
     const combobox = inspectComponent(manifest, "Combobox");
-    const names = combobox?.exports
-      .find((item) => item.name === "Combobox")
-      ?.props.map((prop) => prop.name);
+    const names = combobox?.exports.find((item) => item.name === "Combobox")?.props.map((prop) => prop.name);
     expect(names).toContain("onQueryChange");
     expect(names).not.toContain("onSelect");
   });
