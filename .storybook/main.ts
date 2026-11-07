@@ -5,6 +5,8 @@ const config: StorybookConfig = {
   // Browser tab title; the manager appends "Storybook", which manager-head.html rewrites to the brand.
   title: "Lufia Design System",
   framework: "@storybook/react-vite",
+  // Native Storybook component metadata for agents; distinct from docs/ai/components.json.
+  features: { componentsManifest: true },
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(ts|tsx)"],
   addons: [
     {

@@ -38,6 +38,18 @@ import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
 - Token data is available as `@lufia/design-system/tokens` (typed map) and `@lufia/design-system/tokens.json`.
 - The root export `@lufia/design-system` re-exports everything, but the subpaths keep bundles small.
 
+## AI agent workflow
+
+For coding agents, use **progressive disclosure** rather than loading the entire manifest into every prompt:
+
+1. Start with [`llms.txt`](https://luizgabriellf.github.io/lufia-design-system/llms.txt) to select a component from its category and description.
+2. Read that component's generated `/ai/components/<Name>.md` specification for the real subpath, explicit prop types, required fields, usage example and accessibility notes. Use `components.json` when structured machine-readable data is needed.
+3. Never guess prop names, variants, imports or relationships from another React design system. If a native HTML prop is not explicitly shown, verify against the TypeScript declaration before using it.
+4. Compare the **when to use** and **when not to use** sections of nearby alternatives before choosing. Keep text translation and brand themes in the consuming app.
+5. Compile/typecheck and test the resulting UI. The static AI docs are guidance, not proof that generated JSX is correct.
+
+Contributors with the repository checked out can run `npm run ai:search -- "task"` and `npm run ai:show -- Button` to retrieve only the relevant manifest data. The JSON flag (`--json`) is intended for agent tooling.
+
 ## Rules when you use components
 
 - **Every user-facing string is a prop.** The package has no i18n. Translate in the app and pass the result in.

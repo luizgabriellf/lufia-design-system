@@ -106,6 +106,17 @@ Docs-only and tooling-only changes need no changeset.
 - Use `.github/pull_request_template.md`, or the specialised ones in `.github/PULL_REQUEST_TEMPLATE/`.
 - Describe the change product-agnostically (hard rule 1). `main` is protected; squash merge only.
 
+## Agent-first component discovery
+
+Before writing or changing UI that uses Lufia, **look up its actual API**:
+
+1. Run `npm run ai:search -- "describe the UI task"` to find matching components.
+2. Run `npm run ai:show -- ComponentName` (`--json` for structured output) for exact imports, props, examples, accessibility and Storybook references.
+3. Use the documented import subpath. Never invent props, aliases, behavior or component names based on another library. Check the real source when a native inherited prop is not listed.
+4. Use semantic tokens, the documented provider and typed APIs, and test the resulting UI rather than trusting generated code. Refer to `docs/ai/CONSUMING.md` for integration instructions.
+
+The lookup is local, read-only and generated from `docs/ai/components.json`. It does not replace TypeScript checks, Storybook stories or accessibility tests. Storybook also exposes a separate native component manifest when built.
+
 ## Where to look: task to doc
 
 | Task                                  | Read first                                                                                          |
