@@ -126,7 +126,7 @@ describe("StatTile", () => {
     const { container, rerender } = render(<StatTile label="Open items" value="12" loading />);
     const skeletons = () => [...container.querySelectorAll<HTMLElement>("[data-variant]")];
     expect(skeletons()).toHaveLength(1);
-    expect(skeletons()[0]!.style.getPropertyValue("--skeleton-height")).toBe("1lh");
+    expect(skeletons()[0]!.className).toMatch(/skeletonValue/);
     rerender(<StatTile label="Open items" value="12" delta="+3" loading />);
     expect(skeletons()).toHaveLength(2);
     rerender(<StatTile label="Open items" value="12" delta="+3" hint="3 due" loading />);
@@ -134,8 +134,8 @@ describe("StatTile", () => {
     expect(
       skeletons()
         .slice(1)
-        .map((el) => el.style.getPropertyValue("--skeleton-height")),
-    ).toEqual(["1lh", "1lh"]);
+        .map((el) => /skeletonLine/.test(el.className)),
+    ).toEqual([true, true]);
     rerender(<StatTile label="Open items" value="12" hint="3 due" sparkline={<span />} loading />);
     expect(skeletons().map((el) => el.dataset.variant)).toEqual(["text", "rect", "text"]);
   });
@@ -150,6 +150,12 @@ describe("StatTile", () => {
     rerender(<StatTile {...props} sparkline={<span data-spark />} loading />);
     expect(loaded()).toBe(loadedLines);
     expect(valueRow()).toBe(loadedRow);
+  });
+
+  it("loading: heights are 1lh with a rem fallback for engines without lh", () => {
+    expect(css).toMatch(/\.skeletonValue \{\s*--skeleton-height: 1\.75rem;/);
+    expect(css).toMatch(/\.skeletonLine \{\s*--skeleton-height: 1\.125rem;/);
+    expect(css).toMatch(/@supports \(block-size: 1lh\) \{[^}]*\{\s*--skeleton-height: 1lh;/);
   });
 
   it("loading: skeleton lines use the typography of the lines they replace", () => {

@@ -124,7 +124,11 @@ export function StatTile({
         <span className={styles.label}>{labelNode}</span>
         <span className={styles.valueRow}>
           <span id={valueId} className={styles.value}>
-            {loading ? <Skeleton width="4.5rem" height="1lh" label={loadingLabel} /> : value}
+            {loading ? (
+              <Skeleton width="4.5rem" className={styles.skeletonValue} label={loadingLabel} />
+            ) : (
+              value
+            )}
           </span>
           {sparkline ? (
             <span className={styles.spark}>
@@ -138,8 +142,8 @@ export function StatTile({
         </span>
         {loading ? (
           <>
-            {hasDelta ? <Skeleton width="70%" height="1lh" className={styles.skeletonLine} /> : null}
-            {hasHint ? <Skeleton width="55%" height="1lh" className={styles.skeletonLine} /> : null}
+            {hasDelta ? <Skeleton width="70%" className={styles.skeletonLine} /> : null}
+            {hasHint ? <Skeleton width="55%" className={styles.skeletonLine} /> : null}
           </>
         ) : (
           <>
