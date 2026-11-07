@@ -1,6 +1,6 @@
 # Select
 
-> A native select styled with tokens, for choosing one option from a short list.
+> A native select (dropdown) styled with tokens, for choosing one option from a short list.
 
 - Status: beta
 - Category: Forms

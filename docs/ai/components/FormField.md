@@ -67,6 +67,16 @@ useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby
 | --- | --- | --- | --- |
 | `own` | `OwnProps` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | yes |  |
+| `aria-describedby` | `string` | yes |  |
+| `aria-invalid` | `true` | yes |  |
+| `required` | `true` | yes |  |
+| `disabled` | `true` | yes |  |
+
 ### `useFormFieldLabelId`
 
 The id of the surrounding `FormField`'s label element, for widgets that need to name a second element (a listbox, a popup) after the field. `undefined` outside a field.

@@ -56,6 +56,18 @@ The toast API when rendered inside a `ToastProvider`, otherwise `null`: for code
 useOptionalToast(): ToastApi | null
 ```
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
+
 ### `useToast`
 
 Show and dismiss notifications. Must be used inside a `ToastProvider`.
@@ -63,6 +75,18 @@ Show and dismiss notifications. Must be used inside a `ToastProvider`.
 ```ts
 useToast(): ToastApi
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
 
 ## Types
 

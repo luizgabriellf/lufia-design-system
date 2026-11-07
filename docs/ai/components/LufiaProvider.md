@@ -59,6 +59,13 @@ The link component and labels in effect. Safe outside a provider: it returns the
 useLufia(): LufiaContextValue
 ```
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `linkComponent` | `LinkComponent` | yes |  |
+| `labels` | `LufiaLabels` | yes |  |
+
 ## Types
 
 - `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`

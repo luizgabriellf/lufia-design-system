@@ -42,6 +42,25 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union; `href` selects the form. Only the props that differ between forms are listed; every other prop is shared.
+
+##### `AsButton`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  |
+
+##### `AsLink`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | no | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
+
 ## Types
 
 - `ButtonProps`: `AsButton | AsLink`

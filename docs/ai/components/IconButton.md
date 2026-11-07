@@ -41,6 +41,25 @@ A `Button` that shows only an icon. The accessible name is required by the types
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union; `href` selects the form. Only the props that differ between forms are listed; every other prop is shared.
+
+##### `Variant1`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  |
+
+##### `Variant2`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | no | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
+
 ## Types
 
 - `IconButtonProps`: `(Omit<AsButton, "children" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "fullWidth" | "iconStart" | "iconEnd">) & { "aria-label": string; icon: ReactNode; title?: string | undefined; }`

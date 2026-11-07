@@ -95,6 +95,23 @@ Other native element attributes pass through to the root element.
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union; `href` selects the form. Only the props that differ between forms are listed; every other prop is shared.
+
+##### `Variant1`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+
+##### `Variant2`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | yes |  |
+| `onClick` | `(() => void)` | no |  |
+
 ### `MobileFloatBarSeparator`
 
 No props of its own.
@@ -201,6 +218,15 @@ useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: P
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `onPointerDown` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 
 ### `useShellPrimaryAction`
 

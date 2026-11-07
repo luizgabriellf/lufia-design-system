@@ -145,7 +145,57 @@ function propsOf(checker, parameter, defaults) {
       description: rest.description,
     };
   });
-  return { props, nativeProps };
+  const variants = members.length > 1 ? variantsOf(checker, members, declaration) : null;
+  return { props, nativeProps, variants };
+}
+
+/**
+ * The branches of a discriminated union of props. Each branch lists only the props that set it apart (missing from
+ * another branch, or typed or required differently); the shared props are in the flat list. The discriminant is the
+ * distinguishing prop whose type is `undefined` in one branch or a literal in all of them.
+ */
+function variantsOf(checker, members, declaration) {
+  const branches = members.map((member, index) => {
+    const props = new Map();
+    for (const prop of checker.getPropertiesOfType(member)) {
+      const decls = prop.declarations ?? [];
+      if (decls.length > 0 && decls.every(inNodeModules)) continue;
+      props.set(prop.name, {
+        name: prop.name,
+        type: resolvedTypeText(checker, checker.getTypeOfSymbolAtLocation(prop, decls[0] ?? declaration)),
+        required: !(prop.flags & ts.SymbolFlags.Optional),
+        description: oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker))),
+      });
+    }
+    const alias = member.aliasSymbol?.name ?? member.symbol?.name;
+    return { name: alias && !alias.startsWith("__") ? alias : `Variant${index + 1}`, props };
+  });
+  const names = [...new Set(branches.flatMap((branch) => [...branch.props.keys()]))].sort(compareText);
+  const differs = (name) => {
+    const first = branches[0].props.get(name);
+    return branches.some((branch) => {
+      const prop = branch.props.get(name);
+      return !prop || !first || prop.type !== first.type || prop.required !== first.required;
+    });
+  };
+  const distinguishing = names.filter(differs);
+  if (distinguishing.length === 0) return null;
+  const isLiteral = (text) => /^(".*"|-?\d+|true|false|undefined)$/.test(text);
+  const discriminant =
+    distinguishing.find((name) => {
+      const types = branches.map((branch) => branch.props.get(name)?.type);
+      return (
+        types.every((type) => type !== undefined) &&
+        (types.includes("undefined") || types.every((type) => type.split(" | ").every(isLiteral)))
+      );
+    }) ?? null;
+  return {
+    discriminant,
+    branches: branches.map((branch) => ({
+      name: branch.name,
+      props: distinguishing.filter((name) => branch.props.has(name)).map((name) => branch.props.get(name)),
+    })),
+  };
 }
 
 /** Code-point comparison: stable under every locale, unlike a bare `localeCompare`. */
@@ -210,6 +260,32 @@ function describeType(checker, resolved) {
   return text.length <= MAX_DEFINITION ? text : null;
 }
 
+/**
+ * Members of the object type a hook returns (`T` or `T | null`), with their types and JSDoc. Null for primitives,
+ * functions, arrays and types declared only by a dependency, so a hook returning a ref or a boolean lists nothing.
+ */
+function returnMembersOf(checker, returnType, location) {
+  const parts = (returnType.isUnion() ? returnType.types : [returnType]).filter(
+    (part) => !(part.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined)),
+  );
+  if (parts.length !== 1) return null;
+  const [type] = parts;
+  if (!(type.flags & ts.TypeFlags.Object) || type.getCallSignatures().length > 0 || checker.isArrayType(type))
+    return null;
+  const members = checker.getPropertiesOfType(type);
+  if (members.length === 0 || members.every((prop) => (prop.declarations ?? []).every(inNodeModules)))
+    return null;
+  return members.map((prop) => ({
+    name: prop.name,
+    type: resolvedTypeText(
+      checker,
+      checker.getTypeOfSymbolAtLocation(prop, prop.valueDeclaration ?? location),
+    ),
+    required: !(prop.flags & ts.SymbolFlags.Optional),
+    description: oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker))),
+  }));
+}
+
 function describeExport(checker, sourceFile, symbol) {
   const name = symbol.name;
   const resolved = symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol;
@@ -246,14 +322,15 @@ function describeExport(checker, sourceFile, symbol) {
         };
       }),
       returns: oneLine(checker.typeToString(signature.getReturnType(), undefined, FORMAT)),
+      returnMembers: returnMembersOf(checker, signature.getReturnType(), declaration ?? sourceFile),
     };
   }
   if (/^[A-Z]/.test(name)) {
     const defaults = declaration ? destructuredDefaults(declaration) : new Map();
-    const { props, nativeProps } = first
+    const { props, nativeProps, variants } = first
       ? propsOf(checker, first, defaults)
-      : { props: [], nativeProps: false };
-    return { name, kind: "component", description, props, nativeProps };
+      : { props: [], nativeProps: false, variants: null };
+    return { name, kind: "component", description, props, nativeProps, ...(variants ? { variants } : {}) };
   }
   return {
     name,

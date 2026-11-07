@@ -1,6 +1,6 @@
 # Combobox
 
-> A searchable single-select input with async options, following the APG combobox pattern.
+> A searchable single-select dropdown input with async options, following the APG combobox pattern.
 
 - Status: beta
 - Category: Forms
