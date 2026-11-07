@@ -55,7 +55,7 @@
     "verify:motion": "tsx src/cli/verify-motion/cli.ts src",
     "build:ai-docs": "tsx scripts/ai/build.mjs",
     "verify:ai-docs": "tsx scripts/ai/verify.mjs",
-    "storybook": "npm run tokens && storybook dev -p 6006",
+    "storybook": "npm run tokens && storybook dev -p 6006 --host 127.0.0.1",
     "build-storybook": "npm run tokens && storybook build -o storybook-static && tsx scripts/ai/publish.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -64,7 +64,10 @@
     "release": "npm run build && changeset tag",
     "commitlint": "commitlint",
     "test:browser": "playwright test",
-    "test:browser:ui": "playwright test --ui"
+    "test:browser:ui": "playwright test --ui",
+    "ai:list": "node scripts/ai/query.mjs list",
+    "ai:search": "node scripts/ai/query.mjs search",
+    "ai:show": "node scripts/ai/query.mjs show"
   },
   "license": "MIT",
   "repository": {
@@ -86,6 +89,7 @@
     "@playwright/test": "1.65.0",
     "@storybook/addon-a11y": "10.6.6",
     "@storybook/addon-docs": "10.6.6",
+    "@storybook/addon-mcp": "10.6.6",
     "@storybook/react-vite": "10.6.6",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",

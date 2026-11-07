@@ -38,6 +38,10 @@ jobs:
         run: npm run build-storybook
         env:
           STORYBOOK_DISABLE_TELEMETRY: "1"
+      - name: Verify Storybook AI manifest
+        run: |
+          test -s storybook-static/manifests/components.json
+          node -e "const m = JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8')); if (!Object.values(m.components ?? {}).some((c) => c.name === 'Button')) { console.error('Button missing from the Storybook components manifest'); process.exit(1); }"
 
   browser:
     name: Browser tests (Chromium + WebKit)
