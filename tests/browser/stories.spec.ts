@@ -129,3 +129,55 @@ test.describe("theme and layout", () => {
     });
   }
 });
+
+test.describe("page actions sheet", () => {
+  test("at 390px the backdrop covers the viewport and the sheet is above a fixed dock", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-actions-moreactions--sheet-over-dock");
+    const menu = page.getByRole("menu", { name: "More actions" });
+    await expect(menu).toBeVisible();
+    // Poll: the sheet slides in, so measure once it has settled.
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const backdrop = document.querySelector<HTMLElement>(
+            '[data-lufia-part="layer"] > div[aria-hidden="true"]',
+          );
+          const sheet = document.querySelector<HTMLElement>('[data-lufia-part="sheet"]');
+          const dock = document.querySelector<HTMLElement>('[data-testid="dock"]');
+          if (!backdrop || !sheet || !dock) return "missing";
+          const b = backdrop.getBoundingClientRect();
+          const s = sheet.getBoundingClientRect();
+          const covers = b.left <= 0 && b.top <= 0 && b.right >= innerWidth && b.bottom >= innerHeight;
+          const anchored = Math.abs(s.bottom - innerHeight) <= 1 && s.width >= innerWidth - 1;
+          // Painted above the dock: the page behind is inert, so a hit test cannot tell; compare the stacking order instead.
+          const above =
+            Number(getComputedStyle(sheet.closest<HTMLElement>('[data-lufia-part="layer"]')!).zIndex) >
+            Number(getComputedStyle(dock).zIndex);
+          return covers && anchored && above ? "ok" : { covers, anchored, above };
+        }),
+      )
+      .toBe("ok");
+  });
+
+  test("a long list scrolls inside the sheet and Escape returns focus to the trigger", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-actions-moreactions--sheet-many-items");
+    const menu = page.getByRole("menu", { name: "More actions" });
+    await expect(menu).toBeVisible();
+    const metrics = await menu.evaluate((element) => ({
+      scrolls: element.scrollHeight > element.clientHeight,
+      contain: getComputedStyle(element).overscrollBehaviorY,
+    }));
+    expect(metrics).toEqual({ scrolls: true, contain: "contain" });
+    // The story opens on its own, with nothing focused before it; reopen it from the trigger, as a person would.
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveCount(0);
+    const trigger = page.getByRole("button", { name: "More actions" });
+    await trigger.click();
+    await expect(menu).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+});

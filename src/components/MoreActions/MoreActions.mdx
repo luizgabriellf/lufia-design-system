@@ -43,6 +43,39 @@ render as links through the `linkComponent` set on `LufiaProvider`.
 <Canvas of={Stories.AlignedToStart} />
 <Canvas of={Stories.LongLabels} />
 
+### Sheet presentation
+
+`presentation` chooses how the open menu is shown. `"popover"` (the default) hangs it from the button. `"sheet"` shows a
+full-width sheet anchored to the bottom of the viewport. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a
+popover from there up; `PageActions` uses it. The sheet is rendered in a portal on `document.body`, over a backdrop that
+covers the whole viewport, with the page behind made `inert` and page scroll locked. Its height is capped at 70% of the
+dynamic viewport (and 32.5rem); longer lists scroll inside it without scrolling the page. The bottom padding includes the
+safe-area inset.
+
+<Canvas of={Stories.Sheet} />
+<Canvas of={Stories.SheetManyItems} />
+
+Items without an icon keep an empty leading slot whenever another item has one, so labels always line up.
+
+<Canvas of={Stories.SheetMixedIcons} />
+
+#### Stacking above an app's dock
+
+The sheet sits at `--lufia-overlay-z`, which defaults to one above `--lufia-z-modal`. An app with a fixed dock or bar above
+that layer sets the property on the root to a value above its own element, so the backdrop and sheet clear it:
+
+```css
+:root {
+  --lufia-overlay-z: 1200; /* above the app's fixed bottom bar */
+}
+```
+
+The sheet registers on the shared overlay stack (through `useFocusTrap`), so a `Modal` or another popup opened from it, and
+`registerOverlayLayer`, order correctly: only the topmost layer reacts to Escape. Optional hooks: `--lufia-sheet-backdrop`,
+`--lufia-sheet-max-block-size`, `--lufia-sheet-max-inline-size`.
+
+<Canvas of={Stories.SheetOverDock} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -69,9 +102,13 @@ render as links through the `linkComponent` set on `LufiaProvider`.
 | Enter / Space              | Item    | Activates the item, closes the menu, and returns focus to the trigger   |
 | Escape                     | Menu    | Closes the menu and returns focus to the trigger                        |
 | Tab                        | Menu    | Closes the menu, returns focus to the button, moves on from it          |
+| Tab / Shift+Tab            | Sheet   | Next / previous item, wrapping: focus stays in the sheet                |
 
 A press outside closes the menu. Escape and outside presses go through `useDismiss` and the shared layer stack, so inside a
 dialog Escape closes the menu first and the dialog on the next press. The component adds no document listeners of its own.
+
+In a sheet, Escape and a tap on the backdrop close it and focus returns to the button. The chosen action runs after the sheet
+has closed, so a dialog it opens returns focus to the button when it closes.
 
 ### Accessibility
 
@@ -82,6 +119,8 @@ dialog Escape closes the menu first and the dialog on the next press. The compon
 - Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.
 - A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
   never carries the meaning alone.
+- A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's
+  name and is hidden from assistive technology. Under reduced motion it appears without the slide and fade.
 - Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.
 - In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears
   without the fade.

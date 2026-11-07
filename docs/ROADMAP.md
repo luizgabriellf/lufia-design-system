@@ -33,5 +33,6 @@ The first components come from existing production React code that had been copi
 - **P3 – Diverged components:** one cluster at a time (overlays: Modal, ConfirmDialog, Toast, focus trap; inputs; tables; navigation). Each cluster is merged into a single API, consumers migrate, and they are swept at 4 widths.
   - **Foundations: done** (`beta`): `LufiaProvider`, `useFocusTrap`, `useMediaQuery`, `useModalState`, `useDismiss`, `usePagination`, `useStepDirection`, `VisuallyHidden`, and `useBodyScrollLock` with scrollbar compensation.
   - **Overlays: done** (`beta`): `Modal`, `ConfirmDialog`, `Toast`, `SuccessCheck`. One overlay architecture (a portaled dialog), no native `<dialog>` variant ([ADR 0003](adr/0003-primitives-library.md)). Consumers still have to migrate and be swept at 4 widths.
+  - **Page actions: done** (`beta`): `MoreActions` `presentation="auto" | "popover" | "sheet"` (a bottom sheet in a portal, over a full-viewport backdrop, stacked at `--lufia-overlay-z`); `PageActions` uses `auto`. Consumers still have to migrate their local copies.
   - Still open: inputs, tables, navigation (including a bottom sheet with a drag gesture).
 - **P4 – Hardening:** a screen-reader pass for every component, stable labels, an adoption tracker, and removal of the legacy copies in consuming apps.

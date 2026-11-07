@@ -10,9 +10,13 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import { IconButton } from "../IconButton";
 import { LufiaLink } from "../LufiaProvider";
 import { useDismiss } from "../useDismiss";
+import { useFocusTrap } from "../useFocusTrap";
+import { useBodyScrollLock } from "../useBodyScrollLock";
+import { useMediaQuery } from "../useMediaQuery";
 import type { ButtonVariant } from "../Button";
 import styles from "./MoreActions.module.css";
 
@@ -44,11 +48,18 @@ export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
   variant?: ButtonVariant;
   /** Replaces the default three-dot icon. */
   icon?: ReactNode;
+  /**
+   * How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet
+   * anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert.
+   * `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up.
+   */
+  presentation?: "auto" | "popover" | "sheet";
   /** Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. */
   defaultOpen?: boolean;
 };
 
 const TYPEAHEAD_RESET_MS = 500;
+const SHEET_QUERY = "(width < 60rem)";
 
 function DotsIcon() {
   return (
@@ -64,6 +75,10 @@ function DotsIcon() {
  * An overflow menu: a button that opens a list of actions. It follows the WAI-ARIA menu button pattern, with a roving
  * focus that arrow keys, Home, End and typeahead move through. Escape and a press outside close it through `useDismiss`,
  * which also keeps the layer order right when the menu sits inside a dialog.
+ *
+ * As a sheet (`presentation`) the menu moves to a portal on `document.body`: a backdrop covers the viewport, focus is trapped
+ * in the sheet, the page behind is inert, and Escape or a tap on the backdrop closes it and returns focus to the button. The
+ * sheet's stacking order is `--lufia-overlay-z`, which an app raises to clear a fixed dock or bar of its own.
  */
 export function MoreActions({
   label,
@@ -72,6 +87,7 @@ export function MoreActions({
   size = "md",
   variant = "ghost",
   icon,
+  presentation = "popover",
   defaultOpen = false,
   className,
   ...rest
@@ -84,10 +100,23 @@ export function MoreActions({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const typed = useRef({ text: "", timer: 0 });
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const pendingSelect = useRef<(() => void) | undefined>(undefined);
   const menuId = useId();
 
+  const narrow = useMediaQuery(SHEET_QUERY);
+  const sheet = presentation === "sheet" || (presentation === "auto" && narrow);
+
   const close = () => setOpen(false);
-  useDismiss(open, close, rootRef, triggerRef);
+  // A sheet lives outside `rootRef`, so an outside-press listener would treat its own items as outside: the sheet has its
+  // own backdrop and trap instead.
+  useDismiss(open && !sheet, close, rootRef, triggerRef);
+  useFocusTrap(open && sheet, sheetRef, {
+    onEscape: close,
+    initialFocus: "container",
+    inertBackground: true,
+  });
+  useBodyScrollLock(open && sheet);
 
   // Items that are shown right now and can take focus. Layout decides, because some items are hidden by CSS on wide pages.
   // Disabled items stay in the list: they are focusable and readable (APG), they just cannot be activated.
@@ -108,7 +137,7 @@ export function MoreActions({
 
   // Checked once when the menu opens: if it runs past the viewport on the aligned side, line it up with the other edge.
   useLayoutEffect(() => {
-    if (!open) return;
+    if (!open || sheet) return;
     const menu = menuRef.current;
     const trigger = triggerRef.current;
     if (!menu || !trigger) return;
@@ -123,6 +152,14 @@ export function MoreActions({
         : { left: anchor.right - box.width, right: anchor.right };
     // Measuring the laid-out menu and correcting its side before paint is what a layout effect is for.
     if (other.left >= 0 && other.right <= viewport) setFlipped(true);
+  }, [open, sheet]);
+
+  // A sheet's action runs once the sheet is gone and focus is back on the button, so a dialog it opens returns here.
+  useEffect(() => {
+    if (open || !pendingSelect.current) return;
+    const run = pendingSelect.current;
+    pendingSelect.current = undefined;
+    run();
   }, [open]);
 
   useEffect(() => {
@@ -158,6 +195,12 @@ export function MoreActions({
     if (event.key === "ArrowUp") return go(at - 1);
     if (event.key === "Home") return go(0);
     if (event.key === "End") return go(list.length - 1);
+    if (event.key === "Tab" && sheet) {
+      // The page behind is inert, so Tab stays among the items. The trap's own Tab handling (made for tabbable content, and the
+      // items are not tabbable) would send focus to the sheet itself, so it must not see this key.
+      event.stopPropagation();
+      return go(at + (event.shiftKey ? -1 : 1));
+    }
     if (event.key === "Tab") {
       // Focus goes back to the button first, so the Tab that follows moves on from it and the order stays predictable.
       triggerRef.current?.focus();
@@ -179,6 +222,11 @@ export function MoreActions({
 
   const select = (item: MoreActionItem) => {
     close();
+    if (sheet) {
+      // The button is inert while the sheet is open and cannot take focus yet; the effect above runs the action later.
+      pendingSelect.current = item.onSelect;
+      return;
+    }
     // The menu unmounts on selection; hand focus back first so a dialog opened by the action returns here when it closes.
     triggerRef.current?.focus();
     item.onSelect?.();
@@ -186,12 +234,76 @@ export function MoreActions({
 
   if (items.length === 0) return null;
   const resolved = flipped ? (align === "end" ? "start" : "end") : align;
+  const hasIcons = items.some((item) => item.icon);
+  const entries = items.map((item) => {
+    const props = {
+      role: "menuitem",
+      tabIndex: -1,
+      className: styles.item,
+      "data-tone": item.tone === "danger" ? "danger" : undefined,
+      "aria-disabled": item.disabled || undefined,
+    };
+    // Items without an icon keep an empty slot when others have one, so every label starts on the same line.
+    const content = (
+      <>
+        {hasIcons ? (
+          <span className={styles.icon} aria-hidden="true">
+            {item.icon}
+          </span>
+        ) : null}
+        <span className={styles.text}>
+          <span>{item.label}</span>
+          {item.description ? <span className={styles.description}>{item.description}</span> : null}
+        </span>
+      </>
+    );
+    return (
+      <li key={item.key} role="none" className={styles.entry} data-narrow-only={item.narrowOnly || undefined}>
+        {item.href !== undefined ? (
+          <LufiaLink
+            {...props}
+            href={item.href}
+            onClick={(event) => {
+              if (item.disabled) return event.preventDefault();
+              select(item);
+            }}
+          >
+            {content}
+          </LufiaLink>
+        ) : (
+          <button
+            {...props}
+            type="button"
+            onClick={() => {
+              if (!item.disabled) select(item);
+            }}
+          >
+            {content}
+          </button>
+        )}
+      </li>
+    );
+  });
+  // The menu itself is not focusable; focus lives on its items and key events bubble up to here.
+  const list = (className: string | undefined) => (
+    <ul
+      ref={menuRef}
+      id={menuId}
+      role="menu"
+      aria-label={label}
+      className={className}
+      onKeyDown={onMenuKeyDown}
+    >
+      {entries}
+    </ul>
+  );
   return (
     <div
       {...rest}
       ref={rootRef}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-align={resolved}
+      data-presentation={sheet ? "sheet" : "popover"}
       data-narrow-only={items.every((item) => item.narrowOnly) || undefined}
     >
       <IconButton
@@ -206,73 +318,21 @@ export function MoreActions({
         onClick={() => (open ? close() : openAt("first"))}
         onKeyDown={onTriggerKeyDown}
       />
-      {open ? (
-        // The menu itself is not focusable; focus lives on its items and key events bubble up to here.
-        <ul
-          ref={menuRef}
-          id={menuId}
-          role="menu"
-          aria-label={label}
-          className={styles.menu}
-          onKeyDown={onMenuKeyDown}
-        >
-          {items.map((item) => {
-            const props = {
-              role: "menuitem",
-              tabIndex: -1,
-              className: styles.item,
-              "data-tone": item.tone === "danger" ? "danger" : undefined,
-              "aria-disabled": item.disabled || undefined,
-            };
-            const content = (
-              <>
-                {item.icon ? (
-                  <span className={styles.icon} aria-hidden="true">
-                    {item.icon}
-                  </span>
-                ) : null}
-                <span className={styles.text}>
-                  <span>{item.label}</span>
-                  {item.description ? <span className={styles.description}>{item.description}</span> : null}
-                </span>
-              </>
-            );
-            return (
-              <li
-                key={item.key}
-                role="none"
-                className={styles.entry}
-                data-narrow-only={item.narrowOnly || undefined}
-              >
-                {item.href !== undefined ? (
-                  <LufiaLink
-                    {...props}
-                    href={item.href}
-                    onClick={(event) => {
-                      if (item.disabled) return event.preventDefault();
-                      close();
-                      triggerRef.current?.focus();
-                      item.onSelect?.();
-                    }}
-                  >
-                    {content}
-                  </LufiaLink>
-                ) : (
-                  <button
-                    {...props}
-                    type="button"
-                    onClick={() => {
-                      if (!item.disabled) select(item);
-                    }}
-                  >
-                    {content}
-                  </button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
+      {open && !sheet ? list(styles.menu) : null}
+      {open && sheet
+        ? createPortal(
+            <div className={styles.layer} data-lufia-part="layer">
+              <div className={styles.backdrop} aria-hidden="true" onClick={close} />
+              <div ref={sheetRef} className={styles.sheet} tabIndex={-1} data-lufia-part="sheet">
+                <div className={styles.heading} aria-hidden="true">
+                  {label}
+                </div>
+                {list(styles.sheetList)}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

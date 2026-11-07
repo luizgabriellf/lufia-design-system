@@ -30,7 +30,8 @@ export type PageActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
 /**
  * The action row of a page, normally the `actions` of a `PageHeader`: one primary action, a few secondary ones and an
  * overflow menu. On wide screens the secondary actions are buttons. On narrow screens they join the overflow menu, so the
- * primary action stays the only labelled button and the row never wraps.
+ * primary action stays the only labelled button and the row never wraps. Below 60rem the open menu is a bottom sheet (see
+ * `MoreActions` `presentation`), whose stacking order an app can raise with `--lufia-overlay-z`.
  */
 export function PageActions({
   primary,
@@ -68,7 +69,9 @@ export function PageActions({
           {item.label}
         </Button>
       ))}
-      {menu.length > 0 ? <MoreActions label={moreLabel} items={menu} variant="secondary" /> : null}
+      {menu.length > 0 ? (
+        <MoreActions label={moreLabel} items={menu} variant="secondary" presentation="auto" />
+      ) : null}
     </div>
   );
 }

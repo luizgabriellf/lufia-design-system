@@ -46,6 +46,9 @@ Strings in the snippet are plain literals. In your app they arrive through props
 The switch is pure CSS, so there is no flash on first paint. Secondary actions exist in both places; the menu entries are
 flagged and hidden on wide screens, and keyboard navigation skips what is hidden.
 
+Below 60rem the open menu is a bottom sheet over a backdrop that covers the viewport; see `MoreActions` for how to raise
+its stacking order above an app's own fixed bar with `--lufia-overlay-z`.
+
 <Canvas of={Stories.Phone390} />
 
 ### All themes
