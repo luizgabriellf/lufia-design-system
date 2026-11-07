@@ -48,7 +48,7 @@ The official Storybook MCP addon is enabled for the development server:
 
 ```bash
 npm run storybook
-# Connect an MCP-capable agent to http://localhost:6006/mcp
+# Connect an MCP-capable agent to http://127.0.0.1:6006/mcp
 ```
 
 Use `docs-list` and `docs-show` to discover components, real prop APIs and documented examples. The MCP dev toolset also supports Storybook development flows. The `test-run` toolset is intentionally disabled until an addon-vitest integration is configured and verified. Never connect a development MCP endpoint to an untrusted public network.
