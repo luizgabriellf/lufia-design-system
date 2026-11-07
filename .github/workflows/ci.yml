@@ -28,9 +28,9 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Check (typecheck, lint, stylelint, format, tests, contrast, motion rules, AI-docs drift)
-        run: npm run check
-      - name: Coverage
+      - name: Static gates (typecheck, lint, stylelint, format, contrast, motion rules, AI-docs drift)
+        run: npm run check:static
+      - name: Unit and accessibility tests with coverage floor
         run: npm run test:coverage
       - name: Build package
         run: npm run build
