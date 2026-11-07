@@ -13,13 +13,19 @@ export type ProgressBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children" |
   valueText?: string;
   tone?: ChartTone;
   size?: "sm" | "md";
+  /**
+   * Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once.
+   * The fill keeps its full width and is scaled, so no layout property animates. Removed under reduced motion.
+   */
+  animateChanges?: boolean;
 };
 
 /**
  * A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill.
  *
  * It states a fraction, so print the figure beside it as text. The fill draws in once on mount and is removed under
- * reduced motion; later changes of `value` apply at once, because animating width would move layout.
+ * reduced motion. Later changes of `value` apply at once, unless `animateChanges` is set: then the fill is scaled with a
+ * `transform` transition (never width), and reduced motion applies the new value at once.
  */
 export function ProgressBar({
   value,
@@ -28,6 +34,7 @@ export function ProgressBar({
   valueText,
   tone = "accent",
   size = "md",
+  animateChanges = false,
   className,
   ...rest
 }: ProgressBarProps) {
@@ -46,7 +53,11 @@ export function ProgressBar({
       data-tone={tone}
       data-size={size}
     >
-      {now > 0 ? <span className={styles.fill} style={{ inlineSize: `${(now * 100) / top}%` }} /> : null}
+      {animateChanges ? (
+        <span className={styles.fill} data-animate="" style={{ transform: `scaleX(${now / top})` }} />
+      ) : now > 0 ? (
+        <span className={styles.fill} style={{ inlineSize: `${(now * 100) / top}%` }} />
+      ) : null}
     </div>
   );
 }
