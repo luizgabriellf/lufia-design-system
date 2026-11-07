@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
 import { axe } from "../../test/axe";
 import { hasOpenOverlay, overlayDepth } from "./layerStack";
-import { useFocusTrap, type UseFocusTrapOptions } from "./useFocusTrap";
+import { getFocusableElements, useFocusTrap, type UseFocusTrapOptions } from "./useFocusTrap";
 
 function Trap({
   name,
@@ -87,6 +87,62 @@ describe("useFocusTrap", () => {
     expect(screen.getByRole("button", { name: "A first" })).toHaveFocus();
     await user.tab({ shift: true });
     expect(screen.getByRole("button", { name: "A last" })).toHaveFocus();
+  });
+
+  it("skips programmatic-only and disabled controls even when they declare tabindex", () => {
+    const { container } = render(
+      <div>
+        <button type="button" tabIndex={-2}>
+          Programmatic only
+        </button>
+        <button type="button" disabled tabIndex={2}>
+          Disabled with tabindex
+        </button>
+        <button type="button">Tabbable</button>
+      </div>,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(getFocusableElements(root)).toEqual([screen.getByRole("button", { name: "Tabbable" })]);
+  });
+
+  it("uses positive tabindex order, then DOM order, and wraps at the real Tab endpoints", async () => {
+    const user = userEvent.setup();
+    function OrderedTrap() {
+      const ref = useRef<HTMLDivElement>(null);
+      useFocusTrap(true, ref, { initialFocus: "first" });
+      return (
+        <div ref={ref} role="dialog" aria-label="Ordered" tabIndex={-1}>
+          <button type="button">Normal first</button>
+          <button type="button" tabIndex={3}>
+            Priority three
+          </button>
+          <button type="button" tabIndex={1}>
+            Priority one
+          </button>
+          <button type="button" tabIndex={-2}>
+            Programmatic only
+          </button>
+          <button type="button">Normal last</button>
+        </div>
+      );
+    }
+    render(<OrderedTrap />);
+
+    const first = screen.getByRole("button", { name: "Priority one" });
+    const second = screen.getByRole("button", { name: "Priority three" });
+    const normalFirst = screen.getByRole("button", { name: "Normal first" });
+    const normalLast = screen.getByRole("button", { name: "Normal last" });
+    expect(first).toHaveFocus();
+    await user.tab();
+    expect(second).toHaveFocus();
+    await user.tab();
+    expect(normalFirst).toHaveFocus();
+    await user.tab();
+    expect(normalLast).toHaveFocus();
+    await user.tab();
+    expect(first).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(normalLast).toHaveFocus();
   });
 
   it("brings focus back inside when it escaped to the page", async () => {
