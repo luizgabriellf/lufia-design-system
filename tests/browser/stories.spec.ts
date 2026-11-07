@@ -23,7 +23,7 @@ async function openStory(
 }
 
 test.describe("keyboard interactions", () => {
-  test("a modal traps focus, closes on Escape, and restores opener focus", async ({ page }) => {
+  test("a modal wraps Tab focus inside, closes on Escape, and restores opener focus", async ({ page }) => {
     await openStory(page, "components-overlays-modal--default");
     const opener = page.getByRole("button", { name: "Open modal" });
     await opener.click();
@@ -31,8 +31,21 @@ test.describe("keyboard interactions", () => {
     const modal = page.getByRole("dialog", { name: "Edit project" });
     await expect(modal).toBeVisible();
     await expect(modal).toBeFocused();
+
+    // The dialog's tab order is: close button, ..., Cancel, Save changes.
+    const first = modal.getByRole("button", { name: "Close" });
+    const last = modal.getByRole("button", { name: "Save changes" });
+
+    // Shift+Tab from the first focusable wraps to the last one, not out to the page.
+    await first.focus();
+    await expect(first).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await expect(last).toBeFocused();
+
+    // Tab from the last focusable wraps back to the first.
     await page.keyboard.press("Tab");
-    await expect(modal.locator(":focus")).toHaveCount(1);
+    await expect(first).toBeFocused();
+
     await page.keyboard.press("Escape");
     await expect(modal).toHaveCount(0);
     await expect(opener).toBeFocused();
@@ -56,42 +69,63 @@ test.describe("keyboard interactions", () => {
   });
 });
 
-test.describe("responsive visual captures", () => {
-  const widths = [320, 390, 768, 1440] as const;
+test.describe("theme and layout", () => {
   const themes: Theme[] = ["default", "example-brand"];
-  const modes: Mode[] = ["light", "dark"];
 
-  for (const width of widths) {
-    for (const theme of themes) {
-      for (const mode of modes) {
-        test(`buttons at ${width}px — ${theme}/${mode}`, async ({ page }, testInfo) => {
-          await page.setViewportSize({ width, height: 900 });
-          await openStory(page, "components-actions-button--all-variants-and-sizes", theme, mode);
-          await expect(page.getByRole("button", { name: "primary", exact: true }).first()).toBeVisible();
-          const capture = await page.screenshot({ animations: "disabled", caret: "hide" });
-          await testInfo.attach(`buttons-${width}-${theme}-${mode}`, {
-            body: capture,
-            contentType: "image/png",
-          });
-        });
-      }
-    }
+  for (const theme of themes) {
+    test(`the modal surface follows the colour mode — ${theme}`, async ({ page }) => {
+      const surface = async (mode: Mode): Promise<string> => {
+        await openStory(page, "components-overlays-modal--open-by-default", theme, mode);
+        const modal = page.getByRole("dialog", { name: "Edit project" });
+        await expect(modal).toBeVisible();
+        return modal.evaluate((element) => getComputedStyle(element).backgroundColor);
+      };
+      const light = await surface("light");
+      const dark = await surface("dark");
+      // A resolved colour, not the transparent default, and different per mode.
+      expect(light).not.toBe("rgba(0, 0, 0, 0)");
+      expect(dark).not.toBe("rgba(0, 0, 0, 0)");
+      expect(light).not.toBe(dark);
+    });
+  }
+
+  test("the primary action colour follows the theme", async ({ page }) => {
+    const primaryColour = async (theme: Theme): Promise<string> => {
+      await openStory(page, "components-actions-button--all-variants-and-sizes", theme, "light");
+      const primary = page.getByRole("button", { name: "primary", exact: true }).first();
+      await expect(primary).toBeVisible();
+      return primary.evaluate((element) => getComputedStyle(element).backgroundColor);
+    };
+    // The example brand overrides the primary action colour.
+    expect(await primaryColour("default")).not.toBe(await primaryColour("example-brand"));
+  });
+
+  for (const width of [320, 390, 768, 1440] as const) {
+    test(`buttons do not overflow horizontally at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, "components-actions-button--all-variants-and-sizes");
+      await expect(page.getByRole("button", { name: "primary", exact: true }).first()).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
   }
 
   for (const width of [320, 1440] as const) {
-    for (const theme of themes) {
-      for (const mode of modes) {
-        test(`open modal at ${width}px — ${theme}/${mode}`, async ({ page }, testInfo) => {
-          await page.setViewportSize({ width, height: 900 });
-          await openStory(page, "components-overlays-modal--open-by-default", theme, mode);
-          await expect(page.getByRole("dialog", { name: "Edit project" })).toBeVisible();
-          const capture = await page.screenshot({ animations: "disabled", caret: "hide" });
-          await testInfo.attach(`modal-${width}-${theme}-${mode}`, {
-            body: capture,
-            contentType: "image/png",
-          });
-        });
-      }
-    }
+    test(`the open modal fits the viewport at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, "components-overlays-modal--open-by-default");
+      const modal = page.getByRole("dialog", { name: "Edit project" });
+      await expect(modal).toBeVisible();
+      // Poll: the dialog animates in, so measure once it has settled (1px for sub-pixel layout).
+      await expect
+        .poll(async () => {
+          const box = await modal.boundingBox();
+          if (!box) return false;
+          return box.x >= 0 && box.y >= 0 && box.x + box.width <= width + 1 && box.y + box.height <= 900 + 1;
+        })
+        .toBe(true);
+    });
   }
 });
