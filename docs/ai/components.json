@@ -2947,7 +2947,7 @@
         {
           "name": "ColumnChart",
           "kind": "component",
-          "description": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. The data is a visually hidden table (series are rows, columns are the headings) that a screen reader can navigate; the drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.",
+          "description": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.",
           "props": [
             {
               "name": "title",
@@ -3108,11 +3108,12 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The data is a table. A visually hidden `table` lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.",
+          "The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.",
           "The `figure` is named by its `title`; `titleVisibility=\"hidden\"` keeps that name for screen readers only. A written `summary` says what the columns show.",
           "Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.",
           "The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.",
-          "Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode the segments use `CanvasText` and the hairline `Canvas`.",
+          "Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, repeating after four) in the columns and in the legend, so the legend stays matchable.",
+          "Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.",
           "Print the figures people need as text beside the chart: the drawing has no value labels."
         ]
       },
@@ -7299,7 +7300,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. Removed under reduced motion."
+              "description": "Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion."
             }
           ],
           "nativeProps": true
@@ -9940,7 +9941,7 @@
         {
           "name": "SwitchInput",
           "kind": "component",
-          "description": "The form-submitting `Switch`: a native `<input type=\"checkbox\" role=\"switch\">`, so the browser owns the state. Its value is read from the form (`FormData`, `form.elements`), a `form` reset restores `defaultChecked`, and `required` and `form=\"id\"` work as on a checkbox. Leave it uncontrolled with `defaultChecked`, or control it with `checked`. Use it in a form that is saved with a submit button; for a setting that takes effect at once, use `Switch`.",
+          "description": "The form-submitting `Switch`: a native `<input type=\"checkbox\" role=\"switch\">`, so the browser owns the state. Its value is read from the form (`FormData`, `form.elements`), a `form` reset restores `defaultChecked`, and `required` and `form=\"id\"` work as on a checkbox. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and a handler (a `checked` without `onCheckedChange` or `onChange` warns once in development). A form reset restores the DOM default, not your state: when controlled, also reset your state from the form's `reset` event. Use it in a form that is saved with a submit button; for a setting that takes effect at once, use `Switch`.",
           "props": [
             {
               "name": "label",

@@ -34,7 +34,7 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
 | `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `size` | `"sm" \| "md"` | no | `"md"` |  |
-| `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. Removed under reduced motion. |
+| `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion. |
 
 Other native element attributes pass through to the root element.
 
