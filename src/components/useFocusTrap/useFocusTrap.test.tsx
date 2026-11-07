@@ -89,6 +89,7 @@ describe("useFocusTrap", () => {
     expect(screen.getByRole("button", { name: "A last" })).toHaveFocus();
   });
 
+  /* eslint-disable jsx-a11y/tabindex-no-positive -- Exercise explicit tab order values for compatibility. */
   it("skips programmatic-only and disabled controls even when they declare tabindex", () => {
     const { container } = render(
       <div>
@@ -144,6 +145,8 @@ describe("useFocusTrap", () => {
     await user.tab({ shift: true });
     expect(normalLast).toHaveFocus();
   });
+
+  /* eslint-enable jsx-a11y/tabindex-no-positive */
 
   it("brings focus back inside when it escaped to the page", async () => {
     const user = userEvent.setup();
