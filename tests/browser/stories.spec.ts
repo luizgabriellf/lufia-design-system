@@ -301,17 +301,23 @@ test.describe("introduction page", () => {
     const preview = await openIntroduction(page);
     const card = preview.locator('a[href^="./?path=/docs/components-"]').first();
     await card.scrollIntoViewIfNeeded();
-    // Record transitionrun rather than polling getAnimations(): a short transition can finish before the first poll.
-    await card.evaluate((element) => {
-      element.setAttribute("data-transition-runs", "0");
-      element.addEventListener("transitionrun", () => {
-        element.setAttribute(
-          "data-transition-runs",
-          String(Number(element.getAttribute("data-transition-runs")) + 1),
-        );
+    // Assert the hover end state and a non-zero transition rather than catching the transition mid-flight: polling
+    // getAnimations() raced short transitions, and WebKit does not fire transitionrun reliably here.
+    const cardStyle = () =>
+      card.evaluate((element) => {
+        const box = element.closest("li");
+        if (box === null) throw new Error("gallery card without a list item");
+        const style = getComputedStyle(box);
+        return {
+          transform: style.transform,
+          longestTransition: Math.max(
+            ...style.transitionDuration.split(",").map((value) => parseFloat(value)),
+          ),
+        };
       });
-    });
+    const before = await cardStyle();
+    expect(before.longestTransition).toBeGreaterThan(0);
     await card.hover();
-    await expect.poll(async () => Number(await card.getAttribute("data-transition-runs"))).toBeGreaterThan(0);
+    await expect.poll(async () => (await cardStyle()).transform).not.toBe(before.transform);
   });
 });
