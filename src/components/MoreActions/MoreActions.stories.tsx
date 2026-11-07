@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { DocumentIcon, SettingsIcon, UploadIcon } from "../../docs/demo";
+import { useState } from "react";
+import { Modal } from "../Modal";
 import { MoreActions, type MoreActionItem } from "./MoreActions";
 
 const items: MoreActionItem[] = [
@@ -168,4 +170,29 @@ export const SheetOverDock: Story = {
       </>
     ),
   ],
+};
+
+function DialogFromItem() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <MoreActions
+        label="More actions"
+        presentation="auto"
+        items={[
+          { key: "rename", label: "Rename", onSelect: () => setOpen(true) },
+          { key: "dup", label: "Duplicate" },
+        ]}
+      />
+      <Modal open={open} onClose={() => setOpen(false)} title="Rename record">
+        <p>Pick a new name for this record.</p>
+      </Modal>
+    </>
+  );
+}
+
+/** The item's `onSelect` opens a dialog the caller owns. The menu closes first, focus is on the button, and closing the dialog returns focus there. */
+export const OpenADialogFromAMenuItem: Story = {
+  name: "Open a dialog from a menu item",
+  render: () => <DialogFromItem />,
 };

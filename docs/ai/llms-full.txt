@@ -3523,6 +3523,7 @@ phrase.
 - `components-actions-moreactions--auto-phone-390`
 - `components-actions-moreactions--sheet-phone-320`
 - `components-actions-moreactions--sheet-over-dock`
+- `components-actions-moreactions--open-a-dialog-from-a-menu-item`
 
 ## NavRow
 
