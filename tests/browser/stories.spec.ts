@@ -231,3 +231,54 @@ test.describe("page actions breakpoints", () => {
     });
   }
 });
+
+test.describe("introduction page", () => {
+  test.use({ reducedMotion: "no-preference" });
+
+  async function openIntroduction(page: Page) {
+    await page.goto("/?path=/docs/introduction--docs");
+    const preview = page.frameLocator("#storybook-preview-iframe");
+    await expect(preview.getByRole("heading", { level: 1, name: "Lufia Design System" })).toBeVisible();
+    return preview;
+  }
+
+  test("a pattern card selects its page in the top window, not a 404", async ({ page }) => {
+    const preview = await openIntroduction(page);
+    await preview.getByRole("link", { name: "Settings form" }).click();
+    await expect(page).toHaveURL(/\?path=\/docs\/patterns-settings-form--docs/);
+    await expect(
+      page.frameLocator("#storybook-preview-iframe").getByRole("heading", { level: 1 }),
+    ).toContainText("Settings form");
+  });
+
+  test("a component gallery card selects the component docs in the top window", async ({ page }) => {
+    const preview = await openIntroduction(page);
+    const card = preview.locator('a[href="./?path=/docs/components-actions-button--docs"]').first();
+    await card.click();
+    await expect(page).toHaveURL(/\?path=\/docs\/components-actions-button--docs/);
+  });
+
+  test("Get started scrolls in place and keeps the Storybook chrome", async ({ page }) => {
+    const preview = await openIntroduction(page);
+    await preview.getByRole("link", { name: "Get started" }).click();
+    await expect(page).toHaveURL(/\?path=\/docs\/introduction--docs/);
+    await expect(page.locator("#storybook-preview-iframe")).toBeVisible();
+    await expect(preview.locator("#quick-start")).toBeInViewport();
+  });
+
+  test("hovering a gallery card runs its transition", async ({ page }) => {
+    const preview = await openIntroduction(page);
+    const card = preview.locator('a[href^="./?path=/docs/components-"]').first();
+    await card.scrollIntoViewIfNeeded();
+    await card.hover();
+    await expect
+      .poll(() =>
+        card.evaluate(
+          (element) =>
+            element.ownerDocument.getAnimations().filter((animation) => animation instanceof CSSTransition)
+              .length,
+        ),
+      )
+      .toBeGreaterThan(0);
+  });
+});
