@@ -55,7 +55,8 @@ its stacking order above an app's own fixed bar with `--lufia-overlay-z`.
 
 `collapse="container"` makes the secondary actions follow the width of a host container instead of the page: below 50rem
 they move into the menu, from 50rem they are buttons. The host (any ancestor) must declare `container-type: inline-size`;
-the query uses the nearest one, and with none the secondary actions never collapse. There is no container name and no
+the query uses the nearest one, and with none the secondary actions never collapse (and a row with no `overflow` items
+shows a menu button with nothing in it), so this mode always needs a host container. There is no container name and no
 threshold prop, because a container condition cannot read a variable. It is pure CSS, so there is no flash on first paint,
 and it combines with `hideBelow` and `primaryPlacement`, which stay viewport rules. A popover is inside the container, so
 the query reaches it. A sheet (viewport below 60rem) is portalled to the body and has left the container, so in this mode
@@ -72,7 +73,10 @@ it always lists the secondary actions.
 ### Data attributes on actions
 
 `attributes` on an action (`{ "data-tour": "share" }`) renders those `data-*` attributes on its button or link and, for a
-secondary action, on its overflow menu item, so tours and tests can target one action without a label lookup.
+secondary action, on its overflow menu item, so tours and tests can target one action without a label lookup. Those
+attributes are spread first, so they never override the component's own `role`, `aria-*` or state attributes. Because a
+secondary action carries them twice, scope a lookup by role (`button` or `menuitem`) or by visibility: the first match in
+DOM order is the button, which is hidden while the action is collapsed into the menu.
 
 <Canvas of={Stories.WithDataAttributes} />
 

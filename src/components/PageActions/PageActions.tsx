@@ -42,7 +42,8 @@ export type PageActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
   /**
    * What collapses the secondary actions into the overflow menu. `"viewport"` (default) is the page width: below 48rem.
    * `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. The host
-   * must declare it; without one the secondary actions never collapse. There is no container name and no threshold prop,
+   * must declare it; without one the secondary actions never collapse, and with no `overflow` items the menu button stays
+   * visible with nothing in it, so always give this mode a host container. There is no container name and no threshold prop,
    * because a container condition cannot read a variable. Pure CSS in both cases, so there is no flash on first paint.
    */
   collapse?: "viewport" | "container";
@@ -78,6 +79,7 @@ function ActionButton({
   return (
     <>
       <Button
+        {...item.attributes}
         className={className}
         variant={variant}
         size={size}
@@ -85,7 +87,6 @@ function ActionButton({
         title={hinted ? item.hint : undefined}
         aria-describedby={hinted ? hintId : undefined}
         {...(soft ? { "aria-disabled": true } : { disabled: item.disabled })}
-        {...item.attributes}
         {...(item.href !== undefined ? { href: item.href } : {})}
         onClick={soft ? undefined : item.onSelect}
       >
