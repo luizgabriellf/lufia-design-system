@@ -58,6 +58,13 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 
 <Canvas of={Stories.InteractiveWithFooterButton} />
 
+### Description and flush body
+
+`description` adds one short line under the `title`. `flush` lets the body span the full width of the card while the header and footer keep their padding, for lists and tables that draw their own rows (`AttentionList`, `ActivityList`). Together with `title` and `headerAction` this covers the "surface with a header" of a dashboard: a section title, a "View all" link at the end, and a list below.
+
+<Canvas of={Stories.Flush} />
+<Canvas of={Stories.WithDescription} />
+
 ### States
 
 <Canvas of={Stories.Interactive} />

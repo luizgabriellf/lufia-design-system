@@ -9,6 +9,8 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   title?: ReactNode;
   /** Heading level of `title` (2 to 6). Pick the one that fits the page outline. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** One short line under the `title` (or on its own, when there is no title). */
+  description?: ReactNode;
   /** Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. */
   headerAction?: ReactNode;
   /** Pinned to the bottom of the card, separated from the body. */
@@ -20,6 +22,11 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   href?: string;
   /** Inner spacing of every slot. Defaults to `md`. */
   padding?: CardPadding;
+  /**
+   * Lets the body span the full width of the card while the header and footer keep their padding. For lists and
+   * tables that draw their own row padding and dividers.
+   */
+  flush?: boolean;
 };
 
 /**
@@ -32,43 +39,70 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
  */
 export function Card({
   title,
+  description,
   headingLevel = 3,
   headerAction,
   footer,
   href,
   padding = "md",
+  flush = false,
   className,
   children,
   ...rest
 }: CardProps) {
   const Heading = `h${headingLevel}` as const;
   const interactive = href !== undefined;
-  const hasHeader = title !== undefined || headerAction !== undefined;
+  const hasDescription = description !== undefined && description !== null && description !== false;
+  const hasHeader = title !== undefined || headerAction !== undefined || hasDescription;
   return (
     <div
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-padding={padding}
       data-interactive={interactive || undefined}
+      data-flush={flush || undefined}
     >
       {hasHeader ? (
         <div className={styles.header}>
-          {title !== undefined ? (
-            <Heading className={styles.title}>
-              {interactive ? (
-                <LufiaLink href={href} className={styles.link}>
-                  {title}
-                </LufiaLink>
-              ) : (
-                title
-              )}
-            </Heading>
+          {title !== undefined || hasDescription ? (
+            <HeadingBlock hasDescription={hasDescription} description={description}>
+              {title !== undefined ? (
+                <Heading className={styles.title}>
+                  {interactive ? (
+                    <LufiaLink href={href} className={styles.link}>
+                      {title}
+                    </LufiaLink>
+                  ) : (
+                    title
+                  )}
+                </Heading>
+              ) : null}
+            </HeadingBlock>
           ) : null}
           {headerAction ? <div className={styles.action}>{headerAction}</div> : null}
         </div>
       ) : null}
       {children !== undefined && children !== null ? <div className={styles.body}>{children}</div> : null}
       {footer ? <div className={styles.footer}>{footer}</div> : null}
+    </div>
+  );
+}
+
+/** Wraps the heading only when there is a description, so a card without one keeps its original markup. */
+function HeadingBlock({
+  hasDescription,
+  description,
+  children,
+}: {
+  hasDescription: boolean;
+  description: ReactNode;
+  children: ReactNode;
+}) {
+  if (!hasDescription) return children;
+  return (
+    <div className={styles.heading}>
+      {children}
+      <p className={styles.description}>{description}</p>
     </div>
   );
 }

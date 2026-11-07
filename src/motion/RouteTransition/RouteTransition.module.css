@@ -1,0 +1,28 @@
+/* The keyframes animate `from` only, so the resting state is the end state; the duration, easing and distance are
+   tokens and collapse under reduced motion. */
+.root > [data-route-enter="rise"] {
+  animation: route-rise var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+.root > [data-route-enter="fade"] {
+  animation: route-fade var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+}
+
+@keyframes route-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-rise));
+  }
+}
+
+@keyframes route-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root > [data-route-enter] {
+    animation: none;
+  }
+}

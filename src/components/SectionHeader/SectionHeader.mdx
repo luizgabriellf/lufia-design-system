@@ -1,0 +1,84 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./SectionHeader.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="SectionHeader"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The title row of one section of a page: a heading, an optional description and the section's actions. `PageHeader` is for the top of a page, this is for the blocks inside it.
+
+<Canvas of={Stories.WithLink} />
+
+### Usage
+
+```tsx
+import { SectionHeader } from "@lufia/design-system/components/SectionHeader";
+
+<section aria-labelledby="recent-title">
+  <SectionHeader
+    title="Recent activity"
+    titleId="recent-title"
+    description="The last five changes."
+    actions={<Link href="/activity">View all</Link>}
+  />
+  {/* the section content */}
+</section>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Default} />
+<Canvas of={Stories.WithDescription} />
+<Canvas of={Stories.WithButtons} />
+<Canvas of={Stories.LongTitle} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- `title` is a heading, level 2 by default. Set `headingLevel` to keep the page outline in order (a section inside a card is usually a 3).
+- Give the heading an id with `titleId` and point the section at it with `aria-labelledby`, so the section is a named region.
+- Actions follow the heading in the reading order and wrap under the text on narrow screens.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Above a list, a chart or a table inside a page.
+- To pair a title with a "View all" link or a few actions.
+
+### When not to use
+
+- The title of a page: use `PageHeader`.
+- The title of a bordered surface: use `Card` with `title`, `description` and `headerAction`.
+
+</Section>

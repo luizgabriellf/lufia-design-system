@@ -48,6 +48,17 @@
   overflow-wrap: anywhere;
 }
 
+.heading {
+  min-inline-size: 0;
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
 .action {
   position: relative;
   z-index: 1;
@@ -64,6 +75,11 @@
 
 .header + .body {
   padding-block-start: 0;
+}
+
+/* Flush body: edge to edge, for lists and tables that bring their own row padding. */
+.root[data-flush] > .body {
+  padding: 0;
 }
 
 .footer {

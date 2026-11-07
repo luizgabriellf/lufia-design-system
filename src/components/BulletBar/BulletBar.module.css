@@ -1,0 +1,78 @@
+.root {
+  --chart-color: var(--lufia-color-accent-default);
+
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 0.75rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-border-subtle);
+}
+
+.root[data-tone="success"] {
+  --chart-color: var(--lufia-color-status-success-fg);
+}
+
+.root[data-tone="warning"] {
+  --chart-color: var(--lufia-color-status-warning-fg);
+}
+
+.root[data-tone="danger"] {
+  --chart-color: var(--lufia-color-status-danger-solid);
+}
+
+.root[data-tone="neutral"] {
+  --chart-color: var(--lufia-color-text-subtle);
+}
+
+.fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  max-inline-size: 100%;
+  min-inline-size: 0.125rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--chart-color);
+  transform-origin: left center;
+  animation: bullet-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) both;
+}
+
+.fill:dir(rtl) {
+  transform-origin: right center;
+}
+
+.tick {
+  position: absolute;
+  inset-block: -0.25rem;
+  inline-size: 0.1875rem;
+  margin-inline-start: calc(0.1875rem / -2);
+  border-radius: var(--lufia-radius-xs);
+  background: var(--lufia-color-text-default);
+}
+
+@keyframes bullet-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root {
+    border: var(--lufia-border-width-thin) solid CanvasText;
+  }
+
+  .fill {
+    background: Highlight;
+  }
+
+  .tick {
+    background: CanvasText;
+  }
+}

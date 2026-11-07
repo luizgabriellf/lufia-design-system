@@ -20,10 +20,12 @@ accessibility note.
 
 - **Design tokens** in the W3C DTCG format, built with Style Dictionary into `--lufia-*` CSS custom properties, a typed
   TypeScript map and JSON. Primitive and semantic layers, light, dark and `forced-colors`.
+- **Dashboard primitives**: `StatTile`, a small SVG chart kit (`Sparkline`, `BarList`, `BulletBar`, `ProgressBar`), `SectionHeader`,
+  `AttentionList` and `ActivityList`, with no chart library.
 - **Components** in React 19, styled with CSS Modules that read only semantic tokens, safe for Server Components. Every
   user-facing string is a prop, so the package carries no i18n of its own.
 - **Motion**: duration, easing and distance tokens (`--lufia-motion-*`) that collapse under `prefers-reduced-motion`,
-  five small primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight) and a `lufia-verify-motion` CLI
+  seven small primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight, Stagger, RouteTransition) and a `lufia-verify-motion` CLI
   that checks your own source against the [motion rules](docs/MOTION.md).
 - **Accessibility as a gate**: WCAG 2.2 AA contrast checked in CI for every theme and mode, `vitest-axe` on every component,
   keyboard behaviour documented per component.

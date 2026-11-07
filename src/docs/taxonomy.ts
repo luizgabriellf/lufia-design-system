@@ -128,6 +128,11 @@ export const ENTRIES: Entry[] = [
   ),
   c("NavRow", "Navigation", "A row that links to a destination, for lists of places and settings."),
   c("Pagination", "Navigation", "Previous, next and numbered pages for long lists."),
+  c(
+    "SectionHeader",
+    "Navigation",
+    "The title row of one section of a page: heading, description and actions.",
+  ),
   c("Stepper", "Navigation", "Shows progress through a short, ordered flow."),
 
   c("Card", "Data display", "A bordered surface that groups related content, optionally interactive."),
@@ -139,6 +144,21 @@ export const ENTRIES: Entry[] = [
     "Data display",
     "A high-signal card for deadlines and risk, with a tone mark and an optional action.",
   ),
+  c(
+    "StatTile",
+    "Data display",
+    "A key figure with its label, change and hint, optionally a link to its detail.",
+  ),
+  c("Sparkline", "Data display", "A word-sized trend chart with no axes, drawn in SVG."),
+  c("BarList", "Data display", "Horizontal bars with the name and the value as text, on one shared scale."),
+  c("BulletBar", "Data display", "A value as a bar against a target tick, comparable across rows."),
+  c("ProgressBar", "Data display", "A determinate progress bar with a native progressbar role."),
+  c(
+    "AttentionList",
+    "Data display",
+    "A short list of items that need a decision, with a tone bar and an action.",
+  ),
+  c("ActivityList", "Data display", "A feed of what happened with its time, optionally on a timeline rail."),
   c("StatusTimeline", "Data display", "A vertical timeline of states with their dates."),
   c("TableToolbar", "Data display", "The search, filter and action row above a table."),
   c(
@@ -173,6 +193,20 @@ export const ENTRIES: Entry[] = [
   ),
   c("Collapse", "Motion", "Animates the height of content that opens and closes.", undefined, "motion"),
   c("Reveal", "Motion", "Fades and lifts content in as it enters, once.", undefined, "motion"),
+  c(
+    "RouteTransition",
+    "Motion",
+    "Fades the content region in when the page changes, with no router dependency.",
+    undefined,
+    "motion",
+  ),
+  c(
+    "Stagger",
+    "Motion",
+    "Children that enter one after another, capped in length and still under reduced motion.",
+    undefined,
+    "motion",
+  ),
   c(
     "Skeleton",
     "Motion",

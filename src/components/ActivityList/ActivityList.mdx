@@ -1,0 +1,93 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ActivityList.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ActivityList"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A feed of what happened, newest first: a title, a line of context, the time and an optional action per entry, with an optional timeline rail.
+
+<Canvas of={Stories.Timeline} />
+
+### Usage
+
+```tsx
+import { ActivityList } from "@lufia/design-system/components/ActivityList";
+
+<ActivityList
+  aria-label="Recent activity"
+  timeline
+  items={[
+    {
+      id: "1",
+      title: "Report published",
+      meta: "By Ana",
+      time: "2 h ago",
+      dateTime: "2026-03-12T10:00:00Z",
+      tone: "success",
+    },
+    { id: "2", title: "Export failed", time: "Yesterday", tone: "danger", toneLabel: "Failed" },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Default} />
+<Canvas of={Stories.SingleEntry} />
+<Canvas of={Stories.LongText} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.InsideCard} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- It is an ordered list (`ol`): the order is the meaning. Name it with `aria-label` or `aria-labelledby`.
+- Pass `dateTime` (ISO 8601) and the time renders as a `<time>` element. `time` itself is already formatted, in your language.
+- The rail and markers are decorative (`aria-hidden`); the tone is reinforcement. Set `toneLabel` so a state such as "Failed" is read before the title.
+- The rail uses logical properties, so it flips in right-to-left layouts.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Recent changes to a workspace, a record or an account.
+- A feed where each entry is one event with a time.
+
+### When not to use
+
+- Things that need a decision: use `AttentionList`.
+- The states of one obligation, with deadlines and inputs: use `StatusTimeline`.
+- Long histories: link to a full page or a table.
+
+</Section>

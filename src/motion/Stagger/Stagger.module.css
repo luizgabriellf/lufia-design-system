@@ -1,0 +1,23 @@
+/* One step is a quarter of the instant token (30 ms), the enter duration and easing are tokens too. Everything collapses
+   under reduced motion, which is also switched off explicitly below. The keyframes animate `from` only. */
+.root > * {
+  animation: stagger-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation-delay: calc(var(--stagger-index, 0) * var(--lufia-motion-duration-instant) / 4);
+}
+
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-rise));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root > * {
+    animation: none;
+  }
+}
+
+.root[data-reduced] > * {
+  animation: none;
+}

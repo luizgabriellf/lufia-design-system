@@ -1,0 +1,95 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./AttentionList.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="AttentionList"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A short list of things that need a decision: each row has a tone bar, a title, a line of context and one action.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { AttentionList } from "@lufia/design-system/components/AttentionList";
+
+<AttentionList
+  aria-label="Needs attention"
+  items={[
+    {
+      id: "contract",
+      tone: "danger",
+      toneLabel: "Overdue",
+      title: "Renew the supplier contract",
+      meta: "3 days overdue",
+      action: (
+        <Button size="sm" variant="ghost">
+          Open
+        </Button>
+      ),
+    },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.SingleItem} />
+<Canvas of={Stories.NoActions} />
+<Canvas of={Stories.LongText} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.InsideCard} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- It is a `ul`. Name it with `aria-label` or `aria-labelledby`.
+- The tone bar and tint are reinforcement. Set `toneLabel` ("Overdue") and it is read before the title, so the urgency never rests on colour.
+- The action is your own link or button, so it keeps its own name and focus ring. Name it so it makes sense out of context, or include the subject.
+- In `forced-colors` mode the tone bar is a border and stays visible.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The few items that need action first, at the top of a dashboard.
+- Rows where each item has one clear next step.
+
+### When not to use
+
+- A log of what happened: use `ActivityList`.
+- Long lists to browse or filter: use a table.
+- An empty list: it renders nothing, so use an `EmptyState` or leave the section out.
+
+</Section>

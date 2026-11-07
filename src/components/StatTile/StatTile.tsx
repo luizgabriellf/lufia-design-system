@@ -1,0 +1,148 @@
+import { useId, type HTMLAttributes, type MouseEventHandler, type ReactNode } from "react";
+import { Skeleton } from "../../motion/Skeleton";
+import { LufiaLink } from "../LufiaProvider";
+import { VisuallyHidden } from "../VisuallyHidden";
+import styles from "./StatTile.module.css";
+
+export type StatTileTone = "neutral" | "success" | "warning" | "danger";
+export type StatTileTrend = "up" | "down" | "flat";
+
+export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
+  /** What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. */
+  label: ReactNode;
+  /** The figure, already formatted. Pass an `AnimatedNumber` to count it up. */
+  value: ReactNode;
+  /** `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. */
+  tone?: StatTileTone;
+  /** The change, already formatted ("+12% vs last week"). */
+  delta?: ReactNode;
+  /** Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. */
+  trend?: StatTileTrend;
+  /** Direction in words for screen readers ("Up"). Read before `delta`. */
+  trendLabel?: string;
+  /** Colour of `delta`. A rise is not always good news, so it is independent of `trend`. */
+  deltaTone?: StatTileTone;
+  /** A line of context under the figure. */
+  hint?: ReactNode;
+  /** A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. */
+  sparkline?: ReactNode;
+  /** Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. */
+  href?: string;
+  /** Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. */
+  onClick?: MouseEventHandler<HTMLElement>;
+  /** Shows skeletons in place of the figure and the lines under it, and disables the link or button. */
+  loading?: boolean;
+  /** Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. */
+  loadingLabel?: string;
+};
+
+const ARROWS: Record<StatTileTrend, string> = {
+  up: "M3 10l5-5 5 5",
+  down: "M3 6l5 5 5-5",
+  flat: "M3 8h10",
+};
+
+function TrendArrow({ trend }: { trend: StatTileTrend }) {
+  return (
+    <svg className={styles.arrow} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <path
+        d={ARROWS[trend]}
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * A key figure with its label: the tile of a dashboard.
+ *
+ * The interactive variant uses the stretched-link pattern, like `Card`: the label is the one link (or button) and its
+ * `::after` covers the tile, so the tile is one tab stop. The figure, change and hint are attached to it as its
+ * description, so a screen reader announces "label, link, 12, up 3 since yesterday" without reading the tile twice.
+ * Hover and press are small `transform` moves from motion tokens, removed under reduced motion.
+ */
+export function StatTile({
+  label,
+  value,
+  tone = "neutral",
+  delta,
+  trend,
+  trendLabel,
+  deltaTone = "neutral",
+  hint,
+  sparkline,
+  href,
+  onClick,
+  loading = false,
+  loadingLabel,
+  className,
+  ...rest
+}: StatTileProps) {
+  const id = useId();
+  const valueId = `${id}-value`;
+  const deltaId = `${id}-delta`;
+  const hintId = `${id}-hint`;
+  const hasDelta = delta !== undefined && delta !== null;
+  const hasHint = hint !== undefined && hint !== null;
+  const interactive = !loading && (href !== undefined || onClick !== undefined);
+  const describedBy = [valueId, hasDelta ? deltaId : null, hasHint ? hintId : null].filter(Boolean).join(" ");
+
+  let labelNode: ReactNode = label;
+  if (interactive && href !== undefined) {
+    labelNode = (
+      <LufiaLink href={href} className={styles.link} onClick={onClick} aria-describedby={describedBy}>
+        {label}
+      </LufiaLink>
+    );
+  } else if (interactive) {
+    labelNode = (
+      <button type="button" className={styles.link} onClick={onClick} aria-describedby={describedBy}>
+        {label}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      {...rest}
+      className={[styles.root, className].filter(Boolean).join(" ")}
+      data-tone={tone}
+      data-interactive={interactive || undefined}
+      data-loading={loading || undefined}
+      aria-busy={loading || undefined}
+    >
+      <div className={styles.body}>
+        <span className={styles.label}>{labelNode}</span>
+        <span className={styles.valueRow}>
+          <span id={valueId} className={styles.value}>
+            {loading ? <Skeleton width="4.5rem" height="1.75rem" label={loadingLabel} /> : value}
+          </span>
+          {sparkline && !loading ? <span className={styles.spark}>{sparkline}</span> : null}
+        </span>
+        {loading ? (
+          hasDelta || hasHint ? (
+            <Skeleton width="70%" height="0.875rem" />
+          ) : null
+        ) : (
+          <>
+            {hasDelta ? (
+              <span id={deltaId} className={styles.delta} data-tone={deltaTone} data-trend={trend}>
+                {trend ? <TrendArrow trend={trend} /> : null}
+                {trendLabel ? <VisuallyHidden>{trendLabel} </VisuallyHidden> : null}
+                {delta}
+              </span>
+            ) : null}
+            {hasHint ? (
+              <span id={hintId} className={styles.hint}>
+                {hint}
+              </span>
+            ) : null}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

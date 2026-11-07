@@ -1,0 +1,65 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { ProgressBar } from "./ProgressBar";
+
+const meta = {
+  title: "Components/Data display/ProgressBar",
+  component: ProgressBar,
+  parameters: { layout: "padded" },
+  args: { value: 45, label: "Storage used" },
+  argTypes: {
+    tone: { control: "inline-radio", options: ["accent", "success", "warning", "danger", "neutral"] },
+    size: { control: "inline-radio", options: ["sm", "md"] },
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "min(100%, 20rem)" }}>
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof ProgressBar>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+export const Small: Story = { args: { size: "sm" } };
+export const Empty: Story = { args: { value: 0 } };
+export const Complete: Story = { args: { value: 100, tone: "success" } };
+export const Warning: Story = { args: { value: 85, tone: "warning" } };
+export const Danger: Story = { args: { value: 97, tone: "danger" } };
+export const CustomRange: Story = {
+  args: { value: 12, max: 40, valueText: "12 of 40 steps", label: "Steps done" },
+};
+export const WithVisibleFigure: Story = {
+  render: (args) => (
+    <div style={{ display: "grid", gap: "0.375rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+        <span>Storage used</span>
+        <span>{args.value}%</span>
+      </div>
+      <ProgressBar {...args} />
+    </div>
+  ),
+};
+export const RightToLeft: Story = {
+  decorators: [
+    (Story) => (
+      <div dir="rtl" style={{ inlineSize: "min(100%, 20rem)" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const AllThemes: Story = {
+  decorators: [],
+  render: (args) => (
+    <ThemeMatrix>
+      <div style={{ display: "grid", gap: "0.75rem" }}>
+        <ProgressBar {...args} />
+        <ProgressBar {...args} value={90} tone="danger" label="Quota" />
+      </div>
+    </ThemeMatrix>
+  ),
+};

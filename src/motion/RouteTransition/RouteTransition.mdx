@@ -1,0 +1,83 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./RouteTransition.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="RouteTransition"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The content region of an app: when the page changes, the new content enters with a short fade and rise. It does not depend on any router.
+
+<Canvas of={Stories.Rise} />
+
+### Usage
+
+```tsx
+import { RouteTransition } from "@lufia/design-system/motion";
+
+// With any router: pass the current path as the key.
+<RouteTransition transitionKey={pathname}>
+  <Banner data-route-static="" />
+  {children}
+</RouteTransition>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Fade} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Rise} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- Nothing is remounted: the region, its layouts and providers (toasts, filters, form state) keep their state. Only a marker attribute is set on the direct children, after React commits and before the browser paints, so the old page never animates.
+- The first render, a refresh and any change that keeps the same `transitionKey` play nothing.
+- Children with `data-route-static` and `position: fixed` children are skipped: a transform on them would restart a banner or change what a fixed element is fixed to.
+- Under `prefers-reduced-motion` nothing is marked, so the page is simply there.
+- Focus and scroll are not touched. Move focus to the new page yourself, as your router recommends.
+
+### Notes
+
+- Use `variant="fade"` when the new page replaces a skeleton that already holds its exact layout; a rise would shift it twice.
+- It is a client component and only reads `transitionKey`, so it works with any router or with plain state.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The main content region of an app, keyed by the pathname.
+- Tabbed or stepped content that behaves like pages.
+
+### When not to use
+
+- Persistent chrome such as headers and sidebars: keep them outside the region.
+- Content that changes with search params or data refreshes: keep the key stable.
+- Single elements that appear and disappear: use `Reveal`.
+
+</Section>
