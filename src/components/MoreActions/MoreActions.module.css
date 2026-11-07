@@ -112,19 +112,39 @@
 
 /* When every item is narrow-only the button itself is needed on narrow pages only. */
 @media (width >= 48rem) {
-  .root[data-narrow-only] {
+  .root[data-narrow-only]:not([data-narrow-scope="container"]) {
     display: none;
   }
 }
 
 @media (width < 48rem) {
-  .entry[data-narrow-only] {
+  .entry[data-narrow-only]:not([data-narrow-scope="container"]) {
     display: block;
   }
 
   .item {
     min-block-size: 3rem;
   }
+}
+
+/* Container scope: the nearest ancestor with `container-type: inline-size` decides, with no name and a fixed 50rem threshold
+   (a container condition cannot read a variable). A popover stays inside that container, so the query reaches it. */
+@container (width >= 50rem) {
+  .root[data-narrow-only][data-narrow-scope="container"] {
+    display: none;
+  }
+}
+
+@container (width < 50rem) {
+  .entry[data-narrow-only][data-narrow-scope="container"] {
+    display: block;
+  }
+}
+
+/* A sheet is portaled to the body and has left the container, so the query cannot see it: in container scope a sheet shows
+   every narrow-only item. The sheet is the presentation below 60rem, where the secondary actions may be collapsed or not. */
+.sheetList .entry[data-narrow-only][data-narrow-scope="container"] {
+  display: block;
 }
 
 /* Sheet presentation. The layer is portaled to the body and covers the whole viewport, so the backdrop leaves no gap for an

@@ -232,6 +232,37 @@ test.describe("page actions breakpoints", () => {
   }
 });
 
+test.describe("page actions container collapse", () => {
+  for (const [story, collapsed] of [
+    ["container-narrow", true],
+    ["container-wide", false],
+  ] as const) {
+    test(`a ${collapsed ? "49rem" : "51rem"} host ${collapsed ? "collapses" : "keeps"} the secondary actions`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 800 });
+      await openStory(page, `components-actions-pageactions--${story}`);
+      const share = page.getByRole("button", { name: "Share" });
+      const more = page.getByRole("button", { name: "More actions" });
+      if (collapsed) await expect(share).toBeHidden();
+      else await expect(share).toBeVisible();
+      await more.click();
+      const item = page.getByRole("menuitem", { name: "Share" });
+      if (collapsed) await expect(item).toBeVisible();
+      else await expect(item).toBeHidden();
+    });
+  }
+
+  test("a narrow-only item is listed in the sheet at 390px even in a wide host", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-actions-pageactions--container-wide");
+    // The 51rem host keeps the secondary actions as buttons, yet the sheet has left the container and lists them.
+    await expect(page.getByRole("button", { name: "Share", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "More actions" }).click();
+    await expect(page.getByRole("menuitem", { name: "Share" })).toBeVisible();
+  });
+});
+
 test.describe("introduction page", () => {
   test.use({ reducedMotion: "no-preference" });
 

@@ -51,6 +51,31 @@ its stacking order above an app's own fixed bar with `--lufia-overlay-z`.
 
 <Canvas of={Stories.Phone390} />
 
+### Collapse by container
+
+`collapse="container"` makes the secondary actions follow the width of a host container instead of the page: below 50rem
+they move into the menu, from 50rem they are buttons. The host (any ancestor) must declare `container-type: inline-size`;
+the query uses the nearest one, and with none the secondary actions never collapse. There is no container name and no
+threshold prop, because a container condition cannot read a variable. It is pure CSS, so there is no flash on first paint,
+and it combines with `hideBelow` and `primaryPlacement`, which stay viewport rules. A popover is inside the container, so
+the query reaches it. A sheet (viewport below 60rem) is portalled to the body and has left the container, so in this mode
+it always lists the secondary actions.
+
+```tsx
+<div style={{ containerType: "inline-size" }}>
+  <PageActions collapse="container" moreLabel="More actions" secondary={secondary} overflow={overflow} />
+</div>
+```
+
+<Canvas of={Stories.ContainerNarrow} />
+
+### Data attributes on actions
+
+`attributes` on an action (`{ "data-tour": "share" }`) renders those `data-*` attributes on its button or link and, for a
+secondary action, on its overflow menu item, so tours and tests can target one action without a label lookup.
+
+<Canvas of={Stories.WithDataAttributes} />
+
 ### Hints for disabled actions
 
 `hint` on an action (primary, secondary or a `MoreActions` item) is the native tooltip and the description of the control

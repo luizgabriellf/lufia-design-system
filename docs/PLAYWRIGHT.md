@@ -22,6 +22,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Theme: the modal surface background (computed style) differs between light and dark in both themes, and the primary action colour differs between the default and example-brand themes.
 - Layout: buttons do not overflow horizontally at 320, 390, 768 and 1440 px; the open modal fits the viewport at 320 and 1440 px.
 - Page actions breakpoints: `hideBelow`, `primaryPlacement="external"` and the secondary collapse flip at 959/960 and 767/768 px.
+- Page actions container collapse: a 49rem host collapses the secondary actions into the menu and a 51rem host keeps them; a narrow-only item is listed in the sheet at 390 px even in a wide host.
 - Page actions sheet: at 390 px the `MoreActions` sheet's backdrop covers the viewport, the sheet is anchored to the bottom above a fixed high-z-index dock, a long list scrolls inside it, and Escape returns focus to the trigger.
 
 Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.

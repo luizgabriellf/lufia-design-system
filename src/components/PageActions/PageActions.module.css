@@ -7,7 +7,16 @@
 
 /* Below this width the secondary actions live in the overflow menu (they are flagged `narrowOnly` there). */
 @media (width < 48rem) {
-  .root > .secondary {
+  .root:not([data-collapse="container"]) > .secondary {
+    display: none;
+  }
+}
+
+/* `collapse="container"`: the nearest ancestor with `container-type: inline-size` decides. The host must declare it; with none
+   the condition is false and nothing collapses. No container name and a fixed threshold, since a container condition cannot
+   read a variable. */
+@container (width < 50rem) {
+  .root[data-collapse="container"] > .secondary {
     display: none;
   }
 }

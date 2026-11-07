@@ -54,6 +54,34 @@ export const Small: Story = { args: { size: "sm" } };
 export const ExternalPrimary: Story = { args: { primaryPlacement: "external" } };
 /** The whole row is hidden below 60rem. Resize the canvas to see it disappear. */
 export const HiddenBelowMedium: Story = { args: { hideBelow: "medium" } };
+/**
+ * `collapse="container"`: the secondary actions follow the width of the nearest ancestor that declares
+ * `container-type: inline-size`, not the page. Here the host is 49rem wide, below the 50rem threshold, so they sit in the menu.
+ */
+export const ContainerNarrow: Story = {
+  args: { collapse: "container" },
+  render: (args) => (
+    <div data-testid="host" style={{ containerType: "inline-size", inlineSize: "49rem" }}>
+      <PageActions {...args} />
+    </div>
+  ),
+};
+/** The same host at 51rem: the secondary actions are buttons again, whatever the page width. */
+export const ContainerWide: Story = {
+  args: { collapse: "container" },
+  render: (args) => (
+    <div data-testid="host" style={{ containerType: "inline-size", inlineSize: "51rem" }}>
+      <PageActions {...args} />
+    </div>
+  ),
+};
+/** `attributes` puts `data-*` on the button and on its menu item, for tours and tests. */
+export const WithDataAttributes: Story = {
+  args: {
+    primary: { ...primary, attributes: { "data-tour": "new" } },
+    secondary: [{ key: "share", label: "Share", attributes: { "data-tour": "share" } }],
+  },
+};
 export const InPageHeader: Story = {
   render: (args) => (
     <PageHeader
