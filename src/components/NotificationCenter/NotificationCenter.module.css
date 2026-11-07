@@ -1,0 +1,201 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+
+  /* An explicit height stops a stretching flex parent from making the root taller than the bell, which the popover hangs from. */
+  block-size: fit-content;
+}
+
+/* The count rides the bell's corner. It repeats what the accessible name already says, so it is hidden from assistive technology. */
+.badge {
+  position: absolute;
+  inset-block-start: 0.125rem;
+  inset-inline-end: 0.125rem;
+  box-sizing: border-box;
+  min-inline-size: 1.125rem;
+  padding: 0 0.3125rem;
+  border: 0.125rem solid var(--lufia-color-bg-surface-solid);
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-accent-default);
+  color: var(--lufia-color-text-on-accent);
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--lufia-font-weight-bold);
+  line-height: 0.875rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+.badge[data-pop="a"] {
+  animation: badge-pop-a var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
+.badge[data-pop="b"] {
+  animation: badge-pop-b var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
+@keyframes badge-pop-a {
+  from {
+    opacity: 0.4;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes badge-pop-b {
+  from {
+    opacity: 0.4;
+    transform: scale(0.6);
+  }
+}
+
+.popover {
+  position: absolute;
+  inset-block-start: calc(100% + 0.5rem);
+  z-index: var(--lufia-z-dropdown);
+  display: flex;
+  box-sizing: border-box;
+  inline-size: min(26rem, calc(100vw - 2rem));
+  max-block-size: min(40rem, calc(100dvh - 5rem));
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-panel);
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  transform-origin: top right;
+  animation: popover-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+/* It leaves faster than it came, and on its way out it no longer takes the pointer. */
+.popover[data-state="closed"] {
+  pointer-events: none;
+  animation: popover-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+.popover:focus {
+  outline: 2px solid transparent;
+}
+
+.root[data-align="end"] .popover {
+  inset-inline-end: 0;
+}
+
+.root[data-align="start"] .popover {
+  inset-inline-start: 0;
+  transform-origin: top left;
+}
+
+/* `transform-origin` has no logical form: the corner under the bell is on the other side in right-to-left text. */
+.root[data-align="end"] .popover:dir(rtl) {
+  transform-origin: top left;
+}
+
+.root[data-align="start"] .popover:dir(rtl) {
+  transform-origin: top right;
+}
+
+/* It grows out of the bell's corner. The enter keyframes animate `from` only, so the resting state is the open panel and a
+   disabled animation leaves it visible. */
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
+}
+
+@keyframes popover-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* Sheet presentation, the same layer as the `MoreActions` sheet. The layer is portaled to the body and covers the viewport,
+   so the backdrop leaves no gap for an app's dock or bar. Theming hooks, all optional: --lufia-overlay-z,
+   --lufia-sheet-backdrop, --lufia-sheet-max-block-size, --lufia-sheet-max-inline-size. */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--lufia-overlay-z, calc(var(--lufia-z-modal) + 1));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--lufia-sheet-backdrop, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+  animation: sheet-fade var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.sheet {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  inline-size: 100%;
+  max-inline-size: var(--lufia-sheet-max-inline-size, 36rem);
+  max-block-size: var(--lufia-sheet-max-block-size, min(85dvh, 40rem));
+  flex-direction: column;
+  padding-block-end: calc(0rem + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-block-end: 0;
+  border-start-start-radius: var(--lufia-radius-panel);
+  border-start-end-radius: var(--lufia-radius-panel);
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.sheet:focus {
+  outline: 2px solid transparent;
+}
+
+.grabber {
+  flex: none;
+  align-self: center;
+  inline-size: 2.5rem;
+  block-size: 0.25rem;
+  margin-block-start: 0.5rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-border-strong);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover,
+  .popover[data-state="closed"],
+  .backdrop,
+  .sheet,
+  .badge[data-pop] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .popover,
+  .sheet {
+    border-color: CanvasText;
+  }
+
+  .badge {
+    border-color: Canvas;
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

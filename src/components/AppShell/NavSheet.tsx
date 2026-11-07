@@ -8,7 +8,7 @@ import { useLufia } from "../LufiaProvider";
 import { useNativeDialog } from "../Modal/useNativeDialog";
 import { CloseGlyph } from "./icons";
 import { NavSurfaceContext } from "./navigation";
-import { usePresence } from "./usePresence";
+import { usePresence } from "../internal/usePresence";
 import { useSheetDrag } from "./useSheetDrag";
 import styles from "./NavSheet.module.css";
 

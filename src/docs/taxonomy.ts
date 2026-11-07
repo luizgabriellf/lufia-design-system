@@ -116,6 +116,12 @@ export const ENTRIES: Entry[] = [
     apg("Alert dialog", "alertdialog"),
   ),
   c(
+    "NotificationCenter",
+    "Overlays",
+    "A bell with an unread count that opens a panel of notifications: a popover on wide pages, a sheet on narrow ones.",
+    apg("Tabs", "tabs"),
+  ),
+  c(
     "CommandPalette",
     "Overlays",
     "A keyboard-first launcher that filters commands and pages.",

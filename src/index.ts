@@ -25,6 +25,7 @@ export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/MoreActions";
 export * from "./components/NavRow";
+export * from "./components/NotificationCenter";
 export * from "./components/PageActions";
 export * from "./components/PageHeader";
 export * from "./components/Pagination";
