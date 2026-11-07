@@ -1,0 +1,33 @@
+name: Temporary AI formatter
+on:
+  push:
+    branches: [feat/agent-native-discovery]
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+        env:
+          HUSKY: "0"
+      - name: Format candidate files
+        run: node node_modules/prettier/bin/prettier.cjs --write scripts/ai/query.mjs scripts/ai/query.test.mjs
+      - name: Emit formatted source for synchronization
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          for (const name of ["scripts/ai/query.mjs", "scripts/ai/query.test.mjs"]) {
+            console.log("LUFIA_FMT_START " + name);
+            console.log(fs.readFileSync(name).toString("base64"));
+            console.log("LUFIA_FMT_END " + name);
+          }
+          NODE
