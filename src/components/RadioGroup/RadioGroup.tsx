@@ -15,6 +15,16 @@ export type RadioOption = {
   label: ReactNode;
   /** A line under the label that says more about this choice. */
   description?: ReactNode;
+  /**
+   * Extra content at the inline end of the option (a price, a badge, a count). Read as part of the option's description.
+   * It sits inside a button, so it must be non-interactive, phrasing content.
+   */
+  meta?: ReactNode;
+  /**
+   * Extra content under the description (a list of features, a note). Read as part of the option's description. Same
+   * limits as `meta`: non-interactive, phrasing content.
+   */
+  content?: ReactNode;
   disabled?: boolean;
 };
 
@@ -37,6 +47,12 @@ export type RadioGroupProps = Omit<
   name?: string;
   /** `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. */
   orientation?: "vertical" | "horizontal";
+  /**
+   * `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries
+   * `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the
+   * same. Defaults to `"default"`.
+   */
+  variant?: "default" | "card";
   /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. */
   requiredLabel?: string;
   /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
@@ -46,7 +62,8 @@ export type RadioGroupProps = Omit<
 
 /**
  * One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the
- * arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description.
+ * arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description, and the `card`
+ * variant draws the options as bordered rows with room for `meta` and `content`.
  */
 export function RadioGroup({
   label,
@@ -60,6 +77,7 @@ export function RadioGroup({
   onValueChange,
   name,
   orientation = "vertical",
+  variant = "default",
   requiredLabel: requiredLabelProp,
   requiredMessage,
   className,
@@ -124,6 +142,7 @@ export function RadioGroup({
         aria-disabled={disabled || undefined}
         className={styles.group}
         data-orientation={orientation}
+        data-variant={variant}
         onKeyDown={(event) => {
           rest.onKeyDown?.(event);
           if (!event.defaultPrevented) keys.onKeyDown(event);
@@ -141,7 +160,15 @@ export function RadioGroup({
               role="radio"
               aria-checked={checked}
               aria-labelledby={`${optionId}-label`}
-              aria-describedby={option.description ? `${optionId}-description` : undefined}
+              aria-describedby={
+                [
+                  option.description ? `${optionId}-description` : undefined,
+                  option.content ? `${optionId}-content` : undefined,
+                  option.meta ? `${optionId}-meta` : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
+              }
               data-radio-index={index}
               disabled={isDisabled}
               tabIndex={option.value === keys.tabbable ? 0 : -1}
@@ -158,7 +185,17 @@ export function RadioGroup({
                     {option.description}
                   </span>
                 ) : null}
+                {option.content ? (
+                  <span id={`${optionId}-content`} className={styles.content}>
+                    {option.content}
+                  </span>
+                ) : null}
               </span>
+              {option.meta ? (
+                <span id={`${optionId}-meta`} className={styles.meta}>
+                  {option.meta}
+                </span>
+              ) : null}
             </button>
           );
         })}

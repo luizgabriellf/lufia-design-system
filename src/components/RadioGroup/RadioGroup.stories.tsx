@@ -33,6 +33,61 @@ export const Required: Story = { args: { required: true, defaultValue: undefined
 export const Invalid: Story = {
   args: { required: true, defaultValue: undefined, error: "Choose a payment method to continue." },
 };
+const plans: RadioOption[] = [
+  {
+    value: "basic",
+    label: "Basic",
+    description: "For a single site.",
+    meta: "9 / month",
+    content: "Two seats, e-mail support.",
+  },
+  {
+    value: "team",
+    label: "Team",
+    description: "For several sites that share one team.",
+    meta: "29 / month",
+    content: "Ten seats, priority support.",
+  },
+  { value: "enterprise", label: "Enterprise", description: "Contact sales.", disabled: true },
+  { value: "free", label: "Free" },
+];
+export const CardVariant: Story = {
+  args: { label: "Plan", options: plans, variant: "card", defaultValue: "team" },
+};
+export const CardHorizontal: Story = {
+  args: { label: "Plan", options: plans, variant: "card", orientation: "horizontal", defaultValue: "basic" },
+};
+export const CardInvalid: Story = {
+  args: {
+    label: "Plan",
+    options: plans,
+    variant: "card",
+    required: true,
+    defaultValue: undefined,
+    error: "Choose a plan to continue.",
+  },
+};
+export const CardLongText: Story = {
+  args: {
+    label: "Plano de subscrição",
+    variant: "card",
+    options: [
+      {
+        value: "a",
+        label: "Plano anual com faturação única e renovação automática no final de cada período",
+        description:
+          "Inclui todas as funcionalidades, atualizações e suporte prioritário por e-mail e telefone.",
+        meta: "1.290,00 € / ano",
+        content: "Cancelável até trinta dias antes da renovação.",
+      },
+      { value: "b", label: "Mensal", meta: "129 € / mês" },
+    ],
+  },
+};
+export const CardPhone320: Story = {
+  args: { label: "Plan", options: plans, variant: "card", defaultValue: "team" },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const Disabled: Story = { args: { disabled: true } };
 export const Horizontal: Story = {
   args: {
@@ -69,6 +124,9 @@ export const AllThemes: Story = {
       <RadioGroup {...args} />
       <div style={{ marginBlockStart: "1rem" }}>
         <RadioGroup {...args} label="Invalid" defaultValue={undefined} error="Choose one to continue." />
+      </div>
+      <div style={{ marginBlockStart: "1rem" }}>
+        <RadioGroup {...args} label="Plan" options={plans} variant="card" defaultValue="team" />
       </div>
     </ThemeMatrix>
   ),
