@@ -6,3 +6,5 @@ coverage/
 src/tokens/generated/
 *.log
 .env*
+playwright-report/
+test-results/
