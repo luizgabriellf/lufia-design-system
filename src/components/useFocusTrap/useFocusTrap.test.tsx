@@ -96,6 +96,7 @@ describe("useFocusTrap", () => {
         <button type="button" tabIndex={-2}>
           Programmatic only
         </button>
+        {/* eslint-disable-next-line jsx-a11y/tabindex-no-positive -- the test covers positive tabindex order */}
         <button type="button" disabled tabIndex={2}>
           Disabled with tabindex
         </button>
@@ -114,9 +115,11 @@ describe("useFocusTrap", () => {
       return (
         <div ref={ref} role="dialog" aria-label="Ordered" tabIndex={-1}>
           <button type="button">Normal first</button>
+          {/* eslint-disable-next-line jsx-a11y/tabindex-no-positive -- the test covers positive tabindex order */}
           <button type="button" tabIndex={3}>
             Priority three
           </button>
+          {/* eslint-disable-next-line jsx-a11y/tabindex-no-positive -- the test covers positive tabindex order */}
           <button type="button" tabIndex={1}>
             Priority one
           </button>
