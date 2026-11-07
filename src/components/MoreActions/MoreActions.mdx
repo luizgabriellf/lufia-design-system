@@ -76,6 +76,27 @@ The sheet registers on the shared overlay stack (through `useFocusTrap`), so a `
 
 <Canvas of={Stories.SheetOverDock} story={{ inline: false, height: "30rem" }} />
 
+### Open a dialog from a menu item
+
+An action that needs a dialog or a form does not need the content inside the menu. Keep the state in the caller, render
+the dialog next to `MoreActions`, and open it from `onSelect`. The dialog stays mounted after the menu closes because the
+menu never owns it. `MoreActions` closes first and puts focus back on its button before `onSelect` runs (for a sheet, once
+the sheet is gone), so a `Modal` opened by the action takes focus and returns it to that button when it closes.
+
+```tsx
+const [renaming, setRenaming] = useState(false);
+
+<MoreActions label="More actions" items={[{ key: "rename", label: "Rename", onSelect: () => setRenaming(true) }]} />
+<Modal open={renaming} onClose={() => setRenaming(false)} title="Rename record">
+  <RenameForm />
+</Modal>
+```
+
+A native `<dialog>` works the same way: call `showModal()` from `onSelect`. Several actions can share one dialog by
+keeping which action was chosen in the caller's state.
+
+<Canvas of={Stories.OpenADialogFromAMenuItem} story={{ inline: false, height: "20rem" }} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />

@@ -6549,6 +6549,10 @@
           {
             "export": "SheetOverDock",
             "id": "components-actions-moreactions--sheet-over-dock"
+          },
+          {
+            "export": "OpenADialogFromAMenuItem",
+            "id": "components-actions-moreactions--open-a-dialog-from-a-menu-item"
           }
         ]
       },

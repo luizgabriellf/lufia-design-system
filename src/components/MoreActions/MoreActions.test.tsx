@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
@@ -6,6 +6,8 @@ import { configureAxe } from "vitest-axe";
 import { axe } from "../../test/axe";
 import { pushLayer, removeLayer } from "../useFocusTrap/layerStack";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
+import { useState } from "react";
+import { Modal } from "../Modal";
 import { MoreActions, type MoreActionItem } from "./MoreActions";
 
 /** jsdom has no layout. Every element gets a box, except those inside a CSS-hidden (`narrowOnly`) entry on a wide page. */
@@ -482,5 +484,44 @@ describe("MoreActions", () => {
       expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
       cleanup();
     });
+  });
+
+  describe("opening a dialog from an item", () => {
+    /** The dialog is owned by the caller, outside the menu, so it stays mounted after the menu closes. */
+    function WithDialog({ presentation }: { presentation: "popover" | "sheet" }) {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <MoreActions
+            label="More actions"
+            presentation={presentation}
+            items={[{ key: "rename", label: "Rename", onSelect: () => setOpen(true) }]}
+          />
+          <Modal open={open} onClose={() => setOpen(false)} title="Rename record">
+            <p>Pick a new name.</p>
+          </Modal>
+        </>
+      );
+    }
+
+    it.each(["popover", "sheet"] as const)(
+      "moves focus into the dialog and back to the trigger when it closes (%s)",
+      async (presentation) => {
+        withLayout();
+        const user = userEvent.setup();
+        render(<WithDialog presentation={presentation} />);
+        const trigger = screen.getByRole("button", { name: "More actions" });
+
+        await user.click(trigger);
+        await user.click(screen.getByRole("menuitem", { name: "Rename" }));
+        const dialog = await screen.findByRole("dialog", { name: "Rename record" });
+        expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+        expect(dialog).toContainElement(document.activeElement as HTMLElement);
+
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(trigger).toHaveFocus();
+      },
+    );
   });
 });
