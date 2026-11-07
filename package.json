@@ -55,14 +55,17 @@
     "verify:motion": "tsx src/cli/verify-motion/cli.ts src",
     "build:ai-docs": "tsx scripts/ai/build.mjs",
     "verify:ai-docs": "tsx scripts/ai/verify.mjs",
-    "storybook": "npm run tokens && storybook dev -p 6006",
+    "storybook": "npm run tokens && storybook dev -p 6006 --host 127.0.0.1",
     "build-storybook": "npm run tokens && storybook build -o storybook-static && tsx scripts/ai/publish.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "test:coverage": "vitest run --passWithNoTests --coverage",
     "check": "npm run typecheck && npm run lint && npm run lint:css && npm run format:check && npm run test && npm run contrast && npm run verify:motion && npm run verify:ai-docs",
     "release": "npm run build && changeset tag",
-    "commitlint": "commitlint"
+    "commitlint": "commitlint",
+    "ai:list": "node scripts/ai/query.mjs list",
+    "ai:search": "node scripts/ai/query.mjs search",
+    "ai:show": "node scripts/ai/query.mjs show"
   },
   "license": "MIT",
   "repository": {
@@ -83,6 +86,7 @@
     "@eslint/js": "9.39.5",
     "@storybook/addon-a11y": "10.6.6",
     "@storybook/addon-docs": "10.6.6",
+    "@storybook/addon-mcp": "10.6.6",
     "@storybook/react-vite": "10.6.6",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",
