@@ -61,6 +61,12 @@ With `name`, the chosen value is submitted with the form.
 
 <Section id="accessibility">
 
+### Form events
+
+When the user chooses a segment (a click or an arrow key), a bubbling `input` Event and then a bubbling `change` Event are dispatched from the hidden input (from the group itself when there is no `name`), after the new value is in the DOM. A native listener on the `<form>` (`form.addEventListener("change", …)`) or a React `onInput` can tell that the user edited it, as with native radios. A React `onChange` on the form does not fire: React ignores hidden inputs for `onChange`, so use `onInput` there. Nothing is dispatched for a `value` that the parent sets, for a form reset, or for choosing what is already chosen. The event waits for the commit that shows the new value, so a controlled parent may accept it later (a transition works too). One edge: if the parent refuses the choice and keeps showing the old value, then later sets that same value, that one change is announced.
+
+A form reset restores the `defaultValue` of the latest render, as native fields do, including when a form action has just changed it.
+
 ### Accessibility
 
 Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) pattern with a visual treatment of
