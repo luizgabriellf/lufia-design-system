@@ -60,9 +60,27 @@ export const LongNames: Story = {
     ],
   },
 };
+export const WithReference: Story = {
+  args: { reference: { amount: 800, label: "Target: 800 per region" } },
+};
+export const ReferenceAboveEveryBar: Story = {
+  args: { reference: { amount: 2000, label: "Target: 2,000 per region" } },
+};
+export const ReferenceLongText: Story = {
+  args: {
+    reference: {
+      amount: 800,
+      label: "Meta mensal acordada com a administração para cada região, revista no início de cada trimestre",
+    },
+  },
+};
+export const HiddenTitle: Story = { args: { titleVisibility: "hidden" } };
 export const AllZero: Story = { args: { rows: [{ key: "a", name: "Nothing yet", value: "0", amount: 0 }] } };
 export const Empty: Story = { args: { rows: [] } };
-export const Phone320: Story = { globals: { viewport: { value: "w320", isRotated: false } } };
+export const Phone320: Story = {
+  args: { reference: { amount: 800, label: "Target: 800 per region" } },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const RightToLeft: Story = {
   decorators: [
     (Story) => (

@@ -1,4 +1,4 @@
-import { useId, type HTMLAttributes, type ReactNode } from "react";
+import { useId, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import type { ChartTone } from "../ChartKit";
 import styles from "./BarList.module.css";
 
@@ -25,6 +25,17 @@ export type BarListProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   rows: readonly BarListRow[];
   /** Closes the list with a total line. */
   total?: { label: ReactNode; value: ReactNode };
+  /**
+   * A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The
+   * `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its
+   * value. The reference counts towards the scale, so a reference above every bar still fits. Off by default.
+   */
+  reference?: { amount: number; label: ReactNode };
+  /**
+   * `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers
+   * only), for a list that sits under a heading of its own. Defaults to `"visible"`.
+   */
+  titleVisibility?: "visible" | "hidden";
 };
 
 /**
@@ -32,21 +43,39 @@ export type BarListProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
  *
  * The text is the accessible data: every name and value is a list item a screen reader reads, and the bars are
  * `aria-hidden` shape on top of it. One scale per list, so rows compare. The draw-in plays once on mount and is removed
- * under reduced motion. Renders nothing when `rows` is empty: show an `EmptyState` instead.
+ * under reduced motion. An optional `reference` adds a dashed tick to every track. Renders nothing when `rows` is empty: show an `EmptyState` instead.
  */
-export function BarList({ title, summary, rows, total, className, ...rest }: BarListProps) {
+export function BarList({
+  title,
+  summary,
+  rows,
+  total,
+  reference,
+  titleVisibility = "visible",
+  className,
+  ...rest
+}: BarListProps) {
   const captionId = useId();
+  const referenceId = useId();
   if (rows.length === 0) return null;
   const safe = (amount: number) => (Number.isFinite(amount) ? amount : 0);
-  const max = Math.max(0, ...rows.map((row) => safe(row.amount)));
+  const referenceAmount = reference ? Math.max(0, safe(reference.amount)) : 0;
+  const max = Math.max(0, referenceAmount, ...rows.map((row) => safe(row.amount)));
   const share = (raw: number) => (max > 0 ? Math.max(0, Math.min(100, (safe(raw) * 100) / max)) : 0);
   return (
     <figure
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
       aria-labelledby={captionId}
+      aria-describedby={reference ? referenceId : undefined}
     >
-      <figcaption id={captionId} className={styles.title}>
+      <figcaption
+        id={captionId}
+        className={[styles.title, titleVisibility === "hidden" ? styles.titleHidden : ""]
+          .filter(Boolean)
+          .join(" ")}
+        data-title-visibility={titleVisibility}
+      >
         {title}
       </figcaption>
       {summary ? <p className={styles.summary}>{summary}</p> : null}
@@ -69,10 +98,22 @@ export function BarList({ title, summary, rows, total, className, ...rest }: Bar
                   style={{ inlineSize: `${share(row.amount)}%` }}
                 />
               ) : null}
+              {reference ? (
+                <span
+                  className={styles.tick}
+                  data-reference=""
+                  style={{ "--bar-reference": `${share(referenceAmount)}%` } as CSSProperties}
+                />
+              ) : null}
             </span>
           </li>
         ))}
       </ul>
+      {reference ? (
+        <p id={referenceId} className={styles.legend}>
+          {reference.label}
+        </p>
+      ) : null}
       {total ? (
         <p className={styles.total}>
           <span>{total.label}</span>
