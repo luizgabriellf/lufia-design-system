@@ -55,6 +55,17 @@ function Tones({ dot }: { dot?: boolean }) {
 
 export const AllTones: Story = { render: () => <Tones /> };
 export const AllTonesWithDot: Story = { render: () => <Tones dot /> };
+/** The corner radius is a component token: here a squarer badge. */
+export const SquareByToken: Story = {
+  render: () => <Tones dot />,
+  decorators: [
+    (Story) => (
+      <div style={{ "--lufia-badge-radius": "0.25rem" } as React.CSSProperties}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const Phone320: Story = {
   render: () => <Tones dot />,
   globals: { viewport: { value: "w320", isRotated: false } },
