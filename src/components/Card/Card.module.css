@@ -61,7 +61,12 @@
 }
 
 .body {
-  padding: var(--lufia-card-body-padding, var(--card-padding));
+  /* The shorthand token wins when set. Otherwise the axis tokens apply, each falling back to the `padding` prop. */
+  padding: var(
+    --lufia-card-body-padding,
+    var(--lufia-card-body-padding-block, var(--card-padding))
+      var(--lufia-card-body-padding-inline, var(--card-padding))
+  );
   min-inline-size: 0;
   flex: 1;
   color: var(--lufia-color-text-muted);
@@ -85,7 +90,10 @@
 }
 
 .root[data-divider]:not([data-flush]) > .header + .body {
-  padding-block-start: var(--lufia-card-body-padding, var(--card-padding));
+  padding-block-start: var(
+    --lufia-card-body-padding,
+    var(--lufia-card-body-padding-block, var(--card-padding))
+  );
 }
 
 .footer {

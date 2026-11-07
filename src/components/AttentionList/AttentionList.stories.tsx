@@ -76,6 +76,24 @@ export const LongText: Story = {
 };
 /** `barStyle="inset"` draws the tone bar as a rounded pill set in from the card edge. */
 export const InsetBar: Story = { args: { barStyle: "inset" } };
+/** The inset is set per axis, falling back to `--lufia-attention-list-bar-inset`. */
+export const InsetPerAxis: Story = {
+  args: { barStyle: "inset" },
+  decorators: [
+    (Story) => (
+      <div
+        style={
+          {
+            "--lufia-attention-list-bar-inset-inline": "1rem",
+            "--lufia-attention-list-bar-inset-block": "0.75rem",
+          } as React.CSSProperties
+        }
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
 /** The bar width is a component token. */
 export const ThickBar: Story = {
   args: { barStyle: "inset" },

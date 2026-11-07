@@ -1424,6 +1424,10 @@
             "id": "components-data-display-attentionlist--inset-bar"
           },
           {
+            "export": "InsetPerAxis",
+            "id": "components-data-display-attentionlist--inset-per-axis"
+          },
+          {
             "export": "ThickBar",
             "id": "components-data-display-attentionlist--thick-bar"
           },
@@ -1484,6 +1488,8 @@
       },
       "tokens": [
         "--lufia-attention-list-bar-inset",
+        "--lufia-attention-list-bar-inset-block",
+        "--lufia-attention-list-bar-inset-inline",
         "--lufia-attention-list-bar-width",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
@@ -2466,6 +2472,8 @@
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-card-body-padding",
+        "--lufia-card-body-padding-block",
+        "--lufia-card-body-padding-inline",
         "--lufia-card-divider-color",
         "--lufia-card-header-padding",
         "--lufia-card-shadow",
@@ -6246,7 +6254,9 @@
         "--lufia-page-header-eyebrow-color",
         "--lufia-page-header-eyebrow-dash-gap",
         "--lufia-page-header-eyebrow-dash-size",
+        "--lufia-page-header-eyebrow-dash-thickness",
         "--lufia-page-header-eyebrow-tracking",
+        "--lufia-page-header-eyebrow-weight",
         "--lufia-page-header-title-size",
         "--lufia-page-header-title-tracking"
       ]
@@ -9070,6 +9080,7 @@
         "--lufia-shadow-md",
         "--lufia-shadow-sm",
         "--lufia-stat-tile-label-color",
+        "--lufia-stat-tile-label-font",
         "--lufia-stat-tile-label-size",
         "--lufia-stat-tile-label-tracking",
         "--lufia-stat-tile-value-size",

@@ -10,7 +10,8 @@ function cssFiles(dir: string): string[] {
 }
 
 /** Properties that, while animated and held by a fill, create a containing block for `position: fixed` descendants. */
-const CONTAINING_BLOCK = /(^|[\s;{])(transform|translate|scale|rotate|filter|perspective)\s*:/;
+const CONTAINING_BLOCK =
+  /(^|[\s;{])(transform|translate|scale|rotate|filter|backdrop-filter|perspective)\s*:/;
 
 /** Names of the keyframes in one stylesheet whose frames set a containing-block property. */
 function containingBlockKeyframes(css: string): Set<string> {
@@ -19,6 +20,43 @@ function containingBlockKeyframes(css: string): Set<string> {
     if (CONTAINING_BLOCK.test(match[2] ?? "")) names.add(match[1] ?? "");
   }
   return names;
+}
+
+const TIME = /^[+-]?(\d+|\d*\.\d+)m?s$/;
+const COUNT = /^(infinite|[+-]?(\d+|\d*\.\d+))$/;
+const SHORTHAND_KEYWORDS = new Set([
+  "linear",
+  "ease",
+  "ease-in",
+  "ease-out",
+  "ease-in-out",
+  "step-start",
+  "step-end",
+  "normal",
+  "reverse",
+  "alternate",
+  "alternate-reverse",
+  "none",
+  "forwards",
+  "backwards",
+  "both",
+  "running",
+  "paused",
+]);
+
+/**
+ * The keyframes name in one `animation` shorthand part: the token that is no time, easing, count, direction, fill mode or
+ * play state. A `var(...)` token (a duration or easing held in a custom property) is skipped when another candidate
+ * exists, because it cannot be told apart from a name.
+ */
+function shorthandName(part: string): string {
+  const tokens = part
+    .trim()
+    .replace(/[\w-]+\((?:[^()]|\([^()]*\))*\)/g, (call) => call.replace(/\s+/g, ""))
+    .split(/\s+/)
+    .filter((token) => token && !TIME.test(token) && !COUNT.test(token) && !SHORTHAND_KEYWORDS.has(token))
+    .filter((token) => !/^(cubic-bezier|steps|linear)\(/.test(token));
+  return tokens.find((token) => !token.startsWith("var(")) ?? tokens[0] ?? "";
 }
 
 /** Every animation of every rule in one stylesheet: its keyframes name and the fill mode it ends up with. */
@@ -32,7 +70,7 @@ function animations(css: string): { name: string; fill: string; text: string }[]
     const parts = shorthand ? shorthand.split(/,(?![^(]*\))/) : [];
     for (const part of parts) {
       const text = part.trim();
-      found.push({ name: text.split(/\s+/)[0] ?? "", fill: `${text} ${longhandFill}`, text });
+      found.push({ name: shorthandName(text), fill: `${text} ${longhandFill}`, text });
     }
     if (longhandName) {
       for (const name of longhandName.split(",")) {
@@ -79,6 +117,30 @@ describe("animation fill mode", () => {
       ({ name, fill }) => guarded.has(name) && /\b(both|forwards)\b/.test(fill),
     );
     expect(flagged).toHaveLength(3);
+  });
+
+  it("reads the keyframes name from anywhere in the animation shorthand", () => {
+    const names = (value: string) => animations(`.a { animation: ${value}; }`).map(({ name }) => name);
+    expect(names("rise 1s ease")).toEqual(["rise"]);
+    expect(names("1s ease rise both")).toEqual(["rise"]);
+    expect(names("ease-in 200ms 2 alternate paused rise")).toEqual(["rise"]);
+    expect(names("var(--d, 1s) var(--e, ease) rise both")).toEqual(["rise"]);
+    expect(names("var(--d) rise")).toEqual(["rise"]);
+    expect(names(".5s cubic-bezier(0.2, 0, 0, 1) infinite rise-in, 1s steps(4, end) fade")).toEqual([
+      "rise-in",
+      "fade",
+    ]);
+    const bad = `.a { animation: 1s ease rise both; } @keyframes rise { from { translate: 0 1rem; } }`;
+    const guarded = containingBlockKeyframes(bad);
+    expect(
+      animations(bad).filter(({ name, fill }) => guarded.has(name) && /\b(both|forwards)\b/.test(fill)),
+    ).toHaveLength(1);
+  });
+
+  it("guards backdrop-filter keyframes", () => {
+    expect(containingBlockKeyframes("@keyframes veil { from { backdrop-filter: blur(0); } }")).toContain(
+      "veil",
+    );
   });
 
   it("sees the keyframes it guards in the real stylesheets", () => {

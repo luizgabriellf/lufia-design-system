@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 
-const read = (name: string) => readFileSync(`src/components/${name}/${name}.module.css`, "utf8");
+/** The stylesheet with whitespace collapsed, so a declaration Prettier wrapped over lines still matches. */
+const read = (name: string) =>
+  readFileSync(`src/components/${name}/${name}.module.css`, "utf8")
+    .replace(/\s+/g, " ")
+    .replace(/\( /g, "(")
+    .replace(/,? \)/g, ")");
 
 /**
  * Component tokens are read with a fallback equal to the value the component had before the token existed, so a consuming
@@ -10,17 +15,42 @@ const CONTRACT: [string, string][] = [
   ["PageHeader", "color: var(--lufia-page-header-eyebrow-color, var(--lufia-color-text-subtle))"],
   ["PageHeader", "letter-spacing: var(--lufia-page-header-eyebrow-tracking, 0.08em)"],
   ["PageHeader", "inline-size: var(--lufia-page-header-eyebrow-dash-size, 0)"],
+  [
+    "PageHeader",
+    "block-size: var(--lufia-page-header-eyebrow-dash-thickness, var(--lufia-border-width-thin))",
+  ],
+  ["PageHeader", "font-weight: var(--lufia-page-header-eyebrow-weight, var(--lufia-font-weight-semibold))"],
   ["PageHeader", "font-size: var(--lufia-page-header-title-size, var(--lufia-font-size-2xl))"],
   ["PageHeader", "font-size: var(--lufia-page-header-title-size, var(--lufia-font-size-3xl))"],
   ["PageHeader", "letter-spacing: var(--lufia-page-header-title-tracking, normal)"],
   ["StatTile", "color: var(--lufia-stat-tile-label-color, var(--lufia-color-text-muted))"],
+  ["StatTile", "font-family: var(--lufia-stat-tile-label-font, var(--lufia-font-family-mono))"],
   ["StatTile", "font-size: var(--lufia-stat-tile-label-size, var(--lufia-font-size-2xs))"],
   ["StatTile", "letter-spacing: var(--lufia-stat-tile-label-tracking, 0.09em)"],
   ["StatTile", "font-size: var(--lufia-stat-tile-value-size, var(--lufia-font-size-3xl))"],
   ["Card", "padding: var(--lufia-card-header-padding, var(--card-padding))"],
-  ["Card", "padding: var(--lufia-card-body-padding, var(--card-padding))"],
+  [
+    "Card",
+    "padding: var(--lufia-card-body-padding, var(--lufia-card-body-padding-block, var(--card-padding)) var(--lufia-card-body-padding-inline, var(--card-padding)))",
+  ],
+  [
+    "Card",
+    "padding-block-start: var(--lufia-card-body-padding, var(--lufia-card-body-padding-block, var(--card-padding)))",
+  ],
   ["Card", "box-shadow: var(--lufia-card-shadow, var(--lufia-shadow-sm))"],
   ["Card", "box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md))"],
+  [
+    "AttentionList",
+    "inset-block: var(--lufia-attention-list-bar-inset-block, var(--lufia-attention-list-bar-inset, 0.5rem))",
+  ],
+  [
+    "AttentionList",
+    "inset-inline-start: var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem))",
+  ],
+  [
+    "AttentionList",
+    "calc(var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem)) + var(--attention-bar-width) + 0.75rem)",
+  ],
   ["AttentionList", "--attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem)"],
 ];
 

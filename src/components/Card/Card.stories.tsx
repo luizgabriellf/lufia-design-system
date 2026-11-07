@@ -80,7 +80,8 @@ export const ThemedByTokens: Story = {
           {
             inlineSize: "min(100%, 24rem)",
             "--lufia-card-header-padding": "1rem 1.5rem",
-            "--lufia-card-body-padding": "1.5rem",
+            "--lufia-card-body-padding-block": "1.25rem",
+            "--lufia-card-body-padding-inline": "1.5rem",
             "--lufia-card-shadow": "var(--lufia-shadow-lg)",
           } as React.CSSProperties
         }

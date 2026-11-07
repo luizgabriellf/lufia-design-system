@@ -70,7 +70,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-page-header-eyebrow-color`, `--lufia-page-header-eyebrow-dash-gap`, `--lufia-page-header-eyebrow-dash-size`, `--lufia-page-header-eyebrow-tracking`, `--lufia-page-header-title-size`, `--lufia-page-header-title-tracking`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xl`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-page-header-eyebrow-color`, `--lufia-page-header-eyebrow-dash-gap`, `--lufia-page-header-eyebrow-dash-size`, `--lufia-page-header-eyebrow-dash-thickness`, `--lufia-page-header-eyebrow-tracking`, `--lufia-page-header-eyebrow-weight`, `--lufia-page-header-title-size`, `--lufia-page-header-title-tracking`.
 
 ## Content guidelines
 

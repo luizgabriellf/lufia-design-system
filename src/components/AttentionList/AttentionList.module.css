@@ -29,15 +29,19 @@
 .root[data-bar-style="inset"] .item {
   position: relative;
   padding-inline-start: calc(
-    var(--lufia-attention-list-bar-inset, 0.5rem) + var(--attention-bar-width) + 0.75rem
+    var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem)) +
+      var(--attention-bar-width) + 0.75rem
   );
   border-inline-start: 0;
 }
 
 .root[data-bar-style="inset"] .item::before {
   position: absolute;
-  inset-block: var(--lufia-attention-list-bar-inset, 0.5rem);
-  inset-inline-start: var(--lufia-attention-list-bar-inset, 0.5rem);
+  inset-block: var(--lufia-attention-list-bar-inset-block, var(--lufia-attention-list-bar-inset, 0.5rem));
+  inset-inline-start: var(
+    --lufia-attention-list-bar-inset-inline,
+    var(--lufia-attention-list-bar-inset, 0.5rem)
+  );
   inline-size: var(--attention-bar-width);
   border-radius: var(--lufia-radius-full);
   background: var(--item-bar);

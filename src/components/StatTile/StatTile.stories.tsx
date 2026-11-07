@@ -29,7 +29,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-/** Label colour, size and tracking and the value size are component tokens. */
+/** Label colour, font, size and tracking and the value size are component tokens. */
 export const ThemedByTokens: Story = {
   decorators: [
     (Story) => (
@@ -38,6 +38,7 @@ export const ThemedByTokens: Story = {
           {
             inlineSize: "min(100%, 15rem)",
             "--lufia-stat-tile-label-color": "var(--lufia-color-text-accent)",
+            "--lufia-stat-tile-label-font": "var(--lufia-font-family-body)",
             "--lufia-stat-tile-label-size": "var(--lufia-font-size-xs)",
             "--lufia-stat-tile-label-tracking": "0.14em",
             "--lufia-stat-tile-value-size": "2.5rem",
