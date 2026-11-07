@@ -122,6 +122,47 @@ describe("StatTile", () => {
     expect(screen.getByText("Open items")).toBeInTheDocument();
   });
 
+  it("loading: holds one skeleton per line the loaded tile has, each one line box tall", () => {
+    const { container, rerender } = render(<StatTile label="Open items" value="12" loading />);
+    const skeletons = () => [...container.querySelectorAll<HTMLElement>("[data-variant]")];
+    expect(skeletons()).toHaveLength(1);
+    expect(skeletons()[0]!.style.getPropertyValue("--skeleton-height")).toBe("1lh");
+    rerender(<StatTile label="Open items" value="12" delta="+3" loading />);
+    expect(skeletons()).toHaveLength(2);
+    rerender(<StatTile label="Open items" value="12" delta="+3" hint="3 due" loading />);
+    expect(skeletons()).toHaveLength(3);
+    expect(
+      skeletons()
+        .slice(1)
+        .map((el) => el.style.getPropertyValue("--skeleton-height")),
+    ).toEqual(["1lh", "1lh"]);
+    rerender(<StatTile label="Open items" value="12" hint="3 due" sparkline={<span />} loading />);
+    expect(skeletons().map((el) => el.dataset.variant)).toEqual(["text", "rect", "text"]);
+  });
+
+  it("loading: the loaded and loading tiles have the same lines in the same order", () => {
+    const props = { label: "Open items", value: "12", delta: "+3", hint: "3 due" } as const;
+    const { container, rerender } = render(<StatTile {...props} sparkline={<span data-spark />} />);
+    const loaded = () => container.querySelector("[class*=body]")!.children.length;
+    const loadedLines = loaded();
+    const valueRow = () => container.querySelector("[class*=valueRow]")!.children.length;
+    const loadedRow = valueRow();
+    rerender(<StatTile {...props} sparkline={<span data-spark />} loading />);
+    expect(loaded()).toBe(loadedLines);
+    expect(valueRow()).toBe(loadedRow);
+  });
+
+  it("loading: skeleton lines use the typography of the lines they replace", () => {
+    const rule = (selector: string) =>
+      css.match(new RegExp(`${selector.replace(".", "\\.")} \\{([^}]*)\\}`))![1]!;
+    const decl = (block: string, prop: string) => block.match(new RegExp(`${prop}:\\s*([^;]+);`))?.[1];
+    for (const line of [".delta", ".hint"]) {
+      expect(decl(rule(".skeletonLine"), "font-size")).toBe(decl(rule(line), "font-size"));
+      expect(decl(rule(".skeletonLine"), "line-height")).toBe(decl(rule(line), "line-height"));
+    }
+    expect(decl(rule(".skeletonSpark"), "aspect-ratio")).toBe("5 / 1");
+  });
+
   it("passes className and rest props to the root", () => {
     render(<StatTile label="Open items" value="12" className="extra" data-testid="t" />);
     expect(screen.getByTestId("t")).toHaveClass("extra");

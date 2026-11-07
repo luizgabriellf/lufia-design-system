@@ -30,7 +30,11 @@ export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
   href?: string;
   /** Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. */
   onClick?: MouseEventHandler<HTMLElement>;
-  /** Shows skeletons in place of the figure and the lines under it, and disables the link or button. */
+  /**
+   * Shows skeletons in place of the figure, the change, the hint and the chart, and disables the link or button. Each
+   * skeleton has the line box of the content it stands for, so the loaded tile has exactly the same height. Pass the same
+   * `delta`, `hint` and `sparkline` you will pass once loaded (placeholders are fine): they decide which lines are held.
+   */
   loading?: boolean;
   /** Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. */
   loadingLabel?: string;
@@ -62,7 +66,9 @@ function TrendArrow({ trend }: { trend: StatTileTrend }) {
  * The interactive variant uses the stretched-link pattern, like `Card`: the label is the one link (or button) and its
  * `::after` covers the tile, so the tile is one tab stop. The figure, change and hint are attached to it as its
  * description, so a screen reader announces "label, link, 12, up 3 since yesterday" without reading the tile twice.
- * Hover and press are small `transform` moves from motion tokens, removed under reduced motion.
+ * Hover and press are small `transform` moves from motion tokens, removed under reduced motion. While `loading`, the
+ * skeletons take the line boxes of the figure, the change, the hint and the chart, so the tile does not change height
+ * when the data arrives.
  */
 export function StatTile({
   label,
@@ -118,14 +124,23 @@ export function StatTile({
         <span className={styles.label}>{labelNode}</span>
         <span className={styles.valueRow}>
           <span id={valueId} className={styles.value}>
-            {loading ? <Skeleton width="4.5rem" height="1.75rem" label={loadingLabel} /> : value}
+            {loading ? <Skeleton width="4.5rem" height="1lh" label={loadingLabel} /> : value}
           </span>
-          {sparkline && !loading ? <span className={styles.spark}>{sparkline}</span> : null}
+          {sparkline ? (
+            <span className={styles.spark}>
+              {loading ? (
+                <Skeleton variant="rect" height="auto" className={styles.skeletonSpark} />
+              ) : (
+                sparkline
+              )}
+            </span>
+          ) : null}
         </span>
         {loading ? (
-          hasDelta || hasHint ? (
-            <Skeleton width="70%" height="0.875rem" />
-          ) : null
+          <>
+            {hasDelta ? <Skeleton width="70%" height="1lh" className={styles.skeletonLine} /> : null}
+            {hasHint ? <Skeleton width="55%" height="1lh" className={styles.skeletonLine} /> : null}
+          </>
         ) : (
           <>
             {hasDelta ? (

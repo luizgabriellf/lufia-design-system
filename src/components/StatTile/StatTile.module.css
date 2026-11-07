@@ -125,6 +125,18 @@
   line-height: var(--lufia-font-line-height-normal);
 }
 
+/* Loading: each placeholder takes the line box of what it replaces (1lh of the same font size and line height), so the
+   loaded tile is exactly as tall. The figure's skeleton inherits the .value typography; the lines below set the same
+   size and line height as .delta and .hint. The chart placeholder keeps the sparkline's 5:1 box. */
+.skeletonLine {
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.skeletonSpark {
+  aspect-ratio: 5 / 1;
+}
+
 @container (inline-size < 12rem) {
   .value {
     font-size: var(--lufia-stat-tile-value-size-narrow, var(--lufia-font-size-2xl));

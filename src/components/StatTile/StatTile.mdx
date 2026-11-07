@@ -63,6 +63,7 @@ The `value` is a node, so pass an `AnimatedNumber` to count to a new figure. The
 <Canvas of={Stories.AsLink} />
 <Canvas of={Stories.AsButton} />
 <Canvas of={Stories.Loading} />
+<Canvas of={Stories.LoadingKeepsHeight} />
 <Canvas of={Stories.LongLabel} />
 <Canvas of={Stories.WithAnimatedNumber} />
 <Canvas of={Stories.Grid} />
@@ -98,7 +99,7 @@ A plain tile is not focusable. The focus ring is drawn around the whole tile.
 - The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
 - `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
 - `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
-- While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.
+- While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.
 - In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`.
 
 </Section>
