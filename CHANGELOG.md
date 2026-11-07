@@ -1,5 +1,16 @@
 # @lufia/design-system
 
+## 0.11.0
+
+### Minor Changes
+
+- [#47](https://github.com/luizgabriellf/lufia-design-system/pull/47) [`91135a8`](https://github.com/luizgabriellf/lufia-design-system/commit/91135a8d9e883162f46d5031836389b9f4758031) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Extend the agent-facing component manifest. Hooks that return an object type now list its members (`returnMembers`),
+  props typed as a union of forms now list their `variants` with the discriminant and the props that differ per form, and the
+  Select and Combobox summaries mention "dropdown". The flat `props` list is unchanged. The `ai:search` lookup also matches
+  the start of a word.
+
+- [#51](https://github.com/luizgabriellf/lufia-design-system/pull/51) [`95f070c`](https://github.com/luizgabriellf/lufia-design-system/commit/95f070c050d6cd46502b9826d78b1eb63971c28c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Ship the AI docs (`components.json`, per-component specs, `llms.txt`) inside the package under `./ai/*`, and add the `lufia-ai` bin: a version-matched, offline lookup CLI (`search`, `list`, `show`, `version`) and a local stdio MCP server (`lufia-ai mcp`) for coding agents.
+
 ## 0.10.0
 
 ### Minor Changes
