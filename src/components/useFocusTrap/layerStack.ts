@@ -44,6 +44,10 @@ export type OverlayLayer = {
  * returns a handle. Use it to make an overlay the package does not own (an app's legacy modal or trap) take part: the package's
  * traps then leave Escape and Tab alone while it is on top, and it can ask `isTop()` before handling them itself.
  * Release it when the overlay closes.
+ *
+ * Registering again moves a layer to the top, so register once per open (an effect keyed on `open` only), not on every render.
+ * A legacy overlay portaled into `document.body` above a package `Modal` must carry `data-lufia-inert-exempt`, otherwise the
+ * Modal makes it `inert` with the rest of the page.
  */
 export function registerOverlayLayer(): OverlayLayer {
   const id = pushLayer();

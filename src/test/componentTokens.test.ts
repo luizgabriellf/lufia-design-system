@@ -56,6 +56,7 @@ const CONTRACT: [string, string][] = [
   ["Toast", "min-inline-size: var(--lufia-toast-min-width, auto)"],
   ["Toast", "max-inline-size: var(--lufia-toast-max-width, calc(100% - 2 * var(--lufia-space-4)))"],
   ["Toast", "gap: var(--lufia-toast-gap, var(--lufia-space-3))"],
+  ["Toast", "flex-direction: column; gap: var(--lufia-toast-gap, var(--lufia-space-3)); max-inline-size"],
   ["Toast", "align-items: var(--lufia-toast-align-items, flex-start)"],
   ["Toast", "line-height: var(--lufia-toast-line-height, var(--lufia-font-line-height-normal))"],
   ["Toast", "padding-block: var(--lufia-toast-padding-block, var(--lufia-space-3))"],

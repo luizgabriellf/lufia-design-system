@@ -23,7 +23,7 @@
   z-index: var(--lufia-z-toast);
   display: flex;
   flex-direction: column;
-  gap: var(--lufia-space-3);
+  gap: var(--lufia-toast-gap, var(--lufia-space-3));
   max-inline-size: var(--lufia-toast-max-width, calc(100% - 2 * var(--lufia-space-4)));
   min-inline-size: var(--lufia-toast-min-width, auto);
   inline-size: var(--lufia-toast-width, 24rem);

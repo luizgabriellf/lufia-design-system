@@ -194,3 +194,31 @@ describe("useFocusTrap", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("inertBackground across module copies", () => {
+  it("shares its reference counts, so one copy's release keeps the page inert while another copy's modal is open", async () => {
+    const first = (await import("./inertBackground")).inertBackground;
+    vi.resetModules();
+    const second = (await import("./inertBackground")).inertBackground;
+    expect(second).not.toBe(first);
+
+    const page = document.body.appendChild(document.createElement("div"));
+    const one = document.body.appendChild(document.createElement("div"));
+    const two = document.body.appendChild(document.createElement("div"));
+    const releaseFirst = first(one);
+    const releaseSecond = second(two);
+    try {
+      expect(page).toHaveAttribute("inert");
+      releaseFirst();
+      // The second copy's modal is still open, so the page behind must stay inert.
+      expect(page).toHaveAttribute("inert");
+    } finally {
+      releaseFirst();
+      releaseSecond();
+      page.remove();
+      one.remove();
+      two.remove();
+    }
+    expect(page).not.toHaveAttribute("inert");
+  });
+});

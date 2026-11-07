@@ -3,9 +3,18 @@
  * reached by keyboard, pointer or assistive technology (WAI-ARIA APG: "Dialog (Modal)" asks for exactly this; `aria-modal`
  * alone is not honoured everywhere). Reference counted per element so stacked modals compose, and an element that was
  * already inert is left alone. A subtree marked `data-lufia-inert-exempt` (the notification region) stays live.
+ *
+ * The counts live on `globalThis.__lufiaInertState`, like the layer stack, so duplicated copies of the package do not
+ * un-inert an element while another copy's modal is still open.
  */
-const counts = new Map<Element, number>();
-const foreign = new WeakSet<Element>();
+type InertState = { counts: Map<Element, number>; foreign: WeakSet<Element> };
+type InertHost = typeof globalThis & { __lufiaInertState?: InertState };
+
+const state: InertState = ((globalThis as InertHost).__lufiaInertState ??= {
+  counts: new Map<Element, number>(),
+  foreign: new WeakSet<Element>(),
+});
+const { counts, foreign } = state;
 
 const SKIPPED = "script, style, link, template, [data-lufia-inert-exempt]";
 

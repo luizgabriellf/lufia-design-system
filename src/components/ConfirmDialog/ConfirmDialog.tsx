@@ -14,13 +14,15 @@ export type ConfirmDialogClassNames = ModalClassNames & {
 
 export type ConfirmDialogProps = Pick<
   ModalProps,
-  "open" | "closeLabel" | "container" | "className" | "size" | "sheetPlacement"
+  "open" | "closeLabel" | "container" | "className" | "sheetPlacement"
 > & {
   /**
    * Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a
    * stable `data-lufia-part` attribute: those of `Modal`, plus `cancel` and `confirm` on the buttons.
    */
   classNames?: ConfirmDialogClassNames;
+  /** Maximum width on screens wider than a phone: a step or any CSS length, as on `Modal`. Default `sm` (not `md`). */
+  size?: ModalProps["size"];
   /** What is being decided, as a question or an action: "Delete invoice 2041?". */
   title: ReactNode;
   /** The consequence, in a sentence or two. Read out when the dialog opens. */

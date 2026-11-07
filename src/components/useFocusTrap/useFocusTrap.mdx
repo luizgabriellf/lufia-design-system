@@ -55,12 +55,17 @@ Wrap a legacy trap so that it and the package's dialogs take turns:
 import { registerOverlayLayer } from "@lufia/design-system/components/useFocusTrap";
 
 function useLegacyTrap(open: boolean, onEscape: () => void) {
+  // A ref, so a new inline `onEscape` does not re-run the effect (see the note below).
+  const onEscapeRef = useRef(onEscape);
+  useEffect(() => {
+    onEscapeRef.current = onEscape;
+  });
   useEffect(() => {
     if (!open) return;
     const layer = registerOverlayLayer(); // now the topmost layer
     const onKeyDown = (event: KeyboardEvent) => {
       if (!layer.isTop()) return; // a package dialog opened above: leave Escape and Tab to it
-      if (event.key === "Escape") onEscape();
+      if (event.key === "Escape") onEscapeRef.current();
       // ...the legacy Tab handling goes here, behind the same check
     };
     document.addEventListener("keydown", onKeyDown);
@@ -68,11 +73,19 @@ function useLegacyTrap(open: boolean, onEscape: () => void) {
       document.removeEventListener("keydown", onKeyDown);
       layer.release(); // always release, or the layer under it never becomes topmost again
     };
-  }, [open, onEscape]);
+  }, [open]); // `open` only
 }
 ```
 
 With this, a `ConfirmDialog` opened over the legacy layer handles one Escape and the legacy layer keeps its own for the next.
+
+Registering again moves a layer to the top. Keep the effect's dependencies to `open` only, as above: if it re-ran on every
+render (an inline callback in the deps), the legacy layer would jump above a package dialog opened over it and take its
+Escape and Tab.
+
+A legacy overlay portaled into `document.body` above an open package `Modal` must carry `data-lufia-inert-exempt`, otherwise
+the Modal makes it `inert` along with the rest of the page. The inert bookkeeping is shared on `globalThis` too, so copies of
+the package agree.
 
 </Section>
 

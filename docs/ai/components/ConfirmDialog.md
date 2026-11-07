@@ -36,12 +36,12 @@ with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `size` | `ModalSize \| (string & {})` | no | `"sm"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet. Default `md`. |
 | `open` | `boolean` | yes |  | Whether the modal is shown. Controlled: the modal never closes itself, it calls `onClose`. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `labels.close`. |
 | `container` | `Element \| DocumentFragment \| null` | no |  | Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported. |
 | `sheetPlacement` | `"bottom" \| "top"` | no |  | Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. |
 | `classNames` | `ConfirmDialogClassNames` | no |  | Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a stable `data-lufia-part` attribute: those of `Modal`, plus `cancel` and `confirm` on the buttons. |
+| `size` | `ModalSize \| (string & {})` | no | `"sm"` | Maximum width on screens wider than a phone: a step or any CSS length, as on `Modal`. Default `sm` (not `md`). |
 | `title` | `ReactNode` | yes |  | What is being decided, as a question or an action: "Delete invoice 2041?". |
 | `message` | `ReactNode` | yes |  | The consequence, in a sentence or two. Read out when the dialog opens. |
 | `confirmLabel` | `string` | yes |  | Text of the confirming button. Name the action ("Delete invoice"), not "OK". |

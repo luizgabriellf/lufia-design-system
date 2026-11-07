@@ -24,8 +24,8 @@ export type PeerNavItem<Href = string> = {
   icon?: ReactNode;
   /**
    * Destination. When every item has one, the nav is a list of links; otherwise it is a tablist. A string by default; a
-   * different type (a router's typed route, a URL object) is allowed when the `linkComponent` set on `LufiaProvider` accepts it:
-   * it is handed to that component unchanged.
+   * different type (a router's typed route, a URL object) is allowed only when the `linkComponent` set on `LufiaProvider`
+   * accepts it: it is handed to that component unchanged. `Href` defaults to `string`.
    */
   href?: Href;
   /** Id of the panel this tab controls (tabs only). */
@@ -74,6 +74,9 @@ const isPlainClick = (event: MouseEvent) =>
   event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
 
 /**
+ * The `Href` type parameter defaults to `string`. A non-string `href` (a typed route, a URL object) needs a `linkComponent` on
+ * `LufiaProvider` that accepts it; the default plain `<a>` cannot render one.
+ *
  * A horizontal set of sibling views of one page (overview and work, register and deliveries), each with a label, an
  * optional description and icon, and an indicator that slides to the chosen one.
  *
