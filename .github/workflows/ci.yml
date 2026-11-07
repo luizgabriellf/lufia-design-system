@@ -28,12 +28,20 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Check (typecheck, lint, stylelint, format, tests, contrast, motion rules, AI-docs drift)
-        run: npm run check
-      - name: Coverage
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
+      - name: Static gates (typecheck, lint, stylelint, format, contrast, motion rules, AI-docs drift)
+        run: npm run check:static
+        env:
+          LUFIA_LEAK_TOKENS: ${{ secrets.LUFIA_LEAK_TOKENS }}
+      - name: Unit and accessibility tests with coverage floor
         run: npm run test:coverage
       - name: Build package
         run: npm run build
+      - name: Package correctness (publint, are-the-types-wrong)
+        run: npm run verify:package
+      - name: Size budget (gzip per entry, .size-limit.json)
+        run: npm run verify:size
       - name: Leak gate on the built package
         run: node scripts/ai/verify-leaks.mjs
         env:
@@ -46,9 +54,61 @@ jobs:
         run: |
           test -s storybook-static/manifests/components.json
           node -e "const m = JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8')); if (!Object.values(m.components ?? {}).some((c) => c.name === 'Button')) { console.error('Button missing from the Storybook components manifest'); process.exit(1); }"
+      - name: Upload built package for downstream jobs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload built Storybook for downstream jobs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: storybook-static
+          path: storybook-static/
+          if-no-files-found: error
+          retention-days: 1
+
+  changeset:
+    name: Changeset present
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Require a changeset when published source changed
+        run: node scripts/check-changeset.mjs
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
 
   consumer:
     name: Next.js App Router consumer smoke
+    needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -62,8 +122,13 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Build distributable package
-        run: npm run build
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
+      - name: Download the package built by the verify job
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
       - name: Test packed package in Next.js
         run: npm run test:consumer:next
         env:
@@ -85,9 +150,16 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
+      - name: Download the Storybook built by the verify job
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: storybook-static
+          path: storybook-static/
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
-      - name: Run Storybook browser tests
+      - name: Run Storybook browser tests (against the built Storybook)
         run: npm run test:browser
         env:
           CI: "true"
@@ -100,3 +172,18 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  gate:
+    name: CI gate
+    if: always()
+    needs: [verify, changeset, dependency-review, consumer, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every job to pass (or be skipped by design)
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          # changeset and dependency-review are skipped on pushes to main; any other skip means an upstream failure.
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success" or .result == "skipped")' > /dev/null
