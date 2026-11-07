@@ -17,12 +17,12 @@ export type RadioOption = {
   description?: ReactNode;
   /**
    * Extra content at the inline end of the option (a price, a badge, a count). Read as part of the option's description.
-   * It sits inside a button, so it must be non-interactive, phrasing content.
+   * It sits inside a button, so it must be phrasing content only (text, `span`, `strong`, `em`, an icon): no lists, no block elements and nothing interactive.
    */
   meta?: ReactNode;
   /**
-   * Extra content under the description (a list of features, a note). Read as part of the option's description. Same
-   * limits as `meta`: non-interactive, phrasing content.
+   * Extra content under the description (a short note, a caption). Read as part of the option's description. Same
+   * limits as `meta`: phrasing content only, no lists, no interactive elements.
    */
   content?: ReactNode;
   disabled?: boolean;

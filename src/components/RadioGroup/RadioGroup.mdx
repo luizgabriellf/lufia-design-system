@@ -52,7 +52,7 @@ With `name`, the chosen value is submitted with the form.
 
 ### Card variant
 
-`variant="card"` draws each option as a bordered, selectable row. An option can carry `meta` (inline end: a price, a badge) and `content` (under the description). Both are read as part of the option's description and live inside the radio button, so keep them non-interactive. The default stays plain rows.
+`variant="card"` draws each option as a bordered, selectable row. An option can carry `meta` (inline end: a price, a badge) and `content` (under the description). Both are read as part of the option's description and live inside the radio button, so they must be phrasing content only (text, `span`, `strong`, an icon): no lists, no block elements, nothing interactive. The default stays plain rows.
 
 ```tsx
 <RadioGroup
@@ -64,7 +64,11 @@ With `name`, the chosen value is submitted with the form.
       label: "Basic",
       description: "For one site.",
       meta: "9 / month",
-      content: "Two seats.",
+      content: (
+        <>
+          Two seats, <strong>e-mail</strong> support.
+        </>
+      ),
     },
   ]}
 />
