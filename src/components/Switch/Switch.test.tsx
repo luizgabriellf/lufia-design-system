@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
 import { Switch } from "./Switch";
+import { SwitchInput } from "./SwitchInput";
 
 describe("Switch", () => {
   it("is a switch button named by its label, off by default", () => {
@@ -91,6 +92,103 @@ describe("Switch", () => {
 
   it("has no axe violations", async () => {
     const { container } = render(<Switch label="Alerts" hint="Hint" error="Error" defaultChecked />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("SwitchInput", () => {
+  it("is a native checkbox with the switch role, off by default", () => {
+    render(<SwitchInput label="Email alerts" name="alerts" />);
+    const control = screen.getByRole("switch", { name: "Email alerts" });
+    expect(control.tagName).toBe("INPUT");
+    expect(control).toHaveAttribute("type", "checkbox");
+    expect(control).not.toBeChecked();
+  });
+
+  it("is read from the form: name=value while on, nothing while off", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <form>
+        <SwitchInput label="Alerts" name="alerts" value="yes" />
+        <SwitchInput label="Digest" name="digest" defaultChecked />
+      </form>,
+    );
+    const form = container.querySelector("form")!;
+    expect(Object.fromEntries(new FormData(form))).toEqual({ digest: "on" });
+    await user.click(screen.getByRole("switch", { name: "Alerts" }));
+    expect(Object.fromEntries(new FormData(form))).toEqual({ alerts: "yes", digest: "on" });
+    expect((form.elements.namedItem("alerts") as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("toggles with Space and through its label, and reports the new state", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    const onChange = vi.fn();
+    render(<SwitchInput label="Alerts" onCheckedChange={onCheckedChange} onChange={onChange} />);
+    const control = screen.getByRole("switch");
+    control.focus();
+    await user.keyboard(" ");
+    expect(control).toBeChecked();
+    await user.click(screen.getByText("Alerts"));
+    expect(control).not.toBeChecked();
+    expect(onCheckedChange.mock.calls.map(([value]) => value)).toEqual([true, false]);
+    expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("follows a controlled value", async () => {
+    const user = userEvent.setup();
+    function Harness() {
+      const [on, setOn] = useState(true);
+      return <SwitchInput label="Dark mode" checked={on} onCheckedChange={setOn} />;
+    }
+    render(<Harness />);
+    expect(screen.getByRole("switch")).toBeChecked();
+    await user.click(screen.getByRole("switch"));
+    expect(screen.getByRole("switch")).not.toBeChecked();
+  });
+
+  it("goes back to its default when the form is reset", async () => {
+    const user = userEvent.setup();
+    render(
+      <form>
+        <SwitchInput label="Alerts" name="alerts" defaultChecked />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("switch"));
+    expect(screen.getByRole("switch")).not.toBeChecked();
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(screen.getByRole("switch")).toBeChecked();
+  });
+
+  it("validates as a required checkbox and ignores clicks when disabled", async () => {
+    const user = userEvent.setup();
+    const onCheckedChange = vi.fn();
+    const { container } = render(
+      <form>
+        <SwitchInput label="Terms" name="terms" required />
+        <SwitchInput label="Off" disabled onCheckedChange={onCheckedChange} />
+      </form>,
+    );
+    expect(container.querySelector("form")!.checkValidity()).toBe(false);
+    await user.click(screen.getByRole("switch", { name: "Terms" }));
+    expect(container.querySelector("form")!.checkValidity()).toBe(true);
+    await user.click(screen.getByRole("switch", { name: "Off" }));
+    expect(onCheckedChange).not.toHaveBeenCalled();
+  });
+
+  it("describes the switch with its hint and error and passes className to the root", () => {
+    const { container } = render(
+      <SwitchInput label="Alerts" hint="Sent once a day." error="Could not save." className="extra" />,
+    );
+    const control = screen.getByRole("switch");
+    expect(control).toHaveAccessibleDescription("Sent once a day. Could not save.");
+    expect(control).toBeInvalid();
+    expect(container.firstElementChild).toHaveClass("extra");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<SwitchInput label="Alerts" hint="Hint" error="Error" defaultChecked />);
     expect(await axe(container)).toHaveNoViolations();
   });
 });
