@@ -84,11 +84,11 @@
 
 /* Keep-mounted panels play the enter themselves: they are never unmounted, so there is no exit to wait for. */
 .panel[data-kept][data-state="open"] {
-  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .native[open] {
-  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .native::backdrop {

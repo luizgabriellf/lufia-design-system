@@ -68,6 +68,28 @@ export const Flush: Story = {
     flush: true,
   },
 };
+/** `divider` draws a rule under the header. Its colour is `--lufia-card-divider-color`. */
+export const Divider: Story = { args: { description: "Updated every night at 02:00.", divider: true } };
+/** The card's spacing and shadow are component tokens, so an app can restyle every card from one place. */
+export const ThemedByTokens: Story = {
+  args: { divider: true },
+  decorators: [
+    (Story) => (
+      <div
+        style={
+          {
+            inlineSize: "min(100%, 24rem)",
+            "--lufia-card-header-padding": "1rem 1.5rem",
+            "--lufia-card-body-padding": "1.5rem",
+            "--lufia-card-shadow": "var(--lufia-shadow-lg)",
+          } as React.CSSProperties
+        }
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const BodyOnly: Story = { args: { title: undefined } };
 /** The whole card is the hit area of one link, the title. The ring shows on the card. */
 export const Interactive: Story = { args: { href: "#report", headerAction: <Badge tone="info">New</Badge> } };

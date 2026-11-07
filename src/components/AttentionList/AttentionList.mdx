@@ -46,6 +46,13 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 <Section id="examples">
 
+### Bar style
+
+`barStyle="edge"` (the default) draws the tone bar flush with the card edge. `barStyle="inset"` draws a rounded bar set in from it. The width is `--lufia-attention-list-bar-width`; see [Theming components](?path=/docs/foundations-theming-components--docs).
+
+<Canvas of={Stories.InsetBar} />
+<Canvas of={Stories.ThickBar} />
+
 ### States
 
 <Canvas of={Stories.SingleItem} />

@@ -17,8 +17,15 @@ export type AttentionItem = {
   action?: ReactNode;
 };
 
+export type AttentionBarStyle = "edge" | "inset";
+
 export type AttentionListProps = Omit<HTMLAttributes<HTMLUListElement>, "children"> & {
   items: readonly AttentionItem[];
+  /**
+   * `edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded
+   * bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`.
+   */
+  barStyle?: AttentionBarStyle;
 };
 
 /**
@@ -26,10 +33,10 @@ export type AttentionListProps = Omit<HTMLAttributes<HTMLUListElement>, "childre
  * Name the list with `aria-label` or `aria-labelledby` (for example the id of a `SectionHeader` title).
  * Renders nothing when `items` is empty: show an `EmptyState` instead, or leave the section out.
  */
-export function AttentionList({ items, className, ...rest }: AttentionListProps) {
+export function AttentionList({ items, barStyle = "edge", className, ...rest }: AttentionListProps) {
   if (items.length === 0) return null;
   return (
-    <ul {...rest} className={[styles.root, className].filter(Boolean).join(" ")}>
+    <ul {...rest} className={[styles.root, className].filter(Boolean).join(" ")} data-bar-style={barStyle}>
       {items.map((item) => (
         <li key={item.id} className={styles.item} data-tone={item.tone ?? "neutral"}>
           <span className={styles.text}>

@@ -41,6 +41,27 @@ export const LongText: Story = {
       "A description that runs on for a while so that the text column has to wrap and the actions move below it when there is no more room to keep them on the same row.",
   },
 };
+/** Eyebrow colour, tracking, a leading dash and the title's size and tracking are component tokens. */
+export const ThemedByTokens: Story = {
+  decorators: [
+    (Story) => (
+      <div
+        style={
+          {
+            "--lufia-page-header-eyebrow-color": "var(--lufia-color-text-accent)",
+            "--lufia-page-header-eyebrow-tracking": "0.16em",
+            "--lufia-page-header-eyebrow-dash-size": "1.5rem",
+            "--lufia-page-header-eyebrow-dash-gap": "0.5rem",
+            "--lufia-page-header-title-tracking": "-0.02em",
+            "--lufia-page-header-title-size": "2.5rem",
+          } as React.CSSProperties
+        }
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const Phone320: Story = { globals: { viewport: { value: "w320", isRotated: false } } };
 export const Phone390: Story = { globals: { viewport: { value: "w390", isRotated: false } } };
 export const RightToLeft: Story = {

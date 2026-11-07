@@ -150,4 +150,14 @@ describe("RouteTransition", () => {
     const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
     expect(reduced?.[1]).toMatch(/animation:\s*none/);
   });
+
+  it("fills backwards only, so the entered child rests with no transform", () => {
+    // `both` or `forwards` would keep an identity `transform` on the child, which becomes the containing block of any
+    // fixed descendant. Backwards applies the first frame during the delay and nothing afterwards.
+    for (const name of ["route-rise", "route-fade"]) {
+      const rule = css.match(new RegExp(`animation:\\s*${name}[^;]*;`));
+      expect(rule?.[0]).toMatch(/\sbackwards;/);
+      expect(rule?.[0]).not.toMatch(/\b(both|forwards)\b/);
+    }
+  });
 });

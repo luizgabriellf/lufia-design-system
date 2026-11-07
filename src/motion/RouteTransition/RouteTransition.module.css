@@ -1,11 +1,13 @@
 /* The keyframes animate `from` only, so the resting state is the end state; the duration, easing and distance are
-   tokens and collapse under reduced motion. */
+   tokens and collapse under reduced motion. The fill mode is `backwards`, never `both`: a forwards fill keeps a
+   `transform` on the entered child for as long as the marker stays, which makes it the containing block of any
+   `position: fixed` descendant rendered inline. */
 .root > [data-route-enter="rise"] {
-  animation: route-rise var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: route-rise var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .root > [data-route-enter="fade"] {
-  animation: route-fade var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: route-fade var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 @keyframes route-rise {

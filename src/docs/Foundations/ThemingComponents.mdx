@@ -1,0 +1,148 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { PatternHeader } from "../patterns/PatternHeader";
+import { DocTable } from "../blocks/DocTable";
+import * as PageHeaderStories from "../../components/PageHeader/PageHeader.stories";
+import * as StatTileStories from "../../components/StatTile/StatTile.stories";
+import * as CardStories from "../../components/Card/Card.stories";
+import * as AttentionListStories from "../../components/AttentionList/AttentionList.stories";
+
+<Meta title="Foundations/Theming components" />
+
+<PatternHeader
+  kind="Foundation"
+  title="Theming components"
+  summary="Component tokens: restyle a component from your own stylesheet, without forking it."
+/>
+
+The semantic tokens (`--lufia-color-*`, `--lufia-font-*`) restyle the whole system. When a product needs more than a new
+palette, such as a wider eyebrow tracking or a heavier card shadow, the components named below expose a **component
+token**: a custom property that overrides one decision in one component.
+
+## How it works
+
+- A component reads `var(--lufia-<component>-<part>, <default>)`. The default is the value the component always had, so
+  nothing changes until you set the property.
+- The tokens are **not** declared by the package. Set them on `:root`, on your theme selector, or on any ancestor of the
+  component, so the cascade does what you expect (a section of the page can differ from the rest).
+- Prefer pointing them at semantic tokens (`var(--lufia-color-text-accent)`) so they follow light, dark and brand
+  themes. A literal value is fine for sizes and tracking.
+- Sizes and spacing are in `rem`, tracking in `em`.
+
+## PageHeader
+
+<DocTable
+  label="PageHeader tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-page-header-eyebrow-color`", "`--lufia-color-text-subtle`", "Eyebrow colour"],
+    ["`--lufia-page-header-eyebrow-tracking`", "`0.08em`", "Eyebrow letter-spacing"],
+    [
+      "`--lufia-page-header-eyebrow-dash-size`",
+      "`0` (no dash)",
+      "Length of a rule before the eyebrow. Any non-zero length turns it on",
+    ],
+    ["`--lufia-page-header-eyebrow-dash-gap`", "`0`", "Space between the dash and the eyebrow text"],
+    ["`--lufia-page-header-title-size`", "`2xl`, `3xl` from 48rem", "Title font size at every width"],
+    ["`--lufia-page-header-title-tracking`", "`normal`", "Title letter-spacing"],
+  ]}
+/>
+
+<Canvas of={PageHeaderStories.ThemedByTokens} />
+
+## StatTile
+
+<DocTable
+  label="StatTile tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-stat-tile-label-color`", "`--lufia-color-text-muted`", "Label colour"],
+    ["`--lufia-stat-tile-label-size`", "`--lufia-font-size-2xs`", "Label font size"],
+    ["`--lufia-stat-tile-label-tracking`", "`0.09em`", "Label letter-spacing"],
+    ["`--lufia-stat-tile-value-size`", "`--lufia-font-size-3xl`", "Figure font size"],
+    [
+      "`--lufia-stat-tile-value-size-narrow`",
+      "`--lufia-font-size-2xl`",
+      "Figure font size when the tile is under 12rem wide",
+    ],
+  ]}
+/>
+
+<Canvas of={StatTileStories.ThemedByTokens} />
+
+## Card
+
+`divider` is a prop (it switches the header rule on); the rest are tokens.
+
+<DocTable
+  label="Card tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-card-header-padding`", "the `padding` prop", "Header padding (shorthand)"],
+    ["`--lufia-card-body-padding`", "the `padding` prop", "Body padding (shorthand)"],
+    ["`--lufia-card-shadow`", "`--lufia-shadow-sm`", "Resting shadow"],
+    [
+      "`--lufia-card-divider-color`",
+      "`--lufia-color-border-subtle`",
+      "Colour of the header rule drawn by `divider`",
+    ],
+  ]}
+/>
+
+<Canvas of={CardStories.ThemedByTokens} />
+
+## AttentionList
+
+`barStyle="edge" | "inset"` is a prop; the rest are tokens.
+
+<DocTable
+  label="AttentionList tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-attention-list-bar-width`", "`0.25rem`", "Width of the tone bar, in both styles"],
+    [
+      "`--lufia-attention-list-bar-inset`",
+      "`0.5rem`",
+      "Distance of the inset bar from the row edges (`inset` only)",
+    ],
+  ]}
+/>
+
+<Canvas of={AttentionListStories.ThickBar} />
+
+## An example theme
+
+```css
+:root {
+  /* Eyebrows: accent colour, wide tracking, a leading dash */
+  --lufia-page-header-eyebrow-color: var(--lufia-color-text-accent);
+  --lufia-page-header-eyebrow-tracking: 0.16em;
+  --lufia-page-header-eyebrow-dash-size: 1.5rem;
+  --lufia-page-header-eyebrow-dash-gap: 0.5rem;
+  --lufia-page-header-title-tracking: -0.02em;
+
+  /* Stat tiles: quieter label, bigger figure */
+  --lufia-stat-tile-label-tracking: 0.14em;
+  --lufia-stat-tile-value-size: 2.5rem;
+
+  /* Cards: roomier, ruled header, deeper shadow */
+  --lufia-card-header-padding: 1rem 1.5rem;
+  --lufia-card-body-padding: 1.5rem;
+  --lufia-card-shadow: var(--lufia-shadow-lg);
+
+  /* Attention lists: slightly thicker bar */
+  --lufia-attention-list-bar-width: 0.3125rem;
+}
+```
+
+```tsx
+<Card title="Needs attention" divider flush>
+  <AttentionList barStyle="inset" items={items} aria-label="Needs attention" />
+</Card>
+```
+
+## Rules for adding a component token
+
+1. Name it `--lufia-<component>-<part>-<property>`, in kebab case. Document it here and in the component's page.
+2. The fallback is the value the component used before, so adding a token is never a visual change.
+3. Point colour tokens at semantic tokens by default; never at primitives.
+4. A new token is a minor release. Renaming or removing one is breaking.

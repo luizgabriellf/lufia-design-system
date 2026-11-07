@@ -21,7 +21,7 @@
   background: var(--lufia-color-bg-surface-solid);
   box-shadow: var(--lufia-shadow-lg);
   list-style: none;
-  animation: menu-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: menu-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .root[data-align="end"] .menu {

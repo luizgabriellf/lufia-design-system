@@ -33,7 +33,7 @@
   color: var(--lufia-color-text-default);
   box-shadow: var(--lufia-shadow-lg);
   overflow: hidden;
-  animation: panel-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: panel-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .panel:focus {

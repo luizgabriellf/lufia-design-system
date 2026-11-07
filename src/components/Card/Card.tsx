@@ -27,6 +27,8 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
    * tables that draw their own row padding and dividers.
    */
   flush?: boolean;
+  /** Draws a rule under the header, between it and the body. Its colour is `--lufia-card-divider-color`. */
+  divider?: boolean;
 };
 
 /**
@@ -46,6 +48,7 @@ export function Card({
   href,
   padding = "md",
   flush = false,
+  divider = false,
   className,
   children,
   ...rest
@@ -61,6 +64,7 @@ export function Card({
       data-padding={padding}
       data-interactive={interactive || undefined}
       data-flush={flush || undefined}
+      data-divider={divider || undefined}
     >
       {hasHeader ? (
         <div className={styles.header}>

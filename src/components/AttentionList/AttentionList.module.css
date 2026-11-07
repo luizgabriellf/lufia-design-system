@@ -1,4 +1,6 @@
 .root {
+  --attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem);
+
   margin: 0;
   padding: 0;
   list-style: none;
@@ -15,12 +17,31 @@
   padding-block: 0.625rem;
   padding-inline: 1rem;
   border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
-  border-inline-start: 0.25rem solid var(--item-bar);
+  border-inline-start: var(--attention-bar-width) solid var(--item-bar);
   color: var(--lufia-color-text-default);
 }
 
 .item:last-child {
   border-block-end: 0;
+}
+
+/* Inset: the bar is a rounded pill drawn inside the row, away from the card edge, instead of the row's own border. */
+.root[data-bar-style="inset"] .item {
+  position: relative;
+  padding-inline-start: calc(
+    var(--lufia-attention-list-bar-inset, 0.5rem) + var(--attention-bar-width) + 0.75rem
+  );
+  border-inline-start: 0;
+}
+
+.root[data-bar-style="inset"] .item::before {
+  position: absolute;
+  inset-block: var(--lufia-attention-list-bar-inset, 0.5rem);
+  inset-inline-start: var(--lufia-attention-list-bar-inset, 0.5rem);
+  inline-size: var(--attention-bar-width);
+  border-radius: var(--lufia-radius-full);
+  background: var(--item-bar);
+  content: "";
 }
 
 .item[data-tone="danger"] {
@@ -64,4 +85,10 @@
   display: flex;
   flex: none;
   align-items: center;
+}
+
+@media (forced-colors: active) {
+  .root[data-bar-style="inset"] .item::before {
+    background: CanvasText;
+  }
 }

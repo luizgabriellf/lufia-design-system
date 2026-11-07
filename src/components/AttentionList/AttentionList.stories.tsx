@@ -74,6 +74,19 @@ export const LongText: Story = {
     ],
   },
 };
+/** `barStyle="inset"` draws the tone bar as a rounded pill set in from the card edge. */
+export const InsetBar: Story = { args: { barStyle: "inset" } };
+/** The bar width is a component token. */
+export const ThickBar: Story = {
+  args: { barStyle: "inset" },
+  decorators: [
+    (Story) => (
+      <div style={{ "--lufia-attention-list-bar-width": "0.375rem" } as React.CSSProperties}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const Empty: Story = { args: { items: [] } };
 /** Inside a flush `Card`, the list spans the card and brings its own row padding. */
 export const InsideCard: Story = {

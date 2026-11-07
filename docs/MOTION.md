@@ -53,6 +53,12 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
 
 - **Token-driven CSS needs no extra work.** The end state is reached at once. The duration is `0.01ms` and not `0` so that
   `transitionend` and `animationend` still fire.
+- **Entrances fill `backwards`, never `both` or `forwards`.** A forwards fill keeps the animation's `transform` applied
+  after it ends, even as an identity matrix. That makes the element the containing block and a stacking context for any
+  `position: fixed` descendant rendered inside it, so a sheet or popover is positioned against the element and not the
+  viewport. `backwards` applies the first frame during the delay and nothing afterwards, so the resting state is
+  `transform: none`. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
+  (`src/test/animationFill.test.ts`) fails on any entrance that animates `transform` and fills forwards.
 - **Keyframes animate `from` only**, so the resting state is the end state and a disabled animation leaves the content
   visible.
 - **Endless loops (spinners, shimmer) are stopped, not shortened.** A near-zero endless loop is a strobe. Give them a
