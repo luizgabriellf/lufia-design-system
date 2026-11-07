@@ -30,9 +30,6 @@ jobs:
           HUSKY: "0"
       - name: Check (typecheck, lint, stylelint, format, tests, contrast, motion rules, AI-docs drift)
         run: npm run check
-      - name: Show formatting diff if verification fails
-        if: failure()
-        run: npx prettier scripts/check-next-consumer.mjs | diff -u scripts/check-next-consumer.mjs - || true
       - name: Coverage
         run: npm run test:coverage
       - name: Build package
