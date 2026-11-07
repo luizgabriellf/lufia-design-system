@@ -96,11 +96,48 @@ function containerIsNarrow(from: HTMLElement, rem: number): boolean | undefined 
   for (let node = from.parentElement; node; node = node.parentElement) {
     const style = getComputedStyle(node);
     if (style.containerType !== "inline-size" && style.containerType !== "size") continue;
+    const number = (value: string) => parseFloat(value) || 0;
+    const frame = number(style.borderLeftWidth) + number(style.borderRightWidth);
+    // The content box, with fractional pixels (`clientWidth` rounds): a scrollbar is not part of it either.
+    const scrollbar = Math.max(0, node.offsetWidth - node.clientWidth - frame);
     const width =
-      node.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
+      node.getBoundingClientRect().width -
+      frame -
+      number(style.paddingLeft) -
+      number(style.paddingRight) -
+      scrollbar;
     return width < CONTAINER_NARROW_REM * rem;
   }
   return undefined;
+}
+
+/** Whether `box` lies wholly outside the viewport or outside a scroll container that clips it. */
+function isScrolledAway(box: DOMRect, from: HTMLElement): boolean {
+  const outside = (clip: { left: number; right: number; top: number; bottom: number }) =>
+    box.bottom < clip.top || box.top > clip.bottom || box.right < clip.left || box.left > clip.right;
+  const viewport = document.documentElement;
+  if (outside({ left: 0, top: 0, right: viewport.clientWidth, bottom: viewport.clientHeight })) return true;
+  for (let node = from.parentElement; node && node !== document.body; node = node.parentElement) {
+    const { overflowX, overflowY } = getComputedStyle(node);
+    if (/^(visible|)$/.test(overflowX) && /^(visible|)$/.test(overflowY)) continue;
+    if (outside(node.getBoundingClientRect())) return true;
+  }
+  return false;
+}
+
+/**
+ * The portalled menu leaves the root's subtree, so what the subtree sets that the body does not is copied over: a theme or
+ * mode scope, the writing direction and language, and the root's inline `--lufia-*` custom properties.
+ */
+function inheritContext(root: HTMLElement, menu: HTMLElement, host: HTMLElement) {
+  for (const name of ["data-lufia-theme", "data-lufia-mode", "dir", "lang"]) {
+    const holder = root.closest<HTMLElement>(`[${name}]`);
+    // A holder that is also above the host (the document element, usually) already reaches the menu by inheritance.
+    if (holder && !holder.contains(host)) menu.setAttribute(name, holder.getAttribute(name) ?? "");
+  }
+  for (const name of Array.from(root.style)) {
+    if (name.startsWith("--lufia-")) menu.style.setProperty(name, root.style.getPropertyValue(name));
+  }
 }
 
 function DotsIcon() {
@@ -144,7 +181,6 @@ export function MoreActions({
   const [flipped, setFlipped] = useState(false);
   const [side, setSide] = useState<"bottom" | "top">("bottom");
   const [host, setHost] = useState<HTMLElement | null>(null);
-  const [containerNarrow, setContainerNarrow] = useState(false);
   const skipFocus = useRef(defaultOpen);
   const [initial, setInitial] = useState<"first" | "last">("first");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -204,25 +240,32 @@ export function MoreActions({
     setHost(rootRef.current?.closest<HTMLElement>(MODAL_HOST) ?? document.body);
   }, [floating]);
 
-  // Positions the menu from the trigger's box, before paint and again on scroll (of any ancestor) and resize. It lines up
-  // with the aligned edge unless that runs past the viewport and the other edge fits; it opens below unless there is not
-  // room and there is more above; and it never grows taller than the room it has.
+  // Positions the menu from the trigger's box, before paint and again on scroll (of any ancestor) and resize, at most once a
+  // frame. It lines up with the aligned edge unless that runs past the viewport and the other edge fits; it opens below
+  // unless there is not room and there is more above; and it never grows taller than the room it has. It closes when the
+  // trigger is hidden or scrolled out of sight. The container width is applied to the menu before measuring, and before the
+  // focus effect runs, so the entries that width reveals are counted.
   useLayoutEffect(() => {
     if (!floating || !host) return;
+    const root = rootRef.current;
+    const menuAtStart = menuRef.current;
+    if (root && menuAtStart) inheritContext(root, menuAtStart, host);
     const place = () => {
       const menu = menuRef.current;
       const trigger = triggerRef.current;
-      const root = rootRef.current;
       if (!menu || !trigger || !root) return;
+      const anchor = trigger.getBoundingClientRect();
+      // Closed without moving focus: the trigger cannot take it, and a menu left on screen would float with nothing to hang from.
+      if (trigger.getClientRects().length === 0 || isScrolledAway(anchor, trigger)) return setOpen(false);
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const gap = rem * 0.5;
-      setContainerNarrow(containerIsNarrow(root, rem) ?? false);
-      // Measured at the origin with no height cap, so the natural size decides.
+      menu.toggleAttribute("data-container-narrow", containerIsNarrow(root, rem) ?? false);
+      // Measured at the origin with no height cap, so the natural size decides; the list keeps its scroll position.
+      const scrolled = menu.scrollTop;
       menu.style.maxBlockSize = "";
       menu.style.left = "0px";
       menu.style.top = "0px";
       const box = menu.getBoundingClientRect();
-      const anchor = trigger.getBoundingClientRect();
       const width = document.documentElement.clientWidth;
       const height = document.documentElement.clientHeight;
       if (box.width === 0) return;
@@ -247,20 +290,31 @@ export function MoreActions({
       const used = Math.min(box.height, room);
       menu.style.left = `${left}px`;
       menu.style.top = `${up ? anchor.top - gap - used : anchor.bottom + gap}px`;
+      menu.scrollTop = scrolled;
       setFlipped(edge !== align);
       setSide(up ? "top" : "bottom");
     };
     place();
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      // lufia-motion-allow reduced-motion: the frame only throttles layout reads; nothing animates.
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        place();
+      });
+    };
     const onScroll = (event: Event) => {
       // A list that scrolls inside the menu does not move the trigger.
       if (event.target instanceof Node && menuRef.current?.contains(event.target)) return;
-      place();
+      schedule();
     };
     window.addEventListener("scroll", onScroll, true);
-    window.addEventListener("resize", place);
+    window.addEventListener("resize", schedule);
     return () => {
+      window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll, true);
-      window.removeEventListener("resize", place);
+      window.removeEventListener("resize", schedule);
     };
   }, [floating, host, align]);
 
@@ -453,7 +507,6 @@ export function MoreActions({
             list(`${styles.menu} ${styles.floating}`, {
               "data-align": resolved,
               "data-side": side,
-              "data-container-narrow": containerNarrow ? "" : undefined,
             }),
             host,
           )

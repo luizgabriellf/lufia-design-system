@@ -231,6 +231,33 @@ test.describe("more actions popover", () => {
   }
 });
 
+test.describe("more actions container scope", () => {
+  test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await openStory(page, "components-actions-moreactions--container-scope-narrow-host");
+    const trigger = page.getByRole("button", { name: "More actions" });
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    const menu = page.getByRole("menu", { name: "More actions" });
+    const share = menu.getByRole("menuitem", { name: "Share" });
+    await expect(share).toBeVisible();
+    await expect(share).toBeFocused();
+    await expect
+      .poll(async () =>
+        share.evaluate((item) => {
+          const box = item.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !!hit && item.contains(hit);
+        }),
+      )
+      .toBe(true);
+    await share.click();
+    await expect(menu).toHaveCount(0);
+  });
+});
+
 test.describe("page actions breakpoints", () => {
   const root = (page: Page) => page.locator('[data-lufia-part="page-actions"]');
 

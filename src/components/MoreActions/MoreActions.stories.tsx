@@ -252,3 +252,31 @@ export const InClippingCardNearTop: Story = {
     ),
   ],
 };
+
+/** `narrowOnlyScope="container"` in a 40rem host on a wide page: the narrow-only item is listed, because the host (not the page) is narrow. The portalled menu has left the host, so the width is read when it opens. */
+export const ContainerScopeNarrowHost: Story = {
+  name: "Container scope in a narrow host",
+  args: {
+    narrowOnlyScope: "container",
+    items: [
+      { key: "share", label: "Share", narrowOnly: true },
+      { key: "dup", label: "Duplicate" },
+    ],
+  },
+  decorators: [
+    (Story) => (
+      <div
+        data-testid="container-host"
+        style={{
+          containerType: "inline-size",
+          inlineSize: "40rem",
+          display: "flex",
+          justifyContent: "flex-end",
+          minBlockSize: "12rem",
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};

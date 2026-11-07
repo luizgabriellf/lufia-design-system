@@ -253,6 +253,16 @@ describe("MoreActions", () => {
   });
 
   describe("placement", () => {
+    // One placement per frame in the component; the tests run the frame at once.
+    beforeEach(() => {
+      vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+        callback(0);
+        return 0; // a real id is never 0; the component reads 0 as "nothing scheduled", which suits a frame that ran at once
+      });
+      vi.stubGlobal("cancelAnimationFrame", () => {});
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
     const box = (left: number, top: number, width: number, height: number) =>
       ({
         left,
@@ -271,14 +281,25 @@ describe("MoreActions", () => {
       triggerTop = 20,
       menuWidth = 200,
       menuHeight = 100,
-    }: { triggerLeft?: number; triggerTop?: number; menuWidth?: number; menuHeight?: number } = {}) {
+      boxOf,
+    }: {
+      triggerLeft?: number;
+      triggerTop?: number;
+      menuWidth?: number;
+      menuHeight?: number;
+      /** A box for an element the test cares about, such as a container; the rest get the trigger's. */
+      boxOf?: (element: HTMLElement) => DOMRect | undefined;
+    } = {}) {
       withLayout();
       vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
         this: HTMLElement,
       ) {
-        return this.getAttribute("role") === "menu"
-          ? box(0, 0, menuWidth, menuHeight)
-          : box(triggerLeft, triggerTop, 40, 30);
+        return (
+          boxOf?.(this) ??
+          (this.getAttribute("role") === "menu"
+            ? box(0, 0, menuWidth, menuHeight)
+            : box(triggerLeft, triggerTop, 40, 30))
+        );
       });
       Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: 300 });
       Object.defineProperty(document.documentElement, "clientHeight", { configurable: true, value: 300 });
@@ -401,12 +422,11 @@ describe("MoreActions", () => {
         { key: "a", label: "Always" },
       ];
 
-      async function inContainer(width: number | null) {
-        measure({ triggerLeft: 200 });
+      /** A host that declares `container-type: inline-size` and is `width` px wide with 16px of padding on each side. */
+      function containerHost(width: number | null) {
         const host = document.createElement("div");
         document.body.append(host);
         if (width !== null) {
-          Object.defineProperty(host, "clientWidth", { configurable: true, value: width });
           const real = window.getComputedStyle.bind(window);
           vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) =>
             element === host
@@ -418,6 +438,23 @@ describe("MoreActions", () => {
               : real(element, pseudo),
           );
         }
+        measure({
+          triggerLeft: 200,
+          boxOf: (element) => (element === host && width !== null ? box(0, 0, width, 100) : undefined),
+        });
+        return host;
+      }
+
+      /** Layout as CSS decides it: a container-scope entry is hidden unless the menu carries `data-container-narrow`. */
+      function cssLayout() {
+        vi.spyOn(Element.prototype, "getClientRects").mockImplementation(function (this: Element) {
+          const hidden = this.closest("li[data-narrow-only]") && !this.closest("[data-container-narrow]");
+          return (hidden ? [] : [new DOMRect(0, 0, 10, 10)]) as unknown as DOMRectList;
+        });
+      }
+
+      async function inContainer(width: number | null) {
+        const host = containerHost(width);
         const user = userEvent.setup();
         const view = render(<MoreActions label="More" items={list} narrowOnlyScope="container" />, {
           container: host,
@@ -430,14 +467,124 @@ describe("MoreActions", () => {
       }
 
       it("marks the menu narrow when the container content box is below 50rem", async () => {
-        expect(await inContainer(831)).toHaveAttribute("data-container-narrow"); // 799 content
-        // 50rem is 800px at the default root size: 799 is narrow, 800 is not.
+        // 831.5 wide less 32 of padding is a content box of 799.5: fractional pixels count.
+        expect(await inContainer(831.5)).toHaveAttribute("data-container-narrow");
       });
 
       it("leaves the menu unmarked in a wide container and with no container at all", async () => {
-        expect(await inContainer(900)).not.toHaveAttribute("data-container-narrow");
+        expect(await inContainer(832)).not.toHaveAttribute("data-container-narrow"); // exactly 800
         expect(await inContainer(null)).not.toHaveAttribute("data-container-narrow");
       });
+
+      it("counts the revealed narrow-only item on the first open, so focus lands on it", async () => {
+        const host = containerHost(700);
+        cssLayout();
+        const user = userEvent.setup();
+        render(<MoreActions label="More" items={list} narrowOnlyScope="container" />, { container: host });
+        screen.getByRole("button", { name: "More" }).focus();
+        await user.keyboard("{ArrowDown}");
+        expect(screen.getByRole("menuitem", { name: "Narrow item" })).toHaveFocus();
+      });
+
+      it("moves focus into a menu whose items are all narrow-only", async () => {
+        const host = containerHost(700);
+        cssLayout();
+        const user = userEvent.setup();
+        render(
+          <MoreActions
+            label="More"
+            items={[
+              { key: "a", label: "First narrow", narrowOnly: true },
+              { key: "b", label: "Second narrow", narrowOnly: true },
+            ]}
+            narrowOnlyScope="container"
+          />,
+          { container: host },
+        );
+        await user.click(screen.getByRole("button", { name: "More" }));
+        expect(screen.getByRole("menuitem", { name: "First narrow" })).toHaveFocus();
+      });
+    });
+
+    it("closes, leaving focus alone, when the trigger is hidden while open", async () => {
+      measure({ triggerLeft: 200 });
+      const { menu } = await open();
+      expect(menu).toBeInTheDocument();
+      vi.spyOn(Element.prototype, "getClientRects").mockReturnValue([] as unknown as DOMRectList);
+      act(() => {
+        window.dispatchEvent(new Event("resize"));
+      });
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "More" })).not.toHaveFocus();
+    });
+
+    it("closes when the trigger scrolls out of the viewport", async () => {
+      measure({ triggerLeft: 200 });
+      await open();
+      measure({ triggerLeft: 200, triggerTop: -200 });
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    });
+
+    it("closes when the trigger is clipped out by a scroll container", async () => {
+      measure({ triggerLeft: 200 });
+      const scroller = document.createElement("div");
+      document.body.append(scroller);
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) =>
+        element === scroller
+          ? ({ overflowX: "visible", overflowY: "auto" } as CSSStyleDeclaration)
+          : real(element, pseudo),
+      );
+      const user = userEvent.setup();
+      render(<MoreActions label="More" items={items} />, { container: scroller });
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      // The scroller's box is 0..100 tall; the trigger now sits at 120.
+      measure({
+        triggerLeft: 200,
+        triggerTop: 120,
+        boxOf: (element) => (element === scroller ? box(0, 0, 300, 100) : undefined),
+      });
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      scroller.remove();
+    });
+
+    it("keeps the list's scroll position when it repositions", async () => {
+      measure({ triggerLeft: 200 });
+      const { menu } = await open();
+      menu.scrollTop = 30;
+      act(() => {
+        window.dispatchEvent(new Event("resize"));
+      });
+      expect(menu.scrollTop).toBe(30);
+    });
+
+    it("copies the theme scope, direction and the root's custom properties onto the portalled menu", async () => {
+      measure({ triggerLeft: 200 });
+      const scope = document.createElement("section");
+      scope.setAttribute("data-lufia-theme", "scoped");
+      scope.setAttribute("data-lufia-mode", "dark");
+      scope.setAttribute("dir", "rtl");
+      scope.setAttribute("lang", "ar");
+      document.body.append(scope);
+      const user = userEvent.setup();
+      render(<MoreActions label="More" items={items} style={{ "--lufia-color-accent": "red" } as never} />, {
+        container: scope,
+      });
+      await user.click(screen.getByRole("button", { name: "More" }));
+      const menu = screen.getByRole("menu");
+      expect(menu).toHaveAttribute("data-lufia-theme", "scoped");
+      expect(menu).toHaveAttribute("data-lufia-mode", "dark");
+      expect(menu).toHaveAttribute("dir", "rtl");
+      expect(menu).toHaveAttribute("lang", "ar");
+      expect(menu.style.getPropertyValue("--lufia-color-accent")).toBe("red");
+      scope.remove();
     });
   });
 
@@ -689,7 +836,14 @@ describe("MoreActions", () => {
   });
 
   it("marks the narrow-only scope on the root and entries, viewport by default", async () => {
-    const { user, trigger, container } = setup([{ key: "a", label: "Export", narrowOnly: true }]);
+    // Narrow, so the all-narrow-only root is laid out (a hidden root cannot be opened).
+    vi.restoreAllMocks();
+    withLayout({ narrow: true });
+    const user = userEvent.setup();
+    const { container } = render(
+      <MoreActions label="More actions" items={[{ key: "a", label: "Export", narrowOnly: true }]} />,
+    );
+    const trigger = screen.getByRole("button", { name: "More actions" });
     expect(container.querySelector("[data-narrow-scope]")).toHaveAttribute("data-narrow-scope", "viewport");
     await user.click(trigger);
     expect(screen.getByRole("menuitem", { name: "Export" }).closest("li")).toHaveAttribute(

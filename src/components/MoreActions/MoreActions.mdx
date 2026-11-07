@@ -53,6 +53,14 @@ the room it has, and follows the button on scroll (of any ancestor) and resize. 
 render, hydration) the menu renders in place. In `narrowOnlyScope="container"` the portalled menu reads the container's
 width when it opens, and on resize, because it has left the container its `@container` query would reach.
 
+Because the menu leaves the component's subtree once mounted, find it by role (`getByRole("menu")`), not inside the
+component's root. What the subtree set that the body does not is copied onto the menu: a nested `data-lufia-theme` or
+`data-lufia-mode` scope, `dir` and `lang`, and any `--lufia-*` custom properties in the root's inline `style`. Custom
+properties set by a stylesheet rule on an ancestor are not copied; set them on the theme scope or on `:root`. The menu
+closes, without moving focus, when its button becomes hidden or scrolls out of view. Stacking is `--lufia-z-dropdown`; a
+page with a sticky or fixed layer above it (the menu is on the body, outside that layer's stacking context) raises
+`--lufia-z-dropdown` on `:root`, the way `--lufia-overlay-z` is raised for the sheet.
+
 <Canvas of={Stories.InClippingCardNearBottom} story={{ inline: false, height: "24rem" }} />
 <Canvas of={Stories.InClippingCardNearTop} story={{ inline: false, height: "24rem" }} />
 

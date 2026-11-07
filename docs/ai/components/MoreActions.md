@@ -119,3 +119,4 @@ phrase.
 - `components-actions-moreactions--open-a-dialog-from-a-menu-item`
 - `components-actions-moreactions--in-clipping-card-near-bottom`
 - `components-actions-moreactions--in-clipping-card-near-top`
+- `components-actions-moreactions--container-scope-narrow-host`

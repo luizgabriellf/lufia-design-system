@@ -6570,6 +6570,10 @@
           {
             "export": "InClippingCardNearTop",
             "id": "components-actions-moreactions--in-clipping-card-near-top"
+          },
+          {
+            "export": "ContainerScopeNarrowHost",
+            "id": "components-actions-moreactions--container-scope-narrow-host"
           }
         ]
       },
