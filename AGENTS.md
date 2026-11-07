@@ -62,7 +62,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 6. `npm run contrast` (WCAG 2.2 AA for every text and UI pair, every theme and mode)
 7. `npm run verify:motion` (motion rules over `src`)
 8. `npm run build` (tsup plus type declarations)
-9. `npm run verify:ai-docs` (AI layer is not stale; see `docs/ai/README.md`)
+9. `npm run verify:ai-docs` (AI layer is not stale and leaks no denylisted identifier; see `docs/ai/README.md`)
 10. `npm run build-storybook` (also publishes the llms files into `storybook-static`)
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
 12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app)
@@ -143,6 +143,14 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 | Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`), `.github/workflows/pages.yml`    |
 | Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                  |
 | Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                |
+
+## Leak gate
+
+`npm run verify:ai-docs` also runs `scripts/ai/verify-leaks.mjs`, which scans the generated AI files, the shipped docs, the
+changesets, the stories and the MDX pages for identifiers of the consuming apps (hard rule 1). The denylist is
+`scripts/ai/leak-tokens.json`: only SHA-256 hashes of lowercase tokens, so the repository never names what it protects.
+To add a token, hash it with `node scripts/ai/hash-token.mjs <word>` and append the hash to `hashes`. Never write the word
+itself in a file, a commit message or a PR. A failure prints the file, the line and a hash prefix, not the word.
 
 ## Keeping this file true
 
