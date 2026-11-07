@@ -1,5 +1,17 @@
 # @lufia/design-system
 
+## 0.9.0
+
+### Minor Changes
+
+- [#37](https://github.com/luizgabriellf/lufia-design-system/pull/37) [`70fd390`](https://github.com/luizgabriellf/lufia-design-system/commit/70fd3909d042d36b2b0025a9dab606abd32401b6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Charts: add `ColumnChart` (single or stacked columns on one baseline, per-series tones, a legend and a hidden data table, `--lufia-column-chart-plot-height`); `BarList` gets `reference` (a dashed reference tick on every track, described by its label) and `titleVisibility="hidden"` (screen-reader-only title); `ProgressBar` gets opt-in `animateChanges` (a `transform: scaleX` transition, none under reduced motion). All off by default.
+
+- [#37](https://github.com/luizgabriellf/lufia-design-system/pull/37) [`70fd390`](https://github.com/luizgabriellf/lufia-design-system/commit/70fd3909d042d36b2b0025a9dab606abd32401b6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `StatTile` with `loading` changes its default rendering (not opt-in): the skeleton now holds one line per `delta` and `hint` you pass, a placeholder where a `sparkline` is passed, and a `1lh` value height (with a rem fallback for engines without `lh`), so the loaded tile keeps its exact height. Pass the same `delta`, `hint` and `sparkline` while loading as when loaded. `Badge` reads its corner radius from `--lufia-badge-radius`, falling back to the current pill.
+
+- [#37](https://github.com/luizgabriellf/lufia-design-system/pull/37) [`70fd390`](https://github.com/luizgabriellf/lufia-design-system/commit/70fd3909d042d36b2b0025a9dab606abd32401b6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Forms: `FormField` parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`). Behaviour change: the children now sit inside a `data-lufia-part="control"` wrapper element (`display: contents`), so direct-child selectors on the field root (`.f > input`, `:nth-child`) no longer reach the control. `LufiaProvider` gets a `required` label that is the default `requiredLabel` of `FormField` and `RadioGroup` (an explicit prop still wins). `RadioGroup` gets `variant="card"` and per-option `meta` and `content` slots. New `SwitchInput`, a native `<input type="checkbox" role="switch">` whose value is read from the form; `Switch` is unchanged. `LufiaLabels` gains a required `required` key, so code that builds a complete `LufiaLabels` object must add it.
+
+- [#37](https://github.com/luizgabriellf/lufia-design-system/pull/37) [`70fd390`](https://github.com/luizgabriellf/lufia-design-system/commit/70fd3909d042d36b2b0025a9dab606abd32401b6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Overlays: export `hasOpenOverlay()` and `overlayDepth()`, public readers of the shared overlay stack, so apps stop reading the global key. `Modal` publishes the height its sticky header covers as `--lufia-modal-header-block-size` on the panel (kept current with a `ResizeObserver`, `0px` with `scrollShadow`), so sticky content in the body can use it as its offset.
+
 ## 0.8.0
 
 ### Minor Changes
