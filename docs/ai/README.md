@@ -1,0 +1,50 @@
+# AI layer
+
+Files that let coding agents use and change this repository without guessing. Everything here is product-agnostic.
+
+| File                           | Audience                  | Origin                                                                                                         |
+| ------------------------------ | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` (repository root)  | Agents changing the repo  | Hand-written; `CLAUDE.md`, `.github/copilot-instructions.md` and `.cursor/rules/design-system.mdc` point to it |
+| `docs/ai/CONSUMING.md`         | Agents using the package  | Hand-written                                                                                                   |
+| `docs/ai/components.json`      | Both                      | Generated from the TypeScript types, MDX and stories                                                           |
+| `docs/ai/components/<Name>.md` | Both                      | Generated, one spec per exported component                                                                     |
+| `docs/ai/llms.txt`             | Agents browsing the site  | Generated index, format from llmstxt.org                                                                       |
+| `docs/ai/llms-full.txt`        | Agents that want one file | Generated: consuming guide, motion rules and every spec                                                        |
+
+## How the manifest is generated
+
+`scripts/ai/build-manifest.mjs` uses the TypeScript compiler API. For each component directory re-exported from
+`src/index.ts` it reads the exports of the directory's index barrel and, per export:
+
+- a component: the props of its first parameter (JSDoc as description, `@default` or the destructuring default as default,
+  union members merged, native element attributes counted but not listed);
+- a hook or function: its signature and parameters.
+
+It adds the category, summary and WAI-ARIA pattern from `src/docs/taxonomy.ts`, the status, usage example, when-to-use
+lists, keyboard table and accessibility notes from the component's `.mdx`, the story ids from its `.stories.tsx`, and the
+`--lufia-*` tokens read by its CSS Module. The output has no timestamp and no package version, so it only changes when a
+component changes. `scripts/ai/render.mjs` turns the manifest into the specs and llms files.
+
+To improve a spec, improve its source: JSDoc on the props, or a section in the MDX. Never edit the generated files.
+
+## Regenerate
+
+```bash
+npm run build:ai-docs     # writes docs/ai/components/, components.json, llms.txt, llms-full.txt
+npm run verify:ai-docs    # the drift gate
+```
+
+## The drift gate
+
+`npm run verify:ai-docs` (part of `npm run check` and so of CI) fails when:
+
+- a generated file differs from a fresh regeneration, is missing, or is stale (a spec for a removed component);
+- a component exported from `src/index.ts` is missing from `components.json` or has no spec;
+- `AGENTS.md`, this file, `CONSUMING.md` or the Copilot file reference a path or an `npm run` script that does not exist;
+- `CLAUDE.md` is not exactly `@AGENTS.md`, or the Cursor rule or Copilot file does not point to `AGENTS.md`.
+
+## Publishing
+
+`npm run build-storybook` ends with `scripts/ai/publish.mjs`, which copies the files into `storybook-static`, so the GitHub
+Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `components.json`, plus `/ai/CONSUMING.md` and
+`/ai/components/<Name>.md` (the targets of the links in `llms.txt`). `docs/` also ships in the npm package files list.

@@ -1,0 +1,89 @@
+# TextInput
+
+> A single-line text field with optional prefix and suffix.
+
+- Status: beta
+- Category: Forms
+- Import: `import { TextInput } from "@lufia/design-system/components/TextInput"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/TextInput](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/TextInput)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-forms-textinput--docs)
+
+## Purpose
+
+A single-line text control: a native `<input>` in a bordered box, with optional prefix and suffix slots for units, signs and
+icons.
+
+## When to use
+
+- Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
+- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
+
+## When not to use
+
+- More than one line of text: use `Textarea`.
+- A choice from a known list: use `Select` or `Combobox`.
+- Searching: use `SearchInput`, which adds a clear button and debouncing.
+
+## API
+
+### `TextInput`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `prefix` | `ReactNode` | no |  | Content before the text: a unit, a currency sign, a decorative icon (give an icon `aria-hidden`). |
+| `suffix` | `ReactNode` | no |  | Content after the text: a unit, a button. |
+| `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
+| `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
+| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+
+Other native element attributes pass through to the root element.
+
+## Example
+
+```tsx
+import { FormField } from "@lufia/design-system/components/FormField";
+import { TextInput } from "@lufia/design-system/components/TextInput";
+
+<FormField label="Amount" hint="Without tax." error={errors.amount}>
+  <TextInput name="amount" prefix="EUR" inputMode="decimal" />
+</FormField>;
+```
+
+## Accessibility
+
+- Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.
+- The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`
+- Height is at least 44px; the text is 16px so iOS does not zoom on focus.
+
+## Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+## Tokens
+
+Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
+
+## Content guidelines
+
+Placeholders show an example ("Quarterly report"), never an instruction and never the label again. Units go in the prefix or
+suffix, not in the label. Keep error text next to the field, in the `FormField`.
+
+## Stories
+
+- `components-forms-textinput--default`
+- `components-forms-textinput--with-value`
+- `components-forms-textinput--with-hint`
+- `components-forms-textinput--required`
+- `components-forms-textinput--invalid`
+- `components-forms-textinput--disabled`
+- `components-forms-textinput--read-only`
+- `components-forms-textinput--prefix`
+- `components-forms-textinput--suffix`
+- `components-forms-textinput--prefix-and-suffix`
+- `components-forms-textinput--with-icon`
+- `components-forms-textinput--password`
+- `components-forms-textinput--long-text`
+- `components-forms-textinput--phone-320`
+- `components-forms-textinput--right-to-left`
+- `components-forms-textinput--all-themes`

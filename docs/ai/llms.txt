@@ -1,0 +1,117 @@
+# Lufia Design System
+
+> Accessible, themeable React 19 components, design tokens and motion primitives (@lufia/design-system). Styled with CSS Modules over `--lufia-*` semantic tokens, safe for Server Components, with every user-facing string passed in as a prop.
+
+The package is pre-1.0 and not on npm yet: consuming apps install from a git tag. Components carry a status (alpha, beta, stable); read it before relying on an API. Import each component from its own subpath, for example `@lufia/design-system/components/Button`.
+
+## Start here
+
+- [Consuming the package](https://luizgabriellf.github.io/lufia-design-system/ai/CONSUMING.md): install, theme setup, provider, RSC rules, conventions.
+- [llms-full.txt](https://luizgabriellf.github.io/lufia-design-system/llms-full.txt): this index with the consuming guide, motion rules and every component spec inlined.
+- [components.json](https://luizgabriellf.github.io/lufia-design-system/components.json): machine-readable manifest generated from the TypeScript types (props, types, defaults, status, a11y, story ids).
+- [Storybook](https://luizgabriellf.github.io/lufia-design-system/): live examples, theme and viewport controls.
+
+## Components: Actions
+
+- [ActionIcons](https://luizgabriellf.github.io/lufia-design-system/ai/components/ActionIcons.md): A small, consistent set of stroke icons for common row and page actions. (beta)
+- [Button](https://luizgabriellf.github.io/lufia-design-system/ai/components/Button.md): The control for an action: a native button, or a link that looks like one. (beta)
+- [IconButton](https://luizgabriellf.github.io/lufia-design-system/ai/components/IconButton.md): A button with only an icon, which therefore requires an accessible name. (beta)
+- [Link](https://luizgabriellf.github.io/lufia-design-system/ai/components/Link.md): Navigation inside text, routed through the adapter set on LufiaProvider. (beta)
+- [MoreActions](https://luizgabriellf.github.io/lufia-design-system/ai/components/MoreActions.md): An overflow menu that collects the secondary actions of a row or a page. (beta)
+- [PageActions](https://luizgabriellf.github.io/lufia-design-system/ai/components/PageActions.md): The action bar of a page: one primary action, the rest collapsed on narrow screens. (beta)
+
+## Components: Forms
+
+- [Checkbox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Checkbox.md): A checkbox with a mixed state, for independent on/off choices. (beta)
+- [Combobox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Combobox.md): A searchable single-select input with async options, following the APG combobox pattern. (beta)
+- [FileField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FileField.md): A file picker with drag and drop, validation and a list of chosen files. (beta)
+- [FormField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FormField.md): Label, hint and error wired to any control, so the control stays accessible by default. (beta)
+- [PendingSubmit](https://luizgabriellf.github.io/lufia-design-system/ai/components/PendingSubmit.md): A submit button that reads the pending state of its form and prevents double submits. (beta)
+- [RadioGroup](https://luizgabriellf.github.io/lufia-design-system/ai/components/RadioGroup.md): A set of radios where exactly one choice applies. (beta)
+- [SearchInput](https://luizgabriellf.github.io/lufia-design-system/ai/components/SearchInput.md): A search field with a clear button, optional debounce and a shortcut hint. (beta)
+- [SegmentedToggle](https://luizgabriellf.github.io/lufia-design-system/ai/components/SegmentedToggle.md): A compact single-choice control for switching between a few views or modes. (beta)
+- [Select](https://luizgabriellf.github.io/lufia-design-system/ai/components/Select.md): A native select styled with tokens, for choosing one option from a short list. (beta)
+- [Switch](https://luizgabriellf.github.io/lufia-design-system/ai/components/Switch.md): An on/off control whose change takes effect immediately. (beta)
+- [Textarea](https://luizgabriellf.github.io/lufia-design-system/ai/components/Textarea.md): A multi-line text field that can show a character count. (beta)
+- [TextInput](https://luizgabriellf.github.io/lufia-design-system/ai/components/TextInput.md): A single-line text field with optional prefix and suffix. (beta)
+
+## Components: Overlays
+
+- [CommandPalette](https://luizgabriellf.github.io/lufia-design-system/ai/components/CommandPalette.md): A keyboard-first launcher that filters commands and pages. (beta)
+- [ConfirmDialog](https://luizgabriellf.github.io/lufia-design-system/ai/components/ConfirmDialog.md): A modal question that has to be answered, with a destructive variant. (beta)
+- [Modal](https://luizgabriellf.github.io/lufia-design-system/ai/components/Modal.md): A dialog that interrupts the page and traps focus until it is dismissed. (beta)
+
+## Components: Navigation
+
+- [AppShell](https://luizgabriellf.github.io/lufia-design-system/ai/components/AppShell.md): The application frame: sidebar, content area and the phone navigation sheet. (beta)
+- [NavRow](https://luizgabriellf.github.io/lufia-design-system/ai/components/NavRow.md): A row that links to a destination, for lists of places and settings. (beta)
+- [PageHeader](https://luizgabriellf.github.io/lufia-design-system/ai/components/PageHeader.md): The title row of a page with eyebrow, description and actions. (beta)
+- [Pagination](https://luizgabriellf.github.io/lufia-design-system/ai/components/Pagination.md): Previous, next and numbered pages for long lists. (beta)
+- [PeerNav](https://luizgabriellf.github.io/lufia-design-system/ai/components/PeerNav.md): Links or tabs for moving between sibling views of the same page. (beta)
+- [SectionHeader](https://luizgabriellf.github.io/lufia-design-system/ai/components/SectionHeader.md): The title row of one section of a page: heading, description and actions. (beta)
+- [Stepper](https://luizgabriellf.github.io/lufia-design-system/ai/components/Stepper.md): Shows progress through a short, ordered flow. (beta)
+
+## Components: Data display
+
+- [ActivityList](https://luizgabriellf.github.io/lufia-design-system/ai/components/ActivityList.md): A feed of what happened with its time, optionally on a timeline rail. (beta)
+- [AttentionList](https://luizgabriellf.github.io/lufia-design-system/ai/components/AttentionList.md): A short list of items that need a decision, with a tone bar and an action. (beta)
+- [Badge](https://luizgabriellf.github.io/lufia-design-system/ai/components/Badge.md): A short status or count label in a semantic tone. (beta)
+- [BarList](https://luizgabriellf.github.io/lufia-design-system/ai/components/BarList.md): Horizontal bars with the name and the value as text, on one shared scale. (beta)
+- [BulletBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/BulletBar.md): A value as a bar against a target tick, comparable across rows. (beta)
+- [Card](https://luizgabriellf.github.io/lufia-design-system/ai/components/Card.md): A bordered surface that groups related content, optionally interactive. (beta)
+- [DetailAttentionCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailAttentionCard.md): A high-signal card for deadlines and risk, with a tone mark and an optional action. (beta)
+- [DetailList](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailList.md): Label and value pairs for the details of one record. (beta)
+- [DetailSectionCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailSectionCard.md): A titled card that holds one section of a detail page. (beta)
+- [ProgressBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/ProgressBar.md): A determinate progress bar with a native progressbar role. (beta)
+- [SortableTh](https://luizgabriellf.github.io/lufia-design-system/ai/components/SortableTh.md): A table header cell that sorts a column and announces the order. (beta)
+- [Sparkline](https://luizgabriellf.github.io/lufia-design-system/ai/components/Sparkline.md): A word-sized trend chart with no axes, drawn in SVG. (beta)
+- [StatTile](https://luizgabriellf.github.io/lufia-design-system/ai/components/StatTile.md): A key figure with its label, change and hint, optionally a link to its detail. (beta)
+- [StatusTimeline](https://luizgabriellf.github.io/lufia-design-system/ai/components/StatusTimeline.md): A vertical timeline of states with their dates. (beta)
+- [TableToolbar](https://luizgabriellf.github.io/lufia-design-system/ai/components/TableToolbar.md): The search, filter and action row above a table. (beta)
+
+## Components: Feedback
+
+- [EmptyState](https://luizgabriellf.github.io/lufia-design-system/ai/components/EmptyState.md): What to show when a list or panel has nothing yet, with the one next step. (beta)
+- [SuccessCheck](https://luizgabriellf.github.io/lufia-design-system/ai/components/SuccessCheck.md): An animated check mark for a completed action. (beta)
+- [Toast](https://luizgabriellf.github.io/lufia-design-system/ai/components/Toast.md): A transient message that confirms an action without taking focus. (beta)
+
+## Components: Motion
+
+- [AnimatedNumber](https://luizgabriellf.github.io/lufia-design-system/ai/components/AnimatedNumber.md): Counts a number to its new value and respects reduced motion. (beta)
+- [ChangeHighlight](https://luizgabriellf.github.io/lufia-design-system/ai/components/ChangeHighlight.md): Briefly highlights content that changed, so the change is noticed. (beta)
+- [Collapse](https://luizgabriellf.github.io/lufia-design-system/ai/components/Collapse.md): Animates the height of content that opens and closes. (beta)
+- [Reveal](https://luizgabriellf.github.io/lufia-design-system/ai/components/Reveal.md): Fades and lifts content in as it enters, once. (beta)
+- [RouteTransition](https://luizgabriellf.github.io/lufia-design-system/ai/components/RouteTransition.md): Fades the content region in when the page changes, with no router dependency. (beta)
+- [Skeleton](https://luizgabriellf.github.io/lufia-design-system/ai/components/Skeleton.md): A placeholder with the shape of the content that is loading. (beta)
+- [Stagger](https://luizgabriellf.github.io/lufia-design-system/ai/components/Stagger.md): Children that enter one after another, capped in length and still under reduced motion. (beta)
+
+## Components: Utilities
+
+- [ChartKit](https://luizgabriellf.github.io/lufia-design-system/ai/components/ChartKit.md): 
+- [LufiaProvider](https://luizgabriellf.github.io/lufia-design-system/ai/components/LufiaProvider.md): Sets the link adapter and the aria-only labels once, at the root of an app. (beta)
+- [VisuallyHidden](https://luizgabriellf.github.io/lufia-design-system/ai/components/VisuallyHidden.md): Hides text visually and keeps it for assistive technology. (beta)
+
+## Components: Hooks
+
+- [useBodyScrollLock](https://luizgabriellf.github.io/lufia-design-system/ai/components/useBodyScrollLock.md): Locks page scrolling while an overlay is open, without layout shift. (beta)
+- [useDismiss](https://luizgabriellf.github.io/lufia-design-system/ai/components/useDismiss.md): Calls back on Escape or an outside press, for popovers and menus. (beta)
+- [useFocusTrap](https://luizgabriellf.github.io/lufia-design-system/ai/components/useFocusTrap.md): Keeps Tab inside a container and restores focus when it closes. (beta)
+- [useMediaQuery](https://luizgabriellf.github.io/lufia-design-system/ai/components/useMediaQuery.md): Subscribes a component to a CSS media query, safe for server rendering. (beta)
+- [useModalState](https://luizgabriellf.github.io/lufia-design-system/ai/components/useModalState.md): Open, close and the element to return focus to, for a controlled modal. (beta)
+- [usePagination](https://luizgabriellf.github.io/lufia-design-system/ai/components/usePagination.md): Computes the page range with ellipses for a paginator. (beta)
+- [usePrefersReducedMotion](https://luizgabriellf.github.io/lufia-design-system/ai/components/usePrefersReducedMotion.md): Reads the reduced-motion preference, for code that animates in JavaScript. (beta)
+- [useSlidingIndicator](https://luizgabriellf.github.io/lufia-design-system/ai/components/useSlidingIndicator.md): Measures the active item so an indicator can slide to it. (beta)
+- [useStepDirection](https://luizgabriellf.github.io/lufia-design-system/ai/components/useStepDirection.md): Tells a stepper whether it is moving forward or back. (beta)
+
+## Docs
+
+- [Standards checklist](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/STANDARDS.md): What every component must meet: tokens, a11y, API conventions, status labels.
+- [Motion rules](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/MOTION.md): Motion principles, tokens, reduced-motion policy and the lufia-verify-motion CLI.
+
+## Optional
+
+- [Roadmap](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/ROADMAP.md): Rules for every component and the delivery phases.
+- [Contributing](https://github.com/luizgabriellf/lufia-design-system/blob/main/CONTRIBUTING.md): Workflow, definition of done, changesets, versioning.
+- [Architecture decisions](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/adr/README.md): Why tokens are DTCG, how it is distributed, why widgets are custom.
+- [Changelog](https://github.com/luizgabriellf/lufia-design-system/blob/main/CHANGELOG.md): Released changes; read before upgrading.
+- [Source repository](https://github.com/luizgabriellf/lufia-design-system)

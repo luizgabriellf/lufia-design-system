@@ -10,3 +10,7 @@ docs/STANDARDS.md
 .github/pull_request_template.md
 .github/PULL_REQUEST_TEMPLATE
 .storybook/public/fonts
+docs/ai/components/
+docs/ai/components.json
+docs/ai/llms.txt
+docs/ai/llms-full.txt
