@@ -617,3 +617,51 @@ describe("Modal", () => {
     });
   });
 });
+
+describe("Modal migration hooks", () => {
+  it("marks every part with data-lufia-part and applies per-part class names", async () => {
+    render(
+      <Modal
+        open
+        onClose={() => {}}
+        title="Edit profile"
+        description="Changes apply at once."
+        footer={<button type="button">Save</button>}
+        className="legacy-root"
+        classNames={{
+          layer: "x-layer",
+          backdrop: "x-backdrop",
+          frame: "x-frame",
+          panel: "x-panel",
+          header: "x-header",
+          title: "x-title",
+          description: "x-description",
+          body: "x-body",
+          footer: "x-footer",
+          close: "x-close",
+        }}
+      >
+        <input aria-label="Name" />
+      </Modal>,
+    );
+    for (const name of [
+      "layer",
+      "backdrop",
+      "frame",
+      "panel",
+      "header",
+      "title",
+      "description",
+      "body",
+      "footer",
+      "close",
+    ]) {
+      const element = document.querySelector<HTMLElement>(`[data-lufia-part="${name}"]`);
+      expect(element, name).toBeInTheDocument();
+      expect(element, name).toHaveClass(`x-${name}`);
+    }
+    expect(screen.getByRole("dialog")).toHaveClass("legacy-root");
+    expect(screen.getByRole("button", { name: "Close" })).toHaveAttribute("data-lufia-part", "close");
+    expect(await axe(document.body)).toHaveNoViolations();
+  });
+});

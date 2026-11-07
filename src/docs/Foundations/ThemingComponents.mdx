@@ -5,6 +5,7 @@ import * as PageHeaderStories from "../../components/PageHeader/PageHeader.stori
 import * as StatTileStories from "../../components/StatTile/StatTile.stories";
 import * as CardStories from "../../components/Card/Card.stories";
 import * as AttentionListStories from "../../components/AttentionList/AttentionList.stories";
+import * as ToastStories from "../../components/Toast/Toast.stories";
 
 <Meta title="Foundations/Theming components" />
 
@@ -178,3 +179,29 @@ token**: a custom property that overrides one decision in one component.
 2. The fallback is the value the component used before, so adding a token is never a visual change.
 3. Point colour tokens at semantic tokens by default; never at primitives.
 4. A new token is a minor release. Renaming or removing one is breaking.
+
+## Toast
+
+The notification stack is portaled to the document body, so set these on `:root` or your theme selector. The width tokens
+apply above a phone; on a phone the stack spans the screen. `ToastProvider` also takes `viewportClassName`.
+
+<DocTable
+  label="Toast tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-toast-width`", "`24rem`", "Width of the stack"],
+    ["`--lufia-toast-min-width`", "`auto`", "Minimum width of the stack"],
+    ["`--lufia-toast-max-width`", "`calc(100% - 2 * var(--lufia-space-4))`", "Maximum width of the stack"],
+    ["`--lufia-toast-gap`", "`--lufia-space-3`", "Space between toasts"],
+    ["`--lufia-toast-padding-block`", "`--lufia-space-3`", "Toast padding, top and bottom"],
+    [
+      "`--lufia-toast-padding-inline`",
+      "`--lufia-space-4` at the start, `--lufia-space-3` at the end",
+      "Toast padding on both sides. `--lufia-toast-padding-inline-start` and `-end` set one side and win over it",
+    ],
+    ["`--lufia-toast-align-items`", "`flex-start`", "Cross-axis alignment of icon, message and buttons"],
+    ["`--lufia-toast-line-height`", "`--lufia-font-line-height-normal`", "Line height of the toast text"],
+  ]}
+/>
+
+<Canvas of={ToastStories.ThemedByTokens} />

@@ -41,6 +41,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`. |
+| `classNames` | `ModalClassNames` | no |  | Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a stable `data-lufia-part` attribute: `layer`, `backdrop`, `frame`, `panel`, `header`, `title`, `description`, `body`, `footer`, `close`. |
 | `headerAction` | `ReactNode` | no |  | Extra controls placed beside the close button in the header. |
 | `footer` | `ReactNode` | no |  | Content of the footer bar, usually the actions. The bar is left out when this is empty. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `labels.close`. |
@@ -57,6 +58,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
+- `ModalClassNames`: `{ layer?: string | undefined; backdrop?: string | undefined; frame?: string | undefined; panel?: string | undefined; header?: string | undefined; title?: string | undefined; description?: string | undefined; body?: string | undefined; footer?: string | undefined; close?: string | undefined; }`
 - `ModalSize`: `"sm" | "md" | "lg" | "xl"`
 
 ## Example
@@ -123,6 +125,7 @@ primary action sits on top.
 - `components-overlays-modal--title-ellipsis`
 - `components-overlays-modal--scroll-shadow`
 - `components-overlays-modal--custom-size`
+- `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`
 - `components-overlays-modal--top-sheet-on-phone`
 - `components-overlays-modal--native-top-layer`

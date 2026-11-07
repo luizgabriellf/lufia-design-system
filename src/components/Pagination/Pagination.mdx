@@ -62,6 +62,14 @@ class on every control and leaves out the built-in control look, for an app that
 <Canvas of={Stories.Compact} />
 <Canvas of={Stories.CustomButtonClass} />
 
+### Native disabled
+
+By default an unavailable previous or next control is `aria-disabled`: it stays focusable so focus is not lost when the last
+page is reached. `disabledMode="native"` renders a real `disabled` attribute instead, for apps whose styles and tests rely on
+`:disabled`. The control then leaves the tab order. Links (`hrefFor`) always use `aria-disabled`.
+
+<Canvas of={Stories.NativeDisabled} />
+
 </Section>
 
 <Section id="props">

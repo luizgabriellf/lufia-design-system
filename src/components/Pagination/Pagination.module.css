@@ -72,12 +72,15 @@
 }
 
 .control[aria-disabled="true"],
-.bare[aria-disabled="true"] {
+.bare[aria-disabled="true"],
+.control:disabled,
+.bare:disabled {
   opacity: var(--lufia-opacity-disabled);
   cursor: not-allowed;
 }
 
-.control[aria-disabled="true"]:hover {
+.control[aria-disabled="true"]:hover,
+.control:disabled:hover {
   background: transparent;
 }
 

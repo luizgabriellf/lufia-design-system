@@ -14,7 +14,7 @@ import { useLufia } from "../LufiaProvider";
 import { useSlidingIndicator } from "../useSlidingIndicator";
 import styles from "./PeerNav.module.css";
 
-export type PeerNavItem = {
+export type PeerNavItem<Href = string> = {
   /** Stable key, also the value reported to `onValueChange`. */
   key: string;
   label: string;
@@ -22,17 +22,24 @@ export type PeerNavItem = {
   description?: string;
   /** Decorative icon; hidden from assistive technology. */
   icon?: ReactNode;
-  /** Destination. When every item has one, the nav is a list of links; otherwise it is a tablist. */
-  href?: string;
+  /**
+   * Destination. When every item has one, the nav is a list of links; otherwise it is a tablist. A string by default; a
+   * different type (a router's typed route, a URL object) is allowed when the `linkComponent` set on `LufiaProvider` accepts it:
+   * it is handed to that component unchanged.
+   */
+  href?: Href;
   /** Id of the panel this tab controls (tabs only). */
   controls?: string;
   disabled?: boolean;
 };
 
-export type PeerNavProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onChange" | "defaultValue"> & {
+export type PeerNavProps<Href = string> = Omit<
+  HTMLAttributes<HTMLElement>,
+  "children" | "onChange" | "defaultValue"
+> & {
   /** Accessible name of the navigation or the tablist. Required: there is usually more than one on a page. */
   label: string;
-  items: readonly PeerNavItem[];
+  items: readonly PeerNavItem<Href>[];
   /** Key of the current item. Controlled. For links it is the page being shown. */
   value?: string;
   /** Initial key when `value` is not given (tabs only; links follow the page). */
@@ -75,7 +82,7 @@ const isPlainClick = (event: MouseEvent) =>
  * focus, arrow keys, Home and End. Mixing the two in one component would promise keyboard behaviour that half the items
  * do not have, so a single missing `href` makes all of them tabs.
  */
-export function PeerNav({
+export function PeerNav<Href = string>({
   label,
   items,
   value,
@@ -87,7 +94,7 @@ export function PeerNav({
   className,
   id,
   ...rest
-}: PeerNavProps) {
+}: PeerNavProps<Href>) {
   const { linkComponent: Link } = useLufia();
   const generatedId = useId();
   const baseId = id ?? generatedId;
@@ -129,7 +136,7 @@ export function PeerNav({
     };
   }, [current, scrolls]);
 
-  const content = (item: PeerNavItem) => (
+  const content = (item: PeerNavItem<Href>) => (
     <>
       {item.icon ? (
         <span className={styles.icon} aria-hidden="true">
@@ -162,7 +169,8 @@ export function PeerNav({
           return (
             <Link
               key={item.key}
-              href={item.href!}
+              // The provider's link type says `string`; an app that passes another `Href` supplies a link component that takes it.
+              href={item.href as string}
               data-peer-key={item.key}
               data-active={item.key === target || undefined}
               className={styles.item}

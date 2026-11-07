@@ -38,6 +38,42 @@ function Panel({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 `getFocusableElements(root)` is exported for code that needs the same notion of "tabbable".
 
+### The shared overlay stack
+
+`useFocusTrap` and `useDismiss` register every open layer on one stack, and only the topmost layer reacts to Escape and Tab.
+The stack lives on `globalThis.__lufiaOverlayStack`, not in a module variable, so duplicated copies of the package agree. It
+also has a small public API, for an overlay the package does not own, such as an app's own trap kept while it migrates:
+
+| Function                   | Does                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `registerOverlayLayer()`   | Pushes a layer on top and returns `{ isTop(), release() }`. `release()` is safe to repeat. |
+| `isTopOverlayLayer(layer)` | Whether `layer` is topmost. The same as `layer.isTop()`.                                   |
+
+Wrap a legacy trap so that it and the package's dialogs take turns:
+
+```tsx
+import { registerOverlayLayer } from "@lufia/design-system/components/useFocusTrap";
+
+function useLegacyTrap(open: boolean, onEscape: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const layer = registerOverlayLayer(); // now the topmost layer
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!layer.isTop()) return; // a package dialog opened above: leave Escape and Tab to it
+      if (event.key === "Escape") onEscape();
+      // ...the legacy Tab handling goes here, behind the same check
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      layer.release(); // always release, or the layer under it never becomes topmost again
+    };
+  }, [open, onEscape]);
+}
+```
+
+With this, a `ConfirmDialog` opened over the legacy layer handles one Escape and the legacy layer keeps its own for the next.
+
 </Section>
 
 <Section id="accessibility">

@@ -101,6 +101,16 @@ fixed header and footer with an edge shadow.
 <Canvas of={Stories.ThemedByVariables} />
 <Canvas of={Stories.ScrollShadow} />
 
+### Part hooks and class names
+
+Every part carries a stable `data-lufia-part` attribute: `layer`, `backdrop`, `frame`, `panel`, `header`, `title`,
+`description`, `body`, `footer` and `close`. They do not change between releases, so an app can target them in CSS and in test
+selectors while it migrates. `classNames` adds your own class to a part (`classNames={{ panel, header, body, footer, close,
+backdrop }}`, plus `layer`, `frame`, `title` and `description`); the root `className` still goes to the panel. In
+`renderAs="dialog"` mode there is no `layer`, `frame` or `backdrop` element: the backdrop is the native `::backdrop`.
+
+<Canvas of={Stories.PartClassNames} />
+
 ### Keep mounted and the native top layer
 
 `keepMounted` keeps the children mounted while the modal is closed (hidden and inert), so typed input and component state

@@ -29,7 +29,7 @@ a description and an icon. An indicator slides to the chosen one.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the navigation or the tablist. Required: there is usually more than one on a page. |
-| `items` | `readonly PeerNavItem[]` | yes |  |  |
+| `items` | `readonly PeerNavItem<Href>[]` | yes |  |  |
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
 | `onValueChange` | `((key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void)` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
@@ -41,7 +41,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
+- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: Href | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
 
 ## Example
 
@@ -99,6 +99,7 @@ Labels are one or two words. Descriptions are a short phrase and may be omitted;
 
 - `components-navigation-peernav--links`
 - `components-navigation-peernav--tabs`
+- `components-navigation-peernav--object-href`
 - `components-navigation-peernav--without-descriptions`
 - `components-navigation-peernav--without-icons`
 - `components-navigation-peernav--two-views`

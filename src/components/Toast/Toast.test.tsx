@@ -528,4 +528,17 @@ describe("useToast", () => {
     advanceAndSettle(1);
     expect(list().queryByText("Saved")).not.toBeInTheDocument();
   });
+
+  it("puts viewportClassName and a stable part hook on the notification region", () => {
+    setup({ viewportClassName: "legacy-viewport" });
+    const region = screen.getByRole("region", { name: "Notifications" });
+    expect(region).toHaveClass("legacy-viewport");
+    expect(region).toHaveAttribute("data-lufia-part", "viewport");
+  });
+
+  it("keeps its live regions mounted before any message, so the first one is announced", () => {
+    setup();
+    expect(document.querySelector('[role="alert"][aria-live="assertive"]')).toBeEmptyDOMElement();
+    expect(document.querySelector('[role="status"][aria-live="polite"]')).toBeEmptyDOMElement();
+  });
 });

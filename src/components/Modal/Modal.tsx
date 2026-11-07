@@ -24,6 +24,28 @@ export type ModalSize = "sm" | "md" | "lg" | "xl";
 
 const SIZE_STEPS: readonly string[] = ["sm", "md", "lg", "xl"];
 
+/** The parts of a `Modal` that accept an extra class name. */
+export type ModalClassNames = {
+  /** The wrapper around the backdrop and the frame (portal mode only). */
+  layer?: string;
+  /** The backdrop (portal mode only; native `dialog` mode uses `::backdrop`). */
+  backdrop?: string;
+  /** The positioning frame around the panel (portal mode only). */
+  frame?: string;
+  /** The dialog panel. Added after the root `className`. */
+  panel?: string;
+  header?: string;
+  title?: string;
+  /** The supporting text under the title, when `description` is set. */
+  description?: string;
+  body?: string;
+  footer?: string;
+  /** The close button. */
+  close?: string;
+};
+
+const cx = (...names: (string | null | undefined | false)[]) => names.filter(Boolean).join(" ");
+
 export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> & {
   /** Whether the modal is shown. Controlled: the modal never closes itself, it calls `onClose`. */
   open: boolean;
@@ -56,6 +78,11 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
    * inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`.
    */
   renderAs?: "portal" | "dialog";
+  /**
+   * Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a
+   * stable `data-lufia-part` attribute: `layer`, `backdrop`, `frame`, `panel`, `header`, `title`, `description`, `body`, `footer`, `close`.
+   */
+  classNames?: ModalClassNames;
   /** Extra controls placed beside the close button in the header. */
   headerAction?: ReactNode;
   /** Content of the footer bar, usually the actions. The bar is left out when this is empty. */
@@ -114,6 +141,7 @@ export function Modal({
   role = "dialog",
   scrollContainerSelectors,
   container,
+  classNames,
   className,
   style,
   children,
@@ -178,7 +206,8 @@ export function Modal({
     "data-title-wrap": titleWrap,
     "data-scroll-shadow": scrollShadow ? "" : undefined,
     style: customSize ? ({ ...style, "--lufia-modal-size": customSize } as CSSProperties) : style,
-    className: [styles.panel, native ? styles.native : null, className].filter(Boolean).join(" "),
+    "data-lufia-part": "panel",
+    className: cx(styles.panel, native && styles.native, className, classNames?.panel),
   };
 
   // A scrolling region must be reachable by keyboard (WCAG 2.1.1), so the body gets a tab stop only when it scrolls.
@@ -186,10 +215,11 @@ export function Modal({
 
   const content = (
     <>
-      <header className={styles.header}>
+      <header className={cx(styles.header, classNames?.header)} data-lufia-part="header">
         <h2
           id={titleId}
-          className={styles.title}
+          className={cx(styles.title, classNames?.title)}
+          data-lufia-part="title"
           title={titleWrap === "ellipsis" && typeof title === "string" ? title : undefined}
         >
           {title}
@@ -199,7 +229,8 @@ export function Modal({
           {hideCloseButton ? null : (
             <button
               type="button"
-              className={styles.close}
+              className={cx(styles.close, classNames?.close)}
+              data-lufia-part="close"
               aria-label={closeLabel ?? labels.close}
               disabled={busy}
               onClick={requestClose}
@@ -217,15 +248,23 @@ export function Modal({
           )}
         </div>
       </header>
-      <div className={styles.body} {...bodyProps}>
+      <div className={cx(styles.body, classNames?.body)} data-lufia-part="body" {...bodyProps}>
         {description ? (
-          <p id={descriptionId} className={styles.description}>
+          <p
+            id={descriptionId}
+            className={cx(styles.description, classNames?.description)}
+            data-lufia-part="description"
+          >
             {description}
           </p>
         ) : null}
         {children}
       </div>
-      {footer ? <footer className={styles.footer}>{footer}</footer> : null}
+      {footer ? (
+        <footer className={cx(styles.footer, classNames?.footer)} data-lufia-part="footer">
+          {footer}
+        </footer>
+      ) : null}
     </>
   );
 
@@ -243,9 +282,10 @@ export function Modal({
 
   if (keepMounted) {
     return createPortal(
-      <div className={styles.layer}>
+      <div className={cx(styles.layer, classNames?.layer)} data-lufia-part="layer">
         <div
-          className={styles.backdrop}
+          className={cx(styles.backdrop, classNames?.backdrop)}
+          data-lufia-part="backdrop"
           data-state={open ? "open" : "closed"}
           hidden={!open}
           aria-hidden="true"
@@ -257,7 +297,12 @@ export function Modal({
             pressedBackdrop.current = false;
           }}
         />
-        <div className={styles.frame} data-sheet={sheetPlacement} hidden={!open}>
+        <div
+          className={cx(styles.frame, classNames?.frame)}
+          data-lufia-part="frame"
+          data-sheet={sheetPlacement}
+          hidden={!open}
+        >
           <div {...(panelProps as HTMLAttributes<HTMLDivElement>)} ref={panelRef} data-kept="" hidden={!open}>
             {content}
           </div>
@@ -268,12 +313,13 @@ export function Modal({
   }
 
   return createPortal(
-    <div className={styles.layer}>
+    <div className={cx(styles.layer, classNames?.layer)} data-lufia-part="layer">
       <Reveal
         show={open}
         appear
         variant="fade"
-        className={styles.backdrop}
+        className={cx(styles.backdrop, classNames?.backdrop)}
+        data-lufia-part="backdrop"
         aria-hidden="true"
         onPointerDown={() => {
           pressedBackdrop.current = true;
@@ -288,7 +334,8 @@ export function Modal({
         show={open}
         appear
         variant={phone ? "rise" : "scale"}
-        className={styles.frame}
+        className={cx(styles.frame, classNames?.frame)}
+        data-lufia-part="frame"
         data-sheet={sheetPlacement}
       >
         <div {...(panelProps as HTMLAttributes<HTMLDivElement>)} ref={panelRef}>

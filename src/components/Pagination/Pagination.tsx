@@ -42,6 +42,13 @@ export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
    * built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it.
    */
   buttonClassName?: string;
+  /**
+   * How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps
+   * keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the
+   * tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use
+   * `aria-disabled`, since a link cannot be disabled.
+   */
+  disabledMode?: "aria" | "native";
 };
 
 type Entry = number | "start-gap" | "end-gap";
@@ -79,6 +86,7 @@ export function Pagination({
   labels,
   variant = "default",
   buttonClassName,
+  disabledMode = "aria",
   className,
   ...rest
 }: PaginationProps) {
@@ -115,7 +123,13 @@ export function Pagination({
         {text}
       </Link>
     ) : (
-      <button type="button" {...common} onClick={choose}>
+      <button
+        type="button"
+        {...common}
+        aria-disabled={enabled || disabledMode === "native" ? undefined : true}
+        disabled={!enabled && disabledMode === "native" ? true : undefined}
+        onClick={choose}
+      >
         {text}
       </button>
     );

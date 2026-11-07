@@ -118,6 +118,8 @@ export type ToastProviderProps = {
   container?: "auto" | Element | null;
   /** Names an app uses for tones, mapped to built-in ones: `{ ok: "success", warn: "warning" }`. */
   toneAliases?: Readonly<Record<string, ToastTone>>;
+  /** A class for the notification region (the fixed viewport that holds the stacks), for an app's own placement or width rules. */
+  viewportClassName?: string;
 };
 
 /**
@@ -133,6 +135,7 @@ export function ToastProvider({
   duration = DEFAULT_DURATION_MS,
   container = "auto",
   toneAliases,
+  viewportClassName,
 }: ToastProviderProps) {
   const { labels } = useLufia();
   const auto = container === "auto";
@@ -357,7 +360,8 @@ export function ToastProvider({
             <div
               role="region"
               aria-label={labels.notifications}
-              className={styles.viewport}
+              className={[styles.viewport, viewportClassName].filter(Boolean).join(" ")}
+              data-lufia-part="viewport"
               data-placement={placement}
               data-lufia-inert-exempt=""
             >

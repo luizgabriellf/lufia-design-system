@@ -1960,9 +1960,12 @@ with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `size` | `ModalSize \| (string & {})` | no | `"sm"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet. Default `md`. |
 | `open` | `boolean` | yes |  | Whether the modal is shown. Controlled: the modal never closes itself, it calls `onClose`. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `labels.close`. |
 | `container` | `Element \| DocumentFragment \| null` | no |  | Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported. |
+| `sheetPlacement` | `"bottom" \| "top"` | no |  | Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. |
+| `classNames` | `ConfirmDialogClassNames` | no |  | Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a stable `data-lufia-part` attribute: those of `Modal`, plus `cancel` and `confirm` on the buttons. |
 | `title` | `ReactNode` | yes |  | What is being decided, as a question or an action: "Delete invoice 2041?". |
 | `message` | `ReactNode` | yes |  | The consequence, in a sentence or two. Read out when the dialog opens. |
 | `confirmLabel` | `string` | yes |  | Text of the confirming button. Name the action ("Delete invoice"), not "OK". |
@@ -1984,8 +1987,8 @@ useConfirmDialog(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confi
 
 ### Types
 
-- `ConfirmDialogProps`: `Pick<ModalProps, "className" | "open" | "closeLabel" | "container"> & { title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; onConfirm: () => void; onCancel: () => void; destructive?: boolean | undefined; busy?: boolean | undefined; }`
-- `ConfirmOptions`: `{ title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; destructive?: boolean | undefined; }`
+- `ConfirmDialogClassNames`: `ModalClassNames & { cancel?: string | undefined; confirm?: string | undefined; }`
+- `ConfirmOptions`: `Pick<ConfirmDialogProps, "className" | "size" | "sheetPlacement" | "classNames"> & { title: ReactNode; message: ReactNode; confirmLabel: string; cancelLabel: string; destructive?: boolean | undefined; }`
 
 ### Example
 
@@ -2032,6 +2035,8 @@ the verb ("Delete invoice" / "Keep invoice"), never "Yes" / "No" or "OK".
 - `components-overlays-confirmdialog--default`
 - `components-overlays-confirmdialog--open-by-default`
 - `components-overlays-confirmdialog--destructive`
+- `components-overlays-confirmdialog--wide-top-sheet`
+- `components-overlays-confirmdialog--part-class-names`
 - `components-overlays-confirmdialog--busy`
 - `components-overlays-confirmdialog--slow-confirmation`
 - `components-overlays-confirmdialog--long-text`
@@ -2957,6 +2962,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`. |
+| `classNames` | `ModalClassNames` | no |  | Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a stable `data-lufia-part` attribute: `layer`, `backdrop`, `frame`, `panel`, `header`, `title`, `description`, `body`, `footer`, `close`. |
 | `headerAction` | `ReactNode` | no |  | Extra controls placed beside the close button in the header. |
 | `footer` | `ReactNode` | no |  | Content of the footer bar, usually the actions. The bar is left out when this is empty. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `labels.close`. |
@@ -2973,6 +2979,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
+- `ModalClassNames`: `{ layer?: string | undefined; backdrop?: string | undefined; frame?: string | undefined; panel?: string | undefined; header?: string | undefined; title?: string | undefined; description?: string | undefined; body?: string | undefined; footer?: string | undefined; close?: string | undefined; }`
 - `ModalSize`: `"sm" | "md" | "lg" | "xl"`
 
 ### Example
@@ -3039,6 +3046,7 @@ primary action sits on top.
 - `components-overlays-modal--title-ellipsis`
 - `components-overlays-modal--scroll-shadow`
 - `components-overlays-modal--custom-size`
+- `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`
 - `components-overlays-modal--top-sheet-on-phone`
 - `components-overlays-modal--native-top-layer`
@@ -3483,6 +3491,7 @@ It is the view for `usePagination`.
 | `labels` | `PaginationLabels` | yes |  |  |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
+| `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |
 
 Other native element attributes pass through to the root element.
 
@@ -3543,6 +3552,7 @@ Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
 - `components-navigation-pagination--many-pages`
 - `components-navigation-pagination--without-total`
 - `components-navigation-pagination--more-siblings`
+- `components-navigation-pagination--native-disabled`
 - `components-navigation-pagination--compact`
 - `components-navigation-pagination--compact-links`
 - `components-navigation-pagination--custom-button-class`
@@ -3583,7 +3593,7 @@ a description and an icon. An indicator slides to the chosen one.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the navigation or the tablist. Required: there is usually more than one on a page. |
-| `items` | `readonly PeerNavItem[]` | yes |  |  |
+| `items` | `readonly PeerNavItem<Href>[]` | yes |  |  |
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
 | `onValueChange` | `((key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void)` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
@@ -3595,7 +3605,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
+- `PeerNavItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: Href | undefined; controls?: string | undefined; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -3653,6 +3663,7 @@ Labels are one or two words. Descriptions are a short phrase and may be omitted;
 
 - `components-navigation-peernav--links`
 - `components-navigation-peernav--tabs`
+- `components-navigation-peernav--object-href`
 - `components-navigation-peernav--without-descriptions`
 - `components-navigation-peernav--without-icons`
 - `components-navigation-peernav--two-views`
@@ -5575,6 +5586,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |
 | `container` | `Element \| "auto" \| null` | no | `"auto"` | Where the notification region is rendered. `"auto"` (default) hosts it inside the topmost open modal `<dialog>` while there is one, so toasts stay visible above a native top-layer dialog (a `Modal` with `renderAs="dialog"`), and in `document.body` otherwise. Pass an element to always render there, or `null` for `document.body` only. |
 | `toneAliases` | `Readonly<Record<string, ToastTone>>` | no |  | Names an app uses for tones, mapped to built-in ones: `{ ok: "success", warn: "warning" }`. |
+| `viewportClassName` | `string` | no |  | A class for the notification region (the fixed viewport that holds the stacks), for an app's own placement or width rules. |
 
 #### `useOptionalToast`
 
@@ -5597,7 +5609,7 @@ useToast(): ToastApi
 - `ToastAction`: `{ label: string; onAction: () => void; }`
 - `ToastOptions`: `{ message: ReactNode; tone?: ToastToneName | undefined; action?: ToastAction | undefined; duration?: number | null | undefined; id?: string | undefined; }`
 - `ToastPlacement`: `"bottom-end" | "bottom-start" | "top-end" | "top-start"`
-- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; }`
+- `ToastProviderProps`: `{ children: ReactNode; placement?: ToastPlacement | undefined; limit?: number | undefined; duration?: number | undefined; container?: Element | "auto" | null | undefined; toneAliases?: Readonly<Record<string, ToastTone>> | undefined; viewportClassName?: string | undefined; }`
 - `ToastTone`: `"info" | "success" | "warning" | "error"`
 - `ToastToneName`: `(string & {}) | ToastTone`
 
@@ -5621,6 +5633,7 @@ toast.info("Invoice moved to the trash.", { action: { label: "Undo", onAction: r
 Follows the WAI-ARIA Authoring Practices pattern: [Alert](https://www.w3.org/WAI/ARIA/apg/patterns/alert/).
 
 - Announcing is separate from showing. Visually hidden live regions (`role="alert"` for errors, `role="status"` for the
+- The announcer regions keep `role="alert"` and `role="status"` while empty, on purpose. A live region only announces
 - In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")`
 - Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a
 - The notification region stays live while a [Modal](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest
@@ -5645,7 +5658,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-slide`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-space-6`, `--lufia-toast-border-width`, `--lufia-toast-icon-size`, `--lufia-toast-offset-block`, `--lufia-toast-radius`, `--lufia-z-toast`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-slide`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-space-6`, `--lufia-toast-align-items`, `--lufia-toast-border-width`, `--lufia-toast-gap`, `--lufia-toast-icon-size`, `--lufia-toast-line-height`, `--lufia-toast-max-width`, `--lufia-toast-min-width`, `--lufia-toast-offset-block`, `--lufia-toast-padding-block`, `--lufia-toast-padding-inline`, `--lufia-toast-padding-inline-end`, `--lufia-toast-padding-inline-start`, `--lufia-toast-radius`, `--lufia-toast-width`, `--lufia-z-toast`.
 
 ### Content guidelines
 
@@ -5661,6 +5674,7 @@ somewhere in a toast that vanishes.
 - `components-feedback-toast--long-message`
 - `components-feedback-toast--phone`
 - `components-feedback-toast--above-a-native-dialog`
+- `components-feedback-toast--themed-by-tokens`
 - `components-feedback-toast--tone-aliases`
 - `components-feedback-toast--above-a-modal`
 
@@ -5886,7 +5900,7 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 
 - Status: beta
 - Category: Hooks
-- Import: `import { getFocusableElements, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
+- Import: `import { getFocusableElements, isTopOverlayLayer, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/useFocusTrap](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/useFocusTrap)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/hooks-usefocustrap--docs)
@@ -5910,6 +5924,8 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 | Name | Kind |
 | --- | --- |
 | `getFocusableElements` | function |
+| `isTopOverlayLayer` | function |
+| `registerOverlayLayer` | function |
 | `useFocusTrap` | hook |
 
 ### API
@@ -5920,6 +5936,22 @@ The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that
 
 ```ts
 getFocusableElements(root: HTMLElement): HTMLElement[]
+```
+
+#### `isTopOverlayLayer`
+
+Whether `layer` is the topmost registered layer. Same as `layer.isTop()`.
+
+```ts
+isTopOverlayLayer(layer: OverlayLayer): boolean
+```
+
+#### `registerOverlayLayer`
+
+Pushes a layer onto the stack shared by `useFocusTrap`, `useDismiss` and every other overlay that registers here, and returns a handle. Use it to make an overlay the package does not own (an app's legacy modal or trap) take part: the package's traps then leave Escape and Tab alone while it is on top, and it can ask `isTop()` before handling them itself. Release it when the overlay closes.
+
+```ts
+registerOverlayLayer(): OverlayLayer
 ```
 
 #### `useFocusTrap`
@@ -5938,6 +5970,7 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 
 ### Types
 
+- `OverlayLayer`: `{ isTop: () => boolean; release: () => void; }`
 - `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: "container" | "first" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
 
 ### Example

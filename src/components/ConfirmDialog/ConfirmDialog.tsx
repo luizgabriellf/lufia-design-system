@@ -1,10 +1,26 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Modal, type ModalProps } from "../Modal";
+import { Modal, type ModalClassNames, type ModalProps } from "../Modal";
 import styles from "./ConfirmDialog.module.css";
 
-export type ConfirmDialogProps = Pick<ModalProps, "open" | "closeLabel" | "container" | "className"> & {
+/** The parts of a `ConfirmDialog` that accept an extra class name: those of `Modal`, plus the two buttons. */
+export type ConfirmDialogClassNames = ModalClassNames & {
+  /** The cancelling button. */
+  cancel?: string;
+  /** The confirming button. */
+  confirm?: string;
+};
+
+export type ConfirmDialogProps = Pick<
+  ModalProps,
+  "open" | "closeLabel" | "container" | "className" | "size" | "sheetPlacement"
+> & {
+  /**
+   * Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a
+   * stable `data-lufia-part` attribute: those of `Modal`, plus `cancel` and `confirm` on the buttons.
+   */
+  classNames?: ConfirmDialogClassNames;
   /** What is being decided, as a question or an action: "Delete invoice 2041?". */
   title: ReactNode;
   /** The consequence, in a sentence or two. Read out when the dialog opens. */
@@ -41,6 +57,8 @@ export function ConfirmDialog({
   onCancel,
   destructive = false,
   busy = false,
+  size = "sm",
+  classNames,
   ...rest
 }: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +70,8 @@ export function ConfirmDialog({
       open={open}
       onClose={onCancel}
       role="alertdialog"
-      size="sm"
+      size={size}
+      classNames={classNames}
       title={title}
       description={message}
       busy={busy}
@@ -64,7 +83,8 @@ export function ConfirmDialog({
           <button
             ref={cancelRef}
             type="button"
-            className={styles.button}
+            className={[styles.button, classNames?.cancel].filter(Boolean).join(" ")}
+            data-lufia-part="cancel"
             data-variant="secondary"
             aria-disabled={busy || undefined}
             onClick={() => {
@@ -76,7 +96,8 @@ export function ConfirmDialog({
           <button
             ref={confirmRef}
             type="button"
-            className={styles.button}
+            className={[styles.button, classNames?.confirm].filter(Boolean).join(" ")}
+            data-lufia-part="confirm"
             data-variant={destructive ? "danger" : "primary"}
             aria-busy={busy || undefined}
             aria-disabled={busy || undefined}
@@ -93,7 +114,10 @@ export function ConfirmDialog({
   );
 }
 
-export type ConfirmOptions = {
+export type ConfirmOptions = Pick<
+  ConfirmDialogProps,
+  "size" | "sheetPlacement" | "className" | "classNames"
+> & {
   title: ReactNode;
   message: ReactNode;
   confirmLabel: string;

@@ -31,7 +31,10 @@ const meta = {
   component: Pagination,
   parameters: { layout: "padded" },
   args: { page: 3, totalPages: 12, total: 118, labels, onPageChange: () => {} },
-  argTypes: { variant: { control: "inline-radio", options: ["default", "compact"] } },
+  argTypes: {
+    variant: { control: "inline-radio", options: ["default", "compact"] },
+    disabledMode: { control: "inline-radio", options: ["aria", "native"] },
+  },
   render: (args) => <Stateful {...args} />,
   decorators: [
     (Story) => (
@@ -53,6 +56,8 @@ export const ManyPages: Story = { args: { page: 250, totalPages: 500, total: 499
 export const WithoutTotal: Story = { args: { total: undefined } };
 export const MoreSiblings: Story = { args: { page: 10, totalPages: 30, siblingCount: 2 } };
 /** Previous and next only, with the status line: for tables where the position matters more than a page number. */
+/** `disabledMode="native"` renders a real `disabled` attribute on the unavailable control instead of `aria-disabled`. */
+export const NativeDisabled: Story = { args: { page: 1, variant: "compact", disabledMode: "native" } };
 export const Compact: Story = { args: { variant: "compact" } };
 export const CompactLinks: Story = { args: { variant: "compact", hrefFor: (page) => `#page-${page}` } };
 /** The app supplies the control look through `buttonClassName`; the built-in look is left out. */

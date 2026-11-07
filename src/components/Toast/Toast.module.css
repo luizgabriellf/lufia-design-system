@@ -1,5 +1,8 @@
 /* Theming hooks, set in the consuming theme: --lufia-toast-icon-size, --lufia-toast-radius, --lufia-toast-border-width
-   (the tone stripe) and --lufia-toast-offset-block. */
+   (the tone stripe) and --lufia-toast-offset-block. Layout hooks, all defaulting to the values below: --lufia-toast-width (24rem),
+   --lufia-toast-min-width (auto), --lufia-toast-max-width, --lufia-toast-gap (the space between toasts),
+   --lufia-toast-padding-block, --lufia-toast-padding-inline (and -start / -end for one side), --lufia-toast-align-items
+   (flex-start) and --lufia-toast-line-height. The width tokens apply above a phone; on a phone the stack spans the screen. */
 
 /* The announcer holds a copy of each message for screen readers only. */
 .announcer {
@@ -21,8 +24,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--lufia-space-3);
-  max-inline-size: calc(100% - 2 * var(--lufia-space-4));
-  inline-size: 24rem;
+  max-inline-size: var(--lufia-toast-max-width, calc(100% - 2 * var(--lufia-space-4)));
+  min-inline-size: var(--lufia-toast-min-width, auto);
+  inline-size: var(--lufia-toast-width, 24rem);
   pointer-events: none;
 }
 
@@ -53,7 +57,7 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--lufia-space-3);
+  gap: var(--lufia-toast-gap, var(--lufia-space-3));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -64,9 +68,14 @@
   --toast-tone-bg: var(--lufia-color-status-neutral-bg);
 
   display: flex;
-  align-items: flex-start;
+  align-items: var(--lufia-toast-align-items, flex-start);
   gap: var(--lufia-space-3);
-  padding: var(--lufia-space-3) var(--lufia-space-3) var(--lufia-space-3) var(--lufia-space-4);
+  padding-block: var(--lufia-toast-padding-block, var(--lufia-space-3));
+  padding-inline: var(
+      --lufia-toast-padding-inline-start,
+      var(--lufia-toast-padding-inline, var(--lufia-space-4))
+    )
+    var(--lufia-toast-padding-inline-end, var(--lufia-toast-padding-inline, var(--lufia-space-3)));
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-surface-solid);
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
@@ -74,7 +83,7 @@
   border-radius: var(--lufia-toast-radius, var(--lufia-radius-card));
   box-shadow: var(--lufia-shadow-md);
   font-size: var(--lufia-font-size-md);
-  line-height: var(--lufia-font-line-height-normal);
+  line-height: var(--lufia-toast-line-height, var(--lufia-font-line-height-normal));
   pointer-events: auto;
 
   /* Animates `from` only: the resting state is the end state, and a disabled animation leaves the toast visible. */
@@ -186,6 +195,7 @@
   .viewport {
     inset-inline: var(--lufia-space-3);
     inline-size: auto;
+    min-inline-size: 0;
     max-inline-size: none;
   }
 }
