@@ -18,7 +18,11 @@ Files that let coding agents use and change this repository without guessing. Ev
 
 - a component: the props of its first parameter (JSDoc as description, `@default` or the destructuring default as default,
   union members merged, native element attributes counted but not listed);
-- a hook or function: its signature and parameters.
+- a hook or function: its signature and parameters; for a hook that returns an object type (`T` or `T | null`), also the
+  members of that type (`returnMembers`: name, type, required, JSDoc), so `useToast()` lists `show`, `dismiss` and the rest;
+- props typed as a union of forms (for example a button that is a `<button>` or, with `href`, a link): the flat `props`
+  list stays, and `variants` adds the discriminant prop and, per form, the props that set it apart (type, required,
+  JSDoc). The spec renders it as a "Variants" section.
 
 It adds the category, summary and WAI-ARIA pattern from `src/docs/taxonomy.ts`, the status, usage example, when-to-use
 lists, keyboard table and accessibility notes from the component's `.mdx`, the story ids from its `.stories.tsx`, and the
@@ -38,7 +42,9 @@ npm run ai:search -- "confirm deleting"  # ranked matches (--limit 1..20, --json
 npm run ai:show -- Button                # imports, props, example, accessibility, Storybook link
 ```
 
-Search terms are OR-ed and weighted by where they match (name, summary, guidance, category, prop names). Stopwords and
+Search terms are OR-ed and weighted by where they match (name, summary, guidance, category, prop names); the start of a
+word ("drop" in "dropdown", "dialog" in `ConfirmDialog`) counts for more than a match inside a word. Search does no
+synonyms, so a summary should use the plain word people search for. Stopwords and
 terms under two characters are dropped, a component matching more terms ranks higher, and an exact component name always
 comes first. It never infers anything: every prop, type and import comes from the manifest.
 
@@ -56,7 +62,10 @@ npm run verify:ai-docs    # the drift gate
 - a generated file differs from a fresh regeneration, is missing, or is stale (a spec for a removed component);
 - a component exported from `src/index.ts` is missing from `components.json` or has no spec;
 - `AGENTS.md`, this file, `CONSUMING.md` or the Copilot file reference a path or an `npm run` script that does not exist;
-- `CLAUDE.md` is not exactly `@AGENTS.md`, or the Cursor rule or Copilot file does not point to `AGENTS.md`.
+- `CLAUDE.md` is not exactly `@AGENTS.md`, or the Cursor rule or Copilot file does not point to `AGENTS.md`;
+- the leak gate (`scripts/ai/verify-leaks.mjs`) finds a denylisted identifier in a tracked file or in `dist/`. The denylist
+  is not in the repository: it comes from `LUFIA_LEAK_TOKENS` or a local config file, and the gate skips with a notice when
+  neither exists (see "Leak gate" in `AGENTS.md`). Output gives the file, the line and the token's index, never the word.
 
 ## Publishing
 

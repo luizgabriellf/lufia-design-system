@@ -62,7 +62,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 6. `npm run contrast` (WCAG 2.2 AA for every text and UI pair, every theme and mode)
 7. `npm run verify:motion` (motion rules over `src`)
 8. `npm run build` (tsup plus type declarations)
-9. `npm run verify:ai-docs` (AI layer is not stale; see `docs/ai/README.md`)
+9. `npm run verify:ai-docs` (AI layer is not stale and leaks no denylisted identifier when a denylist is configured; see `docs/ai/README.md`)
 10. `npm run build-storybook` (also publishes the llms files into `storybook-static`)
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
 12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app)
@@ -143,6 +143,19 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 | Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`), `.github/workflows/pages.yml`    |
 | Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                  |
 | Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                |
+
+## Leak gate
+
+`npm run verify:ai-docs` also runs `scripts/ai/verify-leaks.mjs`, which scans every tracked file (and `dist/` when it
+exists) for identifiers of the consuming apps (hard rule 1). The denylist is **never stored in the repository**, not even
+hashed: it is read from the `LUFIA_LEAK_TOKENS` environment variable (one lowercase word per line, or comma-separated)
+or, when that is unset, from the file `~/.config/lufia/leak-tokens` (one word per line). Matching ignores case and
+diacritics, splits camelCase, and also tries adjacent words joined (`foo-bar` matches `fooBar` and `foobar`). With no
+list configured the gate prints "verify:leaks skipped (no denylist configured)" and passes, so configure it locally.
+CI reads the list from the repository secret `LUFIA_LEAK_TOKENS` and scans again after `npm run build`; pull requests
+from forks have no secret and skip it. A failure prints the file, the line and the token's position in the list, never
+the token. To add one, append the word to the local file and update the secret; never write it in a file, a commit
+message or a PR.
 
 ## Keeping this file true
 
