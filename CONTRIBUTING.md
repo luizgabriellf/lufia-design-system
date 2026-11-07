@@ -12,7 +12,7 @@ npm run storybook  # http://127.0.0.1:6006
 npm run check      # typecheck, lint, stylelint, format, tests, contrast, motion rules
 ```
 
-Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
+Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:consumer:next` (run `build` first; builds a Next.js app against the packed package), `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
 
 ## Workflow
 

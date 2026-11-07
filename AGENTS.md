@@ -29,6 +29,7 @@ motion primitives, consumed by several applications.
 | `tokens/`                | DTCG token source; `npm run tokens` builds CSS, TS and JSON into `src/tokens/generated/`                 |
 | `docs/`                  | the standards, motion and roadmap docs, `docs/adr/`, and the AI layer in `docs/ai/`                      |
 | `scripts/`               | Token build, contrast check, postbuild; `scripts/ai/` builds the AI layer and holds the `ai:*` query CLI |
+| `tests/consumer/`        | Fixture apps that consume the packed package; `scripts/check-next-consumer.mjs` runs the Next.js one     |
 | `.storybook/`            | Storybook config and docs theme                                                                          |
 | `.github/workflows/`     | CI, Storybook Pages deploy, release, PR title check, CodeQL                                              |
 | `.changeset/`            | Pending release notes                                                                                    |
@@ -40,6 +41,7 @@ nvm use                      # Node version from .nvmrc
 npm ci                       # install and set up git hooks
 npm run storybook            # http://127.0.0.1:6006 (bound to loopback; also serves the MCP endpoint)
 npm run check                # the gate ladder below, minus build and build-storybook
+npm run test:consumer:next   # pack the build, install it in a Next.js app, assert SSR (needs npm run build first)
 npm run build:ai-docs        # regenerate docs/ai (manifest, specs, llms files)
 npm run ai:search -- "task"  # find components for a UI task (read-only; ai:show -- Name, ai:list)
 ```
@@ -48,7 +50,7 @@ Run heavy commands one at a time; `build` and `build-storybook` are memory hungr
 
 ## Gate ladder
 
-Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI also runs 8 (build), 10 (build-storybook) and 11 (coverage).
+Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and 9, CI also runs 8 (build), 10 (build-storybook), 11 (coverage) and 12 (Next.js consumer smoke).
 
 1. `npm run typecheck` (builds tokens, then `tsc --noEmit`)
 2. `npm run lint` (ESLint with React, hooks, jsx-a11y)
@@ -61,6 +63,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 9. `npm run verify:ai-docs` (AI layer is not stale; see `docs/ai/README.md`)
 10. `npm run build-storybook` (also publishes the llms files into `storybook-static`)
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
+12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app)
 
 ## Package rules
 
@@ -133,7 +136,7 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 | Change distribution or exports        | `docs/adr/0002-distribution.md`, `package.json` `exports`, `tsup.config.ts`                         |
 | Why widgets are custom, not a library | `docs/adr/0003-primitives-library.md`                                                               |
 | Cut or understand a release           | "Release process" above, `.changeset/`, `.github/workflows/release.yml`                             |
-| Change CI or the Pages deploy         | `.github/workflows/ci.yml`, `.github/workflows/pages.yml`                                           |
+| Change CI or the Pages deploy         | `.github/workflows/ci.yml` (jobs `verify` and `consumer`), `.github/workflows/pages.yml`            |
 | Change the AI layer itself            | `docs/ai/README.md`, `scripts/ai/`                                                                  |
 | Security, conduct, governance         | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                |
 
