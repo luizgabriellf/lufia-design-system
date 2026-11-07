@@ -301,15 +301,17 @@ test.describe("introduction page", () => {
     const preview = await openIntroduction(page);
     const card = preview.locator('a[href^="./?path=/docs/components-"]').first();
     await card.scrollIntoViewIfNeeded();
+    // Record transitionrun rather than polling getAnimations(): a short transition can finish before the first poll.
+    await card.evaluate((element) => {
+      element.setAttribute("data-transition-runs", "0");
+      element.addEventListener("transitionrun", () => {
+        element.setAttribute(
+          "data-transition-runs",
+          String(Number(element.getAttribute("data-transition-runs")) + 1),
+        );
+      });
+    });
     await card.hover();
-    await expect
-      .poll(() =>
-        card.evaluate(
-          (element) =>
-            element.ownerDocument.getAnimations().filter((animation) => animation instanceof CSSTransition)
-              .length,
-        ),
-      )
-      .toBeGreaterThan(0);
+    await expect.poll(async () => Number(await card.getAttribute("data-transition-runs"))).toBeGreaterThan(0);
   });
 });
