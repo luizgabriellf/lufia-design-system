@@ -98,9 +98,7 @@ export function searchComponents(manifest, query, limit = 8) {
 }
 
 export function inspectComponent(manifest, name) {
-  const component = manifest.components.find(
-    (item) => normalize(item.name) === normalize(name),
-  );
+  const component = manifest.components.find((item) => normalize(item.name) === normalize(name));
   if (!component) return null;
   return {
     name: component.name,
@@ -116,9 +114,7 @@ export function inspectComponent(manifest, name) {
     a11y: component.a11y,
     motion: component.motion,
     tokens: component.tokens,
-    storybook: component.story?.docsId
-      ? `${STORYBOOK_URL}?path=/docs/${component.story.docsId}`
-      : null,
+    storybook: component.story?.docsId ? `${STORYBOOK_URL}?path=/docs/${component.story.docsId}` : null,
     stories: component.story?.stories ?? [],
   };
 }
@@ -139,9 +135,7 @@ function run(argv) {
     return;
   }
   const json = args.includes("--json");
-  const positional = args.filter(
-    (arg, index) => !arg.startsWith("--") && args[index - 1] !== "--limit",
-  );
+  const positional = args.filter((arg, index) => !arg.startsWith("--") && args[index - 1] !== "--limit");
   const manifest = loadManifest();
   let result;
   if (command === "list") {
