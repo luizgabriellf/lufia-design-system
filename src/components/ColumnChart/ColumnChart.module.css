@@ -184,27 +184,35 @@
   /* Tones collapse to one colour, so each series gets its own fill pattern, in the columns and in the legend. */
   .segment,
   .legendItem::before {
-    --pattern: none;
-
     border: var(--lufia-border-width-thin) solid CanvasText;
-    background: Canvas var(--pattern);
+    background: Canvas;
     forced-color-adjust: none;
   }
 
-  [data-series="0"] {
-    --pattern: linear-gradient(CanvasText, CanvasText);
+  /* Scoped to the chart's own parts, and set on the swatch pseudo-element itself, so the legend matches the columns. */
+  .segment[data-series="0"],
+  .legendItem[data-series="0"]::before {
+    background: Canvas linear-gradient(CanvasText, CanvasText);
   }
 
-  [data-series="1"] {
-    --pattern: repeating-linear-gradient(45deg, CanvasText 0 2px, Canvas 2px 6px);
+  .segment[data-series="1"],
+  .legendItem[data-series="1"]::before {
+    background: Canvas repeating-linear-gradient(45deg, CanvasText 0 2px, Canvas 2px 6px);
   }
 
-  [data-series="2"] {
-    --pattern: radial-gradient(CanvasText 1.5px, transparent 1.5px) 0 0 / 6px 6px;
+  .segment[data-series="2"],
+  .legendItem[data-series="2"]::before {
+    background: Canvas radial-gradient(CanvasText 1.5px, transparent 1.5px) 0 0 / 6px 6px;
   }
 
-  [data-series="3"] {
-    --pattern: repeating-linear-gradient(90deg, CanvasText 0 2px, Canvas 2px 6px);
+  .segment[data-series="3"],
+  .legendItem[data-series="3"]::before {
+    background: Canvas repeating-linear-gradient(90deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  .segment[data-series="4"],
+  .legendItem[data-series="4"]::before {
+    background: Canvas repeating-linear-gradient(0deg, CanvasText 0 2px, Canvas 2px 6px);
   }
 
   .legendItem::before {

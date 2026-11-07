@@ -1753,7 +1753,7 @@ import { ColumnChart } from "@lufia/design-system/components/ColumnChart";
 - The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
 - Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
 - The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.
-- Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, repeating after four) in the columns and in the legend, so the legend stays matchable.
+- Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.
 - Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.
 - Print the figures people need as text beside the chart: the drawing has no value labels.
 

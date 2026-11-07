@@ -42,7 +42,7 @@ export type ColumnChartProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
 const DEFAULT_TONES: readonly ChartTone[] = ["accent", "neutral", "success", "warning", "danger"];
 const MAX_STAGGER = 6;
 /** Series told apart by a fill pattern in forced-colors mode, where tones collapse to one colour. */
-const PATTERNS = 4;
+const PATTERNS = 5;
 
 const clean = (value: number | undefined) =>
   value !== undefined && Number.isFinite(value) && value > 0 ? value : 0;

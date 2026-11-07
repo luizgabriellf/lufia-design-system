@@ -158,7 +158,13 @@ describe("ColumnChart", () => {
     expect(idx("li")).toEqual(["0", "1", "2"]);
     expect(idx("span[style]").slice(0, 3)).toEqual(["0", "1", "2"]);
     const forced = css.match(/@media \(forced-colors: active\) \{([\s\S]*)\n\}/)![1]!;
-    for (const n of [0, 1, 2, 3]) expect(forced).toContain(`[data-series="${n}"]`);
+    for (const n of [0, 1, 2, 3, 4]) {
+      // Scoped to the chart's parts, and set on the legend swatch pseudo-element itself (not inherited through a
+      // custom property the swatch would override).
+      expect(forced).toContain(`.segment[data-series="${n}"]`);
+      expect(forced).toContain(`.legendItem[data-series="${n}"]::before`);
+    }
+    expect(forced).not.toContain("--pattern");
   });
 
   it("hides the drawing from assistive technology, not the data", () => {
