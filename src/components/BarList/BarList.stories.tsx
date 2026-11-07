@@ -60,6 +60,26 @@ export const LongNames: Story = {
     ],
   },
 };
+export const LongValues: Story = {
+  args: {
+    valueWrap: true,
+    rows: [
+      {
+        key: "a",
+        name: "Norte",
+        value: "12 de 40 instalações verificadas, 3 com pendências críticas",
+        detail: "Atualizado ontem às 18:30, falta a vistoria de duas instalações",
+        amount: 12,
+      },
+      { key: "b", name: "Sul", value: "8 de 40", amount: 8 },
+      { key: "c", name: "Nome de região muito longo que tem de quebrar linha", value: "0", amount: 0 },
+    ],
+  },
+};
+export const LongValuesPhone320: Story = {
+  args: LongValues.args,
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const WithReference: Story = {
   args: { reference: { amount: 800, label: "Target: 800 per region" } },
 };
