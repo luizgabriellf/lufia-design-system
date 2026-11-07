@@ -44,7 +44,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `MoreActionItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; tone?: "danger" | "default" | undefined; narrowOnly?: boolean | undefined; }`
+- `MoreActionItem`: `{ key: string; label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; hint?: string | undefined; tone?: "danger" | "default" | undefined; narrowOnly?: boolean | undefined; }`
 
 ## Example
 

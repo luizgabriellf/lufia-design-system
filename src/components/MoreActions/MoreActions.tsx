@@ -18,6 +18,7 @@ import { useDismiss } from "../useDismiss";
 import { useFocusTrap } from "../useFocusTrap";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useMediaQuery } from "../useMediaQuery";
+import { VisuallyHidden } from "../VisuallyHidden";
 import type { ButtonVariant } from "../Button";
 import styles from "./MoreActions.module.css";
 
@@ -33,6 +34,11 @@ export type MoreActionItem = {
   href?: string;
   onSelect?: () => void;
   disabled?: boolean;
+  /**
+   * Short explanation, such as why the item is disabled. Shown as the native tooltip and read as the description of the
+   * item. Disabled items are already focusable (`aria-disabled`), so the hint is reachable by keyboard.
+   */
+  hint?: string;
   /** `"danger"` styles a destructive item. The label must still say what it does. */
   tone?: "default" | "danger";
   /** Shown only when the page is narrow, where the actions that stay visible on wide screens move into the menu. */
@@ -245,9 +251,13 @@ export function MoreActions({
   if (items.length === 0) return null;
   const resolved = flipped ? (align === "end" ? "start" : "end") : align;
   const hasIcons = items.some((item) => item.icon);
-  const entries = items.map((item) => {
+  const entries = items.map((item, index) => {
+    const hinted = item.hint !== undefined && item.hint !== "";
+    const hintId = `${menuId}-hint-${index}`;
     const props = {
       role: "menuitem",
+      title: hinted ? item.hint : undefined,
+      "aria-describedby": hinted ? hintId : undefined,
       tabIndex: -1,
       className: styles.item,
       "data-tone": item.tone === "danger" ? "danger" : undefined,
@@ -291,6 +301,11 @@ export function MoreActions({
             {content}
           </button>
         )}
+        {hinted ? (
+          <VisuallyHidden id={hintId} hidden>
+            {item.hint}
+          </VisuallyHidden>
+        ) : null}
       </li>
     );
   });

@@ -51,6 +51,26 @@ its stacking order above an app's own fixed bar with `--lufia-overlay-z`.
 
 <Canvas of={Stories.Phone390} />
 
+### Hints for disabled actions
+
+`hint` on an action (primary, secondary or a `MoreActions` item) is the native tooltip and the description of the control
+(`aria-describedby` to a visually hidden copy). A disabled action with a hint is `aria-disabled` and stays focusable, with
+activation ignored, so keyboard and screen reader users can reach the reason (the APG advice for disabled controls that
+need an explanation). Without a hint a disabled button stays natively disabled.
+
+<Canvas of={Stories.DisabledWithHint} />
+
+### App shell integration
+
+- `size="sm"` shrinks the buttons and the menu button for compact headers (default `"md"`).
+- `hideBelow="medium"` hides the whole row below 60rem, in CSS.
+- `primaryPlacement="external"` hides only the primary action below 60rem, for an app shell that renders it elsewhere (a
+  floating bar); it stays inline on wide screens.
+- The root carries `data-lufia-part="page-actions"`, `data-primary-placement` and `data-hide-below`, and passes `className`
+  and any other attribute (such as `data-*`) through, so shell CSS and end-to-end tests can target it.
+
+<Canvas of={Stories.ExternalPrimary} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -73,6 +93,7 @@ Buttons follow `Button`; the menu follows `MoreActions` (arrow keys, Home, End, 
 
 - Every control is a native button or link, or the menu from `MoreActions`; the menu button is named by `moreLabel`.
 - On narrow screens an action is reachable in the menu only, so keep labels meaningful out of context.
+- A hinted disabled action is `aria-disabled`, not `disabled`, so it takes focus and announces its reason.
 - The row does not wrap, so it never pushes content around when it collapses.
 
 </Section>

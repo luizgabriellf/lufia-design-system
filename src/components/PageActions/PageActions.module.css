@@ -11,3 +11,14 @@
     display: none;
   }
 }
+
+/* The app shell owns the primary action below the medium breakpoint (60rem). */
+@media (width < 60rem) {
+  .root[data-hide-below="medium"] {
+    display: none;
+  }
+
+  .root[data-primary-placement="external"] > .primary {
+    display: none;
+  }
+}
