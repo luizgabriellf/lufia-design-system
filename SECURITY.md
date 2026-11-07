@@ -15,8 +15,8 @@ Once 1.0 is released, the latest major and the previous major (for 6 months afte
 
 Please **do not open a public issue**. Report privately through GitHub Security Advisories:
 
-1. Open the repository's **Security** tab.
-2. Choose **Report a vulnerability**.
+1. Open the repository's [**Security** tab](https://github.com/luizgabriellf/lufia-design-system/security).
+2. Choose [**Report a vulnerability**](https://github.com/luizgabriellf/lufia-design-system/security/advisories/new).
 3. Describe the issue, the affected version, and steps to reproduce.
 
 You can expect an acknowledgement within 5 working days and a status update within 14 days. Valid reports are fixed in a
