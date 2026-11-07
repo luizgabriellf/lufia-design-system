@@ -84,7 +84,7 @@ const clean = (value: number | undefined) =>
  * Columns on one zero baseline, for a weekly strip or a stack of measures per period.
  *
  * The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the
- * drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its
+ * drawing is `aria-hidden` shape on top of it (unless `interactive`, which exposes the columns). One scale for the whole chart, so columns compare. A zero column keeps its
  * slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced
  * motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.
  *
@@ -156,7 +156,6 @@ export function ColumnChart({
           ? {
               ...interactiveProps,
               role: "img",
-              tabIndex: 0,
               "data-column": columnIndex,
               "data-interactive": "",
             }
@@ -214,7 +213,7 @@ export function ColumnChart({
         </span>
         {interactiveProps && !plainLabel ? (
           <span id={`${captionId}-r${columnIndex}`} hidden>
-            {`: ${rest}`}
+            {rest}
           </span>
         ) : null}
       </div>

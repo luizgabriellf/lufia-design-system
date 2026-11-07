@@ -1759,11 +1759,12 @@ Keyboard:
 
 | Key | Action |
 | --- | --- |
-| `Tab` | Moves to the next column and shows its tooltip |
-| `Shift` + `Tab` | Moves to the previous column and shows its tooltip |
+| `Tab` | Enters the columns at the last one focused (the first at first), and leaves them on the next press |
+| `Arrow Right` / `Arrow Left` | Next or previous column and shows its tooltip (swapped in right-to-left) |
+| `Home` / `End` | First or last column |
 | `Escape` | Dismisses the tooltip; focus stays on the column |
 
-- The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.
+- The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it, except when `interactive` is set, where the columns are exposed as named images. Write the numbers with `formatValue`.
 - The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
 - Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
 - The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.

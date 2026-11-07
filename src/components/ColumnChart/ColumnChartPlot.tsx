@@ -1,6 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
 import styles from "./ColumnChart.module.css";
 
 export type ColumnChartPlotProps = HTMLAttributes<HTMLDivElement> & {
@@ -27,6 +37,8 @@ export function tipZone(index: number, count: number): "start" | "center" | "end
  */
 export function ColumnChartPlot({ tips, children, className, ...rest }: ColumnChartPlotProps) {
   const [active, setActive] = useState<number | null>(null);
+  // Roving tabindex: one column is in the tab order, the one that was focused last.
+  const [stop, setStop] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   // A tap on the column that already shows its tip closes it; the tap that first shows it must not.
   const wasActive = useRef(false);
@@ -78,7 +90,10 @@ export function ColumnChartPlot({ tips, children, className, ...rest }: ColumnCh
       onFocus={(event) => {
         rest.onFocus?.(event);
         const index = indexOf(event.target);
-        if (index !== null) setActive(index);
+        if (index !== null) {
+          setActive(index);
+          setStop(index);
+        }
       }}
       onBlur={(event) => {
         rest.onBlur?.(event);
@@ -87,13 +102,41 @@ export function ColumnChartPlot({ tips, children, className, ...rest }: ColumnCh
       onKeyDown={(event) => {
         rest.onKeyDown?.(event);
         if (event.key === "Escape" && active !== null) {
-          // Only the tooltip is dismissed: a dialog around the chart must not close with it.
+          // Only the tooltip is dismissed. A native dialog turns an Escape that is not default-prevented into a close
+          // request, and the repo's own overlays check `defaultPrevented`, so both are needed.
+          event.preventDefault();
           event.stopPropagation();
           setActive(null);
+          return;
         }
+        const from = indexOf(event.target);
+        const last = tips.length - 1;
+        if (from === null || event.altKey || event.ctrlKey || event.metaKey) return;
+        const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+        const step =
+          event.key === (rtl ? "ArrowLeft" : "ArrowRight")
+            ? 1
+            : event.key === (rtl ? "ArrowRight" : "ArrowLeft")
+              ? -1
+              : 0;
+        const to =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? last
+              : step
+                ? Math.min(last, Math.max(0, from + step))
+                : null;
+        if (to === null) return;
+        event.preventDefault();
+        root.current?.querySelector<HTMLElement>(`[data-column="${to}"]`)?.focus();
       }}
     >
-      {children}
+      {Children.map(children, (child, index) =>
+        isValidElement<{ tabIndex?: number }>(child)
+          ? cloneElement(child, { tabIndex: index === stop ? 0 : -1 })
+          : child,
+      )}
       {active !== null ? (
         <div
           className={styles.tip}

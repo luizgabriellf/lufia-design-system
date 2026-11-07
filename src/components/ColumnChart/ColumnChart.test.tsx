@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
+import { mockDialog } from "../../test/dialog";
+import { Modal } from "../Modal/Modal";
 import { ColumnChartPlot, tipZone } from "./ColumnChartPlot";
 import { ColumnChart, type ColumnChartColumn, type ColumnChartSeries } from "./ColumnChart";
 
@@ -439,15 +441,102 @@ describe("ColumnChart", () => {
       expect(tip()).toBeNull();
       expect(outer).not.toHaveBeenCalled();
       expect(screen.getByRole("img", { name: /^Mon/ })).toHaveFocus();
-      await user.tab();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("img", { name: /^Tue/ })).toHaveFocus();
       expect(tip()).toHaveTextContent("Tue8");
       await user.tab();
-      await user.tab();
+      expect(screen.getByRole("button", { name: "After" })).toHaveFocus();
       expect(tip()).toBeNull();
       // With nothing shown, Escape is the page's own.
       await user.keyboard("{Escape}");
       expect(outer).toHaveBeenCalledTimes(1);
     });
+
+    it("is one tab stop with arrows, Home and End between the columns, and Tab returns to the last one", async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <button type="button">Before</button>
+          <ColumnChart title="Deliveries" series={single} columns={detailed} interactive />
+          <button type="button">After</button>
+        </>,
+      );
+      const cols = screen.getAllByRole("img");
+      expect(cols.map((c) => c.tabIndex)).toEqual([0, -1, -1]);
+      await user.tab();
+      await user.tab();
+      expect(cols[0]).toHaveFocus();
+      await user.keyboard("{ArrowRight}{ArrowRight}");
+      expect(cols[2]).toHaveFocus();
+      await user.keyboard("{ArrowRight}");
+      expect(cols[2]).toHaveFocus();
+      await user.keyboard("{Home}");
+      expect(cols[0]).toHaveFocus();
+      await user.keyboard("{End}");
+      expect(cols[2]).toHaveFocus();
+      expect(cols.map((c) => c.tabIndex)).toEqual([-1, -1, 0]);
+      await user.tab();
+      expect(screen.getByRole("button", { name: "After" })).toHaveFocus();
+      await user.tab({ shift: true });
+      expect(cols[2]).toHaveFocus();
+    });
+
+    it("swaps the arrows in a right-to-left page", async () => {
+      const user = userEvent.setup();
+      render(
+        <div style={{ direction: "rtl" }}>
+          <ColumnChart title="Deliveries" series={single} columns={detailed} interactive />
+        </div>,
+      );
+      const cols = screen.getAllByRole("img");
+      cols[0]!.focus();
+      await user.keyboard("{ArrowLeft}");
+      expect(cols[1]).toHaveFocus();
+    });
+
+    it("does not name the hidden label span with a leading colon", () => {
+      const { container } = render(
+        <ColumnChart
+          title="Deliveries"
+          series={single}
+          columns={[{ key: "a", label: <em>Mon</em>, values: [4] }]}
+          interactive
+        />,
+      );
+      expect(container.querySelector("[hidden]")).toHaveTextContent(/^4$/);
+    });
+
+    it.each(["portal", "dialog"] as const)(
+      "Escape on the tooltip is default-prevented and does not close a %s Modal around the chart",
+      async (mode) => {
+        const onClose = vi.fn();
+        const dialogMock = mockDialog();
+        const { unmount } = render(
+          <Modal open title="Chart" onClose={onClose} renderAs={mode}>
+            <ColumnChart title="Deliveries" series={single} columns={detailed} interactive />
+          </Modal>,
+        );
+        const column = screen.getAllByRole("img")[0]!;
+        act(() => column.focus());
+        expect(tip()).not.toBeNull();
+        const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true });
+        act(() => {
+          column.dispatchEvent(event);
+        });
+        // A native dialog closes on an Escape that is not default-prevented; the other overlays check the same flag.
+        expect(event.defaultPrevented).toBe(true);
+        expect(tip()).toBeNull();
+        expect(onClose).not.toHaveBeenCalled();
+        // With no tooltip shown, Escape still closes the Modal.
+        const second = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true });
+        act(() => {
+          column.dispatchEvent(second);
+        });
+        expect(onClose).toHaveBeenCalledTimes(1);
+        unmount();
+        dialogMock.restore();
+      },
+    );
 
     it("shows on tap, closes on a second tap and on a tap outside", async () => {
       const user = userEvent.setup();
