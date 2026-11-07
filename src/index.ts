@@ -9,6 +9,7 @@ export * from "./components/Button";
 export * from "./components/Card";
 export * from "./components/ChartKit";
 export * from "./components/Checkbox";
+export * from "./components/ColumnChart";
 export * from "./components/Combobox";
 export * from "./components/CommandPalette";
 export * from "./components/ConfirmDialog";

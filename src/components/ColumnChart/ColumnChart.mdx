@@ -1,0 +1,109 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ColumnChart.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ColumnChart"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Columns on one zero baseline, for a weekly strip or a stack of measures per period. One scale for the whole chart, so columns compare.
+
+<Canvas of={Stories.Stacked} />
+
+### Usage
+
+```tsx
+import { ColumnChart } from "@lufia/design-system/components/ColumnChart";
+
+// A weekly strip: one series
+<ColumnChart
+  title="Deliveries this week"
+  series={[{ key: "done", label: "Deliveries" }]}
+  columns={[
+    { key: "mon", label: "Mon", values: [4] },
+    { key: "tue", label: "Tue", values: [8] },
+  ]}
+/>
+
+// Stacked columns: one number per series, the first series at the bottom
+<ColumnChart
+  title="Orders by delivery state"
+  series={[
+    { key: "ok", label: "On time", tone: "success" },
+    { key: "late", label: "Late", tone: "danger" },
+  ]}
+  columns={[{ key: "w1", label: "Week 1", values: [6, 2] }]}
+  formatValue={(value) => value.toLocaleString("en")}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.WeeklyStrip} />
+<Canvas of={Stories.FormattedValues} />
+<Canvas of={Stories.HiddenLegend} />
+<Canvas of={Stories.HiddenTitle} />
+<Canvas of={Stories.Tones} />
+<Canvas of={Stories.ZeroColumns} />
+<Canvas of={Stories.SingleColumn} />
+<Canvas of={Stories.TwelveColumns} />
+<Canvas of={Stories.LongPortugueseText} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.LowerPlot} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+### Component token
+
+`--lufia-column-chart-plot-height` (default `7rem`) sets the height of the drawing, labels excluded. See [Theming components](?path=/docs/foundations-theming-components--docs).
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.WeeklyStrip} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The data is a table. A visually hidden `table` lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.
+- The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
+- Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
+- The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.
+- Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode the segments use `CanvasText` and the hairline `Canvas`.
+- Print the figures people need as text beside the chart: the drawing has no value labels.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts.
+
+### When not to use
+
+- Categories with long names or exact values: use `BarList`.
+- A trend inside a sentence or a tile: use `Sparkline`.
+- Many periods, negative values or several axes: use a chart library or a table.
+- Nothing to show: it renders nothing, so use an `EmptyState`.
+
+</Section>
