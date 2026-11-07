@@ -44,13 +44,40 @@ describe("leak gate scanner", () => {
     expect(findHits(`un${dummy}s`, tokens)).toEqual([]);
   });
 
-  it("scans files from an injected list and skips binary ones", () => {
+  it("splits acronym runs and letter/digit boundaries", () => {
+    const acme = ["ac", "me"].join("");
+    expect(findHits(`${acme.toUpperCase()}Portal`, [acme])).toEqual([0]);
+    expect(findHits(`${acme}2`, [acme])).toEqual([0]);
+    expect(findHits(`v2${acme}`, [acme])).toEqual([0]);
+  });
+
+  it("scans files from an injected list and skips only known binary extensions", () => {
     mkdirSync(path.join(dir, "sub"));
     writeFileSync(path.join(dir, "sub/clean.md"), "nothing here\n");
     writeFileSync(path.join(dir, "sub/leaky.html"), `<p>\n${dummy}\n</p>\n`);
-    writeFileSync(path.join(dir, "sub/data.bin"), Buffer.from([0, 1, 2, ...Buffer.from(dummy)]));
-    expect(findLeaks(tokens, ["sub/clean.md", "sub/leaky.html", "sub/data.bin"], dir)).toEqual([
-      "sub/leaky.html:2 matches denylist token #1",
+    writeFileSync(path.join(dir, "sub/data.png"), Buffer.from([0, 1, 2, ...Buffer.from(dummy)]));
+    const files = ["sub/clean.md", "sub/leaky.html", "sub/data.png"];
+    expect(findLeaks(tokens, files, dir)).toEqual({
+      problems: ["sub/leaky.html:2 matches denylist token #1"],
+      skipped: 1,
+    });
+  });
+
+  it("scans a text file that contains NUL bytes", () => {
+    writeFileSync(path.join(dir, "nul.md"), `a\0b\n${[...dummy].join("\0")}\n`);
+    expect(findLeaks(tokens, ["nul.md"], dir).problems).toEqual(["nul.md:2 matches denylist token #1"]);
+  });
+
+  it("scans a file larger than 5 MB, with correct line numbers", () => {
+    const filler = `${"x".repeat(99)}\n`.repeat(60_000);
+    writeFileSync(path.join(dir, "big.md"), `${filler}${dummy}\n${filler}`);
+    expect(findLeaks(tokens, ["big.md"], dir).problems).toEqual(["big.md:60001 matches denylist token #1"]);
+  });
+
+  it("scans file names and paths", () => {
+    writeFileSync(path.join(dir, `${dummy}-notes.md`), "clean\n");
+    expect(findLeaks(tokens, [`${dummy}-notes.md`], dir).problems).toEqual([
+      `${dummy}-notes.md path matches denylist token #1`,
     ]);
   });
 
