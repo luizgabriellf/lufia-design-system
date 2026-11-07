@@ -15,6 +15,11 @@ const config: StorybookConfig = {
       options: { mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } } },
     },
     "@storybook/addon-a11y",
+    // Live MCP server for local coding agents. Published GitHub Pages stays static.
+    {
+      name: "@storybook/addon-mcp",
+      options: { toolsets: { docs: true, dev: true, test: false } },
+    },
   ],
   // favicon, logos and the share image; Storybook picks up favicon.svg from here.
   staticDirs: ["./public"],
