@@ -117,6 +117,8 @@ Before writing or changing UI that uses Lufia, **look up its actual API**:
 
 The lookup is local, read-only and generated from `docs/ai/components.json`. It does not replace TypeScript checks, Storybook stories or accessibility tests. Storybook also exposes a separate native component manifest when built.
 
+When Storybook is running locally, coding agents may also use its MCP endpoint (`http://localhost:6006/mcp`). Query `docs-list` and `docs-show` before using component APIs; do not assume a missing prop exists. The published GitHub Pages site has static manifests, **not** a live MCP endpoint.
+
 ## Where to look: task to doc
 
 | Task                                  | Read first                                                                                          |
