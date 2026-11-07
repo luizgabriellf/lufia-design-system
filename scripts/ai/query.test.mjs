@@ -30,6 +30,32 @@ describe("AI component discovery", () => {
     expect(top3).toContain("ConfirmDialog");
   });
 
+  it("ranks ConfirmDialog first for a confirm-before-deleting task", () => {
+    expect(searchComponents(manifest, "confirm before deleting")[0]?.name).toBe("ConfirmDialog");
+  });
+
+  it("finds the dropdown components, which no name or API calls that", () => {
+    const top3 = searchComponents(manifest, "dropdown", 3).map((item) => item.name);
+    expect(top3).toEqual(expect.arrayContaining(["Select", "Combobox"]));
+  });
+
+  it("scores the start of a word, below an exact name", () => {
+    const manifestOf = (components) => ({ components });
+    const make = (name, summary) => ({
+      name,
+      category: "Forms",
+      status: "beta",
+      summary,
+      entry: { subpath: name },
+      exports: [],
+    });
+    const results = searchComponents(
+      manifestOf([make("Alpha", "contains xundo inside"), make("Beta", "an undo control"), make("Undo", "")]),
+      "undo",
+    );
+    expect(results.map((item) => item.name)).toEqual(["Undo", "Beta", "Alpha"]);
+  });
+
   it("drops stopwords and one-character terms instead of matching everything", () => {
     expect(searchComponents(manifest, "a")).toEqual([]);
     expect(searchComponents(manifest, "the of to")).toEqual([]);
