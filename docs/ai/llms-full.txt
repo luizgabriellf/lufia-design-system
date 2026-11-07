@@ -6106,7 +6106,7 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 
 #### `getFocusableElements`
 
-The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that is `null` for fixed-position children.
+The tabbable descendants of `root`, in keyboard Tab order. Not `offsetParent`-based: that is `null` for fixed-position children. Positive tabindex values precede the natural DOM order; negative tabindex values are only programmatically focusable.
 
 ```ts
 getFocusableElements(root: HTMLElement): HTMLElement[]
