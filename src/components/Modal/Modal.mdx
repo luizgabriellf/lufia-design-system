@@ -111,6 +111,13 @@ backdrop }}`, plus `layer`, `frame`, `title` and `description`); the root `class
 
 <Canvas of={Stories.PartClassNames} />
 
+### Following your own native dialog
+
+`notifyTopModalDialogChanged()` (exported from `@lufia/design-system/components/Modal`) makes the package re-read which
+native `<dialog>` is topmost. The package calls it for its own modals; call it after your own code closes or removes a
+native `<dialog>` so the toast region, which follows the topmost dialog, moves out of it at once. It does nothing when
+nothing is listening.
+
 ### Keep mounted and the native top layer
 
 `keepMounted` keeps the children mounted while the modal is closed (hidden and inert), so typed input and component state

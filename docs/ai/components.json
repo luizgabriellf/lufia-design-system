@@ -5402,6 +5402,12 @@
           "kind": "type",
           "description": "",
           "definition": "\"sm\" | \"md\" | \"lg\" | \"xl\""
+        },
+        {
+          "name": "notifyTopModalDialogChanged",
+          "kind": "function",
+          "description": "Tells the store of open modal dialogs to look again. The package calls it itself when it closes or removes a native `Modal` (`renderAs=\"dialog\"`): a dialog React removes is detached before its `open` attribute changes, so the attribute observer cannot see it. Public for an app that opens or closes its own native `<dialog>` and wants anything following the topmost dialog (the `ToastProvider` region that moves into it) to update at once. Cheap and safe to call at any time; it does nothing when nothing is listening.",
+          "signature": "(): void"
         }
       ],
       "aliases": {
@@ -7415,6 +7421,13 @@
               "required": false,
               "default": "false",
               "description": "Play the enter animation when the component mounts already shown. Off by default: only real changes animate."
+            },
+            {
+              "name": "onExited",
+              "type": "(() => void)",
+              "required": false,
+              "default": null,
+              "description": "Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first."
             }
           ],
           "nativeProps": true
@@ -7423,11 +7436,11 @@
           "name": "RevealProps",
           "kind": "type",
           "description": "",
-          "definition": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; }"
+          "definition": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
         }
       ],
       "aliases": {
-        "RevealProps": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; }"
+        "RevealProps": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
       },
       "story": {
         "docsId": "components-motion-reveal--docs",
