@@ -2925,7 +2925,7 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 
 - Status: beta
 - Category: Overlays
-- Import: `import { Modal } from "@lufia/design-system/components/Modal"`
+- Import: `import { Modal, notifyTopModalDialogChanged } from "@lufia/design-system/components/Modal"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/Modal](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Modal)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-modal--docs)
@@ -2945,6 +2945,13 @@ containment, scroll lock, an inert background and an enter/exit motion.
 - A message that does not need a response: use a [Toast](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-toast--docs).
 - Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the
 - Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `Modal` | component |
+| `notifyTopModalDialogChanged` | function |
 
 ### API
 
@@ -2976,6 +2983,14 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `scrollContainerSelectors` | `readonly string[]` | no |  | Inner scroll containers to lock instead of the document, for app shells that scroll an inner pane. |
 
 Other native element attributes pass through to the root element.
+
+#### `notifyTopModalDialogChanged`
+
+Tells the store of open modal dialogs to look again. The package calls it itself when it closes or removes a native `Modal` (`renderAs="dialog"`): a dialog React removes is detached before its `open` attribute changes, so the attribute observer cannot see it. Public for an app that opens or closes its own native `<dialog>` and wants anything following the topmost dialog (the `ToastProvider` region that moves into it) to update at once. Cheap and safe to call at any time; it does nothing when nothing is listening.
+
+```ts
+notifyTopModalDialogChanged(): void
+```
 
 ### Types
 
@@ -3998,12 +4013,13 @@ shorter `--lufia-motion-duration-exit`.
 | `show` | `boolean` | yes |  | Whether the content is shown. Toggling it plays the enter or exit animation. |
 | `variant` | `"scale" \| "fade" \| "rise"` | no | `"fade"` | `fade` changes opacity only, `rise` also moves the content up, `scale` grows it slightly. |
 | `appear` | `boolean` | no | `false` | Play the enter animation when the component mounts already shown. Off by default: only real changes animate. |
+| `onExited` | `(() => void)` | no |  | Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `RevealProps`: `HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; }`
+- `RevealProps`: `HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }`
 
 ### Example
 

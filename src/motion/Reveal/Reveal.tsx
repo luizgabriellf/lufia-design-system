@@ -11,6 +11,8 @@ export type RevealProps = HTMLAttributes<HTMLDivElement> & {
   variant?: "fade" | "rise" | "scale";
   /** Play the enter animation when the component mounts already shown. Off by default: only real changes animate. */
   appear?: boolean;
+  /** Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. */
+  onExited?: () => void;
 };
 
 type Phase = "open" | "closed" | "unmounted";
@@ -26,6 +28,7 @@ export function Reveal({
   show,
   variant = "fade",
   appear = false,
+  onExited,
   className,
   onAnimationEnd,
   children,
@@ -55,6 +58,20 @@ export function Reveal({
     // No animation to wait for (stylesheet missing or disabled): unmount on the next frame.
     const frame = requestAnimationFrame(() => setPhase("unmounted"));
     return () => cancelAnimationFrame(frame);
+  }, [phase]);
+
+  // Reports a completed exit once, from an effect so the parent can react to the unmount.
+  const wasMounted = useRef(phase !== "unmounted");
+  const onExitedRef = useRef(onExited);
+  useEffect(() => {
+    onExitedRef.current = onExited;
+  });
+  useEffect(() => {
+    if (phase !== "unmounted") wasMounted.current = true;
+    else if (wasMounted.current) {
+      wasMounted.current = false;
+      onExitedRef.current?.();
+    }
   }, [phase]);
 
   if (phase === "unmounted") return null;

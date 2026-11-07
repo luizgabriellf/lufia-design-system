@@ -43,8 +43,11 @@ const isDialogNode = (node: Node) =>
   ((node as Element).localName === "dialog" || !!(node as Element).querySelector("dialog"));
 
 /**
- * Tells the store a dialog was closed or removed by the package itself. A dialog React removes is detached before its
- * `open` attribute changes, so the attribute observer cannot see it.
+ * Tells the store of open modal dialogs to look again. The package calls it itself when it closes or removes a native
+ * `Modal` (`renderAs="dialog"`): a dialog React removes is detached before its `open` attribute changes, so the
+ * attribute observer cannot see it. Public for an app that opens or closes its own native `<dialog>` and wants anything
+ * following the topmost dialog (the `ToastProvider` region that moves into it) to update at once. Cheap and safe to call
+ * at any time; it does nothing when nothing is listening.
  */
 export function notifyTopModalDialogChanged() {
   recompute();

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useId,
   useRef,
   useState,
@@ -169,6 +170,19 @@ export function Modal({
   const [hostDialog, setHostDialog] = useState<HTMLDialogElement | null>(null);
   if (open && liveHost !== hostDialog) setHostDialog(liveHost);
 
+  // The portal layer exists only while the modal is open or its exit is still playing. A layer left in `body` while closed
+  // would be made inert by any other modal that opens, and a modal opening inside it later would stay unusable.
+  const [layerPresent, setLayerPresent] = useState(open);
+  if (open && !layerPresent) setLayerPresent(true);
+  const exited = useRef(new Set<string>());
+  useEffect(() => {
+    if (open) exited.current.clear();
+  }, [open]);
+  const onPartExited = (part: string) => {
+    exited.current.add(part);
+    if (exited.current.size >= 2) setLayerPresent(false);
+  };
+
   const requestClose = () => {
     if (!busy) onClose();
   };
@@ -312,12 +326,15 @@ export function Modal({
     );
   }
 
+  if (!open && !layerPresent) return null;
+
   return createPortal(
     <div className={cx(styles.layer, classNames?.layer)} data-lufia-part="layer">
       <Reveal
         show={open}
         appear
         variant="fade"
+        onExited={() => onPartExited("backdrop")}
         className={cx(styles.backdrop, classNames?.backdrop)}
         data-lufia-part="backdrop"
         aria-hidden="true"
@@ -334,6 +351,7 @@ export function Modal({
         show={open}
         appear
         variant={phone ? "rise" : "scale"}
+        onExited={() => onPartExited("frame")}
         className={cx(styles.frame, classNames?.frame)}
         data-lufia-part="frame"
         data-sheet={sheetPlacement}
