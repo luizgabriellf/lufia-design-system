@@ -379,6 +379,8 @@ test.describe("notification center", () => {
     await openStory(page, id("many-items"));
     const scroller = page.locator('[data-lufia-part="notification-panel"] > div').nth(1);
     const footer = page.getByRole("link", { name: "Notification settings" });
+    // The footer rises in with the rest of the first view: measure once every entrance has finished.
+    await page.waitForFunction(() => document.getAnimations().length === 0);
     const before = await footer.boundingBox();
     await scroller.evaluate((element) => {
       element.scrollTop = element.scrollHeight;
