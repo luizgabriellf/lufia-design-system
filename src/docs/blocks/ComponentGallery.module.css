@@ -139,6 +139,14 @@
   gap: 0.5rem;
 }
 
+/* Content-sized items that wrap, for previews whose items have different widths (badges). */
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
 .iconTile {
   display: grid;
   place-items: center;

@@ -9,6 +9,7 @@
 }
 
 .list li {
+  display: grid;
   margin: 0;
 }
 
@@ -16,7 +17,6 @@
   position: relative;
   display: grid;
   gap: 0.125rem;
-  block-size: 100%;
   padding: 1rem 3rem 1rem 1.125rem;
   color: var(--lufia-color-text-default);
   text-decoration: none;

@@ -39,7 +39,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Button",
     preview: (
-      <div className={styles.iconRow}>
+      <div className={styles.chipRow}>
         <Button variant="primary" size="sm">
           Save
         </Button>
@@ -53,7 +53,7 @@ export const GALLERY_ENTRIES: GalleryEntry[] = [
   {
     name: "Badge",
     preview: (
-      <div className={styles.iconRow}>
+      <div className={styles.chipRow}>
         <Badge tone="success" dot>
           Done
         </Badge>

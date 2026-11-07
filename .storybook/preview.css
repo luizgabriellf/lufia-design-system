@@ -9,6 +9,12 @@
   font-family: var(--lufia-font-family-body);
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+
+  /* Mobile browsers inflate text after layout, which overflows fixed-height grid rows.
+     Safari on iOS still needs the prefix. */
+  text-size-adjust: 100%;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
