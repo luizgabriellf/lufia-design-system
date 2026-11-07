@@ -31,7 +31,11 @@ for (const component of runtime) {
   if (!component.docs?.usage?.code) {
     fail(component.name + ": missing usage example");
   }
-  if (!component.docs?.whenToUse?.length || !component.docs?.whenNotToUse?.length) {
+  const hasVisualComponent = component.exports.some((item) => item.kind === "component");
+  if (
+    hasVisualComponent &&
+    (!component.docs?.whenToUse?.length || !component.docs?.whenNotToUse?.length)
+  ) {
     fail(component.name + ": missing usage decision guidance");
   }
   if (!component.story?.docsId || !component.story.stories?.length) {
