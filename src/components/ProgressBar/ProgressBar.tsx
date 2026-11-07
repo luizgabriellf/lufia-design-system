@@ -15,10 +15,13 @@ export type ProgressBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children" |
   size?: "sm" | "md";
   /**
    * Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once.
-   * The fill keeps its full width and is scaled, so no layout property animates. Removed under reduced motion.
+   * The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion.
    */
   animateChanges?: boolean;
 };
+
+/** Smallest visible fill with `animateChanges` for a non-zero value: a sliver, as the width-based fill keeps with `min-inline-size`. */
+const MIN_SCALE = 0.02;
 
 /**
  * A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill.
@@ -54,7 +57,11 @@ export function ProgressBar({
       data-size={size}
     >
       {animateChanges ? (
-        <span className={styles.fill} data-animate="" style={{ transform: `scaleX(${now / top})` }} />
+        <span
+          className={styles.fill}
+          data-animate=""
+          style={{ transform: `scaleX(${now > 0 ? Math.max(now / top, MIN_SCALE) : 0})` }}
+        />
       ) : now > 0 ? (
         <span className={styles.fill} style={{ inlineSize: `${(now * 100) / top}%` }} />
       ) : null}

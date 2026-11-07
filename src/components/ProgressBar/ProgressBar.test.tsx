@@ -68,6 +68,14 @@ describe("ProgressBar", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("animateChanges keeps a visible sliver for a tiny non-zero value, and none for zero", () => {
+    const { rerender } = render(<ProgressBar value={0.1} label="x" animateChanges />);
+    const fill = () => screen.getByRole("progressbar").firstElementChild as HTMLElement;
+    expect(fill().style.transform).toBe("scaleX(0.02)");
+    rerender(<ProgressBar value={0} label="x" animateChanges />);
+    expect(fill().style.transform).toBe("scaleX(0)");
+  });
+
   it("animates only transform, with tokens, and stops under reduced motion", () => {
     expect(css).toMatch(
       /\.fill\[data-animate\] \{[^}]*transition:\s*transform var\(--lufia-motion-duration-enter\) var\(--lufia-motion-easing-out\)/,
