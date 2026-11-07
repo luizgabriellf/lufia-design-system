@@ -353,6 +353,27 @@ test.describe("notification center", () => {
     await expect(bell).toBeFocused();
   });
 
+  test("activating a row closes the panel and leaves focus on the bell", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("default"));
+    const bell = page.getByRole("button", { name: /^Notifications/ });
+    await bell.click();
+    await page.getByRole("link", { name: /Supplier proposal needs your review/ }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(bell).toBeFocused();
+  });
+
+  test("at 320px the tab row fades the edge that hides more tabs", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, id("sheet-phone-320"));
+    const tabs = page.getByRole("tablist");
+    await expect(tabs).toHaveAttribute("data-more", "end");
+    await tabs.evaluate((element) => {
+      element.scrollLeft = element.scrollWidth;
+    });
+    await expect(tabs).toHaveAttribute("data-more", "start");
+  });
+
   test("a long list scrolls inside the panel while the footer stays put", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openStory(page, id("many-items"));

@@ -87,6 +87,15 @@
   transform-origin: top left;
 }
 
+/* `transform-origin` has no logical form: the corner under the bell is on the other side in right-to-left text. */
+.root[data-align="end"] .popover:dir(rtl) {
+  transform-origin: top left;
+}
+
+.root[data-align="start"] .popover:dir(rtl) {
+  transform-origin: top right;
+}
+
 /* It grows out of the bell's corner. The enter keyframes animate `from` only, so the resting state is the open panel and a
    disabled animation leaves it visible. */
 @keyframes popover-in {

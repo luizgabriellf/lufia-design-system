@@ -92,7 +92,7 @@ Other native element attributes pass through to the root element.
 | `empty` | `NotificationEmpty` | no |  | What to show when the chosen tab has no items. A tab's own `empty` wins. |
 | `error` | `ReactNode` | no |  | Replaces the list when loading failed. It is announced as an alert; include the way to retry. |
 | `onClose` | `() => void` | no |  | Adds a close button to the header, for a panel shown as a sheet. |
-| `onItemActivate` | `(item: NotificationItem) => void` | no |  | Called after a row is activated, so a host can close itself. |
+| `onAction` | `(run: () => void) => void` | no |  | Receives what a row, the footer or the summary's action is about to do, so a host can close itself first and run it once focus is back where it belongs. Omit it and the action runs at once. |
 | `titleId` | `string` | no |  | Id of the heading, for a host that names its dialog with it. Generated when omitted. |
 | `landmark` | `boolean` | no | `true` | Whether the root is a labelled region (`<section>`). Default `true`. A host that already names the panel, such as the dialog of `NotificationCenter`, sets `false` to get a plain element. |
 | `announce` | `boolean` | no | `true` | Renders the polite live region that announces changes of `unreadCount`. Default `true`; a host that has its own turns it off. |
@@ -178,7 +178,7 @@ Keyboard:
 
 - The bell is a button named by `label` and the count, "Notifications, 4 unread", with `aria-haspopup="dialog"`,
 - The popover is a non-modal `role="dialog"` labelled by its heading. Focus moves to it on open; Escape returns focus to the
-- Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items.
+- Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items. The arrow keys mirror in right-to-left text. A row of tabs that does not fit scrolls sideways, and the edge that hides more fades.
 - Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the
 - A polite live region announces changes of `unreadCount` ("Notifications, 5 unread"). It says nothing on first paint.
 - "Mark all as read" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is

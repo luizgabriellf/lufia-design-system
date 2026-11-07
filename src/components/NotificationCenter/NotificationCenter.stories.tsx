@@ -176,7 +176,13 @@ const meta = {
   decorators: [
     (Story) => (
       <div
-        style={{ display: "flex", justifyContent: "flex-end", minBlockSize: "46rem", maxInlineSize: "34rem" }}
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          minBlockSize: "46rem",
+          maxInlineSize: "34rem",
+          paddingInline: "1rem",
+        }}
       >
         <Story />
       </div>

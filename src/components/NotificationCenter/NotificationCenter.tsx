@@ -47,6 +47,8 @@ export type NotificationCenterProps = Omit<HTMLAttributes<HTMLDivElement>, "chil
     maxCount?: number;
   };
 
+/** The room kept between a nudged popover and the edge of the viewport. */
+const EDGE_GUTTER_PX = 8;
 const SHEET_QUERY = "(width < 60rem)";
 
 function BellIcon() {
@@ -107,6 +109,8 @@ export function NotificationCenter({
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
   const [flipped, setFlipped] = useState(false);
+  // How far (px, to the right) the popover is moved so it stays on screen when neither edge of the bell can line up with it.
+  const [nudge, setNudge] = useState(0);
   const skipFocus = useRef(defaultOpen);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -129,6 +133,7 @@ export function NotificationCenter({
     onOpenChange?.(next);
   };
   const close = () => setOpen(false);
+  const pendingAction = useRef<(() => void) | undefined>(undefined);
 
   // The sheet lives outside `rootRef`, so an outside-press listener would treat its own rows as outside: it has a backdrop
   // and a trap instead.
@@ -156,17 +161,26 @@ export function NotificationCenter({
     const popover = popoverRef.current;
     const trigger = triggerRef.current;
     if (!popover || !trigger) return;
-    const box = popover.getBoundingClientRect();
+    // Layout width, not the painted box: the popover is scaled while it animates in, which would skew the measure.
+    const width = popover.offsetWidth;
     const anchor = trigger.getBoundingClientRect();
     const viewport = document.documentElement.clientWidth;
-    if (box.width === 0 || (box.left >= 0 && box.right <= viewport)) return;
-    const other =
-      box.left < 0
-        ? { left: anchor.left, right: anchor.left + box.width }
-        : { left: anchor.right - box.width, right: anchor.right };
+    if (width === 0) return;
+    const at = (edge: "start" | "end") =>
+      edge === "end"
+        ? { left: anchor.right - width, right: anchor.right }
+        : { left: anchor.left, right: anchor.left + width };
+    // Right-to-left text puts the logical start edge on the right.
+    const rtl = getComputedStyle(popover).direction === "rtl";
+    const place = (edge: "start" | "end") => at((edge === "end") !== rtl ? "end" : "start");
+    const own = place(align);
+    if (own.left >= 0 && own.right <= viewport) return;
+    const other = place(align === "end" ? "start" : "end");
     // Measuring the laid-out popover and correcting its side before paint is what a layout effect is for.
     if (other.left >= 0 && other.right <= viewport) setFlipped(true);
-  }, [open, sheet]);
+    // Neither edge fits (a wide panel under a bell near the screen's edge): keep it a half rem clear of the viewport instead.
+    else setNudge(own.left < 0 ? EDGE_GUTTER_PX - own.left : viewport - EDGE_GUTTER_PX - own.right);
+  }, [open, sheet, align]);
 
   // The popover stays mounted while it animates out. A closing popover is inert: it takes no focus and no clicks.
   const presence = usePresence(open && !sheet, popoverRef);
@@ -179,6 +193,24 @@ export function NotificationCenter({
     setShownCount(unreadCount);
     setPops(pops + 1);
   }
+
+  // A row, the footer or the summary's action closes the panel first. A popover hands focus back to the bell before the action
+  // runs, so a dialog it opens returns here. A sheet makes the bell inert while open, so its action runs once the sheet is gone.
+  const act = (run: () => void) => {
+    close();
+    if (sheet) {
+      pendingAction.current = run;
+      return;
+    }
+    triggerRef.current?.focus();
+    run();
+  };
+  useEffect(() => {
+    if (open || !pendingAction.current) return;
+    const run = pendingAction.current;
+    pendingAction.current = undefined;
+    run();
+  }, [open]);
 
   const name = unreadCount > 0 ? `${label}, ${unreadCountLabel(unreadCount)}` : label;
   const announcement = useUnreadAnnouncement(unreadCount, (count) => `${label}, ${unreadCountLabel(count)}`);
@@ -209,7 +241,7 @@ export function NotificationCenter({
       empty={empty}
       error={error}
       onClose={sheet ? close : undefined}
-      onItemActivate={close}
+      onAction={act}
     />
   );
 
@@ -234,6 +266,7 @@ export function NotificationCenter({
         size={size}
         onClick={() => {
           setFlipped(false);
+          setNudge(0);
           setOpen(!open);
         }}
       />
@@ -258,6 +291,7 @@ export function NotificationCenter({
           aria-labelledby={titleId}
           tabIndex={-1}
           className={styles.popover}
+          style={nudge === 0 ? undefined : { translate: `${nudge}px 0` }}
           data-state={presence.phase === "open" ? "open" : "closed"}
           inert={presence.phase !== "open" || undefined}
           onAnimationEnd={(event) => {

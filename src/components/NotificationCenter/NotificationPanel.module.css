@@ -55,6 +55,33 @@
   display: none;
 }
 
+/* Scroll cue: fade the edge that hides more tabs. Any opaque colour works for a mask. */
+.tabs[data-more="end"] {
+  mask-image: linear-gradient(to right, var(--lufia-color-text-default) calc(100% - 2rem), transparent);
+}
+
+.tabs[data-more="start"] {
+  mask-image: linear-gradient(to left, var(--lufia-color-text-default) calc(100% - 2rem), transparent);
+}
+
+.tabs[data-more="both"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--lufia-color-text-default) 2rem,
+    var(--lufia-color-text-default) calc(100% - 2rem),
+    transparent
+  );
+}
+
+.tabs[data-more="end"]:dir(rtl) {
+  mask-image: linear-gradient(to left, var(--lufia-color-text-default) calc(100% - 2rem), transparent);
+}
+
+.tabs[data-more="start"]:dir(rtl) {
+  mask-image: linear-gradient(to right, var(--lufia-color-text-default) calc(100% - 2rem), transparent);
+}
+
 .tab {
   display: inline-flex;
   flex: none;
@@ -309,11 +336,11 @@
   transform: none;
 }
 
-/* Marking everything read settles the rows top to bottom, 40 ms apart. */
+/* Marking everything read settles the rows top to bottom, a third of the instant token apart (40 ms). */
 .panel[data-cascade] .row,
 .panel[data-cascade] .leading,
 .panel[data-cascade] .dot {
-  transition-delay: calc(var(--row-index, 0) * 40ms);
+  transition-delay: calc(var(--row-index, 0) * var(--lufia-motion-duration-instant) / 3);
 }
 
 /* Motion on arrival. Keyframes animate `from` only and fill `backwards`, so the resting state is the final one. */
@@ -321,8 +348,10 @@
   animation: list-fade var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 
-/* The first view of the panel: rows rise in a short step apart, the same sequence as the Stagger primitive. */
-.content[data-intro] .entry {
+/* The first view of the panel: rows, group headings and the footer rise in a short step apart, the same sequence as the Stagger
+   primitive. */
+.panel[data-intro] .entry,
+.panel[data-intro] .groupHeading {
   animation: row-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
   animation-delay: calc(var(--row-index, 0) * var(--lufia-motion-duration-instant) / 4);
 }
@@ -506,6 +535,11 @@
   border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
 
+.panel[data-intro] .footer {
+  animation: row-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+  animation-delay: calc(var(--row-index, 0) * var(--lufia-motion-duration-instant) / 4);
+}
+
 .footerLink {
   display: flex;
   box-sizing: border-box;
@@ -585,7 +619,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .content[data-crossfade],
-  .content[data-intro] .entry,
+  .panel[data-intro] .entry,
+  .panel[data-intro] .groupHeading,
+  .panel[data-intro] .footer,
   .entry[data-arrived],
   .entry[data-arrived]::before,
   .segment[data-filled]::after {

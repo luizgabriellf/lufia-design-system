@@ -17,6 +17,7 @@ import { Button } from "../Button";
 import { EmptyState } from "../EmptyState";
 import { IconButton } from "../IconButton";
 import { LufiaLink, useLufia } from "../LufiaProvider";
+import { NotificationActionContext } from "./context";
 import { useSlidingIndicator } from "../useSlidingIndicator";
 import { VisuallyHidden } from "../VisuallyHidden";
 import type {
@@ -73,8 +74,11 @@ export type NotificationPanelProps = Omit<HTMLAttributes<HTMLElement>, "children
   NotificationContentProps & {
     /** Adds a close button to the header, for a panel shown as a sheet. */
     onClose?: () => void;
-    /** Called after a row is activated, so a host can close itself. */
-    onItemActivate?: (item: NotificationItem) => void;
+    /**
+     * Receives what a row, the footer or the summary's action is about to do, so a host can close itself first and run it once
+     * focus is back where it belongs. Omit it and the action runs at once.
+     */
+    onAction?: (run: () => void) => void;
     /** Id of the heading, for a host that names its dialog with it. Generated when omitted. */
     titleId?: string;
     /**
@@ -94,6 +98,8 @@ const STAGGER_LIMIT = 6;
 const INTRO_MS = 700;
 const ARRIVAL_MS = 900;
 const CASCADE_MS = 700;
+/** Where the arrows go in a tab row. */
+const ROW_ENDS = ["Home", "End"];
 
 function ChevronIcon() {
   return (
@@ -145,7 +151,7 @@ export function NotificationPanel({
   empty,
   error,
   onClose,
-  onItemActivate,
+  onAction,
   titleId,
   landmark = true,
   announce = true,
@@ -157,17 +163,22 @@ export function NotificationPanel({
   const baseId = useId();
   const headingId = titleId ?? `${baseId}-title`;
   const panelId = `${baseId}-panel`;
-  const tabId = (key: string) => `${baseId}-tab-${key}`;
-  const tabRefs = useRef(new Map<string, HTMLButtonElement>());
+  // Ids come from the position, not the key: a key is the caller's text and may hold characters an id or a selector dislikes.
+  const tabId = (index: number) => `${baseId}-tab-${index}`;
+  const tabRefs = useRef(new Map<number, HTMLButtonElement>());
   const [inner, setInner] = useState(defaultActiveTab);
   const message = useUnreadAnnouncement(unreadCount, (count) => `${label}, ${unreadCountLabel(count)}`);
   const reduced = usePrefersReducedMotion();
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const tabList = tabs ?? [];
-  const requested = activeTab ?? inner;
-  const current = tabList.find((tab) => tab.key === requested) ?? tabList[0];
-  const indicator = useSlidingIndicator(tabsRef, `[data-tab-key="${current?.key}"]`, current?.key);
+  const requested = activeTab ?? inner ?? tabList[0]?.key;
+  const currentIndex = Math.max(
+    0,
+    tabList.findIndex((tab) => tab.key === requested),
+  );
+  const current = tabList[currentIndex];
+  const indicator = useSlidingIndicator(tabsRef, `[data-tab-index="${currentIndex}"]`, currentIndex);
 
   // Motion state. Each piece is compared while rendering, so the first frame after a change already carries it, and each
   // one switches itself off once its animation is over: a tab switch remounts the rows and must not replay them.
@@ -184,18 +195,49 @@ export function NotificationPanel({
     setCrossfade(true);
   }
   // Items that arrive while the panel is open enter at the top.
+  // What is on screen when the list first finishes loading is the baseline, not an arrival: a list fetched on open must not
+  // flash as if every row had just come in.
   const [seen, setSeen] = useState(() => new Set(items.map((item) => item.id)));
+  const [baselined, setBaselined] = useState(!loading);
   const [arrived, setArrived] = useState<ReadonlySet<string>>(() => new Set());
-  const newcomers = items.filter((item) => !seen.has(item.id)).map((item) => item.id);
-  if (newcomers.length > 0) {
-    setSeen(new Set([...seen, ...newcomers]));
-    setArrived(new Set(newcomers));
+  if (!baselined && !loading) {
+    setBaselined(true);
+    setSeen(new Set(items.map((item) => item.id)));
+  } else if (baselined && !loading) {
+    const newcomers = items.filter((item) => !seen.has(item.id)).map((item) => item.id);
+    if (newcomers.length > 0) {
+      setSeen(new Set([...seen, ...newcomers]));
+      setArrived(new Set(newcomers));
+    }
   }
   useEffect(() => {
     if (arrived.size === 0) return;
     const timer = window.setTimeout(() => setArrived(new Set()), ARRIVAL_MS);
     return () => window.clearTimeout(timer);
   }, [arrived]);
+  // A tab row that does not fit scrolls sideways; the edge that hides more tabs fades, so the clipping is not silent.
+  useEffect(() => {
+    const row = tabsRef.current;
+    if (!row) return;
+    const mark = () => {
+      const start = Math.abs(row.scrollLeft) > 2;
+      const end = Math.abs(row.scrollLeft) + row.clientWidth < row.scrollWidth - 2;
+      if (start || end) row.dataset.more = start && end ? "both" : start ? "start" : "end";
+      else delete row.dataset.more;
+    };
+    mark();
+    row.addEventListener("scroll", mark, { passive: true });
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(mark) : null;
+    observer?.observe(row);
+    return () => {
+      row.removeEventListener("scroll", mark);
+      observer?.disconnect();
+    };
+  }, [tabList.length]);
+  // Keep the chosen tab in sight when the row scrolls.
+  useEffect(() => {
+    tabRefs.current.get(currentIndex)?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  }, [currentIndex]);
   // "Mark all as read" settles the rows top to bottom, a short step apart.
   const [cascade, setCascade] = useState(false);
   useEffect(() => {
@@ -205,33 +247,29 @@ export function NotificationPanel({
   }, [cascade]);
 
   const choose = (key: string) => {
-    if (key === current?.key) return;
+    // Compare with what the caller asked for, not what is shown: a controlled `activeTab` that matches no tab shows the first
+    // one, and choosing that one is still a change the caller has to hear about.
+    if (key === requested && tabList.some((tab) => tab.key === key)) return;
     setInner(key);
     onTabChange?.(key);
   };
 
   const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const last = tabList.length - 1;
-    const target =
-      event.key === "ArrowRight"
-        ? index === last
-          ? 0
-          : index + 1
-        : event.key === "ArrowLeft"
-          ? index === 0
-            ? last
-            : index - 1
-          : event.key === "Home"
-            ? 0
-            : event.key === "End"
-              ? last
-              : -1;
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    const forward = rtl ? "ArrowLeft" : "ArrowRight";
+    const backward = rtl ? "ArrowRight" : "ArrowLeft";
+    let target = -1;
+    if (event.key === forward) target = index === last ? 0 : index + 1;
+    else if (event.key === backward) target = index === 0 ? last : index - 1;
+    else if (ROW_ENDS.includes(event.key)) target = event.key === "Home" ? 0 : last;
     if (target < 0) return;
     event.preventDefault();
-    const next = tabList[target]!;
-    tabRefs.current.get(next.key)?.focus();
-    choose(next.key);
+    tabRefs.current.get(target)?.focus();
+    choose(tabList[target]!.key);
   };
+
+  const run = onAction ?? ((fn: () => void) => fn());
 
   const visible = current && !current.all ? items.filter((item) => item.tab === current.key) : items;
   const known = new Set((groups ?? []).map((group) => group.key));
@@ -287,10 +325,7 @@ export function NotificationPanel({
         <span className={styles.dot} data-on={item.unread || undefined} aria-hidden="true" />
       </>
     );
-    const activate = () => {
-      item.onSelect?.();
-      onItemActivate?.(item);
-    };
+    const activate = () => run(() => item.onSelect?.());
     return (
       <li
         key={item.id}
@@ -359,11 +394,16 @@ export function NotificationPanel({
     ) : null;
   } else {
     list = sections.map((section) => {
+      const headingIndex = Math.min(order, STAGGER_LIMIT - 1);
       const sectionHeading = `${baseId}-group-${section.key}`;
       return (
         <div key={section.key || "ungrouped"} className={styles.group}>
           {section.label ? (
-            <h3 id={sectionHeading} className={styles.groupHeading}>
+            <h3
+              id={sectionHeading}
+              className={styles.groupHeading}
+              style={{ "--row-index": headingIndex } as CSSProperties}
+            >
               {section.label}
             </h3>
           ) : null}
@@ -384,116 +424,122 @@ export function NotificationPanel({
       className={[styles.panel, className].filter(Boolean).join(" ")}
       data-lufia-part="notification-panel"
       data-cascade={cascade || undefined}
+      data-intro={intro && !reduced ? "" : undefined}
     >
-      <header className={styles.header}>
-        <h2 id={headingId} className={styles.heading}>
-          {label}
-        </h2>
-        {unreadCount > 0 ? (
-          <>
-            <ChangeHighlight value={unreadCount} aria-hidden="true">
-              <Badge tone="info">{unreadCount}</Badge>
-            </ChangeHighlight>
-            <VisuallyHidden>{unreadCountLabel(unreadCount)}</VisuallyHidden>
-          </>
-        ) : null}
-        <span className={styles.headerActions}>
-          {markable ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className={styles.markAll}
-              aria-disabled={unreadCount === 0 || undefined}
-              onClick={() => {
-                if (unreadCount === 0) return;
-                setCascade(true);
-                onMarkAllRead?.();
-              }}
-            >
-              {markAllLabel}
-            </Button>
+      <NotificationActionContext value={run}>
+        <header className={styles.header}>
+          <h2 id={headingId} className={styles.heading}>
+            {label}
+          </h2>
+          {unreadCount > 0 ? (
+            <>
+              <ChangeHighlight value={unreadCount} aria-hidden="true">
+                <Badge tone="info">{unreadCount}</Badge>
+              </ChangeHighlight>
+              <VisuallyHidden>{unreadCountLabel(unreadCount)}</VisuallyHidden>
+            </>
           ) : null}
-          {onClose ? (
-            <IconButton size="sm" icon={<CloseIcon />} aria-label={labels.close} onClick={onClose} />
-          ) : null}
-        </span>
-      </header>
-
-      {tabList.length > 0 ? (
-        <div ref={tabsRef} role="tablist" aria-label={label} className={styles.tabs}>
-          <span ref={indicator} className={styles.indicator} hidden aria-hidden="true" />
-          {tabList.map((tab, index) => {
-            const selected = tab.key === current?.key;
-            return (
-              <button
-                key={tab.key}
-                ref={(node) => {
-                  if (node) tabRefs.current.set(tab.key, node);
-                  else tabRefs.current.delete(tab.key);
+          <span className={styles.headerActions}>
+            {markable ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={styles.markAll}
+                aria-disabled={unreadCount === 0 || undefined}
+                onClick={() => {
+                  if (unreadCount === 0) return;
+                  setCascade(true);
+                  onMarkAllRead?.();
                 }}
-                type="button"
-                role="tab"
-                id={tabId(tab.key)}
-                data-tab-key={tab.key}
-                aria-selected={selected}
-                aria-controls={panelId}
-                tabIndex={selected ? 0 : -1}
-                className={styles.tab}
-                onClick={() => choose(tab.key)}
-                onKeyDown={(event) => onTabKeyDown(event, index)}
               >
-                {tab.label}
-                {tab.count !== undefined ? (
-                  <ChangeHighlight value={tab.count} className={styles.count}>
-                    {tab.count}
-                  </ChangeHighlight>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+                {markAllLabel}
+              </Button>
+            ) : null}
+            {onClose ? (
+              <IconButton size="sm" icon={<CloseIcon />} aria-label={labels.close} onClick={onClose} />
+            ) : null}
+          </span>
+        </header>
 
-      <div className={styles.scroll}>
-        {summary ? <div className={styles.summarySlot}>{summary}</div> : null}
-        <div
-          id={panelId}
-          role={current ? "tabpanel" : undefined}
-          aria-labelledby={current ? tabId(current.key) : undefined}
-          aria-busy={loading || undefined}
-        >
+        {tabList.length > 0 ? (
+          <div ref={tabsRef} role="tablist" aria-label={label} className={styles.tabs}>
+            <span ref={indicator} className={styles.indicator} hidden aria-hidden="true" />
+            {tabList.map((tab, index) => {
+              const selected = index === currentIndex;
+              return (
+                <button
+                  key={tab.key}
+                  ref={(node) => {
+                    if (node) tabRefs.current.set(index, node);
+                    else tabRefs.current.delete(index);
+                  }}
+                  type="button"
+                  role="tab"
+                  id={tabId(index)}
+                  data-tab-index={index}
+                  aria-selected={selected}
+                  aria-controls={panelId}
+                  tabIndex={selected ? 0 : -1}
+                  className={styles.tab}
+                  onClick={() => choose(tab.key)}
+                  onKeyDown={(event) => onTabKeyDown(event, index)}
+                >
+                  {tab.label}
+                  {tab.count !== undefined ? (
+                    <ChangeHighlight value={tab.count} className={styles.count}>
+                      {tab.count}
+                    </ChangeHighlight>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className={styles.scroll}>
+          {summary ? <div className={styles.summarySlot}>{summary}</div> : null}
           <div
-            key={current?.key}
-            className={styles.content}
-            data-crossfade={crossfade || undefined}
-            data-intro={intro && !reduced ? "" : undefined}
+            id={panelId}
+            role={current ? "tabpanel" : undefined}
+            aria-labelledby={current ? tabId(currentIndex) : undefined}
+            aria-busy={loading || undefined}
           >
-            {list}
+            <div key={current?.key} className={styles.content} data-crossfade={crossfade || undefined}>
+              {list}
+            </div>
           </div>
         </div>
-      </div>
 
-      {footer ? (
-        <div className={styles.footer}>
-          {footer.href !== undefined ? (
-            <LufiaLink href={footer.href} className={styles.footerLink} onClick={() => footer.onSelect?.()}>
-              {footer.label}
-              <ChevronIcon />
-            </LufiaLink>
-          ) : (
-            <button type="button" className={styles.footerLink} onClick={() => footer.onSelect?.()}>
-              {footer.label}
-              <ChevronIcon />
-            </button>
-          )}
-        </div>
-      ) : null}
+        {footer ? (
+          <div className={styles.footer} style={{ "--row-index": STAGGER_LIMIT } as CSSProperties}>
+            {footer.href !== undefined ? (
+              <LufiaLink
+                href={footer.href}
+                className={styles.footerLink}
+                onClick={() => run(() => footer.onSelect?.())}
+              >
+                {footer.label}
+                <ChevronIcon />
+              </LufiaLink>
+            ) : (
+              <button
+                type="button"
+                className={styles.footerLink}
+                onClick={() => run(() => footer.onSelect?.())}
+              >
+                {footer.label}
+                <ChevronIcon />
+              </button>
+            )}
+          </div>
+        ) : null}
 
-      {announce ? (
-        <VisuallyHidden role="status" aria-live="polite">
-          {message}
-        </VisuallyHidden>
-      ) : null}
+        {announce ? (
+          <VisuallyHidden role="status" aria-live="polite">
+            {message}
+          </VisuallyHidden>
+        ) : null}
+      </NotificationActionContext>
     </Root>
   );
 }

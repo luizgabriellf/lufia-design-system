@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, type CSSProperties, type HTMLAttributes } from "react";
+import { useContext, useId, type CSSProperties, type HTMLAttributes } from "react";
+import { NotificationActionContext } from "./context";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./NotificationPanel.module.css";
 
@@ -40,6 +41,8 @@ export function NotificationSummary({
   ...rest
 }: NotificationSummaryProps) {
   const titleId = useId();
+  // Inside a `NotificationCenter` the panel closes first, then the action runs.
+  const run = useContext(NotificationActionContext);
   const total = progress ? Math.max(0, Math.min(MAX_SEGMENTS, Math.round(progress.total))) : 0;
   const done = progress ? Math.max(0, Math.min(total, Math.round(progress.done))) : 0;
   return (
@@ -75,11 +78,19 @@ export function NotificationSummary({
       ) : null}
       {action ? (
         action.href !== undefined ? (
-          <LufiaLink href={action.href} className={styles.summaryAction} onClick={() => action.onSelect?.()}>
+          <LufiaLink
+            href={action.href}
+            className={styles.summaryAction}
+            onClick={() => run(() => action.onSelect?.())}
+          >
             {action.label}
           </LufiaLink>
         ) : (
-          <button type="button" className={styles.summaryAction} onClick={() => action.onSelect?.()}>
+          <button
+            type="button"
+            className={styles.summaryAction}
+            onClick={() => run(() => action.onSelect?.())}
+          >
             {action.label}
           </button>
         )

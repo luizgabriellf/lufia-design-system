@@ -77,8 +77,16 @@ labelled region by default; set `landmark={false}` when a host already names it.
 - **Groups** are the caller's too ("Today", "Earlier"). An item names its group with `group`; items without a known group come
   first, under no heading.
 - **Items** have a title, a `meta` line ("Supplier intelligence") and a `time` ("07:52"), a leading `icon` or `avatar`, and
-  are links (`href`) or buttons (`onSelect`). Activating a row closes the panel.
+  are links (`href`) or buttons (`onSelect`).
 - **Open state** is controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`.
+
+### Actions close the panel
+
+A row, the footer link and the summary's action all close the panel, then run. `NotificationCenter` closes first and hands
+focus back to the bell before `onSelect` runs (for a sheet, once the sheet is gone), so a `Modal` opened by the action takes
+focus and returns it to the bell when it closes. `NotificationSummary` reads this from the panel it sits in, so its action
+needs no wiring. A `NotificationPanel` hosted on a page has nothing to close: the action runs at once, or pass `onAction` to
+receive it and decide.
 
 ### Highlight card
 
@@ -168,7 +176,7 @@ through `useFocusTrap`, so inside a dialog Escape closes one layer at a time.
   `aria-expanded` and `aria-controls`. The visible count repeats the name and is hidden from assistive technology.
 - The popover is a non-modal `role="dialog"` labelled by its heading. Focus moves to it on open; Escape returns focus to the
   bell. The sheet is `aria-modal`, traps focus and makes the page behind inert.
-- Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items.
+- Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items. The arrow keys mirror in right-to-left text. A row of tabs that does not fit scrolls sideways, and the edge that hides more fades.
 - Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the
   tint alone. Rows are links or buttons, so the whole row is the target and is at least 3.5rem tall.
 - A polite live region announces changes of `unreadCount` ("Notifications, 5 unread"). It says nothing on first paint.

@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
+import { Modal } from "../Modal";
 import { axe } from "../../test/axe";
 import { endAnimation, mockReducedMotion } from "../../test/motion";
 import {
@@ -213,6 +214,44 @@ describe("NotificationCenter", () => {
       expect(tabs[0]).toHaveFocus();
     });
 
+    it("mirrors the arrows in right-to-left text", async () => {
+      const { user, trigger } = setup();
+      await user.click(trigger);
+      const tabs = screen.getAllByRole("tab");
+      tabs[0]!.focus();
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, "getComputedStyle").mockImplementation(
+        (element, pseudo) => ({ ...real(element, pseudo), direction: "rtl" }) as CSSStyleDeclaration,
+      );
+      await user.keyboard("{ArrowLeft}");
+      expect(tabs[1]).toHaveFocus();
+      await user.keyboard("{ArrowRight}");
+      expect(tabs[0]).toHaveFocus();
+    });
+
+    it("survives keys that are not safe in an id or a selector", async () => {
+      const { user, trigger } = setup({
+        tabs: [
+          { key: 'a "b"]', label: "Odd", all: true },
+          { key: "c d", label: "Other" },
+        ],
+      });
+      await user.click(trigger);
+      const panel = screen.getByRole("tabpanel");
+      expect(panel).toHaveAccessibleName("Odd");
+      await user.click(screen.getByRole("tab", { name: "Other" }));
+      expect(screen.getByRole("tabpanel")).toHaveAccessibleName("Other");
+    });
+
+    it("reports the first tab when a controlled activeTab matches none", async () => {
+      const onTabChange = vi.fn();
+      const { user, trigger } = setup({ activeTab: "gone", onTabChange });
+      await user.click(trigger);
+      expect(screen.getByRole("tab", { name: /^All/ })).toHaveAttribute("aria-selected", "true");
+      await user.click(screen.getByRole("tab", { name: /^All/ }));
+      expect(onTabChange).toHaveBeenCalledWith("all");
+    });
+
     it("can be controlled", async () => {
       const { user, trigger } = setup({ activeTab: "agents" });
       await user.click(trigger);
@@ -256,6 +295,7 @@ describe("NotificationCenter", () => {
       await user.click(screen.getByRole("button", { name: /Proposal ready/ }));
       expect(onSelect).toHaveBeenCalledTimes(1);
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      expect(trigger).toHaveFocus();
     });
 
     it("shows the footer link", async () => {
@@ -299,6 +339,98 @@ describe("NotificationCenter", () => {
       expect(bar).toHaveAttribute("aria-valuenow", "1");
       expect(bar).toHaveAttribute("aria-valuemax", "3");
       expect(screen.getByRole("link", { name: "Review" })).toHaveAttribute("href", "/review");
+    });
+  });
+
+  describe("focus after an action", () => {
+    function WithModal({ presentation }: { presentation: "popover" | "sheet" }) {
+      const [shown, setShown] = useState(false);
+      return (
+        <>
+          <NotificationCenter
+            {...base}
+            presentation={presentation}
+            items={[{ id: "x", title: "Open the details", unread: true, onSelect: () => setShown(true) }]}
+            tabs={undefined}
+            groups={undefined}
+            footer={{ label: "Notification settings", onSelect: () => setShown(true) }}
+          />
+          <Modal open={shown} onClose={() => setShown(false)} title="Details">
+            <p>Body</p>
+          </Modal>
+        </>
+      );
+    }
+
+    for (const presentation of ["popover", "sheet"] as const) {
+      it(`hands focus to the bell before the row's action runs (${presentation})`, async () => {
+        withLayout();
+        const user = userEvent.setup();
+        const seen: (Element | null)[] = [];
+        render(
+          <NotificationCenter
+            {...base}
+            presentation={presentation}
+            tabs={undefined}
+            groups={undefined}
+            items={[{ id: "x", title: "Row", onSelect: () => seen.push(document.activeElement) }]}
+          />,
+        );
+        const bell = screen.getByRole("button", { name: /^Notifications/ });
+        await user.click(bell);
+        await user.click(screen.getByRole("button", { name: "Row" }));
+        await waitFor(() => expect(seen).toHaveLength(1));
+        expect(seen[0]).toBe(bell);
+        expect(bell).toHaveFocus();
+      });
+
+      it(`lets a dialog opened by a row take focus and return it to the bell (${presentation})`, async () => {
+        withLayout();
+        const user = userEvent.setup();
+        render(<WithModal presentation={presentation} />);
+        const bell = screen.getByRole("button", { name: /^Notifications/ });
+        await user.click(bell);
+        await user.click(screen.getByRole("button", { name: /Open the details/ }));
+        const modal = await screen.findByRole("dialog", { name: "Details" });
+        await waitFor(() => expect(modal).toHaveFocus());
+        await user.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(bell).toHaveFocus();
+      });
+    }
+
+    it("closes the panel, then runs the footer action", async () => {
+      const onFooter = vi.fn();
+      const { user, trigger } = setup({ footer: { label: "Settings", onSelect: onFooter } });
+      await user.click(trigger);
+      await user.click(screen.getByRole("button", { name: "Settings" }));
+      expect(onFooter).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      expect(trigger).toHaveFocus();
+    });
+
+    it("closes the panel, then runs the summary action", async () => {
+      const onReview = vi.fn();
+      const { user, trigger } = setup({
+        summary: <NotificationSummary title="2 due" action={{ label: "Review", onSelect: onReview }} />,
+      });
+      await user.click(trigger);
+      await user.click(screen.getByRole("button", { name: "Review" }));
+      expect(onReview).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      expect(trigger).toHaveFocus();
+    });
+
+    it("runs the summary action at once when the panel is hosted on a page", async () => {
+      const onReview = vi.fn();
+      render(
+        <NotificationPanel
+          {...base}
+          summary={<NotificationSummary title="2 due" action={{ label: "Review", onSelect: onReview }} />}
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "Review" }));
+      expect(onReview).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -408,6 +540,7 @@ describe("NotificationPanel", () => {
 });
 
 describe("motion", () => {
+  const panelRoot = () => document.querySelector('[data-lufia-part="notification-panel"]');
   const popover = () => document.querySelector<HTMLElement>('[data-lufia-part="notification-popover"]');
 
   it("keeps the popover mounted, inert, while it animates out", async () => {
@@ -440,7 +573,7 @@ describe("motion", () => {
     const { user, trigger } = setup();
     await user.click(trigger);
     const content = () => document.querySelector("[data-intro], [data-crossfade]") as HTMLElement | null;
-    expect(screen.getByRole("tabpanel").firstElementChild).toHaveAttribute("data-intro");
+    expect(panelRoot()).toHaveAttribute("data-intro");
     expect(content()).not.toHaveAttribute("data-crossfade");
     await user.click(screen.getByRole("tab", { name: /Approvals/ }));
     expect(screen.getByRole("tabpanel").firstElementChild).toHaveAttribute("data-crossfade");
@@ -450,7 +583,7 @@ describe("motion", () => {
     mockReducedMotion(true);
     const { user, trigger } = setup();
     await user.click(trigger);
-    expect(screen.getByRole("tabpanel").firstElementChild).not.toHaveAttribute("data-intro");
+    expect(panelRoot()).not.toHaveAttribute("data-intro");
   });
 
   it("marks an item that arrives while open, not the ones it opened with", () => {
@@ -468,6 +601,16 @@ describe("motion", () => {
     const arrived = document.querySelectorAll("[data-arrived]");
     expect(arrived).toHaveLength(1);
     expect(arrived[0]).toHaveTextContent("Just arrived");
+  });
+
+  it("does not flash a list that finishes loading as new arrivals", () => {
+    mockReducedMotion(false);
+    const { rerender } = render(<NotificationPanel {...base} items={[]} loading />);
+    rerender(<NotificationPanel {...base} items={items} loading={false} />);
+    expect(document.querySelector("[data-arrived]")).toBeNull();
+    const fresh: NotificationItem = { id: "new", group: "today", tab: "approvals", title: "Just arrived" };
+    rerender(<NotificationPanel {...base} items={[fresh, ...items]} loading={false} />);
+    expect(document.querySelectorAll("[data-arrived]")).toHaveLength(1);
   });
 
   it("cascades mark-all-read, and fades the dot instead of removing it", async () => {
