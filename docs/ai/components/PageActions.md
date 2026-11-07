@@ -34,13 +34,15 @@ of `PageHeader`.
 | `secondary` | `readonly PageActionItem[]` | no | `[]` | Frequent actions. Visible on wide screens; on narrow ones they move into the overflow menu. |
 | `overflow` | `readonly MoreActionItem[]` | no | `[]` | Infrequent actions. Always in the overflow menu. |
 | `moreLabel` | `string` | yes |  | Accessible name of the overflow menu button, such as "More actions". |
+| `size` | `"sm" \| "md"` | no | `"md"` | Size of the primary and secondary buttons and of the menu button. Defaults to `"md"`; `"sm"` suits compact headers. |
+| `hideBelow` | `"medium"` | no |  | `"medium"` hides the whole row below 60rem, for a page whose app shell shows the actions elsewhere on narrow screens. Pure CSS, so there is no flash on first paint. Omit it to keep the row at every width. |
+| `primaryPlacement` | `"inline" \| "external"` | no | `"inline"` | Where the primary action is rendered. `"inline"` (default) keeps it in the row. `"external"` hides it in the row below 60rem (the `medium` breakpoint), because the app shell renders it there, for example in a floating bar; it stays inline on wider screens. The secondary actions and the menu are not affected. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; }`
-- `PageActionsProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { primary?: PageActionItem | undefined; secondary?: readonly PageActionItem[] | undefined; overflow?: readonly MoreActionItem[] | undefined; moreLabel: string; }`
+- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; hint?: string | undefined; }`
 
 ## Example
 
@@ -63,6 +65,7 @@ Buttons follow `Button`; the menu follows `MoreActions` (arrow keys, Home, End, 
 
 - Every control is a native button or link, or the menu from `MoreActions`; the menu button is named by `moreLabel`.
 - On narrow screens an action is reachable in the menu only, so keep labels meaningful out of context.
+- A hinted disabled action is `aria-disabled`, not `disabled`, so it takes focus and announces its reason.
 - The row does not wrap, so it never pushes content around when it collapses.
 
 ## Motion
@@ -85,6 +88,10 @@ Verbs first, one to three words. Put the destructive action last in the menu and
 - `components-actions-pageactions--overflow-only`
 - `components-actions-pageactions--primary-as-link`
 - `components-actions-pageactions--disabled`
+- `components-actions-pageactions--disabled-with-hint`
+- `components-actions-pageactions--small`
+- `components-actions-pageactions--external-primary`
+- `components-actions-pageactions--hidden-below-medium`
 - `components-actions-pageactions--in-page-header`
 - `components-actions-pageactions--phone-320`
 - `components-actions-pageactions--phone-390`

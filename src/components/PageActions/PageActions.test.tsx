@@ -65,6 +65,116 @@ describe("PageActions", () => {
     expect(screen.getByTestId("p")).toHaveClass("extra");
   });
 
+  it("describes a hinted action with a title and a hidden description", () => {
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", hint: "Creates a report" }}
+        secondary={[{ key: "s", label: "Share", hint: "Needs a saved report" }]}
+      />,
+    );
+    const primary = screen.getByRole("button", { name: "New" });
+    expect(primary).toHaveAttribute("title", "Creates a report");
+    expect(primary).toHaveAccessibleDescription("Creates a report");
+    expect(screen.getByRole("button", { name: "Share" })).toHaveAccessibleDescription("Needs a saved report");
+  });
+
+  it("keeps a hinted disabled button focusable, explained and inert", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", disabled: true, hint: "Record is superseded", onSelect }}
+      />,
+    );
+    const button = screen.getByRole("button", { name: "New" });
+    expect(button).not.toBeDisabled();
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAccessibleDescription("Record is superseded");
+    await user.tab();
+    expect(button).toHaveFocus();
+    await user.click(button);
+    await user.keyboard("{Enter}");
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("keeps a disabled action without a hint natively disabled", () => {
+    render(<PageActions moreLabel="More" primary={{ key: "n", label: "New", disabled: true }} />);
+    expect(screen.getByRole("button", { name: "New" })).toBeDisabled();
+  });
+
+  it("marks a hinted disabled link aria-disabled", () => {
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", href: "/n", disabled: true, hint: "No" }}
+      />,
+    );
+    const link = screen.getByRole("link", { name: "New" });
+    expect(link).toHaveAttribute("aria-disabled", "true");
+    expect(link).toHaveAccessibleDescription("No");
+  });
+
+  it("describes a hinted menu item", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    render(
+      <PageActions
+        moreLabel="More"
+        overflow={[{ key: "o", label: "Export", disabled: true, hint: "Nothing to export" }]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "More" }));
+    const item = screen.getByRole("menuitem", { name: "Export" });
+    expect(item).toHaveAttribute("title", "Nothing to export");
+    expect(item).toHaveAccessibleDescription("Nothing to export");
+  });
+
+  it("exposes a stable part, placement and hide markers on the root and passes data attributes through", () => {
+    const { rerender } = render(<PageActions moreLabel="More" data-page-actions="" />);
+    const root = document.querySelector("[data-lufia-part='page-actions']")!;
+    expect(root).toHaveAttribute("data-page-actions");
+    expect(root).toHaveAttribute("data-primary-placement", "inline");
+    expect(root).not.toHaveAttribute("data-hide-below");
+    rerender(<PageActions moreLabel="More" hideBelow="medium" primaryPlacement="external" />);
+    expect(root).toHaveAttribute("data-hide-below", "medium");
+    expect(root).toHaveAttribute("data-primary-placement", "external");
+  });
+
+  it("passes the size to the buttons and the menu button", () => {
+    render(
+      <PageActions
+        moreLabel="More"
+        size="sm"
+        primary={{ key: "n", label: "New" }}
+        secondary={[{ key: "s", label: "Share" }]}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "New" })).toHaveAttribute("data-size", "sm");
+    expect(screen.getByRole("button", { name: "Share" })).toHaveAttribute("data-size", "sm");
+    expect(screen.getByRole("button", { name: "More" })).toHaveAttribute("data-size", "sm");
+  });
+
+  it("defaults to the medium size", () => {
+    render(<PageActions moreLabel="More" primary={{ key: "n", label: "New" }} />);
+    expect(screen.getByRole("button", { name: "New" })).toHaveAttribute("data-size", "md");
+  });
+
+  it("has no axe violations with hints and a disabled hinted action", async () => {
+    const { container } = render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", disabled: true, hint: "Record is superseded" }}
+        secondary={[{ key: "s", label: "Share", hint: "Shares the link" }]}
+        overflow={[{ key: "o", label: "Export", hint: "As CSV" }]}
+        hideBelow="medium"
+        primaryPlacement="external"
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <PageActions

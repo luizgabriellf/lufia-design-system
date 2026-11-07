@@ -40,6 +40,20 @@ export const SecondaryOnly: Story = { args: { overflow: [] } };
 export const OverflowOnly: Story = { args: { secondary: [] } };
 export const PrimaryAsLink: Story = { args: { primary: { ...primary, href: "#new" } } };
 export const Disabled: Story = { args: { primary: { ...primary, disabled: true } } };
+/** A disabled action with a hint stays focusable and explains itself on hover, focus and to screen readers. */
+export const DisabledWithHint: Story = {
+  args: {
+    primary: { ...primary, disabled: true, hint: "Disabled because the record is superseded" },
+    secondary: [{ key: "share", label: "Share", hint: "Copies a link to the report" }],
+    overflow: [{ key: "export", label: "Export all", disabled: true, hint: "Nothing to export yet" }],
+  },
+};
+/** Compact headers: smaller primary and secondary buttons and menu button. */
+export const Small: Story = { args: { size: "sm" } };
+/** The app shell shows the primary action itself below 60rem; here it stays inline from 60rem up. */
+export const ExternalPrimary: Story = { args: { primaryPlacement: "external" } };
+/** The whole row is hidden below 60rem. Resize the canvas to see it disappear. */
+export const HiddenBelowMedium: Story = { args: { hideBelow: "medium" } };
 export const InPageHeader: Story = {
   render: (args) => (
     <PageHeader
