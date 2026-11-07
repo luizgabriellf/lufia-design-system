@@ -38,6 +38,19 @@ import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
 - Token data is available as `@lufia/design-system/tokens` (typed map) and `@lufia/design-system/tokens.json`.
 - The root export `@lufia/design-system` re-exports everything, but the subpaths keep bundles small.
 
+## Live Storybook MCP for local agents
+
+The official Storybook MCP addon is enabled for the development server:
+
+```bash
+npm run storybook
+# Connect an MCP-capable agent to http://localhost:6006/mcp
+```
+
+Use `docs-list` and `docs-show` to discover components, real prop APIs and documented examples. The MCP dev toolset also supports Storybook development flows. The `test-run` toolset is intentionally disabled until an addon-vitest integration is configured and verified. Never connect a development MCP endpoint to an untrusted public network.
+
+The GitHub Pages documentation remains **static**: it serves the machine-readable Lufia files at `/components.json` and the separate Storybook-native manifest at `/manifests/components.json`, but **not** `/mcp`. To connect a remote agent, run a trusted compatible MCP host rather than treating GitHub Pages as a live server.
+
 ## AI agent workflow
 
 For coding agents, use **progressive disclosure** rather than loading the entire manifest into every prompt:
