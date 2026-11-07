@@ -54,7 +54,7 @@ export const InForm: Story = {
         }}
       >
         <SwitchInput
-          {...args}
+          label={args.label}
           name="alerts"
           value="yes"
           defaultChecked

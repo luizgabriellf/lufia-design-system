@@ -41,7 +41,7 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | `sparkline` | `ReactNode` | no |  | A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. |
 | `href` | `string` | no |  | Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. |
 | `onClick` | `MouseEventHandler<HTMLElement>` | no |  | Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. |
-| `loading` | `boolean` | no | `false` | Shows skeletons in place of the figure and the lines under it, and disables the link or button. |
+| `loading` | `boolean` | no | `false` | Shows skeletons in place of the figure, the change, the hint and the chart, and disables the link or button. Each skeleton has the line box of the content it stands for, so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` you will pass once loaded (placeholders are fine): they decide which lines are held. |
 | `loadingLabel` | `string` | no |  | Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. |
 
 Other native element attributes pass through to the root element.
@@ -85,7 +85,7 @@ Keyboard:
 - The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
 - `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
 - `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
-- While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.
+- While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.
 - In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`.
 
 ## Motion
@@ -110,6 +110,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--as-link`
 - `components-data-display-stattile--as-button`
 - `components-data-display-stattile--loading`
+- `components-data-display-stattile--loading-keeps-height`
 - `components-data-display-stattile--long-label`
 - `components-data-display-stattile--with-animated-number`
 - `components-data-display-stattile--in-flex-row`
