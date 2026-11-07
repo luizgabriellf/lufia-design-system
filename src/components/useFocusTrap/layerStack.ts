@@ -58,3 +58,22 @@ export function registerOverlayLayer(): OverlayLayer {
 export function isTopOverlayLayer(layer: OverlayLayer): boolean {
   return layer.isTop();
 }
+
+/**
+ * How many layers are open on the shared overlay stack right now: package modals and traps, dismissable popups that
+ * registered through `useDismiss`, and any layer an app registered with `registerOverlayLayer`. `0` when nothing is open.
+ *
+ * A read-only snapshot, not reactive: call it when you need it (in an event handler, in a key handler), not during render.
+ * Read it here instead of reaching for the `globalThis.__lufiaOverlayStack` key, which is an implementation detail.
+ */
+export function overlayDepth(): number {
+  return stack().length;
+}
+
+/**
+ * Whether any layer is open on the shared overlay stack. The same as `overlayDepth() > 0`. Use it to leave a global
+ * shortcut or an outside-press handler alone while a dialog or popup is open. Read-only and not reactive.
+ */
+export function hasOpenOverlay(): boolean {
+  return overlayDepth() > 0;
+}

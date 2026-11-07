@@ -1622,6 +1622,10 @@
             "id": "components-data-display-badge--all-tones-with-dot"
           },
           {
+            "export": "SquareByToken",
+            "id": "components-data-display-badge--square-by-token"
+          },
+          {
             "export": "Phone320",
             "id": "components-data-display-badge--phone-320"
           },
@@ -1665,6 +1669,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-badge-radius",
         "--lufia-border-width-thin",
         "--lufia-color-accent-border",
         "--lufia-color-accent-subtle",
@@ -1705,7 +1710,7 @@
         {
           "name": "BarList",
           "kind": "component",
-          "description": "Horizontal bars with the name and the value as text above each track. The text is the accessible data: every name and value is a list item a screen reader reads, and the bars are `aria-hidden` shape on top of it. One scale per list, so rows compare. The draw-in plays once on mount and is removed under reduced motion. Renders nothing when `rows` is empty: show an `EmptyState` instead.",
+          "description": "Horizontal bars with the name and the value as text above each track. The text is the accessible data: every name and value is a list item a screen reader reads, and the bars are `aria-hidden` shape on top of it. One scale per list, so rows compare. The draw-in plays once on mount and is removed under reduced motion. An optional `reference` adds a dashed tick to every track. Renders nothing when `rows` is empty: show an `EmptyState` instead.",
           "props": [
             {
               "name": "title",
@@ -1734,6 +1739,20 @@
               "required": false,
               "default": null,
               "description": "Closes the list with a total line."
+            },
+            {
+              "name": "reference",
+              "type": "{ amount: number; label: ReactNode; }",
+              "required": false,
+              "default": null,
+              "description": "A shared reference (\"Target 500\"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default."
+            },
+            {
+              "name": "titleVisibility",
+              "type": "\"hidden\" | \"visible\"",
+              "required": false,
+              "default": "\"visible\"",
+              "description": "`\"hidden\"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `\"visible\"`."
             }
           ],
           "nativeProps": true
@@ -1742,7 +1761,7 @@
           "name": "BarListProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: \"hidden\" | \"visible\" | undefined; }"
         },
         {
           "name": "BarListRow",
@@ -1752,7 +1771,7 @@
         }
       ],
       "aliases": {
-        "BarListProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }",
+        "BarListProps": "Omit<HTMLAttributes<HTMLElement>, \"title\"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: \"hidden\" | \"visible\" | undefined; }",
         "BarListRow": "{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }"
       },
       "story": {
@@ -1773,6 +1792,22 @@
           {
             "export": "LongNames",
             "id": "components-data-display-barlist--long-names"
+          },
+          {
+            "export": "WithReference",
+            "id": "components-data-display-barlist--with-reference"
+          },
+          {
+            "export": "ReferenceAboveEveryBar",
+            "id": "components-data-display-barlist--reference-above-every-bar"
+          },
+          {
+            "export": "ReferenceLongText",
+            "id": "components-data-display-barlist--reference-long-text"
+          },
+          {
+            "export": "HiddenTitle",
+            "id": "components-data-display-barlist--hidden-title"
           },
           {
             "export": "AllZero",
@@ -1822,6 +1857,8 @@
         "notes": [
           "The text is the data. It is a `figure` named by its `title`, and every name and value is a list item a screen reader reads in order. The bars are `aria-hidden` shape on top, so no separate table is needed.",
           "Format `value` yourself (it is what people read); the bar is drawn from `amount`.",
+          "`reference` draws a dashed tick on every track, on the same scale as the bars (it counts towards the scale). The tick is shape only: its `label` is printed as a legend under the list and is the figure's accessible description, so write what it means and its value (\"Target: 800\").",
+          "`titleVisibility=\"hidden\"` keeps the `title` as the figure's accessible name for screen readers only.",
           "A written `summary` says what the bars show.",
           "The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.",
           "In `forced-colors` mode tracks get a border and fills use `CanvasText`."
@@ -2894,6 +2931,218 @@
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-exit",
         "--lufia-motion-easing-in-out"
+      ]
+    },
+    {
+      "name": "ColumnChart",
+      "category": "Data display",
+      "summary": "Columns on one baseline, single or stacked, with the numbers in a hidden data table.",
+      "status": "beta",
+      "source": "src/components/ColumnChart",
+      "entry": {
+        "subpath": "@lufia/design-system/components/ColumnChart",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "ColumnChart",
+          "kind": "component",
+          "description": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.",
+          "props": [
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Caption of the figure, and its accessible name."
+            },
+            {
+              "name": "titleVisibility",
+              "type": "\"hidden\" | \"visible\"",
+              "required": false,
+              "default": "\"visible\"",
+              "description": "`\"hidden\"` keeps the title as the accessible name for screen readers only. Defaults to `\"visible\"`."
+            },
+            {
+              "name": "summary",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A written summary of what the columns show. Shown above them."
+            },
+            {
+              "name": "series",
+              "type": "readonly ColumnChartSeries[]",
+              "required": true,
+              "default": null,
+              "description": "The measures. One series draws plain columns; several stack in this order, the first at the bottom."
+            },
+            {
+              "name": "columns",
+              "type": "readonly ColumnChartColumn[]",
+              "required": true,
+              "default": null,
+              "description": "One column per entry, left to right (right to left in an RTL page)."
+            },
+            {
+              "name": "formatValue",
+              "type": "((value: number) => string)",
+              "required": false,
+              "default": "String",
+              "description": "How a number is written in the data table (\"12 h\", \"1,240\"). Defaults to `String`. Format with your locale here."
+            },
+            {
+              "name": "legend",
+              "type": "\"hidden\" | \"auto\"",
+              "required": false,
+              "default": "\"auto\"",
+              "description": "The legend of a stacked chart. `\"auto\"` (default) shows it when there is more than one series."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ColumnChartColumn",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: ReactNode; values: readonly number[]; }"
+        },
+        {
+          "name": "ColumnChartProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "ColumnChartSeries",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; tone?: ChartTone | undefined; }"
+        }
+      ],
+      "aliases": {
+        "ColumnChartColumn": "{ key: string; label: ReactNode; values: readonly number[]; }",
+        "ColumnChartSeries": "{ key: string; label: string; tone?: ChartTone | undefined; }"
+      },
+      "story": {
+        "docsId": "components-data-display-columnchart--docs",
+        "stories": [
+          {
+            "export": "WeeklyStrip",
+            "id": "components-data-display-columnchart--weekly-strip"
+          },
+          {
+            "export": "Stacked",
+            "id": "components-data-display-columnchart--stacked"
+          },
+          {
+            "export": "FormattedValues",
+            "id": "components-data-display-columnchart--formatted-values"
+          },
+          {
+            "export": "HiddenLegend",
+            "id": "components-data-display-columnchart--hidden-legend"
+          },
+          {
+            "export": "HiddenTitle",
+            "id": "components-data-display-columnchart--hidden-title"
+          },
+          {
+            "export": "Tones",
+            "id": "components-data-display-columnchart--tones"
+          },
+          {
+            "export": "ZeroColumns",
+            "id": "components-data-display-columnchart--zero-columns"
+          },
+          {
+            "export": "SingleColumn",
+            "id": "components-data-display-columnchart--single-column"
+          },
+          {
+            "export": "TwelveColumns",
+            "id": "components-data-display-columnchart--twelve-columns"
+          },
+          {
+            "export": "LongPortugueseText",
+            "id": "components-data-display-columnchart--long-portuguese-text"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-data-display-columnchart--phone-320"
+          },
+          {
+            "export": "LowerPlot",
+            "id": "components-data-display-columnchart--lower-plot"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-data-display-columnchart--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-columnchart--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/ColumnChart/ColumnChart.mdx",
+        "overview": "Columns on one zero baseline, for a weekly strip or a stack of measures per period. One scale for the whole chart, so columns compare.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { ColumnChart } from \"@lufia/design-system/components/ColumnChart\";\n\n// A weekly strip: one series\n<ColumnChart\n  title=\"Deliveries this week\"\n  series={[{ key: \"done\", label: \"Deliveries\" }]}\n  columns={[\n    { key: \"mon\", label: \"Mon\", values: [4] },\n    { key: \"tue\", label: \"Tue\", values: [8] },\n  ]}\n/>\n\n// Stacked columns: one number per series, the first series at the bottom\n<ColumnChart\n  title=\"Orders by delivery state\"\n  series={[\n    { key: \"ok\", label: \"On time\", tone: \"success\" },\n    { key: \"late\", label: \"Late\", tone: \"danger\" },\n  ]}\n  columns={[{ key: \"w1\", label: \"Week 1\", values: [6, 2] }]}\n  formatValue={(value) => value.toLocaleString(\"en\")}\n/>;"
+        },
+        "whenToUse": [
+          "A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts."
+        ],
+        "whenNotToUse": [
+          "Categories with long names or exact values: use `BarList`.",
+          "A trend inside a sentence or a tile: use `Sparkline`.",
+          "Many periods, negative values or several axes: use a chart library or a table.",
+          "Nothing to show: it renders nothing, so use an `EmptyState`."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.",
+          "The `figure` is named by its `title`; `titleVisibility=\"hidden\"` keeps that name for screen readers only. A written `summary` says what the columns show.",
+          "Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.",
+          "The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.",
+          "Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.",
+          "Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.",
+          "Print the figures people need as text beside the chart: the drawing has no value labels."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-bg-surface",
+        "--lufia-color-border-subtle",
+        "--lufia-color-status-danger-solid",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-color-text-subtle",
+        "--lufia-column-chart-plot-height",
+        "--lufia-font-family-display",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-2xs",
+        "--lufia-font-size-md",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-duration-medium",
+        "--lufia-motion-easing-out"
       ]
     },
     {
@@ -4550,7 +4799,7 @@
         {
           "name": "FormField",
           "kind": "component",
-          "description": "Wires a label, a hint and an error to one control: the label targets it, the hint and error describe it, an error sets `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up from context; anything else takes them from the render prop.",
+          "description": "Wires a label, a hint and an error to one control: the label targets it, the hint and error describe it, an error sets `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up from context; anything else takes them from the render prop. The parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`) for app-level styling and tests. `control` is a layout-neutral wrapper (`display: contents`) around the children.",
           "props": [
             {
               "name": "id",
@@ -4598,8 +4847,8 @@
               "name": "requiredLabel",
               "type": "string",
               "required": false,
-              "default": "\"required\"",
-              "description": "Text read after the label when `required`. Aria-only: the visible mark is a glyph."
+              "default": null,
+              "description": "Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` (\"required\"), so an app sets the word once; this prop wins when given."
             },
             {
               "name": "children",
@@ -4679,6 +4928,10 @@
           {
             "export": "Disabled",
             "id": "components-forms-formfield--disabled"
+          },
+          {
+            "export": "RequiredFromProvider",
+            "id": "components-forms-formfield--required-from-provider"
           },
           {
             "export": "LongText",
@@ -5089,7 +5342,7 @@
           "name": "LufiaLabels",
           "kind": "type",
           "description": "Text that only assistive technology reads. Visible copy never lives here: it arrives through each component's props. Every key has a neutral English default, so a missing provider is harmless; override them for the app's language.",
-          "definition": "{ close: string; dismiss: string; notifications: string; }"
+          "definition": "{ close: string; dismiss: string; notifications: string; required: string; }"
         },
         {
           "name": "LufiaLink",
@@ -5161,7 +5414,7 @@
         "LinkComponent": "ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>",
         "LinkComponentProps": "AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }",
         "LufiaContextValue": "{ linkComponent: LinkComponent; labels: LufiaLabels; }",
-        "LufiaLabels": "{ close: string; dismiss: string; notifications: string; }",
+        "LufiaLabels": "{ close: string; dismiss: string; notifications: string; required: string; }",
         "LufiaProviderProps": "{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }"
       },
       "story": {
@@ -5226,7 +5479,7 @@
         {
           "name": "Modal",
           "kind": "component",
-          "description": "A modal dialog in a portal. Traps focus, locks page scroll, makes the page behind inert, restores focus to the trigger on close, and enters and leaves with the package's motion (scale on larger screens, a sheet rising from the bottom on phones). Follows the WAI-ARIA APG Dialog (Modal) pattern; with `role=\"alertdialog\"`, the Alert Dialog pattern.",
+          "description": "A modal dialog in a portal. Traps focus, locks page scroll, makes the page behind inert, restores focus to the trigger on close, and enters and leaves with the package's motion (scale on larger screens, a sheet rising from the bottom on phones). Follows the WAI-ARIA APG Dialog (Modal) pattern; with `role=\"alertdialog\"`, the Alert Dialog pattern. The panel publishes the height its sticky header covers as `--lufia-modal-header-block-size`, kept current with a `ResizeObserver`, so sticky content in the body can use `top: var(--lufia-modal-header-block-size, 0px)` instead of a hand-tuned number. It is `0px` with `scrollShadow`, where the body scrolls below the header.",
           "props": [
             {
               "name": "open",
@@ -5476,6 +5729,10 @@
           {
             "export": "ScrollShadow",
             "id": "components-overlays-modal--scroll-shadow"
+          },
+          {
+            "export": "StickyContentUnderHeader",
+            "id": "components-overlays-modal--sticky-content-under-header"
           },
           {
             "export": "CustomSize",
@@ -6994,7 +7251,7 @@
         {
           "name": "ProgressBar",
           "kind": "component",
-          "description": "A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill. It states a fraction, so print the figure beside it as text. The fill draws in once on mount and is removed under reduced motion; later changes of `value` apply at once, because animating width would move layout.",
+          "description": "A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill. It states a fraction, so print the figure beside it as text. The fill draws in once on mount and is removed under reduced motion. Later changes of `value` apply at once, unless `animateChanges` is set: then the fill is scaled with a `transform` transition (never width), and reduced motion applies the new value at once.",
           "props": [
             {
               "name": "value",
@@ -7037,6 +7294,13 @@
               "required": false,
               "default": "\"md\"",
               "description": ""
+            },
+            {
+              "name": "animateChanges",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion."
             }
           ],
           "nativeProps": true
@@ -7045,11 +7309,11 @@
           "name": "ProgressBarProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; }"
         }
       ],
       "aliases": {
-        "ProgressBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; }"
+        "ProgressBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-data-display-progressbar--docs",
@@ -7087,6 +7351,14 @@
             "id": "components-data-display-progressbar--with-visible-figure"
           },
           {
+            "export": "AnimatedChanges",
+            "id": "components-data-display-progressbar--animated-changes"
+          },
+          {
+            "export": "AnimatedAtRest",
+            "id": "components-data-display-progressbar--animated-at-rest"
+          },
+          {
             "export": "RightToLeft",
             "id": "components-data-display-progressbar--right-to-left"
           },
@@ -7120,7 +7392,7 @@
           "`role=\"progressbar\"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label` is required: without a name a progress bar is announced as a bare number.",
           "Use `valueText` when the percentage alone says too little (\"12 of 40 steps\").",
           "It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.",
-          "The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once, because animating width would move layout.",
+          "The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.",
           "In `forced-colors` mode the track gets a border and the fill is `Highlight`."
         ]
       },
@@ -7136,6 +7408,7 @@
         "--lufia-color-status-success-fg",
         "--lufia-color-status-warning-fg",
         "--lufia-color-text-subtle",
+        "--lufia-motion-duration-enter",
         "--lufia-motion-duration-medium",
         "--lufia-motion-easing-out",
         "--lufia-radius-full"
@@ -7155,7 +7428,7 @@
         {
           "name": "RadioGroup",
           "kind": "component",
-          "description": "One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description.",
+          "description": "One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the arrow keys move and choose, wrapping and skipping disabled options. Each option may carry a description, and the `card` variant draws the options as bordered rows with room for `meta` and `content`.",
           "props": [
             {
               "name": "label",
@@ -7235,11 +7508,18 @@
               "description": "`\"vertical\"` (default) stacks the options; `\"horizontal\"` wraps them in a row."
             },
             {
+              "name": "variant",
+              "type": "\"default\" | \"card\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "`\"default\"` draws the options as plain rows. `\"card\"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `\"default\"`."
+            },
+            {
               "name": "requiredLabel",
               "type": "string",
               "required": false,
-              "default": "\"required\"",
-              "description": "Text read after the label when `required`. Aria-only: the visible mark is a glyph."
+              "default": null,
+              "description": "Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`."
             },
             {
               "name": "requiredMessage",
@@ -7268,11 +7548,11 @@
           "name": "RadioOption",
           "kind": "type",
           "description": "",
-          "definition": "{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }"
+          "definition": "{ value: string; label: ReactNode; description?: ReactNode; meta?: ReactNode; content?: ReactNode; disabled?: boolean | undefined; }"
         }
       ],
       "aliases": {
-        "RadioOption": "{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }"
+        "RadioOption": "{ value: string; label: ReactNode; description?: ReactNode; meta?: ReactNode; content?: ReactNode; disabled?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-forms-radiogroup--docs",
@@ -7296,6 +7576,26 @@
           {
             "export": "Invalid",
             "id": "components-forms-radiogroup--invalid"
+          },
+          {
+            "export": "CardVariant",
+            "id": "components-forms-radiogroup--card-variant"
+          },
+          {
+            "export": "CardHorizontal",
+            "id": "components-forms-radiogroup--card-horizontal"
+          },
+          {
+            "export": "CardInvalid",
+            "id": "components-forms-radiogroup--card-invalid"
+          },
+          {
+            "export": "CardLongText",
+            "id": "components-forms-radiogroup--card-long-text"
+          },
+          {
+            "export": "CardPhone320",
+            "id": "components-forms-radiogroup--card-phone-320"
           },
           {
             "export": "Disabled",
@@ -7351,7 +7651,8 @@
           "In right-to-left layouts Left and Right swap.",
           "`role=\"radiogroup\"` named by the label; each option is `role=\"radio\"` with `aria-checked`, named by its label and",
           "A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.",
-          "Required adds an asterisk, the text `required` for screen readers (`requiredLabel`), and `aria-required`.",
+          "The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.",
+          "Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.",
           "The error is in the group's description, with `role=\"alert\"` and `aria-invalid`."
         ]
       },
@@ -7361,8 +7662,11 @@
       },
       "tokens": [
         "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
         "--lufia-color-accent-default",
+        "--lufia-color-accent-subtle",
         "--lufia-color-bg-field",
+        "--lufia-color-bg-surface",
         "--lufia-color-border-strong",
         "--lufia-color-focus-ring",
         "--lufia-color-status-danger-fg",
@@ -7378,10 +7682,13 @@
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-opacity-disabled",
+        "--lufia-radius-card",
         "--lufia-radius-control",
         "--lufia-radius-full",
         "--lufia-space-1",
+        "--lufia-space-2",
         "--lufia-space-3",
+        "--lufia-space-4",
         "--lufia-space-6"
       ]
     },
@@ -8881,7 +9188,7 @@
         {
           "name": "StatTile",
           "kind": "component",
-          "description": "A key figure with its label: the tile of a dashboard. The interactive variant uses the stretched-link pattern, like `Card`: the label is the one link (or button) and its `::after` covers the tile, so the tile is one tab stop. The figure, change and hint are attached to it as its description, so a screen reader announces \"label, link, 12, up 3 since yesterday\" without reading the tile twice. Hover and press are small `transform` moves from motion tokens, removed under reduced motion.",
+          "description": "A key figure with its label: the tile of a dashboard. The interactive variant uses the stretched-link pattern, like `Card`: the label is the one link (or button) and its `::after` covers the tile, so the tile is one tab stop. The figure, change and hint are attached to it as its description, so a screen reader announces \"label, link, 12, up 3 since yesterday\" without reading the tile twice. Hover and press are small `transform` moves from motion tokens, removed under reduced motion. While `loading`, the skeletons take the line boxes of the figure, the change, the hint and the chart, so the tile does not change height when the data arrives.",
           "props": [
             {
               "name": "label",
@@ -8965,7 +9272,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "Shows skeletons in place of the figure and the lines under it, and disables the link or button."
+              "description": "Shows skeletons in place of the figure, the change, the hint and the chart, and disables the link or button. Each skeleton has the line box of the content it stands for, so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` you will pass once loaded (placeholders are fine): they decide which lines are held."
             },
             {
               "name": "loadingLabel",
@@ -9052,6 +9359,10 @@
             "id": "components-data-display-stattile--loading"
           },
           {
+            "export": "LoadingKeepsHeight",
+            "id": "components-data-display-stattile--loading-keeps-height"
+          },
+          {
             "export": "LongLabel",
             "id": "components-data-display-stattile--long-label"
           },
@@ -9120,7 +9431,7 @@
           "The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.",
           "`trend` draws a decorative arrow. Say the direction in words with `trendLabel` (\"Up\") or inside `delta`, so the direction never rests on the arrow or the colour.",
           "`tone=\"warning\"` and `\"danger\"` tint the tile. The label and hint must say why it needs attention.",
-          "While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.",
+          "While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.",
           "In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`."
         ]
       },
@@ -9628,6 +9939,69 @@
           "nativeProps": true
         },
         {
+          "name": "SwitchInput",
+          "kind": "component",
+          "description": "The form-submitting `Switch`: a native `<input type=\"checkbox\" role=\"switch\">`, so the browser owns the state. Its value is read from the form (`FormData`, `form.elements`), a `form` reset restores `defaultChecked`, and `required` and `form=\"id\"` work as on a checkbox. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and a handler (a `checked` without `onCheckedChange` or `onChange` warns once in development). A form reset restores the DOM default, not your state: when controlled, also reset your state from the form's `reset` event. Use it in a form that is saved with a submit button; for a setting that takes effect at once, use `Switch`.",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The visible label. Clicking it toggles the switch."
+            },
+            {
+              "name": "hint",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "default": "\"on\"",
+              "description": "Submitted as `name=value` while on. Defaults to `\"on\"`, like a checkbox."
+            },
+            {
+              "name": "onCheckedChange",
+              "type": "((checked: boolean) => void)",
+              "required": false,
+              "default": null,
+              "description": "Called with the new state. A plain `onChange` also works; both fire."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Goes on the root element."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLInputElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SwitchInputProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
           "name": "SwitchProps",
           "kind": "type",
           "description": "",
@@ -9667,6 +10041,18 @@
             "id": "components-forms-switch--controlled"
           },
           {
+            "export": "InForm",
+            "id": "components-forms-switch--in-form"
+          },
+          {
+            "export": "InputStates",
+            "id": "components-forms-switch--input-states"
+          },
+          {
+            "export": "InputRightToLeft",
+            "id": "components-forms-switch--input-right-to-left"
+          },
+          {
             "export": "LongText",
             "id": "components-forms-switch--long-text"
           },
@@ -9695,7 +10081,7 @@
           "A setting that applies at once, with no Save button: notifications, dark mode, a feature flag."
         ],
         "whenNotToUse": [
-          "A choice that is submitted later with a form: use `Checkbox`.",
+          "A choice that is submitted later with a form: use `Checkbox`, or `SwitchInput` when an on/off switch reads better.",
           "A choice between two named options that are not on and off (\"Monthly\" or \"Yearly\"): use `SegmentedToggle`."
         ],
         "contentGuidelines": "Name the setting as a noun phrase (\"Email alerts\", \"Dark mode\"). The hint says what happens when it is on. Do not use a verb\nthat flips meaning with the state (\"Enable alerts\")."
@@ -9708,6 +10094,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
+          "`SwitchInput` is a native checkbox with `role=\"switch\"`, so the checked state is exposed natively and Space toggles it (Enter does not, as on any checkbox); the label, hint and error wiring is the same.",
           "`role=\"switch\"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.",
           "If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.",
           "Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,"
@@ -10812,10 +11199,22 @@
           "signature": "(root: HTMLElement): HTMLElement[]"
         },
         {
+          "name": "hasOpenOverlay",
+          "kind": "function",
+          "description": "Whether any layer is open on the shared overlay stack. The same as `overlayDepth() > 0`. Use it to leave a global shortcut or an outside-press handler alone while a dialog or popup is open. Read-only and not reactive.",
+          "signature": "(): boolean"
+        },
+        {
           "name": "isTopOverlayLayer",
           "kind": "function",
           "description": "Whether `layer` is the topmost registered layer. Same as `layer.isTop()`.",
           "signature": "(layer: OverlayLayer): boolean"
+        },
+        {
+          "name": "overlayDepth",
+          "kind": "function",
+          "description": "How many layers are open on the shared overlay stack right now: package modals and traps, dismissable popups that registered through `useDismiss`, and any layer an app registered with `registerOverlayLayer`. `0` when nothing is open. A read-only snapshot, not reactive: call it when you need it (in an event handler, in a key handler), not during render. Read it here instead of reaching for the `globalThis.__lufiaOverlayStack` key, which is an implementation detail.",
+          "signature": "(): number"
         },
         {
           "name": "registerOverlayLayer",

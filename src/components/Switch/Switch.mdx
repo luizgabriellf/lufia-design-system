@@ -40,6 +40,22 @@ It is controlled with `checked` and `onCheckedChange`, or uncontrolled with `def
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.Controlled} />
 
+### In a form: `SwitchInput`
+
+`SwitchInput` is the same switch on a native `<input type="checkbox" role="switch">`. The browser owns the state, so the value is read from the form (`FormData`, `form.elements`), a form reset restores `defaultChecked`, and `required` and `form="id"` work as on a checkbox. It submits `name=value` (default `on`) while on. Leave it uncontrolled with `defaultChecked`, or control it with `checked` and `onCheckedChange` (a `checked` without a handler warns once in development). Controlled caveat: a form reset restores the DOM default, not your state, so reset your state from the form's `reset` event too. `Switch` stays the choice for a setting that applies at once; it is unchanged.
+
+```tsx
+import { SwitchInput } from "@lufia/design-system/components/Switch";
+
+<form action={save}>
+  <SwitchInput label="Email alerts" name="alerts" defaultChecked />
+</form>;
+```
+
+<Canvas of={Stories.InForm} />
+<Canvas of={Stories.InputStates} />
+<Canvas of={Stories.InputRightToLeft} />
+
 The state is read from the thumb's position **and** its track colour **and** `aria-checked`. Never label the switch with its
 state ("On"); the label names the setting, and the screen reader says on or off.
 
@@ -68,6 +84,7 @@ Follows the WAI-ARIA APG [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switc
 | Enter        | Toggles the switch.         |
 | Click label  | Toggles the switch.         |
 
+- `SwitchInput` is a native checkbox with `role="switch"`, so the checked state is exposed natively and Space toggles it (Enter does not, as on any checkbox); the label, hint and error wiring is the same.
 - `role="switch"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.
 - If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.
 - Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,
@@ -83,7 +100,7 @@ Follows the WAI-ARIA APG [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switc
 
 ### When not to use
 
-- A choice that is submitted later with a form: use `Checkbox`.
+- A choice that is submitted later with a form: use `Checkbox`, or `SwitchInput` when an on/off switch reads better.
 - A choice between two named options that are not on and off ("Monthly" or "Yearly"): use `SegmentedToggle`.
 
 ### Content guidelines

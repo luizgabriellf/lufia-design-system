@@ -85,6 +85,32 @@ export const AsLink: Story = {
 };
 export const AsButton: Story = { args: { onClick: () => {} } };
 export const Loading: Story = { args: { loading: true, loadingLabel: "Loading open items" } };
+const full = {
+  label: "Open items",
+  value: "128",
+  delta: "12% vs last week",
+  trend: "up",
+  trendLabel: "Up",
+  hint: "Across all teams",
+} as const;
+/** Pass the same `delta`, `hint` and `sparkline` as the loaded tile: the skeleton lines then keep its exact height. */
+export const LoadingKeepsHeight: Story = {
+  decorators: [],
+  render: () => (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-start" }}>
+      {[false, true].map((loading) => (
+        <div key={String(loading)} style={{ inlineSize: "15rem" }}>
+          <StatTile
+            {...full}
+            loading={loading}
+            loadingLabel="Loading open items"
+            sparkline={<Sparkline values={[3, 5, 4, 8, 6, 9, 12]} label={null} />}
+          />
+        </div>
+      ))}
+    </div>
+  ),
+};
 export const LongLabel: Story = {
   args: {
     label: "A label long enough to wrap onto several lines in a narrow tile",

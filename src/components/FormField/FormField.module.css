@@ -21,3 +21,8 @@
   margin-inline-start: var(--lufia-space-1);
   color: var(--lufia-color-status-danger-fg);
 }
+
+/* A hook for apps, with no box of its own: the control stays a direct flex item of the field. */
+.control {
+  display: contents;
+}

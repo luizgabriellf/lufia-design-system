@@ -139,6 +139,7 @@ primary action sits on top.
 - `components-overlays-modal--focus-first-element`
 - `components-overlays-modal--title-ellipsis`
 - `components-overlays-modal--scroll-shadow`
+- `components-overlays-modal--sticky-content-under-header`
 - `components-overlays-modal--custom-size`
 - `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`

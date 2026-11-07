@@ -46,7 +46,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. |
 | `disabled` | `boolean` | no |  |  |
-| `requiredLabel` | `string` | no | `"required"` | Text read after the label when `required`. Aria-only: the visible mark is a glyph. |
+| `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
 | `children` | `ReactNode \| ((control: FormFieldControlProps) => ReactNode)` | yes |  | The control. A node reaches the controls of this package through context; a function receives the props to spread on any other control (a third-party input, a native element). |
 
 Other native element attributes pass through to the root element.
@@ -119,6 +119,7 @@ for assistive technology.
 - `components-forms-formfield--required`
 - `components-forms-formfield--invalid`
 - `components-forms-formfield--disabled`
+- `components-forms-formfield--required-from-provider`
 - `components-forms-formfield--long-text`
 - `components-forms-formfield--phone-320`
 - `components-forms-formfield--right-to-left`

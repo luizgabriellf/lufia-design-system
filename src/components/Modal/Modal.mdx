@@ -93,6 +93,7 @@ the modal without forking it. All are optional and the defaults are unchanged.
 | `--lufia-modal-backdrop`                                                                     | Backdrop colour                                   |
 | `--lufia-modal-sheet-offset`, `--lufia-modal-sheet-radius`                                   | Phone sheet gap to the screen edge, corner radius |
 | `--lufia-modal-scroll-shadow`                                                                | Edge shadow colour of `scrollShadow`              |
+| `--lufia-modal-header-block-size`                                                            | Output: the height the header covers (see below)  |
 
 `size` also takes any CSS length (`size="62rem"`). `sheetPlacement="top"` hangs the phone sheet from the offset instead of
 rising from the bottom, `titleWrap="ellipsis"` keeps the title on one line, and `scrollShadow` scrolls the body between a
@@ -100,6 +101,24 @@ fixed header and footer with an edge shadow.
 
 <Canvas of={Stories.ThemedByVariables} />
 <Canvas of={Stories.ScrollShadow} />
+
+### Sticky content under the header
+
+The header is sticky, and its height changes with the title (a wrapped title, a larger font, a header action). The panel
+measures it with a `ResizeObserver` and publishes it as the `--lufia-modal-header-block-size` custom property on the
+panel, so sticky content in the body can sit right under it without a hand-tuned number:
+
+```css
+.toolbar {
+  position: sticky;
+  inset-block-start: var(--lufia-modal-header-block-size, 0px);
+}
+```
+
+It is read-only output, not a theming input: do not set it. With `scrollShadow` the body is the scroller and the header does
+not overlap it, so the property is `0px` and the same rule still lands flush. Without `ResizeObserver` it is measured once.
+
+<Canvas of={Stories.StickyContentUnderHeader} />
 
 ### Part hooks and class names
 

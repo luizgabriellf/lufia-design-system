@@ -42,6 +42,12 @@
   animation: progress-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) backwards;
 }
 
+/* `animateChanges`: the fill is full width and scaled, so a change of value is a transform transition. */
+.fill[data-animate] {
+  inline-size: 100%;
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
 .fill:dir(rtl) {
   transform-origin: right center;
 }
@@ -55,6 +61,10 @@
 @media (prefers-reduced-motion: reduce) {
   .fill {
     animation: none;
+  }
+
+  .fill[data-animate] {
+    transition: none;
   }
 }
 

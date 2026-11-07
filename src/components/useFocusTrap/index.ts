@@ -1,2 +1,8 @@
 export { getFocusableElements, useFocusTrap, type UseFocusTrapOptions } from "./useFocusTrap";
-export { isTopOverlayLayer, registerOverlayLayer, type OverlayLayer } from "./layerStack";
+export {
+  hasOpenOverlay,
+  isTopOverlayLayer,
+  overlayDepth,
+  registerOverlayLayer,
+  type OverlayLayer,
+} from "./layerStack";

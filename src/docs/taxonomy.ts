@@ -151,6 +151,11 @@ export const ENTRIES: Entry[] = [
   ),
   c("Sparkline", "Data display", "A word-sized trend chart with no axes, drawn in SVG."),
   c("BarList", "Data display", "Horizontal bars with the name and the value as text, on one shared scale."),
+  c(
+    "ColumnChart",
+    "Data display",
+    "Columns on one baseline, single or stacked, with the numbers in a hidden data table.",
+  ),
   c("BulletBar", "Data display", "A value as a bar against a target tick, comparable across rows."),
   c("ProgressBar", "Data display", "A determinate progress bar with a native progressbar role."),
   c(

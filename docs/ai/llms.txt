@@ -59,6 +59,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [BarList](https://luizgabriellf.github.io/lufia-design-system/ai/components/BarList.md): Horizontal bars with the name and the value as text, on one shared scale. (beta)
 - [BulletBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/BulletBar.md): A value as a bar against a target tick, comparable across rows. (beta)
 - [Card](https://luizgabriellf.github.io/lufia-design-system/ai/components/Card.md): A bordered surface that groups related content, optionally interactive. (beta)
+- [ColumnChart](https://luizgabriellf.github.io/lufia-design-system/ai/components/ColumnChart.md): Columns on one baseline, single or stacked, with the numbers in a hidden data table. (beta)
 - [DetailAttentionCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailAttentionCard.md): A high-signal card for deadlines and risk, with a tone mark and an optional action. (beta)
 - [DetailList](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailList.md): Label and value pairs for the details of one record. (beta)
 - [DetailSectionCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailSectionCard.md): A titled card that holds one section of a detail page. (beta)

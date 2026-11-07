@@ -85,7 +85,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
 
 ## Content guidelines
 
@@ -100,5 +100,6 @@ truncating.
 - `components-data-display-badge--long-text`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`
+- `components-data-display-badge--square-by-token`
 - `components-data-display-badge--phone-320`
 - `components-data-display-badge--all-themes`

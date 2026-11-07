@@ -985,7 +985,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
 
 ### Content guidelines
 
@@ -1000,6 +1000,7 @@ truncating.
 - `components-data-display-badge--long-text`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`
+- `components-data-display-badge--square-by-token`
 - `components-data-display-badge--phone-320`
 - `components-data-display-badge--all-themes`
 
@@ -1040,12 +1041,14 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | `summary` | `ReactNode` | no |  | A written summary of what the bars show. Shown above them. |
 | `rows` | `readonly BarListRow[]` | yes |  |  |
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
+| `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
+| `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; }`
+- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: "hidden" | "visible" | undefined; }`
 - `BarListRow`: `{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }`
 
 ### Example
@@ -1068,6 +1071,8 @@ import { BarList } from "@lufia/design-system/components/BarList";
 
 - The text is the data. It is a `figure` named by its `title`, and every name and value is a list item a screen reader reads in order. The bars are `aria-hidden` shape on top, so no separate table is needed.
 - Format `value` yourself (it is what people read); the bar is drawn from `amount`.
+- `reference` draws a dashed tick on every track, on the same scale as the bars (it counts towards the scale). The tick is shape only: its `label` is printed as a legend under the list and is the figure's accessible description, so write what it means and its value ("Target: 800").
+- `titleVisibility="hidden"` keeps the `title` as the figure's accessible name for screen readers only.
 - A written `summary` says what the bars show.
 - The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
 - In `forced-colors` mode tracks get a border and fills use `CanvasText`.
@@ -1086,6 +1091,10 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-barlist--with-total`
 - `components-data-display-barlist--tones`
 - `components-data-display-barlist--long-names`
+- `components-data-display-barlist--with-reference`
+- `components-data-display-barlist--reference-above-every-bar`
+- `components-data-display-barlist--reference-long-text`
+- `components-data-display-barlist--hidden-title`
 - `components-data-display-barlist--all-zero`
 - `components-data-display-barlist--empty`
 - `components-data-display-barlist--phone-320`
@@ -1663,6 +1672,115 @@ Reads these semantic tokens: `--lufia-motion-duration-enter`, `--lufia-motion-du
 - `components-motion-collapse--open`
 - `components-motion-collapse--long-content`
 - `components-motion-collapse--all-themes`
+
+## ColumnChart
+
+> Columns on one baseline, single or stacked, with the numbers in a hidden data table.
+
+- Status: beta
+- Category: Data display
+- Import: `import { ColumnChart } from "@lufia/design-system/components/ColumnChart"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/ColumnChart](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/ColumnChart)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-columnchart--docs)
+
+### Purpose
+
+Columns on one zero baseline, for a weekly strip or a stack of measures per period. One scale for the whole chart, so columns compare.
+
+### When to use
+
+- A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts.
+
+### When not to use
+
+- Categories with long names or exact values: use `BarList`.
+- A trend inside a sentence or a tile: use `Sparkline`.
+- Many periods, negative values or several axes: use a chart library or a table.
+- Nothing to show: it renders nothing, so use an `EmptyState`.
+
+### API
+
+#### `ColumnChart`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `title` | `ReactNode` | yes |  | Caption of the figure, and its accessible name. |
+| `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the accessible name for screen readers only. Defaults to `"visible"`. |
+| `summary` | `ReactNode` | no |  | A written summary of what the columns show. Shown above them. |
+| `series` | `readonly ColumnChartSeries[]` | yes |  | The measures. One series draws plain columns; several stack in this order, the first at the bottom. |
+| `columns` | `readonly ColumnChartColumn[]` | yes |  | One column per entry, left to right (right to left in an RTL page). |
+| `formatValue` | `((value: number) => string)` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
+| `legend` | `"hidden" \| "auto"` | no | `"auto"` | The legend of a stacked chart. `"auto"` (default) shows it when there is more than one series. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `ColumnChartColumn`: `{ key: string; label: ReactNode; values: readonly number[]; }`
+- `ColumnChartSeries`: `{ key: string; label: string; tone?: ChartTone | undefined; }`
+
+### Example
+
+```tsx
+import { ColumnChart } from "@lufia/design-system/components/ColumnChart";
+
+// A weekly strip: one series
+<ColumnChart
+  title="Deliveries this week"
+  series={[{ key: "done", label: "Deliveries" }]}
+  columns={[
+    { key: "mon", label: "Mon", values: [4] },
+    { key: "tue", label: "Tue", values: [8] },
+  ]}
+/>
+
+// Stacked columns: one number per series, the first series at the bottom
+<ColumnChart
+  title="Orders by delivery state"
+  series={[
+    { key: "ok", label: "On time", tone: "success" },
+    { key: "late", label: "Late", tone: "danger" },
+  ]}
+  columns={[{ key: "w1", label: "Week 1", values: [6, 2] }]}
+  formatValue={(value) => value.toLocaleString("en")}
+/>;
+```
+
+### Accessibility
+
+- The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.
+- The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
+- Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
+- The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.
+- Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.
+- Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.
+- Print the figures people need as text beside the chart: the drawing has no value labels.
+
+### Motion
+
+Its stylesheet has a `prefers-reduced-motion` branch.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-column-chart-plot-height`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`.
+
+### Stories
+
+- `components-data-display-columnchart--weekly-strip`
+- `components-data-display-columnchart--stacked`
+- `components-data-display-columnchart--formatted-values`
+- `components-data-display-columnchart--hidden-legend`
+- `components-data-display-columnchart--hidden-title`
+- `components-data-display-columnchart--tones`
+- `components-data-display-columnchart--zero-columns`
+- `components-data-display-columnchart--single-column`
+- `components-data-display-columnchart--twelve-columns`
+- `components-data-display-columnchart--long-portuguese-text`
+- `components-data-display-columnchart--phone-320`
+- `components-data-display-columnchart--lower-plot`
+- `components-data-display-columnchart--right-to-left`
+- `components-data-display-columnchart--all-themes`
 
 ## Combobox
 
@@ -2559,7 +2677,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. |
 | `disabled` | `boolean` | no |  |  |
-| `requiredLabel` | `string` | no | `"required"` | Text read after the label when `required`. Aria-only: the visible mark is a glyph. |
+| `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
 | `children` | `ReactNode \| ((control: FormFieldControlProps) => ReactNode)` | yes |  | The control. A node reaches the controls of this package through context; a function receives the props to spread on any other control (a third-party input, a native element). |
 
 Other native element attributes pass through to the root element.
@@ -2632,6 +2750,7 @@ for assistive technology.
 - `components-forms-formfield--required`
 - `components-forms-formfield--invalid`
 - `components-forms-formfield--disabled`
+- `components-forms-formfield--required-from-provider`
 - `components-forms-formfield--long-text`
 - `components-forms-formfield--phone-320`
 - `components-forms-formfield--right-to-left`
@@ -2886,7 +3005,7 @@ useLufia(): LufiaContextValue
 - `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`
 - `LinkComponentProps`: `AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }`
 - `LufiaContextValue`: `{ linkComponent: LinkComponent; labels: LufiaLabels; }`
-- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; }`
+- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; required: string; }`
 - `LufiaProviderProps`: `{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }`
 
 ### Example
@@ -3060,6 +3179,7 @@ primary action sits on top.
 - `components-overlays-modal--focus-first-element`
 - `components-overlays-modal--title-ellipsis`
 - `components-overlays-modal--scroll-shadow`
+- `components-overlays-modal--sticky-content-under-header`
 - `components-overlays-modal--custom-size`
 - `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`
@@ -3824,12 +3944,13 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
 | `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `size` | `"sm" \| "md"` | no | `"md"` |  |
+| `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; }`
+- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; animateChanges?: boolean | undefined; }`
 
 ### Example
 
@@ -3845,7 +3966,7 @@ import { ProgressBar } from "@lufia/design-system/components/ProgressBar";
 - `role="progressbar"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label` is required: without a name a progress bar is announced as a bare number.
 - Use `valueText` when the percentage alone says too little ("12 of 40 steps").
 - It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.
-- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once, because animating width would move layout.
+- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.
 - In `forced-colors` mode the track gets a border and the fill is `Highlight`.
 
 ### Motion
@@ -3854,7 +3975,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-subtle`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-subtle`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`, `--lufia-radius-full`.
 
 ### Stories
 
@@ -3866,6 +3987,8 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-progressbar--danger`
 - `components-data-display-progressbar--custom-range`
 - `components-data-display-progressbar--with-visible-figure`
+- `components-data-display-progressbar--animated-changes`
+- `components-data-display-progressbar--animated-at-rest`
 - `components-data-display-progressbar--right-to-left`
 - `components-data-display-progressbar--all-themes`
 
@@ -3912,7 +4035,8 @@ and arrow-key navigation.
 | `onValueChange` | `((value: string) => void)` | no |  |  |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
-| `requiredLabel` | `string` | no | `"required"` | Text read after the label when `required`. Aria-only: the visible mark is a glyph. |
+| `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |
+| `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. |
 | `requiredMessage` | `string` | no |  | Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. |
 | `ref` | `Ref<HTMLDivElement>` | no |  |  |
 
@@ -3920,7 +4044,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `RadioOption`: `{ value: string; label: ReactNode; description?: ReactNode; disabled?: boolean | undefined; }`
+- `RadioOption`: `{ value: string; label: ReactNode; description?: ReactNode; meta?: ReactNode; content?: ReactNode; disabled?: boolean | undefined; }`
 
 ### Example
 
@@ -3947,7 +4071,8 @@ Follows the WAI-ARIA Authoring Practices pattern: [Radio group](https://www.w3.o
 - In right-to-left layouts Left and Right swap.
 - `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and
 - A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
-- Required adds an asterisk, the text `required` for screen readers (`requiredLabel`), and `aria-required`.
+- The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.
+- Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.
 - The error is in the group's description, with `role="alert"` and `aria-invalid`.
 
 ### Motion
@@ -3956,7 +4081,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-field`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-3`, `--lufia-space-6`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`.
 
 ### Content guidelines
 
@@ -3971,6 +4096,11 @@ and require a choice.
 - `components-forms-radiogroup--with-hint`
 - `components-forms-radiogroup--required`
 - `components-forms-radiogroup--invalid`
+- `components-forms-radiogroup--card-variant`
+- `components-forms-radiogroup--card-horizontal`
+- `components-forms-radiogroup--card-invalid`
+- `components-forms-radiogroup--card-long-text`
+- `components-forms-radiogroup--card-phone-320`
 - `components-forms-radiogroup--disabled`
 - `components-forms-radiogroup--horizontal`
 - `components-forms-radiogroup--long-text`
@@ -4873,7 +5003,7 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | `sparkline` | `ReactNode` | no |  | A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. |
 | `href` | `string` | no |  | Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. |
 | `onClick` | `MouseEventHandler<HTMLElement>` | no |  | Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. |
-| `loading` | `boolean` | no | `false` | Shows skeletons in place of the figure and the lines under it, and disables the link or button. |
+| `loading` | `boolean` | no | `false` | Shows skeletons in place of the figure, the change, the hint and the chart, and disables the link or button. Each skeleton has the line box of the content it stands for, so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` you will pass once loaded (placeholders are fine): they decide which lines are held. |
 | `loadingLabel` | `string` | no |  | Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. |
 
 Other native element attributes pass through to the root element.
@@ -4917,7 +5047,7 @@ Keyboard:
 - The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
 - `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
 - `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
-- While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.
+- While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.
 - In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`.
 
 ### Motion
@@ -4942,6 +5072,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--as-link`
 - `components-data-display-stattile--as-button`
 - `components-data-display-stattile--loading`
+- `components-data-display-stattile--loading-keeps-height`
 - `components-data-display-stattile--long-label`
 - `components-data-display-stattile--with-animated-number`
 - `components-data-display-stattile--in-flex-row`
@@ -5197,7 +5328,7 @@ Reads these semantic tokens: `--lufia-motion-duration-enter`, `--lufia-motion-ea
 
 - Status: beta
 - Category: Forms
-- Import: `import { Switch } from "@lufia/design-system/components/Switch"`
+- Import: `import { Switch, SwitchInput } from "@lufia/design-system/components/Switch"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/Switch](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Switch)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-forms-switch--docs)
@@ -5213,8 +5344,15 @@ error, and a thumb that slides.
 
 ### When not to use
 
-- A choice that is submitted later with a form: use `Checkbox`.
+- A choice that is submitted later with a form: use `Checkbox`, or `SwitchInput` when an on/off switch reads better.
 - A choice between two named options that are not on and off ("Monthly" or "Yearly"): use `SegmentedToggle`.
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `Switch` | component |
+| `SwitchInput` | component |
 
 ### API
 
@@ -5235,6 +5373,20 @@ error, and a thumb that slides.
 
 Other native element attributes pass through to the root element.
 
+#### `SwitchInput`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `ReactNode` | yes |  | The visible label. Clicking it toggles the switch. |
+| `hint` | `ReactNode` | no |  |  |
+| `error` | `ReactNode` | no |  |  |
+| `value` | `string` | no | `"on"` | Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. |
+| `onCheckedChange` | `((checked: boolean) => void)` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
+| `className` | `string` | no |  | Goes on the root element. |
+| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+
+Other native element attributes pass through to the root element.
+
 ### Example
 
 ```tsx
@@ -5247,6 +5399,7 @@ import { Switch } from "@lufia/design-system/components/Switch";
 
 Follows the WAI-ARIA Authoring Practices pattern: [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switch/).
 
+- `SwitchInput` is a native checkbox with `role="switch"`, so the checked state is exposed natively and Space toggles it (Enter does not, as on any checkbox); the label, hint and error wiring is the same.
 - `role="switch"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.
 - If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.
 - Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,
@@ -5273,6 +5426,9 @@ that flips meaning with the state ("Enable alerts").
 - `components-forms-switch--disabled`
 - `components-forms-switch--disabled-on`
 - `components-forms-switch--controlled`
+- `components-forms-switch--in-form`
+- `components-forms-switch--input-states`
+- `components-forms-switch--input-right-to-left`
 - `components-forms-switch--long-text`
 - `components-forms-switch--phone-320`
 - `components-forms-switch--right-to-left`
@@ -5916,7 +6072,7 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 
 - Status: beta
 - Category: Hooks
-- Import: `import { getFocusableElements, isTopOverlayLayer, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
+- Import: `import { getFocusableElements, hasOpenOverlay, isTopOverlayLayer, overlayDepth, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/useFocusTrap](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/useFocusTrap)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/hooks-usefocustrap--docs)
@@ -5940,7 +6096,9 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 | Name | Kind |
 | --- | --- |
 | `getFocusableElements` | function |
+| `hasOpenOverlay` | function |
 | `isTopOverlayLayer` | function |
+| `overlayDepth` | function |
 | `registerOverlayLayer` | function |
 | `useFocusTrap` | hook |
 
@@ -5954,12 +6112,28 @@ The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that
 getFocusableElements(root: HTMLElement): HTMLElement[]
 ```
 
+#### `hasOpenOverlay`
+
+Whether any layer is open on the shared overlay stack. The same as `overlayDepth() > 0`. Use it to leave a global shortcut or an outside-press handler alone while a dialog or popup is open. Read-only and not reactive.
+
+```ts
+hasOpenOverlay(): boolean
+```
+
 #### `isTopOverlayLayer`
 
 Whether `layer` is the topmost registered layer. Same as `layer.isTop()`.
 
 ```ts
 isTopOverlayLayer(layer: OverlayLayer): boolean
+```
+
+#### `overlayDepth`
+
+How many layers are open on the shared overlay stack right now: package modals and traps, dismissable popups that registered through `useDismiss`, and any layer an app registered with `registerOverlayLayer`. `0` when nothing is open. A read-only snapshot, not reactive: call it when you need it (in an event handler, in a key handler), not during render. Read it here instead of reaching for the `globalThis.__lufiaOverlayStack` key, which is an implementation detail.
+
+```ts
+overlayDepth(): number
 ```
 
 #### `registerOverlayLayer`

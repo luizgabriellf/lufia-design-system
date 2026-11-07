@@ -50,6 +50,36 @@ With `name`, the chosen value is submitted with the form.
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.Horizontal} />
 
+### Card variant
+
+`variant="card"` draws each option as a bordered, selectable row. An option can carry `meta` (inline end: a price, a badge) and `content` (under the description). Both are read as part of the option's description and live inside the radio button, so they must be phrasing content only (text, `span`, `strong`, an icon): no lists, no block elements, nothing interactive. The default stays plain rows.
+
+```tsx
+<RadioGroup
+  label="Plan"
+  variant="card"
+  options={[
+    {
+      value: "basic",
+      label: "Basic",
+      description: "For one site.",
+      meta: "9 / month",
+      content: (
+        <>
+          Two seats, <strong>e-mail</strong> support.
+        </>
+      ),
+    },
+  ]}
+/>
+```
+
+<Canvas of={Stories.CardVariant} />
+<Canvas of={Stories.CardHorizontal} />
+<Canvas of={Stories.CardInvalid} />
+<Canvas of={Stories.CardLongText} />
+<Canvas of={Stories.CardPhone320} />
+
 `orientation="horizontal"` lays the options in a wrapping row. The keys do not change: ArrowDown and ArrowRight both mean next.
 
 ### All themes
@@ -81,7 +111,8 @@ Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/
 - `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and
   described by its description.
 - A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
-- Required adds an asterisk, the text `required` for screen readers (`requiredLabel`), and `aria-required`.
+- The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.
+- Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.
 - The error is in the group's description, with `role="alert"` and `aria-invalid`.
 
 </Section>

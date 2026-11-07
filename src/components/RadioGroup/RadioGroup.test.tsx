@@ -284,4 +284,76 @@ describe("RadioGroup", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  describe("card variant", () => {
+    const cards: RadioOption[] = [
+      {
+        value: "basic",
+        label: "Basic",
+        description: "For one site",
+        meta: "9 / month",
+        content: "Two seats",
+      },
+      { value: "team", label: "Team", meta: "29 / month" },
+      { value: "off", label: "Enterprise", disabled: true },
+      { value: "pro", label: "Pro" },
+    ];
+
+    it("is the default variant unless asked", () => {
+      render(<RadioGroup label="Plan" options={cards} />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-variant", "default");
+    });
+
+    it("keeps the radio semantics and reads meta and content as the description", () => {
+      render(<RadioGroup label="Plan" options={cards} variant="card" defaultValue="team" />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-variant", "card");
+      const basic = screen.getByRole("radio", { name: "Basic" });
+      expect(basic).toHaveAccessibleDescription("For one site Two seats 9 / month");
+      expect(screen.getByRole("radio", { name: "Team" })).toHaveAccessibleDescription("29 / month");
+      expect(screen.getByRole("radio", { name: "Pro" })).not.toHaveAttribute("aria-describedby");
+      expect(screen.getAllByRole("radio").map((r) => r.tabIndex)).toEqual([-1, 0, -1, -1]);
+    });
+
+    it("moves and chooses with the arrow keys, skipping the disabled card, and chooses on click", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <RadioGroup
+          label="Plan"
+          options={cards}
+          variant="card"
+          defaultValue="team"
+          onValueChange={onValueChange}
+        />,
+      );
+      screen.getByRole("radio", { name: "Team" }).focus();
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("radio", { name: "Pro" })).toHaveFocus();
+      expect(onValueChange).toHaveBeenLastCalledWith("pro");
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("radio", { name: "Basic" })).toHaveFocus();
+      await user.keyboard("{ArrowUp}");
+      expect(screen.getByRole("radio", { name: "Pro" })).toHaveFocus();
+      await user.click(screen.getByRole("radio", { name: "Team" }));
+      expect(onValueChange).toHaveBeenLastCalledWith("team");
+    });
+
+    it("submits its value with the form", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <RadioGroup label="Plan" options={cards} variant="card" name="plan" />
+        </form>,
+      );
+      await user.click(screen.getByRole("radio", { name: "Pro" }));
+      expect(new FormData(container.querySelector("form")!).get("plan")).toBe("pro");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <RadioGroup label="Plan" options={cards} variant="card" defaultValue="basic" hint="Hint" required />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
 });
