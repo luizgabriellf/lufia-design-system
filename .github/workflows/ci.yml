@@ -163,3 +163,18 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  gate:
+    name: CI gate
+    if: always()
+    needs: [verify, changeset, dependency-review, consumer, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every job to pass (or be skipped by design)
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          # changeset and dependency-review are skipped on pushes to main; any other skip means an upstream failure.
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success" or .result == "skipped")' > /dev/null
