@@ -1,21 +1,3 @@
-/* The body padding is layered so the per-axis tokens can fall back to the shorthand token. A multi-value shorthand
-   (`1rem 1.5rem`) cannot be split in CSS, so an unset axis token reverts to the shorthand layer instead of reading it.
-   Unlayered rules below (flush, the header joint) still win over both layers. */
-@layer lufia-card-body-shorthand, lufia-card-body-axis;
-
-@layer lufia-card-body-shorthand {
-  .body {
-    padding: var(--lufia-card-body-padding, var(--card-padding));
-  }
-}
-
-@layer lufia-card-body-axis {
-  .body {
-    padding-block: var(--lufia-card-body-padding-block, revert-layer);
-    padding-inline: var(--lufia-card-body-padding-inline, revert-layer);
-  }
-}
-
 .root {
   --card-padding: 1.25rem;
 
@@ -79,6 +61,12 @@
 }
 
 .body {
+  /* The shorthand token wins when set. Otherwise the axis tokens apply, each falling back to the `padding` prop. */
+  padding: var(
+    --lufia-card-body-padding,
+    var(--lufia-card-body-padding-block, var(--card-padding))
+      var(--lufia-card-body-padding-inline, var(--card-padding))
+  );
   min-inline-size: 0;
   flex: 1;
   color: var(--lufia-color-text-muted);
@@ -102,7 +90,10 @@
 }
 
 .root[data-divider]:not([data-flush]) > .header + .body {
-  padding-block-start: var(--lufia-card-body-padding-block, revert-layer);
+  padding-block-start: var(
+    --lufia-card-body-padding,
+    var(--lufia-card-body-padding-block, var(--card-padding))
+  );
 }
 
 .footer {

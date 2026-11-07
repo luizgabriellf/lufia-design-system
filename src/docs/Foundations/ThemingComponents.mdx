@@ -82,7 +82,7 @@ token**: a custom property that overrides one decision in one component.
 
 ## Card
 
-`divider` is a prop (it switches the header rule on); the rest are tokens.
+`divider` is a prop (it switches the header rule on); the rest are tokens. For the body padding, use the shorthand or the axis tokens: the shorthand wins when it is set.
 
 <DocTable
   label="Card tokens"
@@ -93,12 +93,12 @@ token**: a custom property that overrides one decision in one component.
     [
       "`--lufia-card-body-padding-block`",
       "`--lufia-card-body-padding`",
-      "Body block padding, overriding the shorthand on this axis. Also the space under a `divider` rule",
+      "Body block padding. Ignored when the shorthand is set. Also the space under a `divider` rule",
     ],
     [
       "`--lufia-card-body-padding-inline`",
       "`--lufia-card-body-padding`",
-      "Body inline padding, overriding the shorthand on this axis",
+      "Body inline padding. Ignored when the shorthand is set",
     ],
     ["`--lufia-card-shadow`", "`--lufia-shadow-sm`", "Resting shadow"],
     ["`--lufia-card-shadow-hover`", "`--lufia-shadow-md`", "Shadow of an interactive card on hover"],

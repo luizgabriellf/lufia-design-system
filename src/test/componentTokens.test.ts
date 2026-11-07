@@ -29,10 +29,14 @@ const CONTRACT: [string, string][] = [
   ["StatTile", "letter-spacing: var(--lufia-stat-tile-label-tracking, 0.09em)"],
   ["StatTile", "font-size: var(--lufia-stat-tile-value-size, var(--lufia-font-size-3xl))"],
   ["Card", "padding: var(--lufia-card-header-padding, var(--card-padding))"],
-  ["Card", "padding: var(--lufia-card-body-padding, var(--card-padding))"],
-  ["Card", "padding-block: var(--lufia-card-body-padding-block, revert-layer)"],
-  ["Card", "padding-inline: var(--lufia-card-body-padding-inline, revert-layer)"],
-  ["Card", "padding-block-start: var(--lufia-card-body-padding-block, revert-layer)"],
+  [
+    "Card",
+    "padding: var(--lufia-card-body-padding, var(--lufia-card-body-padding-block, var(--card-padding)) var(--lufia-card-body-padding-inline, var(--card-padding)))",
+  ],
+  [
+    "Card",
+    "padding-block-start: var(--lufia-card-body-padding, var(--lufia-card-body-padding-block, var(--card-padding)))",
+  ],
   ["Card", "box-shadow: var(--lufia-card-shadow, var(--lufia-shadow-sm))"],
   ["Card", "box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md))"],
   [
