@@ -78,7 +78,11 @@ function ActionButton({
       >
         {item.label}
       </Button>
-      {hinted ? <VisuallyHidden id={hintId}>{item.hint}</VisuallyHidden> : null}
+      {hinted ? (
+        <VisuallyHidden id={hintId} hidden>
+          {item.hint}
+        </VisuallyHidden>
+      ) : null}
     </>
   );
 }

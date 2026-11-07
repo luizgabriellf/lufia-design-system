@@ -175,6 +175,58 @@ describe("PageActions", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("keeps hint text out of the accessibility tree while still describing the control", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", hint: "Creates a report" }}
+        overflow={[{ key: "o", label: "Export", hint: "As CSV" }]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "More" }));
+    for (const text of ["Creates a report", "As CSV"]) {
+      const copy = screen.getByText(text, { selector: "[hidden]" });
+      expect(copy).not.toBeVisible();
+    }
+    expect(screen.getByRole("button", { name: "New" })).toHaveAccessibleDescription("Creates a report");
+    expect(screen.getByRole("menuitem", { name: "Export" })).toHaveAccessibleDescription("As CSV");
+    expect(screen.getByRole("menu").children).toHaveLength(1);
+  });
+
+  it("gives hinted menu items distinct descriptions even with awkward or repeated keys", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    render(
+      <PageActions
+        moreLabel="More"
+        overflow={[
+          { key: "a b", label: "One", hint: "First hint" },
+          { key: "a b", label: "Two", hint: "Second hint" },
+        ]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "More" }));
+    expect(screen.getByRole("menuitem", { name: "One" })).toHaveAccessibleDescription("First hint");
+    expect(screen.getByRole("menuitem", { name: "Two" })).toHaveAccessibleDescription("Second hint");
+  });
+
+  it("has no axe violations with the menu open and hinted items", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    const { container } = render(
+      <PageActions
+        moreLabel="More"
+        secondary={[{ key: "s", label: "Share", hint: "Shares the link" }]}
+        overflow={[{ key: "o", label: "Export", disabled: true, hint: "Nothing to export" }]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "More" }));
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <PageActions

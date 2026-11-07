@@ -251,9 +251,9 @@ export function MoreActions({
   if (items.length === 0) return null;
   const resolved = flipped ? (align === "end" ? "start" : "end") : align;
   const hasIcons = items.some((item) => item.icon);
-  const entries = items.map((item) => {
+  const entries = items.map((item, index) => {
     const hinted = item.hint !== undefined && item.hint !== "";
-    const hintId = `${menuId}-hint-${item.key}`;
+    const hintId = `${menuId}-hint-${index}`;
     const props = {
       role: "menuitem",
       title: hinted ? item.hint : undefined,
@@ -301,7 +301,11 @@ export function MoreActions({
             {content}
           </button>
         )}
-        {hinted ? <VisuallyHidden id={hintId}>{item.hint}</VisuallyHidden> : null}
+        {hinted ? (
+          <VisuallyHidden id={hintId} hidden>
+            {item.hint}
+          </VisuallyHidden>
+        ) : null}
       </li>
     );
   });

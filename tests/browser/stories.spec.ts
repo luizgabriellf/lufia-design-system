@@ -189,3 +189,45 @@ test.describe("page actions sheet", () => {
     await expect(trigger).toBeFocused();
   });
 });
+
+test.describe("page actions breakpoints", () => {
+  const root = (page: Page) => page.locator('[data-lufia-part="page-actions"]');
+
+  for (const [width, visible] of [
+    [959, false],
+    [960, true],
+  ] as const) {
+    test(`hideBelow="medium" ${visible ? "shows" : "hides"} the row at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-actions-pageactions--hidden-below-medium");
+      if (visible) await expect(root(page)).toBeVisible();
+      else await expect(root(page)).toBeHidden();
+    });
+
+    test(`primaryPlacement="external" ${visible ? "shows" : "hides"} the primary at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-actions-pageactions--external-primary");
+      const primary = page.getByRole("button", { name: "New report" });
+      if (visible) await expect(primary).toBeVisible();
+      else await expect(primary).toBeHidden();
+      await expect(page.getByRole("button", { name: "More actions" })).toBeVisible();
+    });
+  }
+
+  for (const [width, visible] of [
+    [767, false],
+    [768, true],
+  ] as const) {
+    test(`secondary actions ${visible ? "stay buttons" : "collapse into the menu"} at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-actions-pageactions--default");
+      const share = page.getByRole("button", { name: "Share" });
+      if (visible) await expect(share).toBeVisible();
+      else await expect(share).toBeHidden();
+    });
+  }
+});
