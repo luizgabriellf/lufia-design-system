@@ -42,6 +42,12 @@ token**: a custom property that overrides one decision in one component.
       "Length of a rule before the eyebrow. Any non-zero length turns it on",
     ],
     ["`--lufia-page-header-eyebrow-dash-gap`", "`0`", "Space between the dash and the eyebrow text"],
+    [
+      "`--lufia-page-header-eyebrow-dash-thickness`",
+      "`--lufia-border-width-thin`",
+      "Thickness of the eyebrow dash",
+    ],
+    ["`--lufia-page-header-eyebrow-weight`", "`--lufia-font-weight-semibold`", "Eyebrow font weight"],
     ["`--lufia-page-header-title-size`", "`2xl`, `3xl` from 48rem", "Title font size at every width"],
     ["`--lufia-page-header-title-tracking`", "`normal`", "Title letter-spacing"],
   ]}
@@ -56,6 +62,11 @@ token**: a custom property that overrides one decision in one component.
   head={["Token", "Default", "What it changes"]}
   rows={[
     ["`--lufia-stat-tile-label-color`", "`--lufia-color-text-muted`", "Label colour"],
+    [
+      "`--lufia-stat-tile-label-font`",
+      "`--lufia-font-family-mono`",
+      "Label font family, for example the sans stack instead of mono",
+    ],
     ["`--lufia-stat-tile-label-size`", "`--lufia-font-size-2xs`", "Label font size"],
     ["`--lufia-stat-tile-label-tracking`", "`0.09em`", "Label letter-spacing"],
     ["`--lufia-stat-tile-value-size`", "`--lufia-font-size-3xl`", "Figure font size"],
@@ -79,6 +90,12 @@ token**: a custom property that overrides one decision in one component.
   rows={[
     ["`--lufia-card-header-padding`", "the `padding` prop", "Header padding (shorthand)"],
     ["`--lufia-card-body-padding`", "the `padding` prop", "Body padding (shorthand)"],
+    [
+      "`--lufia-card-body-padding-block`",
+      "`--lufia-card-body-padding`",
+      "Body block padding. Also the space under a `divider` rule",
+    ],
+    ["`--lufia-card-body-padding-inline`", "`--lufia-card-body-padding`", "Body inline padding"],
     ["`--lufia-card-shadow`", "`--lufia-shadow-sm`", "Resting shadow"],
     ["`--lufia-card-shadow-hover`", "`--lufia-shadow-md`", "Shadow of an interactive card on hover"],
     [
@@ -103,7 +120,17 @@ token**: a custom property that overrides one decision in one component.
     [
       "`--lufia-attention-list-bar-inset`",
       "`0.5rem`",
-      "Distance of the inset bar from the row edges (`inset` only)",
+      "Distance of the inset bar from the row edges, both axes (`inset` only)",
+    ],
+    [
+      "`--lufia-attention-list-bar-inset-inline`",
+      "`--lufia-attention-list-bar-inset`",
+      "Inline-start distance of the inset bar. Overrides the shorthand on this axis",
+    ],
+    [
+      "`--lufia-attention-list-bar-inset-block`",
+      "`--lufia-attention-list-bar-inset`",
+      "Block-start and block-end distance of the inset bar. Overrides the shorthand on this axis",
     ],
   ]}
 />

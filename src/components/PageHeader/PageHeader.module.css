@@ -17,7 +17,7 @@
   color: var(--lufia-page-header-eyebrow-color, var(--lufia-color-text-subtle));
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
-  font-weight: var(--lufia-font-weight-semibold);
+  font-weight: var(--lufia-page-header-eyebrow-weight, var(--lufia-font-weight-semibold));
   letter-spacing: var(--lufia-page-header-eyebrow-tracking, 0.08em);
   text-transform: uppercase;
 }
@@ -26,7 +26,7 @@
 .eyebrow::before {
   display: inline-block;
   inline-size: var(--lufia-page-header-eyebrow-dash-size, 0);
-  block-size: var(--lufia-border-width-thin);
+  block-size: var(--lufia-page-header-eyebrow-dash-thickness, var(--lufia-border-width-thin));
   margin-inline-end: var(--lufia-page-header-eyebrow-dash-gap, 0);
   background: currentcolor;
   content: "";

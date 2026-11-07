@@ -79,7 +79,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-attention-list-bar-inset`, `--lufia-attention-list-bar-width`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-attention-list-bar-inset`, `--lufia-attention-list-bar-inset-block`, `--lufia-attention-list-bar-inset-inline`, `--lufia-attention-list-bar-width`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-solid`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-radius-full`.
 
 ## Stories
 
@@ -88,6 +88,7 @@ Reads these semantic tokens: `--lufia-attention-list-bar-inset`, `--lufia-attent
 - `components-data-display-attentionlist--no-actions`
 - `components-data-display-attentionlist--long-text`
 - `components-data-display-attentionlist--inset-bar`
+- `components-data-display-attentionlist--inset-per-axis`
 - `components-data-display-attentionlist--thick-bar`
 - `components-data-display-attentionlist--empty`
 - `components-data-display-attentionlist--inside-card`

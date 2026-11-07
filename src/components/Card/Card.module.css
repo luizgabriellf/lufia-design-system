@@ -61,7 +61,8 @@
 }
 
 .body {
-  padding: var(--lufia-card-body-padding, var(--card-padding));
+  padding-block: var(--lufia-card-body-padding-block, var(--lufia-card-body-padding, var(--card-padding)));
+  padding-inline: var(--lufia-card-body-padding-inline, var(--lufia-card-body-padding, var(--card-padding)));
   min-inline-size: 0;
   flex: 1;
   color: var(--lufia-color-text-muted);
@@ -85,7 +86,10 @@
 }
 
 .root[data-divider]:not([data-flush]) > .header + .body {
-  padding-block-start: var(--lufia-card-body-padding, var(--card-padding));
+  padding-block-start: var(
+    --lufia-card-body-padding-block,
+    var(--lufia-card-body-padding, var(--card-padding))
+  );
 }
 
 .footer {

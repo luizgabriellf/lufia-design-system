@@ -52,6 +52,8 @@ export const ThemedByTokens: Story = {
             "--lufia-page-header-eyebrow-tracking": "0.16em",
             "--lufia-page-header-eyebrow-dash-size": "1.5rem",
             "--lufia-page-header-eyebrow-dash-gap": "0.5rem",
+            "--lufia-page-header-eyebrow-dash-thickness": "2px",
+            "--lufia-page-header-eyebrow-weight": "var(--lufia-font-weight-bold)",
             "--lufia-page-header-title-tracking": "-0.02em",
             "--lufia-page-header-title-size": "2.5rem",
           } as React.CSSProperties

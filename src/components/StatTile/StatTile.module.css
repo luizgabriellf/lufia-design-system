@@ -56,7 +56,7 @@
 
 .label {
   color: var(--lufia-stat-tile-label-color, var(--lufia-color-text-muted));
-  font-family: var(--lufia-font-family-mono);
+  font-family: var(--lufia-stat-tile-label-font, var(--lufia-font-family-mono));
   font-size: var(--lufia-stat-tile-label-size, var(--lufia-font-size-2xs));
   font-weight: var(--lufia-font-weight-semibold);
   letter-spacing: var(--lufia-stat-tile-label-tracking, 0.09em);
