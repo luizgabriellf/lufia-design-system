@@ -68,6 +68,12 @@ export type ColumnChartProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   printValues?: "auto" | boolean;
   /** Names the range row of the data table and the range in the tooltip, when a column has a `band`. Aria and tooltip text, so it has an English default. Defaults to `"Range"`. */
   bandLabel?: string;
+  /**
+   * What a screen reader calls each column when `interactive` is set (`aria-roledescription`), so it is announced as a
+   * "column", not as an image, which tells people the arrow keys move between columns. Aria-only text, so it has an
+   * English default. Defaults to `"column"`.
+   */
+  columnLabel?: string;
 };
 
 const DEFAULT_TONES: readonly ChartTone[] = ["accent", "neutral", "success", "warning", "danger"];
@@ -102,6 +108,7 @@ export function ColumnChart({
   interactive = false,
   printValues = false,
   bandLabel = "Range",
+  columnLabel = "column",
   className,
   style,
   ...rest
@@ -156,6 +163,7 @@ export function ColumnChart({
           ? {
               ...interactiveProps,
               role: "img",
+              "aria-roledescription": columnLabel,
               "data-column": columnIndex,
               "data-interactive": "",
             }

@@ -481,6 +481,36 @@ describe("ColumnChart", () => {
       expect(cols[2]).toHaveFocus();
     });
 
+    it("keeps exactly one tab stop when the columns shrink or are reordered", () => {
+      const make = (keys: string[]) => keys.map((key) => ({ key, label: key.toUpperCase(), values: [1] }));
+      const ui = (keys: string[]) => (
+        <ColumnChart title="Deliveries" series={single} columns={make(keys)} interactive />
+      );
+      const stops = () => screen.getAllByRole("img").filter((column) => column.tabIndex === 0);
+      const { rerender } = render(ui(["a", "b", "c", "d", "e", "f"]));
+      const last = screen.getByRole("img", { name: /^F:/ });
+      act(() => last.focus());
+      act(() => last.blur());
+      expect(stops().map((column) => column.getAttribute("aria-label"))).toEqual(["F: 1"]);
+      // The stop follows its column when the order changes.
+      rerender(ui(["f", "e", "d", "c", "b", "a"]));
+      expect(stops().map((column) => column.getAttribute("aria-label"))).toEqual(["F: 1"]);
+      // The column is gone: the first one takes over.
+      rerender(ui(["a", "b", "c"]));
+      expect(stops().map((column) => column.getAttribute("aria-label"))).toEqual(["A: 1"]);
+    });
+
+    it("announces each column as a column, in the language given", () => {
+      const { rerender } = render(
+        <ColumnChart title="Deliveries" series={single} columns={week} interactive />,
+      );
+      expect(screen.getAllByRole("img")[0]).toHaveAttribute("aria-roledescription", "column");
+      rerender(
+        <ColumnChart title="Deliveries" series={single} columns={week} interactive columnLabel="coluna" />,
+      );
+      expect(screen.getAllByRole("img")[0]).toHaveAttribute("aria-roledescription", "coluna");
+    });
+
     it("swaps the arrows in a right-to-left page", async () => {
       const user = userEvent.setup();
       render(

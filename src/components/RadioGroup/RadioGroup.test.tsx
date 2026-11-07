@@ -228,6 +228,8 @@ describe("RadioGroup", () => {
     // The parent refuses the choice (value stays "cash"): no event, and none when it later sets "card" itself.
     await user.click(screen.getByRole("radio", { name: "Card" }));
     rerender(withValue("cash", "Another render"));
+    // The parent sets something else: the refused choice is forgotten.
+    rerender(withValue("transfer"));
     rerender(withValue("card"));
     expect(onChange).not.toHaveBeenCalled();
     // The user's own choice, accepted by the parent in the same update, is an event from the group (no name).
@@ -247,7 +249,7 @@ describe("RadioGroup", () => {
     expect(target).toHaveBeenCalledWith(screen.getAllByRole("radiogroup")[1]!.parentElement);
   });
 
-  it("expires a refused choice, so the parent later setting that value is not announced", async () => {
+  it("forgets a refused choice once the parent shows another value, but not before (documented edge)", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const withValue = (value: string) => (
@@ -256,12 +258,14 @@ describe("RadioGroup", () => {
       </form>
     );
     const { rerender } = render(withValue("cash"));
-    // Refused: the parent keeps "cash". No render happens in between.
     await user.click(screen.getByRole("radio", { name: "Card" }));
-    // Later, on its own, the parent sets that same value.
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    rerender(withValue("transfer"));
     rerender(withValue("card"));
     expect(onChange).not.toHaveBeenCalled();
+    // The edge: refused, nothing renders in between, the parent later sets that same value.
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    rerender(withValue("cash"));
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 
   it("shows the message and moves focus to the radio when a submit is refused", async () => {

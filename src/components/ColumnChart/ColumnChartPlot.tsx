@@ -38,8 +38,11 @@ export function tipZone(index: number, count: number): "start" | "center" | "end
 export function ColumnChartPlot({ tips, children, className, ...rest }: ColumnChartPlotProps) {
   const [active, setActive] = useState<number | null>(null);
   // Roving tabindex: one column is in the tab order, the one that was focused last.
-  const [stop, setStop] = useState(0);
+  const [stopKey, setStopKey] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
+  // The tab stop follows its column by key. When that column is gone, or nothing was focused yet, it is the first one.
+  const keys = Children.toArray(children).map((child) => (isValidElement(child) ? String(child.key) : null));
+  const stop = Math.max(0, keys.indexOf(stopKey));
   // A tap on the column that already shows its tip closes it; the tap that first shows it must not.
   const wasActive = useRef(false);
   const pointerType = useRef("mouse");
@@ -92,7 +95,8 @@ export function ColumnChartPlot({ tips, children, className, ...rest }: ColumnCh
         const index = indexOf(event.target);
         if (index !== null) {
           setActive(index);
-          setStop(index);
+          const key = Children.toArray(children)[index];
+          setStopKey(isValidElement(key) ? String(key.key) : null);
         }
       }}
       onBlur={(event) => {

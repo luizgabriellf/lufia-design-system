@@ -3032,6 +3032,13 @@
               "required": false,
               "default": "\"Range\"",
               "description": "Names the range row of the data table and the range in the tooltip, when a column has a `band`. Aria and tooltip text, so it has an English default. Defaults to `\"Range\"`."
+            },
+            {
+              "name": "columnLabel",
+              "type": "string",
+              "required": false,
+              "default": "\"column\"",
+              "description": "What a screen reader calls each column when `interactive` is set (`aria-roledescription`), so it is announced as a \"column\", not as an image, which tells people the arrow keys move between columns. Aria-only text, so it has an English default. Defaults to `\"column\"`."
             }
           ],
           "nativeProps": true
@@ -3212,7 +3219,7 @@
           "Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.",
           "Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.",
           "Print the figures people need as text beside the chart: the drawing has no value labels, unless you set `printValues`.",
-          "`interactive`: each column is a focusable `role=\"img\"` named \"<column label>: <values> · <detail>\" (a series is named when there are several; a `band` adds \"<bandLabel> low – high\"). The tooltip repeats that text visually, so it is hidden from assistive technology and there is no `aria-describedby`; the detail would be read twice. It follows the WCAG 1.4.13 conditions: Escape dismisses it (and stops there, so a dialog around the chart stays open), the pointer can move onto it, and it stays until the pointer or focus leaves. It is at most two thirds of the plot wide and anchored to the plot edge on the outer thirds, so it does not overflow, down to 320px. It fades in on `opacity`, and not at all under `prefers-reduced-motion`. A column label that is not text names the column from the label element and its values.",
+          "`interactive`: each column is a focusable `role=\"img\"` named \"<column label>: <values> · <detail>\" and announced as a \"column\" (`aria-roledescription`, set with `columnLabel`, so people know the arrow keys move between columns) (a series is named when there are several; a `band` adds \"<bandLabel> low – high\"). The tooltip repeats that text visually, so it is hidden from assistive technology and there is no `aria-describedby`; the detail would be read twice. It follows the WCAG 1.4.13 conditions: Escape dismisses it (and stops there, so a dialog around the chart stays open), the pointer can move onto it, and it stays until the pointer or focus leaves. It is at most two thirds of the plot wide and anchored to the plot edge on the outer thirds, so it does not overflow, down to 320px. It fades in on `opacity`, and not at all under `prefers-reduced-motion`. A column label that is not text names the column from the label element and its values.",
           "`printValues`: the printed totals repeat the data table, so they are hidden from assistive technology.",
           "`band`: counted in the scale maximum and listed in the data table, under `bandLabel` (an English default, as it is aria text; set it in your language). It is drawn as a stem with two caps; in `forced-colors` mode it uses `CanvasText`.",
           "`pattern=\"hatch\"`: diagonal stripes in the card colour over the series colour, in the columns and in the legend. In `forced-colors` mode every series already has its own fill pattern, which replaces the hatch."
