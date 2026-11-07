@@ -20,6 +20,7 @@ const CONTRACT: [string, string][] = [
   ["Card", "padding: var(--lufia-card-header-padding, var(--card-padding))"],
   ["Card", "padding: var(--lufia-card-body-padding, var(--card-padding))"],
   ["Card", "box-shadow: var(--lufia-card-shadow, var(--lufia-shadow-sm))"],
+  ["Card", "box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md))"],
   ["AttentionList", "--attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem)"],
 ];
 

@@ -57,7 +57,8 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
   after it ends, even as an identity matrix. That makes the element the containing block and a stacking context for any
   `position: fixed` descendant rendered inside it, so a sheet or popover is positioned against the element and not the
   viewport. `backwards` applies the first frame during the delay and nothing afterwards, so the resting state is
-  `transform: none`. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
+  `transform: none`. The one exception is `NavSheet`, which rests on its own drag transform
+  (`translateY(var(--lufia-sheet-drag, 0))`); it sits inside a fixed root, so nothing is affected. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
   (`src/test/animationFill.test.ts`) fails on any entrance that animates `transform` and fills forwards.
 - **Keyframes animate `from` only**, so the resting state is the end state and a disabled animation leaves the content
   visible.

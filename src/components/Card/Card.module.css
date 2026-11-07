@@ -84,7 +84,7 @@
     var(--lufia-card-divider-color, var(--lufia-color-border-subtle));
 }
 
-.root[data-divider] > .header + .body {
+.root[data-divider]:not([data-flush]) > .header + .body {
   padding-block-start: var(--lufia-card-body-padding, var(--card-padding));
 }
 
@@ -133,7 +133,7 @@
 
 .root[data-interactive]:hover {
   border-color: var(--lufia-color-accent-border);
-  box-shadow: var(--lufia-shadow-md);
+  box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md));
 }
 
 .root[data-interactive]:hover .link {
