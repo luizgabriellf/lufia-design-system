@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.6.0
+
+### Minor Changes
+
+- [#30](https://github.com/luizgabriellf/lufia-design-system/pull/30) [`8a642eb`](https://github.com/luizgabriellf/lufia-design-system/commit/8a642eb16def0b170208427dd7331bf7894e7956) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add component tokens: `--lufia-page-header-eyebrow-dash-thickness`, `--lufia-page-header-eyebrow-weight`, `--lufia-stat-tile-label-font`, `--lufia-attention-list-bar-inset-inline` and `-block` (the shorthand `--lufia-attention-list-bar-inset` stays the fallback), and `--lufia-card-body-padding-block` and `-inline` (they default to the `padding` prop; when `--lufia-card-body-padding` is set it wins and the axis tokens are ignored). Fallbacks equal the previous values, so nothing changes by default.
+
 ## 0.5.0
 
 ### Minor Changes
