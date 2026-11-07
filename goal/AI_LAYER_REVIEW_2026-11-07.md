@@ -9,7 +9,7 @@
 - 66 manifest entries; 242 declared exports; 452 explicit component prop entries.
 - 343 of 452 props have a JSDoc description (**75.9%**); 109 lack one.
 - All 66 manifest entries are currently labeled beta.
-- One type-only directory (ChartKit) has no standalone usage page / stories. The other 65 runtime entries have docs, example, usage decision notes and story references.
+- One type-only directory (ChartKit) has no standalone usage page / stories. The other 65 runtime entries have docs, examples and story references. The useBodyScrollLock hook lacks when-to-use and when-not-to-use sections (64/65 runtime entries have those notes).
 - Deterministic TypeScript + MDX + story extraction exists in scripts/ai/build-manifest.mjs.
 - Committed docs/ai/components.json, per-component Markdown specs, llms.txt and llms-full.txt; drift detection in scripts/ai/verify.mjs; publication by scripts/ai/publish.mjs.
 - Accessibility and motion have their own unit tests and CI checks, but those are not a direct measure of generated code by agents.
