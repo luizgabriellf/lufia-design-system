@@ -32,6 +32,12 @@ accessibility note.
 - **Storybook** with theme, mode and viewport (320 / 390 / 768 / 1440) controls, deployed to GitHub Pages after CI passes on `main`
   (Pages is enabled by `scripts/setup-repo-settings.sh`).
 
+### AI-assisted component discovery
+
+Lufia exposes machine-readable component specs through `llms.txt`, `components.json`, and per-component docs on GitHub Pages. From a source checkout, use `npm run ai:search -- "searchable selector"` and `npm run ai:show -- Combobox` to retrieve only the real documented APIs.
+
+For local coding agents, `npm run storybook` exposes the official Storybook MCP server at `http://localhost:6006/mcp`. The published GitHub Pages site provides static manifests, **not** a live MCP endpoint. See [the consuming guide](docs/ai/CONSUMING.md).
+
 ## Install
 
 npm publishing is on hold. Until then, install from git (the package builds itself on install). The `v0.1.0` tag exists after the
