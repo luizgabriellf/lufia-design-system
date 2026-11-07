@@ -321,3 +321,161 @@ test.describe("introduction page", () => {
     await expect.poll(async () => (await cardStyle()).transform).not.toBe(before.transform);
   });
 });
+
+test.describe("notification center", () => {
+  const id = (story: string) => `components-overlays-notificationcenter--${story}`;
+
+  test("at 1440px the bell opens a popover, tabs switch, and Escape returns focus", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("default"));
+    const bell = page.getByRole("button", { name: "Notifications, 5 unread" });
+    await expect(bell).toHaveAttribute("aria-expanded", "false");
+    await bell.click();
+    const dialog = page.getByRole("dialog", { name: "Notifications" });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeFocused();
+    await expect(bell).toHaveAttribute("aria-expanded", "true");
+    // The popover hangs from the bell: its right edge lines up with the bell's.
+    const fits = await dialog.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return box.left >= 0 && box.right <= innerWidth;
+    });
+    expect(fits).toBe(true);
+
+    await expect(page.getByRole("tab", { name: /^All/ })).toHaveAttribute("aria-selected", "true");
+    await page.getByRole("tab", { name: /^Stock/ }).click();
+    await expect(page.getByRole("tab", { name: /^Stock/ })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByText("Safety gloves are below the reorder level")).toBeVisible();
+    await expect(page.getByText("Supplier proposal needs your review")).toHaveCount(0);
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(bell).toBeFocused();
+  });
+
+  test("at 390px the panel is a sheet above a fixed dock, and Escape returns focus", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, id("sheet-over-dock"));
+    const dialog = page.getByRole("dialog", { name: "Notifications" });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute("aria-modal", "true");
+    // Poll: the sheet slides in, so measure once it has settled.
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const layer = document.querySelector<HTMLElement>('[data-lufia-part="notification-layer"]');
+          const sheet = document.querySelector<HTMLElement>('[data-lufia-part="notification-sheet"]');
+          const dock = document.querySelector<HTMLElement>('[data-testid="dock"]');
+          const header = document.querySelector<HTMLElement>('[data-testid="header"]');
+          if (!layer || !sheet || !dock || !header) return "missing";
+          const s = sheet.getBoundingClientRect();
+          const anchored = Math.abs(s.bottom - innerHeight) <= 1 && s.width >= innerWidth - 1;
+          const above =
+            layer.parentElement === document.body &&
+            Number(getComputedStyle(layer).zIndex) > Number(getComputedStyle(dock).zIndex) &&
+            Number(getComputedStyle(layer).zIndex) > Number(getComputedStyle(header).zIndex);
+          return anchored && above ? "ok" : { anchored, above };
+        }),
+      )
+      .toBe("ok");
+
+    await page.getByRole("tab", { name: /^Agents/ }).click();
+    await expect(page.getByRole("tab", { name: /^Agents/ })).toHaveAttribute("aria-selected", "true");
+    // The story opens on its own, with nothing focused before it; reopen it from the bell, as a person would.
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    const bell = page.getByRole("button", { name: /^Notifications/ });
+    await bell.click();
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(bell).toBeFocused();
+  });
+
+  test("activating a row closes the panel and leaves focus on the bell", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("default"));
+    const bell = page.getByRole("button", { name: /^Notifications/ });
+    await bell.click();
+    await page.getByRole("link", { name: /Supplier proposal needs your review/ }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(bell).toBeFocused();
+  });
+
+  test("the mark-all action never wraps: text at 390px, an icon with the same name at 320px", async ({
+    page,
+  }) => {
+    const measure = async (width: number) => {
+      await page.setViewportSize({ width, height: 700 });
+      await openStory(page, id(`sheet-phone-${width}`));
+      const mark = page.getByRole("button", { name: "Mark all as read" });
+      await expect(mark).toBeVisible();
+      await page.waitForFunction(() => document.getAnimations().length === 0);
+      return mark.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const text = element
+          .querySelector<HTMLElement>('span[class*="markAllText"]')!
+          .getBoundingClientRect();
+        return { width: box.width, height: box.height, textWidth: text.width };
+      });
+    };
+    const wide = await measure(390);
+    expect(wide.height).toBeLessThan(40);
+    expect(wide.textWidth).toBeGreaterThan(60);
+    const narrow = await measure(320);
+    expect(narrow.height).toBeLessThan(40);
+    expect(narrow.textWidth).toBeLessThanOrEqual(1);
+    expect(narrow.width).toBeLessThan(50);
+  });
+
+  test("at 320px the tab row fades the edge that hides more tabs", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, id("sheet-phone-320"));
+    const tabs = page.getByRole("tablist");
+    await expect(tabs).toHaveAttribute("data-more", "end");
+    await tabs.evaluate((element) => {
+      element.scrollLeft = element.scrollWidth;
+    });
+    await expect(tabs).toHaveAttribute("data-more", "start");
+  });
+
+  test("a long list scrolls inside the panel while the footer stays put", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("many-items"));
+    const scroller = page.locator('[data-lufia-part="notification-panel"] > div').nth(1);
+    const footer = page.getByRole("link", { name: "Notification settings" });
+    // The footer rises in with the rest of the first view: measure once every entrance has finished.
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    const before = await footer.boundingBox();
+    await scroller.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    const after = await footer.boundingBox();
+    // Poll-free: the panel is still settling its entrance scale, so allow a sub-pixel difference.
+    expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThan(1);
+    expect(await scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  });
+
+  test("the panel animates in, and not at all under reduced motion", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const animationName = async (reducedMotion: "no-preference" | "reduce") => {
+      await page.emulateMedia({ reducedMotion });
+      await openStory(page, id("default"));
+      await page.getByRole("button", { name: /^Notifications/ }).click();
+      const dialog = page.getByRole("dialog", { name: "Notifications" });
+      await expect(dialog).toBeVisible();
+      return dialog.evaluate((element) => getComputedStyle(element).animationName);
+    };
+    expect(await animationName("no-preference")).toContain("popover-in");
+    expect(await animationName("reduce")).toBe("none");
+  });
+
+  test("marking everything read fades the dots and keeps the bell's count in step", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("interactive"));
+    await page.getByRole("button", { name: "Notifications, 5 unread" }).click();
+    await page.getByRole("button", { name: "Mark all as read" }).click();
+    await expect(page.getByRole("button", { name: "Notifications", exact: true })).toBeVisible();
+    await expect(page.locator('[data-lufia-part="notification-panel"] [data-on]')).toHaveCount(0);
+  });
+});

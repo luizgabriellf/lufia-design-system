@@ -41,6 +41,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [CommandPalette](https://luizgabriellf.github.io/lufia-design-system/ai/components/CommandPalette.md): A keyboard-first launcher that filters commands and pages. (beta)
 - [ConfirmDialog](https://luizgabriellf.github.io/lufia-design-system/ai/components/ConfirmDialog.md): A modal question that has to be answered, with a destructive variant. (beta)
 - [Modal](https://luizgabriellf.github.io/lufia-design-system/ai/components/Modal.md): A dialog that interrupts the page and traps focus until it is dismissed. (beta)
+- [NotificationCenter](https://luizgabriellf.github.io/lufia-design-system/ai/components/NotificationCenter.md): A bell with an unread count that opens a panel of notifications: a popover on wide pages, a sheet on narrow ones. (beta)
 
 ## Components: Navigation
 

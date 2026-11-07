@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { usePresence } from "../AppShell/usePresence";
+import { usePresence } from "../internal/usePresence";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
 import styles from "./CommandPalette.module.css";
