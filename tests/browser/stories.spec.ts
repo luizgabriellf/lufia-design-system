@@ -363,6 +363,32 @@ test.describe("notification center", () => {
     await expect(bell).toBeFocused();
   });
 
+  test("the mark-all action never wraps: text at 390px, an icon with the same name at 320px", async ({
+    page,
+  }) => {
+    const measure = async (width: number) => {
+      await page.setViewportSize({ width, height: 700 });
+      await openStory(page, id(`sheet-phone-${width}`));
+      const mark = page.getByRole("button", { name: "Mark all as read" });
+      await expect(mark).toBeVisible();
+      await page.waitForFunction(() => document.getAnimations().length === 0);
+      return mark.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const text = element
+          .querySelector<HTMLElement>('span[class*="markAllText"]')!
+          .getBoundingClientRect();
+        return { width: box.width, height: box.height, textWidth: text.width };
+      });
+    };
+    const wide = await measure(390);
+    expect(wide.height).toBeLessThan(40);
+    expect(wide.textWidth).toBeGreaterThan(60);
+    const narrow = await measure(320);
+    expect(narrow.height).toBeLessThan(40);
+    expect(narrow.textWidth).toBeLessThanOrEqual(1);
+    expect(narrow.width).toBeLessThan(50);
+  });
+
   test("at 320px the tab row fades the edge that hides more tabs", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 640 });
     await openStory(page, id("sheet-phone-320"));

@@ -168,6 +168,16 @@ describe("NotificationCenter", () => {
     expect(base.onMarkAllRead).toHaveBeenCalledTimes(1);
   });
 
+  it("names mark-all the same in its text and icon forms", async () => {
+    // jsdom runs no container queries: the markup carries both forms and CSS picks one. The text is what names the button.
+    const { user, trigger } = setup();
+    await user.click(trigger);
+    const mark = screen.getByRole("button", { name: "Mark all as read" });
+    expect(mark).toHaveAttribute("title", "Mark all as read");
+    expect(mark.querySelector("svg")?.closest('[aria-hidden="true"]')).not.toBeNull();
+    expect(mark.textContent).toBe("Mark all as read");
+  });
+
   it("keeps mark-all focusable but inert when nothing is unread", async () => {
     const { user, trigger } = setup({ unreadCount: 0 });
     await user.click(trigger);

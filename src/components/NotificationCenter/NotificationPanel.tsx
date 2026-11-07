@@ -115,6 +115,20 @@ function ChevronIcon() {
   );
 }
 
+function CheckAllIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width="1rem" height="1rem" fill="none" focusable="false" aria-hidden="true">
+      <path
+        d="M1.5 8.5 4.5 11.5 10 5M7 11.5l.5.5L14 5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function CloseIcon() {
   return (
     <svg viewBox="0 0 16 16" width="1rem" height="1rem" fill="none" focusable="false" aria-hidden="true">
@@ -445,6 +459,7 @@ export function NotificationPanel({
                 variant="ghost"
                 size="sm"
                 className={styles.markAll}
+                title={markAllLabel}
                 aria-disabled={unreadCount === 0 || undefined}
                 onClick={() => {
                   if (unreadCount === 0) return;
@@ -452,7 +467,10 @@ export function NotificationPanel({
                   onMarkAllRead?.();
                 }}
               >
-                {markAllLabel}
+                <span className={styles.markAllIcon} aria-hidden="true">
+                  <CheckAllIcon />
+                </span>
+                <span className={styles.markAllText}>{markAllLabel}</span>
               </Button>
             ) : null}
             {onClose ? (
