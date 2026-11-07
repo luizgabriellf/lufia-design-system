@@ -479,3 +479,19 @@ test.describe("notification center", () => {
     await expect(page.locator('[data-lufia-part="notification-panel"] [data-on]')).toHaveCount(0);
   });
 });
+
+test.describe("badge", () => {
+  test("a badge in a squeezed table column keeps its word on one line", async ({ page }) => {
+    await openStory(page, "components-data-display-badge--in-narrow-table-cell");
+    const lines = await page.getByTestId("badge-cell").evaluate((cell) => {
+      const walker = cell.ownerDocument.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node !== null && node.textContent?.trim() !== "Active") node = walker.nextNode();
+      if (node === null) throw new Error("badge text not found");
+      const range = cell.ownerDocument.createRange();
+      range.selectNodeContents(node);
+      return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
+    });
+    expect(lines).toBe(1);
+  });
+});

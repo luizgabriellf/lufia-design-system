@@ -1691,6 +1691,10 @@
             "id": "components-data-display-badge--long-text"
           },
           {
+            "export": "InNarrowTableCell",
+            "id": "components-data-display-badge--in-narrow-table-cell"
+          },
+          {
             "export": "AllTones",
             "id": "components-data-display-badge--all-tones"
           },
