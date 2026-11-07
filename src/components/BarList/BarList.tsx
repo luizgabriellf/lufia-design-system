@@ -36,6 +36,13 @@ export type BarListProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
    * only), for a list that sits under a heading of its own. Defaults to `"visible"`.
    */
   titleVisibility?: "visible" | "hidden";
+  /**
+   * Lets `value` wrap onto several lines (and break inside a long word) instead of staying on one line, for a value that
+   * is text rather than a number ("12 of 40 sites checked", a range of dates). The value column then takes at most half
+   * the row and the name keeps the rest. Off by default, so numbers stay on one line. A very long note belongs in `detail`,
+   * which always wraps.
+   */
+  valueWrap?: boolean;
 };
 
 /**
@@ -52,6 +59,7 @@ export function BarList({
   total,
   reference,
   titleVisibility = "visible",
+  valueWrap = false,
   className,
   ...rest
 }: BarListProps) {
@@ -81,7 +89,7 @@ export function BarList({
       {summary ? <p className={styles.summary}>{summary}</p> : null}
       <ul className={styles.list}>
         {rows.map((row) => (
-          <li key={row.key} className={styles.row}>
+          <li key={row.key} className={styles.row} data-value-wrap={valueWrap ? "" : undefined}>
             <span className={styles.name}>
               {row.name}
               {row.note ? <small className={styles.small}>{row.note}</small> : null}

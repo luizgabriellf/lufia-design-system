@@ -43,6 +43,8 @@ Add `reference` for a shared target and `titleVisibility="hidden"` when a headin
 />
 ```
 
+`value` stays on one line by default, which suits numbers. For a value that is text ("12 of 40 sites checked"), set `valueWrap`: it wraps and breaks inside long words, takes at most half the row, and the name keeps the rest. A longer remark still belongs in `detail`, which always wraps.
+
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 </Section>
@@ -54,6 +56,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.Default} />
 <Canvas of={Stories.Tones} />
 <Canvas of={Stories.LongNames} />
+<Canvas of={Stories.LongValues} />
+<Canvas of={Stories.LongValuesPhone320} />
 <Canvas of={Stories.WithReference} />
 <Canvas of={Stories.ReferenceAboveEveryBar} />
 <Canvas of={Stories.ReferenceLongText} />
