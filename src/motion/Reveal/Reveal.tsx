@@ -15,6 +15,17 @@ export type RevealProps = HTMLAttributes<HTMLDivElement> & {
   onExited?: () => void;
 };
 
+/** Extra time past the exit animation before it is declared finished, in case `animationend` never arrives. */
+const EXIT_MARGIN_MS = 150;
+
+/** The first value of a CSS time list (`"0.2s"`, `"200ms"`) in milliseconds; 0 when absent or unparsable. */
+function toMs(value: string | undefined): number {
+  const first = (value ?? "").split(",")[0]?.trim() ?? "";
+  const number = parseFloat(first);
+  if (!Number.isFinite(number)) return 0;
+  return first.endsWith("ms") ? number : number * 1000;
+}
+
 type Phase = "open" | "closed" | "unmounted";
 
 /**
@@ -54,7 +65,14 @@ export function Reveal({
     const style = element ? getComputedStyle(element) : null;
     const animated =
       style !== null && style.animationName !== "none" && parseFloat(style.animationDuration) > 0;
-    if (animated) return;
+    if (animated) {
+      // Safety net: `animationend` never fires under a `display: none` ancestor or if the animation is cancelled.
+      const timeout = setTimeout(
+        () => setPhase("unmounted"),
+        toMs(style.animationDuration) + toMs(style.animationDelay) + EXIT_MARGIN_MS,
+      );
+      return () => clearTimeout(timeout);
+    }
     // No animation to wait for (stylesheet missing or disabled): unmount on the next frame.
     const frame = requestAnimationFrame(() => setPhase("unmounted"));
     return () => cancelAnimationFrame(frame);

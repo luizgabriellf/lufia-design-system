@@ -9,7 +9,9 @@
  * itself, even when its root was in the document (and inerted) before it opened; the roots of the modals below it are
  * inert; and once the last holder is released nothing this module set stays inert, whatever the order of closing.
  *
- * The state lives on `globalThis.__lufiaInertState`, like the layer stack, so duplicated copies of the package agree.
+ * The state lives on `globalThis.__lufiaInertStateV2`, like the layer stack, so duplicated copies of this version agree. It
+ * deliberately does not touch `__lufiaInertState`, the shape an older release keeps there: an older copy loaded beside this
+ * one then keeps working on its own state, and at worst leaves the page live, never stuck inert.
  */
 type Holder = { container: HTMLElement };
 type InertState = {
@@ -20,11 +22,11 @@ type InertState = {
   /** Elements that were already inert before this module wanted them to be: never touched. */
   foreign: WeakSet<Element>;
 };
-type InertHost = typeof globalThis & { __lufiaInertState?: Partial<InertState> };
+type InertHost = typeof globalThis & { __lufiaInertStateV2?: Partial<InertState> };
 
 function sharedState(): InertState {
   const host = globalThis as InertHost;
-  const state = (host.__lufiaInertState ??= {});
+  const state = (host.__lufiaInertStateV2 ??= {});
   state.holders ??= [];
   state.ours ??= new Set<Element>();
   state.foreign ??= new WeakSet<Element>();
@@ -65,8 +67,9 @@ function sync(state: InertState) {
   }
   for (const element of ours) {
     if (present.has(element)) continue;
-    // Gone from the body (or became exempt): nothing left to restore.
+    // Detached from the body, or became exempt: hand it back live, so reattaching it later does not leave it stuck inert.
     ours.delete(element);
+    element.removeAttribute("inert");
   }
 }
 

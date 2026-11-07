@@ -107,4 +107,58 @@ describe("Reveal", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("unmounts after the exit duration plus a margin when animationend never fires", () => {
+    vi.useFakeTimers();
+    try {
+      withAnimation();
+      const onExited = vi.fn();
+      const { rerender } = render(
+        <Reveal show onExited={onExited}>
+          content
+        </Reveal>,
+      );
+      rerender(
+        <Reveal show={false} onExited={onExited}>
+          content
+        </Reveal>,
+      );
+      expect(screen.getByText("content")).toHaveAttribute("data-state", "closed");
+      act(() => void vi.advanceTimersByTime(100));
+      expect(screen.getByText("content")).toBeInTheDocument();
+      act(() => void vi.advanceTimersByTime(300));
+      expect(screen.queryByText("content")).not.toBeInTheDocument();
+      expect(onExited).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not run the safety timeout after the animation ended or the content came back", () => {
+    vi.useFakeTimers();
+    try {
+      withAnimation();
+      const onExited = vi.fn();
+      const { rerender } = render(
+        <Reveal show onExited={onExited}>
+          content
+        </Reveal>,
+      );
+      rerender(
+        <Reveal show={false} onExited={onExited}>
+          content
+        </Reveal>,
+      );
+      rerender(
+        <Reveal show onExited={onExited}>
+          content
+        </Reveal>,
+      );
+      act(() => void vi.advanceTimersByTime(1000));
+      expect(screen.getByText("content")).toHaveAttribute("data-state", "open");
+      expect(onExited).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

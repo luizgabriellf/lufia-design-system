@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { endAnimation, mockReducedMotion } from "../../test/motion";
 import { useConfirmDialog } from "../ConfirmDialog";
+import { inertBackground as inertBackgroundV070 } from "../../test/fixtures/inertBackgroundV070";
 import { inertBackground } from "../useFocusTrap/inertBackground";
 import { Modal } from "./Modal";
 
@@ -293,5 +294,85 @@ describe("inertBackground", () => {
       for (const element of [page, a, b]) element.remove();
     }
     expect(page).not.toHaveAttribute("inert");
+  });
+
+  it("hands an element back live when it becomes exempt while a modal is open", () => {
+    const page = body();
+    const a = body();
+    const release = inertBackground(a);
+    expect(page).toHaveAttribute("inert");
+    page.setAttribute("data-lufia-inert-exempt", "");
+    // Another modal opening triggers a fresh pass.
+    const b = body();
+    const releaseB = inertBackground(b);
+    expect(page).not.toHaveAttribute("inert");
+    releaseB();
+    release();
+    for (const element of [page, a, b]) element.remove();
+  });
+
+  it("does not leave a detached element inert when it is reattached later", () => {
+    const page = body();
+    const a = body();
+    const release = inertBackground(a);
+    expect(page).toHaveAttribute("inert");
+    page.remove();
+    const b = body();
+    const releaseB = inertBackground(b); // a fresh pass sees `page` gone
+    expect(page).not.toHaveAttribute("inert");
+    releaseB();
+    release();
+    document.body.appendChild(page);
+    expect(page).not.toHaveAttribute("inert");
+    for (const element of [page, a, b]) element.remove();
+  });
+});
+
+describe("inertBackground beside a v0.7.0 copy", () => {
+  const setup = () => {
+    document.body.innerHTML =
+      "<div id=app></div><div id=oldL><div id=oldC></div></div><div id=newL><div id=newC></div></div>";
+    const get = (id: string) => document.getElementById(id)!;
+    return { oldC: get("oldC"), newC: get("newC") };
+  };
+  const orders: [string, string[]][] = [
+    ["old, new, close old, close new", ["open old", "open new", "close old", "close new"]],
+    ["old, new, close new, close old", ["open old", "open new", "close new", "close old"]],
+    ["new, old, close old, close new", ["open new", "open old", "close old", "close new"]],
+    ["new, old, close new, close old", ["open new", "open old", "close new", "close old"]],
+  ];
+
+  it.each(orders)("never throws and leaves nothing inert: %s", (_name, steps) => {
+    const { oldC, newC } = setup();
+    const releases: Record<string, () => void> = {};
+    for (const step of steps) {
+      const [op, who] = step.split(" ") as [string, "old" | "new"];
+      expect(() => {
+        if (op === "open")
+          releases[who] = (who === "old" ? inertBackgroundV070 : inertBackground)(
+            who === "old" ? oldC : newC,
+          );
+        else releases[who]!();
+      }).not.toThrow();
+    }
+    expect([...document.body.children].filter((child) => child.hasAttribute("inert"))).toHaveLength(0);
+    document.body.innerHTML = "";
+  });
+
+  it("does not break a v0.7.0 copy that is loaded after the current one has run", async () => {
+    const { oldC, newC } = setup();
+    // A page where no copy has run yet: the current copy creates its state first, the older one is loaded afterwards.
+    delete (globalThis as { __lufiaInertState?: unknown }).__lufiaInertState;
+    delete (globalThis as { __lufiaInertStateV2?: unknown }).__lufiaInertStateV2;
+    inertBackground(newC)();
+    vi.resetModules();
+    const late = (await import("../../test/fixtures/inertBackgroundV070")).inertBackground;
+    let release = () => {};
+    expect(() => {
+      release = late(oldC);
+    }).not.toThrow();
+    expect(() => release()).not.toThrow();
+    expect([...document.body.children].filter((child) => child.hasAttribute("inert"))).toHaveLength(0);
+    document.body.innerHTML = "";
   });
 });
