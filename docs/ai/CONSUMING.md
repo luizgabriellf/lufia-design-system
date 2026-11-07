@@ -51,6 +51,45 @@ Use `docs-list` and `docs-show` to discover components, real prop APIs and docum
 
 The GitHub Pages documentation remains **static**: it serves the machine-readable Lufia files at `/components.json` and the separate Storybook-native manifest at `/manifests/components.json`, but **not** `/mcp`. To connect a remote agent, run a trusted compatible MCP host rather than treating GitHub Pages as a live server.
 
+## Coding agents: version-matched lookup
+
+The installed package ships the AI docs of **its own version** (`node_modules/@lufia/design-system/dist/ai/`: `components.json`, one
+spec per component, `llms.txt`) and a `lufia-ai` command that reads them offline, with no server and no network. Prefer it to
+the published site, which always documents the latest version.
+
+```bash
+npx --no-install lufia-ai search "searchable async select"   # ranked components for a task (--json, --limit 8)
+npx --no-install lufia-ai show Combobox                      # import path, props, example, accessibility (--json)
+npx --no-install lufia-ai list                               # every component
+npx --no-install lufia-ai version                            # the installed version
+```
+
+`lufia-ai mcp` starts a local stdio [MCP](https://modelcontextprotocol.io) server with three read-only tools:
+`search_components` (`query`, optional `limit`), `get_component` (`name`) and `list_components`. Each returns JSON text.
+Register it in your agent. The package must be installed in the project: always pass `--no-install`, because a bare `npx lufia-ai` that finds no local copy downloads and runs whatever package of that name exists on npm (and without a terminal it does not ask first).
+
+Claude Code, `.mcp.json` at the project root (or `claude mcp add --transport stdio --scope project lufia -- npx --no-install lufia-ai mcp`):
+
+```json
+{ "mcpServers": { "lufia": { "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
+```
+
+Cursor, `.cursor/mcp.json`:
+
+```json
+{ "mcpServers": { "lufia": { "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
+```
+
+VS Code (Copilot agent mode), `.vscode/mcp.json`; note the top-level key is `servers`, not `mcpServers`:
+
+```json
+{ "servers": { "lufia": { "type": "stdio", "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
+```
+
+The server must start in the project root, where `node_modules` lives. VS Code defaults to the workspace folder; if your host does not, set `"cwd": "${workspaceFolder}"` (VS Code) or the equivalent for the host.
+
+The raw files are also importable, for example `@lufia/design-system/ai/components.json`.
+
 ## AI agent workflow
 
 For coding agents, use **progressive disclosure** rather than loading the entire manifest into every prompt:
@@ -61,7 +100,7 @@ For coding agents, use **progressive disclosure** rather than loading the entire
 4. Compare the **when to use** and **when not to use** sections of nearby alternatives before choosing. Keep text translation and brand themes in the consuming app.
 5. Compile/typecheck and test the resulting UI. The static AI docs are guidance, not proof that generated JSX is correct.
 
-Contributors with the repository checked out can run `npm run ai:search -- "task"` and `npm run ai:show -- Button` to retrieve only the relevant manifest data. The JSON flag (`--json`) is intended for agent tooling.
+The same lookup is available through `lufia-ai` above. Contributors with the repository checked out can run `npm run ai:search -- "task"` and `npm run ai:show -- Button` to retrieve only the relevant manifest data. The JSON flag (`--json`) is intended for agent tooling.
 
 ## Rules when you use components
 

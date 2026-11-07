@@ -304,6 +304,7 @@ export function renderLlmsTxt(manifest) {
     `- [Consuming the package](${SITE}ai/CONSUMING.md): install, theme setup, provider, RSC rules, conventions.`,
     `- [llms-full.txt](${SITE}llms-full.txt): this index with the consuming guide, motion rules and every component spec inlined.`,
     `- [components.json](${SITE}components.json): machine-readable manifest generated from the TypeScript types (props, types, defaults, status, a11y, story ids).`,
+    '- Version-matched lookup: the installed package ships these docs; run `npx --no-install lufia-ai search "task"` or `npx --no-install lufia-ai mcp` (see the consuming guide).',
     `- [Storybook](${SITE}): live examples, theme and viewport controls.`,
     "",
   ];

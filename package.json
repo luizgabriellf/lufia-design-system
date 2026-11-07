@@ -27,9 +27,11 @@
       "types": "./dist/components/*/index.d.ts",
       "import": "./dist/components/*/index.js"
     },
+    "./ai/*": "./dist/ai/*",
     "./package.json": "./package.json"
   },
   "bin": {
+    "lufia-ai": "./dist/cli/lufia-ai.js",
     "lufia-verify-motion": "./dist/cli/verify-motion/cli.js"
   },
   "files": [

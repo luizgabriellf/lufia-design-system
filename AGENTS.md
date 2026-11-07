@@ -18,22 +18,23 @@ motion primitives, consumed by several applications.
 
 ## Repo map
 
-| Path                     | What is there                                                                                            |
-| ------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `src/components/<Name>/` | A component: `<Name>.tsx`, CSS Module, stories, test, MDX page and an index barrel                       |
-| `src/motion/<Name>/`     | Motion primitives, same layout as a component                                                            |
-| `src/index.ts`           | Root export; one `export *` line per component directory                                                 |
-| `src/docs/taxonomy.ts`   | Category, one-line summary and WAI-ARIA pattern of every component (single source)                       |
-| `src/docs/blocks/`       | Storybook doc page template (`DocHeader`, `Section`, anatomy and Do/Don't figures)                       |
-| `src/cli/verify-motion/` | The `lufia-verify-motion` CLI                                                                            |
-| `tokens/`                | DTCG token source; `npm run tokens` builds CSS, TS and JSON into `src/tokens/generated/`                 |
-| `docs/`                  | the standards, motion and roadmap docs, `docs/adr/`, and the AI layer in `docs/ai/`                      |
-| `scripts/`               | Token build, contrast check, postbuild; `scripts/ai/` builds the AI layer and holds the `ai:*` query CLI |
-| `tests/browser/`         | Playwright specs that drive the Storybook stories in real browsers                                       |
-| `tests/consumer/`        | Fixture apps that consume the packed package; `scripts/check-next-consumer.mjs` runs the Next.js one     |
-| `.storybook/`            | Storybook config and docs theme                                                                          |
-| `.github/workflows/`     | CI, Storybook Pages deploy, release, PR title check, CodeQL                                              |
-| `.changeset/`            | Pending release notes                                                                                    |
+| Path                     | What is there                                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `src/components/<Name>/` | A component: `<Name>.tsx`, CSS Module, stories, test, MDX page and an index barrel                         |
+| `src/motion/<Name>/`     | Motion primitives, same layout as a component                                                              |
+| `src/index.ts`           | Root export; one `export *` line per component directory                                                   |
+| `src/docs/taxonomy.ts`   | Category, one-line summary and WAI-ARIA pattern of every component (single source)                         |
+| `src/docs/blocks/`       | Storybook doc page template (`DocHeader`, `Section`, anatomy and Do/Don't figures)                         |
+| `src/cli/verify-motion/` | The `lufia-verify-motion` CLI                                                                              |
+| `src/cli/lufia-ai.js`    | The shipped `lufia-ai` bin; `src/cli/lufia-ai/` holds the lookup core and the stdio MCP server (plain ESM) |
+| `tokens/`                | DTCG token source; `npm run tokens` builds CSS, TS and JSON into `src/tokens/generated/`                   |
+| `docs/`                  | the standards, motion and roadmap docs, `docs/adr/`, and the AI layer in `docs/ai/`                        |
+| `scripts/`               | Token build, contrast check, postbuild; `scripts/ai/` builds the AI layer and holds the `ai:*` query CLI   |
+| `tests/browser/`         | Playwright specs that drive the Storybook stories in real browsers                                         |
+| `tests/consumer/`        | Fixture apps that consume the packed package; `scripts/check-next-consumer.mjs` runs the Next.js one       |
+| `.storybook/`            | Storybook config and docs theme                                                                            |
+| `.github/workflows/`     | CI, Storybook Pages deploy, release, PR title check, CodeQL                                                |
+| `.changeset/`            | Pending release notes                                                                                      |
 
 ## Commands
 
@@ -50,6 +51,7 @@ npm run verify:changeset     # published source changed without a new changeset?
 npm run test:consumer:next   # pack the build, install it in a Next.js app, assert SSR (needs npm run build first)
 npm run build:ai-docs        # regenerate docs/ai (manifest, specs, llms files)
 npm run ai:search -- "task"  # find components for a UI task (read-only; ai:show -- Name, ai:list)
+node dist/cli/lufia-ai.js mcp # the shipped lookup MCP server (needs npm run build first; consumers run `npx --no-install lufia-ai`)
 ```
 
 Run heavy commands one at a time; `build` and `build-storybook` are memory hungry.
@@ -143,7 +145,7 @@ Before writing or changing UI that uses Lufia, **look up its actual API**:
 3. Use the documented import subpath. Never invent props, aliases, behavior or component names based on another library. Check the real source when a native inherited prop is not listed.
 4. Use semantic tokens, the documented provider and typed APIs, and test the resulting UI rather than trusting generated code. Refer to `docs/ai/CONSUMING.md` for integration instructions.
 
-The lookup is local, read-only and generated from `docs/ai/components.json`. It does not replace TypeScript checks, Storybook stories or accessibility tests. Storybook also exposes a separate native component manifest when built.
+The lookup is local, read-only and generated from `docs/ai/components.json`. Consuming apps get the same lookup, matched to the installed version, from `npx --no-install lufia-ai` (and `npx --no-install lufia-ai mcp`); both run `src/cli/lufia-ai/core.js`. It does not replace TypeScript checks, Storybook stories or accessibility tests. Storybook also exposes a separate native component manifest when built.
 
 When Storybook is running locally, coding agents may also use its MCP endpoint (`http://127.0.0.1:6006/mcp`; the dev server is bound to loopback only). Query `docs-list` and `docs-show` before using component APIs; do not assume a missing prop exists. The published GitHub Pages site has static manifests, **not** a live MCP endpoint.
 
@@ -153,6 +155,7 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Use a component in an app               | `docs/ai/CONSUMING.md`, then `docs/ai/components/<Name>.md`                                              |
 | Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                            |
+| Change the `lufia-ai` CLI or MCP server | `src/cli/lufia-ai/core.js`, `scripts/ai/lufia-ai.test.mjs`, `scripts/postbuild.mjs`, `docs/ai/README.md` |
 | Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md`      |
 | Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`                 |
 | Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                                 |

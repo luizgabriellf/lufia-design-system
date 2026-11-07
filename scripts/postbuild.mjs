@@ -1,5 +1,5 @@
 // Copies CSS Modules next to the compiled JS (the consumer's bundler processes them).
-import { cpSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { chmodSync, cpSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 function walk(dir) {
@@ -17,6 +17,24 @@ for (const file of walk("src").filter((f) => f.endsWith(".css") && !f.startsWith
   copied += 1;
 }
 console.log(`postbuild: copied ${copied} CSS files`);
+
+// Ship the AI docs and the plain-ESM lookup CLI (no build step: the same files the repo tests run against).
+mkdirSync("dist/ai/components", { recursive: true });
+let aiFiles = 0;
+for (const file of ["components.json", "llms.txt", "llms-full.txt", "CONSUMING.md"]) {
+  if (!existsSync(`docs/ai/${file}`)) continue;
+  cpSync(`docs/ai/${file}`, `dist/ai/${file}`);
+  aiFiles += 1;
+}
+for (const file of readdirSync("docs/ai/components").filter((f) => f.endsWith(".md"))) {
+  cpSync(`docs/ai/components/${file}`, `dist/ai/components/${file}`);
+  aiFiles += 1;
+}
+mkdirSync("dist/cli", { recursive: true });
+cpSync("src/cli/lufia-ai.js", "dist/cli/lufia-ai.js");
+cpSync("src/cli/lufia-ai", "dist/cli/lufia-ai", { recursive: true, filter: (f) => !/\.test\./.test(f) });
+chmodSync("dist/cli/lufia-ai.js", 0o755);
+console.log(`postbuild: copied ${aiFiles} AI docs and the lufia-ai CLI`);
 
 // Native ESM needs explicit file extensions: rewrite extensionless relative specifiers.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
