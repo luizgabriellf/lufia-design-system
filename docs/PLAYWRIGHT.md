@@ -1,6 +1,6 @@
-# Browser tests (Playwright)
+# Playwright browser tests
 
-Playwright runs the real Storybook stories in Chromium and WebKit, covering keyboard behavior that jsdom alone cannot verify.
+Playwright runs the existing Storybook stories in Chromium and WebKit.
 
 ## Run locally
 
@@ -10,21 +10,27 @@ npx playwright install chromium webkit
 npm run test:browser
 ```
 
-The Playwright config starts Storybook automatically on port 6006. If it is already running locally, that server is reused. For interactive debugging, run `npm run test:browser:ui`.
+The test runner starts Storybook on port 6006. An already running local server is reused.
+Use `npm run test:browser:ui` for interactive debugging.
 
-## Current coverage
+## Coverage
 
-- Modal: keyboard focus, Escape to close, and focus restoration.
-- Combobox inside Modal: Escape closes the combobox before the enclosing dialog.
-- Visual captures: Button states at widths 320, 390, 768 and 1440, plus open Modal at 320 and 1440, across both Storybook themes and both color modes.
-- Browsers: Chromium and WebKit, exercising both standard desktop behavior and Safari's rendering engine.
+- Modal focus trapping, Escape dismissal, and opener focus restoration.
+- Combobox inside a modal: Escape closes the list before the dialog.
+- Button screenshots at 320, 390, 768, and 1440 px.
+- Open modal screenshots at 320 and 1440 px.
+- Both Storybook themes and both light/dark modes in Chromium and WebKit.
 
-Every capture is attached to the Playwright HTML report; failed tests also retain traces. GitHub Actions uploads `playwright-report/` and `test-results/` for inspection.
+The GitHub Actions job uploads screenshots, traces, and an HTML report.
 
-**Visual baseline status:** Screenshots are *captured* but are **not yet pixel-diff assertions**. This initial step deliberately does not manufacture golden images: reference snapshots must be generated in a real browser, reviewed and committed before enabling blocking visual diffs. Behavioral assertions already fail CI.
+## Visual regression baseline
+
+Screenshots are captured for review, but pixel-diff assertions are not yet enabled.
+Approved reference screenshots must be generated with a real browser and committed
+before visual changes can block CI. The keyboard and interaction tests already fail CI.
 
 ## Next steps
 
-1. Review the CI image artifacts and choose stable, representative stories.
-2. Commit approved screenshot baselines and enable Playwright's `toHaveScreenshot` diff gate, with a documented review workflow for intended visual changes.
-3. Extend the matrix to remaining primitives and add explicit mobile/touch interaction tests and additional focus/scroll regression cases.
+- Review and approve initial screenshot baselines.
+- Enable Playwright `toHaveScreenshot` with an intentional update workflow.
+- Expand coverage to other components and touch interactions.
