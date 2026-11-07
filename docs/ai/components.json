@@ -6412,7 +6412,7 @@
         {
           "name": "MoreActions",
           "kind": "component",
-          "description": "An overflow menu: a button that opens a list of actions. It follows the WAI-ARIA menu button pattern, with a roving focus that arrow keys, Home, End and typeahead move through. Escape and a press outside close it through `useDismiss`, which also keeps the layer order right when the menu sits inside a dialog. As a sheet (`presentation`) the menu moves to a portal on `document.body`: a backdrop covers the viewport, focus is trapped in the sheet, the page behind is inert, and Escape or a tap on the backdrop closes it and returns focus to the button. The sheet's stacking order is `--lufia-overlay-z`, which an app raises to clear a fixed dock or bar of its own.",
+          "description": "An overflow menu: a button that opens a list of actions. It follows the WAI-ARIA menu button pattern, with a roving focus that arrow keys, Home, End and typeahead move through. Escape and a press outside close it through `useDismiss`, which also keeps the layer order right when the menu sits inside a dialog. As a popover the open menu is portalled out of the component (to `document.body`, or into the open modal it sits in) and placed with `position: fixed` from the trigger's box, so an ancestor with `overflow: hidden` cannot clip it. It lines up with `align` and flips to the other edge, or opens upward, when it would leave the viewport, and it follows the trigger on scroll and resize. Until the component has mounted (server render, hydration) it renders in place. As a sheet (`presentation`) the menu moves to a portal on `document.body`: a backdrop covers the viewport, focus is trapped in the sheet, the page behind is inert, and Escape or a tap on the backdrop closes it and returns focus to the button. The sheet's stacking order is `--lufia-overlay-z`, which an app raises to clear a fixed dock or bar of its own.",
           "props": [
             {
               "name": "label",
@@ -6468,7 +6468,7 @@
               "type": "\"container\" | \"viewport\"",
               "required": false,
               "default": "\"viewport\"",
-              "description": "What decides when a `narrowOnly` item shows. `\"viewport\"` (default) is the page width: below 48rem. `\"container\"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `\"container\"` scope a sheet always shows `narrowOnly` items. `PageActions` sets this from its `collapse` prop."
+              "description": "What decides when a `narrowOnly` item shows. `\"viewport\"` (default) is the page width: below 48rem. `\"container\"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `\"container\"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop."
             },
             {
               "name": "defaultOpen",
@@ -6558,6 +6558,14 @@
           {
             "export": "OpenADialogFromAMenuItem",
             "id": "components-actions-moreactions--open-a-dialog-from-a-menu-item"
+          },
+          {
+            "export": "InClippingCardNearBottom",
+            "id": "components-actions-moreactions--in-clipping-card-near-bottom"
+          },
+          {
+            "export": "InClippingCardNearTop",
+            "id": "components-actions-moreactions--in-clipping-card-near-top"
           }
         ]
       },
@@ -6628,7 +6636,7 @@
           "The trigger is an `IconButton` named by `label`, with `aria-haspopup=\"menu\"`, `aria-expanded` and `aria-controls`.",
           "The list is `role=\"menu\"` with `role=\"menuitem\"` entries; focus moves between items (roving focus) and returns to the",
           "Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.",
-          "Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.",
+          "Choosing a link item also returns focus to the button. The popover flips to the other edge of the button when it would run past the viewport, and opens upward when there is no room below. With no items, no button is rendered.",
           "A destructive item (`tone=\"danger\"`) is styled red, but its label must say what it does (\"Delete record\"), since colour",
           "A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's",
           "Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.",
@@ -12474,7 +12482,7 @@
           "name": "useDismiss",
           "kind": "hook",
           "description": "Closes a non-modal popup (dropdown, menu, popover) on Escape or a pointer press outside it. Escape returns focus to the `toggle` that opened it. A copy with no layout boxes (a desktop and a phone instance of the same control, one hidden by CSS) never listens, so the two do not close each other.",
-          "signature": "(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined): void",
+          "signature": "(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined, portalled?: RefObject<HTMLElement | null> | undefined): void",
           "parameters": [
             {
               "name": "open",
@@ -12499,6 +12507,12 @@
               "type": "RefObject<HTMLElement | null>",
               "required": false,
               "description": ""
+            },
+            {
+              "name": "portalled",
+              "type": "RefObject<HTMLElement | null>",
+              "required": false,
+              "description": "A second element that counts as inside, for a popup portalled out of `root`."
             }
           ],
           "returns": "void",

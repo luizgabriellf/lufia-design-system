@@ -20,7 +20,7 @@ import { useDismiss } from "@lufia/design-system/components/useDismiss";
 useDismiss(open, () => setOpen(false), rootRef, toggleRef);
 ```
 
-`rootRef` wraps the toggle and the popup, so a press on either counts as inside. Escape returns focus to `toggleRef`.
+`rootRef` wraps the toggle and the popup, so a press on either counts as inside. Escape returns focus to `toggleRef`. A popup portalled out of `rootRef` (so no ancestor's `overflow` clips it) passes its ref as the fifth argument and also counts as inside.
 
 </Section>
 

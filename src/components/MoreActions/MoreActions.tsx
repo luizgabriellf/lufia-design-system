@@ -70,7 +70,7 @@ export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
   /**
    * What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the
    * width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body
-   * and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. `PageActions` sets this
+   * and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this
    * from its `collapse` prop.
    */
   narrowOnlyScope?: "viewport" | "container";
@@ -80,6 +80,28 @@ export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
 
 const TYPEAHEAD_RESET_MS = 500;
 const SHEET_QUERY = "(width < 60rem)";
+/** The `@container` threshold of `narrowOnlyScope="container"`, in rem (a container condition cannot read a variable). */
+const CONTAINER_NARROW_REM = 50;
+/**
+ * Where a popover is portalled: inside the open modal it belongs to (a native `dialog` or a portal `Modal` panel, whose focus
+ * trap and inert page would otherwise lock a menu on the body out), else `document.body`.
+ */
+const MODAL_HOST = 'dialog[open], [aria-modal="true"]';
+
+/**
+ * Whether the content box of the nearest `container-type: inline-size` ancestor is below the narrow threshold. `undefined`
+ * when there is no such ancestor: a container condition then matches nothing, which the portalled menu must mirror.
+ */
+function containerIsNarrow(from: HTMLElement, rem: number): boolean | undefined {
+  for (let node = from.parentElement; node; node = node.parentElement) {
+    const style = getComputedStyle(node);
+    if (style.containerType !== "inline-size" && style.containerType !== "size") continue;
+    const width =
+      node.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
+    return width < CONTAINER_NARROW_REM * rem;
+  }
+  return undefined;
+}
 
 function DotsIcon() {
   return (
@@ -95,6 +117,11 @@ function DotsIcon() {
  * An overflow menu: a button that opens a list of actions. It follows the WAI-ARIA menu button pattern, with a roving
  * focus that arrow keys, Home, End and typeahead move through. Escape and a press outside close it through `useDismiss`,
  * which also keeps the layer order right when the menu sits inside a dialog.
+ *
+ * As a popover the open menu is portalled out of the component (to `document.body`, or into the open modal it sits in) and
+ * placed with `position: fixed` from the trigger's box, so an ancestor with `overflow: hidden` cannot clip it. It lines up with
+ * `align` and flips to the other edge, or opens upward, when it would leave the viewport, and it follows the trigger on
+ * scroll and resize. Until the component has mounted (server render, hydration) it renders in place.
  *
  * As a sheet (`presentation`) the menu moves to a portal on `document.body`: a backdrop covers the viewport, focus is trapped
  * in the sheet, the page behind is inert, and Escape or a tap on the backdrop closes it and returns focus to the button. The
@@ -115,6 +142,9 @@ export function MoreActions({
 }: MoreActionsProps) {
   const [open, setOpen] = useState(defaultOpen);
   const [flipped, setFlipped] = useState(false);
+  const [side, setSide] = useState<"bottom" | "top">("bottom");
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const [containerNarrow, setContainerNarrow] = useState(false);
   const skipFocus = useRef(defaultOpen);
   const [initial, setInitial] = useState<"first" | "last">("first");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -135,9 +165,11 @@ export function MoreActions({
   const sheet = presentation === "sheet" || (presentation === "auto" && narrow);
 
   const close = () => setOpen(false);
+  // A popover is portalled out of the root once mounted, so a press on the menu must count as inside.
+  const floating = open && !sheet && mounted;
   // A sheet lives outside `rootRef`, so an outside-press listener would treat its own items as outside: the sheet has its
   // own backdrop and trap instead.
-  useDismiss(open && !sheet, close, rootRef, triggerRef);
+  useDismiss(open && !sheet, close, rootRef, triggerRef, menuRef);
   useFocusTrap(open && sheet && mounted, sheetRef, {
     onEscape: close,
     initialFocus: "container",
@@ -154,7 +186,8 @@ export function MoreActions({
 
   useEffect(() => {
     // Not before mount: the first pass of a hydrating tree must not consume the skip below.
-    if (!open || !mounted) return;
+    // A popover waits for its portal host: the menu is not rendered until the layout effect below has chosen one.
+    if (!open || !mounted || !menuRef.current) return;
     // A sheet is modal and always moves focus in, `defaultOpen` included; a popover left open for documentation does not.
     if (skipFocus.current) {
       skipFocus.current = false;
@@ -163,26 +196,73 @@ export function MoreActions({
     const list = focusable();
     (initial === "last" ? list[list.length - 1] : list[0])?.focus();
     // `sheet` is a dependency so that crossing the breakpoint while open moves focus into the new presentation.
-  }, [open, initial, sheet, mounted]);
+  }, [open, initial, sheet, mounted, host]);
 
-  // Checked once when the menu opens: if it runs past the viewport on the aligned side, line it up with the other edge.
+  // The popover leaves the root for `document.body` (or the open modal it sits in), so no ancestor's `overflow` can clip it.
   useLayoutEffect(() => {
-    if (!open || sheet) return;
-    const menu = menuRef.current;
-    const trigger = triggerRef.current;
-    if (!menu || !trigger) return;
-    const box = menu.getBoundingClientRect();
-    const anchor = trigger.getBoundingClientRect();
-    const viewport = document.documentElement.clientWidth;
-    if (box.width === 0 || (box.left >= 0 && box.right <= viewport)) return;
-    // The other alignment puts the menu's edge on the opposite edge of the trigger.
-    const other =
-      box.left < 0
-        ? { left: anchor.left, right: anchor.left + box.width }
-        : { left: anchor.right - box.width, right: anchor.right };
-    // Measuring the laid-out menu and correcting its side before paint is what a layout effect is for.
-    if (other.left >= 0 && other.right <= viewport) setFlipped(true);
-  }, [open, sheet]);
+    if (!floating) return;
+    setHost(rootRef.current?.closest<HTMLElement>(MODAL_HOST) ?? document.body);
+  }, [floating]);
+
+  // Positions the menu from the trigger's box, before paint and again on scroll (of any ancestor) and resize. It lines up
+  // with the aligned edge unless that runs past the viewport and the other edge fits; it opens below unless there is not
+  // room and there is more above; and it never grows taller than the room it has.
+  useLayoutEffect(() => {
+    if (!floating || !host) return;
+    const place = () => {
+      const menu = menuRef.current;
+      const trigger = triggerRef.current;
+      const root = rootRef.current;
+      if (!menu || !trigger || !root) return;
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const gap = rem * 0.5;
+      setContainerNarrow(containerIsNarrow(root, rem) ?? false);
+      // Measured at the origin with no height cap, so the natural size decides.
+      menu.style.maxBlockSize = "";
+      menu.style.left = "0px";
+      menu.style.top = "0px";
+      const box = menu.getBoundingClientRect();
+      const anchor = trigger.getBoundingClientRect();
+      const width = document.documentElement.clientWidth;
+      const height = document.documentElement.clientHeight;
+      if (box.width === 0) return;
+      const rtl = getComputedStyle(trigger).direction === "rtl";
+      const leftFor = (edge: "start" | "end") =>
+        (edge === "end") !== rtl ? anchor.right - box.width : anchor.left;
+      const fits = (left: number) => left >= 0 && left + box.width <= width;
+      let edge = align;
+      let left = leftFor(edge);
+      if (!fits(left)) {
+        const other = align === "end" ? "start" : "end";
+        if (fits(leftFor(other))) {
+          edge = other;
+          left = leftFor(other);
+        } else left = Math.min(Math.max(left, 0), Math.max(width - box.width, 0));
+      }
+      const below = height - anchor.bottom - gap - gap;
+      const above = anchor.top - gap - gap;
+      const up = box.height > below && above > below;
+      const room = Math.max(up ? above : below, 0);
+      if (box.height > room) menu.style.maxBlockSize = `${room}px`;
+      const used = Math.min(box.height, room);
+      menu.style.left = `${left}px`;
+      menu.style.top = `${up ? anchor.top - gap - used : anchor.bottom + gap}px`;
+      setFlipped(edge !== align);
+      setSide(up ? "top" : "bottom");
+    };
+    place();
+    const onScroll = (event: Event) => {
+      // A list that scrolls inside the menu does not move the trigger.
+      if (event.target instanceof Node && menuRef.current?.contains(event.target)) return;
+      place();
+    };
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [floating, host, align]);
 
   // A sheet's action runs once the sheet is gone and focus is back on the button, so a dialog it opens returns here.
   useEffect(() => {
@@ -199,6 +279,7 @@ export function MoreActions({
 
   const openAt = (where: "first" | "last") => {
     setFlipped(false);
+    setSide("bottom");
     setInitial(where);
     setOpen(true);
   };
@@ -331,13 +412,14 @@ export function MoreActions({
     );
   });
   // The menu itself is not focusable; focus lives on its items and key events bubble up to here.
-  const list = (className: string | undefined) => (
+  const list = (className: string | undefined, placement?: Record<`data-${string}`, string | undefined>) => (
     <ul
       ref={menuRef}
       id={menuId}
       role="menu"
       aria-label={label}
       className={className}
+      {...placement}
       onKeyDown={onMenuKeyDown}
     >
       {entries}
@@ -365,7 +447,17 @@ export function MoreActions({
         onClick={() => (open ? close() : openAt("first"))}
         onKeyDown={onTriggerKeyDown}
       />
-      {open && !sheet ? list(styles.menu) : null}
+      {open && !sheet && !mounted ? list(styles.menu) : null}
+      {floating && host
+        ? createPortal(
+            list(`${styles.menu} ${styles.floating}`, {
+              "data-align": resolved,
+              "data-side": side,
+              "data-container-narrow": containerNarrow ? "" : undefined,
+            }),
+            host,
+          )
+        : null}
       {open && sheet && mounted
         ? createPortal(
             <div className={styles.layer} data-lufia-part="layer">

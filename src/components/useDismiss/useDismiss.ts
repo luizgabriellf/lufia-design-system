@@ -13,6 +13,8 @@ export function useDismiss(
   close: () => void,
   root: RefObject<HTMLElement | null>,
   toggle?: RefObject<HTMLElement | null>,
+  /** A second element that counts as inside, for a popup portalled out of `root`. */
+  portalled?: RefObject<HTMLElement | null>,
 ) {
   // A ref keeps the layer registered across re-renders that pass a new inline `close`; re-pushing it would jump the stack.
   const closeRef = useRef(close);
@@ -25,7 +27,8 @@ export function useDismiss(
     const layer = pushLayer();
     const onPointerDown = (event: PointerEvent) => {
       if (!isTopLayer(layer)) return;
-      if (!root.current?.contains(event.target as Node)) closeRef.current();
+      const target = event.target as Node;
+      if (!root.current?.contains(target) && !portalled?.current?.contains(target)) closeRef.current();
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented || !isTopLayer(layer)) return;
@@ -40,5 +43,5 @@ export function useDismiss(
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [open, root, toggle]);
+  }, [open, root, toggle, portalled]);
 }

@@ -32,11 +32,31 @@
   inset-inline-start: 0;
 }
 
+/* The popover once mounted: portalled out of the root (so no ancestor's overflow clips it) and placed in the viewport with
+   physical `left` and `top` from the trigger's box, set inline. It scrolls inside when the room is shorter than the list. */
+.floating {
+  position: fixed;
+  inset: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.floating[data-side="top"] {
+  animation-name: menu-in-up;
+}
+
 /* The keyframes animate `from` only, so the resting state is the open menu and a disabled animation leaves it visible. */
 @keyframes menu-in {
   from {
     opacity: 0;
     transform: translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
+}
+
+@keyframes menu-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-nudge));
   }
 }
 
@@ -128,7 +148,7 @@
 }
 
 /* Container scope: the nearest ancestor with `container-type: inline-size` decides, with no name and a fixed 50rem threshold
-   (a container condition cannot read a variable). A popover stays inside that container, so the query reaches it. */
+   (a container condition cannot read a variable). The in-place menu (before mount) stays inside that container, so the query reaches it. */
 @container (width >= 50rem) {
   .root[data-narrow-only][data-narrow-scope="container"] {
     display: none;
@@ -144,6 +164,12 @@
 /* A sheet is portaled to the body and has left the container, so the query cannot see it: in container scope a sheet shows
    every narrow-only item. The sheet is the presentation below 60rem, where the secondary actions may be collapsed or not. */
 .sheetList .entry[data-narrow-only][data-narrow-scope="container"] {
+  display: block;
+}
+
+/* A popover is portaled too, so the query cannot see it either: the width of the container is read when the menu opens and set
+   as `data-container-narrow`. With no container ancestor neither condition matches, and the attribute stays off. */
+.floating[data-container-narrow] .entry[data-narrow-only][data-narrow-scope="container"] {
   display: block;
 }
 

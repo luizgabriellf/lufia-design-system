@@ -252,41 +252,192 @@ describe("MoreActions", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  describe("alignment", () => {
-    const box = (left: number, width: number) =>
-      ({ left, right: left + width, width, top: 0, bottom: 10, height: 10, x: left, y: 0 }) as DOMRect;
+  describe("placement", () => {
+    const box = (left: number, top: number, width: number, height: number) =>
+      ({
+        left,
+        top,
+        right: left + width,
+        bottom: top + height,
+        width,
+        height,
+        x: left,
+        y: top,
+      }) as DOMRect;
 
-    function measure(menuLeft: number, triggerLeft: number) {
+    /** The trigger is a 40x30 box at (triggerLeft, triggerTop) and the menu is menuWidth x menuHeight; the viewport is 300x300. */
+    function measure({
+      triggerLeft = 100,
+      triggerTop = 20,
+      menuWidth = 200,
+      menuHeight = 100,
+    }: { triggerLeft?: number; triggerTop?: number; menuWidth?: number; menuHeight?: number } = {}) {
       withLayout();
       vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
         this: HTMLElement,
       ) {
-        return this.getAttribute("role") === "menu" ? box(menuLeft, 200) : box(triggerLeft, 40);
+        return this.getAttribute("role") === "menu"
+          ? box(0, 0, menuWidth, menuHeight)
+          : box(triggerLeft, triggerTop, 40, 30);
       });
       Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: 300 });
+      Object.defineProperty(document.documentElement, "clientHeight", { configurable: true, value: 300 });
     }
 
-    it("flips to the other edge when the menu would run past the viewport and the other edge fits", async () => {
-      measure(-60, 20); // end-aligned menu hangs 60px off the left; start-aligned (left 20, right 220) fits
+    async function open(align: "start" | "end" = "end") {
       const user = userEvent.setup();
-      const { container } = render(<MoreActions label="More" items={items} align="end" />);
-      expect(container.firstElementChild).toHaveAttribute("data-align", "end");
+      const view = render(<MoreActions label="More" items={items} align={align} />);
       await user.click(screen.getByRole("button", { name: "More" }));
-      expect(container.firstElementChild).toHaveAttribute("data-align", "start");
+      return { user, view, menu: screen.getByRole("menu", { name: "More" }) };
+    }
+
+    it("portals the open menu to the body, outside the component, with fixed coordinates below the trigger", async () => {
+      measure({ triggerLeft: 200 });
+      const { view, menu } = await open();
+      expect(menu.parentElement).toBe(document.body);
+      expect(view.container.contains(menu)).toBe(false);
+      expect(menu).toHaveAttribute("data-side", "bottom");
+      // End-aligned: the menu's right edge is the trigger's (240), half a rem below its bottom edge (50).
+      expect(menu.style.left).toBe("40px");
+      expect(menu.style.top).toBe("58px");
+    });
+
+    it("renders in place until mounted, then moves to the body", () => {
+      withLayout();
+      const html = renderToString(<MoreActions label="More" items={items} defaultOpen />);
+      expect(html).toContain('role="menu"');
+      expect(html.indexOf("<ul")).toBeGreaterThan(html.indexOf("<button"));
+      expect(html.indexOf("</div>")).toBeGreaterThan(html.indexOf("<ul"));
+    });
+
+    it("opens upward when there is no room below and more above", async () => {
+      measure({ triggerTop: 250, menuHeight: 100 }); // 20px below the trigger, 234px above
+      const { menu } = await open();
+      expect(menu).toHaveAttribute("data-side", "top");
+      expect(menu.style.top).toBe("142px"); // 250 - 8 - 100
+    });
+
+    it("stays below, capped to the room, when neither side fits the whole menu but below is larger", async () => {
+      measure({ triggerTop: 20, menuHeight: 400 });
+      const { menu } = await open();
+      expect(menu).toHaveAttribute("data-side", "bottom");
+      expect(menu.style.maxBlockSize).toBe("234px"); // 300 - 50 - 16
+    });
+
+    it("flips to the other edge when the menu would run past the viewport and the other edge fits", async () => {
+      measure({ triggerLeft: 20 }); // end-aligned left edge would be -140; start-aligned (20..220) fits
+      const { menu } = await open("end");
+      expect(menu).toHaveAttribute("data-align", "start");
+      expect(menu.style.left).toBe("20px");
     });
 
     it("keeps the alignment when it fits, or when the other edge would not fit either", async () => {
-      const user = userEvent.setup();
-      measure(10, 20);
-      const first = render(<MoreActions label="More" items={items} align="end" />);
-      await user.click(screen.getByRole("button", { name: "More" }));
-      expect(first.container.firstElementChild).toHaveAttribute("data-align", "end");
-      first.unmount();
+      measure({ triggerLeft: 200 }); // end-aligned: 40..240
+      const first = await open("end");
+      expect(first.menu).toHaveAttribute("data-align", "end");
+      first.view.unmount();
       vi.restoreAllMocks();
-      measure(-60, 200); // flipping would put the menu at 200..400, past the 300px viewport
-      const second = render(<MoreActions label="More" items={items} align="end" />);
+      measure({ triggerLeft: 150 }); // end-aligned -50, start-aligned 150..350: neither fits
+      const second = await open("end");
+      expect(second.menu).toHaveAttribute("data-align", "end");
+      expect(second.menu.style.left).toBe("0px");
+    });
+
+    it("repositions on scroll and resize while open", async () => {
+      measure({ triggerLeft: 200 });
+      const { menu } = await open("end");
+      expect(menu.style.top).toBe("58px");
+      measure({ triggerLeft: 200, triggerTop: 60 });
+      act(() => {
+        document.dispatchEvent(new Event("scroll", { bubbles: false }));
+        window.dispatchEvent(new Event("scroll"));
+      });
+      expect(menu.style.top).toBe("98px");
+      measure({ triggerLeft: 200, triggerTop: 80 });
+      act(() => {
+        window.dispatchEvent(new Event("resize"));
+      });
+      expect(menu.style.top).toBe("118px");
+    });
+
+    it("counts the portalled menu as inside for a press, and closes on a press outside", async () => {
+      measure({ triggerLeft: 200 });
+      const { user, menu } = await open();
+      await user.pointer({ keys: "[MouseLeft]", target: menu });
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      await user.click(document.body);
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    });
+
+    it("returns focus to the trigger on Escape and after a selection", async () => {
+      measure({ triggerLeft: 200 });
+      const { user } = await open();
+      await user.keyboard("{Escape}");
+      expect(screen.getByRole("button", { name: "More" })).toHaveFocus();
       await user.click(screen.getByRole("button", { name: "More" }));
-      expect(second.container.firstElementChild).toHaveAttribute("data-align", "end");
+      await user.click(screen.getByRole("menuitem", { name: /Export/ }));
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "More" })).toHaveFocus();
+    });
+
+    it("portals into the open modal it sits in, where the page behind is inert", async () => {
+      measure({ triggerLeft: 200 });
+      const user = userEvent.setup();
+      render(
+        <Modal open title="Row" onClose={() => {}}>
+          <MoreActions label="More" items={items} />
+        </Modal>,
+      );
+      await user.click(screen.getByRole("button", { name: "More" }));
+      const menu = screen.getByRole("menu", { name: "More" });
+      expect(menu.closest('[aria-modal="true"]')).not.toBeNull();
+      await user.click(screen.getByRole("menuitem", { name: "Duplicate" }));
+      expect(onSelect).toHaveBeenCalledTimes(1);
+    });
+
+    describe("narrow-only items in container scope", () => {
+      const list: MoreActionItem[] = [
+        { key: "n", label: "Narrow item", narrowOnly: true },
+        { key: "a", label: "Always" },
+      ];
+
+      async function inContainer(width: number | null) {
+        measure({ triggerLeft: 200 });
+        const host = document.createElement("div");
+        document.body.append(host);
+        if (width !== null) {
+          Object.defineProperty(host, "clientWidth", { configurable: true, value: width });
+          const real = window.getComputedStyle.bind(window);
+          vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) =>
+            element === host
+              ? ({
+                  containerType: "inline-size",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                } as CSSStyleDeclaration)
+              : real(element, pseudo),
+          );
+        }
+        const user = userEvent.setup();
+        const view = render(<MoreActions label="More" items={list} narrowOnlyScope="container" />, {
+          container: host,
+        });
+        await user.click(screen.getByRole("button", { name: "More" }));
+        const menu = screen.getByRole("menu", { name: "More" });
+        view.unmount();
+        host.remove();
+        return menu;
+      }
+
+      it("marks the menu narrow when the container content box is below 50rem", async () => {
+        expect(await inContainer(831)).toHaveAttribute("data-container-narrow"); // 799 content
+        // 50rem is 800px at the default root size: 799 is narrow, 800 is not.
+      });
+
+      it("leaves the menu unmarked in a wide container and with no container at all", async () => {
+        expect(await inContainer(900)).not.toHaveAttribute("data-container-narrow");
+        expect(await inContainer(null)).not.toHaveAttribute("data-container-narrow");
+      });
     });
   });
 
@@ -394,7 +545,7 @@ describe("MoreActions", () => {
       match(false);
       const wide = setupSheet("auto");
       await wide.user.click(wide.trigger);
-      expect(wide.view.container.contains(screen.getByRole("menu"))).toBe(true);
+      expect(screen.getByRole("menu").closest('[data-lufia-part="layer"]')).toBeNull();
       wide.view.unmount();
       match(true);
       const narrow = setupSheet("auto");
@@ -437,7 +588,7 @@ describe("MoreActions", () => {
       await user.keyboard("{ArrowDown}");
       narrow = false;
       act(() => listeners.forEach((fn) => fn()));
-      expect(view.container.contains(screen.getByRole("menu"))).toBe(true);
+      expect(screen.getByRole("menu").closest('[data-lufia-part="layer"]')).toBeNull();
       expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
       vi.unstubAllGlobals();
     });
