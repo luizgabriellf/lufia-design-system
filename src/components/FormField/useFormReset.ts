@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useInsertionEffect, useRef, type RefObject } from "react";
 
 /**
  * Runs `onReset` when the form that contains `ref`'s element is reset (`<button type="reset">`, `form.reset()`), so state a
@@ -11,10 +11,12 @@ export function useFormReset(ref: RefObject<HTMLElement | null>, onReset: () => 
   const latest = useRef(onReset);
   const attached = useRef<HTMLFormElement | null>(null);
   const listener = useRef(() => latest.current());
-  // Saved during render, not in an effect: React 19 resets a form in the commit of its action, before any effect of that
-  // commit runs, so a callback saved by an effect would still carry the defaults of the previous render.
-  // eslint-disable-next-line react-hooks/refs
-  latest.current = onReset;
+  // Saved in an insertion effect: React 19 resets a form in the commit of its action, before layout and passive effects run,
+  // but after insertion effects, which also run only for committed renders. A passive effect would still carry the
+  // callback, and so the defaults, of the previous render.
+  useInsertionEffect(() => {
+    latest.current = onReset;
+  });
   useEffect(() => {
     // Checked after every render: the `form` attribute of a control can point it at another form at any time.
     const element = ref.current;

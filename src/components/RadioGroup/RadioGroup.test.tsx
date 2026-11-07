@@ -217,7 +217,7 @@ describe("RadioGroup", () => {
         <button type="reset">Reset</button>
       </form>
     );
-    const { container, rerender } = render(withValue("card"));
+    const { rerender } = render(withValue("card"));
     // The parent sets the value: no event.
     rerender(withValue("cash"));
     // Choosing the chosen option is not a change, and must not leave an event waiting for the next render.
@@ -232,10 +232,36 @@ describe("RadioGroup", () => {
     expect(onChange).not.toHaveBeenCalled();
     // The user's own choice, accepted by the parent in the same update, is an event from the group (no name).
     const target = vi.fn();
-    container.querySelector("form")!.addEventListener("change", (event) => target(event.target));
-    await user.click(screen.getByRole("radio", { name: "Cash" }));
-    rerender(withValue("cash"));
-    expect(target).toHaveBeenCalledWith(screen.getByRole("radiogroup").parentElement);
+    const listener = (event: Event) => target(event.target);
+    function Parent() {
+      const [value, setValue] = useState("card");
+      return (
+        <form ref={(form) => form?.addEventListener("change", listener)}>
+          <RadioGroup label="Payment" options={options} value={value} onValueChange={setValue} />
+        </form>
+      );
+    }
+    render(<Parent />);
+    await user.click(screen.getAllByRole("radio", { name: "Cash" })[1]!);
+    expect(target).toHaveBeenCalledTimes(1);
+    expect(target).toHaveBeenCalledWith(screen.getAllByRole("radiogroup")[1]!.parentElement);
+  });
+
+  it("expires a refused choice, so the parent later setting that value is not announced", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const withValue = (value: string) => (
+      <form ref={(form) => form?.addEventListener("change", onChange)}>
+        <RadioGroup label="Payment" options={options} value={value} onValueChange={() => undefined} />
+      </form>
+    );
+    const { rerender } = render(withValue("cash"));
+    // Refused: the parent keeps "cash". No render happens in between.
+    await user.click(screen.getByRole("radio", { name: "Card" }));
+    // Later, on its own, the parent sets that same value.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    rerender(withValue("card"));
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("shows the message and moves focus to the radio when a submit is refused", async () => {

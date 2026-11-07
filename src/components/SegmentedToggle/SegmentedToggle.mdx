@@ -63,7 +63,7 @@ With `name`, the chosen value is submitted with the form.
 
 ### Form events
 
-When the user chooses a segment (a click or an arrow key), a bubbling `input` Event and then a bubbling `change` Event are dispatched from the hidden input (from the group itself when there is no `name`), after the new value is in the DOM. A listener on the `<form>` can tell that the user edited it, as with native radios. Nothing is dispatched for a `value` that the parent sets, for a form reset, or for choosing what is already chosen. A controlled parent must accept the value in the same update as `onValueChange`.
+When the user chooses a segment (a click or an arrow key), a bubbling `input` Event and then a bubbling `change` Event are dispatched from the hidden input (from the group itself when there is no `name`), after the new value is in the DOM. A native listener on the `<form>` (`form.addEventListener("change", …)`) or a React `onInput` can tell that the user edited it, as with native radios. A React `onChange` on the form does not fire: React ignores hidden inputs for `onChange`, so use `onInput` there. Nothing is dispatched for a `value` that the parent sets, for a form reset, or for choosing what is already chosen. A controlled parent must accept the value in the same update as `onValueChange`.
 
 A form reset restores the `defaultValue` of the latest render, as native fields do, including when a form action has just changed it.
 

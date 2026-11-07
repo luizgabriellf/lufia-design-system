@@ -142,16 +142,20 @@ describe("SegmentedToggle", () => {
   it("dispatches from the group when it has no name, and not when the parent sets the value", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    const ui = (value: string) => (
+    const ui = (value: string, onValueChange?: (v: string) => void) => (
       <form ref={(form) => form?.addEventListener("change", onChange)}>
-        <SegmentedToggle label="View" options={options} value={value} onValueChange={() => undefined} />
+        <SegmentedToggle label="View" options={options} value={value} onValueChange={onValueChange} />
       </form>
     );
     const { rerender } = render(ui("list"));
     rerender(ui("board"));
     expect(onChange).not.toHaveBeenCalled();
-    await user.click(screen.getByRole("radio", { name: "Map" }));
-    rerender(ui("map"));
+    function Parent() {
+      const [value, setValue] = useState("list");
+      return ui(value, setValue);
+    }
+    render(<Parent />);
+    await user.click(screen.getAllByRole("radio", { name: "Map" })[1]!);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 

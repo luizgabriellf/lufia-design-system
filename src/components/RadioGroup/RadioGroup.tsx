@@ -67,7 +67,7 @@ export type RadioGroupProps = Omit<
  * variant draws the options as bordered rows with room for `meta` and `content`.
  *
  * When the user chooses an option (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from
- * the hidden input (from the group when there is no `name`), so a form-level listener sees it as it would a native radio.
+ * the hidden input (from the group when there is no `name`), so a native `addEventListener("change")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there.
  * A `value` set by the parent, a form reset and choosing the option already chosen dispatch nothing.
  */
 export function RadioGroup({
