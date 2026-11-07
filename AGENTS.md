@@ -74,14 +74,20 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 
 ## CI
 
-`.github/workflows/ci.yml` builds once. The `verify` job runs the static gates, coverage, the build, `verify:package`
-(publint and are-the-types-wrong, `--profile esm-only`; the four asset entrypoints without types are excluded by name),
-`verify:size` (gzip budgets in `.size-limit.json`, about 10% above measured; raise one only with a reason) and the
-Storybook build, then uploads `dist/` and `storybook-static/` as artifacts. `consumer` (Next.js smoke) and `browser`
-(Playwright) need `verify` and download them; Playwright serves the built Storybook with `scripts/serve-static.mjs` in CI
-or with `PW_STATIC=1`, and runs `storybook dev` otherwise. Pull requests also run `changeset` (`scripts/check-changeset.mjs`)
-and `dependency-review` (fails at moderate severity). The `gate` job needs all of them and fails unless each succeeded or
-was skipped by design: **`CI gate` is the single check to require in branch protection** (a repository owner action).
+`.github/workflows/ci.yml` builds the package and Storybook once, in `verify`. Every job installs with
+`LUFIA_SKIP_PREPARE_BUILD=1`, which stops `scripts/prepare.mjs` from building `dist/` during `npm ci`; `verify` then builds
+it in its explicit steps. `verify` runs the static gates, coverage, the build, `verify:package` (`scripts/verify-package.mjs`:
+publint, then are-the-types-wrong with `--profile esm-only`, every `dist/components/<Name>` subpath passed explicitly because
+attw does not expand the wildcard export; the four asset entrypoints without types are excluded by name), `verify:size` (gzip
+budgets in `.size-limit.json`, about 10% above measured; raise one only with a reason) and the Storybook build, then uploads
+`dist/` and `storybook-static/` as artifacts. `consumer` (Next.js smoke) and `browser` (Playwright) need `verify` and download
+them; Playwright serves the built Storybook with `scripts/serve-static.mjs` in CI or with `PW_STATIC=1`, and runs
+`storybook dev` otherwise. Pull requests also run `changeset` (`scripts/check-changeset.mjs`: published source, tokens, build
+inputs and shipped `package.json` fields need a changeset; release and dependency-bot branches from this repository are
+exempt) and `dependency-review` (fails at moderate severity). The `gate` job (`CI gate`) needs all of them and fails unless
+each succeeded or was skipped by design. Branch protection is the owner's: until the owner runs
+`scripts/setup-repo-settings.sh`, which requires `CI gate`, `Conventional Commits title` and `Analyze`, the required check is
+still `Verify`.
 
 ## Package rules
 

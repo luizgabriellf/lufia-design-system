@@ -50,6 +50,8 @@ fi
 echo "  Pages: source = GitHub Actions"
 
 # --- Ruleset protecting main ----------------------------------------------------------------------------------------
+# "CI gate" aggregates the jobs of ci.yml (verify, changeset, dependency-review, consumer, browser). The PR title check and
+# CodeQL "Analyze" live in their own workflows, so they stay listed separately.
 # PRs are required but 0 approvals (solo maintainer); required checks, linear history, no force pushes or deletions.
 # The admin role may bypass through a pull request only: the "Version packages" PR is opened with GITHUB_TOKEN, which does
 # not trigger CI, so its required checks never report and the maintainer merges it using the bypass.
@@ -82,7 +84,7 @@ PAYLOAD="$(cat <<JSON
       "parameters": {
         "strict_required_status_checks_policy": true,
         "required_status_checks": [
-          { "context": "Verify" },
+          { "context": "CI gate" },
           { "context": "Conventional Commits title" },
           { "context": "Analyze" }
         ]

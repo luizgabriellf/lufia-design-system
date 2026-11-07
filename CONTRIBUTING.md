@@ -33,10 +33,11 @@ Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browse
 
 ### Required checks
 
-`CI gate`, which aggregates `Verify` (typecheck, lint, stylelint, format, tests with coverage, WCAG contrast, package
+`Verify` today. The target is `CI gate`, which aggregates `Verify` (typecheck, lint, stylelint, format, tests with coverage, WCAG contrast, package
 build, publint and are-the-types-wrong, size budget, Storybook build), the Next.js consumer smoke, the browser tests, the
 changeset check (a pull request that changes published source adds a `.changeset/*.md`) and the dependency review, plus
-`PR title` and `CodeQL`. Run `npm run check` locally to catch most of them before pushing.
+`PR title` and `CodeQL`; the owner switches the required check to `CI gate` by running `scripts/setup-repo-settings.sh`,
+which requires `CI gate`, the PR title check and `Analyze`. Run `npm run check` locally to catch most of them before pushing.
 
 ## Proposing a component (RFC)
 

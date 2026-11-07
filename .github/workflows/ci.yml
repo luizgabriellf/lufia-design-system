@@ -28,6 +28,8 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
       - name: Static gates (typecheck, lint, stylelint, format, contrast, motion rules, AI-docs drift)
         run: npm run check:static
         env:
@@ -120,6 +122,8 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
       - name: Download the package built by the verify job
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -146,6 +150,8 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
+          # The explicit build step (verify) or a downloaded artifact (consumer, browser) supplies dist/.
+          LUFIA_SKIP_PREPARE_BUILD: "1"
       - name: Download the Storybook built by the verify job
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
