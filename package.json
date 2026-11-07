@@ -66,6 +66,7 @@
     "release": "npm run build && changeset tag",
     "commitlint": "commitlint",
     "verify:package": "publint && attw --pack . --profile esm-only --exclude-entrypoints ./tokens.json ./tokens.css ./themes/default.css ./themes/example-brand.css",
+    "verify:changeset": "node scripts/check-changeset.mjs",
     "verify:size": "size-limit",
     "test:browser": "playwright test",
     "test:browser:ui": "playwright test --ui",

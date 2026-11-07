@@ -67,6 +67,25 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  changeset:
+    name: Changeset present
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Require a changeset when published source changed
+        run: node scripts/check-changeset.mjs
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+
   consumer:
     name: Next.js App Router consumer smoke
     needs: verify
