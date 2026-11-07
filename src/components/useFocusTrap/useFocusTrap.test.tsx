@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
 import { axe } from "../../test/axe";
+import { hasOpenOverlay, overlayDepth } from "./layerStack";
 import { useFocusTrap, type UseFocusTrapOptions } from "./useFocusTrap";
 
 function Trap({
@@ -192,6 +193,27 @@ describe("useFocusTrap", () => {
   it("has no axe violations while open", async () => {
     const { container } = render(<Trap name="A" />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("overlay readers with real traps", () => {
+  it("follow a trap opening and closing, and count nested traps", async () => {
+    const user = userEvent.setup();
+    expect(hasOpenOverlay()).toBe(false);
+    render(<Host />);
+    expect(overlayDepth()).toBe(0);
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    expect(hasOpenOverlay()).toBe(true);
+    expect(overlayDepth()).toBe(1);
+    render(<Trap name="Nested" />);
+    expect(overlayDepth()).toBe(2);
+  });
+
+  it("drop to zero once the traps unmount", () => {
+    const { unmount } = render(<Trap name="A" />);
+    expect(overlayDepth()).toBe(1);
+    unmount();
+    expect(hasOpenOverlay()).toBe(false);
   });
 });
 
