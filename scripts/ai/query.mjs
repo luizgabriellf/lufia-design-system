@@ -17,7 +17,17 @@ const normalize = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-const termsOf = (value) => normalize(value).match(/[a-z0-9]+/g) ?? [];
+const STOPWORDS = new Set(
+  (
+    "a an the and or of to in on at by for with from into onto as is are be it its this that these those " +
+    "i we you my our your me do does how what which when where why can should would could want need " +
+    "show display use using make build create add get give find before after over under about"
+  ).split(" "),
+);
+
+/** Query terms: lowercase words, no stopwords, nothing shorter than 2 characters. */
+const termsOf = (value) =>
+  (normalize(value).match(/[a-z0-9]+/g) ?? []).filter((term) => term.length >= 2 && !STOPWORDS.has(term));
 
 export function loadManifest() {
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
@@ -41,7 +51,8 @@ export function listComponents(manifest) {
 
 /**
  * Search across names, descriptions and usage guidance, not assumed React APIs.
- * All terms must match somewhere in the documented contract.
+ * Terms are OR-ed and weighted by where they match (name, summary, guidance, category, props);
+ * a component matching more terms ranks higher, and an exact component name always comes first.
  */
 export function searchComponents(manifest, query, limit = 8) {
   const terms = [...new Set(termsOf(query))];
@@ -65,23 +76,26 @@ export function searchComponents(manifest, query, limit = 8) {
         .join(" "),
     );
     let score = 0;
-    let allMatched = true;
+    let matched = 0;
+    let exactName = false;
     for (const term of terms) {
       let weight = 0;
-      if (name === term) weight = 100;
-      else if (name.startsWith(term)) weight = 45;
+      if (name === term) {
+        weight = 100;
+        exactName = true;
+      } else if (name.startsWith(term)) weight = 45;
       else if (name.includes(term)) weight = 30;
       else if (summary.includes(term)) weight = 18;
       else if (guidance.includes(term)) weight = 10;
       else if (category.includes(term)) weight = 7;
       else if (propNames.includes(term)) weight = 3;
-      if (!weight) {
-        allMatched = false;
-        break;
-      }
+      if (!weight) continue;
+      matched += 1;
       score += weight;
     }
-    if (allMatched) {
+    if (matched) {
+      // Covering more of the query beats one strong partial match.
+      score += matched * 5;
       ranked.push({
         name: component.name,
         category: component.category,
@@ -89,12 +103,20 @@ export function searchComponents(manifest, query, limit = 8) {
         summary: component.summary,
         import: component.entry.subpath,
         score,
+        exactName,
       });
     }
   }
   return ranked
-    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "en"))
-    .slice(0, Math.min(Math.max(1, limit), 20));
+    .sort(
+      (a, b) =>
+        Number(b.exactName) - Number(a.exactName) || b.score - a.score || a.name.localeCompare(b.name, "en"),
+    )
+    .slice(0, Math.min(Math.max(1, limit), 20))
+    .map((entry) => {
+      delete entry.exactName;
+      return entry;
+    });
 }
 
 export function inspectComponent(manifest, name) {
