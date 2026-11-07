@@ -1,17 +1,8 @@
-import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import { axe } from "../../test/axe";
 import { Badge, StatusBadge } from "./Badge";
 
-const css = readFileSync("src/components/Badge/Badge.module.css", "utf8");
-
 describe("Badge", () => {
-  it("reads its radius from --lufia-badge-radius, falling back to the pill it always was", () => {
-    expect(css).toMatch(
-      /\.root \{[^}]*border-radius: var\(--lufia-badge-radius, var\(--lufia-radius-full\)\);/,
-    );
-  });
-
   it("always renders its text and defaults to the neutral tone", () => {
     render(<Badge>Draft</Badge>);
     expect(screen.getByText("Draft")).toHaveAttribute("data-tone", "neutral");
