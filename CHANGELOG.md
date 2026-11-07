@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.14.0
+
+### Minor Changes
+
+- [#58](https://github.com/luizgabriellf/lufia-design-system/pull/58) [`a73c5a9`](https://github.com/luizgabriellf/lufia-design-system/commit/a73c5a98288429f0e5f9d2afd24493a2c76afa01) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `NotificationCenter`: a bell with an unread count that opens a panel of notifications, as a non-modal popover on wide pages and a modal sheet below 60rem. Also exports `NotificationPanel` (the panel alone, for a page) and `NotificationSummary` (a highlight card). Tabs, groups, loading, empty and error states, an unread live region, and reduced-motion-aware motion.
+
+- [#59](https://github.com/luizgabriellf/lufia-design-system/pull/59) [`bec1453`](https://github.com/luizgabriellf/lufia-design-system/commit/bec1453c5518f6d2f99093711faa85761ddfa373) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `PageActions` gains `collapse="container"`, which collapses the secondary actions by the width of the nearest ancestor that declares `container-type: inline-size` (below 50rem) instead of the viewport. `MoreActions` gains `narrowOnlyScope` for the same choice. Menu items and page actions gain `attributes`, a `data-*` passthrough rendered on the item element.
+
 ## 0.13.0
 
 ### Minor Changes
