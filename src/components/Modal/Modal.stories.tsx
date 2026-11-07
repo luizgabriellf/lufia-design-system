@@ -10,6 +10,8 @@ type DemoProps = Partial<Omit<ModalProps, "open" | "onClose">> & {
   paragraphs?: number;
   /** Footer actions simulate a slow save that keeps the modal busy. */
   slowSave?: boolean;
+  /** Put a toolbar at the top of the body that sticks under the header with `--lufia-modal-header-block-size`. */
+  stickyBar?: boolean;
 };
 
 const field: CSSProperties = {
@@ -21,7 +23,14 @@ const field: CSSProperties = {
   borderRadius: "var(--lufia-radius-control)",
 };
 
-function Demo({ startOpen = false, paragraphs = 0, slowSave = false, footer, ...rest }: DemoProps) {
+function Demo({
+  startOpen = false,
+  paragraphs = 0,
+  slowSave = false,
+  stickyBar = false,
+  footer,
+  ...rest
+}: DemoProps) {
   const [open, setOpen] = useState(startOpen);
   const [busy, setBusy] = useState(false);
 
@@ -59,6 +68,20 @@ function Demo({ startOpen = false, paragraphs = 0, slowSave = false, footer, ...
         }
       >
         <div style={{ display: "grid", gap: "1rem" }}>
+          {stickyBar ? (
+            <div
+              style={{
+                position: "sticky",
+                insetBlockStart: "var(--lufia-modal-header-block-size, 0px)",
+                zIndex: 1,
+                padding: "0.5rem 0",
+                background: "var(--lufia-color-bg-surface-solid)",
+                borderBlockEnd: "1px solid var(--lufia-color-border-subtle)",
+              }}
+            >
+              Sticky toolbar: top is var(--lufia-modal-header-block-size)
+            </div>
+          ) : null}
           <label style={{ display: "grid", gap: "0.375rem" }}>
             Project name
             <input style={field} defaultValue="Quarterly report" />
@@ -148,6 +171,15 @@ export const ScrollShadow: Story = {
           "The body scrolls between a fixed header and footer; a shadow shows where more content is hidden.",
       },
     },
+  },
+};
+/** Sticky content in the body: its `top` is the header height the panel publishes, so it never slides under the header. */
+export const StickyContentUnderHeader: Story = {
+  args: {
+    startOpen: true,
+    stickyBar: true,
+    title: "A long title that wraps onto a second line on a narrow screen, making the header taller",
+    paragraphs: 12,
   },
 };
 export const CustomSize: Story = {

@@ -92,4 +92,57 @@ describe("BarList", () => {
     const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
     expect(reduced?.[1]).toMatch(/animation:\s*none/);
   });
+
+  describe("reference", () => {
+    it("draws a dashed tick on every track on the shared scale, with an accessible legend", async () => {
+      const { container } = render(
+        <BarList title="Items" rows={rows} reference={{ amount: 600, label: "Target 600" }} />,
+      );
+      const ticks = container.querySelectorAll<HTMLElement>("[data-reference]");
+      expect(ticks).toHaveLength(3);
+      expect(ticks[0]!.style.getPropertyValue("--bar-reference")).toBe("50%");
+      expect(ticks[0]!.closest("[aria-hidden]")).not.toBeNull();
+      const figure = screen.getByRole("figure", { name: "Items" });
+      expect(figure).toHaveAccessibleDescription("Target 600");
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it("counts the reference towards the scale", () => {
+      const { container } = render(
+        <BarList title="Items" rows={rows} reference={{ amount: 2400, label: "Target" }} />,
+      );
+      const fills = container.querySelectorAll<HTMLElement>("[data-tone]");
+      expect(fills[0]!.style.inlineSize).toBe("50%");
+      expect(
+        container.querySelector<HTMLElement>("[data-reference]")!.style.getPropertyValue("--bar-reference"),
+      ).toBe("100%");
+    });
+
+    it("draws nothing by default and copes with a non-finite amount", () => {
+      const { container, rerender } = render(<BarList title="Items" rows={rows} />);
+      expect(container.querySelector("[data-reference]")).toBeNull();
+      expect(screen.getByRole("figure")).not.toHaveAttribute("aria-describedby");
+      rerender(<BarList title="Items" rows={rows} reference={{ amount: Number.NaN, label: "Target" }} />);
+      expect(container.innerHTML).not.toMatch(/NaN/);
+    });
+
+    it("keeps the tick inside the track at the end", () => {
+      expect(css).toMatch(/\.tick \{[^}]*min\(var\(--bar-reference, 0%\), calc\(100% - 0\.125rem\)\)/);
+    });
+  });
+
+  describe("titleVisibility", () => {
+    it("keeps the title as the accessible name when hidden", async () => {
+      const { container } = render(<BarList title="Items" rows={rows} titleVisibility="hidden" />);
+      expect(screen.getByRole("figure", { name: "Items" })).toBeInTheDocument();
+      expect(screen.getByText("Items").getAttribute("class")).toMatch(/titleHidden/);
+      expect(screen.getByText("Items")).toHaveAttribute("data-title-visibility", "hidden");
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it("is visible by default", () => {
+      render(<BarList title="Items" rows={rows} />);
+      expect(screen.getByText("Items").getAttribute("class")).not.toMatch(/titleHidden/);
+    });
+  });
 });

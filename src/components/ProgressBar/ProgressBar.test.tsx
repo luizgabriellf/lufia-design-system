@@ -45,6 +45,45 @@ describe("ProgressBar", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("keeps the width-based fill by default", () => {
+    render(<ProgressBar value={30} label="x" />);
+    const fill = screen.getByRole("progressbar").firstElementChild;
+    expect(fill).not.toHaveAttribute("data-animate");
+    expect(fill).toHaveStyle({ inlineSize: "30%" });
+  });
+
+  it("animateChanges scales a full-width fill and follows value updates", async () => {
+    const { rerender, container } = render(<ProgressBar value={25} max={50} label="x" animateChanges />);
+    const fill = () => screen.getByRole("progressbar").firstElementChild as HTMLElement;
+    expect(fill()).toHaveAttribute("data-animate");
+    expect(fill().style.transform).toBe("scaleX(0.5)");
+    expect(fill().style.inlineSize).toBe("");
+    const same = fill();
+    rerender(<ProgressBar value={50} max={50} label="x" animateChanges />);
+    expect(fill()).toBe(same);
+    expect(fill().style.transform).toBe("scaleX(1)");
+    rerender(<ProgressBar value={0} max={50} label="x" animateChanges />);
+    expect(fill().style.transform).toBe("scaleX(0)");
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "0");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("animateChanges keeps a visible sliver for a tiny non-zero value, and none for zero", () => {
+    const { rerender } = render(<ProgressBar value={0.1} label="x" animateChanges />);
+    const fill = () => screen.getByRole("progressbar").firstElementChild as HTMLElement;
+    expect(fill().style.transform).toBe("scaleX(0.02)");
+    rerender(<ProgressBar value={0} label="x" animateChanges />);
+    expect(fill().style.transform).toBe("scaleX(0)");
+  });
+
+  it("animates only transform, with tokens, and stops under reduced motion", () => {
+    expect(css).toMatch(
+      /\.fill\[data-animate\] \{[^}]*transition:\s*transform var\(--lufia-motion-duration-enter\) var\(--lufia-motion-easing-out\)/,
+    );
+    const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
+    expect(reduced?.[1]).toMatch(/\.fill\[data-animate\] \{\s*transition:\s*none/);
+  });
+
   it("draws in with motion tokens and stops under reduced motion", () => {
     expect(css).toMatch(
       /animation:\s*progress-grow var\(--lufia-motion-duration-medium\) var\(--lufia-motion-easing-out\)/,

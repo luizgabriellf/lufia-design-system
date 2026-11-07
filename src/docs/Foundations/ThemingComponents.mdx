@@ -6,6 +6,9 @@ import * as StatTileStories from "../../components/StatTile/StatTile.stories";
 import * as CardStories from "../../components/Card/Card.stories";
 import * as AttentionListStories from "../../components/AttentionList/AttentionList.stories";
 import * as ToastStories from "../../components/Toast/Toast.stories";
+import * as BadgeStories from "../../components/Badge/Badge.stories";
+import * as ColumnChartStories from "../../components/ColumnChart/ColumnChart.stories";
+import * as ModalStories from "../../components/Modal/Modal.stories";
 
 <Meta title="Foundations/Theming components" />
 
@@ -205,3 +208,55 @@ apply above a phone; on a phone the stack spans the screen. `ToastProvider` also
 />
 
 <Canvas of={ToastStories.ThemedByTokens} />
+
+## Badge
+
+<DocTable
+  label="Badge tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    [
+      "`--lufia-badge-radius`",
+      "`--lufia-radius-full`",
+      "Corner radius, for example `0.25rem` for a squarer badge. `StatusBadge` follows it",
+    ],
+  ]}
+/>
+
+<Canvas of={BadgeStories.SquareByToken} />
+
+## ColumnChart
+
+<DocTable
+  label="ColumnChart tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    [
+      "`--lufia-column-chart-plot-height`",
+      "`7rem`",
+      "Height of the drawing, labels excluded. Set it on the chart or on an ancestor",
+    ],
+  ]}
+/>
+
+<Canvas of={ColumnChartStories.LowerPlot} />
+
+## Modal
+
+The modal's input tokens (`--lufia-modal-radius`, the padding tokens and the others) are listed on its
+[own page](?path=/docs/components-overlays-modal--docs). One token goes the other way: the panel **publishes** it, and your
+content reads it.
+
+<DocTable
+  label="Modal output token"
+  head={["Token", "Value", "Use"]}
+  rows={[
+    [
+      "`--lufia-modal-header-block-size`",
+      "The height the sticky header covers, in px, kept current with a `ResizeObserver`. `0px` with `scrollShadow`",
+      "`inset-block-start: var(--lufia-modal-header-block-size, 0px)` on sticky content in the body. Read it, do not set it",
+    ],
+  ]}
+/>
+
+<Canvas of={ModalStories.StickyContentUnderHeader} />

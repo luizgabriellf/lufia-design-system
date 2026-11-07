@@ -7,7 +7,7 @@
   padding-block: 0.125rem;
   padding-inline: 0.625rem;
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
-  border-radius: var(--lufia-radius-full);
+  border-radius: var(--lufia-badge-radius, var(--lufia-radius-full));
   background: var(--lufia-color-status-neutral-bg);
   color: var(--lufia-color-status-neutral-fg);
   font-family: var(--lufia-font-family-body);

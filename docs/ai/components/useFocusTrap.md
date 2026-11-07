@@ -4,7 +4,7 @@
 
 - Status: beta
 - Category: Hooks
-- Import: `import { getFocusableElements, isTopOverlayLayer, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
+- Import: `import { getFocusableElements, hasOpenOverlay, isTopOverlayLayer, overlayDepth, registerOverlayLayer, useFocusTrap } from "@lufia/design-system/components/useFocusTrap"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/useFocusTrap](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/useFocusTrap)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/hooks-usefocustrap--docs)
@@ -28,7 +28,9 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 | Name | Kind |
 | --- | --- |
 | `getFocusableElements` | function |
+| `hasOpenOverlay` | function |
 | `isTopOverlayLayer` | function |
+| `overlayDepth` | function |
 | `registerOverlayLayer` | function |
 | `useFocusTrap` | hook |
 
@@ -42,12 +44,28 @@ The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that
 getFocusableElements(root: HTMLElement): HTMLElement[]
 ```
 
+### `hasOpenOverlay`
+
+Whether any layer is open on the shared overlay stack. The same as `overlayDepth() > 0`. Use it to leave a global shortcut or an outside-press handler alone while a dialog or popup is open. Read-only and not reactive.
+
+```ts
+hasOpenOverlay(): boolean
+```
+
 ### `isTopOverlayLayer`
 
 Whether `layer` is the topmost registered layer. Same as `layer.isTop()`.
 
 ```ts
 isTopOverlayLayer(layer: OverlayLayer): boolean
+```
+
+### `overlayDepth`
+
+How many layers are open on the shared overlay stack right now: package modals and traps, dismissable popups that registered through `useDismiss`, and any layer an app registered with `registerOverlayLayer`. `0` when nothing is open. A read-only snapshot, not reactive: call it when you need it (in an event handler, in a key handler), not during render. Read it here instead of reaching for the `globalThis.__lufiaOverlayStack` key, which is an implementation detail.
+
+```ts
+overlayDepth(): number
 ```
 
 ### `registerOverlayLayer`

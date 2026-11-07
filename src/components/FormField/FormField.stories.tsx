@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { CSSProperties } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { LufiaProvider } from "../LufiaProvider";
 import { FormField, type FormFieldProps } from "./FormField";
 
 const input: CSSProperties = {
@@ -45,6 +46,17 @@ export const Invalid: Story = {
   args: { required: true, hint: "Up to 40 characters.", error: "Enter a project name to continue." },
 };
 export const Disabled: Story = { args: { disabled: true, hint: "Only an owner can rename the project." } };
+/** The word read after the label comes from `LufiaProvider` `labels.required`; `requiredLabel` overrides it per field. */
+export const RequiredFromProvider: Story = {
+  args: { required: true },
+  decorators: [
+    (Story) => (
+      <LufiaProvider labels={{ required: "obrigatório" }}>
+        <Story />
+      </LufiaProvider>
+    ),
+  ],
+};
 export const LongText: Story = {
   args: {
     label: "A considerably longer label that has to wrap onto a second line on narrow screens",

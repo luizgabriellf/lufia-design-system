@@ -30,12 +30,15 @@ export type LufiaLabels = {
   dismiss: string;
   /** Accessible name of the region that holds notifications. */
   notifications: string;
+  /** Text read after the label of a required field ("required"). Set it once for the app's language. */
+  required: string;
 };
 
 export const DEFAULT_LABELS: LufiaLabels = {
   close: "Close",
   dismiss: "Dismiss",
   notifications: "Notifications",
+  required: "required",
 };
 
 const DefaultLink: LinkComponent = ({ children, ...rest }) => <a {...rest}>{children}</a>;

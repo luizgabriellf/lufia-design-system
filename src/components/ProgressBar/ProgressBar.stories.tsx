@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ProgressBar } from "./ProgressBar";
 
@@ -43,6 +44,26 @@ export const WithVisibleFigure: Story = {
     </div>
   ),
 };
+export const AnimatedChanges: Story = {
+  args: { animateChanges: true, label: "Upload" },
+  render: function Render(args) {
+    const [value, setValue] = useState(args.value);
+    return (
+      <div style={{ display: "grid", gap: "0.75rem" }}>
+        <ProgressBar {...args} value={value} />
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <button type="button" onClick={() => setValue((v) => Math.max(0, v - 25))}>
+            -25
+          </button>
+          <button type="button" onClick={() => setValue((v) => Math.min(100, v + 25))}>
+            +25
+          </button>
+        </div>
+      </div>
+    );
+  },
+};
+export const AnimatedAtRest: Story = { args: { animateChanges: true, value: 60 } };
 export const RightToLeft: Story = {
   decorators: [
     (Story) => (

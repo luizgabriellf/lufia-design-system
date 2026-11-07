@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "../../test/axe";
+import { LufiaProvider } from "../LufiaProvider";
 import { FormField } from "./FormField";
 import { useFormFieldControl } from "./useFormFieldControl";
 
@@ -89,6 +90,52 @@ describe("FormField", () => {
       </FormField>,
     );
     expect(screen.getByTestId("root")).toHaveClass("root", "extra");
+  });
+
+  it("exposes stable data-lufia-part hooks", () => {
+    render(
+      <FormField label="Name" hint="Hint" error="Error" data-testid="root">
+        {(control) => <input {...control} />}
+      </FormField>,
+    );
+    const part = (name: string) => document.querySelectorAll(`[data-lufia-part="${name}"]`);
+    expect(screen.getByTestId("root")).toHaveAttribute("data-lufia-part", "field");
+    expect(part("label")).toHaveLength(1);
+    expect(part("label")[0]!.tagName).toBe("LABEL");
+    expect(part("hint")[0]).toHaveTextContent("Hint");
+    expect(part("error")[0]).toHaveTextContent("Error");
+    expect(part("control")).toHaveLength(1);
+    expect(part("control")[0]!.contains(screen.getByRole("textbox"))).toBe(true);
+  });
+
+  it("omits the hint and error hooks when there is neither", () => {
+    render(<FormField label="Name">{(control) => <input {...control} />}</FormField>);
+    expect(document.querySelector('[data-lufia-part="hint"]')).toBeNull();
+    expect(document.querySelector('[data-lufia-part="error"]')).toBeNull();
+  });
+
+  it("takes the required text from LufiaProvider labels, and an explicit prop wins", () => {
+    render(
+      <LufiaProvider labels={{ required: "obrigatório" }}>
+        <FormField label="Name" required>
+          {(control) => <input {...control} />}
+        </FormField>
+        <FormField label="Email" required requiredLabel="a preencher">
+          {(control) => <input {...control} />}
+        </FormField>
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("textbox", { name: "Name(obrigatório)" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Email(a preencher)" })).toBeInTheDocument();
+  });
+
+  it("falls back to the English word without a provider", () => {
+    render(
+      <FormField label="Name" required>
+        {(control) => <input {...control} />}
+      </FormField>,
+    );
+    expect(screen.getByRole("textbox", { name: "Name(required)" })).toBeInTheDocument();
   });
 
   it("has no axe violations", async () => {

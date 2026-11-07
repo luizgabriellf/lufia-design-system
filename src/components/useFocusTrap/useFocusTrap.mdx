@@ -48,6 +48,21 @@ also has a small public API, for an overlay the package does not own, such as an
 | -------------------------- | ------------------------------------------------------------------------------------------ |
 | `registerOverlayLayer()`   | Pushes a layer on top and returns `{ isTop(), release() }`. `release()` is safe to repeat. |
 | `isTopOverlayLayer(layer)` | Whether `layer` is topmost. The same as `layer.isTop()`.                                   |
+| `overlayDepth()`           | How many layers are open on the stack, `0` when none.                                      |
+| `hasOpenOverlay()`         | Whether any layer is open. The same as `overlayDepth() > 0`.                               |
+
+`overlayDepth()` and `hasOpenOverlay()` are the public readers of the stack: use them, not the `globalThis.__lufiaOverlayStack`
+key. They count every layer, a package `Modal`, a popup registered through `useDismiss` and an app layer from
+`registerOverlayLayer()` alike. They are a snapshot and not reactive, so call them in an event or key handler, not during
+render. A global shortcut can stand down while a dialog is open:
+
+```tsx
+import { hasOpenOverlay } from "@lufia/design-system/components/useFocusTrap";
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "/" && !hasOpenOverlay()) openSearch();
+});
+```
 
 Wrap a legacy trap so that it and the package's dialogs take turns:
 

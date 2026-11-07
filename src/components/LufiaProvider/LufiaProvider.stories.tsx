@@ -44,7 +44,9 @@ function Demo({ translated }: { translated: boolean }) {
     <LufiaProvider
       linkComponent={RouterLink}
       labels={
-        translated ? { close: "Fechar", dismiss: "Dispensar", notifications: "Notificações" } : undefined
+        translated
+          ? { close: "Fechar", dismiss: "Dispensar", notifications: "Notificações", required: "obrigatório" }
+          : undefined
       }
     >
       <div style={{ display: "grid", gap: "1rem", inlineSize: "min(100%, 24rem)" }}>

@@ -25,6 +25,12 @@ import { ProgressBar } from "@lufia/design-system/components/ProgressBar";
 <ProgressBar value={12} max={40} label="Steps done" valueText="12 of 40 steps" />
 ```
 
+Pass `animateChanges` to animate later changes of `value`. It is off by default.
+
+```tsx
+<ProgressBar value={uploaded} label="Upload" animateChanges />
+```
+
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 </Section>
@@ -39,6 +45,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.Warning} />
 <Canvas of={Stories.Danger} />
 <Canvas of={Stories.CustomRange} />
+<Canvas of={Stories.AnimatedChanges} />
 <Canvas of={Stories.RightToLeft} />
 
 ### All themes
@@ -60,7 +67,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - `role="progressbar"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label` is required: without a name a progress bar is announced as a bare number.
 - Use `valueText` when the percentage alone says too little ("12 of 40 steps").
 - It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.
-- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once, because animating width would move layout.
+- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.
 - In `forced-colors` mode the track gets a border and the fill is `Highlight`.
 
 </Section>

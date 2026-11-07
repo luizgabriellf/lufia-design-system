@@ -52,6 +52,8 @@ const CONTRACT: [string, string][] = [
     "calc(var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem)) + var(--attention-bar-width) + 0.75rem)",
   ],
   ["AttentionList", "--attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem)"],
+  ["Badge", "border-radius: var(--lufia-badge-radius, var(--lufia-radius-full))"],
+  ["ColumnChart", "grid-template-rows: var(--lufia-column-chart-plot-height, 7rem) auto"],
   ["Toast", "inline-size: var(--lufia-toast-width, 24rem)"],
   ["Toast", "min-inline-size: var(--lufia-toast-min-width, auto)"],
   ["Toast", "max-inline-size: var(--lufia-toast-max-width, calc(100% - 2 * var(--lufia-space-4)))"],

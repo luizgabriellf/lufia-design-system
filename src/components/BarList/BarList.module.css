@@ -13,6 +13,19 @@
   line-height: var(--lufia-font-line-height-tight);
 }
 
+/* Screen-reader-only title: the figure keeps its accessible name, the layout loses the line. */
+.titleHidden {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .summary {
   margin: 0;
   color: var(--lufia-color-text-muted);
@@ -59,6 +72,7 @@
 }
 
 .track {
+  position: relative;
   display: block;
   overflow: hidden;
   block-size: 0.625rem;
@@ -97,6 +111,31 @@
 
 .fill[data-tone="neutral"] {
   --chart-color: var(--lufia-color-text-subtle);
+}
+
+/* Reference tick: dashed, on the shared scale; clamped so it never clips at the end of the track. */
+.tick {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: min(var(--bar-reference, 0%), calc(100% - 0.125rem));
+  border-inline-start: 0.125rem dashed var(--lufia-color-text-default);
+  pointer-events: none;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+}
+
+.legend::before {
+  content: "";
+  flex: none;
+  block-size: 0.75rem;
+  border-inline-start: 0.125rem dashed var(--lufia-color-text-default);
 }
 
 .total {
@@ -142,5 +181,10 @@
 
   .fill {
     background: CanvasText;
+  }
+
+  .tick,
+  .legend::before {
+    border-color: CanvasText;
   }
 }

@@ -34,12 +34,13 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
 | `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
 | `size` | `"sm" \| "md"` | no | `"md"` |  |
+| `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; }`
+- `ProgressBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: "sm" | "md" | undefined; animateChanges?: boolean | undefined; }`
 
 ## Example
 
@@ -55,7 +56,7 @@ import { ProgressBar } from "@lufia/design-system/components/ProgressBar";
 - `role="progressbar"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label` is required: without a name a progress bar is announced as a bare number.
 - Use `valueText` when the percentage alone says too little ("12 of 40 steps").
 - It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.
-- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once, because animating width would move layout.
+- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.
 - In `forced-colors` mode the track gets a border and the fill is `Highlight`.
 
 ## Motion
@@ -64,7 +65,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-subtle`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-subtle`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`, `--lufia-radius-full`.
 
 ## Stories
 
@@ -76,5 +77,7 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-progressbar--danger`
 - `components-data-display-progressbar--custom-range`
 - `components-data-display-progressbar--with-visible-figure`
+- `components-data-display-progressbar--animated-changes`
+- `components-data-display-progressbar--animated-at-rest`
 - `components-data-display-progressbar--right-to-left`
 - `components-data-display-progressbar--all-themes`
