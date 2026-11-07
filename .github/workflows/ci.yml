@@ -43,6 +43,28 @@ jobs:
           test -s storybook-static/manifests/components.json
           node -e "const m = JSON.parse(require('node:fs').readFileSync('storybook-static/manifests/components.json', 'utf8')); if (!Object.values(m.components ?? {}).some((c) => c.name === 'Button')) { console.error('Button missing from the Storybook components manifest'); process.exit(1); }"
 
+  consumer:
+    name: Next.js App Router consumer smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+        env:
+          HUSKY: "0"
+      - name: Build distributable package
+        run: npm run build
+      - name: Test packed package in Next.js
+        run: npm run test:consumer:next
+        env:
+          CI: "true"
+
   browser:
     name: Browser tests (Chromium + WebKit)
     needs: verify
