@@ -34,7 +34,7 @@ segment.
 | `options` | `readonly SegmentedToggleOption[]` | yes |  |  |
 | `value` | `string` | no |  | Controlled value. |
 | `defaultValue` | `string` | no |  | Initial value when `value` is not given. Defaults to the first enabled option. |
-| `onValueChange` | `((value: string) => void)` | no |  |  |
+| `onValueChange` | `(value: string) => void` | no |  |  |
 | `disabled` | `boolean` | no |  |  |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `width` | `"fill" \| "fit"` | no | `"fit"` | `"fit"` (default) shrinks to its content; `"fill"` shares the full width between the segments. |

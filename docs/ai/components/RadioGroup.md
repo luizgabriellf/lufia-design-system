@@ -38,7 +38,7 @@ and arrow-key navigation.
 | `disabled` | `boolean` | no |  |  |
 | `value` | `string` | no |  | Controlled value. `""` means nothing chosen. |
 | `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `((value: string) => void)` | no |  |  |
+| `onValueChange` | `(value: string) => void` | no |  |  |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
 | `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |

@@ -34,7 +34,7 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
-| `onClick` | `((event: MouseEvent<HTMLElement, MouseEvent>) => void)` | no |  | Makes the row a button when there is no `href`. |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Makes the row a button when there is no `href`. |
 | `disabled` | `boolean` | no | `false` |  |
 
 Other native element attributes pass through to the root element.

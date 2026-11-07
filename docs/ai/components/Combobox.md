@@ -36,13 +36,13 @@ the empty and loading states are part of the component.
 | `options` | `readonly ComboboxOption[]` | yes |  | The options to offer. For async data, replace them as results arrive and set `filter={false}`. |
 | `value` | `string \| null` | no |  | Chosen option value, or `null` for none. Controlled. |
 | `defaultValue` | `string \| null` | no | `null` | Initial value when `value` is not given. |
-| `onValueChange` | `((value: string \| null, option: ComboboxOption \| null) => void)` | no |  |  |
-| `onQueryChange` | `((query: string) => void)` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
+| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  |  |
+| `onQueryChange` | `(query: string) => void` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
 | `filter` | `false \| ((option: ComboboxOption, query: string) => boolean)` | no |  | How typed text narrows the list. Default: the label contains the text, ignoring case and diacritics. Pass a function to match your own way, or `false` to show `options` as given (the server already filtered them). |
 | `loading` | `boolean` | no | `false` | Options are being loaded. Shows a ring and `loadingLabel`, and sets `aria-busy`. |
 | `loadingLabel` | `ReactNode` | yes |  | Shown, and announced, while `loading`. |
 | `emptyLabel` | `ReactNode` | yes |  | Shown, and announced, when nothing matches. |
-| `resultsLabel` | `((count: number) => string)` | no |  | Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. |
+| `resultsLabel` | `(count: number) => string` | no |  | Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. |
 | `valueLabel` | `string` | no |  | Label of the chosen option when it is not in `options` (a value set before the options loaded). |
 | `clearable` | `boolean` | no | `false` | Shows a clear button while something is chosen. Escape clears too, when the list is closed. |
 | `clearLabel` | `string` | no | `"Clear"` | Accessible name of the clear button. Aria-only. |

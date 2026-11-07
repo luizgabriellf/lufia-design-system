@@ -55,7 +55,23 @@ function createProgram(entryFiles) {
 
 const FORMAT = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
 const inNodeModules = (decl) => decl.getSourceFile().fileName.includes("/node_modules/");
-const stripUndefined = (text) => text.replace(/ \| undefined$/, "");
+/** True when one pair of parentheses wraps all of `text`, as in `(() => void)`. */
+const wrapped = (text) => {
+  if (!text.startsWith("(") || !text.endsWith(")")) return false;
+  let depth = 0;
+  for (let i = 0; i < text.length - 1; i += 1) {
+    if (text[i] === "(") depth += 1;
+    else if (text[i] === ")") depth -= 1;
+    if (depth === 0) return false;
+  }
+  return true;
+};
+/** Drops a trailing `| undefined`, and the parentheses TypeScript adds around a function type before a union. */
+const stripUndefined = (text) => {
+  if (!/ \| undefined$/.test(text)) return text;
+  const rest = text.replace(/ \| undefined$/, "");
+  return wrapped(rest) ? rest.slice(1, -1) : rest;
+};
 const oneLine = (text) => text.replace(/\s+/g, " ").trim();
 
 /** Defaults written as `name = value` in the props destructuring of a component or hook. */

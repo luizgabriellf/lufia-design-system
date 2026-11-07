@@ -30,8 +30,8 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | --- | --- | --- | --- | --- |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `showCount` | `boolean` | no |  | Shows a character count under the box. With `maxLength` it reads "12 / 200". |
-| `formatCount` | `((length: number, max: number \| undefined) => ReactNode)` | no | `defaultCount` | Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword. |
-| `formatCountAnnouncement` | `((length: number, max: number) => string)` | no | `defaultAnnouncement` | Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. |
+| `formatCount` | `(length: number, max: number \| undefined) => ReactNode` | no | `defaultCount` | Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword. |
+| `formatCountAnnouncement` | `(length: number, max: number) => string` | no | `defaultAnnouncement` | Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
 | `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
 

@@ -44,13 +44,13 @@ with messages you provide, and the chosen files are listed with a remove button 
 | `maxSize` | `number` | no |  | Largest file in bytes. Larger files are rejected with reason `"size"`. |
 | `maxFiles` | `number` | no |  | Most files at once (with `multiple`). The extra ones are rejected with reason `"count"`. |
 | `formatRejection` | `(rejection: FileRejection, limits: FileLimits) => string` | yes |  | The message for a rejected file. Required: every rejection is shown to the person in their language. |
-| `removeLabel` | `((file: File) => string)` | no | `defaultRemoveLabel` | Accessible name of a file's remove button. Aria-only. Defaults to "Remove" and the file name. |
+| `removeLabel` | `(file: File) => string` | no | `defaultRemoveLabel` | Accessible name of a file's remove button. Aria-only. Defaults to "Remove" and the file name. |
 | `removeText` | `string` | no |  | Visible text on the remove button. Defaults to a cross icon only. |
-| `describeFiles` | `((files: readonly File[]) => string)` | no |  | Read out politely when the chosen files change ("2 files chosen"). Optional. |
+| `describeFiles` | `(files: readonly File[]) => string` | no |  | Read out politely when the chosen files change ("2 files chosen"). Optional. |
 | `locale` | `string` | no |  | Locale of the sizes. The runtime's when omitted. |
 | `files` | `readonly File[]` | no |  | Controlled files. |
-| `onFilesChange` | `((files: File[]) => void)` | no |  | Called with the whole list after a pick, a drop or a removal. |
-| `onReject` | `((rejections: FileRejection[]) => void)` | no |  | Called with files that were refused, after the message is shown. |
+| `onFilesChange` | `(files: File[]) => void` | no |  | Called with the whole list after a pick, a drop or a removal. |
+| `onReject` | `(rejections: FileRejection[]) => void` | no |  | Called with files that were refused, after the message is shown. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |

@@ -42,7 +42,7 @@ error, and a thumb that slides.
 | `hint` | `ReactNode` | no |  |  |
 | `error` | `ReactNode` | no |  |  |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `((checked: boolean) => void)` | no |  |  |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  |  |
 | `value` | `string` | no | `"on"` |  |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
@@ -57,7 +57,7 @@ Other native element attributes pass through to the root element.
 | `hint` | `ReactNode` | no |  |  |
 | `error` | `ReactNode` | no |  |  |
 | `value` | `string` | no | `"on"` | Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. |
-| `onCheckedChange` | `((checked: boolean) => void)` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
 

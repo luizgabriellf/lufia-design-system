@@ -352,7 +352,7 @@
             },
             {
               "name": "format",
-              "type": "((value: number) => string)",
+              "type": "(value: number) => string",
               "required": false,
               "default": "String",
               "description": "Turns the running number into text. Pass a locale-aware formatter; the default is `String`."
@@ -467,7 +467,7 @@
             },
             {
               "name": "isActive",
-              "type": "((item: ShellNavItem) => boolean)",
+              "type": "(item: ShellNavItem) => boolean",
               "required": false,
               "default": null,
               "description": "Takes over from `currentPath`. Return true for the current item."
@@ -572,7 +572,7 @@
             },
             {
               "name": "onCollapsedChange",
-              "type": "((collapsed: boolean) => void)",
+              "type": "(collapsed: boolean) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -593,7 +593,7 @@
             },
             {
               "name": "onOpenGroupsChange",
-              "type": "((keys: readonly string[]) => void)",
+              "type": "(keys: readonly string[]) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -702,7 +702,7 @@
             },
             {
               "name": "onClick",
-              "type": "(() => void)",
+              "type": "() => void",
               "required": false,
               "default": null,
               "description": ""
@@ -750,7 +750,7 @@
                   },
                   {
                     "name": "onClick",
-                    "type": "(() => void)",
+                    "type": "() => void",
                     "required": false,
                     "description": "",
                     "onlyTypeDiffers": true
@@ -896,7 +896,7 @@
             },
             {
               "name": "isActive",
-              "type": "((item: ShellNavItem) => boolean)",
+              "type": "(item: ShellNavItem) => boolean",
               "required": false,
               "default": null,
               "description": "Takes over from `currentPath`: return true for the current item. The first match wins."
@@ -924,7 +924,7 @@
             },
             {
               "name": "onItemChoose",
-              "type": "((item: ShellNavItem) => void)",
+              "type": "(item: ShellNavItem) => void",
               "required": false,
               "default": null,
               "description": "An item was chosen by a plain click or by keyboard (not an open-in-new-tab click)."
@@ -974,7 +974,7 @@
             },
             {
               "name": "onCollapsedChange",
-              "type": "((collapsed: boolean) => void)",
+              "type": "(collapsed: boolean) => void",
               "required": false,
               "default": null,
               "description": "When given, a button in the header asks for the rail to open or close."
@@ -1073,7 +1073,7 @@
             },
             {
               "name": "onOpenChange",
-              "type": "((open: boolean) => void)",
+              "type": "(open: boolean) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -1164,7 +1164,7 @@
             },
             {
               "name": "onClick",
-              "type": "((event: MouseEvent<HTMLElement, MouseEvent>) => void)",
+              "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -3217,7 +3217,7 @@
             },
             {
               "name": "formatValue",
-              "type": "((value: number) => string)",
+              "type": "(value: number) => string",
               "required": false,
               "default": "String",
               "description": "How a number is written in the data table (\"12 h\", \"1,240\"). Defaults to `String`. Format with your locale here."
@@ -3524,14 +3524,14 @@
             },
             {
               "name": "onValueChange",
-              "type": "((value: string | null, option: ComboboxOption | null) => void)",
+              "type": "(value: string | null, option: ComboboxOption | null) => void",
               "required": false,
               "default": null,
               "description": ""
             },
             {
               "name": "onQueryChange",
-              "type": "((query: string) => void)",
+              "type": "(query: string) => void",
               "required": false,
               "default": null,
               "description": "Called on every keystroke with the typed text, and with `\"\"` once the box is cleared. Use it to load options."
@@ -3566,7 +3566,7 @@
             },
             {
               "name": "resultsLabel",
-              "type": "((count: number) => string)",
+              "type": "(count: number) => string",
               "required": false,
               "default": null,
               "description": "Announced when the list changes (\"3 results\"). Optional; the empty and loading texts are always announced."
@@ -3855,14 +3855,14 @@
             },
             {
               "name": "filter",
-              "type": "((item: CommandItem, query: string) => boolean)",
+              "type": "(item: CommandItem, query: string) => boolean",
               "required": false,
               "default": "filterCommands",
               "description": "Decides which commands match the query. Defaults to {@link filterCommands}: every word of the query, ignoring case and accents, must appear in the label, description, group or keywords. Pass `() => true` when `items` already comes filtered (a server search driven by `onQueryChange`)."
             },
             {
               "name": "onQueryChange",
-              "type": "((query: string) => void)",
+              "type": "(query: string) => void",
               "required": false,
               "default": null,
               "description": "Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs."
@@ -3890,7 +3890,7 @@
             },
             {
               "name": "onEscape",
-              "type": "(() => boolean | void)",
+              "type": "() => boolean | void",
               "required": false,
               "default": null,
               "description": "Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close."
@@ -4907,7 +4907,7 @@
             },
             {
               "name": "removeLabel",
-              "type": "((file: File) => string)",
+              "type": "(file: File) => string",
               "required": false,
               "default": "defaultRemoveLabel",
               "description": "Accessible name of a file's remove button. Aria-only. Defaults to \"Remove\" and the file name."
@@ -4921,7 +4921,7 @@
             },
             {
               "name": "describeFiles",
-              "type": "((files: readonly File[]) => string)",
+              "type": "(files: readonly File[]) => string",
               "required": false,
               "default": null,
               "description": "Read out politely when the chosen files change (\"2 files chosen\"). Optional."
@@ -4942,14 +4942,14 @@
             },
             {
               "name": "onFilesChange",
-              "type": "((files: File[]) => void)",
+              "type": "(files: File[]) => void",
               "required": false,
               "default": null,
               "description": "Called with the whole list after a pick, a drop or a removal."
             },
             {
               "name": "onReject",
-              "type": "((rejections: FileRejection[]) => void)",
+              "type": "(rejections: FileRejection[]) => void",
               "required": false,
               "default": null,
               "description": "Called with files that were refused, after the message is shown."
@@ -6675,7 +6675,7 @@
             },
             {
               "name": "onClick",
-              "type": "((event: MouseEvent<HTMLElement, MouseEvent>) => void)",
+              "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
               "required": false,
               "default": null,
               "description": "Makes the row a button when there is no `href`."
@@ -7157,7 +7157,7 @@
             },
             {
               "name": "hrefFor",
-              "type": "((page: number) => string)",
+              "type": "(page: number) => string",
               "required": false,
               "default": null,
               "description": "Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place."
@@ -7389,7 +7389,7 @@
             },
             {
               "name": "onValueChange",
-              "type": "((key: string, event?: MouseEvent<HTMLElement, MouseEvent> | undefined) => void)",
+              "type": "(key: string, event?: MouseEvent<HTMLElement, MouseEvent> | undefined) => void",
               "required": false,
               "default": null,
               "description": "Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs)."
@@ -7403,7 +7403,7 @@
             },
             {
               "name": "onItemClick",
-              "type": "((key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void)",
+              "type": "(key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void",
               "required": false,
               "default": null,
               "description": "Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button) included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change. Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not followed and a tab is not selected. Links and tabs."
@@ -8022,7 +8022,7 @@
             },
             {
               "name": "onValueChange",
-              "type": "((value: string) => void)",
+              "type": "(value: string) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -8265,7 +8265,7 @@
             },
             {
               "name": "onExited",
-              "type": "(() => void)",
+              "type": "() => void",
               "required": false,
               "default": null,
               "description": "Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first."
@@ -8484,14 +8484,14 @@
             },
             {
               "name": "onValueChange",
-              "type": "((value: string) => void)",
+              "type": "(value: string) => void",
               "required": false,
               "default": null,
               "description": "Called on every keystroke with the current text."
             },
             {
               "name": "onSearch",
-              "type": "((value: string) => void)",
+              "type": "(value: string) => void",
               "required": false,
               "default": null,
               "description": "Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row."
@@ -8858,7 +8858,7 @@
             },
             {
               "name": "onValueChange",
-              "type": "((value: string) => void)",
+              "type": "(value: string) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -10193,7 +10193,7 @@
             },
             {
               "name": "onStepClick",
-              "type": "((index: number) => void)",
+              "type": "(index: number) => void",
               "required": false,
               "default": null,
               "description": "Optional: jump to an already-visited step."
@@ -10443,7 +10443,7 @@
             },
             {
               "name": "onCheckedChange",
-              "type": "((checked: boolean) => void)",
+              "type": "(checked: boolean) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -10507,7 +10507,7 @@
             },
             {
               "name": "onCheckedChange",
-              "type": "((checked: boolean) => void)",
+              "type": "(checked: boolean) => void",
               "required": false,
               "default": null,
               "description": "Called with the new state. A plain `onChange` also works; both fire."
@@ -10697,7 +10697,7 @@
             },
             {
               "name": "onFilterChange",
-              "type": "((key: string) => void)",
+              "type": "(key: string) => void",
               "required": false,
               "default": null,
               "description": ""
@@ -10711,7 +10711,7 @@
             },
             {
               "name": "onSearchChange",
-              "type": "((value: string) => void)",
+              "type": "(value: string) => void",
               "required": false,
               "default": null,
               "description": "The search field renders only when this handler is provided."
@@ -11047,14 +11047,14 @@
             },
             {
               "name": "formatCount",
-              "type": "((length: number, max: number | undefined) => ReactNode)",
+              "type": "(length: number, max: number | undefined) => ReactNode",
               "required": false,
               "default": "defaultCount",
               "description": "Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword."
             },
             {
               "name": "formatCountAnnouncement",
-              "type": "((length: number, max: number) => string)",
+              "type": "(length: number, max: number) => string",
               "required": false,
               "default": "defaultAnnouncement",
               "description": "Text read out when the person is close to the limit (the last tenth) or over it. Aria-only."
