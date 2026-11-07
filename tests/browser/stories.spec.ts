@@ -67,7 +67,7 @@ test.describe("responsive visual captures", () => {
         test(`buttons at ${width}px — ${theme}/${mode}`, async ({ page }, testInfo) => {
           await page.setViewportSize({ width, height: 900 });
           await openStory(page, "components-actions-button--all-variants-and-sizes", theme, mode);
-          await expect(page.getByRole("button", { name: "primary", exact: true })).toBeVisible();
+          await expect(page.getByRole("button", { name: "primary", exact: true }).first()).toBeVisible();
           const capture = await page.screenshot({ animations: "disabled", caret: "hide" });
           await testInfo.attach(`buttons-${width}-${theme}-${mode}`, {
             body: capture,
