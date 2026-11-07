@@ -61,7 +61,11 @@ try {
     env: environment,
     encoding: "utf8",
   });
-  const [{ filename }] = JSON.parse(packOutput);
+  const [{ filename, files }] = JSON.parse(packOutput);
+  const packed = new Set(files.map((file) => file.path));
+  for (const required of ["dist/ai/components.json", "dist/ai/llms.txt", "dist/cli/lufia-ai.js"]) {
+    if (!packed.has(required)) throw new Error(`The packed tarball is missing ${required}`);
+  }
   const pkgPath = join(app, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
   pkg.dependencies["@lufia/design-system"] = `file:./${filename}`;
@@ -69,6 +73,27 @@ try {
 
   // --ignore-scripts: no lifecycle scripts of the fixture dependencies run on CI or a developer machine.
   run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], app);
+
+  // The shipped lookup CLI resolves through the installed bin and answers from the installed version's manifest.
+  const shown = JSON.parse(
+    execFileSync("npx", ["--no-install", "lufia-ai", "show", "Button", "--json"], {
+      cwd: app,
+      env: environment,
+      encoding: "utf8",
+    }),
+  );
+  if (shown.name !== "Button" || !shown.import.startsWith("@lufia/design-system/")) {
+    throw new Error("npx lufia-ai show Button did not return the Button manifest entry");
+  }
+  const installedVersion = execFileSync("npx", ["--no-install", "lufia-ai", "version"], {
+    cwd: app,
+    env: environment,
+    encoding: "utf8",
+  }).trim();
+  if (installedVersion !== JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version) {
+    throw new Error(`lufia-ai version ${installedVersion} does not match the packed package`);
+  }
+
   run("npm", ["run", "build"], app);
 
   const port = await availablePort();

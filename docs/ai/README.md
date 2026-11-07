@@ -10,6 +10,7 @@ Files that let coding agents use and change this repository without guessing. Ev
 | `docs/ai/components/<Name>.md` | Both                      | Generated, one spec per exported component                                                                     |
 | `docs/ai/llms.txt`             | Agents browsing the site  | Generated index, format from llmstxt.org                                                                       |
 | `docs/ai/llms-full.txt`        | Agents that want one file | Generated: consuming guide, motion rules and every spec                                                        |
+| `src/cli/lufia-ai/`            | Agents using the package  | Hand-written plain ESM: lookup core, MCP server; `src/cli/lufia-ai.js` is the `lufia-ai` bin                   |
 
 ## How the manifest is generated
 
@@ -76,6 +77,17 @@ Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `compone
 Storybook's own native components manifest (`features.componentsManifest` in `.storybook/main.ts`) is also built into
 `storybook-static/manifests/components.json`, so Pages serves it at `/manifests/components.json`. It is independent of
 `docs/ai/components.json`; CI asserts that it contains a known component.
+
+## Shipped with the package: `lufia-ai`
+
+`scripts/postbuild.mjs` copies `components.json`, `llms.txt`, `llms-full.txt`, `CONSUMING.md` and the per-component specs into
+`dist/ai/` (exported as `@lufia/design-system/ai/*`), and the plain-ESM CLI into `dist/cli/`. The `lufia-ai` bin
+(`search`, `list`, `show`, `version`, `mcp`) reads `dist/ai/components.json` relative to its own file, so it always answers
+for the installed version, offline. `lufia-ai mcp` is a hand-written stdio MCP server (no runtime dependency; newline-delimited
+JSON-RPC; `initialize` for revisions up to 2025-11-25 and the server-discover call for 2026-07-28). The lookup logic lives only in
+`src/cli/lufia-ai/core.js`; `scripts/ai/query.mjs` (the `ai:*` scripts) is a thin wrapper pointing it at `docs/ai/`, so the
+repository script and the shipped CLI cannot drift. Tests: `scripts/ai/lufia-ai.test.mjs`, and the Next.js consumer smoke runs
+`npx lufia-ai` from the packed install. User setup and MCP client configs: `CONSUMING.md`.
 
 ## Storybook MCP (local only)
 
