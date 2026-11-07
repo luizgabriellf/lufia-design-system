@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * `lufia-ai`: look up the docs of the installed @lufia/design-system version, offline.
- * Reads `dist/ai/components.json` next to this file, so `npx lufia-ai` always matches the installed version.
+ * Reads `dist/ai/components.json` next to this file, so `npx --no-install lufia-ai` always matches the installed version.
  */
 import { readFileSync } from "node:fs";
 import { execute, loadManifest } from "./lufia-ai/core.js";

@@ -8,18 +8,25 @@ import { inspectComponent, listComponents, parseLimit, searchComponents } from "
 // Newest first. 2026-07-28 makes the protocol stateless (no initialize); `server/discover` and the per-request
 // `_meta` protocol version below cover it, while `initialize` keeps older clients working.
 export const SUPPORTED_VERSIONS = ["2026-07-28", "2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
-const HANDSHAKE_VERSIONS = SUPPORTED_VERSIONS.filter((version) => version < "2026-07-28");
-const STATELESS_META = "io.modelcontextprotocol/protocolVersion";
+const MODERN_VERSION = "2026-07-28";
+const HANDSHAKE_VERSIONS = SUPPORTED_VERSIONS.filter((version) => version !== MODERN_VERSION);
+const VERSION_META = "io.modelcontextprotocol/protocolVersion";
+const SERVER_INFO_META = "io.modelcontextprotocol/serverInfo";
+// The manifest only changes with the installed package, so clients may cache listings for an hour. Nothing in it is
+// user specific, hence "public" (CacheableResult, schema 2026-07-28).
+const CACHE = { ttlMs: 3_600_000, cacheScope: "public" };
 
 const INVALID_REQUEST = -32600;
 const METHOD_NOT_FOUND = -32601;
 const INVALID_PARAMS = -32602;
 const PARSE_ERROR = -32700;
+const UNSUPPORTED_PROTOCOL_VERSION = -32022;
 
 class RpcError extends Error {
-  constructor(code, message) {
+  constructor(code, message, data) {
     super(message);
     this.code = code;
+    this.data = data;
   }
 }
 
@@ -105,7 +112,7 @@ function callTool(manifest, params) {
 }
 
 /** Handles one JSON-RPC request; returns the result, or throws RpcError. */
-function dispatch(manifest, serverInfo, method, params) {
+function dispatch(manifest, serverInfo, method, params, modern) {
   switch (method) {
     case "initialize": {
       const asked = params?.protocolVersion;
@@ -116,15 +123,13 @@ function dispatch(manifest, serverInfo, method, params) {
       };
     }
     case "server/discover":
-      return {
-        supportedVersions: SUPPORTED_VERSIONS,
-        capabilities: { tools: { listChanged: false } },
-        serverInfo,
-      };
+      // DiscoverResult: no top-level serverInfo; identity goes in _meta (added for every modern result).
+      return { supportedVersions: SUPPORTED_VERSIONS, capabilities: { tools: {} }, ...CACHE };
     case "ping":
+      if (modern) throw new RpcError(METHOD_NOT_FOUND, "Method not found: ping");
       return {};
     case "tools/list":
-      return { tools: TOOLS };
+      return { tools: TOOLS, ...(modern ? CACHE : {}) };
     case "tools/call":
       return callTool(manifest, params);
     default:
@@ -159,15 +164,29 @@ export function handleMessage(manifest, serverInfo, message) {
   }
   if (!("id" in message)) return null; // notification, e.g. notifications/initialized
   try {
-    const result = dispatch(manifest, serverInfo, message.method, message.params);
-    if (message.params?._meta?.[STATELESS_META]) result.resultType = "complete";
+    const requested = message.params?._meta?.[VERSION_META];
+    if (requested !== undefined && !SUPPORTED_VERSIONS.includes(requested)) {
+      // UnsupportedProtocolVersionError: the client picks a mutually supported version and retries.
+      throw new RpcError(UNSUPPORTED_PROTOCOL_VERSION, "Unsupported protocol version", {
+        supported: SUPPORTED_VERSIONS,
+        requested: String(requested),
+      });
+    }
+    const modern = requested === MODERN_VERSION || message.method === "server/discover";
+    const result = dispatch(manifest, serverInfo, message.method, message.params, modern);
+    if (modern) {
+      result.resultType = "complete";
+      result._meta = { ...result._meta, [SERVER_INFO_META]: serverInfo };
+    }
     return { jsonrpc: "2.0", id: message.id, result };
   } catch (error) {
     if (!(error instanceof RpcError)) {
       process.stderr.write(`lufia-ai mcp: ${error instanceof Error ? error.stack : String(error)}\n`);
       return { jsonrpc: "2.0", id: message.id, error: { code: -32603, message: "Internal error" } };
     }
-    return { jsonrpc: "2.0", id: message.id, error: { code: error.code, message: error.message } };
+    const body = { code: error.code, message: error.message };
+    if (error.data !== undefined) body.data = error.data;
+    return { jsonrpc: "2.0", id: message.id, error: body };
   }
 }
 
@@ -185,6 +204,10 @@ export function serve(manifest, serverInfo) {
       return;
     }
     // Batches were removed from the protocol in 2025-06-18; answer each element anyway when a client sends one.
+    if (Array.isArray(message) && !message.length) {
+      send({ jsonrpc: "2.0", id: null, error: { code: INVALID_REQUEST, message: "Invalid request" } });
+      return;
+    }
     const responses = (Array.isArray(message) ? message : [message])
       .map((item) => handleMessage(manifest, serverInfo, item))
       .filter(Boolean);
@@ -203,7 +226,9 @@ export function serve(manifest, serverInfo) {
   });
   process.stdin.on("end", () => {
     handleLine(buffer);
-    process.exit(0);
+    // Let queued stdout writes drain before leaving, so a client that closes stdin right after its last request
+    // still receives every response.
+    process.stdout.write("", () => process.exit(0));
   });
   process.stderr.write(`lufia-ai mcp: ${serverInfo.name} ${serverInfo.version} ready on stdio\n`);
 }

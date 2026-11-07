@@ -208,7 +208,9 @@ export function execute(argv, { manifestPath, usage }) {
     result = listComponents(manifest);
   } else if (command === "search") {
     const at = args.indexOf("--limit");
-    result = searchComponents(manifest, positional.join(" "), parseLimit(at >= 0 ? args[at + 1] : undefined));
+    const limit = parseLimit(at >= 0 ? args[at + 1] : undefined);
+    if (!positional.length) throw new Error(`Missing search query.\n\n${usage}`);
+    result = searchComponents(manifest, positional.join(" "), limit);
   } else if (command === "show") {
     result = inspectComponent(manifest, positional[0]);
     if (!result) throw new Error(`Unknown component: ${positional[0] ?? "(missing)"}`);

@@ -58,33 +58,35 @@ spec per component, `llms.txt`) and a `lufia-ai` command that reads them offline
 the published site, which always documents the latest version.
 
 ```bash
-npx lufia-ai search "searchable async select"   # ranked components for a task (--json, --limit 8)
-npx lufia-ai show Combobox                      # import path, props, example, accessibility (--json)
-npx lufia-ai list                               # every component
-npx lufia-ai version                            # the installed version
+npx --no-install lufia-ai search "searchable async select"   # ranked components for a task (--json, --limit 8)
+npx --no-install lufia-ai show Combobox                      # import path, props, example, accessibility (--json)
+npx --no-install lufia-ai list                               # every component
+npx --no-install lufia-ai version                            # the installed version
 ```
 
 `lufia-ai mcp` starts a local stdio [MCP](https://modelcontextprotocol.io) server with three read-only tools:
 `search_components` (`query`, optional `limit`), `get_component` (`name`) and `list_components`. Each returns JSON text.
-Register it in your agent. The package must be installed in the project, since `npx` resolves the local copy.
+Register it in your agent. The package must be installed in the project: always pass `--no-install`, because a bare `npx lufia-ai` that finds no local copy downloads and runs whatever package of that name exists on npm (and without a terminal it does not ask first).
 
-Claude Code, `.mcp.json` at the project root (or `claude mcp add lufia -- npx lufia-ai mcp`):
+Claude Code, `.mcp.json` at the project root (or `claude mcp add --transport stdio --scope project lufia -- npx --no-install lufia-ai mcp`):
 
 ```json
-{ "mcpServers": { "lufia": { "command": "npx", "args": ["lufia-ai", "mcp"] } } }
+{ "mcpServers": { "lufia": { "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
 ```
 
 Cursor, `.cursor/mcp.json`:
 
 ```json
-{ "mcpServers": { "lufia": { "command": "npx", "args": ["lufia-ai", "mcp"] } } }
+{ "mcpServers": { "lufia": { "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
 ```
 
 VS Code (Copilot agent mode), `.vscode/mcp.json`; note the top-level key is `servers`, not `mcpServers`:
 
 ```json
-{ "servers": { "lufia": { "type": "stdio", "command": "npx", "args": ["lufia-ai", "mcp"] } } }
+{ "servers": { "lufia": { "type": "stdio", "command": "npx", "args": ["--no-install", "lufia-ai", "mcp"] } } }
 ```
+
+The server must start in the project root, where `node_modules` lives. VS Code defaults to the workspace folder; if your host does not, set `"cwd": "${workspaceFolder}"` (VS Code) or the equivalent for the host.
 
 The raw files are also importable, for example `@lufia/design-system/ai/components.json`.
 

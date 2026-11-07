@@ -48,6 +48,10 @@ describe("lufia-ai CLI", () => {
     expect(unknown.stderr).toContain("Unknown component: Nope");
     expect(cli("search", "x", "--limit", "99").status).toBe(1);
     expect(cli("wat").status).toBe(1);
+    const empty = cli("search");
+    expect(empty.status).toBe(1);
+    expect(empty.stderr).toContain("Missing search query");
+    expect(empty.stderr).toContain("Usage:");
   });
 });
 
@@ -114,15 +118,56 @@ describe("lufia-ai mcp", () => {
     expect(stderr).toContain("ready on stdio");
   });
 
-  it("falls back to a supported version and supports the stateless discovery call", async () => {
-    const { messages } = await mcpSession([
-      rpc(1, "initialize", { protocolVersion: "1999-01-01" }),
-      rpc(2, "server/discover", {}),
-      rpc(3, "tools/list", { _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28" } }),
-    ]);
+  it("falls back to a supported version in the legacy handshake", async () => {
+    const { messages } = await mcpSession([rpc(1, "initialize", { protocolVersion: "1999-01-01" })]);
     expect(messages[0].result.protocolVersion).toBe("2025-11-25");
-    expect(messages[1].result.supportedVersions).toContain("2026-07-28");
-    expect(messages[2].result.resultType).toBe("complete");
+    expect(messages[0].result).not.toHaveProperty("resultType");
+  });
+
+  // Shapes below follow the 2026-07-28 schema (schema/2026-07-28/schema.ts): `resultType` on every result (Result),
+  // `ttlMs` (integer >= 0) and `cacheScope` on CacheableResult (~l.1081, used by ListToolsResult ~l.1779 and
+  // DiscoverResult ~l.678), no top-level serverInfo: identity lives in result `_meta` (examples/DiscoverResultResponse).
+  describe("2026-07-28 stateless mode", () => {
+    const meta = { _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28" } };
+    const identity = { name: "lufia-ai", version: "9.9.9" };
+
+    it("answers discover, tools/list and tools/call without a handshake", async () => {
+      const { messages } = await mcpSession([
+        rpc(1, "server/discover", {}),
+        rpc(2, "tools/list", meta),
+        rpc(3, "tools/call", { ...meta, name: "get_component", arguments: { name: "Button" } }),
+        rpc(4, "tools/call", { ...meta, name: "get_component", arguments: { name: "Nope" } }),
+      ]);
+      const [discover, list, get, missing] = messages.map((m) => m.result);
+      for (const result of [discover, list, get, missing]) {
+        expect(result.resultType).toBe("complete");
+        expect(result._meta["io.modelcontextprotocol/serverInfo"]).toEqual(identity);
+        expect(result).not.toHaveProperty("serverInfo");
+      }
+      expect(discover.supportedVersions).toContain("2026-07-28");
+      expect(discover.capabilities.tools).toEqual({});
+      for (const cached of [discover, list]) {
+        expect(Number.isInteger(cached.ttlMs) && cached.ttlMs >= 0).toBe(true);
+        expect(["public", "private"]).toContain(cached.cacheScope);
+      }
+      expect(list.tools.map((t) => t.name)).toContain("search_components");
+      expect(JSON.parse(get.content[0].text).name).toBe("Button");
+      expect(missing.isError).toBe(true);
+    });
+
+    it("rejects an unsupported _meta version with -32022 and the supported list", async () => {
+      const { messages } = await mcpSession([
+        rpc(1, "tools/list", { _meta: { "io.modelcontextprotocol/protocolVersion": "2031-01-01" } }),
+      ]);
+      expect(messages[0].error.code).toBe(-32022);
+      expect(messages[0].error.data.requested).toBe("2031-01-01");
+      expect(messages[0].error.data.supported).toContain("2026-07-28");
+    });
+
+    it("no longer answers ping", async () => {
+      const { messages } = await mcpSession([rpc(1, "ping", meta)]);
+      expect(messages[0].error.code).toBe(-32601);
+    });
   });
 
   it("returns JSON-RPC errors for unknown methods, tools and bad arguments", async () => {
@@ -135,6 +180,7 @@ describe("lufia-ai mcp", () => {
       rpc(6, "tools/call", { arguments: {} }),
       "{not json",
       JSON.stringify([1]),
+      "[]",
       call(7, "get_component", { name: "Nope" }),
     ]);
     expect(messages[0].error.code).toBe(-32601);
@@ -143,7 +189,8 @@ describe("lufia-ai mcp", () => {
     expect(messages[7]).toBeInstanceOf(Array);
     expect(messages[7][0].error.code).toBe(-32600);
     // An unknown component is a tool-level error, not a protocol error.
-    expect(messages[8].result.isError).toBe(true);
+    expect(messages[8].error.code).toBe(-32600);
+    expect(messages[9].result.isError).toBe(true);
     // Every stdout line is a protocol message.
     expect(stdoutLines.every((line) => line.startsWith("{") || line.startsWith("["))).toBe(true);
   });
