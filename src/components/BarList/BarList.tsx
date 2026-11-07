@@ -37,8 +37,9 @@ export type BarListProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
 export function BarList({ title, summary, rows, total, className, ...rest }: BarListProps) {
   const captionId = useId();
   if (rows.length === 0) return null;
-  const max = Math.max(0, ...rows.map((row) => row.amount));
-  const share = (amount: number) => (max > 0 ? Math.max(0, Math.min(100, (amount * 100) / max)) : 0);
+  const safe = (amount: number) => (Number.isFinite(amount) ? amount : 0);
+  const max = Math.max(0, ...rows.map((row) => safe(row.amount)));
+  const share = (raw: number) => (max > 0 ? Math.max(0, Math.min(100, (safe(raw) * 100) / max)) : 0);
   return (
     <figure
       {...rest}
@@ -61,7 +62,7 @@ export function BarList({ title, summary, rows, total, className, ...rest }: Bar
               {row.detail ? <small className={styles.small}>{row.detail}</small> : null}
             </span>
             <span className={styles.track} aria-hidden="true">
-              {row.amount > 0 ? (
+              {safe(row.amount) > 0 ? (
                 <span
                   className={styles.fill}
                   data-tone={row.tone ?? "accent"}

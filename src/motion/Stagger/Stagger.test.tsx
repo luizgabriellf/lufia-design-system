@@ -39,6 +39,30 @@ describe("Stagger", () => {
     ]);
   });
 
+  it("clamps the limit so the delay stays capped", () => {
+    render(
+      <Stagger limit={1000}>
+        {Array.from({ length: 12 }, (_, i) => (
+          <p key={i}>{`n${i}`}</p>
+        ))}
+      </Stagger>,
+    );
+    expect(index(screen.getByText("n11"))).toBe("7");
+  });
+
+  it("leaves Fragments alone", () => {
+    render(
+      <Stagger data-testid="s">
+        <>
+          <p>inside</p>
+        </>
+        <p>after</p>
+      </Stagger>,
+    );
+    expect(index(screen.getByText("inside"))).toBe("");
+    expect(index(screen.getByText("after"))).toBe("0");
+  });
+
   it("keeps a child's own style and leaves text nodes alone", () => {
     render(
       <Stagger data-testid="s">

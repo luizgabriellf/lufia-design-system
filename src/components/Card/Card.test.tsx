@@ -74,7 +74,7 @@ describe("Card", () => {
     expect(container.firstElementChild).toHaveAttribute("data-padding", padding);
   });
 
-  it("renders a description under the title, and ignores it without a title", () => {
+  it("renders a description under the title, and on its own without a title", () => {
     const { container, rerender } = render(
       <Card title="Report" description="Totals for the period">
         Body
@@ -83,7 +83,8 @@ describe("Card", () => {
     expect(screen.getByText("Totals for the period")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Report" })).toBeInTheDocument();
     rerender(<Card description="Orphan">Body</Card>);
-    expect(container).not.toHaveTextContent("Orphan");
+    expect(container).toHaveTextContent("Orphan");
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 
   it("keeps the original header markup when there is no description", () => {

@@ -114,33 +114,35 @@ export function StatTile({
       data-loading={loading || undefined}
       aria-busy={loading || undefined}
     >
-      <span className={styles.label}>{labelNode}</span>
-      <span className={styles.valueRow}>
-        <span id={valueId} className={styles.value}>
-          {loading ? <Skeleton width="4.5rem" height="1.75rem" label={loadingLabel} /> : value}
+      <div className={styles.body}>
+        <span className={styles.label}>{labelNode}</span>
+        <span className={styles.valueRow}>
+          <span id={valueId} className={styles.value}>
+            {loading ? <Skeleton width="4.5rem" height="1.75rem" label={loadingLabel} /> : value}
+          </span>
+          {sparkline && !loading ? <span className={styles.spark}>{sparkline}</span> : null}
         </span>
-        {sparkline && !loading ? <span className={styles.spark}>{sparkline}</span> : null}
-      </span>
-      {loading ? (
-        hasDelta || hasHint ? (
-          <Skeleton width="70%" height="0.875rem" />
-        ) : null
-      ) : (
-        <>
-          {hasDelta ? (
-            <span id={deltaId} className={styles.delta} data-tone={deltaTone} data-trend={trend}>
-              {trend ? <TrendArrow trend={trend} /> : null}
-              {trendLabel ? <VisuallyHidden>{trendLabel} </VisuallyHidden> : null}
-              {delta}
-            </span>
-          ) : null}
-          {hasHint ? (
-            <span id={hintId} className={styles.hint}>
-              {hint}
-            </span>
-          ) : null}
-        </>
-      )}
+        {loading ? (
+          hasDelta || hasHint ? (
+            <Skeleton width="70%" height="0.875rem" />
+          ) : null
+        ) : (
+          <>
+            {hasDelta ? (
+              <span id={deltaId} className={styles.delta} data-tone={deltaTone} data-trend={trend}>
+                {trend ? <TrendArrow trend={trend} /> : null}
+                {trendLabel ? <VisuallyHidden>{trendLabel} </VisuallyHidden> : null}
+                {delta}
+              </span>
+            ) : null}
+            {hasHint ? (
+              <span id={hintId} className={styles.hint}>
+                {hint}
+              </span>
+            ) : null}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -34,7 +34,7 @@ export const WithDelta: Story = {
 };
 export const FallingIsGood: Story = {
   args: {
-    label: "Open incidents",
+    label: "Open tickets",
     value: "7",
     delta: "3 fewer than last week",
     trend: "down",
@@ -75,7 +75,7 @@ export const LongLabel: Story = {
 function Counting() {
   const [value, setValue] = useState(128);
   return (
-    <div style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>
+    <div style={{ display: "grid", gap: "0.75rem", justifyItems: "stretch" }}>
       <StatTile
         label="Open items"
         value={<AnimatedNumber value={value} />}
@@ -88,6 +88,23 @@ function Counting() {
   );
 }
 export const WithAnimatedNumber: Story = { render: () => <Counting /> };
+
+/** Guards the width: a tile in a flex row shares the space and never collapses to its padding. */
+export const InFlexRow: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "min(100%, 40rem)" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => (
+    <div style={{ display: "flex", gap: "0.75rem" }}>
+      <StatTile label="Open items" value="128" />
+      <StatTile label="Overdue" value="4" tone="danger" />
+    </div>
+  ),
+};
 
 export const Grid: Story = {
   decorators: [

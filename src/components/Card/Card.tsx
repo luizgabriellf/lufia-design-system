@@ -9,7 +9,7 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   title?: ReactNode;
   /** Heading level of `title` (2 to 6). Pick the one that fits the page outline. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
-  /** One short line under the `title`. */
+  /** One short line under the `title` (or on its own, when there is no title). */
   description?: ReactNode;
   /** Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. */
   headerAction?: ReactNode;
@@ -52,8 +52,8 @@ export function Card({
 }: CardProps) {
   const Heading = `h${headingLevel}` as const;
   const interactive = href !== undefined;
-  const hasHeader = title !== undefined || headerAction !== undefined;
   const hasDescription = description !== undefined && description !== null && description !== false;
+  const hasHeader = title !== undefined || headerAction !== undefined || hasDescription;
   return (
     <div
       {...rest}
@@ -64,17 +64,19 @@ export function Card({
     >
       {hasHeader ? (
         <div className={styles.header}>
-          {title !== undefined ? (
+          {title !== undefined || hasDescription ? (
             <HeadingBlock hasDescription={hasDescription} description={description}>
-              <Heading className={styles.title}>
-                {interactive ? (
-                  <LufiaLink href={href} className={styles.link}>
-                    {title}
-                  </LufiaLink>
-                ) : (
-                  title
-                )}
-              </Heading>
+              {title !== undefined ? (
+                <Heading className={styles.title}>
+                  {interactive ? (
+                    <LufiaLink href={href} className={styles.link}>
+                      {title}
+                    </LufiaLink>
+                  ) : (
+                    title
+                  )}
+                </Heading>
+              ) : null}
             </HeadingBlock>
           ) : null}
           {headerAction ? <div className={styles.action}>{headerAction}</div> : null}

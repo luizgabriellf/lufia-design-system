@@ -3,22 +3,29 @@
   --tile-value: var(--lufia-color-text-default);
 
   position: relative;
-  display: flex;
   box-sizing: border-box;
+  inline-size: 100%;
   min-inline-size: 0;
-  flex-direction: column;
-  gap: 0.4375rem;
   padding-block: 1rem 1.0625rem;
   padding-inline: 1.125rem;
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
   border-radius: var(--lufia-radius-md);
   background: var(--lufia-color-bg-surface);
   color: var(--lufia-color-text-default);
+}
+
+/* The container for the narrow-tile query lives on this inner wrapper, not on the root: size containment on the root
+   would let it collapse to its padding in a flex row or a start-aligned grid. */
+.body {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: 0.4375rem;
   container-type: inline-size;
 }
 
-/* The short accent bar above the label, from the canonical KPI tile. */
-.root::before {
+/* The short accent bar above the label. */
+.body::before {
   display: block;
   inline-size: 1.625rem;
   block-size: var(--lufia-border-width-thick);
@@ -201,7 +208,7 @@
     border-color: CanvasText;
   }
 
-  .root::before {
+  .body::before {
     background: CanvasText;
   }
 

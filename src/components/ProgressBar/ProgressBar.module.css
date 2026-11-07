@@ -66,8 +66,4 @@
   .fill {
     background: Highlight;
   }
-
-  .tick {
-    background: CanvasText;
-  }
 }

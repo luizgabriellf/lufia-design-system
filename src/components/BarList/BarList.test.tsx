@@ -55,6 +55,23 @@ describe("BarList", () => {
     expect(container.querySelectorAll("[data-tone]")).toHaveLength(0);
   });
 
+  it("treats non-finite amounts as 0", () => {
+    const { container } = render(
+      <BarList
+        title="Items"
+        rows={[
+          { key: "a", name: "A", value: "10", amount: 10 },
+          { key: "b", name: "B", value: "?", amount: Number.NaN },
+          { key: "c", name: "C", value: "inf", amount: Number.POSITIVE_INFINITY },
+        ]}
+      />,
+    );
+    const fills = container.querySelectorAll<HTMLElement>("[data-tone]");
+    expect(fills).toHaveLength(1);
+    expect(fills[0]!.style.inlineSize).toBe("100%");
+    expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
+  });
+
   it("passes className and rest props to the figure", () => {
     render(<BarList title="Items" rows={rows} className="extra" data-testid="b" />);
     expect(screen.getByTestId("b")).toHaveClass("extra");

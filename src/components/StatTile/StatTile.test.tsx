@@ -139,6 +139,13 @@ describe("StatTile", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("keeps its width in a flex row: the root is not a size container and fills its track", () => {
+    const root = css.match(/\.root \{([^}]*)\}/)![1]!;
+    expect(root).not.toMatch(/container-type/);
+    expect(root).toMatch(/inline-size:\s*100%/);
+    expect(css.match(/\.body \{([^}]*)\}/)![1]).toMatch(/container-type:\s*inline-size/);
+  });
+
   it("hover and press use motion tokens and are switched off under reduced motion", () => {
     const rule = css.match(/\.root\[data-interactive\] \{([^}]*)\}/);
     expect(rule?.[1]).toMatch(/var\(--lufia-motion-duration-instant\)/);
