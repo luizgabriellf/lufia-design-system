@@ -12,6 +12,7 @@ export const OUT = "docs/ai";
 
 const cell = (text) =>
   String(text ?? "")
+    .replace(/\\/g, "\\\\")
     .replace(/\|/g, "\\|")
     .replace(/\n/g, " ");
 const code = (text) => `\`${String(text).replace(/`/g, "'")}\``;

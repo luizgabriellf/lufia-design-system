@@ -47,4 +47,4 @@ npm run verify:ai-docs    # the drift gate
 
 `npm run build-storybook` ends with `scripts/ai/publish.mjs`, which copies the files into `storybook-static`, so the GitHub
 Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `components.json`, plus `/ai/CONSUMING.md` and
-`/ai/components/<Name>.md` (the targets of the links in `llms.txt`). `docs/` also ships in the npm package files list.
+`/ai/components/<Name>.md` (the targets of the links in `llms.txt`). The generated `docs/ai` files are not published in the npm package; they live in the repo and on Pages.
