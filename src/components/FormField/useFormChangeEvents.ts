@@ -9,8 +9,8 @@ import { useCallback, useEffect, useInsertionEffect, useRef } from "react";
  * called with the value a user gesture (a click, an arrow key) is asking for. A value that changes any other way, a
  * controlled `value` from the parent or a form reset, dispatches nothing, and neither does choosing what is already chosen.
  * An announcement is settled by the commit that shows its value, whenever that is (a transition may commit later); a
- * commit that shows a different value drops it. Edge case: if a controlled parent refuses the choice and nothing renders
- * in between, the announcement waits, and the parent later setting that same value announces once. There is no timer:
+ * commit that shows a different value drops it. Edge case: if a controlled parent refuses the choice, the announcement waits
+ * through any commits that still show the old value, and the parent later setting that same value announces once. There is no timer:
  * React schedules its own render in a microtask, so any time-based expiry loses real events.
  * The events are for native listeners and React `onInput`: React's own `onChange` ignores hidden inputs, so it never sees them.
  * Internal: shared by the controls that render hidden inputs.

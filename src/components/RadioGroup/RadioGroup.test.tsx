@@ -262,7 +262,7 @@ describe("RadioGroup", () => {
     rerender(withValue("transfer"));
     rerender(withValue("card"));
     expect(onChange).not.toHaveBeenCalled();
-    // The edge: refused, nothing renders in between, the parent later sets that same value.
+    // The edge: refused, commits keep showing the old value, the parent later sets that same value.
     await user.click(screen.getByRole("radio", { name: "Cash" }));
     rerender(withValue("cash"));
     expect(onChange).toHaveBeenCalledTimes(1);
