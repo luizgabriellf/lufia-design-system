@@ -16,7 +16,7 @@ export type ColumnChartColumn = {
   key: string;
   /** Printed under the column and used as its heading in the data table ("Mon", "Week 12"). */
   label: ReactNode;
-  /** One number per series, in the order of `series`. Missing, negative and non-finite numbers count as 0. */
+  /** One number per series, in the order of `series`. Missing numbers count as 0. Negative and non-finite numbers are drawn as 0 but the data table shows them as given (through `formatValue`), so bad data is visible to assistive technology and not silently hidden. */
   values: readonly number[];
 };
 
@@ -41,6 +41,8 @@ export type ColumnChartProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
 
 const DEFAULT_TONES: readonly ChartTone[] = ["accent", "neutral", "success", "warning", "danger"];
 const MAX_STAGGER = 6;
+/** Series told apart by a fill pattern in forced-colors mode, where tones collapse to one colour. */
+const PATTERNS = 4;
 
 const clean = (value: number | undefined) =>
   value !== undefined && Number.isFinite(value) && value > 0 ? value : 0;
@@ -48,7 +50,7 @@ const clean = (value: number | undefined) =>
 /**
  * Columns on one zero baseline, for a weekly strip or a stack of measures per period.
  *
- * The data is a visually hidden table (series are rows, columns are the headings) that a screen reader can navigate; the
+ * The data is a visually hidden table named by the title (series are rows, columns are the headings) that a screen reader can navigate; the
  * drawing is `aria-hidden` shape on top of it. One scale for the whole chart, so columns compare. A zero column keeps its
  * slot and shows a thin baseline mark. The draw-in plays once on mount, on `transform` only, and is removed under reduced
  * motion. Renders nothing when `columns` or `series` is empty: show an `EmptyState` instead.
@@ -104,6 +106,7 @@ export function ColumnChart({
                       key={entry.key}
                       className={styles.segment}
                       data-tone={toneOf(index)}
+                      data-series={index % PATTERNS}
                       style={
                         {
                           blockSize: `${(value * 100) / max}%`,
@@ -122,13 +125,18 @@ export function ColumnChart({
       {showLegend ? (
         <ul className={styles.legend}>
           {series.map((entry, index) => (
-            <li key={entry.key} className={styles.legendItem} data-tone={toneOf(index)}>
+            <li
+              key={entry.key}
+              className={styles.legendItem}
+              data-tone={toneOf(index)}
+              data-series={index % PATTERNS}
+            >
               {entry.label}
             </li>
           ))}
         </ul>
       ) : null}
-      <table className={styles.table}>
+      <table className={styles.table} aria-labelledby={captionId}>
         <thead>
           <tr>
             <td />
@@ -144,7 +152,7 @@ export function ColumnChart({
             <tr key={entry.key}>
               <th scope="row">{entry.label}</th>
               {columns.map((column) => (
-                <td key={column.key}>{formatValue(clean(column.values[index]))}</td>
+                <td key={column.key}>{formatValue(column.values[index] ?? 0)}</td>
               ))}
             </tr>
           ))}

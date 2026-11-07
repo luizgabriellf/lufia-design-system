@@ -181,14 +181,34 @@
 }
 
 @media (forced-colors: active) {
+  /* Tones collapse to one colour, so each series gets its own fill pattern, in the columns and in the legend. */
   .segment,
   .legendItem::before {
-    background: CanvasText;
+    --pattern: none;
+
+    border: var(--lufia-border-width-thin) solid CanvasText;
+    background: Canvas var(--pattern);
     forced-color-adjust: none;
   }
 
-  .segment + .segment {
-    border-color: Canvas;
+  [data-series="0"] {
+    --pattern: linear-gradient(CanvasText, CanvasText);
+  }
+
+  [data-series="1"] {
+    --pattern: repeating-linear-gradient(45deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  [data-series="2"] {
+    --pattern: radial-gradient(CanvasText 1.5px, transparent 1.5px) 0 0 / 6px 6px;
+  }
+
+  [data-series="3"] {
+    --pattern: repeating-linear-gradient(90deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  .legendItem::before {
+    box-sizing: border-box;
   }
 
   .zero {

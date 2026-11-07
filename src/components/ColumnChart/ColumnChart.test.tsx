@@ -111,9 +111,23 @@ describe("ColumnChart", () => {
         ]}
       />,
     );
-    expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
     expect(segments(container).filter((el) => el.hasAttribute("style"))).toHaveLength(1);
     expect(container.querySelectorAll("[data-zero]")).toHaveLength(1);
+  });
+
+  it("shows odd numbers as given in the table while drawing them as 0", () => {
+    render(
+      <ColumnChart
+        title="Odd"
+        series={stacked}
+        columns={[{ key: "a", label: "A", values: [4, -3, Number.NaN] }]}
+        formatValue={(n) => `<${n}>`}
+      />,
+    );
+    const row = (name: string) => within(screen.getByRole("row", { name: new RegExp(name) }));
+    expect(row("Late").getByRole("cell")).toHaveTextContent("<-3>");
+    expect(row("Open").getByRole("cell")).toHaveTextContent("<NaN>");
+    expect(row("On time").getByRole("cell")).toHaveTextContent("<4>");
   });
 
   it("copes with all-zero data", async () => {
@@ -130,6 +144,21 @@ describe("ColumnChart", () => {
     expect(container).toBeEmptyDOMElement();
     rerender(<ColumnChart title="x" series={[]} columns={week} />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("names the data table after the title", () => {
+    render(<ColumnChart title="Deliveries" series={single} columns={week} />);
+    expect(screen.getByRole("table", { name: "Deliveries" })).toBeInTheDocument();
+  });
+
+  it("gives each series a pattern index for forced-colors mode, in the columns and the legend", () => {
+    const { container } = render(<ColumnChart title="Orders" series={stacked} columns={stackedColumns} />);
+    const idx = (selector: string) =>
+      [...container.querySelectorAll(selector)].map((el) => el.getAttribute("data-series"));
+    expect(idx("li")).toEqual(["0", "1", "2"]);
+    expect(idx("span[style]").slice(0, 3)).toEqual(["0", "1", "2"]);
+    const forced = css.match(/@media \(forced-colors: active\) \{([\s\S]*)\n\}/)![1]!;
+    for (const n of [0, 1, 2, 3]) expect(forced).toContain(`[data-series="${n}"]`);
   });
 
   it("hides the drawing from assistive technology, not the data", () => {
