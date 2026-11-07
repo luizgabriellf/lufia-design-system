@@ -1,0 +1,461 @@
+/**
+ * Builds the component manifest from the TypeScript types, the MDX docs and the story files.
+ *
+ * Run through `tsx` (see `npm run build:ai-docs`) because it reads `src/docs/taxonomy.ts` directly, so the category,
+ * summary and WAI-ARIA pattern of a component have exactly one source. The output is deterministic: no timestamps and no
+ * package version, so the committed copy only changes when a component changes.
+ */
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import ts from "typescript";
+import { ENTRIES, docsIdFor } from "../../src/docs/taxonomy.ts";
+
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+export const PACKAGE_NAME = "@lufia/design-system";
+
+const read = (file) => readFileSync(path.join(ROOT, file), "utf8");
+
+/** Directory names exported by `export * from "./<dir>/<Name>"` lines of src/index.ts, in file order. */
+function indexExports() {
+  const names = [];
+  for (const match of read("src/index.ts").matchAll(
+    /export \* from "\.\/(components|motion)(?:\/([^"]+))?";/g,
+  )) {
+    names.push(match[2] ? { dir: match[1], name: match[2] } : { dir: match[1], name: null });
+  }
+  return names;
+}
+
+/** Every component directory that src/index.ts re-exports, directly or through src/motion/index.ts. */
+export function exportedComponentDirs() {
+  const result = [];
+  for (const { dir, name } of indexExports()) {
+    if (name) {
+      result.push({ dir, name });
+      continue;
+    }
+    for (const m of read(`src/${dir}/index.ts`).matchAll(/export \* from "\.\/([^"]+)";/g)) {
+      result.push({ dir, name: m[1] });
+    }
+  }
+  return result;
+}
+
+function createProgram(entryFiles) {
+  const configPath = path.join(ROOT, "tsconfig.json");
+  const config = ts.readConfigFile(configPath, ts.sys.readFile);
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, ROOT);
+  const extra = [path.join(ROOT, "src/css-modules.d.ts")].filter(existsSync);
+  return ts.createProgram({
+    rootNames: [...entryFiles, ...extra],
+    options: { ...parsed.options, noEmit: true },
+  });
+}
+
+const FORMAT = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
+const inNodeModules = (decl) => decl.getSourceFile().fileName.includes("/node_modules/");
+const stripUndefined = (text) => text.replace(/ \| undefined$/, "");
+const oneLine = (text) => text.replace(/\s+/g, " ").trim();
+
+/** Defaults written as `name = value` in the props destructuring of a component or hook. */
+function destructuredDefaults(declaration) {
+  const defaults = new Map();
+  const fn = ts.isVariableDeclaration(declaration) ? declaration.initializer : declaration;
+  if (!fn || !(ts.isFunctionDeclaration(fn) || ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)))
+    return defaults;
+  const collect = (pattern) => {
+    for (const element of pattern.elements) {
+      if (element.initializer && ts.isIdentifier(element.name)) {
+        const key =
+          element.propertyName && ts.isIdentifier(element.propertyName)
+            ? element.propertyName.text
+            : element.name.text;
+        defaults.set(key, oneLine(element.initializer.getText()));
+      }
+    }
+  };
+  const first = fn.parameters[0];
+  if (!first) return defaults;
+  if (ts.isObjectBindingPattern(first.name)) collect(first.name);
+  if (fn.body && ts.isBlock(fn.body) && ts.isIdentifier(first.name)) {
+    for (const statement of fn.body.statements) {
+      if (!ts.isVariableStatement(statement)) continue;
+      for (const d of statement.declarationList.declarations) {
+        if (
+          ts.isObjectBindingPattern(d.name) &&
+          d.initializer &&
+          ts.isIdentifier(d.initializer) &&
+          d.initializer.text === first.name.text
+        ) {
+          collect(d.name);
+        }
+      }
+    }
+  }
+  return defaults;
+}
+
+function propsOf(checker, parameter, defaults) {
+  const declaration = parameter.valueDeclaration ?? parameter.declarations?.[0];
+  const type = checker.getTypeOfSymbolAtLocation(parameter, declaration);
+  const members = type.isUnion() ? type.types : [type];
+  const merged = new Map();
+  let nativeProps = false;
+  for (const member of members) {
+    for (const prop of checker.getPropertiesOfType(member)) {
+      const decls = prop.declarations ?? [];
+      if (decls.length > 0 && decls.every(inNodeModules)) {
+        nativeProps = true;
+        continue;
+      }
+      const entry = merged.get(prop.name);
+      const required = !(prop.flags & ts.SymbolFlags.Optional);
+      const typeText = resolvedTypeText(
+        checker,
+        checker.getTypeOfSymbolAtLocation(prop, decls[0] ?? declaration),
+      );
+      const description = oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker)));
+      if (entry) {
+        entry.required = entry.required && required;
+        entry.seen += 1;
+        if (!entry.types.includes(typeText)) entry.types.push(typeText);
+        if (!entry.description) entry.description = description;
+        continue;
+      }
+      const tags = prop.getJsDocTags(checker);
+      const tagged = tags.find((tag) => tag.name === "default")?.text;
+      merged.set(prop.name, {
+        name: prop.name,
+        types: [typeText],
+        required,
+        default: tagged ? oneLine(ts.displayPartsToString(tagged)) : (defaults.get(prop.name) ?? null),
+        description,
+        seen: 1,
+      });
+    }
+  }
+  const props = [...merged.values()].map(({ seen, types, ...rest }) => {
+    const shown = types.length > 1 ? types.filter((t) => t !== "undefined") : types;
+    return {
+      name: rest.name,
+      type: shown.join(" | "),
+      required: rest.required && seen === members.length,
+      default: rest.default,
+      description: rest.description,
+    };
+  });
+  return { props, nativeProps };
+}
+
+/** Code-point comparison: stable under every locale, unlike a bare `localeCompare`. */
+const compareByName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * Type text with string and number literal unions written out, so `variant: ButtonVariant` reads
+ * `"primary" | "secondary" | ...`. Other types print as TypeScript writes them.
+ */
+function resolvedTypeText(checker, type) {
+  const parts = type.isUnion() ? type.types : [type];
+  const rest = parts.filter((part) => !(part.flags & ts.TypeFlags.Undefined));
+  if (rest.length > 1 && rest.every((part) => part.isStringLiteral() || part.isNumberLiteral())) {
+    return literalUnion(rest.map((part) => part.value));
+  }
+  return oneLine(stripUndefined(checker.typeToString(type, undefined, FORMAT)));
+}
+
+/**
+ * TypeScript orders union members by internal type id, which depends on what the program loaded first. The order the
+ * author wrote is stable and reads better, so literal unions declared by an exported alias are remembered by their
+ * value set and written in that order wherever the same set appears.
+ */
+const DECLARED_ORDER = new Map();
+const orderKey = (values) => JSON.stringify(values.map(String).sort(compareText));
+const literalUnion = (values) =>
+  (DECLARED_ORDER.get(orderKey(values)) ?? values.map((v) => JSON.stringify(v))).join(" | ");
+
+function declaredOrder(symbol) {
+  const decl = symbol.declarations?.[0];
+  if (!decl || !ts.isTypeAliasDeclaration(decl) || !ts.isUnionTypeNode(decl.type)) return null;
+  const items = decl.type.types;
+  if (
+    !items.every(
+      (node) =>
+        ts.isLiteralTypeNode(node) && (ts.isStringLiteral(node.literal) || ts.isNumericLiteral(node.literal)),
+    )
+  )
+    return null;
+  return items.map((node) =>
+    ts.isStringLiteral(node.literal) ? JSON.stringify(node.literal.text) : node.literal.text,
+  );
+}
+
+const MAX_DEFINITION = 300;
+
+/** What an exported type alias stands for, or null when it is an interface or too large to be useful inline. */
+function describeType(checker, resolved) {
+  const declared = checker.getDeclaredTypeOfSymbol(resolved);
+  if (
+    declared.isUnion() &&
+    declared.types.every((part) => part.isStringLiteral() || part.isNumberLiteral())
+  ) {
+    const written = declaredOrder(resolved);
+    const values = declared.types.map((part) => part.value);
+    if (written) DECLARED_ORDER.set(orderKey(values), written);
+    return literalUnion(values);
+  }
+  if (!(resolved.flags & ts.SymbolFlags.TypeAlias)) return null;
+  const text = oneLine(checker.typeToString(declared, undefined, FORMAT | ts.TypeFormatFlags.InTypeAlias));
+  return text.length <= MAX_DEFINITION ? text : null;
+}
+
+function describeExport(checker, sourceFile, symbol) {
+  const name = symbol.name;
+  const resolved = symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol;
+  if (!(resolved.flags & ts.SymbolFlags.Value))
+    return {
+      name,
+      kind: "type",
+      description: oneLine(ts.displayPartsToString(resolved.getDocumentationComment(checker))),
+      definition: describeType(checker, resolved),
+    };
+  const declaration = resolved.valueDeclaration ?? resolved.declarations?.[0];
+  const type = checker.getTypeOfSymbolAtLocation(resolved, declaration ?? sourceFile);
+  const signatures = type.getCallSignatures();
+  if (signatures.length === 0)
+    return { name, kind: "constant", type: oneLine(checker.typeToString(type, undefined, FORMAT)) };
+  const signature = signatures[0];
+  const first = signature.getParameters()[0];
+  const description = oneLine(ts.displayPartsToString(resolved.getDocumentationComment(checker)));
+  if (/^use[A-Z]/.test(name)) {
+    return {
+      name,
+      kind: "hook",
+      description,
+      signature: oneLine(checker.signatureToString(signature, undefined, FORMAT)),
+      parameters: signature.getParameters().map((param) => {
+        const decl = param.valueDeclaration;
+        return {
+          name: param.name,
+          type: resolvedTypeText(checker, checker.getTypeOfSymbolAtLocation(param, decl)),
+          required:
+            !(param.flags & ts.SymbolFlags.Optional) &&
+            !(decl && ts.isParameter(decl) && (decl.questionToken || decl.initializer)),
+          description: oneLine(ts.displayPartsToString(param.getDocumentationComment(checker))),
+        };
+      }),
+      returns: oneLine(checker.typeToString(signature.getReturnType(), undefined, FORMAT)),
+    };
+  }
+  if (/^[A-Z]/.test(name)) {
+    const defaults = declaration ? destructuredDefaults(declaration) : new Map();
+    const { props, nativeProps } = first
+      ? propsOf(checker, first, defaults)
+      : { props: [], nativeProps: false };
+    return { name, kind: "component", description, props, nativeProps };
+  }
+  return {
+    name,
+    kind: "function",
+    description,
+    signature: oneLine(checker.signatureToString(signature, undefined, FORMAT)),
+  };
+}
+
+/** Splits an MDX file into `### Heading` sections with the JSX lines removed, keeping code fences untouched. */
+function parseMdx(source) {
+  const lines = source.split("\n");
+  const sections = new Map();
+  let current = null;
+  let fenced = false;
+  let inTag = false;
+  const intro = { lines: [], open: false, done: false };
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) fenced = !fenced;
+    if (!fenced && !/^\s*```/.test(line)) {
+      if (inTag) {
+        if (/\/?>\s*$/.test(line)) inTag = false;
+        continue;
+      }
+      if (/^\s*<\/?[A-Za-z]/.test(line)) {
+        if (/<Section id="overview"/.test(line)) intro.open = true;
+        else if (intro.open) intro.done = true;
+        if (!/\/?>\s*$/.test(line)) inTag = true;
+        if (/^\s*<\/Section>/.test(line)) current = null;
+        continue;
+      }
+    }
+    const heading = !fenced && /^###\s+(.+?)\s*$/.exec(line);
+    if (heading) {
+      intro.done = true;
+      current = heading[1];
+      sections.set(current, []);
+      continue;
+    }
+    if (current) sections.get(current).push(line);
+    else if (intro.open && !intro.done && !/^import |^export /.test(line)) intro.lines.push(line);
+  }
+
+  const body = (heading) => {
+    const found = sections.get(heading);
+    return found ? found.join("\n").trim() : null;
+  };
+  return { overview: intro.lines.join("\n").trim(), body, headings: [...sections.keys()] };
+}
+
+const bullets = (text) =>
+  text
+    ? text
+        .split("\n")
+        .filter((line) => /^\s*[-*] /.test(line))
+        .map((line) => line.replace(/^\s*[-*] /, "").trim())
+    : [];
+
+function tableRows(text) {
+  if (!text) return [];
+  const rows = text.split("\n").filter((line) => /^\s*\|/.test(line));
+  return rows
+    .slice(2)
+    .map((line) =>
+      line
+        .trim()
+        .replace(/^\||\|$/g, "")
+        .split("|")
+        .map((cell) => cell.trim()),
+    )
+    .filter((cells) => cells.length >= 2)
+    .map((cells) => ({ keys: cells[0], action: cells.slice(1).join(" | ") }));
+}
+
+function firstCodeFence(text) {
+  const match = text ? /```(\w+)?\n([\s\S]*?)```/.exec(text) : null;
+  return match ? { language: match[1] ?? "tsx", code: match[2].trimEnd() } : null;
+}
+
+const kebab = (name) =>
+  name
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .replace(/([A-Za-z])(\d)/g, "$1-$2")
+    .replace(/(\d)([A-Za-z])/g, "$1-$2")
+    .toLowerCase();
+
+function storyExports(file) {
+  if (!existsSync(file)) return [];
+  const source = ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
+  const names = [];
+  for (const statement of source.statements) {
+    if (
+      !ts.isVariableStatement(statement) ||
+      !statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
+    )
+      continue;
+    for (const d of statement.declarationList.declarations)
+      if (ts.isIdentifier(d.name)) names.push(d.name.text);
+  }
+  return names;
+}
+
+function tokensUsed(dir, name) {
+  const file = path.join(ROOT, dir, `${name}.module.css`);
+  if (!existsSync(file)) return [];
+  return [
+    ...new Set([...readFileSync(file, "utf8").matchAll(/--lufia-[a-z0-9-]+/g)].map((m) => m[0])),
+  ].sort();
+}
+
+function reducedMotion(dir, name) {
+  const file = path.join(ROOT, dir, `${name}.module.css`);
+  return existsSync(file) && /prefers-reduced-motion/.test(readFileSync(file, "utf8"));
+}
+
+/** Returns the manifest object. Throws when a component exported by src/index.ts cannot be described. */
+export function buildManifest() {
+  const exported = exportedComponentDirs();
+  const byName = new Map(ENTRIES.map((entry) => [entry.name, entry]));
+  const dirs = new Map();
+  for (const item of exported) dirs.set(item.name, item.dir);
+
+  const files = [...dirs].map(([name, dir]) => path.join(ROOT, "src", dir, name, "index.ts"));
+  const program = createProgram(files);
+  const checker = program.getTypeChecker();
+
+  // First pass: learn the declared order of every exported literal union before any prop type is written.
+  for (const file of files) {
+    const source = program.getSourceFile(file);
+    const symbol = source && checker.getSymbolAtLocation(source);
+    for (const exported of symbol ? checker.getExportsOfModule(symbol) : []) {
+      const target = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported;
+      if (!(target.flags & ts.SymbolFlags.Value)) describeType(checker, target);
+    }
+  }
+
+  const components = [];
+  for (const [name, dir] of [...dirs].sort(([a], [b]) => compareText(a, b))) {
+    const entry = byName.get(name);
+    const indexPath = path.join(ROOT, "src", dir, name, "index.ts");
+    const sourceFile = program.getSourceFile(indexPath);
+    const moduleSymbol = sourceFile && checker.getSymbolAtLocation(sourceFile);
+    if (!moduleSymbol) throw new Error(`Cannot read the exports of src/${dir}/${name}/index.ts`);
+    const exports = checker
+      .getExportsOfModule(moduleSymbol)
+      .map((symbol) => describeExport(checker, sourceFile, symbol))
+      .sort(compareByName);
+
+    const dirRel = `src/${dir}/${name}`;
+    const mdxPath = `${dirRel}/${name}.mdx`;
+    const mdx = existsSync(path.join(ROOT, mdxPath)) ? parseMdx(read(mdxPath)) : null;
+    // A directory with no docs page (types only) is labelled like the rest of the pre-1.0 package.
+    const status = mdx
+      ? (/status="(alpha|beta|stable|deprecated)"/.exec(read(mdxPath))?.[1] ?? null)
+      : "beta";
+    const category = entry?.category ?? "Utilities";
+    const docsId = entry ? docsIdFor(name) : null;
+    const stories = storyExports(path.join(ROOT, dirRel, `${name}.stories.tsx`));
+    const importPath = dir === "motion" ? `${PACKAGE_NAME}/motion` : `${PACKAGE_NAME}/components/${name}`;
+    const keyboardText = mdx?.body("Keyboard") ?? mdx?.body("Keyboard and accessibility") ?? null;
+    const motionHeading = mdx?.headings.find((h) => /^(Motion|Reduced motion|Timing)$/i.test(h));
+
+    components.push({
+      name,
+      category,
+      summary: entry?.summary ?? exports.find((e) => e.description)?.description ?? "",
+      status,
+      source: dirRel,
+      entry: { subpath: importPath, root: PACKAGE_NAME },
+      exports,
+      aliases: Object.fromEntries(
+        exports.filter((e) => e.kind === "type" && e.definition).map((e) => [e.name, e.definition]),
+      ),
+      story: docsId
+        ? {
+            docsId: `${docsId}--docs`,
+            stories: stories.map((story) => ({ export: story, id: `${docsId}--${kebab(story)}` })),
+          }
+        : null,
+      docs: mdx
+        ? {
+            mdx: mdxPath,
+            overview: mdx.overview,
+            usage: firstCodeFence(mdx.body("Usage")),
+            whenToUse: bullets(mdx.body("When to use")),
+            whenNotToUse: bullets(mdx.body("When not to use")),
+            contentGuidelines: mdx.body("Content guidelines"),
+          }
+        : null,
+      a11y: {
+        pattern: entry?.apg ? { label: entry.apg.label, url: entry.apg.path } : null,
+        keyboard: tableRows(keyboardText),
+        keyboardNotes: keyboardText && tableRows(keyboardText).length === 0 ? keyboardText : null,
+        notes: bullets(mdx?.body("Accessibility") ?? null),
+      },
+      motion: {
+        respectsReducedMotion: reducedMotion(dirRel, name),
+        notes: motionHeading ? mdx.body(motionHeading) : null,
+      },
+      tokens: tokensUsed(dirRel, name),
+    });
+  }
+  return { schema: 1, package: PACKAGE_NAME, components };
+}

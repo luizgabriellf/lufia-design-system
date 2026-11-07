@@ -28,7 +28,7 @@ jobs:
       - run: npm ci
         env:
           HUSKY: "0"
-      - name: Check (typecheck, lint, stylelint, format, tests, contrast)
+      - name: Check (typecheck, lint, stylelint, format, tests, contrast, motion rules, AI-docs drift)
         run: npm run check
       - name: Coverage
         run: npm run test:coverage

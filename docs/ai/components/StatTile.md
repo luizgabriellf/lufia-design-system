@@ -1,0 +1,119 @@
+# StatTile
+
+> A key figure with its label, change and hint, optionally a link to its detail.
+
+- Status: beta
+- Category: Data display
+- Import: `import { StatTile } from "@lufia/design-system/components/StatTile"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/StatTile](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/StatTile)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-stattile--docs)
+
+## Purpose
+
+A key figure with its label, an optional change and hint, and a slot for a small chart: the tile of a dashboard. With `href` or `onClick` the whole tile is one link or button.
+
+## When to use
+
+- A figure people scan first on a dashboard: a count, a rate, an amount.
+- A shortcut to the filtered list behind the figure.
+
+## When not to use
+
+- A figure inside a sentence or a table cell: format it as text.
+- Several figures in one tile: use one tile per figure.
+- A tile whose destination is unrelated to the figure: use a `Card`.
+
+## API
+
+### `StatTile`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `ReactNode` | yes |  | What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. |
+| `value` | `ReactNode` | yes |  | The figure, already formatted. Pass an `AnimatedNumber` to count it up. |
+| `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
+| `delta` | `ReactNode` | no |  | The change, already formatted ("+12% vs last week"). |
+| `trend` | `"up" \| "down" \| "flat"` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
+| `trendLabel` | `string` | no |  | Direction in words for screen readers ("Up"). Read before `delta`. |
+| `deltaTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `delta`. A rise is not always good news, so it is independent of `trend`. |
+| `hint` | `ReactNode` | no |  | A line of context under the figure. |
+| `sparkline` | `ReactNode` | no |  | A chart beside the figure, usually a `Sparkline`. Give it `label={null}` or a label of its own. |
+| `href` | `string` | no |  | Makes the whole tile a link: the label becomes the link and its hit area is stretched over the tile. |
+| `onClick` | `MouseEventHandler<HTMLElement>` | no |  | Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. |
+| `loading` | `boolean` | no | `false` | Shows skeletons in place of the figure and the lines under it, and disables the link or button. |
+| `loadingLabel` | `string` | no |  | Accessible name of the loading state ("Loading pending items"). Without it the skeleton is silent. |
+
+Other native element attributes pass through to the root element.
+
+## Types
+
+- `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
+- `StatTileTrend`: `"up" | "down" | "flat"`
+
+## Example
+
+```tsx
+import { StatTile } from "@lufia/design-system/components/StatTile";
+import { AnimatedNumber } from "@lufia/design-system/motion";
+import { Sparkline } from "@lufia/design-system/components/Sparkline";
+
+<StatTile
+  label="Open items"
+  value={<AnimatedNumber value={128} />}
+  delta="12% vs last week"
+  trend="up"
+  trendLabel="Up"
+  hint="Across all teams"
+  sparkline={<Sparkline values={[3, 5, 4, 8, 6, 9, 12]} label={null} />}
+  href="/items"
+/>
+
+<StatTile label="Open items" value="--" loading loadingLabel="Loading open items" />
+```
+
+## Accessibility
+
+Keyboard:
+
+| Key | Action |
+| --- | --- |
+| Tab | Interactive tile: focuses the link or button |
+| Enter | Follows the link, or presses the button |
+| Space | Presses the button |
+
+- The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
+- `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
+- `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
+- While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.
+- In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`.
+
+## Motion
+
+Its stylesheet has a `prefers-reduced-motion` branch.
+
+## Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`.
+
+## Stories
+
+- `components-data-display-stattile--default`
+- `components-data-display-stattile--themed-by-tokens`
+- `components-data-display-stattile--with-delta`
+- `components-data-display-stattile--falling-is-good`
+- `components-data-display-stattile--flat`
+- `components-data-display-stattile--with-sparkline`
+- `components-data-display-stattile--warning`
+- `components-data-display-stattile--danger`
+- `components-data-display-stattile--success`
+- `components-data-display-stattile--as-link`
+- `components-data-display-stattile--as-button`
+- `components-data-display-stattile--loading`
+- `components-data-display-stattile--long-label`
+- `components-data-display-stattile--with-animated-number`
+- `components-data-display-stattile--in-flex-row`
+- `components-data-display-stattile--grid`
+- `components-data-display-stattile--phone-320`
+- `components-data-display-stattile--right-to-left`
+- `components-data-display-stattile--all-themes`
