@@ -15,22 +15,17 @@ Use `npm run test:browser:ui` for interactive debugging.
 
 ## Coverage
 
-- Modal focus trapping, Escape dismissal, and opener focus restoration.
+- Modal focus: Shift+Tab from the first focusable wraps to "Save changes", Tab from the last wraps back, Escape closes, and the opener regains focus.
 - Combobox inside a modal: Escape closes the list before the dialog.
-- Button screenshots at 320, 390, 768, and 1440 px.
-- Open modal screenshots at 320 and 1440 px.
-- Both Storybook themes and both light/dark modes in Chromium and WebKit.
+- Theme: the modal surface background (computed style) differs between light and dark in both themes, and the primary action colour differs between the default and example-brand themes.
+- Layout: buttons do not overflow horizontally at 320, 390, 768 and 1440 px; the open modal fits the viewport at 320 and 1440 px.
 
-The GitHub Actions job uploads screenshots, traces, and an HTML report.
+Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.
 
-## Visual regression baseline
+## Design choices
 
-Screenshots are captured for review, but pixel-diff assertions are not yet enabled.
-Approved reference screenshots must be generated with a real browser and committed
-before visual changes can block CI. The keyboard and interaction tests already fail CI.
-
-## Next steps
-
-- Review and approve initial screenshot baselines.
-- Enable Playwright `toHaveScreenshot` with an intentional update workflow.
-- Expand coverage to other components and touch interactions.
+- `retries` is 0. A retry would hide a flaky first attempt, so a flaky test has to be fixed or removed.
+- No `toHaveScreenshot` baselines are committed. Pixels depend on the OS, fonts and browser build, so a baseline captured
+  locally would fail on CI runners. Computed-style and geometry assertions are deterministic and fail on real regressions.
+  Add screenshot baselines only if they are generated in CI itself.
+- The suite runs against `storybook dev`, with a 15 s expect timeout for the cold start.

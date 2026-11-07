@@ -12,7 +12,7 @@ npm run storybook  # http://localhost:6006
 npm run check      # typecheck, lint, stylelint, format, tests, contrast, motion rules
 ```
 
-Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
+Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browser` (Playwright against Storybook; see `docs/PLAYWRIGHT.md`), `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
 
 ## Workflow
 
