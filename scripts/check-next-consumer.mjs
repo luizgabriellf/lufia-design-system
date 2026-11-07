@@ -38,7 +38,7 @@ async function getPage(server, url) {
       const response = await fetch(url, { signal: AbortSignal.timeout(1500) });
       if (response.ok) return response.text();
     } catch {
-      // The development server may not have started accepting connections yet.
+      // The production server may not have started accepting connections yet.
     }
     await new Promise((done) => setTimeout(done, 500));
   }
@@ -66,7 +66,8 @@ try {
   pkg.dependencies["@lufia/design-system"] = `file:./${filename}`;
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 
-  run("npm", ["install", "--no-audit", "--no-fund"], app);
+  // --ignore-scripts: no lifecycle scripts of the fixture dependencies run on CI or a developer machine.
+  run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], app);
   run("npm", ["run", "build"], app);
 
   const port = await availablePort();
@@ -77,12 +78,41 @@ try {
   });
 
   const html = await getPage(server, `http://127.0.0.1:${port}`);
-  for (const text of ["Lufia consumer smoke", "Server badge", "Client button", "Open modal"]) {
+  for (const text of [
+    "Lufia consumer smoke",
+    "Server badge",
+    "Client button",
+    "Open modal",
+    "Email notifications",
+  ]) {
     if (!html.includes(text)) throw new Error(`Server HTML is missing: ${text}`);
   }
-  if (!/<link[^>]+rel="stylesheet"/.test(html)) {
-    throw new Error("The consumer HTML is missing a CSS stylesheet");
+
+  // Markup that only the package's own components produce, rendered from a Server Component.
+  if (!/<button[^>]*role="switch"[^>]*aria-checked="true"/.test(html)) {
+    throw new Error('The package Switch was not server-rendered with role="switch" and aria-checked="true"');
   }
+  if (!/<button[^>]*data-variant="primary"[^>]*data-size="md"/.test(html)) {
+    throw new Error("The package Button data-variant and data-size attributes are missing from the HTML");
+  }
+  // CSS module class names are hashed, so read the Switch's own class from the markup.
+  const switchClass = /<button[^>]*role="switch"[^>]*class="([^"]+)"/.exec(html)?.[1];
+  if (!switchClass) throw new Error("The package Switch markup carries no CSS module class");
+
+  // The linked CSS must be the package's: token variables and a component module class.
+  const stylesheets = [...html.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)]
+    .map(([tag]) => /href="([^"]+)"/.exec(tag)?.[1])
+    .filter(Boolean);
+  if (!stylesheets.length) throw new Error("The consumer HTML links no CSS stylesheet");
+  let css = "";
+  for (const href of stylesheets) {
+    const response = await fetch(new URL(href, `http://127.0.0.1:${port}`));
+    if (!response.ok) throw new Error(`Could not fetch stylesheet ${href}: ${response.status}`);
+    css += await response.text();
+  }
+  if (!css.includes("--lufia-")) throw new Error("The linked CSS contains no --lufia- token variables");
+  if (!css.includes(`.${switchClass}`))
+    throw new Error(`The linked CSS has no Switch module class .${switchClass}`);
 
   console.log("Next.js consumer smoke passed: packed package, production build and SSR HTTP response.");
 } finally {
