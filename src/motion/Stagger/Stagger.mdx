@@ -1,0 +1,85 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Stagger.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Stagger"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Children that enter in sequence on mount: each fades in and rises a few pixels, one step after the previous.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Stagger } from "@lufia/design-system/motion";
+
+<Stagger style={{ display: "grid", gap: "0.75rem" }}>
+  <StatTile label="Open" value="12" />
+  <StatTile label="Overdue" value="4" />
+  <StatTile label="Done" value="96%" />
+</Stagger>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.LongList} />
+<Canvas of={Stories.LowLimit} />
+<Canvas of={Stories.AsList} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- Only `opacity` and `transform` move. The layout is final from the first frame, so nothing shifts (no layout shift) and focus order is untouched.
+- Each step is a quarter of the instant duration token (about 30 ms), and children past `limit` enter together with the last step, so a long list never makes people wait: the default total is about 120 ms of delay plus the 240 ms enter.
+- Under `prefers-reduced-motion` the children are simply there: no animation, no delay.
+- Content is in the DOM and readable at once; screen readers are not affected by the entrance.
+
+### Notes
+
+- Children must be React elements that accept `style` (every DOM element does). Text nodes are left alone.
+- It runs when the group mounts. Re-renders never replay it. To replay, change the `key`.
+- Use it for the first paint of a group, not for every data refresh.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A grid of tiles or cards that appear together when a page opens.
+- A short list entering after a skeleton.
+
+### When not to use
+
+- Long lists or tables: the stagger is capped, and a wall of motion is noise.
+- Content people are already aiming at, such as controls that were visible before.
+- A whole page changing: use `RouteTransition`.
+
+</Section>

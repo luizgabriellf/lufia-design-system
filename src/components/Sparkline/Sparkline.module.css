@@ -1,0 +1,79 @@
+.root {
+  --chart-color: var(--lufia-color-accent-default);
+
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 7.5rem;
+  block-size: auto;
+  color: var(--chart-color);
+  overflow: visible;
+}
+
+.root[data-tone="success"] {
+  --chart-color: var(--lufia-color-status-success-fg);
+}
+
+.root[data-tone="warning"] {
+  --chart-color: var(--lufia-color-status-warning-fg);
+}
+
+.root[data-tone="danger"] {
+  --chart-color: var(--lufia-color-status-danger-solid);
+}
+
+.root[data-tone="neutral"] {
+  --chart-color: var(--lufia-color-text-subtle);
+}
+
+.column {
+  fill: currentcolor;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sparkline-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) both;
+  animation-delay: calc(var(--chart-index, 0) * var(--lufia-motion-duration-instant) / 4);
+}
+
+.zero {
+  fill: var(--lufia-color-border-strong);
+}
+
+.line {
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: sparkline-draw var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) both;
+}
+
+/* Draw-in (on `.column` and `.line` above): once, on mount. The keyframes animate `from` only, so the resting state is
+   the finished drawing, and the duration, easing and the stagger step are tokens that collapse under reduced motion. */
+@keyframes sparkline-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes sparkline-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .column,
+  .line {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root {
+    color: CanvasText;
+  }
+
+  .zero {
+    fill: GrayText;
+  }
+}

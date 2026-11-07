@@ -44,6 +44,30 @@ export const WithFooter: Story = {
     ),
   },
 };
+export const WithDescription: Story = { args: { description: "Updated every night at 02:00." } };
+/** The body spans the card; the header and footer keep their padding. For lists and tables with their own rows. */
+export const Flush: Story = {
+  args: {
+    description: "Updated every night at 02:00.",
+    headerAction: <Badge tone="info">3 new</Badge>,
+    children: (
+      <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+        {["North", "South", "East"].map((name) => (
+          <li
+            key={name}
+            style={{
+              padding: "0.625rem 1.25rem",
+              borderBlockStart: "1px solid var(--lufia-color-border-subtle)",
+            }}
+          >
+            {name}
+          </li>
+        ))}
+      </ul>
+    ),
+    flush: true,
+  },
+};
 export const BodyOnly: Story = { args: { title: undefined } };
 /** The whole card is the hit area of one link, the title. The ring shows on the card. */
 export const Interactive: Story = { args: { href: "#report", headerAction: <Badge tone="info">New</Badge> } };

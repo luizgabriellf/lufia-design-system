@@ -1,0 +1,77 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./BulletBar.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="BulletBar"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A value as a bar against a target tick. The scale is the target, so the tick sits in the same place on every row and rows compare at a glance.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { BulletBar } from "@lufia/design-system/components/BulletBar";
+
+<BulletBar value={80} target={100} label="Delivered 80 of 100" />;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.OverTarget} />
+<Canvas of={Stories.FarOverTarget} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.NoTarget} />
+<Canvas of={Stories.Rows} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- `label` is required: `role="img"` named by a sentence with the value, the target and what they mean. Pass `null` to hide the bar only when those numbers are printed as text next to it.
+- The tick is a dark mark, not a colour: it reads without colour vision.
+- The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
+- In `forced-colors` mode the fill is `Highlight` and the tick `CanvasText`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Progress against a target, repeated on several rows.
+- A value that can pass its target.
+
+### When not to use
+
+- A single completion fraction with no target tick: use `ProgressBar`.
+- Anything that needs exact values: print them.
+
+</Section>

@@ -1,0 +1,89 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./BarList.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="BarList"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Horizontal bars with the name and the value as text above each track. One scale per list: the largest row fills the track.
+
+<Canvas of={Stories.WithTotal} />
+
+### Usage
+
+```tsx
+import { BarList } from "@lufia/design-system/components/BarList";
+
+<BarList
+  title="Items by region"
+  summary="North has the most items."
+  rows={[
+    { key: "north", name: "North", note: "12 sites", value: "1,240", amount: 1240 },
+    { key: "south", name: "South", value: "860", amount: 860, tone: "warning" },
+  ]}
+  total={{ label: "Total", value: "2,100" }}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Default} />
+<Canvas of={Stories.Tones} />
+<Canvas of={Stories.LongNames} />
+<Canvas of={Stories.AllZero} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The text is the data. It is a `figure` named by its `title`, and every name and value is a list item a screen reader reads in order. The bars are `aria-hidden` shape on top, so no separate table is needed.
+- Format `value` yourself (it is what people read); the bar is drawn from `amount`.
+- A written `summary` says what the bars show.
+- The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
+- In `forced-colors` mode tracks get a border and fills use `CanvasText`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Comparing a handful of categories by one measure.
+- A breakdown that fits a card.
+
+### When not to use
+
+- More than about ten rows: use a table.
+- Two measures per row: use a table, or two lists.
+- Time series: use `Sparkline`.
+- Nothing to show: it renders nothing, so use an `EmptyState`.
+
+</Section>

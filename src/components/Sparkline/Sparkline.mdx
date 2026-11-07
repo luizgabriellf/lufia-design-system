@@ -1,0 +1,85 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Sparkline.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Sparkline"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A word-sized chart with no axes: the trend that sits next to a figure. Drawn in SVG, with no chart library.
+
+<Canvas of={Stories.Columns} />
+
+### Usage
+
+```tsx
+import { Sparkline } from "@lufia/design-system/components/Sparkline";
+
+<Sparkline values={[3, 5, 4, 8, 6, 9, 12]} label="Deliveries per week: 3, 5, 4, 8, 6, 9, 12" />;
+
+{
+  /* The numbers are already printed as text beside it. */
+}
+<Sparkline values={[3, 5, 4, 8]} variant="line" label={null} />;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Line} />
+<Canvas of={Stories.Tones} />
+<Canvas of={Stories.WithZeros} />
+<Canvas of={Stories.SingleValue} />
+<Canvas of={Stories.ConstantLine} />
+<Canvas of={Stories.ManyValues} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.Decorative} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Columns} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- `label` is required. With a string, the drawing is `role="img"` named by that sentence, so put the numbers in it. With `null`, it is hidden from assistive technology: do that only when the numbers are printed as text next to it.
+- The tone only reinforces. Never use a tone as the only way to tell good from bad.
+- The draw-in is `transform` and stroke only and plays once, on mount. Under `prefers-reduced-motion` it is removed and the finished drawing is there at once.
+- In `forced-colors` mode the marks use `CanvasText`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The trend next to a figure, in a `StatTile` or a table row.
+- A comparison of a few short series at a glance.
+
+### When not to use
+
+- Reading exact values or axes: print a table or use `BarList`.
+- Long series that need a scale, gridlines or tooltips.
+
+</Section>

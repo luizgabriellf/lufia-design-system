@@ -1,0 +1,79 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ProgressBar.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ProgressBar"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill.
+
+<Canvas of={Stories.WithVisibleFigure} />
+
+### Usage
+
+```tsx
+import { ProgressBar } from "@lufia/design-system/components/ProgressBar";
+
+<ProgressBar value={45} label="Storage used" />
+<ProgressBar value={12} max={40} label="Steps done" valueText="12 of 40 steps" />
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### States
+
+<Canvas of={Stories.Small} />
+<Canvas of={Stories.Empty} />
+<Canvas of={Stories.Complete} />
+<Canvas of={Stories.Warning} />
+<Canvas of={Stories.Danger} />
+<Canvas of={Stories.CustomRange} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- `role="progressbar"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label` is required: without a name a progress bar is announced as a bare number.
+- Use `valueText` when the percentage alone says too little ("12 of 40 steps").
+- It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.
+- The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once, because animating width would move layout.
+- In `forced-colors` mode the track gets a border and the fill is `Highlight`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A known fraction of a whole: storage used, steps done, a quota.
+
+### When not to use
+
+- Work of unknown length: use a spinner or a `Skeleton`.
+- A value against a target tick: use `BulletBar`.
+
+</Section>

@@ -1,0 +1,146 @@
+.root {
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.75rem;
+  margin: 0;
+  color: var(--lufia-color-text-default);
+}
+
+.title {
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.summary {
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.list {
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  min-inline-size: 0;
+  align-items: baseline;
+  gap: 0.1875rem 0.75rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.name {
+  min-inline-size: 0;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.value {
+  font-size: var(--lufia-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.small {
+  display: block;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-regular);
+}
+
+.track {
+  display: block;
+  overflow: hidden;
+  block-size: 0.625rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-border-subtle);
+  grid-column: 1 / -1;
+}
+
+.fill {
+  --chart-color: var(--lufia-color-accent-default);
+
+  display: block;
+  min-inline-size: 0.125rem;
+  block-size: 100%;
+  border-radius: var(--lufia-radius-full);
+  background: var(--chart-color);
+  transform-origin: left center;
+  animation: bar-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) both;
+}
+
+.fill:dir(rtl) {
+  transform-origin: right center;
+}
+
+.fill[data-tone="success"] {
+  --chart-color: var(--lufia-color-status-success-fg);
+}
+
+.fill[data-tone="warning"] {
+  --chart-color: var(--lufia-color-status-warning-fg);
+}
+
+.fill[data-tone="danger"] {
+  --chart-color: var(--lufia-color-status-danger-solid);
+}
+
+.fill[data-tone="neutral"] {
+  --chart-color: var(--lufia-color-text-subtle);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+  padding-block-start: 0.5rem;
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  font-size: var(--lufia-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+/* Draw-in: once, on mount; transform only, so the final width is real from the first frame and nothing reflows. */
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (width < 32.5rem) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .value {
+    text-align: start;
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .track {
+    border: var(--lufia-border-width-thin) solid CanvasText;
+  }
+
+  .fill {
+    background: CanvasText;
+  }
+}

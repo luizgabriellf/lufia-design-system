@@ -74,6 +74,45 @@ describe("Card", () => {
     expect(container.firstElementChild).toHaveAttribute("data-padding", padding);
   });
 
+  it("renders a description under the title, and ignores it without a title", () => {
+    const { container, rerender } = render(
+      <Card title="Report" description="Totals for the period">
+        Body
+      </Card>,
+    );
+    expect(screen.getByText("Totals for the period")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Report" })).toBeInTheDocument();
+    rerender(<Card description="Orphan">Body</Card>);
+    expect(container).not.toHaveTextContent("Orphan");
+  });
+
+  it("keeps the original header markup when there is no description", () => {
+    render(<Card title="Report">Body</Card>);
+    expect(screen.getByRole("heading").parentElement?.className).toMatch(/header/);
+  });
+
+  it("keeps the interactive link inside the heading when there is a description", () => {
+    render(
+      <Card title="Report" description="Totals" href="/r">
+        Body
+      </Card>,
+    );
+    expect(screen.getByRole("heading", { name: "Report" })).toContainElement(screen.getByRole("link"));
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  it("flush: exposes the flag so the body can span the card", () => {
+    const { container, rerender } = render(<Card title="List">Body</Card>);
+    expect(container.firstElementChild).not.toHaveAttribute("data-flush");
+    rerender(
+      <Card title="List" flush>
+        Body
+      </Card>,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-flush");
+    expect(css).toMatch(/\[data-flush\] > \.body \{\s*padding: 0;/);
+  });
+
   it("passes className and rest props to the root", () => {
     render(
       <Card className="extra" data-testid="c" aria-label="Region">

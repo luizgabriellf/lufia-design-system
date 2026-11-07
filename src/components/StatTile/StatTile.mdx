@@ -1,0 +1,118 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./StatTile.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="StatTile"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A key figure with its label, an optional change and hint, and a slot for a small chart: the tile of a dashboard. With `href` or `onClick` the whole tile is one link or button.
+
+<Canvas of={Stories.WithSparkline} />
+
+### Usage
+
+```tsx
+import { StatTile } from "@lufia/design-system/components/StatTile";
+import { AnimatedNumber } from "@lufia/design-system/motion";
+import { Sparkline } from "@lufia/design-system/components/Sparkline";
+
+<StatTile
+  label="Open items"
+  value={<AnimatedNumber value={128} />}
+  delta="12% vs last week"
+  trend="up"
+  trendLabel="Up"
+  hint="Across all teams"
+  sparkline={<Sparkline values={[3, 5, 4, 8, 6, 9, 12]} label={null} />}
+  href="/items"
+/>
+
+<StatTile label="Open items" value="--" loading loadingLabel="Loading open items" />
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### The interactive tile
+
+An interactive tile is not a clickable `div`. It uses the stretched-link pattern, like `Card`: the `label` renders as the one link (or button) and its `::after` pseudo-element covers the tile. The figure, the change and the hint are attached to it with `aria-describedby`, so a screen reader announces "Open items, link, 128, up 12% vs last week" once. Hover lifts the tile a little and press scales it down slightly, both from motion tokens and both removed under reduced motion.
+
+The standard trade-off of the pattern: text in the tile cannot be selected with the mouse.
+
+### Counting up
+
+The `value` is a node, so pass an `AnimatedNumber` to count to a new figure. The tile adds no motion of its own to the number.
+
+### States
+
+<Canvas of={Stories.WithDelta} />
+<Canvas of={Stories.FallingIsGood} />
+<Canvas of={Stories.Warning} />
+<Canvas of={Stories.Danger} />
+<Canvas of={Stories.AsLink} />
+<Canvas of={Stories.AsButton} />
+<Canvas of={Stories.Loading} />
+<Canvas of={Stories.LongLabel} />
+<Canvas of={Stories.WithAnimatedNumber} />
+<Canvas of={Stories.Grid} />
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key   | Action                                       |
+| ----- | -------------------------------------------- |
+| Tab   | Interactive tile: focuses the link or button |
+| Enter | Follows the link, or presses the button      |
+| Space | Presses the button                           |
+
+A plain tile is not focusable. The focus ring is drawn around the whole tile.
+
+### Accessibility
+
+- The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
+- `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
+- `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
+- While `loading`, the tile is `aria-busy`, the link or button is removed and the skeleton keeps the layout. Set `loadingLabel` to announce it once.
+- In `forced-colors` mode the border is `CanvasText` and the focus ring `Highlight`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A figure people scan first on a dashboard: a count, a rate, an amount.
+- A shortcut to the filtered list behind the figure.
+
+### When not to use
+
+- A figure inside a sentence or a table cell: format it as text.
+- Several figures in one tile: use one tile per figure.
+- A tile whose destination is unrelated to the figure: use a `Card`.
+
+</Section>

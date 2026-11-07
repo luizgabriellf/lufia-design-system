@@ -1,0 +1,67 @@
+.root {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  --item-bar: var(--lufia-color-border-strong);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  padding-block: 0.625rem;
+  padding-inline: 1rem;
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-inline-start: 0.25rem solid var(--item-bar);
+  color: var(--lufia-color-text-default);
+}
+
+.item:last-child {
+  border-block-end: 0;
+}
+
+.item[data-tone="danger"] {
+  --item-bar: var(--lufia-color-status-danger-solid);
+
+  background: var(--lufia-color-status-danger-bg);
+}
+
+.item[data-tone="warning"] {
+  --item-bar: var(--lufia-color-status-warning-fg);
+
+  background: var(--lufia-color-status-warning-bg);
+}
+
+.item[data-tone="info"] {
+  --item-bar: var(--lufia-color-accent-default);
+
+  background: var(--lufia-color-accent-subtle);
+}
+
+.text {
+  display: grid;
+  min-inline-size: 0;
+  flex: 1 1 12rem;
+  gap: 0.125rem;
+}
+
+.title {
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.action {
+  display: flex;
+  flex: none;
+  align-items: center;
+}

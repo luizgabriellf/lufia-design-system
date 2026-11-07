@@ -71,9 +71,15 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
 | `Skeleton`                | Placeholder for content that is loading    | Shimmer stops, shape stays   |
 | `AnimatedNumber`          | A figure that changes while visible        | New value at once            |
 | `ChangeHighlight`         | Pointing at a value that updated by itself | No flash                     |
+| `Stagger`                 | A group that enters on mount, in sequence  | Children are simply there    |
+| `RouteTransition`         | The content region when the page changes   | Nothing is marked            |
 | `usePrefersReducedMotion` | Anything CSS cannot switch off             | n/a                          |
 
 Import from `@lufia/design-system/motion`. All are `beta`.
+
+The chart components (`Sparkline`, `BarList`, `BulletBar`, `ProgressBar`) draw in once on mount with
+`--lufia-motion-duration-medium` (380 ms), on `transform` or stroke only. It is a one-time entrance of a drawing, not an
+interaction, which is why it is longer than the 300 ms an interactive control may take. It is removed under reduced motion.
 
 ## Checklist for a new screen
 
