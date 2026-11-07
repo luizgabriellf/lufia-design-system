@@ -1,0 +1,11 @@
+{
+  "algorithm": "sha256",
+  "note": "SHA-256 of lowercase tokens. Add one with: node scripts/ai/hash-token.mjs <word>",
+  "hashes": [
+    "f89925312102b3ac218837c4f74d9dd854f22077c5cf25dc0cbc57f5f06c3792",
+    "76e49a35a7be5f8fa3c1b88be0ec6f5121babdd74560945a64ce778c8829569e",
+    "61828ca7bfd7e31e78e6b4ff07f55c7c5d169a114bf801704a25a3b22b03b028",
+    "a581b4ff5acd7b14b28dfbff1d5423e1497ba2c343e0dd05d8f636b206c75c87",
+    "a1cb7f829d694c93cb74fbf5338ecd6601ac3af0835bce0f75846ad0d6a74cd3"
+  ]
+}
