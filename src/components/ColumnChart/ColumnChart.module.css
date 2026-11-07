@@ -36,6 +36,7 @@
 }
 
 .plot {
+  position: relative;
   display: grid;
   min-inline-size: 0;
   gap: 0.5rem;
@@ -52,6 +53,7 @@
 
 /* One baseline for every column: the stack grows upward from the bottom of the plot. */
 .stack {
+  position: relative;
   display: flex;
   min-inline-size: 0;
   flex-direction: column-reverse;
@@ -97,12 +99,125 @@
   --chart-color: var(--lufia-color-text-subtle);
 }
 
+/* Opt-in: stripes in the card colour over the series colour, so the series is told apart without colour. In forced-colors mode the per-series patterns below take over. */
+.segment[data-pattern="hatch"],
+.legendItem[data-pattern="hatch"]::before {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 0.1875rem,
+    var(--lufia-color-bg-surface) 0.1875rem 0.3125rem
+  );
+}
+
 /* An empty column keeps its slot: a thin mark on the baseline, quiet next to real data. */
 .zero {
   display: block;
   flex: none;
   block-size: 0.125rem;
   background: var(--lufia-color-border-subtle);
+}
+
+/* Opt-in (`printValues`): the total sits on top of its column. The plot reserves a line for the tallest one. */
+.plot[data-print-values] {
+  padding-block-start: 1.125rem;
+}
+
+.total {
+  position: absolute;
+  inset-inline: -0.25rem;
+  padding-block-end: 0.125rem;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lufia-font-line-height-tight);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+/* Opt-in (`band`): an error bar, a stem with a cap at each end, centred on the column on the shared scale. */
+.band {
+  position: absolute;
+  inset-inline: 0;
+  box-sizing: border-box;
+  inline-size: 0.625rem;
+  margin-inline: auto;
+  border-block: 0.125rem solid var(--lufia-color-text-default);
+  box-shadow: 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-bg-surface);
+  pointer-events: none;
+}
+
+.band::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(50% - 0.0625rem);
+  inline-size: 0.125rem;
+  background: var(--lufia-color-text-default);
+}
+
+/* Opt-in (`interactive`): the column is the focus target, and the tooltip belongs to the whole plot. */
+.column[data-interactive] {
+  border-radius: var(--lufia-radius-sm);
+  cursor: default;
+}
+
+.column[data-interactive]:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 0.125rem;
+}
+
+/*
+ * One third of the plot at most would be wrong for a wide tip, so it is at most two thirds wide: centred on a column in the
+ * middle third it still fits, and on the outer thirds it is held against the plot edge, so it never leaves the plot,
+ * even at 320px. It sits above the plot; the ::after bridges the gap so the pointer can move onto it (WCAG 1.4.13).
+ */
+.tip {
+  position: absolute;
+  z-index: var(--lufia-z-dropdown);
+  display: grid;
+  box-sizing: border-box;
+  inline-size: min(14rem, 66%);
+  inset-block-end: calc(100% + 0.25rem);
+  gap: 0.125rem;
+  padding: 0.5rem 0.625rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-md);
+  animation: tip-in var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out) backwards;
+  background: var(--lufia-color-bg-surface-raised);
+  box-shadow: var(--lufia-shadow-md);
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-xs);
+  line-height: var(--lufia-font-line-height-normal);
+  overflow-wrap: anywhere;
+}
+
+.tip::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  block-size: 0.5rem;
+}
+
+.tip[data-zone="start"] {
+  inset-inline-start: calc(var(--tip-index) * 100% / var(--tip-count));
+}
+
+.tip[data-zone="end"] {
+  inset-inline-end: calc((var(--tip-count) - var(--tip-index) - 1) * 100% / var(--tip-count));
+}
+
+.tip[data-zone="center"] {
+  inset-inline-start: calc((var(--tip-index) + 0.5) * 100% / var(--tip-count));
+  margin-inline-start: calc(min(14rem, 66%) / -2);
+}
+
+.tipTitle {
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.tipDetail {
+  color: var(--lufia-color-text-muted);
 }
 
 .label {
@@ -164,6 +279,12 @@
   }
 }
 
+@keyframes tip-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (width < 32.5rem) {
   .plot {
     gap: 0.25rem;
@@ -175,7 +296,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .segment {
+  .segment,
+  .tip {
     animation: none;
   }
 }
@@ -221,5 +343,20 @@
 
   .zero {
     background: GrayText;
+  }
+
+  .band {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .band::before {
+    background: CanvasText;
+  }
+
+  .tip {
+    border-color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
   }
 }

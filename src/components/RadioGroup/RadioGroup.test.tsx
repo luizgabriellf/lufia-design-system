@@ -1,5 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { axe } from "../../test/axe";
 import { RadioGroup, type RadioOption } from "./RadioGroup";
 
@@ -8,6 +9,12 @@ const options: RadioOption[] = [
   { value: "transfer", label: "Bank transfer" },
   { value: "invoice", label: "Invoice", disabled: true },
   { value: "cash", label: "Cash" },
+];
+
+const policyOptions: RadioOption[] = [
+  { value: "off", label: "Off" },
+  { value: "optional", label: "Optional" },
+  { value: "required", label: "Required" },
 ];
 
 describe("RadioGroup", () => {
@@ -147,6 +154,118 @@ describe("RadioGroup", () => {
     await user.click(screen.getByRole("button", { name: "Reset" }));
     expect(screen.getByRole("radio", { name: "Card" })).toHaveAttribute("aria-checked", "true");
     expect(container.querySelector('input[name="payment"]')).toHaveValue("card");
+  });
+
+  it("resets to the latest default after a form action changes it, like native radios", async () => {
+    const user = userEvent.setup();
+    function Settings() {
+      const [policy, setPolicy] = useState("off");
+      return (
+        <form
+          action={() => {
+            setPolicy("required");
+          }}
+        >
+          <RadioGroup label="Policy" options={policyOptions} defaultValue={policy} />
+          <button type="submit">Save</button>
+        </form>
+      );
+    }
+    render(<Settings />);
+    await user.click(screen.getByRole("radio", { name: "Optional" }));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(screen.getByRole("radio", { name: "Required" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "Off" })).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("dispatches bubbling input and change events to the form for a click and for an arrow key", async () => {
+    const user = userEvent.setup();
+    const seen: string[] = [];
+    const { container } = render(
+      <form
+        ref={(form) => {
+          for (const type of ["input", "change"]) {
+            form?.addEventListener(type, (event) => {
+              const target = event.target as HTMLInputElement;
+              seen.push(`${event.type}:${target.name}=${target.value}:${event.bubbles}`);
+            });
+          }
+        }}
+      >
+        <RadioGroup label="Payment" options={options} name="payment" defaultValue="card" />
+      </form>,
+    );
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    expect(seen).toEqual(["input:payment=cash:true", "change:payment=cash:true"]);
+    await user.keyboard("{ArrowUp}");
+    expect(seen.slice(2)).toEqual(["input:payment=transfer:true", "change:payment=transfer:true"]);
+    expect(container.querySelector('input[name="payment"]')).toHaveValue("transfer");
+  });
+
+  it("dispatches from the group when it has no name, and not for what the user did not do", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const withValue = (value: string, extra?: string) => (
+      <form ref={(form) => form?.addEventListener("change", onChange)}>
+        <RadioGroup
+          label="Payment"
+          options={options}
+          value={value}
+          onValueChange={() => undefined}
+          hint={extra}
+        />
+        <button type="reset">Reset</button>
+      </form>
+    );
+    const { rerender } = render(withValue("card"));
+    // The parent sets the value: no event.
+    rerender(withValue("cash"));
+    // Choosing the chosen option is not a change, and must not leave an event waiting for the next render.
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    rerender(withValue("cash", "A later, unrelated render"));
+    await user.click(screen.getByRole("button", { name: "Reset" }));
+    expect(onChange).not.toHaveBeenCalled();
+    // The parent refuses the choice (value stays "cash"): no event, and none when it later sets "card" itself.
+    await user.click(screen.getByRole("radio", { name: "Card" }));
+    rerender(withValue("cash", "Another render"));
+    // The parent sets something else: the refused choice is forgotten.
+    rerender(withValue("transfer"));
+    rerender(withValue("card"));
+    expect(onChange).not.toHaveBeenCalled();
+    // The user's own choice, accepted by the parent in the same update, is an event from the group (no name).
+    const target = vi.fn();
+    const listener = (event: Event) => target(event.target);
+    function Parent() {
+      const [value, setValue] = useState("card");
+      return (
+        <form ref={(form) => form?.addEventListener("change", listener)}>
+          <RadioGroup label="Payment" options={options} value={value} onValueChange={setValue} />
+        </form>
+      );
+    }
+    render(<Parent />);
+    await user.click(screen.getAllByRole("radio", { name: "Cash" })[1]!);
+    expect(target).toHaveBeenCalledTimes(1);
+    expect(target).toHaveBeenCalledWith(screen.getAllByRole("radiogroup")[1]!.parentElement);
+  });
+
+  it("forgets a refused choice once the parent shows another value, but not before (documented edge)", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const withValue = (value: string) => (
+      <form ref={(form) => form?.addEventListener("change", onChange)}>
+        <RadioGroup label="Payment" options={options} value={value} onValueChange={() => undefined} />
+      </form>
+    );
+    const { rerender } = render(withValue("cash"));
+    await user.click(screen.getByRole("radio", { name: "Card" }));
+    rerender(withValue("transfer"));
+    rerender(withValue("card"));
+    expect(onChange).not.toHaveBeenCalled();
+    // The edge: refused, commits keep showing the old value, the parent later sets that same value.
+    await user.click(screen.getByRole("radio", { name: "Cash" }));
+    rerender(withValue("cash"));
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 
   it("shows the message and moves focus to the radio when a submit is refused", async () => {

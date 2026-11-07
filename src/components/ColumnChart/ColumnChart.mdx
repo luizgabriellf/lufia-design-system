@@ -43,6 +43,30 @@ import { ColumnChart } from "@lufia/design-system/components/ColumnChart";
 />;
 ```
 
+Four opt-in additions, all off by default:
+
+```tsx
+<ColumnChart
+  title="Hours worked"
+  series={[
+    { key: "actual", label: "Actual" },
+    { key: "forecast", label: "Forecast", pattern: "hatch" }, // stripes: a cue that is not colour
+  ]}
+  columns={[
+    {
+      key: "mon",
+      label: "Mon",
+      values: [4, 0],
+      detail: "Two drivers out sick", // tooltip text, and part of the column's name
+      band: { low: 3, high: 6 }, // error bar on the shared scale
+    },
+  ]}
+  interactive // each column is focusable and shows a tooltip
+  printValues="auto" // the total above each column when there are 6 columns or fewer
+  bandLabel="Likely range"
+/>
+```
+
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 </Section>
@@ -60,6 +84,17 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.SingleColumn} />
 <Canvas of={Stories.TwelveColumns} />
 <Canvas of={Stories.LongPortugueseText} />
+<Canvas of={Stories.Interactive} />
+<Canvas of={Stories.InteractiveStacked} />
+<Canvas of={Stories.InteractiveLongPortugueseText} />
+<Canvas of={Stories.InteractivePhone320} />
+<Canvas of={Stories.InteractiveRightToLeft} />
+<Canvas of={Stories.PrintedValues} />
+<Canvas of={Stories.PrintedValuesAuto} />
+<Canvas of={Stories.PrintedValuesStacked} />
+<Canvas of={Stories.WithBand} />
+<Canvas of={Stories.HatchedSeries} />
+<Canvas of={Stories.EverythingOn} />
 <Canvas of={Stories.Phone320} />
 <Canvas of={Stories.LowerPlot} />
 <Canvas of={Stories.RightToLeft} />
@@ -82,15 +117,32 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 <Section id="accessibility">
 
+### Keyboard
+
+Only when `interactive` is set. The columns are one tab stop (roving tabindex), and the arrow keys move between them.
+
+| Key                          | Action                                                                                             |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| `Tab`                        | Enters the columns at the last one focused (the first at first), and leaves them on the next press |
+| `Arrow Right` / `Arrow Left` | Next or previous column and shows its tooltip (swapped in right-to-left)                           |
+| `Home` / `End`               | First or last column                                                                               |
+| `Escape`                     | Dismisses the tooltip; focus stays on the column                                                   |
+
+Hover shows the tooltip too, and the pointer can move onto it without it closing. A tap shows it; a second tap on the same column, or a tap elsewhere, closes it.
+
 ### Accessibility
 
-- The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.
+- The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it, except when `interactive` is set, where the columns are exposed as named images. Write the numbers with `formatValue`.
 - The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
 - Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
 - The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.
 - Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.
 - Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.
-- Print the figures people need as text beside the chart: the drawing has no value labels.
+- Print the figures people need as text beside the chart: the drawing has no value labels, unless you set `printValues`.
+- `interactive`: each column is a focusable `role="img"` named `<column label>: <values> · <detail>` and announced as a "column" (`aria-roledescription`, set with `columnLabel`, so people know the arrow keys move between columns) (a series is named when there are several; a `band` adds "`bandLabel` low – high"). The tooltip repeats that text visually, so it is hidden from assistive technology and there is no `aria-describedby`; the detail would be read twice. It follows the WCAG 1.4.13 conditions: Escape dismisses it (and stops there, so a dialog around the chart stays open), the pointer can move onto it, and it stays until the pointer or focus leaves. It is at most two thirds of the plot wide and anchored to the plot edge on the outer thirds, so it does not overflow, down to 320px. It fades in on `opacity`, and not at all under `prefers-reduced-motion`. A column label that is not text names the column from the label element and its values.
+- `printValues`: the printed totals repeat the data table, so they are hidden from assistive technology.
+- `band`: counted in the scale maximum and listed in the data table, under `bandLabel` (an English default, as it is aria text; set it in your language). It is drawn as a stem with two caps; in `forced-colors` mode it uses `CanvasText`.
+- `pattern="hatch"`: diagonal stripes in the card colour over the series colour, in the columns and in the legend. In `forced-colors` mode every series already has its own fill pattern, which replaces the hatch.
 
 </Section>
 
@@ -98,6 +150,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### When to use
 
+- Hovering or tapping a column should explain it (a holiday, an outlier): `interactive` with `detail`.
 - A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts.
 
 ### When not to use
