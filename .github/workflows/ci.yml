@@ -30,6 +30,8 @@ jobs:
           HUSKY: "0"
       - name: Static gates (typecheck, lint, stylelint, format, contrast, motion rules, AI-docs drift)
         run: npm run check:static
+        env:
+          LUFIA_LEAK_TOKENS: ${{ secrets.LUFIA_LEAK_TOKENS }}
       - name: Unit and accessibility tests with coverage floor
         run: npm run test:coverage
       - name: Build package
