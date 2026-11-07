@@ -152,4 +152,26 @@ describe("Card", () => {
     expect(rule?.[2]).toMatch(/position:\s*relative/);
     expect(rule?.[2]).toMatch(/z-index:\s*1/);
   });
+
+  it("marks the header divider only when asked", () => {
+    const { container, rerender } = render(<Card title="Report">Body</Card>);
+    expect(container.firstElementChild).not.toHaveAttribute("data-divider");
+    rerender(
+      <Card title="Report" divider>
+        Body
+      </Card>,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-divider", "true");
+    expect(css).toMatch(/\[data-divider\] > \.header \{[^}]*border-block-end/);
+  });
+
+  it("keeps a flush body flush when the divider is on", () => {
+    // The divider restores the body's top padding with a higher specificity than the flush reset, so it must exclude it.
+    expect(css).toMatch(/\.root\[data-divider\]:not\(\[data-flush\]\) > \.header \+ \.body \{/);
+    expect(css).not.toMatch(/\.root\[data-divider\] > \.header \+ \.body/);
+  });
+
+  it("takes the hover shadow from a token", () => {
+    expect(css).toMatch(/box-shadow: var\(--lufia-card-shadow-hover, var\(--lufia-shadow-md\)\)/);
+  });
 });

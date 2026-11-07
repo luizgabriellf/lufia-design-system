@@ -14,20 +14,32 @@
 
 .eyebrow {
   margin: 0 0 0.25rem;
-  color: var(--lufia-color-text-subtle);
+  color: var(--lufia-page-header-eyebrow-color, var(--lufia-color-text-subtle));
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-page-header-eyebrow-tracking, 0.08em);
   text-transform: uppercase;
+}
+
+/* The leading dash is off by default: its width is zero until a theme sets `--lufia-page-header-eyebrow-dash-size`. */
+.eyebrow::before {
+  display: inline-block;
+  inline-size: var(--lufia-page-header-eyebrow-dash-size, 0);
+  block-size: var(--lufia-border-width-thin);
+  margin-inline-end: var(--lufia-page-header-eyebrow-dash-gap, 0);
+  background: currentcolor;
+  content: "";
+  vertical-align: middle;
 }
 
 .title {
   margin: 0;
   color: var(--lufia-color-text-default);
   font-family: var(--lufia-font-family-display);
-  font-size: var(--lufia-font-size-2xl);
+  font-size: var(--lufia-page-header-title-size, var(--lufia-font-size-2xl));
   font-weight: var(--lufia-font-weight-bold);
+  letter-spacing: var(--lufia-page-header-title-tracking, normal);
   line-height: var(--lufia-font-line-height-tight);
   overflow-wrap: anywhere;
 }
@@ -51,6 +63,6 @@
 
 @media (width >= 48rem) {
   .title {
-    font-size: var(--lufia-font-size-3xl);
+    font-size: var(--lufia-page-header-title-size, var(--lufia-font-size-3xl));
   }
 }

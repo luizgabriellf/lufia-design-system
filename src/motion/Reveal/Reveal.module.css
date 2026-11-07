@@ -1,6 +1,6 @@
 /* Enter and exit use keyframes that animate `from` only, so the resting state is the end state. */
 .root[data-animate][data-state="open"] {
-  animation: reveal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: reveal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .root[data-animate][data-state="closed"] {

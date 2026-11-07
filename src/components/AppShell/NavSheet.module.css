@@ -38,7 +38,7 @@
 
   /* Springs back after a short drag. A drag in progress follows the finger without easing. */
   transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
-  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) both;
+  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) backwards;
 }
 
 /* A native dialog sits in the top layer, so it positions itself against the viewport and the browser draws the backdrop. */

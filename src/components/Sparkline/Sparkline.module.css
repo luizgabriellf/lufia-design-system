@@ -29,7 +29,7 @@
   fill: currentcolor;
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: sparkline-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) both;
+  animation: sparkline-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) backwards;
   animation-delay: calc(var(--chart-index, 0) * var(--lufia-motion-duration-instant) / 4);
 }
 

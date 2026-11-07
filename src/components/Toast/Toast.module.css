@@ -78,7 +78,7 @@
   pointer-events: auto;
 
   /* Animates `from` only: the resting state is the end state, and a disabled animation leaves the toast visible. */
-  animation: toast-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
+  animation: toast-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .item[data-tone="info"] {

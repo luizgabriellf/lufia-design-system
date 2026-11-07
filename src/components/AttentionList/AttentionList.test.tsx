@@ -50,4 +50,11 @@ describe("AttentionList", () => {
     const { container } = render(<AttentionList items={items} aria-label="Needs attention" />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("draws the edge bar by default and the inset bar on request", () => {
+    const { rerender } = render(<AttentionList items={items} aria-label="Needs attention" />);
+    expect(screen.getByRole("list")).toHaveAttribute("data-bar-style", "edge");
+    rerender(<AttentionList items={items} barStyle="inset" aria-label="Needs attention" />);
+    expect(screen.getByRole("list")).toHaveAttribute("data-bar-style", "inset");
+  });
 });

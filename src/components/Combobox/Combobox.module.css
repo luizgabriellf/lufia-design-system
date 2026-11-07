@@ -68,7 +68,7 @@
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
   border-radius: var(--lufia-radius-control);
   box-shadow: var(--lufia-shadow-md);
-  animation: popup-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) both;
+  animation: popup-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 
 .root[data-placement="top"] .popup {
