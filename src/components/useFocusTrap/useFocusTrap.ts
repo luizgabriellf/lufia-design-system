@@ -27,9 +27,24 @@ function isVisible(element: HTMLElement): boolean {
   return style.display !== "none" && style.visibility !== "hidden";
 }
 
-/** The tabbable descendants of `root`, in DOM order. Not `offsetParent`-based: that is `null` for fixed-position children. */
+/**
+ * The tabbable descendants of `root`, in keyboard Tab order. Not `offsetParent`-based:
+ * that is `null` for fixed-position children. Positive tabindex values precede
+ * the natural DOM order; negative tabindex values are only programmatically focusable.
+ */
 export function getFocusableElements(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(isVisible);
+  const tabbable = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((element) => {
+    if (!isVisible(element) || element.matches(":disabled")) return false;
+    const explicitTabIndex = element.getAttribute("tabindex");
+    return explicitTabIndex === null || element.tabIndex >= 0;
+  });
+
+  // Stable sort keeps DOM order for elements with the same tabindex.
+  return tabbable.sort((a, b) => {
+    const aPriority = a.tabIndex > 0 ? a.tabIndex : Number.MAX_SAFE_INTEGER;
+    const bPriority = b.tabIndex > 0 ? b.tabIndex : Number.MAX_SAFE_INTEGER;
+    return aPriority - bPriority;
+  });
 }
 
 /** A caller (or another trap's own restore) deliberately moved focus out of the trap since it began closing: leave it be. */
