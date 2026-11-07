@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.4.0
+
+### Minor Changes
+
+- [#25](https://github.com/luizgabriellf/lufia-design-system/pull/25) [`e605c36`](https://github.com/luizgabriellf/lufia-design-system/commit/e605c36563584113d7a9f06edffebc825e01ee21) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add dashboard primitives (beta): `StatTile`, the chart kit `Sparkline`, `BarList`, `BulletBar` and `ProgressBar`, `SectionHeader`, `AttentionList` and `ActivityList`, and the motion primitives `Stagger` and `RouteTransition`. `Card` gains an optional `description` and a `flush` body; existing cards render as before.
+
 ## 0.3.0
 
 ### Minor Changes
