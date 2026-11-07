@@ -30,9 +30,9 @@ open-ended filter) go in as children.
 | --- | --- | --- | --- | --- |
 | `filters` | `FilterOption[]` | no |  |  |
 | `activeFilter` | `string` | no |  |  |
-| `onFilterChange` | `((key: string) => void)` | no |  |  |
+| `onFilterChange` | `(key: string) => void` | no |  |  |
 | `search` | `string` | no |  |  |
-| `onSearchChange` | `((value: string) => void)` | no |  | The search field renders only when this handler is provided. |
+| `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
 | `searchPlaceholder` | `string` | no |  |  |
 | `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |

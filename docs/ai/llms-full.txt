@@ -475,7 +475,7 @@ A number that counts to its new value when `value` changes. It uses `requestAnim
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `value` | `number` | yes |  |  |
-| `format` | `((value: number) => string)` | no | `String` | Turns the running number into text. Pass a locale-aware formatter; the default is `String`. |
+| `format` | `(value: number) => string` | no | `String` | Turns the running number into text. Pass a locale-aware formatter; the default is `String`. |
 | `duration` | `number` | no |  | Milliseconds. Defaults to the `--lufia-motion-duration-medium` token, which is ~0 under reduced motion. |
 
 Other native element attributes pass through to the root element.
@@ -567,7 +567,7 @@ navigation is data, so both layouts always agree.
 | --- | --- | --- | --- | --- |
 | `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation, as data. It renders in the sidebar and again in the phone sheet. |
 | `currentPath` | `string` | no |  | The path being shown: the matching item is current (`aria-current="page"`). |
-| `isActive` | `((item: ShellNavItem) => boolean)` | no |  | Takes over from `currentPath`. Return true for the current item. |
+| `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
 | `labels` | `AppShellLabels` | yes |  |  |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
@@ -582,10 +582,10 @@ navigation is data, so both layouts always agree.
 | `sheetAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
 | `defaultCollapsed` | `boolean` | no | `false` |  |
-| `onCollapsedChange` | `((collapsed: boolean) => void)` | no |  |  |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  |  |
 | `openGroups` | `readonly string[]` | no |  | Keys of the open collapsible groups. Controlled; the owner then also decides what arriving on a page opens. |
 | `defaultOpenGroups` | `readonly string[]` | no |  |  |
-| `onOpenGroupsChange` | `((keys: readonly string[]) => void)` | no |  |  |
+| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  |  |
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `children` | `ReactNode` | yes |  | The page. The shell renders the one `<main>` landmark around it. |
 
@@ -608,9 +608,28 @@ Other native element attributes pass through to the root element.
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
 | `icon` | `ReactNode` | no |  |  |
 | `href` | `string` | no |  |  |
-| `onClick` | `(() => void)` | no |  |  |
+| `onClick` | `() => void` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+###### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
+| `type` | `"submit" \| "reset" \| "button"` | no | Native attribute in this form. |
+
+###### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | yes |  |
+| `onClick` | `() => void` | no | In every form; only its type differs. |
 
 #### `MobileFloatBarSeparator`
 
@@ -639,11 +658,11 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `groups` | `readonly ShellNavGroup[]` | yes |  |  |
 | `currentPath` | `string` | no |  | The path being shown. Items whose `href` it equals or sits under are current. |
-| `isActive` | `((item: ShellNavItem) => boolean)` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
+| `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
 | `openGroups` | `readonly string[]` | yes |  | Keys of the open collapsible groups. |
 | `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  |  |
 | `pendingKey` | `string` | no |  | Key of the item a click is heading to: it looks active before the page arrives, `aria-current` stays put. |
-| `onItemChoose` | `((item: ShellNavItem) => void)` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
+| `onItemChoose` | `(item: ShellNavItem) => void` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
 
 #### `ShellPrimaryActionSlot`
 
@@ -657,7 +676,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the navigation landmark inside the sidebar. |
 | `collapsed` | `boolean` | no | `false` | Render as a rail: icons only. The parts keep their labels for assistive technology. |
-| `onCollapsedChange` | `((collapsed: boolean) => void)` | no |  | When given, a button in the header asks for the rail to open or close. |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  | When given, a button in the header asks for the rail to open or close. |
 | `collapseLabel` | `string` | no |  | Accessible name of that button while the sidebar is open ("Collapse sidebar"). |
 | `expandLabel` | `string` | no |  | Accessible name of that button while it is a rail ("Expand sidebar"). |
 | `busy` | `boolean` | no | `false` | The navigation is being replaced (a route is loading): `aria-busy` on the landmark. Pass the skeleton as `children`. |
@@ -677,7 +696,7 @@ Other native element attributes pass through to the root element.
 | `collapsible` | `boolean` | no | `false` | Turns the heading into a button that shows and hides the items. Needs a `label`. |
 | `open` | `boolean` | no |  | Controlled open state of a collapsible group. |
 | `defaultOpen` | `boolean` | no | `true` | Initial open state when uncontrolled. Default `true`. |
-| `onOpenChange` | `((open: boolean) => void)` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  |  |
 | `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it. |
 | `children` | `ReactNode` | yes |  | `SidebarItem`s. |
 
@@ -695,7 +714,7 @@ Other native element attributes pass through to the root element.
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `highlighted` | `boolean` | no |  | Draw the active style without claiming the page: the item a click is heading to, before the page arrives. |
 | `disabled` | `boolean` | no | `false` |  |
-| `onClick` | `((event: MouseEvent<HTMLElement, MouseEvent>) => void)` | no |  |  |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
 | `className` | `string` | no |  |  |
 
 #### `findActiveNavKey`
@@ -718,6 +737,15 @@ useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: P
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `onPointerDown` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 
 #### `useShellPrimaryAction`
 
@@ -1249,6 +1277,38 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 Other native element attributes pass through to the root element.
 
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated. Native element attributes (event handlers, for instance) are typed for each form's element.
+
+###### `AsButton`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `form` | `string` | no | Native attribute in this form. |
+| `formAction` | `string \| ((formData: FormData) => void \| Promise<void>)` | no | Native attribute in this form. |
+| `formEncType` | `string` | no | Native attribute in this form. |
+| `formMethod` | `string` | no | Native attribute in this form. |
+| `formNoValidate` | `boolean` | no | Native attribute in this form. |
+| `formTarget` | `string` | no | Native attribute in this form. |
+| `href` | `undefined` | no |  |
+| `name` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLButtonElement>` | no | In every form; only its type differs. |
+| `value` | `string \| number \| readonly string[]` | no | Native attribute in this form. |
+
+###### `AsLink`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `download` | `any` | no | Native attribute in this form. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `hrefLang` | `string` | no | Native attribute in this form. |
+| `media` | `string` | no | Native attribute in this form. |
+| `ping` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). In every form; only its type differs. |
+| `referrerPolicy` | `"" \| "origin" \| "no-referrer" \| "no-referrer-when-downgrade" \| "origin-when-cross-origin" \| "same-origin" \| "strict-origin" \| "strict-origin-when-cross-origin" \| "unsafe-url"` | no | Native attribute in this form. |
+| `target` | `HTMLAttributeAnchorTarget` | no | Native attribute in this form. |
+
 ### Types
 
 - `ButtonProps`: `AsButton | AsLink`
@@ -1738,7 +1798,7 @@ Columns on one zero baseline, for a weekly strip or a stack of measures per peri
 | `summary` | `ReactNode` | no |  | A written summary of what the columns show. Shown above them. |
 | `series` | `readonly ColumnChartSeries[]` | yes |  | The measures. One series draws plain columns; several stack in this order, the first at the bottom. |
 | `columns` | `readonly ColumnChartColumn[]` | yes |  | One column per entry, left to right (right to left in an RTL page). |
-| `formatValue` | `((value: number) => string)` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
+| `formatValue` | `(value: number) => string` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
 | `legend` | `"hidden" \| "auto"` | no | `"auto"` | The legend of a stacked chart. `"auto"` (default) shows it when there is more than one series. |
 | `interactive` | `boolean` | no | `false` | Makes every column a focusable element named "<column label>: <values> · <detail>" that shows a tooltip on hover, focus and tap. Escape dismisses the tooltip. Off by default: the chart is then static and needs no client code. |
 | `printValues` | `boolean \| "auto"` | no | `false` | Prints the formatted total above each column. `"auto"` prints it when there are 6 columns or fewer, so a long strip does not crowd; `true` always and `false` (default) never. The numbers repeat the data table, so they are hidden from assistive technology. |
@@ -1840,7 +1900,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 
 ## Combobox
 
-> A searchable single-select input with async options, following the APG combobox pattern.
+> A searchable single-select dropdown input with async options, following the APG combobox pattern.
 
 - Status: beta
 - Category: Forms
@@ -1876,13 +1936,13 @@ the empty and loading states are part of the component.
 | `options` | `readonly ComboboxOption[]` | yes |  | The options to offer. For async data, replace them as results arrive and set `filter={false}`. |
 | `value` | `string \| null` | no |  | Chosen option value, or `null` for none. Controlled. |
 | `defaultValue` | `string \| null` | no | `null` | Initial value when `value` is not given. |
-| `onValueChange` | `((value: string \| null, option: ComboboxOption \| null) => void)` | no |  |  |
-| `onQueryChange` | `((query: string) => void)` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
+| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  |  |
+| `onQueryChange` | `(query: string) => void` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
 | `filter` | `false \| ((option: ComboboxOption, query: string) => boolean)` | no |  | How typed text narrows the list. Default: the label contains the text, ignoring case and diacritics. Pass a function to match your own way, or `false` to show `options` as given (the server already filtered them). |
 | `loading` | `boolean` | no | `false` | Options are being loaded. Shows a ring and `loadingLabel`, and sets `aria-busy`. |
 | `loadingLabel` | `ReactNode` | yes |  | Shown, and announced, while `loading`. |
 | `emptyLabel` | `ReactNode` | yes |  | Shown, and announced, when nothing matches. |
-| `resultsLabel` | `((count: number) => string)` | no |  | Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. |
+| `resultsLabel` | `(count: number) => string` | no |  | Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. |
 | `valueLabel` | `string` | no |  | Label of the chosen option when it is not in `options` (a value set before the options loaded). |
 | `clearable` | `boolean` | no | `false` | Shows a clear button while something is chosen. Escape clears too, when the list is closed. |
 | `clearLabel` | `string` | no | `"Clear"` | Accessible name of the clear button. Aria-only. |
@@ -2006,12 +2066,12 @@ arrow keys, run with Enter.
 | `items` | `readonly CommandItem[]` | yes |  |  |
 | `labels` | `CommandPaletteLabels` | yes |  |  |
 | `hint` | `ReactNode` | no |  | Text under the list while the field is empty: a tip about what can be searched. |
-| `filter` | `((item: CommandItem, query: string) => boolean)` | no | `filterCommands` | Decides which commands match the query. Defaults to {@link filterCommands}: every word of the query, ignoring case and accents, must appear in the label, description, group or keywords. Pass `() => true` when `items` already comes filtered (a server search driven by `onQueryChange`). |
-| `onQueryChange` | `((query: string) => void)` | no |  | Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs. |
+| `filter` | `(item: CommandItem, query: string) => boolean` | no | `filterCommands` | Decides which commands match the query. Defaults to {@link filterCommands}: every word of the query, ignoring case and accents, must appear in the label, description, group or keywords. Pass `() => true` when `items` already comes filtered (a server search driven by `onQueryChange`). |
+| `onQueryChange` | `(query: string) => void` | no |  | Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs. |
 | `loading` | `boolean` | no | `false` | A search is in flight: `aria-busy` on the results, and the empty message waits, so "No results" does not flash before the server answers. |
 | `groupOrder` | `readonly string[]` | no |  | The order of the group headings, by name. Groups not listed follow, in the order they are first used; listed groups with no results are left out. Default: the order of first use. |
 | `bodyOverride` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are not announced. The field keeps focus. |
-| `onEscape` | `(() => boolean \| void)` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
+| `onEscape` | `() => boolean \| void` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
 | `shortcut` | `boolean` | no | `true` | Open on Ctrl+K and Cmd+K. Default `true`. |
 | `container` | `HTMLElement \| null` | no |  | Where the palette is mounted. Defaults to `document.body`. |
 
@@ -2158,6 +2218,13 @@ A promise-based replacement for `window.confirm()`: ```tsx const { confirm, conf
 ```ts
 useConfirmDialog(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `confirm` | `(next: ConfirmOptions) => Promise<boolean>` | yes |  |
+| `confirmDialog` | `Element \| null` | yes |  |
 
 ### Types
 
@@ -2591,13 +2658,13 @@ with messages you provide, and the chosen files are listed with a remove button 
 | `maxSize` | `number` | no |  | Largest file in bytes. Larger files are rejected with reason `"size"`. |
 | `maxFiles` | `number` | no |  | Most files at once (with `multiple`). The extra ones are rejected with reason `"count"`. |
 | `formatRejection` | `(rejection: FileRejection, limits: FileLimits) => string` | yes |  | The message for a rejected file. Required: every rejection is shown to the person in their language. |
-| `removeLabel` | `((file: File) => string)` | no | `defaultRemoveLabel` | Accessible name of a file's remove button. Aria-only. Defaults to "Remove" and the file name. |
+| `removeLabel` | `(file: File) => string` | no | `defaultRemoveLabel` | Accessible name of a file's remove button. Aria-only. Defaults to "Remove" and the file name. |
 | `removeText` | `string` | no |  | Visible text on the remove button. Defaults to a cross icon only. |
-| `describeFiles` | `((files: readonly File[]) => string)` | no |  | Read out politely when the chosen files change ("2 files chosen"). Optional. |
+| `describeFiles` | `(files: readonly File[]) => string` | no |  | Read out politely when the chosen files change ("2 files chosen"). Optional. |
 | `locale` | `string` | no |  | Locale of the sizes. The runtime's when omitted. |
 | `files` | `readonly File[]` | no |  | Controlled files. |
-| `onFilesChange` | `((files: File[]) => void)` | no |  | Called with the whole list after a pick, a drop or a removal. |
-| `onReject` | `((rejections: FileRejection[]) => void)` | no |  | Called with files that were refused, after the message is shown. |
+| `onFilesChange` | `(files: File[]) => void` | no |  | Called with the whole list after a pick, a drop or a removal. |
+| `onReject` | `(rejections: FileRejection[]) => void` | no |  | Called with files that were refused, after the message is shown. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
@@ -2754,6 +2821,16 @@ useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby
 | --- | --- | --- | --- |
 | `own` | `OwnProps` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string \| undefined` | yes |  |
+| `aria-describedby` | `string \| undefined` | yes |  |
+| `aria-invalid` | `true \| undefined` | yes |  |
+| `required` | `true \| undefined` | yes |  |
+| `disabled` | `true \| undefined` | yes |  |
+
 #### `useFormFieldLabelId`
 
 The id of the surrounding `FormField`'s label element, for widgets that need to name a second element (a listbox, a popup) after the field. `undefined` outside a field.
@@ -2854,6 +2931,38 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated. Native element attributes (event handlers, for instance) are typed for each form's element.
+
+###### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `form` | `string` | no | Native attribute in this form. |
+| `formAction` | `string \| ((formData: FormData) => void \| Promise<void>)` | no | Native attribute in this form. |
+| `formEncType` | `string` | no | Native attribute in this form. |
+| `formMethod` | `string` | no | Native attribute in this form. |
+| `formNoValidate` | `boolean` | no | Native attribute in this form. |
+| `formTarget` | `string` | no | Native attribute in this form. |
+| `href` | `undefined` | no |  |
+| `name` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLButtonElement>` | no | In every form; only its type differs. |
+| `value` | `string \| number \| readonly string[]` | no | Native attribute in this form. |
+
+###### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `download` | `any` | no | Native attribute in this form. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `hrefLang` | `string` | no | Native attribute in this form. |
+| `media` | `string` | no | Native attribute in this form. |
+| `ping` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). In every form; only its type differs. |
+| `referrerPolicy` | `"" \| "origin" \| "no-referrer" \| "no-referrer-when-downgrade" \| "origin-when-cross-origin" \| "same-origin" \| "strict-origin" \| "strict-origin-when-cross-origin" \| "unsafe-url"` | no | Native attribute in this form. |
+| `target` | `HTMLAttributeAnchorTarget` | no | Native attribute in this form. |
 
 ### Types
 
@@ -3055,6 +3164,13 @@ The link component and labels in effect. Safe outside a provider: it returns the
 ```ts
 useLufia(): LufiaContextValue
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `linkComponent` | `LinkComponent` | yes |  |
+| `labels` | `LufiaLabels` | yes |  |
 
 ### Types
 
@@ -3396,7 +3512,7 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
-| `onClick` | `((event: MouseEvent<HTMLElement, MouseEvent>) => void)` | no |  | Makes the row a button when there is no `href`. |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Makes the row a button when there is no `href`. |
 | `disabled` | `boolean` | no | `false` |  |
 
 Other native element attributes pass through to the root element.
@@ -3677,7 +3793,7 @@ It is the view for `usePagination`.
 | `totalPages` | `number` | yes |  |  |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
 | `onPageChange` | `(page: number) => void` | yes |  |  |
-| `hrefFor` | `((page: number) => string)` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
+| `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
 | `siblingCount` | `number` | no | `1` | Page numbers shown on each side of the current one. Default 1. |
 | `labels` | `PaginationLabels` | yes |  |  |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
@@ -3787,9 +3903,9 @@ a description and an icon. An indicator slides to the chosen one.
 | `items` | `readonly PeerNavItem<Href>[]` | yes |  |  |
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
-| `onValueChange` | `((key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void)` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
+| `onValueChange` | `(key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
 | `layout` | `"auto" \| "fit" \| "scroll"` | no | `"auto"` | `"fit"` shares the width between the items; `"scroll"` keeps them readable and scrolls sideways with a fade on the edge that hides more. `"auto"` (default) scrolls from five items. |
-| `onItemClick` | `((key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void)` | no |  | Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button) included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change. Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not followed and a tab is not selected. Links and tabs. |
+| `onItemClick` | `(key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button) included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change. Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not followed and a tab is not selected. Links and tabs. |
 | `phoneGrid` | `"row" \| "2x2"` | no | `"row"` | What four items do on a phone (narrower than 35rem, `fit` layout). `"row"` (default) keeps them in one row with the icon above the label; `"2x2"` wraps them into two rows of two so each label keeps its width. |
 
 Other native element attributes pass through to the root element.
@@ -4088,7 +4204,7 @@ and arrow-key navigation.
 | `disabled` | `boolean` | no |  |  |
 | `value` | `string` | no |  | Controlled value. `""` means nothing chosen. |
 | `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `((value: string) => void)` | no |  |  |
+| `onValueChange` | `(value: string) => void` | no |  |  |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
 | `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |
@@ -4199,7 +4315,7 @@ shorter `--lufia-motion-duration-exit`.
 | `show` | `boolean` | yes |  | Whether the content is shown. Toggling it plays the enter or exit animation. |
 | `variant` | `"scale" \| "fade" \| "rise"` | no | `"fade"` | `fade` changes opacity only, `rise` also moves the content up, `scale` grows it slightly. |
 | `appear` | `boolean` | no | `false` | Play the enter animation when the component mounts already shown. Off by default: only real changes animate. |
-| `onExited` | `(() => void)` | no |  | Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. |
+| `onExited` | `() => void` | no |  | Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. |
 
 Other native element attributes pass through to the root element.
 
@@ -4349,8 +4465,8 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | --- | --- | --- | --- | --- |
 | `value` | `string` | no |  | Controlled text. |
 | `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `((value: string) => void)` | no |  | Called on every keystroke with the current text. |
-| `onSearch` | `((value: string) => void)` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
+| `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
+| `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
 | `clearLabel` | `string` | no | `"Clear search"` | Accessible name of the clear button. Aria-only. |
 | `shortcut` | `string` | no |  | A hint for the key that focuses the field, such as "/" or "Ctrl K". Display only: the app binds the key. |
@@ -4532,7 +4648,7 @@ segment.
 | `options` | `readonly SegmentedToggleOption[]` | yes |  |  |
 | `value` | `string` | no |  | Controlled value. |
 | `defaultValue` | `string` | no |  | Initial value when `value` is not given. Defaults to the first enabled option. |
-| `onValueChange` | `((value: string) => void)` | no |  |  |
+| `onValueChange` | `(value: string) => void` | no |  |  |
 | `disabled` | `boolean` | no |  |  |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `width` | `"fill" \| "fit"` | no | `"fit"` | `"fit"` (default) shrinks to its content; `"fill"` shares the full width between the segments. |
@@ -4597,7 +4713,7 @@ the dimension being chosen ("View", "Billing period").
 
 ## Select
 
-> A native select styled with tokens, for choosing one option from a short list.
+> A native select (dropdown) styled with tokens, for choosing one option from a short list.
 
 - Status: beta
 - Category: Forms
@@ -5264,7 +5380,7 @@ expands into a numbered row with connectors that fill as the user progresses.
 | --- | --- | --- | --- | --- |
 | `steps` | `StepDef[]` | yes |  |  |
 | `current` | `number` | yes |  | Index of the active step (0-based). |
-| `onStepClick` | `((index: number) => void)` | no |  | Optional: jump to an already-visited step. |
+| `onStepClick` | `(index: number) => void` | no |  | Optional: jump to an already-visited step. |
 
 Other native element attributes pass through to the root element.
 
@@ -5422,7 +5538,7 @@ error, and a thumb that slides.
 | `hint` | `ReactNode` | no |  |  |
 | `error` | `ReactNode` | no |  |  |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `((checked: boolean) => void)` | no |  |  |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  |  |
 | `value` | `string` | no | `"on"` |  |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
@@ -5437,7 +5553,7 @@ Other native element attributes pass through to the root element.
 | `hint` | `ReactNode` | no |  |  |
 | `error` | `ReactNode` | no |  |  |
 | `value` | `string` | no | `"on"` | Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. |
-| `onCheckedChange` | `((checked: boolean) => void)` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
 
@@ -5522,9 +5638,9 @@ open-ended filter) go in as children.
 | --- | --- | --- | --- | --- |
 | `filters` | `FilterOption[]` | no |  |  |
 | `activeFilter` | `string` | no |  |  |
-| `onFilterChange` | `((key: string) => void)` | no |  |  |
+| `onFilterChange` | `(key: string) => void` | no |  |  |
 | `search` | `string` | no |  |  |
-| `onSearchChange` | `((value: string) => void)` | no |  | The search field renders only when this handler is provided. |
+| `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
 | `searchPlaceholder` | `string` | no |  |  |
 | `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |
@@ -5712,8 +5828,8 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | --- | --- | --- | --- | --- |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `showCount` | `boolean` | no |  | Shows a character count under the box. With `maxLength` it reads "12 / 200". |
-| `formatCount` | `((length: number, max: number \| undefined) => ReactNode)` | no | `defaultCount` | Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword. |
-| `formatCountAnnouncement` | `((length: number, max: number) => string)` | no | `defaultAnnouncement` | Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. |
+| `formatCount` | `(length: number, max: number \| undefined) => ReactNode` | no | `defaultCount` | Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword. |
+| `formatCountAnnouncement` | `(length: number, max: number) => string` | no | `defaultAnnouncement` | Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
 | `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
 
@@ -5824,6 +5940,18 @@ The toast API when rendered inside a `ToastProvider`, otherwise `null`: for code
 useOptionalToast(): ToastApi | null
 ```
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
+
 #### `useToast`
 
 Show and dismiss notifications. Must be used inside a `ToastProvider`.
@@ -5831,6 +5959,18 @@ Show and dismiss notifications. Must be used inside a `ToastProvider`.
 ```ts
 useToast(): ToastApi
 ```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `show` | `(options: ToastOptions) => string` | yes | Shows a toast and returns its id. A string message with the same tone as a visible toast is not shown twice. |
+| `info` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `success` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `warning` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `error` | `(message: ReactNode, options?: Omit<ToastOptions, "message" \| "tone"> \| undefined) => string` | yes |  |
+| `dismiss` | `(id: string) => void` | yes |  |
+| `clear` | `() => void` | yes | Dismisses every toast. |
 
 ### Types
 
@@ -6382,6 +6522,17 @@ useModalState({ adapter, keys, onNavigate, }?: UseModalStateOptions): { readonly
 | --- | --- | --- | --- |
 | `__0` | `UseModalStateOptions` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modal` | `string \| null` | yes |  |
+| `id` | `string \| null` | yes |  |
+| `returnModal` | `string \| null` | yes |  |
+| `returnId` | `string \| null` | yes |  |
+| `open` | `(name: string, itemId?: string \| undefined, options?: ModalOpenOptions \| undefined) => void` | yes |  |
+| `close` | `() => void` | yes |  |
+
 ### Types
 
 - `ModalOpenOptions`: `{ consumeKeys?: readonly string[] | undefined; }`
@@ -6467,6 +6618,22 @@ usePagination<T>(items: readonly T[], pageSize?: number, resetKey?: string): { p
 | `items` | `readonly T[]` | yes |  |
 | `pageSize` | `number` | no |  |
 | `resetKey` | `string` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `page` | `number` | yes |  |
+| `pageSize` | `number` | yes |  |
+| `total` | `number` | yes |  |
+| `totalPages` | `number` | yes |  |
+| `slice` | `T[]` | yes |  |
+| `setPage` | `Dispatch<SetStateAction<number>>` | yes |  |
+| `hasPrev` | `boolean` | yes |  |
+| `hasNext` | `boolean` | yes |  |
+| `goPrev` | `() => void` | yes |  |
+| `goNext` | `() => void` | yes |  |
+| `show` | `boolean` | yes | False when everything fits on one page, so a pager can be left out. |
 
 ### Example
 

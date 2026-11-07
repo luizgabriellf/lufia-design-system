@@ -41,6 +41,38 @@ A `Button` that shows only an icon. The accessible name is required by the types
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated. Native element attributes (event handlers, for instance) are typed for each form's element.
+
+##### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `form` | `string` | no | Native attribute in this form. |
+| `formAction` | `string \| ((formData: FormData) => void \| Promise<void>)` | no | Native attribute in this form. |
+| `formEncType` | `string` | no | Native attribute in this form. |
+| `formMethod` | `string` | no | Native attribute in this form. |
+| `formNoValidate` | `boolean` | no | Native attribute in this form. |
+| `formTarget` | `string` | no | Native attribute in this form. |
+| `href` | `undefined` | no |  |
+| `name` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLButtonElement>` | no | In every form; only its type differs. |
+| `value` | `string \| number \| readonly string[]` | no | Native attribute in this form. |
+
+##### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `download` | `any` | no | Native attribute in this form. |
+| `href` | `string` | yes | When present the button renders as a link (through the `LufiaProvider` link component). |
+| `hrefLang` | `string` | no | Native attribute in this form. |
+| `media` | `string` | no | Native attribute in this form. |
+| `ping` | `string` | no | Native attribute in this form. |
+| `ref` | `Ref<HTMLAnchorElement>` | no | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). In every form; only its type differs. |
+| `referrerPolicy` | `"" \| "origin" \| "no-referrer" \| "no-referrer-when-downgrade" \| "origin-when-cross-origin" \| "same-origin" \| "strict-origin" \| "strict-origin-when-cross-origin" \| "unsafe-url"` | no | Native attribute in this form. |
+| `target` | `HTMLAttributeAnchorTarget` | no | Native attribute in this form. |
+
 ## Types
 
 - `IconButtonProps`: `(Omit<AsButton, "children" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "fullWidth" | "iconStart" | "iconEnd">) & { "aria-label": string; icon: ReactNode; title?: string | undefined; }`

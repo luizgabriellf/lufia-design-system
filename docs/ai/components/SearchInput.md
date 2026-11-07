@@ -31,8 +31,8 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | --- | --- | --- | --- | --- |
 | `value` | `string` | no |  | Controlled text. |
 | `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `((value: string) => void)` | no |  | Called on every keystroke with the current text. |
-| `onSearch` | `((value: string) => void)` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
+| `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
+| `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
 | `clearLabel` | `string` | no | `"Clear search"` | Accessible name of the clear button. Aria-only. |
 | `shortcut` | `string` | no |  | A hint for the key that focuses the field, such as "/" or "Ctrl K". Display only: the app binds the key. |

@@ -55,7 +55,23 @@ function createProgram(entryFiles) {
 
 const FORMAT = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
 const inNodeModules = (decl) => decl.getSourceFile().fileName.includes("/node_modules/");
-const stripUndefined = (text) => text.replace(/ \| undefined$/, "");
+/** True when one pair of parentheses wraps all of `text`, as in `(() => void)`. */
+const wrapped = (text) => {
+  if (!text.startsWith("(") || !text.endsWith(")")) return false;
+  let depth = 0;
+  for (let i = 0; i < text.length - 1; i += 1) {
+    if (text[i] === "(") depth += 1;
+    else if (text[i] === ")") depth -= 1;
+    if (depth === 0) return false;
+  }
+  return true;
+};
+/** Drops a trailing `| undefined`, and the parentheses TypeScript adds around a function type before a union. */
+const stripUndefined = (text) => {
+  if (!/ \| undefined$/.test(text)) return text;
+  const rest = text.replace(/ \| undefined$/, "");
+  return wrapped(rest) ? rest.slice(1, -1) : rest;
+};
 const oneLine = (text) => text.replace(/\s+/g, " ").trim();
 
 /** Defaults written as `name = value` in the props destructuring of a component or hook. */
@@ -145,7 +161,95 @@ function propsOf(checker, parameter, defaults) {
       description: rest.description,
     };
   });
-  return { props, nativeProps };
+  const variants = members.length > 1 ? variantsOf(checker, members, declaration) : null;
+  return { props, nativeProps, variants };
+}
+
+/** Name of a union branch: its alias, looking through `Omit`/`Pick` wrappers; null for an anonymous object type. */
+function branchName(type) {
+  const alias = type.aliasSymbol?.name;
+  if (alias && !/^(Omit|Pick|Exclude|Extract)$/.test(alias)) return alias;
+  const inner = type.aliasTypeArguments?.[0];
+  if (alias && inner) return branchName(inner);
+  const symbol = type.symbol?.name;
+  return symbol && !symbol.startsWith("__") ? symbol : null;
+}
+
+/**
+ * The branches of a discriminated union of props. A branch lists only the props that set it apart from the others:
+ * missing from one, or typed or required differently. A prop with the same type and requirement in every branch is not
+ * repeated; one that is native in a branch and declared in another is listed (marked `native`) only when it differs, and
+ * a prop present in every branch that differs only in its type is marked `onlyTypeDiffers`. Native attributes that every
+ * branch inherits are skipped, and `nativeTypesDiffer` records that their element type differs between branches (event
+ * handlers, for instance). The discriminant is the distinguishing prop whose type is `undefined` in one branch or a
+ * literal in all of them.
+ */
+function variantsOf(checker, members, declaration) {
+  const branches = members.map((member, index) => {
+    const props = new Map();
+    for (const prop of checker.getPropertiesOfType(member)) {
+      const decls = prop.declarations ?? [];
+      const native = decls.length > 0 && decls.every(inNodeModules);
+      props.set(prop.name, {
+        name: prop.name,
+        type: resolvedTypeText(checker, checker.getTypeOfSymbolAtLocation(prop, decls[0] ?? declaration)),
+        required: !(prop.flags & ts.SymbolFlags.Optional),
+        description: native ? "" : oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker))),
+        native,
+      });
+    }
+    return { name: branchName(member), index, props };
+  });
+  const names = [...new Set(branches.flatMap((branch) => [...branch.props.keys()]))].sort(compareText);
+  const sameEverywhere = (name, compare) => {
+    const first = branches[0].props.get(name);
+    return branches.every((branch) => {
+      const prop = branch.props.get(name);
+      return prop && first && compare(prop, first);
+    });
+  };
+  const identical = (name) =>
+    sameEverywhere(name, (prop, first) => prop.type === first.type && prop.required === first.required);
+  const nativeEverywhere = (name) => sameEverywhere(name, (prop) => prop.native);
+  const present = (name) => sameEverywhere(name, () => true);
+  const distinguishing = names.filter((name) => !identical(name) && !nativeEverywhere(name));
+  const nativeTypesDiffer = names.some((name) => nativeEverywhere(name) && !identical(name));
+  if (distinguishing.length === 0) return null;
+  const isLiteral = (text) => /^(".*"|-?\d+|true|false|undefined)$/.test(text);
+  const discriminant =
+    distinguishing.find((name) => {
+      const types = branches.map((branch) => branch.props.get(name)?.type);
+      return (
+        types.every((type) => type !== undefined) &&
+        (types.includes("undefined") || types.every((type) => type.split(" | ").every(isLiteral)))
+      );
+    }) ?? null;
+  const onlyTypeDiffers = (name) =>
+    present(name) &&
+    sameEverywhere(name, (prop, first) => prop.required === first.required) &&
+    !identical(name);
+  return {
+    discriminant,
+    nativeTypesDiffer,
+    branches: branches.map((branch) => ({
+      // An anonymous branch (an `Omit` of a named one) is named by what selects it, e.g. `href: string`.
+      name:
+        branch.name ??
+        (discriminant
+          ? `${discriminant}: ${branch.props.get(discriminant).type}`
+          : `Variant${branch.index + 1}`),
+      props: distinguishing
+        .filter((name) => branch.props.has(name))
+        .map((name) => {
+          const { native, ...prop } = branch.props.get(name);
+          return {
+            ...prop,
+            ...(native ? { native: true } : {}),
+            ...(onlyTypeDiffers(name) ? { onlyTypeDiffers: true } : {}),
+          };
+        }),
+    })),
+  };
 }
 
 /** Code-point comparison: stable under every locale, unlike a bare `localeCompare`. */
@@ -210,6 +314,38 @@ function describeType(checker, resolved) {
   return text.length <= MAX_DEFINITION ? text : null;
 }
 
+/**
+ * Members of the object type a hook returns (`T` or `T | null`), with their types and JSDoc. Null for primitives,
+ * functions, arrays and types declared only by a dependency, so a hook returning a ref or a boolean lists nothing.
+ */
+function returnMembersOf(checker, returnType, location) {
+  const parts = (returnType.isUnion() ? returnType.types : [returnType]).filter(
+    (part) => !(part.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined)),
+  );
+  if (parts.length !== 1) return null;
+  const [type] = parts;
+  if (!(type.flags & ts.TypeFlags.Object) || type.getCallSignatures().length > 0 || checker.isArrayType(type))
+    return null;
+  const members = checker.getPropertiesOfType(type);
+  if (members.length === 0 || members.every((prop) => (prop.declarations ?? []).every(inNodeModules)))
+    return null;
+  return members.map((prop) => {
+    const memberType = checker.getTypeOfSymbolAtLocation(prop, prop.valueDeclaration ?? location);
+    const optional = Boolean(prop.flags & ts.SymbolFlags.Optional);
+    // `| undefined` is only noise on an optional member; on a required one it is part of what the hook returns.
+    const keepsUndefined =
+      !optional &&
+      memberType.isUnion() &&
+      memberType.types.some((part) => part.flags & ts.TypeFlags.Undefined);
+    return {
+      name: prop.name,
+      type: resolvedTypeText(checker, memberType) + (keepsUndefined ? " | undefined" : ""),
+      required: !optional,
+      description: oneLine(ts.displayPartsToString(prop.getDocumentationComment(checker))),
+    };
+  });
+}
+
 function describeExport(checker, sourceFile, symbol) {
   const name = symbol.name;
   const resolved = symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol;
@@ -246,14 +382,15 @@ function describeExport(checker, sourceFile, symbol) {
         };
       }),
       returns: oneLine(checker.typeToString(signature.getReturnType(), undefined, FORMAT)),
+      returnMembers: returnMembersOf(checker, signature.getReturnType(), declaration ?? sourceFile),
     };
   }
   if (/^[A-Z]/.test(name)) {
     const defaults = declaration ? destructuredDefaults(declaration) : new Map();
-    const { props, nativeProps } = first
+    const { props, nativeProps, variants } = first
       ? propsOf(checker, first, defaults)
-      : { props: [], nativeProps: false };
-    return { name, kind: "component", description, props, nativeProps };
+      : { props: [], nativeProps: false, variants: null };
+    return { name, kind: "component", description, props, nativeProps, ...(variants ? { variants } : {}) };
   }
   return {
     name,

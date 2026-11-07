@@ -50,7 +50,7 @@ navigation is data, so both layouts always agree.
 | --- | --- | --- | --- | --- |
 | `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation, as data. It renders in the sidebar and again in the phone sheet. |
 | `currentPath` | `string` | no |  | The path being shown: the matching item is current (`aria-current="page"`). |
-| `isActive` | `((item: ShellNavItem) => boolean)` | no |  | Takes over from `currentPath`. Return true for the current item. |
+| `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
 | `labels` | `AppShellLabels` | yes |  |  |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
@@ -65,10 +65,10 @@ navigation is data, so both layouts always agree.
 | `sheetAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
 | `defaultCollapsed` | `boolean` | no | `false` |  |
-| `onCollapsedChange` | `((collapsed: boolean) => void)` | no |  |  |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  |  |
 | `openGroups` | `readonly string[]` | no |  | Keys of the open collapsible groups. Controlled; the owner then also decides what arriving on a page opens. |
 | `defaultOpenGroups` | `readonly string[]` | no |  |  |
-| `onOpenGroupsChange` | `((keys: readonly string[]) => void)` | no |  |  |
+| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  |  |
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `children` | `ReactNode` | yes |  | The page. The shell renders the one `<main>` landmark around it. |
 
@@ -91,9 +91,28 @@ Other native element attributes pass through to the root element.
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
 | `icon` | `ReactNode` | no |  |  |
 | `href` | `string` | no |  |  |
-| `onClick` | `(() => void)` | no |  |  |
+| `onClick` | `() => void` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+#### Variants
+
+The props are a union of forms; `href` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+##### `href: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `undefined` | no |  |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
+| `type` | `"submit" \| "reset" \| "button"` | no | Native attribute in this form. |
+
+##### `href: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | yes |  |
+| `onClick` | `() => void` | no | In every form; only its type differs. |
 
 ### `MobileFloatBarSeparator`
 
@@ -122,11 +141,11 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `groups` | `readonly ShellNavGroup[]` | yes |  |  |
 | `currentPath` | `string` | no |  | The path being shown. Items whose `href` it equals or sits under are current. |
-| `isActive` | `((item: ShellNavItem) => boolean)` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
+| `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
 | `openGroups` | `readonly string[]` | yes |  | Keys of the open collapsible groups. |
 | `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  |  |
 | `pendingKey` | `string` | no |  | Key of the item a click is heading to: it looks active before the page arrives, `aria-current` stays put. |
-| `onItemChoose` | `((item: ShellNavItem) => void)` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
+| `onItemChoose` | `(item: ShellNavItem) => void` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
 
 ### `ShellPrimaryActionSlot`
 
@@ -140,7 +159,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the navigation landmark inside the sidebar. |
 | `collapsed` | `boolean` | no | `false` | Render as a rail: icons only. The parts keep their labels for assistive technology. |
-| `onCollapsedChange` | `((collapsed: boolean) => void)` | no |  | When given, a button in the header asks for the rail to open or close. |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  | When given, a button in the header asks for the rail to open or close. |
 | `collapseLabel` | `string` | no |  | Accessible name of that button while the sidebar is open ("Collapse sidebar"). |
 | `expandLabel` | `string` | no |  | Accessible name of that button while it is a rail ("Expand sidebar"). |
 | `busy` | `boolean` | no | `false` | The navigation is being replaced (a route is loading): `aria-busy` on the landmark. Pass the skeleton as `children`. |
@@ -160,7 +179,7 @@ Other native element attributes pass through to the root element.
 | `collapsible` | `boolean` | no | `false` | Turns the heading into a button that shows and hides the items. Needs a `label`. |
 | `open` | `boolean` | no |  | Controlled open state of a collapsible group. |
 | `defaultOpen` | `boolean` | no | `true` | Initial open state when uncontrolled. Default `true`. |
-| `onOpenChange` | `((open: boolean) => void)` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  |  |
 | `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it. |
 | `children` | `ReactNode` | yes |  | `SidebarItem`s. |
 
@@ -178,7 +197,7 @@ Other native element attributes pass through to the root element.
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `highlighted` | `boolean` | no |  | Draw the active style without claiming the page: the item a click is heading to, before the page arrives. |
 | `disabled` | `boolean` | no | `false` |  |
-| `onClick` | `((event: MouseEvent<HTMLElement, MouseEvent>) => void)` | no |  |  |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
 | `className` | `string` | no |  |  |
 
 ### `findActiveNavKey`
@@ -201,6 +220,15 @@ useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: P
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `onPointerDown` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 
 ### `useShellPrimaryAction`
 

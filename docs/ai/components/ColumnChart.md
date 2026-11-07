@@ -36,7 +36,7 @@ Columns on one zero baseline, for a weekly strip or a stack of measures per peri
 | `summary` | `ReactNode` | no |  | A written summary of what the columns show. Shown above them. |
 | `series` | `readonly ColumnChartSeries[]` | yes |  | The measures. One series draws plain columns; several stack in this order, the first at the bottom. |
 | `columns` | `readonly ColumnChartColumn[]` | yes |  | One column per entry, left to right (right to left in an RTL page). |
-| `formatValue` | `((value: number) => string)` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
+| `formatValue` | `(value: number) => string` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
 | `legend` | `"hidden" \| "auto"` | no | `"auto"` | The legend of a stacked chart. `"auto"` (default) shows it when there is more than one series. |
 | `interactive` | `boolean` | no | `false` | Makes every column a focusable element named "<column label>: <values> · <detail>" that shows a tooltip on hover, focus and tap. Escape dismisses the tooltip. Off by default: the chart is then static and needs no client code. |
 | `printValues` | `boolean \| "auto"` | no | `false` | Prints the formatted total above each column. `"auto"` prints it when there are 6 columns or fewer, so a long strip does not crowd; `true` always and `false` (default) never. The numbers repeat the data table, so they are hidden from assistive technology. |

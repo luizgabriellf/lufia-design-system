@@ -30,7 +30,7 @@ expands into a numbered row with connectors that fill as the user progresses.
 | --- | --- | --- | --- | --- |
 | `steps` | `StepDef[]` | yes |  |  |
 | `current` | `number` | yes |  | Index of the active step (0-based). |
-| `onStepClick` | `((index: number) => void)` | no |  | Optional: jump to an already-visited step. |
+| `onStepClick` | `(index: number) => void` | no |  | Optional: jump to an already-visited step. |
 
 Other native element attributes pass through to the root element.
 

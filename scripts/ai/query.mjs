@@ -29,6 +29,12 @@ const STOPWORDS = new Set(
 const termsOf = (value) =>
   (normalize(value).match(/[a-z0-9]+/g) ?? []).filter((term) => term.length >= 2 && !STOPWORDS.has(term));
 
+/** True when a query term is the start of a word in the text, so "drop" finds "dropdown" but "own" does not. */
+const startsWord = (text, term) => text.split(/[^a-z0-9]+/).some((word) => word.startsWith(term));
+
+/** Word boundaries of a PascalCase name: "ConfirmDialog" is "confirm dialog". */
+const nameWords = (name) => normalize(String(name).replace(/([a-z0-9])([A-Z])/g, "$1 $2"));
+
 export function loadManifest() {
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
   if (!Array.isArray(manifest.components)) {
@@ -51,7 +57,8 @@ export function listComponents(manifest) {
 
 /**
  * Search across names, descriptions and usage guidance, not assumed React APIs.
- * Terms are OR-ed and weighted by where they match (name, summary, guidance, category, props);
+ * Terms are OR-ed and weighted by where they match (name, summary, guidance, category, props), a match at the start
+ * of a word counting for more than one inside a word;
  * a component matching more terms ranks higher, and an exact component name always comes first.
  */
 export function searchComponents(manifest, query, limit = 8) {
@@ -60,6 +67,7 @@ export function searchComponents(manifest, query, limit = 8) {
   const ranked = [];
   for (const component of manifest.components) {
     const name = normalize(component.name);
+    const words = nameWords(component.name);
     const category = normalize(component.category);
     const summary = normalize(component.summary);
     const guidance = normalize(
@@ -84,9 +92,12 @@ export function searchComponents(manifest, query, limit = 8) {
         weight = 100;
         exactName = true;
       } else if (name.startsWith(term)) weight = 45;
+      else if (startsWord(words, term)) weight = 38;
       else if (name.includes(term)) weight = 30;
-      else if (summary.includes(term)) weight = 18;
-      else if (guidance.includes(term)) weight = 10;
+      else if (startsWord(summary, term)) weight = 18;
+      else if (summary.includes(term)) weight = 14;
+      else if (startsWord(guidance, term)) weight = 10;
+      else if (guidance.includes(term)) weight = 8;
       else if (category.includes(term)) weight = 7;
       else if (propNames.includes(term)) weight = 3;
       if (!weight) continue;

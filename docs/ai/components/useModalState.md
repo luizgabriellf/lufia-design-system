@@ -53,6 +53,17 @@ useModalState({ adapter, keys, onNavigate, }?: UseModalStateOptions): { readonly
 | --- | --- | --- | --- |
 | `__0` | `UseModalStateOptions` | no |  |
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modal` | `string \| null` | yes |  |
+| `id` | `string \| null` | yes |  |
+| `returnModal` | `string \| null` | yes |  |
+| `returnId` | `string \| null` | yes |  |
+| `open` | `(name: string, itemId?: string \| undefined, options?: ModalOpenOptions \| undefined) => void` | yes |  |
+| `close` | `() => void` | yes |  |
+
 ## Types
 
 - `ModalOpenOptions`: `{ consumeKeys?: readonly string[] | undefined; }`

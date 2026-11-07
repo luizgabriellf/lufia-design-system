@@ -61,6 +61,13 @@ A promise-based replacement for `window.confirm()`: ```tsx const { confirm, conf
 useConfirmDialog(): { confirm: (next: ConfirmOptions) => Promise<boolean>; confirmDialog: Element | null; }
 ```
 
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `confirm` | `(next: ConfirmOptions) => Promise<boolean>` | yes |  |
+| `confirmDialog` | `Element \| null` | yes |  |
+
 ## Types
 
 - `ConfirmDialogClassNames`: `ModalClassNames & { cancel?: string | undefined; confirm?: string | undefined; }`

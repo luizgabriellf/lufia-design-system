@@ -23,14 +23,14 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 ## Components: Forms
 
 - [Checkbox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Checkbox.md): A checkbox with a mixed state, for independent on/off choices. (beta)
-- [Combobox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Combobox.md): A searchable single-select input with async options, following the APG combobox pattern. (beta)
+- [Combobox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Combobox.md): A searchable single-select dropdown input with async options, following the APG combobox pattern. (beta)
 - [FileField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FileField.md): A file picker with drag and drop, validation and a list of chosen files. (beta)
 - [FormField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FormField.md): Label, hint and error wired to any control, so the control stays accessible by default. (beta)
 - [PendingSubmit](https://luizgabriellf.github.io/lufia-design-system/ai/components/PendingSubmit.md): A submit button that reads the pending state of its form and prevents double submits. (beta)
 - [RadioGroup](https://luizgabriellf.github.io/lufia-design-system/ai/components/RadioGroup.md): A set of radios where exactly one choice applies. (beta)
 - [SearchInput](https://luizgabriellf.github.io/lufia-design-system/ai/components/SearchInput.md): A search field with a clear button, optional debounce and a shortcut hint. (beta)
 - [SegmentedToggle](https://luizgabriellf.github.io/lufia-design-system/ai/components/SegmentedToggle.md): A compact single-choice control for switching between a few views or modes. (beta)
-- [Select](https://luizgabriellf.github.io/lufia-design-system/ai/components/Select.md): A native select styled with tokens, for choosing one option from a short list. (beta)
+- [Select](https://luizgabriellf.github.io/lufia-design-system/ai/components/Select.md): A native select (dropdown) styled with tokens, for choosing one option from a short list. (beta)
 - [Switch](https://luizgabriellf.github.io/lufia-design-system/ai/components/Switch.md): An on/off control whose change takes effect immediately. (beta)
 - [TextInput](https://luizgabriellf.github.io/lufia-design-system/ai/components/TextInput.md): A single-line text field with optional prefix and suffix. (beta)
 - [Textarea](https://luizgabriellf.github.io/lufia-design-system/ai/components/Textarea.md): A multi-line text field that can show a character count. (beta)

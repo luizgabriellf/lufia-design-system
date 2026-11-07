@@ -40,12 +40,12 @@ arrow keys, run with Enter.
 | `items` | `readonly CommandItem[]` | yes |  |  |
 | `labels` | `CommandPaletteLabels` | yes |  |  |
 | `hint` | `ReactNode` | no |  | Text under the list while the field is empty: a tip about what can be searched. |
-| `filter` | `((item: CommandItem, query: string) => boolean)` | no | `filterCommands` | Decides which commands match the query. Defaults to {@link filterCommands}: every word of the query, ignoring case and accents, must appear in the label, description, group or keywords. Pass `() => true` when `items` already comes filtered (a server search driven by `onQueryChange`). |
-| `onQueryChange` | `((query: string) => void)` | no |  | Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs. |
+| `filter` | `(item: CommandItem, query: string) => boolean` | no | `filterCommands` | Decides which commands match the query. Defaults to {@link filterCommands}: every word of the query, ignoring case and accents, must appear in the label, description, group or keywords. Pass `() => true` when `items` already comes filtered (a server search driven by `onQueryChange`). |
+| `onQueryChange` | `(query: string) => void` | no |  | Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs. |
 | `loading` | `boolean` | no | `false` | A search is in flight: `aria-busy` on the results, and the empty message waits, so "No results" does not flash before the server answers. |
 | `groupOrder` | `readonly string[]` | no |  | The order of the group headings, by name. Groups not listed follow, in the order they are first used; listed groups with no results are left out. Default: the order of first use. |
 | `bodyOverride` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are not announced. The field keeps focus. |
-| `onEscape` | `(() => boolean \| void)` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
+| `onEscape` | `() => boolean \| void` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
 | `shortcut` | `boolean` | no | `true` | Open on Ctrl+K and Cmd+K. Default `true`. |
 | `container` | `HTMLElement \| null` | no |  | Where the palette is mounted. Defaults to `document.body`. |
 

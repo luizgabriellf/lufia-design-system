@@ -34,6 +34,10 @@ jobs:
         run: npm run test:coverage
       - name: Build package
         run: npm run build
+      - name: Leak gate on the built package
+        run: node scripts/ai/verify-leaks.mjs
+        env:
+          LUFIA_LEAK_TOKENS: ${{ secrets.LUFIA_LEAK_TOKENS }}
       - name: Build Storybook
         run: npm run build-storybook
         env:

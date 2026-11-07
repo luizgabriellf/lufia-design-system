@@ -32,7 +32,7 @@ It is the view for `usePagination`.
 | `totalPages` | `number` | yes |  |  |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
 | `onPageChange` | `(page: number) => void` | yes |  |  |
-| `hrefFor` | `((page: number) => string)` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
+| `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
 | `siblingCount` | `number` | no | `1` | Page numbers shown on each side of the current one. Default 1. |
 | `labels` | `PaginationLabels` | yes |  |  |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |

@@ -33,7 +33,7 @@ shorter `--lufia-motion-duration-exit`.
 | `show` | `boolean` | yes |  | Whether the content is shown. Toggling it plays the enter or exit animation. |
 | `variant` | `"scale" \| "fade" \| "rise"` | no | `"fade"` | `fade` changes opacity only, `rise` also moves the content up, `scale` grows it slightly. |
 | `appear` | `boolean` | no | `false` | Play the enter animation when the component mounts already shown. Off by default: only real changes animate. |
-| `onExited` | `(() => void)` | no |  | Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. |
+| `onExited` | `() => void` | no |  | Called once the content is gone after a hide: the exit animation ended, or there was none. Not called when it re-opens first. |
 
 Other native element attributes pass through to the root element.
 
