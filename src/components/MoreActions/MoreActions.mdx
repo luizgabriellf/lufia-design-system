@@ -52,12 +52,12 @@ covers the whole viewport, with the page behind made `inert` and page scroll loc
 dynamic viewport (and 32.5rem); longer lists scroll inside it without scrolling the page. The bottom padding includes the
 safe-area inset.
 
-<Canvas of={Stories.Sheet} />
-<Canvas of={Stories.SheetManyItems} />
+<Canvas of={Stories.Sheet} story={{ inline: false, height: "30rem" }} />
+<Canvas of={Stories.SheetManyItems} story={{ inline: false, height: "30rem" }} />
 
 Items without an icon keep an empty leading slot whenever another item has one, so labels always line up.
 
-<Canvas of={Stories.SheetMixedIcons} />
+<Canvas of={Stories.SheetMixedIcons} story={{ inline: false, height: "30rem" }} />
 
 #### Stacking above an app's dock
 
@@ -74,7 +74,7 @@ The sheet registers on the shared overlay stack (through `useFocusTrap`), so a `
 `registerOverlayLayer`, order correctly: only the topmost layer reacts to Escape. Optional hooks: `--lufia-sheet-backdrop`,
 `--lufia-sheet-max-block-size`, `--lufia-sheet-max-inline-size`.
 
-<Canvas of={Stories.SheetOverDock} />
+<Canvas of={Stories.SheetOverDock} story={{ inline: false, height: "30rem" }} />
 
 ### All themes
 

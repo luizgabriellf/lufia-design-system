@@ -38,7 +38,7 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
-| `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. |
+| `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. |
 
 Other native element attributes pass through to the root element.
 

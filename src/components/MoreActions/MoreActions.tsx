@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type HTMLAttributes,
   type KeyboardEvent,
   type ReactNode,
@@ -54,7 +55,7 @@ export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
    * `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up.
    */
   presentation?: "auto" | "popover" | "sheet";
-  /** Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves. */
+  /** Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. */
   defaultOpen?: boolean;
 };
 
@@ -104,6 +105,12 @@ export function MoreActions({
   const pendingSelect = useRef<(() => void) | undefined>(undefined);
   const menuId = useId();
 
+  // False on the server and during hydration: a portal cannot be rendered there.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const narrow = useMediaQuery(SHEET_QUERY);
   const sheet = presentation === "sheet" || (presentation === "auto" && narrow);
 
@@ -111,12 +118,12 @@ export function MoreActions({
   // A sheet lives outside `rootRef`, so an outside-press listener would treat its own items as outside: the sheet has its
   // own backdrop and trap instead.
   useDismiss(open && !sheet, close, rootRef, triggerRef);
-  useFocusTrap(open && sheet, sheetRef, {
+  useFocusTrap(open && sheet && mounted, sheetRef, {
     onEscape: close,
     initialFocus: "container",
     inertBackground: true,
   });
-  useBodyScrollLock(open && sheet);
+  useBodyScrollLock(open && sheet && mounted);
 
   // Items that are shown right now and can take focus. Layout decides, because some items are hidden by CSS on wide pages.
   // Disabled items stay in the list: they are focusable and readable (APG), they just cannot be activated.
@@ -127,13 +134,15 @@ export function MoreActions({
 
   useEffect(() => {
     if (!open) return;
+    // A sheet is modal and always moves focus in, `defaultOpen` included; a popover left open for documentation does not.
     if (skipFocus.current) {
       skipFocus.current = false;
-      return;
+      if (!sheet) return;
     }
     const list = focusable();
     (initial === "last" ? list[list.length - 1] : list[0])?.focus();
-  }, [open, initial]);
+    // `sheet` is a dependency so that crossing the breakpoint while open moves focus into the new presentation.
+  }, [open, initial, sheet, mounted]);
 
   // Checked once when the menu opens: if it runs past the viewport on the aligned side, line it up with the other edge.
   useLayoutEffect(() => {
@@ -319,7 +328,7 @@ export function MoreActions({
         onKeyDown={onTriggerKeyDown}
       />
       {open && !sheet ? list(styles.menu) : null}
-      {open && sheet
+      {open && sheet && mounted
         ? createPortal(
             <div className={styles.layer} data-lufia-part="layer">
               <div className={styles.backdrop} aria-hidden="true" onClick={close} />

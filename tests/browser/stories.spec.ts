@@ -151,9 +151,17 @@ test.describe("page actions sheet", () => {
           const covers = b.left <= 0 && b.top <= 0 && b.right >= innerWidth && b.bottom >= innerHeight;
           const anchored = Math.abs(s.bottom - innerHeight) <= 1 && s.width >= innerWidth - 1;
           // Painted above the dock: the page behind is inert, so a hit test cannot tell; compare the stacking order instead.
+          const header = document.querySelector<HTMLElement>('[data-testid="header"]');
+          const transformed = document.querySelector<HTMLElement>('[data-testid="transformed"]');
+          const layer = sheet.closest<HTMLElement>('[data-lufia-part="layer"]')!;
+          // The sheet is not inside the transformed ancestor, so that ancestor's stacking context cannot trap it.
+          const portaled =
+            !!transformed && !transformed.contains(layer) && layer.parentElement === document.body;
           const above =
-            Number(getComputedStyle(sheet.closest<HTMLElement>('[data-lufia-part="layer"]')!).zIndex) >
-            Number(getComputedStyle(dock).zIndex);
+            portaled &&
+            Number(getComputedStyle(layer).zIndex) > Number(getComputedStyle(dock).zIndex) &&
+            !!header &&
+            Number(getComputedStyle(layer).zIndex) > Number(getComputedStyle(header).zIndex);
           return covers && anchored && above ? "ok" : { covers, anchored, above };
         }),
       )

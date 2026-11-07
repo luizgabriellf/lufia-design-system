@@ -1,5 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
 import { configureAxe } from "vitest-axe";
 import { axe } from "../../test/axe";
 import { pushLayer, removeLayer } from "../useFocusTrap/layerStack";
@@ -396,6 +397,45 @@ describe("MoreActions", () => {
       const narrow = setupSheet("auto");
       await narrow.user.click(narrow.trigger);
       expect(narrow.view.container.contains(screen.getByRole("menu"))).toBe(false);
+      vi.unstubAllGlobals();
+    });
+
+    it("moves focus to the first item with defaultOpen, so the keys work", async () => {
+      withLayout();
+      render(<MoreActions label="More actions" items={items} presentation="sheet" defaultOpen />);
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      await userEvent.keyboard("{ArrowDown}");
+      expect(screen.getByRole("menuitem", { name: /Export/ })).toHaveFocus();
+    });
+
+    it("renders on the server without touching the document", () => {
+      const html = renderToString(
+        <MoreActions label="More actions" items={items} presentation="sheet" defaultOpen />,
+      );
+      expect(html).toContain("More actions");
+    });
+
+    it("moves focus into the new presentation when the breakpoint is crossed while open", async () => {
+      withLayout();
+      let narrow = true;
+      const listeners = new Set<() => void>();
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        get matches() {
+          return narrow;
+        },
+        media: query,
+        addEventListener: (_: string, fn: () => void) => listeners.add(fn),
+        removeEventListener: (_: string, fn: () => void) => listeners.delete(fn),
+      }));
+      const user = userEvent.setup();
+      const view = render(<MoreActions label="More actions" items={items} presentation="auto" />);
+      await user.click(screen.getByRole("button", { name: "More actions" }));
+      expect(view.container.contains(screen.getByRole("menu"))).toBe(false);
+      await user.keyboard("{ArrowDown}");
+      narrow = false;
+      act(() => listeners.forEach((fn) => fn()));
+      expect(view.container.contains(screen.getByRole("menu"))).toBe(true);
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
       vi.unstubAllGlobals();
     });
 

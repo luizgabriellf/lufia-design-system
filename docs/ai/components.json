@@ -6468,7 +6468,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "Renders the menu open on first paint, without moving focus. For documentation and tests; people open it themselves."
+              "description": "Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item."
             }
           ],
           "nativeProps": true

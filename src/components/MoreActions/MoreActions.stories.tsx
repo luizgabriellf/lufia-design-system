@@ -135,6 +135,18 @@ export const SheetOverDock: Story = {
       <>
         <style>{":root { --lufia-overlay-z: 9999; }"}</style>
         <div
+          data-testid="header"
+          style={{
+            position: "fixed",
+            insetInline: 0,
+            insetBlockStart: 0,
+            blockSize: "3rem",
+            zIndex: 9000,
+            background: "var(--lufia-color-bg-surface-solid)",
+            borderBlockEnd: "1px solid var(--lufia-color-border-strong)",
+          }}
+        />
+        <div
           data-testid="dock"
           style={{
             position: "fixed",
@@ -146,7 +158,13 @@ export const SheetOverDock: Story = {
             borderBlockStart: "1px solid var(--lufia-color-border-strong)",
           }}
         />
-        <Story />
+        {/* A transformed ancestor makes a stacking context; the sheet is portaled to the body so it is not trapped in it. */}
+        <div
+          data-testid="transformed"
+          style={{ transform: "translateZ(0)", position: "relative", zIndex: 1 }}
+        >
+          <Story />
+        </div>
       </>
     ),
   ],
