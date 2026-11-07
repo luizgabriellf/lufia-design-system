@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.13.0
+
+### Minor Changes
+
+- [#54](https://github.com/luizgabriellf/lufia-design-system/pull/54) [`ababaad`](https://github.com/luizgabriellf/lufia-design-system/commit/ababaad1f52c97af1929ea9a3691db92bd1c4111) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - PageActions and MoreActions items accept a `hint` (tooltip plus accessible description; a hinted disabled action stays focusable as `aria-disabled`). PageActions adds `size`, `hideBelow`, `primaryPlacement`, a stable `data-lufia-part="page-actions"` root and attribute pass-through.
+
 ## 0.12.0
 
 ### Minor Changes
