@@ -524,4 +524,26 @@ describe("MoreActions", () => {
       },
     );
   });
+
+  it("renders item data attributes on the menuitem, button or link, without overriding its role", async () => {
+    const { user, trigger } = setup([
+      { key: "a", label: "Export", attributes: { "data-tour": "export" } },
+      { key: "b", label: "Docs", href: "/docs", attributes: { "data-tour": "docs", "data-x": "1" } },
+    ]);
+    await user.click(trigger);
+    expect(screen.getByRole("menuitem", { name: "Export" })).toHaveAttribute("data-tour", "export");
+    const link = screen.getByRole("menuitem", { name: "Docs" });
+    expect(link).toHaveAttribute("data-tour", "docs");
+    expect(link).toHaveAttribute("data-x", "1");
+  });
+
+  it("marks the narrow-only scope on the root and entries, viewport by default", async () => {
+    const { user, trigger, container } = setup([{ key: "a", label: "Export", narrowOnly: true }]);
+    expect(container.querySelector("[data-narrow-scope]")).toHaveAttribute("data-narrow-scope", "viewport");
+    await user.click(trigger);
+    expect(screen.getByRole("menuitem", { name: "Export" }).closest("li")).toHaveAttribute(
+      "data-narrow-scope",
+      "viewport",
+    );
+  });
 });

@@ -97,6 +97,14 @@ keeping which action was chosen in the caller's state.
 
 <Canvas of={Stories.OpenADialogFromAMenuItem} story={{ inline: false, height: "20rem" }} />
 
+### Data attributes and narrow-only scope
+
+- `attributes` on an item (`{ "data-tour": "export" }`) renders those `data-*` attributes on its `menuitem` element, so an app
+  can anchor a tour or a test to one item without a label lookup.
+- `narrowOnlyScope="container"` makes `narrowOnly` items follow the width of the nearest ancestor with
+  `container-type: inline-size` (below 50rem) instead of the page (below 48rem). A sheet leaves that container, so it always
+  shows them. `PageActions` sets this from its `collapse` prop.
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />

@@ -238,4 +238,42 @@ describe("PageActions", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("marks the collapse mode, viewport by default, and passes it to the menu entries", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    const { container, rerender } = render(
+      <PageActions moreLabel="More" secondary={[{ key: "s", label: "Share" }]} />,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-collapse", "viewport");
+    await user.click(screen.getByRole("button", { name: "More" }));
+    expect(screen.getByRole("menuitem", { name: "Share" }).closest("li")).toHaveAttribute(
+      "data-narrow-scope",
+      "viewport",
+    );
+    rerender(
+      <PageActions moreLabel="More" collapse="container" secondary={[{ key: "s", label: "Share" }]} />,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-collapse", "container");
+    expect(screen.getByRole("menuitem", { name: "Share" }).closest("li")).toHaveAttribute(
+      "data-narrow-scope",
+      "container",
+    );
+  });
+
+  it("renders item attributes on the secondary button and its menu item", async () => {
+    withLayout();
+    const user = userEvent.setup();
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New", attributes: { "data-tour": "new" } }}
+        secondary={[{ key: "s", label: "Share", attributes: { "data-tour": "share" } }]}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "New" })).toHaveAttribute("data-tour", "new");
+    expect(screen.getByRole("button", { name: "Share" })).toHaveAttribute("data-tour", "share");
+    await user.click(screen.getByRole("button", { name: "More" }));
+    expect(screen.getByRole("menuitem", { name: "Share" })).toHaveAttribute("data-tour", "share");
+  });
 });

@@ -232,6 +232,37 @@ test.describe("page actions breakpoints", () => {
   }
 });
 
+test.describe("page actions container collapse", () => {
+  for (const [story, collapsed] of [
+    ["container-narrow", true],
+    ["container-wide", false],
+  ] as const) {
+    test(`a ${collapsed ? "49rem" : "51rem"} host ${collapsed ? "collapses" : "keeps"} the secondary actions`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 800 });
+      await openStory(page, `components-actions-pageactions--${story}`);
+      const share = page.getByRole("button", { name: "Share" });
+      const more = page.getByRole("button", { name: "More actions" });
+      if (collapsed) await expect(share).toBeHidden();
+      else await expect(share).toBeVisible();
+      await more.click();
+      const item = page.getByRole("menuitem", { name: "Share" });
+      if (collapsed) await expect(item).toBeVisible();
+      else await expect(item).toBeHidden();
+    });
+  }
+
+  test("a narrow-only item is listed in the sheet at 390px even in a wide host", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-actions-pageactions--container-wide");
+    // The 51rem host keeps the secondary actions as buttons, yet the sheet has left the container and lists them.
+    await expect(page.getByRole("button", { name: "Share", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "More actions" }).click();
+    await expect(page.getByRole("menuitem", { name: "Share" })).toBeVisible();
+  });
+});
+
 test.describe("introduction page", () => {
   test.use({ reducedMotion: "no-preference" });
 
@@ -270,16 +301,24 @@ test.describe("introduction page", () => {
     const preview = await openIntroduction(page);
     const card = preview.locator('a[href^="./?path=/docs/components-"]').first();
     await card.scrollIntoViewIfNeeded();
+    // Assert the hover end state and a non-zero transition rather than catching the transition mid-flight: polling
+    // getAnimations() raced short transitions, and WebKit does not fire transitionrun reliably here.
+    const cardStyle = () =>
+      card.evaluate((element) => {
+        const box = element.closest("li");
+        if (box === null) throw new Error("gallery card without a list item");
+        const style = getComputedStyle(box);
+        return {
+          transform: style.transform,
+          longestTransition: Math.max(
+            ...style.transitionDuration.split(",").map((value) => parseFloat(value)),
+          ),
+        };
+      });
+    const before = await cardStyle();
+    expect(before.longestTransition).toBeGreaterThan(0);
     await card.hover();
-    await expect
-      .poll(() =>
-        card.evaluate(
-          (element) =>
-            element.ownerDocument.getAnimations().filter((animation) => animation instanceof CSSTransition)
-              .length,
-        ),
-      )
-      .toBeGreaterThan(0);
+    await expect.poll(async () => (await cardStyle()).transform).not.toBe(before.transform);
   });
 });
 

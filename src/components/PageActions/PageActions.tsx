@@ -21,6 +21,11 @@ export type PageActionItem = {
    * ignored) so keyboard and screen reader users can reach the explanation; without a hint it is natively disabled.
    */
   hint?: string;
+  /**
+   * `data-*` attributes rendered on the action's button or link and, for a secondary action, on its overflow menu item as
+   * well, so an app can anchor a tour or a test to one action without looking it up by label.
+   */
+  attributes?: Record<`data-${string}`, string>;
 };
 
 export type PageActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -34,6 +39,14 @@ export type PageActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
   moreLabel: string;
   /** Size of the primary and secondary buttons and of the menu button. Defaults to `"md"`; `"sm"` suits compact headers. */
   size?: "sm" | "md";
+  /**
+   * What collapses the secondary actions into the overflow menu. `"viewport"` (default) is the page width: below 48rem.
+   * `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. The host
+   * must declare it; without one the secondary actions never collapse, and with no `overflow` items the menu button stays
+   * visible with nothing in it, so always give this mode a host container. There is no container name and no threshold prop,
+   * because a container condition cannot read a variable. Pure CSS in both cases, so there is no flash on first paint.
+   */
+  collapse?: "viewport" | "container";
   /**
    * `"medium"` hides the whole row below 60rem, for a page whose app shell shows the actions elsewhere on narrow screens.
    * Pure CSS, so there is no flash on first paint. Omit it to keep the row at every width.
@@ -66,6 +79,7 @@ function ActionButton({
   return (
     <>
       <Button
+        {...item.attributes}
         className={className}
         variant={variant}
         size={size}
@@ -91,7 +105,9 @@ function ActionButton({
  * The action row of a page, normally the `actions` of a `PageHeader`: one primary action, a few secondary ones and an
  * overflow menu. On wide screens the secondary actions are buttons. On narrow screens they join the overflow menu, so the
  * primary action stays the only labelled button and the row never wraps. Below 60rem the open menu is a bottom sheet (see
- * `MoreActions` `presentation`), whose stacking order an app can raise with `--lufia-overlay-z`.
+ * `MoreActions` `presentation`), whose stacking order an app can raise with `--lufia-overlay-z`. With `collapse="container"` the
+ * secondary actions collapse by the width of a host container instead of the page (the host declares `container-type:
+ * inline-size`); a sheet has left that container, so it always lists them.
  */
 export function PageActions({
   primary,
@@ -99,6 +115,7 @@ export function PageActions({
   overflow = [],
   moreLabel,
   size = "md",
+  collapse = "viewport",
   hideBelow,
   primaryPlacement = "inline",
   className,
@@ -110,6 +127,7 @@ export function PageActions({
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-lufia-part="page-actions"
+      data-collapse={collapse}
       data-hide-below={hideBelow}
       data-primary-placement={primaryPlacement}
     >
@@ -126,7 +144,14 @@ export function PageActions({
         />
       ))}
       {menu.length > 0 ? (
-        <MoreActions label={moreLabel} items={menu} variant="secondary" size={size} presentation="auto" />
+        <MoreActions
+          label={moreLabel}
+          items={menu}
+          variant="secondary"
+          size={size}
+          presentation="auto"
+          narrowOnlyScope={collapse}
+        />
       ) : null}
     </div>
   );

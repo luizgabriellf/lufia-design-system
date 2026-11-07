@@ -35,6 +35,7 @@ of `PageHeader`.
 | `overflow` | `readonly MoreActionItem[]` | no | `[]` | Infrequent actions. Always in the overflow menu. |
 | `moreLabel` | `string` | yes |  | Accessible name of the overflow menu button, such as "More actions". |
 | `size` | `"sm" \| "md"` | no | `"md"` | Size of the primary and secondary buttons and of the menu button. Defaults to `"md"`; `"sm"` suits compact headers. |
+| `collapse` | `"container" \| "viewport"` | no | `"viewport"` | What collapses the secondary actions into the overflow menu. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. The host must declare it; without one the secondary actions never collapse, and with no `overflow` items the menu button stays visible with nothing in it, so always give this mode a host container. There is no container name and no threshold prop, because a container condition cannot read a variable. Pure CSS in both cases, so there is no flash on first paint. |
 | `hideBelow` | `"medium"` | no |  | `"medium"` hides the whole row below 60rem, for a page whose app shell shows the actions elsewhere on narrow screens. Pure CSS, so there is no flash on first paint. Omit it to keep the row at every width. |
 | `primaryPlacement` | `"inline" \| "external"` | no | `"inline"` | Where the primary action is rendered. `"inline"` (default) keeps it in the row. `"external"` hides it in the row below 60rem (the `medium` breakpoint), because the app shell renders it there, for example in a floating bar; it stays inline on wider screens. The secondary actions and the menu are not affected. |
 
@@ -42,7 +43,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; hint?: string | undefined; }`
+- `PageActionItem`: `{ key: string; label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; disabled?: boolean | undefined; hint?: string | undefined; attributes?: Record<'data-${string}', string> | undefined; }`
 
 ## Example
 
@@ -92,6 +93,9 @@ Verbs first, one to three words. Put the destructive action last in the menu and
 - `components-actions-pageactions--small`
 - `components-actions-pageactions--external-primary`
 - `components-actions-pageactions--hidden-below-medium`
+- `components-actions-pageactions--container-narrow`
+- `components-actions-pageactions--container-wide`
+- `components-actions-pageactions--with-data-attributes`
 - `components-actions-pageactions--in-page-header`
 - `components-actions-pageactions--phone-320`
 - `components-actions-pageactions--phone-390`

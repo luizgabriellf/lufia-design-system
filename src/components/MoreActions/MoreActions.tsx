@@ -43,6 +43,12 @@ export type MoreActionItem = {
   tone?: "default" | "danger";
   /** Shown only when the page is narrow, where the actions that stay visible on wide screens move into the menu. */
   narrowOnly?: boolean;
+  /**
+   * `data-*` attributes rendered on the menu item element (the `menuitem` button or link), so an app can anchor a tour or
+   * a test to one item without looking it up by label. The attributes the component owns (`role`, `aria-*`, `class`) cannot
+   * be set this way.
+   */
+  attributes?: Record<`data-${string}`, string>;
 };
 
 export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -61,6 +67,13 @@ export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> 
    * `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up.
    */
   presentation?: "auto" | "popover" | "sheet";
+  /**
+   * What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the
+   * width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body
+   * and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. `PageActions` sets this
+   * from its `collapse` prop.
+   */
+  narrowOnlyScope?: "viewport" | "container";
   /** Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. */
   defaultOpen?: boolean;
 };
@@ -96,6 +109,7 @@ export function MoreActions({
   icon,
   presentation = "popover",
   defaultOpen = false,
+  narrowOnlyScope = "viewport",
   className,
   ...rest
 }: MoreActionsProps) {
@@ -255,6 +269,7 @@ export function MoreActions({
     const hinted = item.hint !== undefined && item.hint !== "";
     const hintId = `${menuId}-hint-${index}`;
     const props = {
+      ...item.attributes,
       role: "menuitem",
       title: hinted ? item.hint : undefined,
       "aria-describedby": hinted ? hintId : undefined,
@@ -278,7 +293,13 @@ export function MoreActions({
       </>
     );
     return (
-      <li key={item.key} role="none" className={styles.entry} data-narrow-only={item.narrowOnly || undefined}>
+      <li
+        key={item.key}
+        role="none"
+        className={styles.entry}
+        data-narrow-only={item.narrowOnly || undefined}
+        data-narrow-scope={narrowOnlyScope}
+      >
         {item.href !== undefined ? (
           <LufiaLink
             {...props}
@@ -330,6 +351,7 @@ export function MoreActions({
       data-align={resolved}
       data-presentation={sheet ? "sheet" : "popover"}
       data-narrow-only={items.every((item) => item.narrowOnly) || undefined}
+      data-narrow-scope={narrowOnlyScope}
     >
       <IconButton
         ref={triggerRef}
