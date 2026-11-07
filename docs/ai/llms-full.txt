@@ -1043,12 +1043,12 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
 | `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
 | `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |
+| `valueWrap` | `boolean` | no | `false` | Lets `value` wrap onto several lines (and break inside a long word) instead of staying on one line, for a value that is text rather than a number ("12 of 40 sites checked", a range of dates). The value column then takes at most half the row and the name keeps the rest. Off by default, so numbers stay on one line. A very long note belongs in `detail`, which always wraps. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `BarListProps`: `Omit<HTMLAttributes<HTMLElement>, "title"> & { title: ReactNode; summary?: ReactNode; rows: readonly BarListRow[]; total?: { label: ReactNode; value: ReactNode; } | undefined; reference?: { amount: number; label: ReactNode; } | undefined; titleVisibility?: "hidden" | "visible" | undefined; }`
 - `BarListRow`: `{ key: string; name: ReactNode; note?: ReactNode; value: ReactNode; detail?: ReactNode; amount: number; tone?: ChartTone | undefined; }`
 
 ### Example
@@ -1091,6 +1091,8 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-barlist--with-total`
 - `components-data-display-barlist--tones`
 - `components-data-display-barlist--long-names`
+- `components-data-display-barlist--long-values`
+- `components-data-display-barlist--long-values-phone-320`
 - `components-data-display-barlist--with-reference`
 - `components-data-display-barlist--reference-above-every-bar`
 - `components-data-display-barlist--reference-long-text`
@@ -1690,6 +1692,7 @@ Columns on one zero baseline, for a weekly strip or a stack of measures per peri
 
 ### When to use
 
+- Hovering or tapping a column should explain it (a holiday, an outlier): `interactive` with `detail`.
 - A short run of periods (a week, up to about twelve months) compared on one measure, or split into a few parts.
 
 ### When not to use
@@ -1712,13 +1715,16 @@ Columns on one zero baseline, for a weekly strip or a stack of measures per peri
 | `columns` | `readonly ColumnChartColumn[]` | yes |  | One column per entry, left to right (right to left in an RTL page). |
 | `formatValue` | `((value: number) => string)` | no | `String` | How a number is written in the data table ("12 h", "1,240"). Defaults to `String`. Format with your locale here. |
 | `legend` | `"hidden" \| "auto"` | no | `"auto"` | The legend of a stacked chart. `"auto"` (default) shows it when there is more than one series. |
+| `interactive` | `boolean` | no | `false` | Makes every column a focusable element named "<column label>: <values> · <detail>" that shows a tooltip on hover, focus and tap. Escape dismisses the tooltip. Off by default: the chart is then static and needs no client code. |
+| `printValues` | `boolean \| "auto"` | no | `false` | Prints the formatted total above each column. `"auto"` prints it when there are 6 columns or fewer, so a long strip does not crowd; `true` always and `false` (default) never. The numbers repeat the data table, so they are hidden from assistive technology. |
+| `bandLabel` | `string` | no | `"Range"` | Names the range row of the data table and the range in the tooltip, when a column has a `band`. Aria and tooltip text, so it has an English default. Defaults to `"Range"`. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `ColumnChartColumn`: `{ key: string; label: ReactNode; values: readonly number[]; }`
-- `ColumnChartSeries`: `{ key: string; label: string; tone?: ChartTone | undefined; }`
+- `ColumnChartColumn`: `{ key: string; label: ReactNode; values: readonly number[]; detail?: string | undefined; band?: { low: number; high: number; } | undefined; }`
+- `ColumnChartSeries`: `{ key: string; label: string; tone?: ChartTone | undefined; pattern?: "hatch" | undefined; }`
 
 ### Example
 
@@ -1749,13 +1755,25 @@ import { ColumnChart } from "@lufia/design-system/components/ColumnChart";
 
 ### Accessibility
 
+Keyboard:
+
+| Key | Action |
+| --- | --- |
+| `Tab` | Moves to the next column and shows its tooltip |
+| `Shift` + `Tab` | Moves to the previous column and shows its tooltip |
+| `Escape` | Dismisses the tooltip; focus stays on the column |
+
 - The data is a table. A visually hidden `table`, named by the `title`, lists every series as a row and every column label as a heading, so a screen reader reads the numbers; the drawing is `aria-hidden` shape on top of it. Write the numbers with `formatValue`.
 - The `figure` is named by its `title`; `titleVisibility="hidden"` keeps that name for screen readers only. A written `summary` says what the columns show.
 - Series are named in a visible legend (shown when there are several) and in the table, so colour never carries the meaning alone. Stacked segments are also separated by a hairline.
 - The draw-in is `transform` only, plays once on mount and is removed under `prefers-reduced-motion`.
 - Columns shrink to fit and their labels wrap, down to 320px. In `forced-colors` mode, where tones collapse to one colour, each series gets its own fill pattern (solid, diagonal stripes, dots, vertical stripes, horizontal stripes, repeating after five) in the columns and in the legend, so the legend stays matchable.
 - Negative and non-finite numbers are drawn as 0, but the table shows them as given (through `formatValue`), so bad data is visible rather than hidden.
-- Print the figures people need as text beside the chart: the drawing has no value labels.
+- Print the figures people need as text beside the chart: the drawing has no value labels, unless you set `printValues`.
+- `interactive`: each column is a focusable `role="img"` named "<column label>: <values> · <detail>" (a series is named when there are several; a `band` adds "<bandLabel> low – high"). The tooltip repeats that text visually, so it is hidden from assistive technology and there is no `aria-describedby`; the detail would be read twice. It follows the WCAG 1.4.13 conditions: Escape dismisses it (and stops there, so a dialog around the chart stays open), the pointer can move onto it, and it stays until the pointer or focus leaves. It is at most two thirds of the plot wide and anchored to the plot edge on the outer thirds, so it does not overflow, down to 320px. It fades in on `opacity`, and not at all under `prefers-reduced-motion`. A column label that is not text names the column from the label element and its values.
+- `printValues`: the printed totals repeat the data table, so they are hidden from assistive technology.
+- `band`: counted in the scale maximum and listed in the data table, under `bandLabel` (an English default, as it is aria text; set it in your language). It is drawn as a stem with two caps; in `forced-colors` mode it uses `CanvasText`.
+- `pattern="hatch"`: diagonal stripes in the card colour over the series colour, in the columns and in the legend. In `forced-colors` mode every series already has its own fill pattern, which replaces the hatch.
 
 ### Motion
 
@@ -1763,7 +1781,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-column-chart-plot-height`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-solid`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-column-chart-plot-height`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-medium`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-radius-sm`, `--lufia-shadow-md`, `--lufia-z-dropdown`.
 
 ### Stories
 
@@ -1777,6 +1795,17 @@ Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-
 - `components-data-display-columnchart--single-column`
 - `components-data-display-columnchart--twelve-columns`
 - `components-data-display-columnchart--long-portuguese-text`
+- `components-data-display-columnchart--interactive`
+- `components-data-display-columnchart--interactive-stacked`
+- `components-data-display-columnchart--interactive-long-portuguese-text`
+- `components-data-display-columnchart--interactive-phone-320`
+- `components-data-display-columnchart--interactive-right-to-left`
+- `components-data-display-columnchart--printed-values`
+- `components-data-display-columnchart--printed-values-auto`
+- `components-data-display-columnchart--printed-values-stacked`
+- `components-data-display-columnchart--with-band`
+- `components-data-display-columnchart--hatched-series`
+- `components-data-display-columnchart--everything-on`
 - `components-data-display-columnchart--phone-320`
 - `components-data-display-columnchart--lower-plot`
 - `components-data-display-columnchart--right-to-left`

@@ -1,0 +1,5 @@
+---
+"@lufia/design-system": minor
+---
+
+Forms: `RadioGroup` and `SegmentedToggle` dispatch a bubbling `input` and then `change` Event from their hidden input (from the group when there is no `name`) when the user chooses an option by click or arrow key, so form-level listeners see them like native radios. A parent-set `value`, a form reset and choosing what is already chosen dispatch nothing. Charts: `ColumnChart` gets opt-in `interactive` with `columns[].detail` (each column is focusable, named "label: values · detail", with a tooltip on hover, focus and tap that Escape dismisses), `printValues` (`"auto"` prints totals for 6 columns or fewer), `columns[].band` (an error bar counted in the scale and listed in the data table, named by `bandLabel`) and `series[].pattern="hatch"` (a non-colour cue in the columns and legend). `BarList` gets opt-in `valueWrap`, which lets a long `value` wrap. All off by default.
