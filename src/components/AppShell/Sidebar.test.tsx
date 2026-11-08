@@ -114,7 +114,7 @@ describe("Sidebar", () => {
       <Sidebar label="Main">
         <SidebarGroup>
           <SidebarItem label="Alerts" href="/a" count={4} countTone="danger" />
-          <SidebarItem label="Exams" href="/e" count={250} />
+          <SidebarItem label="Tasks" href="/e" count={250} />
           <SidebarItem label="Capped" href="/c" count={12} maxCount={9} />
           <SidebarItem label="Quiet" href="/q" count={0} />
           <SidebarItem label="Tagged" href="/t" badge="New" badgeTone="neutral" />

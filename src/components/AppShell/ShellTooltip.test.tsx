@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -14,7 +15,14 @@ function Rail({ collapsed = true }: { collapsed?: boolean }) {
   );
 }
 
+const css = readFileSync("src/components/AppShell/ShellTooltip.module.css", "utf8");
+
 describe("rail tooltip", () => {
+  it("sits on the tooltip layer, above toasts and sheets", () => {
+    expect(css).toMatch(/z-index:\s*var\(--lufia-z-tooltip\)/);
+    expect(css).not.toMatch(/z-index:\s*var\(--lufia-z-toast\)/);
+  });
+
   afterEach(() => vi.useRealTimers());
 
   it("shows after a hover delay, in the body, and leaves when the pointer does", () => {

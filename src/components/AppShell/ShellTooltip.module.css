@@ -1,7 +1,7 @@
 /* Fixed to the viewport at the measured position of the control; the portal keeps it clear of any clipping ancestor. */
 .tooltip {
   position: fixed;
-  z-index: var(--lufia-z-toast);
+  z-index: var(--lufia-z-tooltip);
   max-inline-size: 16rem;
   padding: var(--lufia-space-1) var(--lufia-space-3);
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
