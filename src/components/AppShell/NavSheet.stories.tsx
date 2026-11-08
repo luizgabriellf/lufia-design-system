@@ -4,6 +4,7 @@ import { DemoBrand, DemoFooter, demoGroups, demoLabels } from "../../docs/demo/A
 import { Button } from "../Button";
 import { NavSheet } from "./NavSheet";
 import { ShellNavigation } from "./ShellNavigation";
+import type { SheetDragThreshold } from "./useSheetDrag";
 
 const meta = {
   title: "Components/Navigation/AppShell/NavSheet",
@@ -20,10 +21,12 @@ function Demo({
   initialOpen = false,
   swipe = true,
   renderAs,
+  dragThreshold,
 }: {
   initialOpen?: boolean;
   swipe?: boolean;
   renderAs?: "portal" | "dialog";
+  dragThreshold?: SheetDragThreshold;
 }) {
   const [open, setOpen] = useState(initialOpen);
   const [openGroups, setOpenGroups] = useState<readonly string[]>(["workspace", "insights"]);
@@ -38,6 +41,7 @@ function Demo({
         footer={<DemoFooter />}
         swipeToDismiss={swipe}
         renderAs={renderAs}
+        dragThreshold={dragThreshold}
       >
         <nav aria-label={demoLabels.navigation}>
           <ShellNavigation
@@ -60,6 +64,13 @@ export const Default: Story = { render: () => <Demo /> };
 export const OpenOnLoad: Story = { render: () => <Demo initialOpen /> };
 /** A native `<dialog>` opened with `showModal()`: top layer, native backdrop, no exit animation. */
 export const NativeDialog: Story = { render: () => <Demo initialOpen renderAs="dialog" /> };
+/**
+ * `dragThreshold`: a release dismisses after 30% of the sheet's height (kept between 96 and 200 pixels), and only a
+ * faster flick counts. Fields left out keep their defaults.
+ */
+export const CustomDragThreshold: Story = {
+  render: () => <Demo initialOpen dragThreshold={{ ratio: 0.3, min: 96, max: 200, flickVelocity: 1 }} />,
+};
 export const WithoutSwipe: Story = { render: () => <Demo initialOpen swipe={false} /> };
 export const SmallPhone: Story = {
   render: () => <Demo initialOpen />,

@@ -27,6 +27,30 @@ describe("PendingSubmit", () => {
     expect(ref.current).toBe(button);
   });
 
+  it("passes className, variant, size and fullWidth through to the Button", () => {
+    const { rerender } = render(<PendingSubmit pendingLabel="Saving…">Save</PendingSubmit>);
+    const button = () => screen.getByRole("button", { name: "Save" });
+    expect(button()).toHaveAttribute("data-variant", "primary");
+    expect(button()).toHaveAttribute("data-size", "md");
+    rerender(
+      <PendingSubmit
+        pendingLabel="Saving…"
+        className="app-submit"
+        variant="danger"
+        size="sm"
+        fullWidth
+        pending
+      >
+        Save
+      </PendingSubmit>,
+    );
+    expect(button()).toHaveClass("app-submit");
+    expect(button()).toHaveAttribute("data-variant", "danger");
+    expect(button()).toHaveAttribute("data-size", "sm");
+    expect(button()).toHaveAttribute("data-full-width");
+    expect(button()).toHaveAttribute("aria-busy", "true");
+  });
+
   it("when pending, is busy, says so politely and keeps its name and focus", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<PendingSubmit pendingLabel="Saving…">Save changes</PendingSubmit>);

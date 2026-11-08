@@ -4,7 +4,7 @@
 
 - Status: beta
 - Category: Navigation
-- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, RouteProgress, SHELL_COUNT_CAP, ShellFooter, ShellFooterItem, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, findActiveNavKey, formatShellCount, parseShellState, serializeShellState, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
+- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, ROUTE_PROGRESS_DONE_EVENT, ROUTE_PROGRESS_START_EVENT, RouteProgress, SHEET_DRAG_THRESHOLD, SHELL_COUNT_CAP, ShellFooter, ShellFooterItem, ShellNavigation, ShellPrimaryActionOwner, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, doneRouteProgress, findActiveNavKey, formatShellCount, parseShellState, serializeShellState, startRouteProgress, useSheetDrag, useShellPrimaryAction, useShellPrimaryActionState } from "@lufia/design-system/components/AppShell"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/AppShell](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/AppShell)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-navigation-appshell--docs)
@@ -33,21 +33,28 @@ navigation is data, so both layouts always agree.
 | `MobileFloatBarButton` | component |
 | `MobileFloatBarSeparator` | component |
 | `NavSheet` | component |
+| `ROUTE_PROGRESS_DONE_EVENT` | constant |
+| `ROUTE_PROGRESS_START_EVENT` | constant |
 | `RouteProgress` | component |
+| `SHEET_DRAG_THRESHOLD` | constant |
 | `SHELL_COUNT_CAP` | constant |
 | `ShellFooter` | component |
 | `ShellFooterItem` | component |
 | `ShellNavigation` | component |
+| `ShellPrimaryActionOwner` | component |
 | `ShellPrimaryActionSlot` | component |
 | `Sidebar` | component |
 | `SidebarGroup` | component |
 | `SidebarItem` | component |
+| `doneRouteProgress` | function |
 | `findActiveNavKey` | function |
 | `formatShellCount` | function |
 | `parseShellState` | function |
 | `serializeShellState` | function |
+| `startRouteProgress` | function |
 | `useSheetDrag` | hook |
 | `useShellPrimaryAction` | hook |
+| `useShellPrimaryActionState` | hook |
 
 ## API
 
@@ -72,6 +79,7 @@ navigation is data, so both layouts always agree.
 | `topBar` | `ReactNode` | no |  | A bar above the page, beside the sidebar, at every width: a unit or context picker. |
 | `statusRow` | `ReactNode` | no |  | A row between `topBar` and the page: sync state, a notice. Give it the live-region semantics it needs. |
 | `sheetAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). |
+| `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
 | `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
 | `onMenuOpenChange` | `(open: boolean) => void` | no |  |  |
@@ -88,6 +96,7 @@ navigation is data, so both layouts always agree.
 | `routeTrackLinks` | `boolean` | no |  | Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks. `RouteProgress` `trackLinks`. |
 | `routeTransitionProps` | `AppShellRouteTransitionProps` | no |  | A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs `routeKey`. |
 | `routeProgress` | `boolean` | no | `true` | Draw the progress bar when `routeKey` is given. Default `true`. |
+| `routeProgressEvents` | `RouteProgressEvents` | no |  | The window events that start and end the progress bar from code (`RouteProgress` `events`). Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch. |
 | `mainPending` | `ReactNode` | no |  | A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for. |
 | `floatScrim` | `boolean` | no | `false` | Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for. |
 | `mainProps` | `AppShellMainProps` | no |  | Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA. `className` is added to the shell's own. |
@@ -138,7 +147,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 | `href` | `string` | yes |  |
 | `onClick` | `() => void` | no | In every form; only its type differs. |
 
-### `MobileFloatBarSeparator`
+### `MobileFloatBarSeparator`, `ShellPrimaryActionOwner`
 
 No props of its own.
 
@@ -153,6 +162,7 @@ No props of its own.
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `close` label. |
 | `swipeToDismiss` | `boolean` | no | `true` | Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. |
+| `dragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the sheet: a share of its height kept between a shortest and a longest distance, or a quick flick. Each field you leave out keeps its default (`SHEET_DRAG_THRESHOLD`: 18% of the height, kept between 64 and 112 pixels; a flick of 0.6 px/ms over 24 pixels). Applies to the grabber, the header and the body alike. |
 | `closeOnNavigate` | `boolean` | no | `false` | Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`. |
 | `container` | `HTMLElement \| null` | no |  | Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. |
 | `layerProps` | `NavSheetLayerProps` | no |  | A class and `data-*` attributes for the outermost layer: the fixed root that holds the backdrop and the panel, or the `<dialog>` with `renderAs="dialog"`. The sheet is portalled out of the app's tree, so a palette an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here. The theme attributes `data-lufia-theme` and `data-lufia-mode` work too. |
@@ -170,6 +180,7 @@ Other native element attributes pass through to the root element.
 | `pending` | `boolean` | no |  | A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation (a query-string change the link tracking does not see). Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar, unless a tracked link click is still on its way. When you pass it (even as `false`), link clicks stop starting the bar unless `trackLinks` is set explicitly. |
 | `trackLinks` | `boolean` | no |  | Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with `pending` and the bar shows while either is in progress. |
 | `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
+| `events` | `RouteProgressEvents` | no | `DEFAULT_EVENTS` | The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and `trackLinks`: the bar shows while any of them is in progress. |
 | `className` | `string` | no |  |  |
 
 ### `ShellFooter`
@@ -278,6 +289,14 @@ Other native element attributes pass through to the root element.
 | `currentBranch` | `boolean` | no | `false` | One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and `aria-current="true"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current="page"`. |
 | `highlightedBranch` | `boolean` | no |  | Draw the branch as current without claiming it: a click is heading to one of the sub-items. |
 
+### `doneRouteProgress`
+
+Ends a run started by `startRouteProgress()` (a cancelled or failed navigation). The bar finishes unless `pending` or a tracked link click still keeps it going. Dispatches `ROUTE_PROGRESS_DONE_EVENT` on `window`; does nothing on the server.
+
+```ts
+doneRouteProgress(): void
+```
+
 ### `findActiveNavKey`
 
 The key of the item that `currentPath` belongs to, or `undefined`, sub-items included. Each item matches as its `match` says (see `ShellNavMatch`); when several match, the strongest claim wins, so two items are never current at once. With `isActive` the first item it returns true for wins, a sub-item before the item that holds it.
@@ -310,18 +329,27 @@ Turns the person's sidebar choices into a short cookie value (`c=1&g=insights&g=
 serializeShellState(state: ShellState): string
 ```
 
-### `useSheetDrag`
+### `startRouteProgress`
 
-Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role="dialog"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out.
+Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second timeout. Does nothing on the server.
 
 ```ts
-useSheetDrag(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }
+startRouteProgress(): void
+```
+
+### `useSheetDrag`
+
+Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role="dialog"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.
+
+```ts
+useSheetDrag(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }
 ```
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `onDismiss` | `() => void` | yes |  |
 | `enabled` | `boolean` | no |  |
+| `threshold` | `SheetDragThreshold` | no |  |
 
 Returned members:
 
@@ -334,7 +362,7 @@ Returned members:
 
 ### `useShellPrimaryAction`
 
-Hands the page's one main action to the shell, which shows it on the floating bar (phones) and wherever a `ShellPrimaryActionSlot` sits (wide screens). Pass `null` to register nothing. When several pages are mounted at once the latest registration wins, and the previous one comes back when it unmounts. Returns whether a shell hosts the action. When it does, leave your own trigger out; outside a shell keep it. The shell re-registers when `label` or `href` change; `icon` and `data` are read at that moment, `onSelect` is always the latest.
+Hands the page's one main action to the shell, which shows it on the floating bar (phones) and wherever a `ShellPrimaryActionSlot` sits (wide screens). Pass `null` to register nothing. When several pages are mounted at once the latest registration wins, and the previous one comes back when it unmounts. Returns whether a shell hosts the action. When it does, leave your own trigger out; outside a shell keep it. The shell re-registers when `label`, `href` or `description` change; `icon` and `data` are read at that moment, `onSelect` is always the latest. It registers before the browser paints, so a client navigation never shows the previous page's action; for the first server render, see `ShellPrimaryActionOwner`.
 
 ```ts
 useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
@@ -344,11 +372,26 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 | --- | --- | --- | --- |
 | `action` | `AppShellPrimaryAction \| null` | yes |  |
 
+### `useShellPrimaryActionState`
+
+Reads the shell's current primary action without registering one: to list it in a command palette, a keyboard shortcut or a help panel, in step with the floating bar. `null` outside a shell. `onSelect` and `onIntent` call the registering page's latest handlers.
+
+```ts
+useShellPrimaryActionState(): ShellPrimaryActionState | null
+```
+
+Returned members:
+
+| Member | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `AppShellPrimaryAction \| undefined` | yes | The latest registered action, else the shell's `primaryAction`; `undefined` when there is neither. |
+| `isFallback` | `boolean` | yes | `action` is the shell's own default, because no page has registered one. |
+
 ## Types
 
 - `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
 - `AppShellMainProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes`
-- `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellPrimaryAction`: `{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellRouteTransitionProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellSheetProps`: `{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes`
@@ -356,12 +399,15 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 - `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }`
 - `NavSheetLayerProps`: `{ className?: string | undefined; } & ShellDataAttributes`
-- `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }`
+- `RouteProgressEvents`: `{ start: string; done: string; }`
+- `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }`
+- `SheetDragThreshold`: `{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }`
 - `ShellBadgeTone`: `"neutral" | "success" | "warning" | "danger"`
 - `ShellDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `ShellFooterProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { "aria-label": string; children: ReactNode; }`
 - `ShellNavGroup`: `{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }`
 - `ShellNavMatch`: `"prefix" | "exact" | "query" | ((currentPath: string, item: ShellNavItem) => boolean)`
+- `ShellPrimaryActionState`: `{ action: AppShellPrimaryAction | undefined; isFallback: boolean; }`
 - `ShellState`: `{ collapsed: boolean; openGroups: readonly string[] | undefined; }`
 
 ## Example
@@ -455,6 +501,9 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--context-slot`
 - `components-navigation-appshell--controlled-sheet-with-switcher`
 - `components-navigation-appshell--route-motion-and-pending`
+- `components-navigation-appshell--route-progress-from-code`
+- `components-navigation-appshell--primary-action-in-palette`
+- `components-navigation-appshell--primary-action-owner-mark`
 - `components-navigation-appshell--primary-action-fallback-on-phones-only`
 - `components-navigation-appshell--nested-navigation`
 - `components-navigation-appshell--nested-navigation-rail`

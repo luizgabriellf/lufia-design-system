@@ -52,6 +52,13 @@ export type FileFieldProps = Omit<
   /** Locale of the sizes. The runtime's when omitted. */
   locale?: string;
   /**
+   * Show a small local thumbnail beside each chosen image (a file whose type starts with `image/`). `true` previews every
+   * image; a function decides per file. The thumbnail is decorative (the file name sits next to it), is read from the
+   * person's own device with an object URL that is released when the file leaves the list, and is never uploaded by
+   * itself. Default `false`.
+   */
+  preview?: boolean | ((file: File) => boolean);
+  /**
    * Outside a `FormField`, name the field with `aria-label` or `aria-labelledby`; with neither, the button text becomes its
    * accessible name, so it never goes unnamed.
    */
@@ -82,10 +89,30 @@ function syncInput(input: HTMLInputElement | null, files: File[]) {
   }
 }
 
+const showsPreview = (preview: FileFieldProps["preview"], file: File) =>
+  file.type.startsWith("image/") && (typeof preview === "function" ? preview(file) : preview === true);
+
+/** A local thumbnail of a chosen image. The object URL lives exactly as long as this element shows this file. */
+function FileThumb({ file }: { file: File }) {
+  const image = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const element = image.current;
+    if (!element || typeof URL.createObjectURL !== "function") return;
+    const url = URL.createObjectURL(file);
+    element.src = url;
+    return () => {
+      element.removeAttribute("src");
+      URL.revokeObjectURL(url);
+    };
+  }, [file]);
+  return <img ref={image} className={styles.thumb} alt="" data-lufia-part="preview" />;
+}
+
 /**
  * A file picker with a drop area, the native input kept in the form, limits on type, size and count with messages you
- * provide, and a list of the chosen files with a remove button each. Inside a `FormField` the field's id, description and
- * states apply.
+ * provide, and a list of the chosen files with a remove button each, with an optional thumbnail for images (`preview`).
+ * Inside a `FormField` the field's id, hint, error and states apply: wrap it in one for a visible label, a hint and a
+ * server error.
  */
 export function FileField({
   chooseLabel,
@@ -99,6 +126,7 @@ export function FileField({
   removeText,
   describeFiles,
   locale,
+  preview = false,
   files: filesProp,
   onFilesChange,
   onReject,
@@ -238,6 +266,7 @@ export function FileField({
         <ul className={styles.list}>
           {files.map((file) => (
             <li key={`${file.name}-${file.size}-${file.lastModified}`} className={styles.item}>
+              {showsPreview(preview, file) ? <FileThumb file={file} /> : null}
               <span className={styles.name}>{file.name}</span>
               <span className={styles.size}>{formatFileSize(file.size, locale)}</span>
               <button

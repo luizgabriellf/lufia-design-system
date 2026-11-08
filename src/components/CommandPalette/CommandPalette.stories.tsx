@@ -130,6 +130,8 @@ export const Phone320: Story = {
 };
 
 /** `groupOrder` lists the sections in a fixed order whatever the order of the items. */
+/** `escapeClearsQuery`: with text in the field, the first Escape clears it and the second closes the palette. */
+export const EscapeClearsQuery: Story = { args: { initialOpen: true, escapeClearsQuery: true } };
 export const FixedSectionOrder: Story = { args: { initialOpen: true, groupOrder: ["Go to", "Actions"] } };
 
 function AnswerMode() {

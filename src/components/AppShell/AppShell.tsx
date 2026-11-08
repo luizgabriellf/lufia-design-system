@@ -33,7 +33,8 @@ import {
   type ShellNavItem,
 } from "./navigation";
 import { ShellNavigation, useGroupDisclosure } from "./ShellNavigation";
-import { RouteProgress } from "./RouteProgress";
+import { RouteProgress, type RouteProgressEvents } from "./RouteProgress";
+import type { SheetDragThreshold } from "./useSheetDrag";
 import { useSheetControl } from "./useSheetControl";
 import { Sidebar } from "./Sidebar";
 import { useShellTooltip } from "./ShellTooltip";
@@ -178,6 +179,8 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   statusRow?: ReactNode;
   /** `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). */
   sheetAs?: "portal" | "dialog";
+  /** When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. */
+  sheetDragThreshold?: SheetDragThreshold;
   /**
    * A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts
    * (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper
@@ -234,6 +237,11 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   routeTransitionProps?: AppShellRouteTransitionProps;
   /** Draw the progress bar when `routeKey` is given. Default `true`. */
   routeProgress?: boolean;
+  /**
+   * The window events that start and end the progress bar from code (`RouteProgress` `events`). Default the ones
+   * `startRouteProgress()` and `doneRouteProgress()` dispatch.
+   */
+  routeProgressEvents?: RouteProgressEvents;
   /**
    * A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden,
    * so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile.
@@ -293,6 +301,7 @@ export function AppShell({
   context,
   sheetAs = "portal",
   sheetProps,
+  sheetDragThreshold,
   menuOpen: menuOpenProp,
   onMenuOpenChange,
   hideSheetNavigation = false,
@@ -302,6 +311,7 @@ export function AppShell({
   routeTrackLinks,
   routeTransitionProps,
   routeProgress = true,
+  routeProgressEvents,
   mainPending,
   floatScrim = false,
   collapsed: collapsedProp,
@@ -474,7 +484,12 @@ export function AppShell({
           {pendingMain ? <div data-shell-pending="">{mainPending}</div> : null}
         </main>
         {routeKey !== undefined && routeProgress ? (
-          <RouteProgress routeKey={routeKey} pending={routePending} trackLinks={routeTrackLinks} />
+          <RouteProgress
+            routeKey={routeKey}
+            pending={routePending}
+            trackLinks={routeTrackLinks}
+            events={routeProgressEvents}
+          />
         ) : null}
         {floatScrim ? <div className={styles.floatScrim} aria-hidden="true" /> : null}
         <MobileFloatBar label={labels.floatBar} className={styles.float}>
@@ -534,6 +549,7 @@ export function AppShell({
           container={sheetContainer}
           layerProps={sheetLayer}
           inheritThemeFrom={main}
+          dragThreshold={sheetDragThreshold}
           closeOnNavigate
           header={resolve(brand, slotState("sheet"))}
           footer={resolve(footer, slotState("sheet"))}

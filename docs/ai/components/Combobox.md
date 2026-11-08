@@ -42,7 +42,8 @@ the empty and loading states are part of the component.
 | `loading` | `boolean` | no | `false` | Options are being loaded. Shows a ring and `loadingLabel`, and sets `aria-busy`. |
 | `loadingLabel` | `ReactNode` | yes |  | Shown, and announced, while `loading`. |
 | `emptyLabel` | `ReactNode` | yes |  | Shown, and announced, when nothing matches. |
-| `resultsLabel` | `(count: number) => string` | no |  | Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. |
+| `resultsLabel` | `(count: number, total: number) => string` | no |  | Announced when the list changes ("3 results"). Gets the number of options shown and, as `total`, the number that matched before `maxResults` cut the list ("20 of 134 results"). Optional; the empty and loading texts are always announced. |
+| `maxResults` | `number` | no |  | Show at most this many matching options, in their order in `options`, for a long local list (typing narrows it). Applied after `filter`. Default: no limit. |
 | `valueLabel` | `string` | no |  | Label of the chosen option when it is not in `options` (a value set before the options loaded). |
 | `freeText` | `boolean` | no | `false` | Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty, also for whitespace only) and `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button that waits on the value does not stay stuck. Enter, Tab, Escape, the toggle button and blur settle the text. Enter with nothing highlighted keeps the text, closes the list and does not submit the form, and the first match is not highlighted on its own. Typed text never resolves to an option, even when it equals an option's `value`, and it wins over `valueLabel`. Choosing an option sets that option's `value`; a `value` set by the parent resolves to its option. |
 | `clearable` | `boolean` | no | `false` | Shows a clear button while something is chosen. Escape clears too, when the list is closed. |
@@ -122,6 +123,7 @@ unique to tell options apart.
 - `components-forms-combobox--async-options`
 - `components-forms-combobox--long-options`
 - `components-forms-combobox--many-options`
+- `components-forms-combobox--capped-results`
 - `components-forms-combobox--inside-dialog`
 - `components-forms-combobox--inside-clipping-box`
 - `components-forms-combobox--phone-320`

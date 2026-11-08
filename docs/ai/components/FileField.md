@@ -48,6 +48,7 @@ with messages you provide, and the chosen files are listed with a remove button 
 | `removeText` | `string` | no |  | Visible text on the remove button. Defaults to a cross icon only. |
 | `describeFiles` | `(files: readonly File[]) => string` | no |  | Read out politely when the chosen files change ("2 files chosen"). Optional. |
 | `locale` | `string` | no |  | Locale of the sizes. The runtime's when omitted. |
+| `preview` | `boolean \| ((file: File) => boolean)` | no | `false` | Show a small local thumbnail beside each chosen image (a file whose type starts with `image/`). `true` previews every image; a function decides per file. The thumbnail is decorative (the file name sits next to it), is read from the person's own device with an object URL that is released when the file leaves the list, and is never uploaded by itself. Default `false`. |
 | `files` | `readonly File[]` | no |  | Controlled files. |
 | `onFilesChange` | `(files: File[]) => void` | no |  | Called with the whole list after a pick, a drop or a removal. |
 | `onReject` | `(rejections: FileRejection[]) => void` | no |  | Called with files that were refused, after the message is shown. |
@@ -116,7 +117,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-radius-xs`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
 
 ## Content guidelines
 
@@ -129,6 +130,7 @@ what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than
 - `components-forms-filefield--default`
 - `components-forms-filefield--single-file`
 - `components-forms-filefield--with-files`
+- `components-forms-filefield--with-preview`
 - `components-forms-filefield--rejected`
 - `components-forms-filefield--required`
 - `components-forms-filefield--invalid`

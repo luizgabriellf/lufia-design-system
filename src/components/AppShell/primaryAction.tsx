@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -16,6 +17,11 @@ import styles from "./AppShell.module.css";
 
 export type AppShellPrimaryAction = {
   label: string;
+  /**
+   * A longer description of what the action does. The shell does not draw it; read it with
+   * `useShellPrimaryActionState` to list the action elsewhere (a command palette's actions group).
+   */
+  description?: string;
   icon?: ReactNode;
   href?: string;
   onSelect?: () => void;
@@ -42,6 +48,9 @@ export type ShellPrimaryActionRegistry = {
 };
 
 export const ShellPrimaryActionContext = createContext<ShellPrimaryActionRegistry | null>(null);
+
+/** Layout effects run before paint, so a client navigation never paints the previous page's action. */
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /** The registry state of one shell: registrations come and go with the pages that make them. */
 export function useShellPrimaryActionRegistry(
@@ -77,7 +86,9 @@ export function useShellPrimaryActionRegistry(
  * latest registration wins, and the previous one comes back when it unmounts.
  *
  * Returns whether a shell hosts the action. When it does, leave your own trigger out; outside a shell keep it. The shell
- * re-registers when `label` or `href` change; `icon` and `data` are read at that moment, `onSelect` is always the latest.
+ * re-registers when `label`, `href` or `description` change; `icon` and `data` are read at that moment, `onSelect` is
+ * always the latest. It registers before the browser paints, so a client navigation never shows the previous page's action;
+ * for the first server render, see `ShellPrimaryActionOwner`.
  */
 export function useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean {
   const shell = useContext(ShellPrimaryActionContext);
@@ -90,28 +101,60 @@ export function useShellPrimaryAction(action: AppShellPrimaryAction | null): boo
   });
   const label = action?.label;
   const href = action?.href;
+  const description = action?.description;
 
   // Registering again on a change updates the entry in place; unregistering is tied to the page going away (or to having
   // no action), so a label change does not send the page to the back of the line.
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!register || label === undefined) return;
     const { icon, data, onIntent } = latest.current ?? {};
     register(id, {
       label,
+      description,
       href,
       icon,
       data,
       onSelect: () => latest.current?.onSelect?.(),
       onIntent: onIntent ? () => latest.current?.onIntent?.() : undefined,
     });
-  }, [register, id, label, href]);
+  }, [register, id, label, href, description]);
   const present = label !== undefined;
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!unregister || !present) return;
     return () => unregister(id);
   }, [unregister, id, present]);
 
   return shell !== null && action !== null;
+}
+
+/** What `useShellPrimaryActionState` returns: the action the shell shows now, and whose it is. */
+export type ShellPrimaryActionState = {
+  /** The latest registered action, else the shell's `primaryAction`; `undefined` when there is neither. */
+  action: AppShellPrimaryAction | undefined;
+  /** `action` is the shell's own default, because no page has registered one. */
+  isFallback: boolean;
+};
+
+/**
+ * Reads the shell's current primary action without registering one: to list it in a command palette, a keyboard
+ * shortcut or a help panel, in step with the floating bar. `null` outside a shell. `onSelect` and `onIntent` call the
+ * registering page's latest handlers.
+ */
+export function useShellPrimaryActionState(): ShellPrimaryActionState | null {
+  const registry = useContext(ShellPrimaryActionContext);
+  const action = registry?.action;
+  const isFallback = registry?.isFallback ?? true;
+  return useMemo(() => (registry ? { action, isFallback } : null), [registry, action, isFallback]);
+}
+
+/**
+ * Server-rendered mark of a page that registers its own primary action. A page registers only once it hydrates, so on a
+ * hard load the shell's default would show first and then be replaced. Render this anywhere in the page (it is an empty,
+ * `hidden` element) and the shell keeps its default out of sight, on the floating bar and in `ShellPrimaryActionSlot`,
+ * for as long as the mark is in the page. Its place is kept, so nothing moves when the page's action arrives.
+ */
+export function ShellPrimaryActionOwner() {
+  return <span hidden data-lufia-shell-primary-owner="" />;
 }
 
 /**

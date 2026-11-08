@@ -655,6 +655,13 @@
               "description": "`portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`)."
             },
             {
+              "name": "sheetDragThreshold",
+              "type": "SheetDragThreshold",
+              "required": false,
+              "default": null,
+              "description": "When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged."
+            },
+            {
               "name": "sheetProps",
               "type": "AppShellSheetProps",
               "required": false,
@@ -767,6 +774,13 @@
               "description": "Draw the progress bar when `routeKey` is given. Default `true`."
             },
             {
+              "name": "routeProgressEvents",
+              "type": "RouteProgressEvents",
+              "required": false,
+              "default": null,
+              "description": "The window events that start and end the progress bar from code (`RouteProgress` `events`). Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch."
+            },
+            {
               "name": "mainPending",
               "type": "ReactNode",
               "required": false,
@@ -827,7 +841,7 @@
           "name": "AppShellPrimaryAction",
           "kind": "type",
           "description": "",
-          "definition": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }"
+          "definition": "{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }"
         },
         {
           "name": "AppShellProps",
@@ -1061,6 +1075,13 @@
               "description": "Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`."
             },
             {
+              "name": "dragThreshold",
+              "type": "SheetDragThreshold",
+              "required": false,
+              "default": null,
+              "description": "When a released drag dismisses the sheet: a share of its height kept between a shortest and a longest distance, or a quick flick. Each field you leave out keeps its default (`SHEET_DRAG_THRESHOLD`: 18% of the height, kept between 64 and 112 pixels; a flick of 0.6 px/ms over 24 pixels). Applies to the grabber, the header and the body alike."
+            },
+            {
               "name": "closeOnNavigate",
               "type": "boolean",
               "required": false,
@@ -1118,9 +1139,19 @@
           "definition": null
         },
         {
+          "name": "ROUTE_PROGRESS_DONE_EVENT",
+          "kind": "constant",
+          "type": "\"lufia:route-progress-done\""
+        },
+        {
+          "name": "ROUTE_PROGRESS_START_EVENT",
+          "kind": "constant",
+          "type": "\"lufia:route-progress-start\""
+        },
+        {
           "name": "RouteProgress",
           "kind": "component",
-          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
+          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). Code starts and ends a run with `startRouteProgress()` and `doneRouteProgress()` (window events, see `events`). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
           "props": [
             {
               "name": "routeKey",
@@ -1151,6 +1182,13 @@
               "description": "Milliseconds to wait before showing the bar. Default 150."
             },
             {
+              "name": "events",
+              "type": "RouteProgressEvents",
+              "required": false,
+              "default": "DEFAULT_EVENTS",
+              "description": "The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and `trackLinks`: the bar shows while any of them is in progress."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -1161,15 +1199,32 @@
           "nativeProps": false
         },
         {
+          "name": "RouteProgressEvents",
+          "kind": "type",
+          "description": "Names of the window events a `RouteProgress` listens for.",
+          "definition": "{ start: string; done: string; }"
+        },
+        {
           "name": "RouteProgressProps",
           "kind": "type",
           "description": "",
-          "definition": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }"
+          "definition": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }"
+        },
+        {
+          "name": "SHEET_DRAG_THRESHOLD",
+          "kind": "constant",
+          "type": "Required<SheetDragThreshold>"
         },
         {
           "name": "SHELL_COUNT_CAP",
           "kind": "constant",
           "type": "99"
+        },
+        {
+          "name": "SheetDragThreshold",
+          "kind": "type",
+          "description": "When a released drag dismisses a bottom sheet. A release dismisses once the sheet has moved `ratio` of its height, kept between `min` and `max` pixels, or on a quick flick: at least `flickVelocity` pixels per millisecond over at least `flickDistance` pixels. Every field is optional; a missing one keeps its default.",
+          "definition": "{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }"
         },
         {
           "name": "ShellBadgeTone",
@@ -1426,6 +1481,13 @@
           "definition": null
         },
         {
+          "name": "ShellPrimaryActionOwner",
+          "kind": "component",
+          "description": "Server-rendered mark of a page that registers its own primary action. A page registers only once it hydrates, so on a hard load the shell's default would show first and then be replaced. Render this anywhere in the page (it is an empty, `hidden` element) and the shell keeps its default out of sight, on the floating bar and in `ShellPrimaryActionSlot`, for as long as the mark is in the page. Its place is kept, so nothing moves when the page's action arrives.",
+          "props": [],
+          "nativeProps": false
+        },
+        {
           "name": "ShellPrimaryActionSlot",
           "kind": "component",
           "description": "Where the shell's primary action shows on wide screens: put it in the page header. Renders nothing when no action is registered, outside a shell, and on phones (the floating bar carries it there). With `desktopPrimaryFallback={false}` on the shell it also stays empty until a page registers its own, so the default never flashes in the wrong place on a hard load.",
@@ -1439,6 +1501,12 @@
             }
           ],
           "nativeProps": false
+        },
+        {
+          "name": "ShellPrimaryActionState",
+          "kind": "type",
+          "description": "What `useShellPrimaryActionState` returns: the action the shell shows now, and whose it is.",
+          "definition": "{ action: AppShellPrimaryAction | undefined; isFallback: boolean; }"
         },
         {
           "name": "ShellState",
@@ -1755,6 +1823,12 @@
           "definition": null
         },
         {
+          "name": "doneRouteProgress",
+          "kind": "function",
+          "description": "Ends a run started by `startRouteProgress()` (a cancelled or failed navigation). The bar finishes unless `pending` or a tracked link click still keeps it going. Dispatches `ROUTE_PROGRESS_DONE_EVENT` on `window`; does nothing on the server.",
+          "signature": "(): void"
+        },
+        {
           "name": "findActiveNavKey",
           "kind": "function",
           "description": "The key of the item that `currentPath` belongs to, or `undefined`, sub-items included. Each item matches as its `match` says (see `ShellNavMatch`); when several match, the strongest claim wins, so two items are never current at once. With `isActive` the first item it returns true for wins, a sub-item before the item that holds it.",
@@ -1779,10 +1853,16 @@
           "signature": "(state: ShellState): string"
         },
         {
+          "name": "startRouteProgress",
+          "kind": "function",
+          "description": "Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second timeout. Does nothing on the server.",
+          "signature": "(): void"
+        },
+        {
           "name": "useSheetDrag",
           "kind": "hook",
-          "description": "Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role=\"dialog\"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out.",
-          "signature": "(onDismiss: () => void, enabled?: boolean): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }",
+          "description": "Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role=\"dialog\"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.",
+          "signature": "(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }",
           "parameters": [
             {
               "name": "onDismiss",
@@ -1793,6 +1873,12 @@
             {
               "name": "enabled",
               "type": "boolean",
+              "required": false,
+              "description": ""
+            },
+            {
+              "name": "threshold",
+              "type": "SheetDragThreshold",
               "required": false,
               "description": ""
             }
@@ -1828,7 +1914,7 @@
         {
           "name": "useShellPrimaryAction",
           "kind": "hook",
-          "description": "Hands the page's one main action to the shell, which shows it on the floating bar (phones) and wherever a `ShellPrimaryActionSlot` sits (wide screens). Pass `null` to register nothing. When several pages are mounted at once the latest registration wins, and the previous one comes back when it unmounts. Returns whether a shell hosts the action. When it does, leave your own trigger out; outside a shell keep it. The shell re-registers when `label` or `href` change; `icon` and `data` are read at that moment, `onSelect` is always the latest.",
+          "description": "Hands the page's one main action to the shell, which shows it on the floating bar (phones) and wherever a `ShellPrimaryActionSlot` sits (wide screens). Pass `null` to register nothing. When several pages are mounted at once the latest registration wins, and the previous one comes back when it unmounts. Returns whether a shell hosts the action. When it does, leave your own trigger out; outside a shell keep it. The shell re-registers when `label`, `href` or `description` change; `icon` and `data` are read at that moment, `onSelect` is always the latest. It registers before the browser paints, so a client navigation never shows the previous page's action; for the first server render, see `ShellPrimaryActionOwner`.",
           "signature": "(action: AppShellPrimaryAction | null): boolean",
           "parameters": [
             {
@@ -1840,12 +1926,34 @@
           ],
           "returns": "boolean",
           "returnMembers": null
+        },
+        {
+          "name": "useShellPrimaryActionState",
+          "kind": "hook",
+          "description": "Reads the shell's current primary action without registering one: to list it in a command palette, a keyboard shortcut or a help panel, in step with the floating bar. `null` outside a shell. `onSelect` and `onIntent` call the registering page's latest handlers.",
+          "signature": "(): ShellPrimaryActionState | null",
+          "parameters": [],
+          "returns": "ShellPrimaryActionState | null",
+          "returnMembers": [
+            {
+              "name": "action",
+              "type": "AppShellPrimaryAction | undefined",
+              "required": true,
+              "description": "The latest registered action, else the shell's `primaryAction`; `undefined` when there is neither."
+            },
+            {
+              "name": "isFallback",
+              "type": "boolean",
+              "required": true,
+              "description": "`action` is the shell's own default, because no page has registered one."
+            }
+          ]
         }
       ],
       "aliases": {
         "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
         "AppShellMainProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes",
-        "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellPrimaryAction": "{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellRouteTransitionProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellSheetProps": "{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes",
@@ -1853,12 +1961,15 @@
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }",
         "NavSheetLayerProps": "{ className?: string | undefined; } & ShellDataAttributes",
-        "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }",
+        "RouteProgressEvents": "{ start: string; done: string; }",
+        "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }",
+        "SheetDragThreshold": "{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }",
         "ShellBadgeTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "ShellFooterProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }",
         "ShellNavGroup": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }",
         "ShellNavMatch": "\"prefix\" | \"exact\" | \"query\" | ((currentPath: string, item: ShellNavItem) => boolean)",
+        "ShellPrimaryActionState": "{ action: AppShellPrimaryAction | undefined; isFallback: boolean; }",
         "ShellState": "{ collapsed: boolean; openGroups: readonly string[] | undefined; }"
       },
       "story": {
@@ -1959,6 +2070,18 @@
           {
             "export": "RouteMotionAndPending",
             "id": "components-navigation-appshell--route-motion-and-pending"
+          },
+          {
+            "export": "RouteProgressFromCode",
+            "id": "components-navigation-appshell--route-progress-from-code"
+          },
+          {
+            "export": "PrimaryActionInPalette",
+            "id": "components-navigation-appshell--primary-action-in-palette"
+          },
+          {
+            "export": "PrimaryActionOwnerMark",
+            "id": "components-navigation-appshell--primary-action-owner-mark"
           },
           {
             "export": "PrimaryActionFallbackOnPhonesOnly",
@@ -4213,10 +4336,17 @@
             },
             {
               "name": "resultsLabel",
-              "type": "(count: number) => string",
+              "type": "(count: number, total: number) => string",
               "required": false,
               "default": null,
-              "description": "Announced when the list changes (\"3 results\"). Optional; the empty and loading texts are always announced."
+              "description": "Announced when the list changes (\"3 results\"). Gets the number of options shown and, as `total`, the number that matched before `maxResults` cut the list (\"20 of 134 results\"). Optional; the empty and loading texts are always announced."
+            },
+            {
+              "name": "maxResults",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "Show at most this many matching options, in their order in `options`, for a long local list (typing narrows it). Applied after `filter`. Default: no limit."
             },
             {
               "name": "valueLabel",
@@ -4362,6 +4492,10 @@
           {
             "export": "ManyOptions",
             "id": "components-forms-combobox--many-options"
+          },
+          {
+            "export": "CappedResults",
+            "id": "components-forms-combobox--capped-results"
           },
           {
             "export": "InsideDialog",
@@ -4579,6 +4713,13 @@
               "description": "Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close."
             },
             {
+              "name": "escapeClearsQuery",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Two-step Escape: while the field holds text, Escape first clears it (and calls `onQueryChange(\"\")`), and the next Escape closes. `onEscape` is asked first and wins when it returns `true`. Default `false`: Escape closes at once."
+            },
+            {
               "name": "shortcut",
               "type": "boolean",
               "required": false,
@@ -4647,6 +4788,10 @@
             "id": "components-overlays-commandpalette--phone-320"
           },
           {
+            "export": "EscapeClearsQuery",
+            "id": "components-overlays-commandpalette--escape-clears-query"
+          },
+          {
             "export": "FixedSectionOrder",
             "id": "components-overlays-commandpalette--fixed-section-order"
           },
@@ -4707,7 +4852,7 @@
           },
           {
             "keys": "Escape",
-            "action": "Closes; focus returns to where it was"
+            "action": "Closes; focus returns to where it was (with `escapeClearsQuery`, first clears typed text)"
           },
           {
             "keys": "Tab",
@@ -5549,7 +5694,7 @@
         {
           "name": "FileField",
           "kind": "component",
-          "description": "A file picker with a drop area, the native input kept in the form, limits on type, size and count with messages you provide, and a list of the chosen files with a remove button each. Inside a `FormField` the field's id, description and states apply.",
+          "description": "A file picker with a drop area, the native input kept in the form, limits on type, size and count with messages you provide, and a list of the chosen files with a remove button each, with an optional thumbnail for images (`preview`). Inside a `FormField` the field's id, hint, error and states apply: wrap it in one for a visible label, a hint and a server error.",
           "props": [
             {
               "name": "chooseLabel",
@@ -5627,6 +5772,13 @@
               "required": false,
               "default": null,
               "description": "Locale of the sizes. The runtime's when omitted."
+            },
+            {
+              "name": "preview",
+              "type": "boolean | ((file: File) => boolean)",
+              "required": false,
+              "default": "false",
+              "description": "Show a small local thumbnail beside each chosen image (a file whose type starts with `image/`). `true` previews every image; a function decides per file. The thumbnail is decorative (the file name sits next to it), is read from the person's own device with an object URL that is released when the file leaves the list, and is never uploaded by itself. Default `false`."
             },
             {
               "name": "files",
@@ -5731,6 +5883,10 @@
             "id": "components-forms-filefield--with-files"
           },
           {
+            "export": "WithPreview",
+            "id": "components-forms-filefield--with-preview"
+          },
+          {
             "export": "Rejected",
             "id": "components-forms-filefield--rejected"
           },
@@ -5821,6 +5977,7 @@
         "--lufia-radius-card",
         "--lufia-radius-control",
         "--lufia-radius-md",
+        "--lufia-radius-xs",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
@@ -8464,6 +8621,13 @@
               "description": "How the footer actions are laid out on a narrow phone (30rem and below). `row` (default) keeps them side by side in DOM order, so the primary action goes last, at the inline end; text actions grow to fill the bar and wrap if their labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top."
             },
             {
+              "name": "footerStackAt",
+              "type": "\"sheet\" | \"narrow\"",
+              "required": false,
+              "default": "\"narrow\"",
+              "description": "Up to which width `footerLayout=\"stack\"` stacks the actions. `narrow` (default) stacks at 30rem (480px) and below; `sheet` stacks at 37.5rem (600px) and below, the width where the dialog becomes a bottom sheet, so a footer with long labels never sits side by side in a sheet. Ignored with `footerLayout=\"row\"`."
+            },
+            {
               "name": "closeLabel",
               "type": "string",
               "required": false,
@@ -8668,6 +8832,10 @@
           {
             "export": "PhoneFooterStacked",
             "id": "components-overlays-modal--phone-footer-stacked"
+          },
+          {
+            "export": "SheetFooterStacked",
+            "id": "components-overlays-modal--sheet-footer-stacked"
           },
           {
             "export": "AllThemes",

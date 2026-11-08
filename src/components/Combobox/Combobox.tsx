@@ -58,8 +58,17 @@ export type ComboboxProps = Omit<
   loadingLabel: ReactNode;
   /** Shown, and announced, when nothing matches. */
   emptyLabel: ReactNode;
-  /** Announced when the list changes ("3 results"). Optional; the empty and loading texts are always announced. */
-  resultsLabel?: (count: number) => string;
+  /**
+   * Announced when the list changes ("3 results"). Gets the number of options shown and, as `total`, the number that
+   * matched before `maxResults` cut the list ("20 of 134 results"). Optional; the empty and loading texts are always
+   * announced.
+   */
+  resultsLabel?: (count: number, total: number) => string;
+  /**
+   * Show at most this many matching options, in their order in `options`, for a long local list (typing narrows it).
+   * Applied after `filter`. Default: no limit.
+   */
+  maxResults?: number;
   /** Label of the chosen option when it is not in `options` (a value set before the options loaded). */
   valueLabel?: string;
   /**
@@ -162,6 +171,7 @@ export function Combobox({
   loadingLabel,
   emptyLabel,
   resultsLabel,
+  maxResults,
   valueLabel,
   freeText = false,
   clearable = false,
@@ -217,7 +227,11 @@ export function Combobox({
   const query = typed ?? "";
   const matches = (option: ComboboxOption) =>
     filter === false || typed === null || query === "" ? true : (filter ?? defaultFilter)(option, query);
-  const visible = options.filter(matches);
+  const matching = options.filter(matches);
+  const visible =
+    maxResults !== undefined && matching.length > maxResults
+      ? matching.slice(0, Math.max(0, maxResults))
+      : matching;
   const firstEnabled = visible.find((option) => !option.disabled);
   const auto = !freeText && typed !== null && query !== "";
   const active =
@@ -391,7 +405,7 @@ export function Combobox({
     : visible.length === 0
       ? emptyLabel
       : resultsLabel
-        ? resultsLabel(visible.length)
+        ? resultsLabel(visible.length, matching.length)
         : "";
 
   return (

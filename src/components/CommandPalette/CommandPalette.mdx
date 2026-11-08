@@ -72,6 +72,8 @@ runs, for commands that show their answer inside.
   listbox and the arrow keys and Enter do nothing. A function gets `{ query }`.
 - `onEscape` runs before Escape closes the palette. Return `true` after leaving a sub-mode (clearing the answer) and the
   palette stays open; the next Escape closes it.
+- `escapeClearsQuery` makes Escape two-step on its own: with text in the field the first Escape clears it (and calls
+  `onQueryChange("")`, so a server search resets too), the next one closes. `onEscape` is still asked first.
 - `loading` marks the results `aria-busy` and holds the empty message back until a server search answers. Pair it with
   `onQueryChange` and `filter={() => true}`.
 - `labels.empty` may return `null`, `undefined`, `false` or `""`: no empty row is rendered, so no blank gap is left when a
@@ -103,14 +105,14 @@ runs, for commands that show their answer inside.
 
 It follows the WAI-ARIA APG pattern for a combobox with a listbox popup, inside a modal dialog.
 
-| Key          | Action                                                                   |
-| ------------ | ------------------------------------------------------------------------ |
-| Ctrl/Cmd + K | Opens the palette; closes it when open (`shortcut={false}` turns it off) |
-| Type         | Filters; the first match is highlighted                                  |
-| Down / Up    | Moves the highlight, wrapping at the ends                                |
-| Enter        | Runs the highlighted command                                             |
-| Escape       | Closes; focus returns to where it was                                    |
-| Tab          | Cycles between the field and the close button                            |
+| Key          | Action                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| Ctrl/Cmd + K | Opens the palette; closes it when open (`shortcut={false}` turns it off)                  |
+| Type         | Filters; the first match is highlighted                                                   |
+| Down / Up    | Moves the highlight, wrapping at the ends                                                 |
+| Enter        | Runs the highlighted command                                                              |
+| Escape       | Closes; focus returns to where it was (with `escapeClearsQuery`, first clears typed text) |
+| Tab          | Cycles between the field and the close button                                             |
 
 - The text field is the `combobox`. Focus never leaves it: the highlighted option is named by `aria-activedescendant`, and
   options are not focusable, as the pattern requires. `aria-expanded` is false when nothing matches.

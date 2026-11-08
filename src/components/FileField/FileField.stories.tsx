@@ -86,6 +86,27 @@ export const WithFiles: Story = {
     return <Demo {...args} files={files} onFilesChange={setFiles} />;
   },
 };
+const swatch = (name: string, from: string, to: string) =>
+  new File(
+    [
+      `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient></defs><rect width="96" height="96" fill="url(#g)"/><circle cx="66" cy="30" r="12" fill="#fff" opacity="0.8"/></svg>`,
+    ],
+    name,
+    { type: "image/svg+xml" },
+  );
+
+/** `preview`: chosen images get a small local thumbnail beside the name; other files keep the plain row. */
+export const WithPreview: Story = {
+  args: { preview: true, accept: "image/*,.pdf", hint: "Photos show a preview before you upload them." },
+  render: (args) => {
+    const [files, setFiles] = useState<File[]>([
+      swatch("entrance-before.svg", "#3b6fd8", "#9ec5ff"),
+      swatch("entrance-after.svg", "#1f8a5b", "#a6e3c4"),
+      sample("inspection-notes.pdf", 220 * 1024),
+    ]);
+    return <Demo {...args} files={files} onFilesChange={setFiles} />;
+  },
+};
 /** A refused file shows its message, built by `formatRejection`, and is linked to the control with `aria-describedby`. */
 export const Rejected: Story = {
   play: async ({ canvasElement }) => {
