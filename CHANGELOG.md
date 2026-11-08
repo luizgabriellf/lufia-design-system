@@ -1,5 +1,21 @@
 # @lufia/design-system
 
+## 0.15.0
+
+### Minor Changes
+
+- [#62](https://github.com/luizgabriellf/lufia-design-system/pull/62) [`fa78928`](https://github.com/luizgabriellf/lufia-design-system/commit/fa7892861a96560ff0adc61e9186422defd4e17b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `MoreActions` popover is no longer clipped by an ancestor with `overflow: hidden`. Once mounted, the open menu is portalled out of the component (to the body, or into the open modal it sits in) and placed with `position: fixed` from the button's box. It opens upward when there is no room below, keeps flipping horizontally, follows the button on scroll and resize (closing when the button is hidden or scrolls out of view), and scrolls inside when the list is taller than the room.
+  
+  Consumers: the open menu is no longer inside the component's root element, so query it by role (`getByRole("menu")`) rather than within the root. A nested `data-lufia-theme`/`data-lufia-mode` scope, `dir`, `lang` and the root's inline `--lufia-*` properties are copied onto the menu. `useDismiss` takes an optional fifth argument for a portalled popup that counts as inside.
+  
+  Test DOMs without layout (jsdom) need no mocks: the menu opens and stays open, and the hidden-trigger and scrolled-away checks apply only when the trigger had layout as the menu opened.
+
+### Patch Changes
+
+- [#61](https://github.com/luizgabriellf/lufia-design-system/pull/61) [`843367f`](https://github.com/luizgabriellf/lufia-design-system/commit/843367f3125c420912e4cab24a5782d8c4e9f844) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Badge: keep a status word whole in a squeezed table column. The badge now uses `overflow-wrap: break-word` instead of
+  `anywhere`, so an auto-layout column can no longer shrink it to one character per line; a word still breaks when it
+  cannot fit on a line of its own.
+
 ## 0.14.0
 
 ### Minor Changes
