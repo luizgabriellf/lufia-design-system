@@ -35,7 +35,7 @@ export const FormattedValues: Story = {
   },
 };
 /** The legend is off but the bar keeps its text alternative: a screen reader still reads every label, value and share. */
-export const LegendHidden: Story = { args: { legend: false } };
+export const LegendHidden: Story = { args: { legend: "hidden" } };
 export const ZeroSegment: Story = {
   args: {
     segments: [
@@ -89,7 +89,7 @@ export const AllThemes: Story = {
     <ThemeMatrix>
       <div style={{ display: "grid", gap: "1rem" }}>
         <StackedBar {...args} />
-        <StackedBar {...args} legend={false} label="Accounts by status, no legend" />
+        <StackedBar {...args} legend="hidden" label="Accounts by status, no legend" />
       </div>
     </ThemeMatrix>
   ),

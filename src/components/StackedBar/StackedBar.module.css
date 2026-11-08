@@ -54,6 +54,7 @@
 }
 
 .segment {
+  box-sizing: border-box;
   flex: 0 1 auto;
   min-inline-size: 0.125rem;
   background: var(--chart-color);
@@ -103,6 +104,11 @@
   white-space: normal;
 }
 
+/* The swatch colour is set at the lowest specificity (as in ColumnChart), so the hatch and forced-colors patterns override it. */
+.item::before {
+  background: var(--chart-color);
+}
+
 .legend[data-visible] .item {
   display: flex;
   min-inline-size: 0;
@@ -117,7 +123,6 @@
   inline-size: 0.625rem;
   block-size: 0.625rem;
   border-radius: 0.125rem;
-  background: var(--chart-color);
 }
 
 .legend[data-visible] strong {

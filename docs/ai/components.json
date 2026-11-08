@@ -10502,7 +10502,7 @@
         {
           "name": "StackedBar",
           "kind": "component",
-          "description": "A single bar split into proportional segments, with a legend: a part-of-whole breakdown such as a plan mix. The text is the accessible data: every segment is a list item with its label, value and share, and the bar is `aria-hidden` shape on top of it. The legend can be hidden visually and the list stays. A zero total draws an empty track and reads 0% for every segment. Segments are told apart by a thin gap, an optional `pattern` and, in `forced-colors` mode, one fill pattern each. The bar draws in once on mount and is removed under reduced motion. For several measures per period use `ColumnChart`; for one value against a target use `BulletBar`.",
+          "description": "A single bar split into proportional segments, with a legend: a part-of-whole breakdown such as a plan mix. The text is the accessible data: every segment is a list item with its label, value and share, and the bar is `aria-hidden` shape on top of it. The legend can be hidden visually (`legend=\"hidden\"`) and the list stays. A zero total draws an empty track and reads 0% for every segment. Segments are told apart by a thin gap, an optional `pattern` and, in `forced-colors` mode, one fill pattern each. The bar draws in once on mount and is removed under reduced motion. For several measures per period use `ColumnChart`; for one value against a target use `BulletBar`.",
           "props": [
             {
               "name": "segments",
@@ -10530,14 +10530,14 @@
               "type": "(percent: number) => string",
               "required": false,
               "default": "defaultPercent",
-              "description": "Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` (\"38%\"). Pass it to localise the number or the symbol."
+              "description": "Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` (\"38%\"), and to \"<1%\" for a segment with a value whose share rounds to 0. Rounded shares may not add up to 100. Pass it to localise the number or the symbol."
             },
             {
               "name": "legend",
-              "type": "boolean",
+              "type": "\"hidden\" | \"auto\"",
               "required": false,
-              "default": "true",
-              "description": "Prints the legend under the bar: a dot, the label and the value of every segment. When `false` the same list stays in the page for screen readers only, so the bar never loses its text alternative. Defaults to `true`."
+              "default": "\"auto\"",
+              "description": "`\"auto\"` prints the legend under the bar: a swatch, the label and the value of every segment. `\"hidden\"` keeps the same list in the page for screen readers only, so the bar never loses its text alternative. Defaults to `\"auto\"`."
             },
             {
               "name": "showPercent",
@@ -10638,10 +10638,12 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The root is a `role=\"group\"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list",
-          "`legend={false}` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether",
-          "Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern`",
+          "The root is a `role=\"group\"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list with one item per segment: its label, its value and its share (\"Active 48 (62%)\").",
+          "`legend=\"hidden\"` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether the share is printed.",
+          "Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern` adds stripes.",
           "A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.",
+          "A segment with a value whose share rounds to 0 reads \"<1%\" by default. Rounded shares may not add up to 100.",
+          "A negative or non-finite value is drawn as 0 and its share reads 0, but the list shows the number as given, so bad data stays visible to assistive technology.",
           "The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.",
           "In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.",
           "Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works."

@@ -73,13 +73,12 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### Accessibility
 
-- The root is a `role="group"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list
-  with one item per segment: its label, its value and its share ("Active 48 (62%)").
-- `legend={false}` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether
-  the share is printed.
-- Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern`
-  adds stripes.
+- The root is a `role="group"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list with one item per segment: its label, its value and its share ("Active 48 (62%)").
+- `legend="hidden"` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether the share is printed.
+- Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern` adds stripes.
 - A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.
+- A segment with a value whose share rounds to 0 reads "<1%" by default. Rounded shares may not add up to 100.
+- A negative or non-finite value is drawn as 0 and its share reads 0, but the list shows the number as given, so bad data stays visible to assistive technology.
 - The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
 - In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.
 - Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works.

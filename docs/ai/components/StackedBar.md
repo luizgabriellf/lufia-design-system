@@ -35,8 +35,8 @@ accounts by status.
 | `segments` | `readonly StackedBarSegment[]` | yes |  | The parts of the whole, in drawing order. Segments with no value are not drawn but stay in the legend and the text. |
 | `label` | `string` | yes |  | Accessible name of the whole bar ("Plan mix"). Required: the bar is a group that a screen reader reads by its parts. |
 | `formatValue` | `(value: number) => string` | no | `String` | Formats each value for the legend and the text alternative ("1,240", "3 sites"). Defaults to `String(value)`. |
-| `formatPercent` | `(percent: number) => string` | no | `defaultPercent` | Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` ("38%"). Pass it to localise the number or the symbol. |
-| `legend` | `boolean` | no | `true` | Prints the legend under the bar: a dot, the label and the value of every segment. When `false` the same list stays in the page for screen readers only, so the bar never loses its text alternative. Defaults to `true`. |
+| `formatPercent` | `(percent: number) => string` | no | `defaultPercent` | Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` ("38%"), and to "<1%" for a segment with a value whose share rounds to 0. Rounded shares may not add up to 100. Pass it to localise the number or the symbol. |
+| `legend` | `"hidden" \| "auto"` | no | `"auto"` | `"auto"` prints the legend under the bar: a swatch, the label and the value of every segment. `"hidden"` keeps the same list in the page for screen readers only, so the bar never loses its text alternative. Defaults to `"auto"`. |
 | `showPercent` | `boolean` | no | `false` | Prints each share next to its value in the legend. Off by default; the share is always read by assistive technology. |
 
 Other native element attributes pass through to the root element.
@@ -63,10 +63,12 @@ import { StackedBar } from "@lufia/design-system/components/StackedBar";
 
 ## Accessibility
 
-- The root is a `role="group"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list
-- `legend={false}` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether
-- Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern`
+- The root is a `role="group"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list with one item per segment: its label, its value and its share ("Active 48 (62%)").
+- `legend="hidden"` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether the share is printed.
+- Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern` adds stripes.
 - A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.
+- A segment with a value whose share rounds to 0 reads "<1%" by default. Rounded shares may not add up to 100.
+- A negative or non-finite value is drawn as 0 and its share reads 0, but the list shows the number as given, so bad data stays visible to assistive technology.
 - The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
 - In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.
 - Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works.

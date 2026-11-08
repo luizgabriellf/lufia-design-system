@@ -93,7 +93,30 @@ describe("StackedBar", () => {
       />,
     );
     expect(parts(container)).toHaveLength(1);
-    expect(screen.getAllByRole("listitem")[0]).toHaveTextContent("A 4 (100%)");
+    expect(screen.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "A 4 (100%)",
+      "B -3 (0%)",
+      "C NaN (0%)",
+      "D Infinity (0%)",
+    ]);
+  });
+
+  it('reads "<1%" for a value whose share rounds to 0, and plain rounded shares otherwise', () => {
+    render(
+      <StackedBar
+        label="Mix"
+        segments={[
+          { key: "a", label: "Big", value: 1000 },
+          { key: "b", label: "Tiny", value: 1 },
+          { key: "c", label: "None", value: 0 },
+        ]}
+      />,
+    );
+    expect(screen.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Big 1000 (100%)",
+      "Tiny 1 (<1%)",
+      "None 0 (0%)",
+    ]);
   });
 
   it("formats values and shares through the props", () => {
@@ -108,8 +131,8 @@ describe("StackedBar", () => {
     expect(screen.getAllByRole("listitem")[0]).toHaveTextContent("Active 50 units (50.0 %)");
   });
 
-  it("keeps the text list but marks the legend as not visible when legend is false", () => {
-    const { container, rerender } = render(<StackedBar segments={segments} label="Mix" legend={false} />);
+  it("keeps the text list but marks the legend as not visible when legend is hidden", () => {
+    const { container, rerender } = render(<StackedBar segments={segments} label="Mix" legend="hidden" />);
     expect(container.querySelector("ul")).not.toHaveAttribute("data-visible");
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
     rerender(<StackedBar segments={segments} label="Mix" />);
@@ -140,7 +163,7 @@ describe("StackedBar", () => {
     const { container } = render(
       <div>
         <StackedBar segments={segments} label="Visible legend" showPercent />
-        <StackedBar segments={segments} label="Hidden legend" legend={false} />
+        <StackedBar segments={segments} label="Hidden legend" legend="hidden" />
         <StackedBar segments={[{ key: "a", label: "A", value: 0 }]} label="Empty" />
       </div>,
     );
@@ -159,6 +182,39 @@ describe("StackedBar", () => {
     const forced = css.match(/@media \(forced-colors: active\) \{([\s\S]*)\n\}/);
     expect(forced?.[1]).toMatch(/\.segment\[data-series="1"\]/);
     expect(forced?.[1]).toMatch(/CanvasText/);
+    expect(css).toMatch(/\.segment \{\s*box-sizing: border-box/);
     expect(css).toMatch(/\.bar:dir\(rtl\)\s*\{\s*transform-origin: right center/);
+  });
+
+  it("never lets a swatch background rule outrank the pattern rules (the cascade would hide the patterns)", () => {
+    // jsdom does not resolve the cascade, so compare selector specificity (ids, classes and attributes, elements) by hand.
+    const specificity = (selector: string): [number, number, number] => {
+      const bare = selector.replace(/\[[^\]]*\]/g, ".a").replace(/:dir\([^)]*\)/g, ".a");
+      const elements = (bare.match(/::[a-z-]+/g) ?? []).length;
+      const classes = (bare.match(/\.[\w-]+/g) ?? []).length;
+      return [0, classes, elements];
+    };
+    const compare = (a: number[], b: number[]) => a[1]! - b[1]! || a[2]! - b[2]!;
+    const swatchBackgrounds = (source: string) =>
+      [...source.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}@]+)\{([^{}]*)\}/g)]
+        .filter(([, , body]) => /\bbackground(-image)?:/.test(body!))
+        .flatMap(([, selectors]) => selectors!.split(",").map((selector) => selector.trim()))
+        .filter((selector) => selector.includes("::before"));
+    const forcedStart = css.indexOf("@media (forced-colors: active)");
+    const base = swatchBackgrounds(css.slice(0, forcedStart)).filter(
+      (selector) => !selector.includes("data-pattern"),
+    );
+    const hatch = swatchBackgrounds(css.slice(0, forcedStart)).filter((selector) =>
+      selector.includes("data-pattern"),
+    );
+    const forced = swatchBackgrounds(css.slice(forcedStart));
+    expect(base.length).toBeGreaterThan(0);
+    expect(hatch.length).toBeGreaterThan(0);
+    expect(forced.length).toBeGreaterThan(0);
+    for (const plain of base) {
+      for (const stronger of [...hatch, ...forced.filter((selector) => selector.includes("data-series"))]) {
+        expect(compare(specificity(plain), specificity(stronger)), `${plain} vs ${stronger}`).toBeLessThan(0);
+      }
+    }
   });
 });
