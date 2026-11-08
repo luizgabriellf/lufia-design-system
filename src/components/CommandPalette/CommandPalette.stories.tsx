@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DocumentIcon, HomeIcon, PlusIcon, SettingsIcon, UploadIcon, UsersIcon } from "../../docs/demo";
 import { Button } from "../Button";
 import {
@@ -205,3 +205,105 @@ function ServerSearch() {
 
 /** `onQueryChange` with `filter={() => true}` and `loading`: results come from a server; "No results" waits for the answer. */
 export const ServerSideSearch: Story = { render: () => <ServerSearch /> };
+
+const serverLabels: CommandPaletteLabels = { ...labels, loading: "Searching…" };
+
+const serverDefaults: CommandItem[] = [
+  {
+    key: "new-project",
+    label: "New project",
+    group: "Actions",
+    icon: <PlusIcon size={16} />,
+    tone: "accent",
+    onSelect: noop,
+  },
+  {
+    key: "open-settings",
+    label: "Open settings",
+    group: "Actions",
+    icon: <SettingsIcon size={16} />,
+    onSelect: noop,
+  },
+];
+
+function ServerSearchStatus() {
+  const [rows, setRows] = useState<CommandItem[]>(serverDefaults);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  return (
+    <CommandPalette
+      open
+      onOpenChange={() => {}}
+      items={rows}
+      labels={serverLabels}
+      filter={() => true}
+      loading={loading}
+      hintPlacement="top"
+      hint={({ query }) => (query.trim().length === 1 ? "Type at least 2 characters to search." : null)}
+      notice={failed ? <p role="alert">Search is unavailable. Showing the default commands.</p> : null}
+      onQueryChange={(query) => {
+        // Only the latest query may answer: cancel the one still in flight.
+        clearTimeout(timer.current);
+        setFailed(false);
+        if (query.trim().length < 2) {
+          setLoading(false);
+          setRows(serverDefaults);
+          return;
+        }
+        setLoading(true);
+        timer.current = setTimeout(() => {
+          if (query.trim() === "fail") {
+            setFailed(true);
+            setRows(serverDefaults);
+          } else {
+            setRows([
+              { key: "projects", label: `Projects matching “${query}”`, group: "Results", onSelect: noop },
+              { key: "invoices", label: `Invoices matching “${query}”`, group: "Results", onSelect: noop },
+            ]);
+          }
+          setLoading(false);
+        }, 1500);
+      }}
+    />
+  );
+}
+
+/**
+ * A server search with every status: type one character for the hint, two or more for the "Searching…" row below the
+ * commands, and `fail` for an error notice above the commands, which stay selectable with the arrow keys.
+ */
+export const ServerSearchWithStatus: Story = { render: () => <ServerSearchStatus /> };
+
+/** `tone` tints the icon: `accent` for create or assistant actions, `danger` for destructive ones. */
+export const IconTones: Story = {
+  args: {
+    initialOpen: true,
+    commands: [
+      {
+        key: "new",
+        label: "New project",
+        group: "Actions",
+        icon: <PlusIcon size={16} />,
+        tone: "accent",
+        onSelect: noop,
+      },
+      {
+        key: "open",
+        label: "Open settings",
+        group: "Actions",
+        icon: <SettingsIcon size={16} />,
+        onSelect: noop,
+      },
+      {
+        key: "delete",
+        label: "Delete workspace",
+        group: "Actions",
+        icon: <DocumentIcon size={16} />,
+        tone: "danger",
+        onSelect: noop,
+      },
+    ],
+  },
+};

@@ -622,3 +622,24 @@ test.describe("segmented toggle status picker", () => {
     });
   }
 });
+
+test.describe("command palette server search", () => {
+  test("shows the searching row while loading and keeps the arrows working beside a notice", async ({
+    page,
+  }) => {
+    await openStory(page, "components-overlays-commandpalette--server-search-with-status");
+    const field = page.getByRole("combobox", { name: "Search or run a command" });
+    await field.fill("ab");
+    await expect(page.locator("[data-loading-row]")).toBeVisible();
+    await expect(page.locator("[data-loading-row]")).toHaveText("Searching…");
+    await expect(page.locator("[data-loading-row]")).toBeHidden({ timeout: 5000 });
+
+    await field.fill("fail");
+    await expect(page.getByRole("alert")).toContainText("Search is unavailable", { timeout: 5000 });
+    const options = page.getByRole("option");
+    await expect(options.first()).toHaveAttribute("aria-selected", "true");
+    await field.press("ArrowDown");
+    await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(options.first()).toHaveAttribute("aria-selected", "false");
+  });
+});

@@ -421,4 +421,181 @@ describe("CommandPalette extension points", () => {
       expect(screen.getByRole("option", { name: "Record for ab" })).toBeInTheDocument();
     });
   });
+
+  describe("loading row", () => {
+    const withLoading = { ...labels, loading: "Searching…" };
+    const row = () => document.querySelector("[data-loading-row]");
+
+    it("shows a searching row below the listed commands and announces it while loading stays true", async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<Harness labels={withLoading} loading />);
+      await user.type(field(), "e");
+      const rowEl = row();
+      expect(rowEl).toHaveTextContent("Searching…");
+      const list = screen.getByRole("listbox");
+      expect(list.compareDocumentPosition(rowEl!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      const status = screen.getByRole("status");
+      expect(status).toHaveTextContent("Searching…");
+      await user.type(field(), "x");
+      expect(status).toHaveTextContent("Searching…");
+      rerender(<Harness labels={withLoading} loading={false} />);
+      expect(status).toHaveTextContent("results");
+      expect(status).not.toHaveTextContent("Searching…");
+    });
+
+    it("keeps the row visible and the empty message waiting while nothing matches", () => {
+      const { rerender } = render(<Harness commands={[]} labels={withLoading} loading />);
+      expect(row()).not.toBeNull();
+      expect(screen.queryByText(/No results/)).toBeNull();
+      rerender(<Harness commands={[]} labels={withLoading} loading={false} />);
+      expect(row()).toBeNull();
+      expect(screen.getByText("No results for “”")).toBeInTheDocument();
+    });
+
+    it("shows nothing extra without a loading label", () => {
+      render(<Harness commands={[]} loading />);
+      expect(row()).toBeNull();
+    });
+
+    it("has no axe violations while loading", async () => {
+      const { container } = render(<Harness labels={withLoading} loading />);
+      expect(await axe(container)).toHaveNoViolations();
+      expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("hint", () => {
+    it("shows a function hint with the query, for a short query too", async () => {
+      const user = userEvent.setup();
+      render(
+        <Harness
+          hint={({ query }) =>
+            query.trim().length < 2 ? `Type at least 2 characters (${query.length})` : null
+          }
+        />,
+      );
+      expect(screen.getByText("Type at least 2 characters (0)")).toBeInTheDocument();
+      await user.type(field(), "a");
+      expect(screen.getByText("Type at least 2 characters (1)")).toBeInTheDocument();
+      await user.type(field(), "b");
+      expect(screen.queryByText(/Type at least/)).toBeNull();
+    });
+
+    it("keeps a node hint for the empty query only, below the results", async () => {
+      const user = userEvent.setup();
+      render(<Harness />);
+      const hint = screen.getByText("Tip");
+      expect(
+        screen.getByRole("listbox").compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      await user.type(field(), "e");
+      expect(screen.queryByText("Tip")).toBeNull();
+    });
+
+    it("places the hint above the results with hintPlacement top", () => {
+      render(<Harness hintPlacement="top" />);
+      const hint = screen.getByText("Tip");
+      expect(
+        screen.getByRole("listbox").compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_PRECEDING,
+      ).toBeTruthy();
+    });
+
+    it("hides a function hint under bodyOverride", () => {
+      render(<Harness hint={() => "Tip"} bodyOverride="Answer" />);
+      expect(screen.queryByText("Tip")).toBeNull();
+    });
+  });
+
+  describe("notice", () => {
+    const notice = <p role="alert">Search failed</p>;
+
+    it("renders above the results, outside the listbox, and is not an option", () => {
+      render(<Harness notice={notice} />);
+      const alert = screen.getByRole("alert");
+      const list = screen.getByRole("listbox");
+      expect(list).not.toContainElement(alert);
+      expect(alert.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(screen.getAllByRole("option")).toHaveLength(4);
+    });
+
+    it("keeps keyboard navigation and Enter working on the commands", async () => {
+      const user = userEvent.setup();
+      const onSelect = vi.fn();
+      render(<Harness notice={notice} commands={items(onSelect)} />);
+      expect(field()).toHaveAttribute(
+        "aria-activedescendant",
+        screen.getByRole("option", { name: /New document/ }).id,
+      );
+      await user.keyboard("{ArrowDown}");
+      expect(field()).toHaveAttribute(
+        "aria-activedescendant",
+        screen.getByRole("option", { name: /Export data/ }).id,
+      );
+      await user.keyboard("{Enter}");
+      expect(onSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it("is replaced along with everything else by bodyOverride", () => {
+      render(<Harness notice={notice} bodyOverride="Answer" />);
+      expect(screen.queryByRole("alert")).toBeNull();
+    });
+
+    it("has no axe violations beside the results", async () => {
+      render(<Harness notice={notice} />);
+      expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("pinned content and aria-busy", () => {
+    const notice = <p role="alert">Search failed</p>;
+
+    it("keeps the notice and the top hint outside the scrolling results", () => {
+      render(<Harness notice={notice} hintPlacement="top" />);
+      const scroller = screen.getByRole("listbox").closest("[class*=body]")!;
+      expect(scroller).not.toContainElement(screen.getByRole("alert"));
+      expect(scroller).not.toContainElement(screen.getByText("Tip"));
+      expect(scroller).toContainElement(screen.getByRole("listbox"));
+    });
+
+    it("marks only the results busy, not the notice", () => {
+      render(<Harness notice={notice} loading />);
+      const busy = document.querySelector('[aria-busy="true"]')!;
+      expect(busy).toContainElement(screen.getByRole("listbox"));
+      expect(busy).not.toContainElement(screen.getByRole("alert"));
+      expect(screen.getByRole("alert").closest("[aria-busy]")).toBeNull();
+    });
+  });
+
+  describe("tone", () => {
+    it("marks the icon of an accent or danger command and leaves the default untouched", () => {
+      const icon = <svg aria-hidden="true" />;
+      render(
+        <Harness
+          commands={[
+            { key: "a", label: "Ask", icon, tone: "accent", onSelect: () => {} },
+            { key: "d", label: "Delete", icon, tone: "danger", onSelect: () => {} },
+            { key: "n", label: "Open", icon, tone: "default", onSelect: () => {} },
+            { key: "u", label: "Plain", icon, onSelect: () => {} },
+          ]}
+        />,
+      );
+      const toneOf = (name: string) =>
+        screen.getByRole("option", { name }).querySelector("[aria-hidden]")!.getAttribute("data-tone");
+      expect(toneOf("Ask")).toBe("accent");
+      expect(toneOf("Delete")).toBe("danger");
+      expect(toneOf("Open")).toBeNull();
+      expect(toneOf("Plain")).toBeNull();
+    });
+
+    it("has no axe violations with tinted icons", async () => {
+      render(
+        <Harness
+          commands={[
+            { key: "a", label: "Ask", icon: <svg aria-hidden="true" />, tone: "accent", onSelect: () => {} },
+          ]}
+        />,
+      );
+      expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
 });

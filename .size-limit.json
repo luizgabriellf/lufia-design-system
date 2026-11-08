@@ -20,7 +20,7 @@
   {
     "name": "CommandPalette",
     "path": "dist/components/CommandPalette/**/*.{js,css}",
-    "limit": "5.4 kB",
+    "limit": "5.6 kB",
     "gzip": true
   },
   {
