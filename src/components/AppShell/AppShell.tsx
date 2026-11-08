@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState, type HTMLAttributes, type Key, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type HTMLAttributes, type Key, type ReactNode } from "react";
+import { RouteTransition } from "../../motion/RouteTransition";
 import { useMediaQuery } from "../useMediaQuery";
 import { MenuGlyph, SearchGlyph } from "./icons";
 import {
@@ -22,6 +23,7 @@ import {
   type ShellNavItem,
 } from "./navigation";
 import { ShellNavigation, useGroupDisclosure } from "./ShellNavigation";
+import { RouteProgress } from "./RouteProgress";
 import { Sidebar } from "./Sidebar";
 import { useShellTooltip } from "./ShellTooltip";
 import styles from "./AppShell.module.css";
@@ -89,9 +91,19 @@ function SearchEntry({ search, collapsed }: { search: AppShellSearch; collapsed:
   );
 }
 
-type SlotState = { collapsed: boolean };
-type Slot = ReactNode | ((state: SlotState) => ReactNode);
-const resolve = (slot: Slot | undefined, state: SlotState) =>
+/** What a slot that is a function receives: where it is drawn, and how to close or open the phone sheet from inside it. */
+export type AppShellSlotState = {
+  /** The sidebar is a rail. Always `false` in the sheet and the phone top bar. */
+  collapsed: boolean;
+  /** Which of the shell's surfaces is drawing the slot. A slot is rendered once per surface. */
+  surface: "sidebar" | "sheet" | "topBar";
+  /** Closes the phone navigation sheet: call it from a slot's own link or button that navigates. */
+  closeSheet: () => void;
+  /** Opens the phone navigation sheet. */
+  openSheet: () => void;
+};
+type Slot = ReactNode | ((state: AppShellSlotState) => ReactNode);
+const resolve = (slot: Slot | undefined, state: AppShellSlotState) =>
   typeof slot === "function" ? slot(state) : slot;
 
 export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -104,6 +116,13 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   labels: AppShellLabels;
   /** Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. */
   brand?: Slot;
+  /**
+   * Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or
+   * account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher
+   * can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its
+   * parts a fixed `id`.
+   */
+  context?: Slot;
   /** Bottom of the sidebar, and of the sheet: account, help and sign-out links. */
   footer?: Slot;
   /** Right side of the phone top bar: a workspace chip, a status. */
@@ -120,6 +139,12 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    * `ShellPrimaryActionSlot`.
    */
   primaryAction?: AppShellPrimaryAction;
+  /**
+   * Whether wide screens show the shell's `primaryAction` in `ShellPrimaryActionSlot` while no page has registered its
+   * own. Default `true`. Set `false` when the default makes sense only on phones (the floating bar still shows it), so a
+   * hard load never flashes an action the page is about to replace or remove.
+   */
+  desktopPrimaryFallback?: boolean;
   /** `data-*` attributes for the floating bar's menu button. */
   menuData?: FloatBarDataAttributes;
   /**
@@ -133,6 +158,17 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   statusRow?: ReactNode;
   /** `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). */
   sheetAs?: "portal" | "dialog";
+  /**
+   * The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and
+   * hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it.
+   */
+  menuOpen?: boolean;
+  onMenuOpenChange?: (open: boolean) => void;
+  /**
+   * Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the
+   * sheet while it is open. The sidebar is not affected.
+   */
+  hideSheetNavigation?: boolean;
   /** Sidebar as a rail. Controlled. */
   collapsed?: boolean;
   defaultCollapsed?: boolean;
@@ -143,6 +179,28 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   onOpenGroupsChange?: (keys: readonly string[]) => void;
   /** Hide the rail button. Default `false`. */
   fixedSidebar?: boolean;
+  /**
+   * Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short
+   * fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A
+   * search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it.
+   * Pass the pathname, not the query string. Wrapping the page adds one element around `children`.
+   */
+  routeKey?: string;
+  /**
+   * A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of
+   * the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash,
+   * and plain link clicks start it by themselves.
+   */
+  routePending?: boolean;
+  /** Draw the progress bar when `routeKey` is given. Default `true`. */
+  routeProgress?: boolean;
+  /**
+   * A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden,
+   * so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile.
+   * Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the
+   * shape of the page it stands in for.
+   */
+  mainPending?: ReactNode;
   /**
    * Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA.
    * `className` is added to the shell's own.
@@ -187,7 +245,16 @@ export function AppShell({
   navigationPending,
   topBar,
   statusRow,
+  context,
   sheetAs = "portal",
+  menuOpen: menuOpenProp,
+  onMenuOpenChange,
+  hideSheetNavigation = false,
+  desktopPrimaryFallback = true,
+  routeKey,
+  routePending,
+  routeProgress = true,
+  mainPending,
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
@@ -206,10 +273,22 @@ export function AppShell({
   const mainId = mainProps?.id ?? generatedMainId;
   const [innerCollapsed, setInnerCollapsed] = useState(defaultCollapsed);
   const collapsed = collapsedProp ?? innerCollapsed;
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [innerSheetOpen, setInnerSheetOpen] = useState(false);
+  const sheetOpen = menuOpenProp ?? innerSheetOpen;
+  const setSheetOpen = (next: boolean) => {
+    if (menuOpenProp === undefined) setInnerSheetOpen(next);
+    onMenuOpenChange?.(next);
+  };
   const wide = useMediaQuery(APP_SHELL_BREAKPOINT);
   // The sheet belongs to phones: growing past the breakpoint (rotation, window drag) closes it for good.
-  if (wide && sheetOpen) setSheetOpen(false);
+  if (wide && innerSheetOpen && menuOpenProp === undefined) setInnerSheetOpen(false);
+  const closeRequest = useRef(onMenuOpenChange);
+  useEffect(() => {
+    closeRequest.current = onMenuOpenChange;
+  });
+  useEffect(() => {
+    if (wide && menuOpenProp) closeRequest.current?.(false);
+  }, [wide, menuOpenProp]);
 
   const activeKey = findActiveNavKey(groups, currentPath, isActive);
   const activeGroupKey = groups.find(
@@ -231,7 +310,7 @@ export function AppShell({
     setSheetOpen(false);
   };
 
-  const registry = useShellPrimaryActionRegistry(primaryActionProp);
+  const registry = useShellPrimaryActionRegistry(primaryActionProp, desktopPrimaryFallback);
   const primaryAction = registry.action;
   const pendingNavigation =
     navigationPending !== undefined && navigationPending !== null && navigationPending !== false;
@@ -252,10 +331,22 @@ export function AppShell({
 
   const defaultSearchEntry = search ? <SearchEntry search={search} collapsed={collapsed} /> : null;
 
+  const slotState = (surface: AppShellSlotState["surface"]): AppShellSlotState => ({
+    collapsed: surface === "sidebar" && collapsed,
+    surface,
+    closeSheet: () => setSheetOpen(false),
+    openSheet: () => setSheetOpen(true),
+  });
   const searchEntry =
-    searchTrigger !== undefined ? resolve(searchTrigger, { collapsed }) : defaultSearchEntry;
+    searchTrigger !== undefined ? resolve(searchTrigger, slotState("sidebar")) : defaultSearchEntry;
 
-  const openState: SlotState = { collapsed: false };
+  // The page waits behind a skeleton: once it has been shown, the arriving page only fades (the skeleton held its layout).
+  const pendingMain = mainPending !== undefined && mainPending !== null && mainPending !== false;
+  const [arrival, setArrival] = useState({ key: routeKey, afterSkeleton: false, skeletonShown: false });
+  if (pendingMain && !arrival.skeletonShown) setArrival({ ...arrival, skeletonShown: true });
+  if (arrival.key !== routeKey) {
+    setArrival({ key: routeKey, afterSkeleton: arrival.skeletonShown, skeletonShown: pendingMain });
+  }
   return (
     <ShellPrimaryActionContext.Provider value={registry}>
       <div
@@ -267,7 +358,7 @@ export function AppShell({
           {labels.skipToContent}
         </a>
         <header className={styles.topBar}>
-          <div className={styles.topBrand}>{resolve(brand, openState)}</div>
+          <div className={styles.topBrand}>{resolve(brand, slotState("topBar"))}</div>
           {topBarEnd ? <div className={styles.topEnd}>{topBarEnd}</div> : null}
         </header>
         <div className={styles.sidebarSlot}>
@@ -284,9 +375,10 @@ export function AppShell({
             }
             collapseLabel={labels.collapseSidebar}
             expandLabel={labels.expandSidebar}
-            header={resolve(brand, { collapsed })}
+            header={resolve(brand, slotState("sidebar"))}
+            context={resolve(context, slotState("sidebar"))}
             search={searchEntry}
-            footer={resolve(footer, { collapsed })}
+            footer={resolve(footer, slotState("sidebar"))}
             busy={pendingNavigation}
           >
             {navigation}
@@ -300,10 +392,27 @@ export function AppShell({
           key={mainKey}
           id={mainId}
           className={[styles.main, mainProps?.className].filter(Boolean).join(" ")}
+          aria-busy={pendingMain || undefined}
+          data-pending={pendingMain || undefined}
         >
-          {mainStart}
-          {children}
+          {mainStart ? (
+            <div className={styles.mainStart} data-route-static="">
+              {mainStart}
+            </div>
+          ) : null}
+          {routeKey === undefined ? (
+            children
+          ) : (
+            <RouteTransition transitionKey={routeKey} variant={arrival.afterSkeleton ? "fade" : "rise"}>
+              {children}
+            </RouteTransition>
+          )}
+          {pendingMain ? <div data-shell-pending="">{mainPending}</div> : null}
         </main>
+        {routeKey !== undefined && routeProgress ? (
+          <RouteProgress routeKey={routeKey} pending={routePending} />
+        ) : null}
+        <div className={styles.floatScrim} aria-hidden="true" />
         <MobileFloatBar label={labels.floatBar} className={styles.float}>
           {search ? (
             <>
@@ -325,6 +434,9 @@ export function AppShell({
                 icon={primaryAction.icon}
                 href={primaryAction.href}
                 onClick={primaryAction.onSelect}
+                onPointerEnter={primaryAction.onIntent}
+                onFocus={primaryAction.onIntent}
+                data-fallback={registry.isFallback || undefined}
                 {...primaryAction.data}
               />
             ) : (
@@ -333,6 +445,9 @@ export function AppShell({
                 label={primaryAction.label}
                 icon={primaryAction.icon}
                 onClick={primaryAction.onSelect}
+                onPointerEnter={primaryAction.onIntent}
+                onFocus={primaryAction.onIntent}
+                data-fallback={registry.isFallback || undefined}
                 {...primaryAction.data}
               />
             )
@@ -353,16 +468,19 @@ export function AppShell({
           label={labels.menu}
           renderAs={sheetAs}
           closeOnNavigate
-          header={resolve(brand, openState)}
-          footer={resolve(footer, openState)}
+          header={resolve(brand, slotState("sheet"))}
+          footer={resolve(footer, slotState("sheet"))}
         >
-          <nav
-            aria-label={labels.navigation}
-            className={styles.sheetNav}
-            aria-busy={pendingNavigation || undefined}
-          >
-            {navigation}
-          </nav>
+          {resolve(context, slotState("sheet"))}
+          {hideSheetNavigation ? null : (
+            <nav
+              aria-label={labels.navigation}
+              className={styles.sheetNav}
+              aria-busy={pendingNavigation || undefined}
+            >
+              {navigation}
+            </nav>
+          )}
         </NavSheet>
       </div>
     </ShellPrimaryActionContext.Provider>

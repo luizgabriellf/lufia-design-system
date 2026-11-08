@@ -13,9 +13,14 @@
 
 /* Header and footer keep their size; only the navigation gives way. */
 .head,
+.context,
 .search,
 .foot {
   flex: none;
+}
+
+.context {
+  padding-block-start: var(--lufia-space-2);
 }
 
 .head {
@@ -93,6 +98,25 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+}
+
+/* Items hidden beyond an edge fade into it, so a list that scrolls says so (`data-more` from the scroll hints). */
+.nav[data-more="start"] {
+  mask-image: linear-gradient(to bottom, transparent, CanvasText 1.25rem);
+}
+
+.nav[data-more="end"] {
+  mask-image: linear-gradient(to bottom, CanvasText calc(100% - 1.25rem), transparent);
+}
+
+.nav[data-more="both"] {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    CanvasText 1.25rem,
+    CanvasText calc(100% - 1.25rem),
+    transparent
+  );
 }
 
 .foot {

@@ -60,7 +60,7 @@ no i18n and no data layer.
 | `open` | `boolean` | no |  | Open state. Controlled: pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial open state when `open` is not given. For documentation and tests; people open it themselves. |
 | `onOpenChange` | `(open: boolean) => void` | no |  |  |
-| `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
+| `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |

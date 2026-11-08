@@ -1,0 +1,26 @@
+/* Scaled, not resized: the bar grows by `transform` on the compositor, never by `width`. */
+.bar {
+  position: fixed;
+  z-index: var(--lufia-z-toast);
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 0.1875rem;
+  background: var(--lufia-color-accent-default);
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+}
+
+.bar:dir(rtl) {
+  transform-origin: 100% 50%;
+}
+
+.bar[data-finishing] {
+  transition-duration: var(--lufia-motion-duration-instant);
+}
+
+@media (forced-colors: active) {
+  .bar {
+    background: Highlight;
+  }
+}

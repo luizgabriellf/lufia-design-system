@@ -36,12 +36,23 @@
   padding: var(--lufia-space-8);
 }
 
+/* The banners sit in a box of their own so a skeleton can hide the page without hiding them; the box adds no layout. */
+.mainStart {
+  display: contents;
+}
+
+/* A slow navigation: the page stays mounted (its state and providers survive) but out of sight; the skeleton takes its place. */
+.main[data-pending] > :not([data-route-static], [data-shell-pending]) {
+  display: none;
+}
+
 .main:focus {
   outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .topBar,
-.float {
+.float,
+.floatScrim {
   display: none;
 }
 
@@ -155,6 +166,18 @@
 
   .float {
     display: flex;
+  }
+
+  /* Content that scrolls under the floating bar fades out instead of ending in a hard edge behind it. */
+  .floatScrim {
+    position: fixed;
+    z-index: var(--lufia-z-sticky);
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: block;
+    block-size: calc(5.5rem + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--lufia-color-bg-canvas), transparent);
+    pointer-events: none;
   }
 
   .primarySlot {

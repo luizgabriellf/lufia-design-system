@@ -73,10 +73,22 @@ export function MobileFloatBarButton({
     </>
   );
   if (href !== undefined) {
-    const { onClick, ...others } = rest as { onClick?: () => void } & Record<string, unknown>;
+    const { onClick, onPointerEnter, onFocus, ...others } = rest as {
+      onClick?: () => void;
+      onPointerEnter?: () => void;
+      onFocus?: () => void;
+    } & Record<string, unknown>;
     const data = Object.fromEntries(Object.entries(others).filter(([name]) => name.startsWith("data-")));
     return (
-      <Link {...data} href={href} className={classes} data-variant={variant} onClick={onClick}>
+      <Link
+        {...data}
+        href={href}
+        className={classes}
+        data-variant={variant}
+        onClick={onClick}
+        onPointerEnter={onPointerEnter}
+        onFocus={onFocus}
+      >
         {content}
       </Link>
     );
