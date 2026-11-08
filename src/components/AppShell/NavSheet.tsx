@@ -10,6 +10,7 @@ import { CloseGlyph } from "./icons";
 import { NavSurfaceContext } from "./navigation";
 import { usePresence } from "../internal/usePresence";
 import { useNavScrollHints } from "./useNavScrollHints";
+import { useSheetBodyDrag } from "./useSheetBodyDrag";
 import { useSheetDrag } from "./useSheetDrag";
 import styles from "./NavSheet.module.css";
 
@@ -24,7 +25,7 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   footer?: ReactNode;
   /** Accessible name of the close button. Defaults to the provider's `close` label. */
   closeLabel?: string;
-  /** Let the grabber and header be dragged down to dismiss. Default `true`. */
+  /** Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. */
   swipeToDismiss?: boolean;
   /**
    * Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an
@@ -57,7 +58,7 @@ function SheetBody({
   useNavScrollHints(body);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
-    <div ref={body} className={styles.body} onClick={onClick}>
+    <div ref={body} className={styles.body} data-sheet-body="" onClick={onClick}>
       {children}
     </div>
   );
@@ -107,6 +108,8 @@ export function NavSheet({
   useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
   useBodyScrollLock(shown);
   const drag = useSheetDrag(close, swipeToDismiss);
+  // The panel exists once the sheet is shown and has somewhere to mount (not before the first client render).
+  useSheetBodyDrag(panel, swipeToDismiss && shown && Boolean(container ?? client), close);
   const closeOnLink = (event: MouseEvent<HTMLElement>) => {
     // A router's link prevents the default itself, so `defaultPrevented` says nothing about whether it navigates.
     if (!closeOnNavigate) return;

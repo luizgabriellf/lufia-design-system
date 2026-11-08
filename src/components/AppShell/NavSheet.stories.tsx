@@ -55,7 +55,7 @@ function Demo({
   );
 }
 
-/** Drag the grabber or the header down to dismiss, or press Escape, or use the close button. */
+/** Drag the grabber, the header or the top of the body down to dismiss, or press Escape, or use the close button. */
 export const Default: Story = { render: () => <Demo /> };
 export const OpenOnLoad: Story = { render: () => <Demo initialOpen /> };
 /** A native `<dialog>` opened with `showModal()`: top layer, native backdrop, no exit animation. */
@@ -64,4 +64,21 @@ export const WithoutSwipe: Story = { render: () => <Demo initialOpen swipe={fals
 export const SmallPhone: Story = {
   render: () => <Demo initialOpen />,
   globals: { viewport: { value: "w320", isRotated: false } },
+};
+
+/** A list taller than the sheet: scroll it, and once it is back at the top a drag down from the list closes the sheet. */
+export const LongListDraggedFromBody: Story = {
+  render: () => (
+    <NavSheet open onOpenChange={() => {}} label="Menu" header={<DemoBrand />}>
+      <nav aria-label="Long list">
+        <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {Array.from({ length: 24 }, (_, index) => (
+            <li key={index} style={{ padding: "0.75rem" }}>
+              Item {index + 1}
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </NavSheet>
+  ),
 };

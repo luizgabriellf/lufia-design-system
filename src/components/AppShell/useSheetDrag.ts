@@ -6,10 +6,33 @@ import { useRef, type PointerEvent as ReactPointerEvent } from "react";
 const MIN_THRESHOLD = 64;
 const MAX_THRESHOLD = 112;
 /** A quick flick (px per ms) dismisses from a shorter distance. */
-const FLICK_VELOCITY = 0.6;
-const FLICK_MIN_DISTANCE = 24;
+export const FLICK_VELOCITY = 0.6;
+export const FLICK_MIN_DISTANCE = 24;
 /** Movement before the gesture counts as a drag, so a tap on the handle stays a tap. */
 const SLOP = 4;
+
+/** Whether a release at `offset` pixels (and `velocity` px per ms) dismisses a sheet `height` pixels tall. */
+export function dragDismisses(offset: number, velocity: number, height: number): boolean {
+  const threshold = Math.min(MAX_THRESHOLD, Math.max(MIN_THRESHOLD, height * 0.18));
+  return offset >= threshold || (velocity >= FLICK_VELOCITY && offset >= FLICK_MIN_DISTANCE);
+}
+
+/**
+ * Ends a drag on `element`: clears the drag marker, then either springs back or asks the owner to close. The owner may
+ * refuse (a guarded close), in which case the sheet is still open and must not stay at the dragged offset.
+ */
+export function finishSheetDrag(element: HTMLElement, dismiss: boolean, onDismiss: () => void) {
+  delete element.dataset.dragging;
+  const reset = () => element.style.setProperty("--lufia-sheet-drag", "0px");
+  if (!dismiss) {
+    reset();
+    return;
+  }
+  onDismiss();
+  queueMicrotask(() => {
+    if (element.isConnected && element.closest('[data-state="open"]')) reset();
+  });
+}
 
 type Gesture = {
   id: number;
@@ -39,18 +62,7 @@ export function useSheetDrag(onDismiss: () => void, enabled = true) {
 
   const finish = (element: HTMLElement | null, dismiss: boolean) => {
     gesture.current = null;
-    if (!element) return;
-    delete element.dataset.dragging;
-    const reset = () => element.style.setProperty("--lufia-sheet-drag", "0px");
-    if (!dismiss) {
-      reset();
-      return;
-    }
-    onDismiss();
-    // The owner may refuse (a guarded close): the sheet is then still open, and must not stay stuck at the dragged offset.
-    queueMicrotask(() => {
-      if (element.isConnected && element.closest('[data-state="open"]')) reset();
-    });
+    if (element) finishSheetDrag(element, dismiss, onDismiss);
   };
 
   return {
@@ -88,12 +100,10 @@ export function useSheetDrag(onDismiss: () => void, enabled = true) {
       const element = panelOf(event);
       if (!current || !element || event.pointerId !== current.id) return;
       const offset = Math.max(0, event.clientY - current.startY);
-      const threshold = Math.min(
-        MAX_THRESHOLD,
-        Math.max(MIN_THRESHOLD, element.getBoundingClientRect().height * 0.18),
+      finish(
+        element,
+        current.moved && dragDismisses(offset, current.velocity, element.getBoundingClientRect().height),
       );
-      const flicked = current.velocity >= FLICK_VELOCITY && offset >= FLICK_MIN_DISTANCE;
-      finish(element, current.moved && (offset >= threshold || flicked));
     },
     onPointerCancel(event: ReactPointerEvent<HTMLElement>) {
       if (gesture.current && event.pointerId === gesture.current.id) finish(panelOf(event), false);
