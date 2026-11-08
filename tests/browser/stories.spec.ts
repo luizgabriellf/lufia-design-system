@@ -588,7 +588,10 @@ test.describe("stat tile as filters", () => {
     await expect(overdue).toHaveAttribute("aria-pressed", "true");
     await expect(open).toHaveAttribute("aria-pressed", "false");
     await expect.poll(async () => (await look(overdue)).shadow).not.toBe("none");
-    expect((await look(open)).background).not.toBe((await look(overdue)).background);
+    // Both tiles transition their background; poll so the read is not taken mid-transition.
+    await expect
+      .poll(async () => (await look(open)).background !== (await look(overdue)).background)
+      .toBe(true);
   });
 });
 
