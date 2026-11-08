@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { Collapse } from "../../motion";
 import { useLufia } from "../LufiaProvider";
 import { ChevronGlyph, SidebarGlyph } from "./icons";
@@ -11,6 +11,7 @@ import {
   type ShellBadgeTone,
   type ShellDataAttributes,
 } from "./navigation";
+import { useNavScrollHints } from "./useNavScrollHints";
 import { useShellTooltip } from "./ShellTooltip";
 import styles from "./Sidebar.module.css";
 
@@ -29,6 +30,8 @@ export type SidebarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   busy?: boolean;
   /** Above the navigation: a brand, an account or workspace switcher. */
   header?: ReactNode;
+  /** Between the header and the search: the workspace or account the person is in, with its switcher. */
+  context?: ReactNode;
   /** Between the header and the navigation: a search entry. */
   search?: ReactNode;
   /** Below the navigation, pinned to the bottom: account and help links. */
@@ -49,6 +52,7 @@ export function Sidebar({
   collapseLabel,
   expandLabel,
   header,
+  context,
   search,
   footer,
   busy = false,
@@ -56,6 +60,8 @@ export function Sidebar({
   children,
   ...rest
 }: SidebarProps) {
+  const nav = useRef<HTMLElement>(null);
+  useNavScrollHints(nav);
   const collapseName = collapsed ? expandLabel : collapseLabel;
   const collapseTip = useShellTooltip(collapseName ?? "", Boolean(collapseName));
   return (
@@ -80,8 +86,9 @@ export function Sidebar({
           ) : null}
           {collapseTip.tooltip}
         </div>
+        {context ? <div className={styles.context}>{context}</div> : null}
         {search ? <div className={styles.search}>{search}</div> : null}
-        <nav className={styles.nav} aria-label={label} aria-busy={busy || undefined}>
+        <nav ref={nav} className={styles.nav} aria-label={label} aria-busy={busy || undefined}>
           {children}
         </nav>
         {footer ? <div className={styles.foot}>{footer}</div> : null}

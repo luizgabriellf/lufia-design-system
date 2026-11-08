@@ -487,6 +487,13 @@
               "description": "Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state."
             },
             {
+              "name": "context",
+              "type": "Slot",
+              "required": false,
+              "default": null,
+              "description": "Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`."
+            },
+            {
               "name": "footer",
               "type": "Slot",
               "required": false,
@@ -522,6 +529,13 @@
               "description": "The main action when no page registers its own with `useShellPrimaryAction`: on the floating bar, and in any `ShellPrimaryActionSlot`."
             },
             {
+              "name": "desktopPrimaryFallback",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether wide screens show the shell's `primaryAction` in `ShellPrimaryActionSlot` while no page has registered its own. Default `true`. Set `false` when the default makes sense only on phones (the floating bar still shows it), so a hard load never flashes an action the page is about to replace or remove."
+            },
+            {
               "name": "menuData",
               "type": "FloatBarDataAttributes",
               "required": false,
@@ -555,6 +569,27 @@
               "required": false,
               "default": "\"portal\"",
               "description": "`portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`)."
+            },
+            {
+              "name": "menuOpen",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it."
+            },
+            {
+              "name": "onMenuOpenChange",
+              "type": "(open: boolean) => void",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "hideSheetNavigation",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected."
             },
             {
               "name": "collapsed",
@@ -606,6 +641,41 @@
               "description": "Hide the rail button. Default `false`."
             },
             {
+              "name": "routeKey",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`."
+            },
+            {
+              "name": "routePending",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself."
+            },
+            {
+              "name": "routeProgress",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Draw the progress bar when `routeKey` is given. Default `true`."
+            },
+            {
+              "name": "mainPending",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for."
+            },
+            {
+              "name": "floatScrim",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for."
+            },
+            {
               "name": "mainProps",
               "type": "AppShellMainProps",
               "required": false,
@@ -652,7 +722,7 @@
           "name": "AppShellPrimaryAction",
           "kind": "type",
           "description": "",
-          "definition": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }"
+          "definition": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }"
         },
         {
           "name": "AppShellProps",
@@ -665,6 +735,12 @@
           "kind": "type",
           "description": "",
           "definition": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }"
+        },
+        {
+          "name": "AppShellSlotState",
+          "kind": "type",
+          "description": "What a slot that is a function receives: where it is drawn, and how to close or open the phone sheet from inside it.",
+          "definition": "{ collapsed: boolean; surface: \"sidebar\" | \"sheet\" | \"topBar\"; closeSheet: () => void; openSheet: () => void; }"
         },
         {
           "name": "FloatBarDataAttributes",
@@ -896,6 +972,55 @@
           "kind": "type",
           "description": "",
           "definition": null
+        },
+        {
+          "name": "RouteProgress",
+          "kind": "component",
+          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
+          "props": [
+            {
+              "name": "routeKey",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Identifies the page being shown (the pathname). When it changes, the navigation has arrived and the bar finishes. `AppShell` passes its own `routeKey`."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar. When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves."
+            },
+            {
+              "name": "trackLinks",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true`."
+            },
+            {
+              "name": "revealDelay",
+              "type": "number",
+              "required": false,
+              "default": "ROUTE_PROGRESS_REVEAL_DELAY_MS",
+              "description": "Milliseconds to wait before showing the bar. Default 150."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": false
+        },
+        {
+          "name": "RouteProgressProps",
+          "kind": "type",
+          "description": "",
+          "definition": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }"
         },
         {
           "name": "SHELL_COUNT_CAP",
@@ -1153,7 +1278,7 @@
         {
           "name": "ShellPrimaryActionSlot",
           "kind": "component",
-          "description": "Where the shell's primary action shows on wide screens: put it in the page header. Renders nothing when no action is registered, outside a shell, and on phones (the floating bar carries it there).",
+          "description": "Where the shell's primary action shows on wide screens: put it in the page header. Renders nothing when no action is registered, outside a shell, and on phones (the floating bar carries it there). With `desktopPrimaryFallback={false}` on the shell it also stays empty until a page registers its own, so the default never flashes in the wrong place on a hard load.",
           "props": [
             {
               "name": "className",
@@ -1224,6 +1349,13 @@
               "required": false,
               "default": null,
               "description": "Above the navigation: a brand, an account or workspace switcher."
+            },
+            {
+              "name": "context",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Between the header and the search: the workspace or account the person is in, with its switcher."
             },
             {
               "name": "search",
@@ -1535,10 +1667,12 @@
       "aliases": {
         "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
         "AppShellMainProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes",
-        "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellSlotState": "{ collapsed: boolean; surface: \"sidebar\" | \"sheet\" | \"topBar\"; closeSheet: () => void; openSheet: () => void; }",
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }",
+        "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }",
         "ShellBadgeTone": "\"neutral\" | \"warning\" | \"danger\"",
         "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "ShellFooterProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }",
@@ -1627,6 +1761,22 @@
           {
             "export": "MainSlots",
             "id": "components-navigation-appshell--main-slots"
+          },
+          {
+            "export": "ContextSlot",
+            "id": "components-navigation-appshell--context-slot"
+          },
+          {
+            "export": "ControlledSheetWithSwitcher",
+            "id": "components-navigation-appshell--controlled-sheet-with-switcher"
+          },
+          {
+            "export": "RouteMotionAndPending",
+            "id": "components-navigation-appshell--route-motion-and-pending"
+          },
+          {
+            "export": "PrimaryActionFallbackOnPhonesOnly",
+            "id": "components-navigation-appshell--primary-action-fallback-on-phones-only"
           }
         ]
       },
@@ -6816,7 +6966,7 @@
             },
             {
               "name": "presentation",
-              "type": "\"popover\" | \"auto\" | \"sheet\"",
+              "type": "\"popover\" | \"sheet\" | \"auto\"",
               "required": false,
               "default": "\"popover\"",
               "description": "How the open menu is shown. `\"popover\"` (default) hangs it from the button. `\"sheet\"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `\"auto\"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up."
@@ -7387,7 +7537,7 @@
             },
             {
               "name": "presentation",
-              "type": "\"popover\" | \"auto\" | \"sheet\"",
+              "type": "\"popover\" | \"sheet\" | \"auto\"",
               "required": false,
               "default": "\"auto\"",
               "description": "How the open panel is shown. `\"popover\"` hangs it from the bell as a non-modal dialog. `\"sheet\"` shows it as a modal bottom sheet over a backdrop that covers the page. `\"auto\"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up."

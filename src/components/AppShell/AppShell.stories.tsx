@@ -20,6 +20,7 @@ import {
 import { Skeleton } from "../../motion";
 import { Button } from "../Button";
 import { AppShell } from "./AppShell";
+import { useState } from "react";
 import { ShellFooter, ShellFooterItem } from "./ShellFooter";
 import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
 
@@ -301,4 +302,110 @@ export const MainSlots: Story = {
     ),
   },
   globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/**
+ * `context`: the workspace the person is in, between the brand and the search, and above the navigation in the sheet. A
+ * function gets the surface, so the same switcher is a card in the sidebar and a button that closes the sheet in it.
+ */
+export const ContextSlot: Story = {
+  args: {
+    context: ({ surface, collapsed, closeSheet }) => (
+      <button
+        type="button"
+        onClick={surface === "sheet" ? closeSheet : undefined}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: collapsed ? "center" : "flex-start",
+          gap: "0.6rem",
+          inlineSize: "100%",
+          padding: "0.5rem",
+          border: "1px solid var(--lufia-color-border-subtle)",
+          borderRadius: "var(--lufia-radius-control)",
+          background: "var(--lufia-color-bg-surface-raised)",
+          color: "var(--lufia-color-text-default)",
+          font: "inherit",
+        }}
+      >
+        <span aria-hidden="true">A</span>
+        {collapsed ? <span className="sb-sr-only">Acme Lisbon</span> : <span>Acme Lisbon</span>}
+      </button>
+    ),
+  },
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+function ControlledSheet(args: Parameters<typeof DemoShell>[0]) {
+  const [open, setOpen] = useState(false);
+  return (
+    <DemoShell
+      {...args}
+      menuOpen={open}
+      onMenuOpenChange={setOpen}
+      hideSheetNavigation
+      topBarEnd={
+        <Button size="sm" onClick={() => setOpen(true)}>
+          Switch
+        </Button>
+      }
+      context={
+        <p style={{ margin: 0, padding: "0.5rem" }}>
+          Pick another workspace here, in place of the navigation.
+        </p>
+      }
+    />
+  );
+}
+
+/** `menuOpen` and `hideSheetNavigation`: a control of your own opens the sheet, and a switcher takes the navigation's place. */
+export const ControlledSheetWithSwitcher: Story = {
+  render: (args) => <ControlledSheet {...args} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+function PendingPage(args: Parameters<typeof DemoShell>[0]) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <DemoShell
+      {...args}
+      trackRoute
+      routePending={loading}
+      mainPending={
+        loading ? (
+          <div style={{ display: "grid", gap: "0.75rem" }} aria-hidden="true">
+            <Skeleton style={{ blockSize: "2rem", inlineSize: "40%" }} />
+            <Skeleton style={{ blockSize: "6rem" }} />
+            <Skeleton style={{ blockSize: "6rem" }} />
+          </div>
+        ) : undefined
+      }
+      mainStart={
+        <div style={{ ...barStyle, marginBlockEnd: "1rem" }}>
+          <span>This banner stays while the page loads.</span>
+          <Button size="sm" onClick={() => setLoading((now) => !now)}>
+            {loading ? "Arrive" : "Start a slow navigation"}
+          </Button>
+        </div>
+      }
+    />
+  );
+}
+
+/**
+ * `routeKey`, `routePending` and `mainPending`: the progress bar at the top appears after 150 ms, the skeleton stands in
+ * for the page (which stays mounted) and the arriving page fades in. Choose another item to play the route motion.
+ */
+export const RouteMotionAndPending: Story = {
+  render: (args) => <PendingPage {...args} />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** `desktopPrimaryFallback={false}` and `primaryAction.onIntent`: the default action stays on the phone bar only. */
+export const PrimaryActionFallbackOnPhonesOnly: Story = {
+  args: {
+    desktopPrimaryFallback: false,
+    primaryAction: { label: "New item", icon: <PlusIcon size={16} />, onIntent: () => {} },
+  },
+  globals: { viewport: { value: "w390", isRotated: false } },
 };

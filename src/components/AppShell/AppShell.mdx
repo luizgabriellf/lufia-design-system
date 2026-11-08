@@ -78,6 +78,7 @@ The shell is built from parts that are exported, so an app with another arrangem
 | `Sidebar`, `SidebarGroup`, `SidebarItem`                            | The desktop sidebar and what goes in it                                        |
 | `ShellNavigation`                                                   | Renders `groups` data as groups and items, for the sidebar and the sheet alike |
 | `MobileFloatBar`, `MobileFloatBarButton`, `MobileFloatBarSeparator` | The floating bar and its controls                                              |
+| `RouteProgress`                                                     | The thin top progress bar for a loading navigation                             |
 | `ShellFooter`, `ShellFooterItem`                                    | The icon-and-label actions at the foot of the sidebar and of the sheet         |
 | `NavSheet`                                                          | The modal bottom sheet with swipe-to-dismiss                                   |
 | `serializeShellState`, `parseShellState`                            | The cookie value that remembers the rail and the open groups                   |
@@ -177,6 +178,66 @@ The shell owns the one `<main>`. Three places sit around it, and the choice deci
 inside remount and drop their state. Leave it out for ordinary page changes.
 
 <Canvas of={Stories.MainSlots} />
+
+#### Context and the phone sheet
+
+`context` is the slot for where the person is working: a workspace, company or account card with its switcher. It sits
+between the brand and the search in the sidebar and above the navigation in the sheet. A function slot receives
+`AppShellSlotState`: `surface` (`"sidebar"`, `"sheet"` or `"topBar"`), `collapsed` (only ever true in the sidebar rail),
+`closeSheet()` and `openSheet()`. So one switcher can open as a dropdown in the sidebar, inline in the sheet, and close the
+sheet when it navigates. `brand`, `footer`, `context` and `searchTrigger` all get this state, and each is rendered once per
+surface: do not give its parts a fixed `id`.
+
+The phone sheet can be controlled: `menuOpen` and `onMenuOpenChange` let a control of your own open it (a workspace chip in
+the top bar), and `hideSheetNavigation` leaves only `context` and the footer in it while a switcher has taken over.
+A followed link inside the sheet, footer and slots included, closes it.
+
+<Canvas of={Stories.ContextSlot} />
+<Canvas of={Stories.ControlledSheetWithSwitcher} />
+
+#### Route motion, progress and the pending page
+
+Give the shell the current page's `routeKey` (the pathname, not the query) and it takes care of the motion around a
+navigation; every piece is optional and none remounts the page.
+
+| Prop            | What it does                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `routeKey`      | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                         |
+| `routePending`  | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck. |
+| `mainPending`   | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
+| `routeProgress` | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
+
+Timing is yours: when to show `mainPending` (most apps wait a few hundred milliseconds, so fast navigations never show a
+skeleton), when a wait is long enough to offer a retry, and what the skeleton looks like. `RouteProgress` is also exported
+for an app that draws the bar itself.
+
+<Canvas of={Stories.RouteMotionAndPending} />
+
+#### Floating bar fade
+
+`floatScrim` (default off) draws a gradient from the canvas colour behind the floating bar on phones, so content scrolling
+under the bar fades out instead of ending in a hard edge. Nothing is drawn unless you ask.
+
+#### Primary action details
+
+`primaryAction.onIntent` fires when the pointer enters the control or it takes focus, on the floating bar and in
+`ShellPrimaryActionSlot`: warm the destination there. `desktopPrimaryFallback={false}` keeps the shell's default action out
+of the wide-screen slot until a page registers its own (the phone bar still shows the default), so a hard load never
+flashes an action the page is about to replace. The default is marked `data-fallback` until a page takes over, for CSS.
+
+#### A long navigation scrolls itself
+
+When the list is taller than the window, both the sidebar and the sheet fade the edge that hides more items
+(`data-more` on the scroller) and bring the current page into view, once for each page and never on a group toggle.
+
+#### What stays in the app
+
+The shell frames the product; these remain the app's own, composed through slots:
+
+- the search or command palette itself (use `CommandPalette`), its data and any AI-assisted query;
+- the workspace and unit pickers, mounted in `context`, `topBar` or `mainStart`;
+- route prefetching (`onIntent` is the hook), skeleton shapes per page, and long-wait copy;
+- where the theme, the account and the session live (the footer's items call your functions).
 
 #### Remembering the rail and the groups
 

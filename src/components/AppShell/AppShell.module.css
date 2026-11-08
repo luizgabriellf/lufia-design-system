@@ -36,12 +36,22 @@
   padding: var(--lufia-space-8);
 }
 
+/* The page's own box adds no layout; `hidden` (a skeleton is showing) takes it out of sight, and out of the tab order. */
+.page {
+  display: contents;
+}
+
+.page[hidden] {
+  display: none;
+}
+
 .main:focus {
   outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .topBar,
-.float {
+.float,
+.floatScrim {
   display: none;
 }
 
@@ -155,6 +165,18 @@
 
   .float {
     display: flex;
+  }
+
+  /* Content that scrolls under the floating bar fades out instead of ending in a hard edge behind it. */
+  .floatScrim {
+    position: fixed;
+    z-index: var(--lufia-z-sticky);
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: block;
+    block-size: calc(5.5rem + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--lufia-color-bg-canvas), transparent);
+    pointer-events: none;
   }
 
   .primarySlot {

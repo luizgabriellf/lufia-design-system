@@ -3,9 +3,11 @@ export {
   APP_SHELL_BREAKPOINT,
   type AppShellLabels,
   type AppShellMainProps,
+  type AppShellSlotState,
   type AppShellProps,
   type AppShellSearch,
 } from "./AppShell";
+export { RouteProgress, type RouteProgressProps } from "./RouteProgress";
 export { ShellPrimaryActionSlot, useShellPrimaryAction, type AppShellPrimaryAction } from "./primaryAction";
 export {
   MobileFloatBar,

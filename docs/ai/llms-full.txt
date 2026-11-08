@@ -560,7 +560,7 @@ Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it compos
 
 - Status: beta
 - Category: Navigation
-- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, SHELL_COUNT_CAP, ShellFooter, ShellFooterItem, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, findActiveNavKey, formatShellCount, parseShellState, serializeShellState, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
+- Import: `import { APP_SHELL_BREAKPOINT, AppShell, MobileFloatBar, MobileFloatBarButton, MobileFloatBarSeparator, NavSheet, RouteProgress, SHELL_COUNT_CAP, ShellFooter, ShellFooterItem, ShellNavigation, ShellPrimaryActionSlot, Sidebar, SidebarGroup, SidebarItem, findActiveNavKey, formatShellCount, parseShellState, serializeShellState, useSheetDrag, useShellPrimaryAction } from "@lufia/design-system/components/AppShell"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/AppShell](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/AppShell)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-navigation-appshell--docs)
@@ -589,6 +589,7 @@ navigation is data, so both layouts always agree.
 | `MobileFloatBarButton` | component |
 | `MobileFloatBarSeparator` | component |
 | `NavSheet` | component |
+| `RouteProgress` | component |
 | `SHELL_COUNT_CAP` | constant |
 | `ShellFooter` | component |
 | `ShellFooterItem` | component |
@@ -615,16 +616,21 @@ navigation is data, so both layouts always agree.
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
 | `labels` | `AppShellLabels` | yes |  |  |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
+| `context` | `Slot` | no |  | Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
 | `topBarEnd` | `ReactNode` | no |  | Right side of the phone top bar: a workspace chip, a status. |
 | `search` | `AppShellSearch` | no |  | A search entry in the sidebar and on the floating bar. |
 | `searchTrigger` | `Slot` | no |  | Replaces the sidebar's search entry with your own (a function gets the rail state). The floating bar's entry still comes from `search`. |
 | `primaryAction` | `AppShellPrimaryAction` | no |  | The main action when no page registers its own with `useShellPrimaryAction`: on the floating bar, and in any `ShellPrimaryActionSlot`. |
+| `desktopPrimaryFallback` | `boolean` | no | `true` | Whether wide screens show the shell's `primaryAction` in `ShellPrimaryActionSlot` while no page has registered its own. Default `true`. Set `false` when the default makes sense only on phones (the floating bar still shows it), so a hard load never flashes an action the page is about to replace or remove. |
 | `menuData` | `FloatBarDataAttributes` | no |  | `data-*` attributes for the floating bar's menu button. |
 | `navigationPending` | `ReactNode` | no |  | Shown in place of the navigation, in the sidebar and in the sheet, while the next route loads: a skeleton. The navigation landmarks are `aria-busy` meanwhile. Leave it out when the navigation is ready. |
 | `topBar` | `ReactNode` | no |  | A bar above the page, beside the sidebar, at every width: a unit or context picker. |
 | `statusRow` | `ReactNode` | no |  | A row between `topBar` and the page: sync state, a notice. Give it the live-region semantics it needs. |
 | `sheetAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). |
+| `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
+| `onMenuOpenChange` | `(open: boolean) => void` | no |  |  |
+| `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
 | `defaultCollapsed` | `boolean` | no | `false` |  |
 | `onCollapsedChange` | `(collapsed: boolean) => void` | no |  |  |
@@ -632,6 +638,11 @@ navigation is data, so both layouts always agree.
 | `defaultOpenGroups` | `readonly string[]` | no |  |  |
 | `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  |  |
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
+| `routeKey` | `string` | no |  | Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`. |
+| `routePending` | `boolean` | no |  | A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself. |
+| `routeProgress` | `boolean` | no | `true` | Draw the progress bar when `routeKey` is given. Default `true`. |
+| `mainPending` | `ReactNode` | no |  | A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for. |
+| `floatScrim` | `boolean` | no | `false` | Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for. |
 | `mainProps` | `AppShellMainProps` | no |  | Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA. `className` is added to the shell's own. |
 | `mainKey` | `Key` | no |  | Remounts the `<main>` and everything in it when it changes, as React's `key` does: a workspace or scope switch that must drop the page's state. Leave it out for a page change, which `children` handles. |
 | `mainStart` | `ReactNode` | no |  | The first thing inside `<main>`, before `children`: banners that belong to the page area and scroll with it (a trial notice, a cookie or install hint). Unlike `topBar` and `statusRow`, which sit beside `<main>` and stay put, this remounts with `mainKey` and takes the page's padding. |
@@ -701,6 +712,16 @@ No props of its own.
 
 Other native element attributes pass through to the root element.
 
+#### `RouteProgress`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `routeKey` | `string` | yes |  | Identifies the page being shown (the pathname). When it changes, the navigation has arrived and the bar finishes. `AppShell` passes its own `routeKey`. |
+| `pending` | `boolean` | no |  | A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar. When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves. |
+| `trackLinks` | `boolean` | no | `true` | Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true`. |
+| `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
+| `className` | `string` | no |  |  |
+
 #### `ShellFooter`
 
 | Prop | Type | Required | Default | Description |
@@ -761,6 +782,7 @@ Other native element attributes pass through to the root element.
 | `expandLabel` | `string` | no |  | Accessible name of that button while it is a rail ("Expand sidebar"). |
 | `busy` | `boolean` | no | `false` | The navigation is being replaced (a route is loading): `aria-busy` on the landmark. Pass the skeleton as `children`. |
 | `header` | `ReactNode` | no |  | Above the navigation: a brand, an account or workspace switcher. |
+| `context` | `ReactNode` | no |  | Between the header and the search: the workspace or account the person is in, with its switcher. |
 | `search` | `ReactNode` | no |  | Between the header and the navigation: a search entry. |
 | `footer` | `ReactNode` | no |  | Below the navigation, pinned to the bottom: account and help links. |
 | `children` | `ReactNode` | yes |  | One or more `SidebarGroup`. |
@@ -872,10 +894,12 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 
 - `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
 - `AppShellMainProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes`
-- `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellSlotState`: `{ collapsed: boolean; surface: "sidebar" | "sheet" | "topBar"; closeSheet: () => void; openSheet: () => void; }`
 - `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; }`
+- `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }`
 - `ShellBadgeTone`: `"neutral" | "warning" | "danger"`
 - `ShellDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `ShellFooterProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { "aria-label": string; children: ReactNode; }`
@@ -969,6 +993,10 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--footer`
 - `components-navigation-appshell--footer-in-rail`
 - `components-navigation-appshell--main-slots`
+- `components-navigation-appshell--context-slot`
+- `components-navigation-appshell--controlled-sheet-with-switcher`
+- `components-navigation-appshell--route-motion-and-pending`
+- `components-navigation-appshell--primary-action-fallback-on-phones-only`
 
 ## AttentionList
 
@@ -3532,7 +3560,7 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
-| `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
+| `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop. |
 | `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. |
 
@@ -3775,7 +3803,7 @@ no i18n and no data layer.
 | `open` | `boolean` | no |  | Open state. Controlled: pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial open state when `open` is not given. For documentation and tests; people open it themselves. |
 | `onOpenChange` | `(open: boolean) => void` | no |  |  |
-| `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
+| `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
