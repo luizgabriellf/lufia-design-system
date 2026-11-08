@@ -192,6 +192,29 @@ export const NativeDialogSheet: Story = {
   globals: { viewport: { value: "w390", isRotated: false } },
 };
 
+/**
+ * The shell sits in a dark scope set on its wrapper (`data-lufia-theme` and `data-lufia-mode`), not on `<html>`. The phone
+ * sheet is portalled to `<body>`, outside that wrapper, and copies the wrapper's theme and mode so it opens dark too. An app
+ * that scopes its palette with its own class passes it in `sheetProps`.
+ */
+export const SheetInScopedDarkMode: Story = {
+  render: (args) => (
+    <div
+      data-lufia-theme="default"
+      data-lufia-mode="dark"
+      style={{
+        minBlockSize: "100dvh",
+        background: "var(--lufia-color-bg-canvas)",
+        color: "var(--lufia-color-text-default)",
+      }}
+    >
+      <DemoShell {...args} />
+    </div>
+  ),
+  args: { menuOpen: true, sheetProps: { "data-demo": "scoped-sheet" } },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
 function RegisteredPage() {
   const hosted = useShellPrimaryAction({
     label: "New order",

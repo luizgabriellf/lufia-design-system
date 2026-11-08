@@ -1,18 +1,30 @@
 "use client";
 
-import { useRef, useSyncExternalStore, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useSyncExternalStore,
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
 import { useNativeDialog } from "../Modal/useNativeDialog";
-import { CloseGlyph } from "./icons";
+import { CloseIcon } from "../Icon/icons";
 import { NavSurfaceContext } from "./navSurface";
 import { usePresence } from "../internal/usePresence";
 import { useNavScrollHints } from "./useNavScrollHints";
 import { useSheetBodyDrag } from "./useSheetBodyDrag";
 import { useSheetDrag } from "./useSheetDrag";
+import type { ShellDataAttributes } from "./navigation";
 import styles from "./NavSheet.module.css";
+
+/** A class and `data-*` attributes for the sheet's outermost layer. */
+export type NavSheetLayerProps = { className?: string } & ShellDataAttributes;
 
 export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "title"> & {
   open: boolean;
@@ -34,6 +46,20 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   closeOnNavigate?: boolean;
   /** Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. */
   container?: HTMLElement | null;
+  /**
+   * A class and `data-*` attributes for the outermost layer: the fixed root that holds the backdrop and the panel, or the
+   * `<dialog>` with `renderAs="dialog"`. The sheet is portalled out of the app's tree, so a palette an app scopes to a class
+   * or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here. The theme
+   * attributes `data-lufia-theme` and `data-lufia-mode` work too.
+   */
+  layerProps?: NavSheetLayerProps;
+  /**
+   * An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies
+   * `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`,
+   * which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet.
+   * Attributes given in `layerProps` win.
+   */
+  inheritThemeFrom?: RefObject<HTMLElement | null>;
   /**
    * `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native
    * `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the
@@ -81,6 +107,8 @@ export function NavSheet({
   swipeToDismiss = true,
   closeOnNavigate = false,
   container,
+  layerProps,
+  inheritThemeFrom,
   renderAs = "portal",
   className,
   children,
@@ -90,6 +118,7 @@ export function NavSheet({
   // The panel is a `div` in portal mode and a `dialog` in native mode; the intersection lets one ref serve both.
   const panel = useRef<HTMLDivElement & HTMLDialogElement>(null);
   const native = renderAs === "dialog";
+  const layer = useRef<HTMLDivElement>(null);
   const client = useSyncExternalStore(
     subscribeNothing,
     () => true,
@@ -119,7 +148,26 @@ export function NavSheet({
     close();
   };
 
+  // Copy a scoped theme or mode onto the portalled layer before paint, each time the sheet is shown.
+  const layerTheme = layerProps?.["data-lufia-theme"];
+  const layerMode = layerProps?.["data-lufia-mode"];
+  useLayoutEffect(() => {
+    const element = native ? panel.current : layer.current;
+    const source = inheritThemeFrom?.current;
+    if (!shown || !element || !source) return;
+    const copy = (attribute: "data-lufia-theme" | "data-lufia-mode", own: unknown) => {
+      if (own !== undefined) return;
+      const scope = source.parentElement?.closest(`[${attribute}]`);
+      const value = scope && scope !== document.documentElement ? scope.getAttribute(attribute) : null;
+      if (value) element.setAttribute(attribute, value);
+      else element.removeAttribute(attribute);
+    };
+    copy("data-lufia-theme", layerTheme);
+    copy("data-lufia-mode", layerMode);
+  }, [shown, native, inheritThemeFrom, layerTheme, layerMode]);
+
   const target = container ?? (client ? document.body : null);
+  const { className: layerClassName, ...layerData } = layerProps ?? {};
   if (!shown || !target) return null;
 
   const sheet = (
@@ -138,7 +186,7 @@ export function NavSheet({
             aria-label={closeLabel ?? labels.close}
             onClick={close}
           >
-            <CloseGlyph />
+            <CloseIcon />
           </button>
         </div>
       </div>
@@ -157,13 +205,15 @@ export function NavSheet({
       <NavSurfaceContext.Provider value={{ collapsed: false, surface: "sheet" }}>
         <dialog
           {...(rest as HTMLAttributes<HTMLDialogElement>)}
+          {...layerData}
           {...nativeDialog}
           ref={panel}
           aria-modal="true"
           aria-label={label}
           tabIndex={-1}
           data-state="open"
-          className={[styles.panel, styles.native, className].filter(Boolean).join(" ")}
+          data-lufia-part="nav-sheet"
+          className={[styles.panel, styles.native, layerClassName, className].filter(Boolean).join(" ")}
         >
           {sheet}
         </dialog>
@@ -174,8 +224,19 @@ export function NavSheet({
 
   return createPortal(
     <NavSurfaceContext.Provider value={{ collapsed: false, surface: "sheet" }}>
-      <div className={styles.root} data-state={phase === "open" ? "open" : "closed"}>
-        <div className={styles.backdrop} onClick={close} aria-hidden="true" />
+      <div
+        {...layerData}
+        ref={layer}
+        className={[styles.root, layerClassName].filter(Boolean).join(" ")}
+        data-state={phase === "open" ? "open" : "closed"}
+        data-lufia-part="nav-sheet-layer"
+      >
+        <div
+          className={styles.backdrop}
+          onClick={close}
+          aria-hidden="true"
+          data-lufia-part="nav-sheet-backdrop"
+        />
         <div
           {...rest}
           ref={panel}
@@ -183,6 +244,7 @@ export function NavSheet({
           aria-modal="true"
           aria-label={label}
           tabIndex={-1}
+          data-lufia-part="nav-sheet"
           className={[styles.panel, className].filter(Boolean).join(" ")}
           onAnimationEnd={(event) => {
             if (event.target === event.currentTarget) finish();

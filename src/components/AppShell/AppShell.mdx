@@ -361,6 +361,24 @@ nothing while the page is pinch-zoomed and where `visualViewport` does not exist
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
 made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabber, the header and the body alike.
 
+#### Theming the portalled sheet
+
+The sheet is portalled to `document.body`, outside the shell. A palette an app scopes to its own wrapper (a class or a
+`data-*` attribute that redefines the `--lufia-*` tokens, such as a dark scope) therefore does not reach it, and the sheet
+would open in the page's default palette. Three ways to scope it:
+
+- **Lufia theme attributes on a wrapper.** When an ancestor of the shell (not `<html>`) sets `data-lufia-theme` or
+  `data-lufia-mode`, the sheet copies them onto its layer each time it opens.
+- **`sheetProps`.** A `className` and `data-*` attributes for the sheet's outermost layer (the fixed root of the backdrop
+  and the panel, or the `<dialog>`): repeat the class or attribute that scopes your palette,
+  `sheetProps={{ className: "app-dark" }}`.
+- **`sheetProps.container`.** Mount the sheet inside your scoped wrapper instead of `document.body`.
+
+Stable hooks for styling: `data-lufia-part="nav-sheet-layer"` (the fixed root), `"nav-sheet-backdrop"` and `"nav-sheet"`
+(the panel).
+
+<Canvas of={Stories.SheetInScopedDarkMode} />
+
 ### All states
 
 <Canvas of={Stories.GroupOpenOnArrival} />
@@ -378,6 +396,7 @@ made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabb
 | `mainProps`, `mainKey`, `mainStart`             | Attributes of `<main>`, a remount key, and banners inside it (see "The page area and where banners sit").                                              |
 | `menuData`, `search.data`, `primaryAction.data` | `data-*` attributes on the floating bar controls (analytics, guided tours).                                                                            |
 | `sheetAs="dialog"`                              | The phone navigation sheet as a native `<dialog>` in the top layer (see `Modal` `renderAs`).                                                           |
+| `sheetProps`                                    | A `className`, `data-*` attributes and a `container` for the phone sheet, to carry a scoped palette to it (see "Theming the portalled sheet").         |
 
 Nav items take an `ariaLabel` when the accessible name should add to the label ("Inbox, 3 unread"). A group without a
 `label` is a plain run of items; a group with a `label` and no `collapsible` has a static heading. A page registers its
