@@ -68,6 +68,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [ProgressBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/ProgressBar.md): A determinate progress bar with a native progressbar role. (beta)
 - [SortableTh](https://luizgabriellf.github.io/lufia-design-system/ai/components/SortableTh.md): A table header cell that sorts a column and announces the order. (beta)
 - [Sparkline](https://luizgabriellf.github.io/lufia-design-system/ai/components/Sparkline.md): A word-sized trend chart with no axes, drawn in SVG. (beta)
+- [StackedBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/StackedBar.md): One bar split into proportional segments, with a legend and a text alternative. (beta)
 - [StatTile](https://luizgabriellf.github.io/lufia-design-system/ai/components/StatTile.md): A key figure with its label, change and hint, optionally a link to its detail. (beta)
 - [StatusTimeline](https://luizgabriellf.github.io/lufia-design-system/ai/components/StatusTimeline.md): A vertical timeline of states with their dates. (beta)
 - [TableToolbar](https://luizgabriellf.github.io/lufia-design-system/ai/components/TableToolbar.md): The search, filter and action row above a table. (beta)

@@ -10489,6 +10489,187 @@
       ]
     },
     {
+      "name": "StackedBar",
+      "category": "Data display",
+      "summary": "One bar split into proportional segments, with a legend and a text alternative.",
+      "status": "beta",
+      "source": "src/components/StackedBar",
+      "entry": {
+        "subpath": "@lufia/design-system/components/StackedBar",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "StackedBar",
+          "kind": "component",
+          "description": "A single bar split into proportional segments, with a legend: a part-of-whole breakdown such as a plan mix. The text is the accessible data: every segment is a list item with its label, value and share, and the bar is `aria-hidden` shape on top of it. The legend can be hidden visually and the list stays. A zero total draws an empty track and reads 0% for every segment. Segments are told apart by a thin gap, an optional `pattern` and, in `forced-colors` mode, one fill pattern each. The bar draws in once on mount and is removed under reduced motion. For several measures per period use `ColumnChart`; for one value against a target use `BulletBar`.",
+          "props": [
+            {
+              "name": "segments",
+              "type": "readonly StackedBarSegment[]",
+              "required": true,
+              "default": null,
+              "description": "The parts of the whole, in drawing order. Segments with no value are not drawn but stay in the legend and the text."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Accessible name of the whole bar (\"Plan mix\"). Required: the bar is a group that a screen reader reads by its parts."
+            },
+            {
+              "name": "formatValue",
+              "type": "(value: number) => string",
+              "required": false,
+              "default": "String",
+              "description": "Formats each value for the legend and the text alternative (\"1,240\", \"3 sites\"). Defaults to `String(value)`."
+            },
+            {
+              "name": "formatPercent",
+              "type": "(percent: number) => string",
+              "required": false,
+              "default": "defaultPercent",
+              "description": "Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` (\"38%\"). Pass it to localise the number or the symbol."
+            },
+            {
+              "name": "legend",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Prints the legend under the bar: a dot, the label and the value of every segment. When `false` the same list stays in the page for screen readers only, so the bar never loses its text alternative. Defaults to `true`."
+            },
+            {
+              "name": "showPercent",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Prints each share next to its value in the legend. Off by default; the share is always read by assistive technology."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "StackedBarProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "StackedBarSegment",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; value: number; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
+        }
+      ],
+      "aliases": {
+        "StackedBarSegment": "{ key: string; label: string; value: number; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
+      },
+      "story": {
+        "docsId": "components-data-display-stackedbar--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-stackedbar--default"
+          },
+          {
+            "export": "WithPercent",
+            "id": "components-data-display-stackedbar--with-percent"
+          },
+          {
+            "export": "FormattedValues",
+            "id": "components-data-display-stackedbar--formatted-values"
+          },
+          {
+            "export": "LegendHidden",
+            "id": "components-data-display-stackedbar--legend-hidden"
+          },
+          {
+            "export": "ZeroSegment",
+            "id": "components-data-display-stackedbar--zero-segment"
+          },
+          {
+            "export": "ZeroTotal",
+            "id": "components-data-display-stackedbar--zero-total"
+          },
+          {
+            "export": "SingleSegment",
+            "id": "components-data-display-stackedbar--single-segment"
+          },
+          {
+            "export": "Hatched",
+            "id": "components-data-display-stackedbar--hatched"
+          },
+          {
+            "export": "ManySegments",
+            "id": "components-data-display-stackedbar--many-segments"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-data-display-stackedbar--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-stackedbar--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/StackedBar/StackedBar.mdx",
+        "overview": "One bar split into proportional segments, with a legend. It shows how a whole divides into parts, such as a plan mix or\naccounts by status.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { StackedBar } from \"@lufia/design-system/components/StackedBar\";\n\n<StackedBar\n  label=\"Accounts by status\"\n  segments={[\n    { key: \"active\", label: \"Active\", value: 48, tone: \"accent\" },\n    { key: \"trial\", label: \"Trial\", value: 21, tone: \"success\" },\n    { key: \"expired\", label: \"Expired\", value: 9, tone: \"warning\" },\n  ]}\n  formatValue={(value) => value.toLocaleString(\"en\")}\n/>;"
+        },
+        "whenToUse": [
+          "A part-of-whole breakdown of one total, with a handful of segments.",
+          "A compact composition next to a figure or inside a card."
+        ],
+        "whenNotToUse": [
+          "Several measures per period: use `ColumnChart`.",
+          "One value against a target: use `BulletBar`; one completion fraction: use `ProgressBar`.",
+          "Values that are compared across rows on a shared scale: use `BarList`.",
+          "Many segments (more than about five): the tones run out and the slices become unreadable. Use `BarList`."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The root is a `role=\"group\"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list",
+          "`legend={false}` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether",
+          "Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern`",
+          "A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.",
+          "The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.",
+          "In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.",
+          "Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-bg-surface",
+        "--lufia-color-border-subtle",
+        "--lufia-color-status-danger-solid",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-color-text-subtle",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-duration-medium",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-full"
+      ]
+    },
+    {
       "name": "Stagger",
       "category": "Motion",
       "summary": "Children that enter one after another, capped in length and still under reduced motion.",

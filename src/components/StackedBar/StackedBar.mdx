@@ -1,0 +1,103 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./StackedBar.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="StackedBar"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+One bar split into proportional segments, with a legend. It shows how a whole divides into parts, such as a plan mix or
+accounts by status.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { StackedBar } from "@lufia/design-system/components/StackedBar";
+
+<StackedBar
+  label="Accounts by status"
+  segments={[
+    { key: "active", label: "Active", value: 48, tone: "accent" },
+    { key: "trial", label: "Trial", value: 21, tone: "success" },
+    { key: "expired", label: "Expired", value: 9, tone: "warning" },
+  ]}
+  formatValue={(value) => value.toLocaleString("en")}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+`tone` takes the chart tones (`accent`, `success`, `warning`, `danger`, `neutral`), not a raw colour, so themes and
+`forced-colors` keep working. Without a `tone` the segments take accent, neutral, success, warning and danger by position.
+
+</Section>
+
+<Section id="examples">
+
+### Shares and formats
+
+<Canvas of={Stories.WithPercent} />
+<Canvas of={Stories.FormattedValues} />
+<Canvas of={Stories.LegendHidden} />
+
+### Edge cases
+
+<Canvas of={Stories.ZeroSegment} />
+<Canvas of={Stories.ZeroTotal} />
+<Canvas of={Stories.SingleSegment} />
+<Canvas of={Stories.Hatched} />
+<Canvas of={Stories.ManySegments} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The root is a `role="group"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list
+  with one item per segment: its label, its value and its share ("Active 48 (62%)").
+- `legend={false}` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether
+  the share is printed.
+- Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern`
+  adds stripes.
+- A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.
+- The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.
+- In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.
+- Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A part-of-whole breakdown of one total, with a handful of segments.
+- A compact composition next to a figure or inside a card.
+
+### When not to use
+
+- Several measures per period: use `ColumnChart`.
+- One value against a target: use `BulletBar`; one completion fraction: use `ProgressBar`.
+- Values that are compared across rows on a shared scale: use `BarList`.
+- Many segments (more than about five): the tones run out and the slices become unreadable. Use `BarList`.
+
+</Section>

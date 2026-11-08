@@ -20,7 +20,7 @@ accessibility note.
 
 - **Design tokens** in the W3C DTCG format, built with Style Dictionary into `--lufia-*` CSS custom properties, a typed
   TypeScript map and JSON. Primitive and semantic layers, light, dark and `forced-colors`.
-- **Dashboard primitives**: `StatTile`, a small SVG chart kit (`Sparkline`, `BarList`, `BulletBar`, `ProgressBar`), `SectionHeader`,
+- **Dashboard primitives**: `StatTile`, a small SVG chart kit (`Sparkline`, `BarList`, `BulletBar`, `StackedBar`, `ProgressBar`), `SectionHeader`,
   `AttentionList` and `ActivityList`, with no chart library.
 - **Components** in React 19, styled with CSS Modules that read only semantic tokens, safe for Server Components. Every
   user-facing string is a prop, so the package carries no i18n of its own.

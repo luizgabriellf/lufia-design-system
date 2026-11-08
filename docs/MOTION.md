@@ -84,7 +84,7 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
 
 Import from `@lufia/design-system/motion`. All are `beta`.
 
-The chart components (`Sparkline`, `BarList`, `BulletBar`, `ProgressBar`) draw in once on mount with
+The chart components (`Sparkline`, `BarList`, `BulletBar`, `ProgressBar`, `StackedBar`) draw in once on mount with
 `--lufia-motion-duration-medium` (380 ms), on `transform` or stroke only. It is a one-time entrance of a drawing, not an
 interaction, which is why it is longer than the 300 ms an interactive control may take. It is removed under reduced motion.
 

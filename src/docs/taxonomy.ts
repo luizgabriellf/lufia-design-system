@@ -166,6 +166,11 @@ export const ENTRIES: Entry[] = [
     "Data display",
     "Columns on one baseline, single or stacked, with the numbers in a hidden data table.",
   ),
+  c(
+    "StackedBar",
+    "Data display",
+    "One bar split into proportional segments, with a legend and a text alternative.",
+  ),
   c("BulletBar", "Data display", "A value as a bar against a target tick, comparable across rows."),
   c("ProgressBar", "Data display", "A determinate progress bar with a native progressbar role."),
   c(
