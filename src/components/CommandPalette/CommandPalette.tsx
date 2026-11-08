@@ -44,7 +44,10 @@ export type CommandPaletteLabels = {
   /** Accessible name of the dialog and of the search field: "Search or run a command". */
   title: string;
   placeholder: string;
-  /** Shown when nothing matches. */
+  /**
+   * Shown when nothing matches. Return `null`, `undefined`, `false` or `""` to render no empty row at all, for example
+   * when an error notice already explains the state.
+   */
   empty: (query: string) => ReactNode;
   /** Announced politely as the list changes: "3 results". */
   resultCount: (count: number) => string;
@@ -263,6 +266,7 @@ export function CommandPalette({
   const hintRow = hintNode ? <p className={styles.hint}>{hintNode}</p> : null;
   const searching = loading && !overridden && labels.loading;
   const expanded = flat.length > 0 && !overridden;
+  const emptyContent = !overridden && !expanded && !loading ? labels.empty(query.trim()) : null;
   let index = -1;
 
   return createPortal(
@@ -404,8 +408,8 @@ export function CommandPalette({
                   );
                 })}
               </div>
-            ) : loading ? null : (
-              <p className={styles.empty}>{labels.empty(query.trim())}</p>
+            ) : loading || !emptyContent ? null : (
+              <p className={styles.empty}>{emptyContent}</p>
             )}
             {searching ? (
               <div className={styles.searching} data-loading-row="" aria-hidden="true">

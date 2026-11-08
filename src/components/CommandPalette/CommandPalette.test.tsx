@@ -130,6 +130,16 @@ describe("CommandPalette", () => {
     expect(field()).not.toHaveAttribute("aria-activedescendant");
   });
 
+  it.each([null, undefined, false, ""])(
+    "renders no empty row when the empty label is %j",
+    async (nothing) => {
+      render(<Harness labels={{ ...labels, empty: () => nothing as never }} />);
+      await userEvent.setup().type(field(), "zzz");
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+      expect(screen.getByRole("dialog").querySelector("p[class*='empty']")).toBeNull();
+    },
+  );
+
   it("runs the highlighted option on Enter and closes", async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
