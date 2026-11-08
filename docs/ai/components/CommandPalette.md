@@ -35,6 +35,7 @@ arrow keys, run with Enter.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `className` | `string` | no |  | Added to the outermost layer, the fixed root that holds the backdrop and the dialog. The palette is portalled out of the app's tree, so a palette or theme an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here (`data-*` attributes go to the same layer; `data-lufia-theme` and `data-lufia-mode` work too). |
 | `open` | `boolean` | yes |  |  |
 | `onOpenChange` | `(open: boolean) => void` | yes |  |  |
 | `items` | `readonly CommandItem[]` | yes |  |  |
@@ -46,7 +47,8 @@ arrow keys, run with Enter.
 | `onQueryChange` | `(query: string) => void` | no |  | Called as the person types, for searches that ask a server: replace `items` with the answer, pass `filter={() => true}` so the palette does not filter it again, and set `loading` while the request runs. |
 | `loading` | `boolean` | no | `false` | A search is in flight: `aria-busy` on the results, the empty message waits, so "No results" does not flash before the server answers, and `labels.loading` (when given) is shown below the commands and announced each time `loading` turns on. |
 | `groupOrder` | `readonly string[]` | no |  | The order of the group headings, by name. Groups not listed follow, in the order they are first used; listed groups with no results are left out. Default: the order of first use. |
-| `bodyOverride` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are not announced. The field keeps focus. |
+| `bodyOverride` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows do nothing, Enter calls `onSubmit`, and the results are not announced. The field keeps focus. |
+| `onSubmit` | `(query: string) => void` | no |  | Called with the query when Enter is pressed while `bodyOverride` is shown (ask the question again, send it to an assistant). The palette stays open. Not called while the commands are listed: there Enter runs the highlighted one. |
 | `onEscape` | `() => boolean \| void` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
 | `escapeClearsQuery` | `boolean` | no | `false` | Two-step Escape: while the field holds text, Escape first clears it (and calls `onQueryChange("")`), and the next Escape closes. `onEscape` is asked first and wins when it returns `true`. Default `false`: Escape closes at once. |
 | `shortcut` | `boolean` | no | `true` | Open on Ctrl+K and Cmd+K. Default `true`. |
@@ -64,6 +66,7 @@ filterCommands(item: CommandItem, query: string): boolean
 
 - `CommandItem`: `{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; tone?: CommandItemTone | undefined; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }`
 - `CommandItemTone`: `"default" | "accent" | "danger"`
+- `CommandPaletteDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `CommandPaletteLabels`: `{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; loading?: string | undefined; }`
 
 ## Example
@@ -105,7 +108,7 @@ Keyboard:
 | Ctrl/Cmd + K | Opens the palette; closes it when open (`shortcut={false}` turns it off) |
 | Type | Filters; the first match is highlighted |
 | Down / Up | Moves the highlight, wrapping at the ends |
-| Enter | Runs the highlighted command |
+| Enter | Runs the highlighted command; with `bodyOverride` shown, calls `onSubmit(query)` |
 | Escape | Closes; focus returns to where it was (with `escapeClearsQuery`, first clears typed text) |
 | Tab | Cycles between the field and the close button |
 
@@ -136,3 +139,5 @@ people might type that the label does not contain.
 - `components-overlays-commandpalette--server-side-search`
 - `components-overlays-commandpalette--server-search-with-status`
 - `components-overlays-commandpalette--icon-tones`
+- `components-overlays-commandpalette--submit-while-answering`
+- `components-overlays-commandpalette--scoped-layer`

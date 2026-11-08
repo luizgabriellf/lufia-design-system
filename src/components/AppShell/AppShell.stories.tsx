@@ -22,7 +22,7 @@ import {
 import { Skeleton } from "../../motion";
 import { Button } from "../Button";
 import { AppShell } from "./AppShell";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ShellFooter, ShellFooterItem } from "./ShellFooter";
 import { CommandPalette, type CommandItem } from "../CommandPalette";
 import {
@@ -683,6 +683,123 @@ export const StaggeredRouteEntrance: Story = {
         routeTransitionProps={{ className: "demo-stagger", "data-stagger": "" }}
       />
     </>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+function TallFooter() {
+  return (
+    <ShellFooter aria-label="Account and help">
+      {[
+        "Profile",
+        "Notifications",
+        "Billing",
+        "Team members",
+        "Integrations",
+        "Keyboard shortcuts",
+        "Help and support",
+        "What is new",
+        "Status",
+      ].map((label) => (
+        <ShellFooterItem key={label} label={label} href={`#${label}`} icon={<HelpIcon size={18} />} />
+      ))}
+      <ShellFooterItem label="Sign out" icon={<ArrowRightIcon size={18} />} />
+    </ShellFooter>
+  );
+}
+
+/**
+ * A footer with many links in a short window (1280 by 480): the footer stops at 40% of the sidebar and scrolls on its own,
+ * so the navigation keeps a usable height. `--lufia-shell-footer-max-block-size` changes the cap.
+ */
+export const TallFooterShortWindow: Story = {
+  render: (args) => <DemoShell {...args} footer={<TallFooter />} />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+function ClosedGroupShell(args: Parameters<typeof DemoShell>[0]) {
+  const [open, setOpen] = useState<readonly string[]>([]);
+  return (
+    <DemoShell {...args} initialPath="/insights/trends" openGroups={open} onOpenGroupsChange={setOpen} />
+  );
+}
+
+/**
+ * The current page sits in a closed group: the group's button stands in for it, with the active look and
+ * `aria-current="true"`. Open the group and the page's own item takes over.
+ */
+export const ClosedGroupHoldsCurrentPage: Story = {
+  render: (args) => <ClosedGroupShell {...args} />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/**
+ * Touch-sized controls: `ShellPrimaryActionSlot size="touch"` (44px) beside a 44px control, and
+ * `--lufia-shell-item-min-block-size` raising the top-level items to 3rem.
+ */
+export const TouchSizes: Story = {
+  render: (args) => (
+    <DemoShell {...args} style={{ "--lufia-shell-item-min-block-size": "3rem" } as CSSProperties}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+        <h1 style={{ margin: 0, marginInlineEnd: "auto" }}>Orders</h1>
+        <Button style={{ minBlockSize: "2.75rem" }}>Export</Button>
+        <ShellPrimaryActionSlot size="touch" />
+      </div>
+    </DemoShell>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/**
+ * `labels.openMenu` and `labels.closeMenu`: the floating bar's button says "Open menu", the sheet is "Menu" and its close
+ * button says "Close menu".
+ */
+export const DistinctMenuNames: Story = {
+  args: { labels: { ...demoLabels, openMenu: "Open menu", closeMenu: "Close menu" } },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+function QueryLinksPage() {
+  const [page, setPage] = useState(1);
+  return (
+    <div style={{ display: "grid", gap: "1rem", justifyItems: "start" }}>
+      <h1 style={{ margin: 0 }}>Results, page {page}</h1>
+      <p style={{ margin: 0, color: "var(--lufia-color-text-muted)" }}>
+        These links change only the query string. With <code>routeTrackLinks=&quot;query&quot;</code> they
+        start the bar; this demo router takes a second and a half to answer.
+      </p>
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        {[1, 2, 3].map((target) => (
+          <a
+            key={target}
+            href={`?page=${target}`}
+            onClick={(event) => {
+              event.preventDefault();
+              setTimeout(() => {
+                const url = new URL(window.location.href);
+                url.searchParams.set("page", String(target));
+                window.history.pushState({}, "", url);
+                setPage(target);
+              }, 1500);
+            }}
+          >
+            Page {target}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * `routeTrackLinks="query"`: a link that changes only the query string starts the progress bar, and the address changing
+ * ends it. `routeTimeout={Infinity}` lets a slow `routePending` page keep the bar; link-only runs stay capped at 10 seconds.
+ */
+export const RouteProgressForQueryLinks: Story = {
+  render: (args) => (
+    <DemoShell {...args} routeKey="/results" routeTrackLinks="query" routeTimeout={Infinity}>
+      <QueryLinksPage />
+    </DemoShell>
   ),
   globals: { viewport: { value: "w1440", isRotated: false } },
 };

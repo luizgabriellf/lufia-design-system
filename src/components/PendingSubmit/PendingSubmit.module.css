@@ -78,3 +78,10 @@
 .root[aria-busy="true"] {
   cursor: progress;
 }
+
+/* `variant="unstyled"`: the app's own classes draw the button. A focus ring stays as a floor, at the lowest specificity
+   (`:where`), so any focus style of the app's class wins. */
+:where(.root[data-variant="unstyled"]):focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}

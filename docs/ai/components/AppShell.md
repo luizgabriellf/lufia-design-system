@@ -93,7 +93,8 @@ navigation is data, so both layouts always agree.
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `routeKey` | `string` | no |  | Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`. |
 | `routePending` | `boolean` | no |  | A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself. |
-| `routeTrackLinks` | `boolean` | no |  | Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks. `RouteProgress` `trackLinks`. |
+| `routeTrackLinks` | `boolean \| "query"` | no |  | Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks, or `"query"` to also count links that change only the query string. `RouteProgress` `trackLinks`. |
+| `routeTimeout` | `number` | no |  | Longest a run driven by `routePending` or by code may show before it ends by itself (`RouteProgress` `timeout`). Default 10 seconds; `Infinity` keeps the bar for as long as the page is pending. Runs started by a link click alone still end after at most 10 seconds. |
 | `routeTransitionProps` | `AppShellRouteTransitionProps` | no |  | A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs `routeKey`. |
 | `routeProgress` | `boolean` | no | `true` | Draw the progress bar when `routeKey` is given. Default `true`. |
 | `routeProgressEvents` | `RouteProgressEvents` | no |  | The window events that start and end the progress bar from code (`RouteProgress` `events`). Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch. |
@@ -178,7 +179,8 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `routeKey` | `string` | yes |  | Identifies the page being shown (the pathname). When it changes, the navigation has arrived and the bar finishes. `AppShell` passes its own `routeKey`. |
 | `pending` | `boolean` | no |  | A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation (a query-string change the link tracking does not see). Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar, unless a tracked link click is still on its way. When you pass it (even as `false`), link clicks stop starting the bar unless `trackLinks` is set explicitly. |
-| `trackLinks` | `boolean` | no |  | Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with `pending` and the bar shows while either is in progress. |
+| `trackLinks` | `boolean \| "query"` | no |  | Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. `"query"` also counts a link to the same path with another query string (a filter or a tab kept in the URL); a hash-only link never counts. A run started this way ends when `location.href` changes, when `routeKey` changes, or after `timeout` (at most 10 seconds), whichever comes first. Default `true` without `pending` and `false` with it; set it together with `pending` and the bar shows while either is in progress. |
+| `timeout` | `number` | no | `ROUTE_PROGRESS_TIMEOUT_MS` | Milliseconds a run started by `pending` or from code may show before it ends by itself, for a navigation nothing ever finishes. Default 10 000. `Infinity` (or any value that is not a finite positive number) never cuts it short: use it for pages that can take long and whose `pending` always settles. A run started only by a link click is still capped at 10 seconds (or `timeout`, when shorter), because nothing else tells the bar it was cancelled. |
 | `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
 | `events` | `RouteProgressEvents` | no | `DEFAULT_EVENTS` | The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and `trackLinks`: the bar shows while any of them is in progress. |
 | `className` | `string` | no |  |  |
@@ -230,7 +232,8 @@ Other native element attributes pass through to the root element.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `className` | `string` | no |  |  |
+| `className` | `string` | no |  | Added to the button's own classes. |
+| `size` | `"sm" \| "md" \| "lg" \| "touch"` | no | `"md"` | Size of the button. A `Button` size (`sm` 32px, `md` 40px, `lg` 48px), or `touch`: the `md` type and padding at the 44px (2.75rem) height of a touch target, to line up with 44px controls beside it. Default `md`. |
 
 ### `Sidebar`
 
@@ -260,7 +263,7 @@ Other native element attributes pass through to the root element.
 | `open` | `boolean` | no |  | Controlled open state of a collapsible group. |
 | `defaultOpen` | `boolean` | no | `true` | Initial open state when uncontrolled. Default `true`. |
 | `onOpenChange` | `(open: boolean) => void` | no |  |  |
-| `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it. |
+| `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it: the active look and `aria-current="true"`. |
 | `children` | `ReactNode` | yes |  | `SidebarItem`s. |
 
 Other native element attributes pass through to the root element.
@@ -331,7 +334,7 @@ serializeShellState(state: ShellState): string
 
 ### `startRouteProgress`
 
-Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second timeout. Does nothing on the server.
+Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the `timeout` (10 seconds by default). Does nothing on the server.
 
 ```ts
 startRouteProgress(): void
@@ -339,10 +342,10 @@ startRouteProgress(): void
 
 ### `useSheetDrag`
 
-Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role="dialog"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.
+Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role="dialog"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. A drag may start on a link in the header (a brand link): past a slightly larger slop the gesture becomes a drag, and the click the release would send to the link is cancelled. A tap on the link, without movement, still follows it. Buttons and form fields in the zone keep their own pointer. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.
 
 ```ts
-useSheetDrag(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }
+useSheetDrag(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; onClickCapture(event: MouseEvent<HTMLElement, MouseEvent>): void; onDragStart(event: DragEvent<HTMLElement>): void; }
 ```
 
 | Parameter | Type | Required | Description |
@@ -359,6 +362,8 @@ Returned members:
 | `onPointerMove` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 | `onPointerUp` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
 | `onPointerCancel` | `(event: PointerEvent<HTMLElement>) => void` | yes |  |
+| `onClickCapture` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | yes | Cancels the click a drag's release sends to a link, before the link (or a router's handler) sees it. |
+| `onDragStart` | `(event: DragEvent<HTMLElement>) => void` | yes | A link would start the browser's own drag (of its address) and cancel the pointer: the sheet's drag wins. |
 
 ### `useShellPrimaryAction`
 
@@ -389,7 +394,7 @@ Returned members:
 
 ## Types
 
-- `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
+- `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; openMenu?: string | undefined; closeMenu?: string | undefined; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
 - `AppShellMainProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes`
 - `AppShellPrimaryAction`: `{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellRouteTransitionProps`: `{ className?: string | undefined; } & ShellDataAttributes`
@@ -400,13 +405,15 @@ Returned members:
 - `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }`
 - `NavSheetLayerProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `RouteProgressEvents`: `{ start: string; done: string; }`
-- `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }`
+- `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | "query" | undefined; timeout?: number | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }`
 - `SheetDragThreshold`: `{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }`
 - `ShellBadgeTone`: `"neutral" | "success" | "warning" | "danger"`
 - `ShellDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `ShellFooterProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { "aria-label": string; children: ReactNode; }`
 - `ShellNavGroup`: `{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }`
-- `ShellNavMatch`: `"prefix" | "exact" | "query" | ((currentPath: string, item: ShellNavItem) => boolean)`
+- `ShellNavMatch`: `"prefix" | "query" | "exact" | ((currentPath: string, item: ShellNavItem) => boolean)`
+- `ShellPrimaryActionSlotProps`: `{ className?: string | undefined; size?: ShellPrimaryActionSlotSize | undefined; }`
+- `ShellPrimaryActionSlotSize`: `"sm" | "md" | "lg" | "touch"`
 - `ShellPrimaryActionState`: `{ action: AppShellPrimaryAction | undefined; isFallback: boolean; }`
 - `ShellState`: `{ collapsed: boolean; openGroups: readonly string[] | undefined; }`
 
@@ -437,6 +444,8 @@ import { AppShell } from "@lufia/design-system/components/AppShell";
     skipToContent: "Skip to content",
     navigation: "Main navigation",
     menu: "Menu",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
     floatBar: "Quick navigation",
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
@@ -510,3 +519,8 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--nested-navigation-rail`
 - `components-navigation-appshell--nested-navigation-phone`
 - `components-navigation-appshell--staggered-route-entrance`
+- `components-navigation-appshell--tall-footer-short-window`
+- `components-navigation-appshell--closed-group-holds-current-page`
+- `components-navigation-appshell--touch-sizes`
+- `components-navigation-appshell--distinct-menu-names`
+- `components-navigation-appshell--route-progress-for-query-links`

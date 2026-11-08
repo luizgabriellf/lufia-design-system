@@ -52,6 +52,25 @@ the keyboard would lose their place. A genuinely `disabled` button (`disabled` p
 
 <Canvas of={Stories.Pending} />
 
+### Classes and the package look
+
+`className` is added to the `Button`'s own classes, never in place of them, so the package look still applies; `variant`,
+`size` and `fullWidth` choose it. An app that moves its forms over while its old button classes still draw the button can
+pass `variant="unstyled"`: the button is then a plain `<button>` with only your `className` (and the pending ring and
+labels, which keep working), and a focus ring at the lowest specificity that your own focus style overrides. That is the one
+way to neutralise the look; no other prop strips it.
+
+```tsx
+<PendingSubmit variant="unstyled" className="btn btn-primary" pendingLabel="Saving…">
+  Save changes
+</PendingSubmit>
+```
+
+There is no `asChild` or `render` prop: no component in the package uses that pattern, and the pending behaviour (the
+cancelled click, `aria-busy`, the label layers) needs to own its button.
+
+<Canvas of={Stories.Unstyled} />
+
 ### Progress labels
 
 `progress` is a list of `[afterMs, label]`. The first label (`pendingLabel`) shows at once and each later one replaces the

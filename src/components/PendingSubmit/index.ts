@@ -1,1 +1,6 @@
-export { PendingSubmit, type PendingProgress, type PendingSubmitProps } from "./PendingSubmit";
+export {
+  PendingSubmit,
+  type PendingProgress,
+  type PendingSubmitProps,
+  type PendingSubmitVariant,
+} from "./PendingSubmit";

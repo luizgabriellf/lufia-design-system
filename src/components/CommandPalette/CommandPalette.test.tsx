@@ -182,6 +182,39 @@ describe("CommandPalette", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
+  it("returns focus to the field after a keepOpen command is picked with the pointer", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(<Harness commands={[{ key: "a", label: "Ask", keepOpen: true, onSelect }]} />);
+    await user.click(screen.getByRole("option", { name: "Ask" }));
+    expect(onSelect).toHaveBeenCalledOnce();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(field()).toHaveFocus();
+  });
+
+  it("leaves focus where a keepOpen command moved it", async () => {
+    const user = userEvent.setup();
+    const target = document.createElement("button");
+    render(
+      <Harness
+        commands={[{ key: "a", label: "Ask", keepOpen: true, onSelect: () => target.focus() }]}
+        bodyOverride={undefined}
+      />,
+    );
+    screen.getByRole("dialog").appendChild(target);
+    await user.click(screen.getByRole("option", { name: "Ask" }));
+    expect(target).toHaveFocus();
+  });
+
+  it("puts className and data-* attributes on the outermost layer", () => {
+    render(<Harness className="app-palette" data-palette="scoped" data-lufia-mode="dark" />);
+    const layer = screen.getByRole("dialog").parentElement!;
+    expect(layer).toHaveClass("app-palette");
+    expect(layer).toHaveAttribute("data-palette", "scoped");
+    expect(layer).toHaveAttribute("data-lufia-mode", "dark");
+    expect(layer).toHaveAttribute("data-state", "open");
+  });
+
   it("closes on Escape and returns focus to the opener", async () => {
     const user = userEvent.setup();
     render(<Harness initial={false} />);
@@ -366,6 +399,27 @@ describe("CommandPalette extension points", () => {
       expect(onSelect).not.toHaveBeenCalled();
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    });
+
+    it("calls onSubmit with the query on Enter and stays open", async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      const onSelect = vi.fn();
+      render(<Harness commands={items(onSelect)} bodyOverride={<p>An answer</p>} onSubmit={onSubmit} />);
+      await user.type(field(), "why now{Enter}");
+      expect(onSubmit).toHaveBeenCalledExactlyOnceWith("why now");
+      expect(onSelect).not.toHaveBeenCalled();
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+
+    it("does not call onSubmit while the commands are listed", async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      const onSelect = vi.fn();
+      render(<Harness commands={items(onSelect)} onSubmit={onSubmit} />);
+      await user.keyboard("{Enter}");
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(onSelect).toHaveBeenCalledOnce();
     });
 
     it("brings the results back when it goes away", () => {

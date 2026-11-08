@@ -36,6 +36,9 @@ is locked instead of the body. The allow-list is explicit on purpose, so a neste
 In document mode the width of the vanishing scrollbar is added to `body`'s right padding, so a page behind a modal does not
 shift sideways on desktop. It is removed on release.
 
+On release the scroll position comes back with `behavior: "instant"`, so a page or app that sets
+`scroll-behavior: smooth` on `html` does not animate the jump back to where the person was.
+
 `isBodyScrollLocked()` reports whether any lock is held, for code outside the overlay's tree.
 
 ### Notes

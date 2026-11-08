@@ -33,9 +33,9 @@ pending label, and for a long wait moves through further labels.
 | `pendingLabel` | `string` | yes |  | The label while the form is submitting ("Saving…"). It is announced to assistive technology. |
 | `progress` | `PendingProgress` | no | `[]` | Labels that replace `pendingLabel` after a delay, for actions that can take long. |
 | `pending` | `boolean` | no | `false` | Treat the button as pending although the form is not (yet). Use it to drive the button from `useActionState`, a `useTransition` or your own request state. It is combined with the form's own pending state. |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. |
-| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
-| `fullWidth` | `boolean` | no |  |  |
+| `variant` | `"danger" \| "primary" \| "secondary" \| "ghost" \| "unstyled"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. `"unstyled"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  | Size of the underlying `Button`. Ignored with `variant="unstyled"`. |
+| `fullWidth` | `boolean` | no |  | Stretches to the full width of its container. Ignored with `variant="unstyled"`. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
@@ -43,6 +43,7 @@ Other native element attributes pass through to the root element.
 ## Types
 
 - `PendingProgress`: `readonly (readonly [afterMs: number, label: string])[]`
+- `PendingSubmitVariant`: `"danger" | "primary" | "secondary" | "ghost" | "unstyled"`
 
 ## Example
 
@@ -71,7 +72,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-space-2`.
 
 ## Content guidelines
 
@@ -87,6 +88,7 @@ button without a pending label.
 - `components-forms-pendingsubmit--pending-secondary`
 - `components-forms-pendingsubmit--with-progress`
 - `components-forms-pendingsubmit--disabled`
+- `components-forms-pendingsubmit--unstyled`
 - `components-forms-pendingsubmit--in-a-form`
 - `components-forms-pendingsubmit--long-text`
 - `components-forms-pendingsubmit--phone-320`

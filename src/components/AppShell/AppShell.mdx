@@ -52,6 +52,8 @@ import { AppShell } from "@lufia/design-system/components/AppShell";
     skipToContent: "Skip to content",
     navigation: "Main navigation",
     menu: "Menu",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
     floatBar: "Quick navigation",
     collapseSidebar: "Collapse sidebar",
     expandSidebar: "Expand sidebar",
@@ -208,6 +210,10 @@ is, which is why it does not use `disabled`.
 
 A link in the footer of the phone sheet closes the sheet like any other link.
 
+The sidebar's footer never takes more than 40% of the sidebar's height: a long footer, or a short window (1280 by 480, say),
+scrolls inside the footer, so the navigation always keeps a usable height. `--lufia-shell-footer-max-block-size` changes the
+cap.
+
 #### The page area and where banners sit
 
 The shell owns the one `<main>`. Three places sit around it, and the choice decides what stays put:
@@ -245,15 +251,16 @@ A followed link inside the sheet, footer and slots included, closes it.
 Give the shell the current page's `routeKey` (the pathname, not the query) and it takes care of the motion around a
 navigation; every piece is optional and none remounts the page.
 
-| Prop                   | What it does                                                                                                                                                                                                                                                                                                                                                                       |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `routeKey`             | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                         |
-| `routePending`         | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck. |
-| `mainPending`          | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
-| `routeTrackLinks`      | Link clicks start the bar alongside `routePending`: the bar shows while either is in progress. Default `true` without `routePending` and `false` with it. Set it `true` to drive query-string navigations (which link tracking ignores) through `routePending` and keep tracking link clicks. The 10-second safety timeout still ends any run.                                     |
-| `routeTransitionProps` | A `className` and `data-*` attributes for the region that plays the route motion, so your own CSS can stagger the arriving page's sections off the `data-route-enter` its children get. Animate `transform` and `opacity` only and turn it off under `prefers-reduced-motion` (the shell sets no marker then anyway).                                                              |
-| `routeProgressEvents`  | The window events that start and end the bar from code. Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch; pass `{ start, done }` names when existing code or a test already raises its own.                                                                                                                                                              |
-| `routeProgress`        | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
+| Prop                   | What it does                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `routeKey`             | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                                         |
+| `routePending`         | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck.                 |
+| `mainPending`          | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.                            |
+| `routeTrackLinks`      | Link clicks start the bar alongside `routePending`: the bar shows while either is in progress. Default `true` without `routePending` and `false` with it. Set it `true` to drive query-string navigations (which link tracking ignores) through `routePending` and keep tracking link clicks, or `"query"` to also count a link that changes only the query string. A hash-only link never counts. |
+| `routeTimeout`         | How long a run driven by `routePending` or by code may show before it ends by itself. Default 10 seconds; `Infinity` keeps it for as long as the page is pending, for slow pages whose pending state always settles. A run that only a link click started is still capped at 10 seconds (or `routeTimeout`, when shorter), because nothing else would tell the bar a cancelled click went nowhere. |
+| `routeTransitionProps` | A `className` and `data-*` attributes for the region that plays the route motion, so your own CSS can stagger the arriving page's sections off the `data-route-enter` its children get. Animate `transform` and `opacity` only and turn it off under `prefers-reduced-motion` (the shell sets no marker then anyway).                                                                              |
+| `routeProgressEvents`  | The window events that start and end the bar from code. Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch; pass `{ start, done }` names when existing code or a test already raises its own.                                                                                                                                                                              |
+| `routeProgress`        | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                                  |
 
 Timing is yours: when to show `mainPending` (most apps wait a few hundred milliseconds, so fast navigations never show a
 skeleton), when a wait is long enough to offer a retry, and what the skeleton looks like. `RouteProgress` is also exported
@@ -268,7 +275,8 @@ A navigation that no link click or `routePending` describes (a `router.push` aft
 change) starts the bar with `startRouteProgress()` and ends it with `doneRouteProgress()`. Both dispatch a window event
 (`ROUTE_PROGRESS_START_EVENT`, `ROUTE_PROGRESS_DONE_EVENT`), so they work from any module, outside React too, and do
 nothing on the server. A run started this way combines with `routePending` and tracked link clicks: the bar stays while
-any of them is in progress, and a `routeKey` change or the 10-second safety timeout still ends everything.
+any of them is in progress, and a `routeKey` change or the safety timeout (`routeTimeout`, 10 seconds by default) still
+ends everything.
 
 ```tsx
 import { doneRouteProgress, startRouteProgress } from "@lufia/design-system/components/AppShell";
@@ -301,6 +309,11 @@ flashes an action the page is about to replace. The default is marked `data-fall
 A page registers in a layout effect, so a client navigation never paints the previous page's action. On a hard load the
 page registers only once it hydrates; render `ShellPrimaryActionOwner` in the page's server markup and the shell keeps its
 default hidden (its place kept), on the floating bar and in the slot, until the page's action arrives.
+
+`ShellPrimaryActionSlot` takes a `size`: a `Button` size (`sm`, `md` by default, `lg`), or `touch` for the medium look at
+the 44px (2.75rem) height of a touch target, to line up with 44px controls in the same header. The slot is hidden on phones
+and the floating bar hidden on wide screens by rules scoped under the shell (`.shell .float`), so a `Button` or
+`MobileFloatBar` stylesheet that loads later (a dev server's chunk order) cannot show them in the wrong place.
 
 `useShellPrimaryActionState()` reads the current action without registering one (`{ action, isFallback }`, or `null`
 outside a shell), so a command palette, a shortcut or a help panel can list it in step with the floating bar. The action's
@@ -417,7 +430,8 @@ would open in the page's default palette. Three ways to scope it:
 - **`sheetProps.container`.** Mount the sheet inside your scoped wrapper instead of `document.body`.
 
 Stable hooks for styling: `data-lufia-part="nav-sheet-layer"` (the fixed root), `"nav-sheet-backdrop"` and `"nav-sheet"`
-(the panel).
+(the panel). A `CommandPalette` is portalled the same way and takes the same fix: its `className` and `data-*` props go on
+its outermost layer.
 
 <Canvas of={Stories.SheetInScopedDarkMode} />
 
@@ -479,9 +493,16 @@ sub-item is current, `data-sub-items` on the folding list of sub-items, `data-op
 - **Landmarks.** The page is wrapped in the only `<main>`; do not render another. A skip link to it is the first tab stop.
   The sidebar and the sheet each hold a `<nav>` named by `labels.navigation`. The sidebar is hidden (`display: none`) below
   the breakpoint, so a phone never sees two.
-- **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button shows the active style
-  to point at the page inside it. In the rail, an item whose hidden sub-item is current has `aria-current="true"`.
-- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet. The body keeps native scrolling:
+- **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button stands in for the page
+  inside it: the active style and `aria-current="true"`. In the rail, an item whose hidden sub-item is current has
+  `aria-current="true"` too.
+- **Names of the menu.** `labels.menu` names the sheet. `labels.openMenu` ("Open menu") names the floating bar's button, so
+  the button and the dialog it opens are told apart; it defaults to `labels.menu`. `labels.closeMenu` ("Close menu") names
+  the sheet's close button; it defaults to the `close` label of `LufiaProvider`, because a close button named after the
+  menu would not say that it closes.
+- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet, also when the drag starts on a
+  link in the header (a brand link): past a short slop it becomes a drag and the link's click is cancelled, while a plain
+  tap still follows the link. The body keeps native scrolling:
   a drag that starts in the body counts only when the body is scrolled to the top and moves down, and then it follows the
   finger (and cancels the browser's pull to refresh) as on a native bottom sheet. A list inside the body that scrolls on its
   own is respected: the drag starts only when it and the body are both at the top. Any other move scrolls, nothing is cancelled
@@ -493,7 +514,8 @@ sub-item is current, `data-sub-items` on the folding list of sub-items, `data-op
   pops up on touch), and gives it back to the opener. Body scroll is locked.
 - **The floating bar is a labelled group**, not an ARIA toolbar: a toolbar promises arrow-key movement and every control
   here is a plain tab stop.
-- **Targets** are at least 2.75rem (44px). Focus is a 2px ring. The active item has a bar on its inline-start edge besides the
+- **Targets** are at least 2.75rem (44px); `--lufia-shell-item-min-block-size` sets the height of a top-level item (items of a
+  group and sub-items stay at 2.5rem). Focus is a 2px ring. The active item has a bar on its inline-start edge besides the
   colour, and a `Highlight` border in forced-colors mode.
 - **Motion.** The sheet rises and the backdrop fades with the `--lufia-motion-*` tokens; exits are shorter than entrances.
   Groups use `Collapse`. Under `prefers-reduced-motion` the sheet appears and disappears at once. The sidebar width changes

@@ -29,6 +29,25 @@ export const WithProgress: Story = {
   },
 };
 export const Disabled: Story = { args: { disabled: true } };
+
+/**
+ * `variant="unstyled"`: a plain button whose look comes only from the app's own class (here an inline style stands in for
+ * it). The pending ring and labels keep working.
+ */
+export const Unstyled: Story = {
+  args: {
+    variant: "unstyled",
+    pending: true,
+    style: {
+      padding: "0.75rem 1.5rem",
+      border: "var(--lufia-border-width-thick) dashed var(--lufia-color-border-strong)",
+      borderRadius: "var(--lufia-radius-full)",
+      background: "var(--lufia-color-bg-surface-raised)",
+      color: "var(--lufia-color-text-default)",
+      font: "inherit",
+    },
+  },
+};
 /** A real form action: the button follows the form through `useFormStatus` and cannot submit twice. Press it. */
 export const InAForm: Story = {
   render: (args) => {

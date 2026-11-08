@@ -309,3 +309,72 @@ export const IconTones: Story = {
     ],
   },
 };
+
+function AskAndSubmit() {
+  const [answering, setAnswering] = useState(false);
+  const [asked, setAsked] = useState<string[]>([]);
+  const commands: CommandItem[] = [
+    {
+      key: "ask",
+      label: "Ask a question",
+      description: "Type it, then press Enter",
+      group: "Assistant",
+      keepOpen: true,
+      onSelect: () => setAnswering(true),
+    },
+    ...items,
+  ];
+  return (
+    <CommandPalette
+      open
+      onOpenChange={() => {}}
+      items={commands}
+      labels={labels}
+      groupOrder={["Assistant"]}
+      bodyOverride={
+        answering ? (
+          <div style={{ display: "grid", gap: "0.5rem", padding: "1rem" }}>
+            <p style={{ margin: 0 }}>Type a question and press Enter to ask it.</p>
+            {asked.length > 0 ? (
+              <ul data-asked="" style={{ margin: 0, paddingInlineStart: "1.25rem" }}>
+                {asked.map((question, index) => (
+                  <li key={index}>Asked: {question}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : undefined
+      }
+      onSubmit={(query) => setAsked((all) => [...all, query || "(empty)"])}
+      onEscape={() => {
+        if (!answering) return false;
+        setAnswering(false);
+        return true;
+      }}
+    />
+  );
+}
+
+/**
+ * `onSubmit` and a `keepOpen` command picked with the pointer: click "Ask a question" and focus is back in the field, so
+ * typing carries on; Enter then calls `onSubmit(query)` while the answer area is shown.
+ */
+export const SubmitWhileAnswering: Story = { render: () => <AskAndSubmit /> };
+
+/**
+ * `className` and `data-*` on the palette's outermost layer: the palette is portalled to `document.body`, so a scope the app
+ * sets on its own wrapper (here a dark mode) is repeated on the palette.
+ */
+export const ScopedLayer: Story = {
+  render: () => (
+    <CommandPalette
+      open
+      onOpenChange={() => {}}
+      items={items}
+      labels={labels}
+      className="app-palette"
+      data-lufia-mode="dark"
+      data-tour="palette"
+    />
+  ),
+};

@@ -7,7 +7,10 @@ import styles from "./RouteProgress.module.css";
 export const ROUTE_PROGRESS_REVEAL_DELAY_MS = 150;
 const TICK_MS = 300;
 const FINISH_MS = 160;
-/** A run that nothing ever finishes (a cancelled or guarded navigation, a redirect back) ends by itself after this. */
+/**
+ * A run that nothing ever finishes (a cancelled or guarded navigation, a redirect back) ends by itself after this: the
+ * default `timeout`, and always the cap of a run that only a link click started.
+ */
 export const ROUTE_PROGRESS_TIMEOUT_MS = 10_000;
 /** It creeps toward this and waits there: the bar never claims the page is nearly ready when it does not know. */
 const CEILING = 85;
@@ -28,8 +31,8 @@ const DEFAULT_EVENTS: RouteProgressEvents = {
 /**
  * Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a
  * `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it
- * works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second
- * timeout. Does nothing on the server.
+ * works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the `timeout`
+ * (10 seconds by default). Does nothing on the server.
  */
 export function startRouteProgress(): void {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(ROUTE_PROGRESS_START_EVENT));
@@ -59,11 +62,19 @@ export type RouteProgressProps = {
   /**
    * Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's
    * links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes
-   * the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after
-   * 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with
-   * `pending` and the bar shows while either is in progress.
+   * the query string or hash. `"query"` also counts a link to the same path with another query string (a filter or a tab
+   * kept in the URL); a hash-only link never counts. A run started this way ends when `location.href` changes, when
+   * `routeKey` changes, or after `timeout` (at most 10 seconds), whichever comes first. Default `true` without `pending`
+   * and `false` with it; set it together with `pending` and the bar shows while either is in progress.
    */
-  trackLinks?: boolean;
+  trackLinks?: boolean | "query";
+  /**
+   * Milliseconds a run started by `pending` or from code may show before it ends by itself, for a navigation nothing ever
+   * finishes. Default 10 000. `Infinity` (or any value that is not a finite positive number) never cuts it short: use it
+   * for pages that can take long and whose `pending` always settles. A run started only by a link click is still capped at
+   * 10 seconds (or `timeout`, when shorter), because nothing else tells the bar it was cancelled.
+   */
+  timeout?: number;
   /** Milliseconds to wait before showing the bar. Default 150. */
   revealDelay?: number;
   /**
@@ -80,7 +91,7 @@ export type RouteProgressProps = {
  * A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it
  * shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades
  * out (opacity, with the exit token). Code starts and ends a run with `startRouteProgress()` and `doneRouteProgress()`
- * (window events, see `events`). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity`
+ * (window events, see `events`). A run that is never finished ends by itself after `timeout` (10 seconds by default). It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity`
  * move, with the motion tokens, so under reduced motion it steps without easing.
  */
 export function RouteProgress({
@@ -88,6 +99,7 @@ export function RouteProgress({
   pending,
   trackLinks,
   revealDelay = ROUTE_PROGRESS_REVEAL_DELAY_MS,
+  timeout = ROUTE_PROGRESS_TIMEOUT_MS,
   events = DEFAULT_EVENTS,
   className,
 }: RouteProgressProps) {
@@ -96,6 +108,8 @@ export function RouteProgress({
   const finish = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ticker = useRef<ReturnType<typeof setInterval> | null>(null);
   const safety = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The cap of a run that a link click started, which nothing else may end. */
+  const linkSafety = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** Set when a link click started the run: the address it left, to notice when it changed. */
   const startedAt = useRef<string | null>(null);
   /** A run started from code (`startRouteProgress()` or `events.start`) that has not been told it is done. */
@@ -108,7 +122,8 @@ export function RouteProgress({
     if (finish.current) clearTimeout(finish.current);
     if (ticker.current) clearInterval(ticker.current);
     if (safety.current) clearTimeout(safety.current);
-    reveal.current = finish.current = ticker.current = safety.current = null;
+    if (linkSafety.current) clearTimeout(linkSafety.current);
+    reveal.current = finish.current = ticker.current = safety.current = linkSafety.current = null;
   }, []);
 
   const complete = useCallback(() => {
@@ -121,7 +136,8 @@ export function RouteProgress({
     }
     if (!ticker.current) {
       if (safety.current) clearTimeout(safety.current);
-      safety.current = null;
+      if (linkSafety.current) clearTimeout(linkSafety.current);
+      safety.current = linkSafety.current = null;
       return;
     }
     clearTimers();
@@ -139,19 +155,31 @@ export function RouteProgress({
     pendingNow.current = Boolean(pending);
   }, [pending]);
 
+  const finite = Number.isFinite(timeout) && timeout > 0;
+  const linkCap = finite ? Math.min(timeout, ROUTE_PROGRESS_TIMEOUT_MS) : ROUTE_PROGRESS_TIMEOUT_MS;
   const start = useCallback(
     (fromLink = false) => {
-      if (fromLink) startedAt.current = window.location.href;
       const running = reveal.current !== null || ticker.current !== null;
       // A bar that is finishing starts over.
       if (!running && finish.current) clearTimers();
       // Nothing may keep the bar on screen for ever: a cancelled or guarded navigation never announces itself. Each new
-      // start (a click, `pending`) gives the run its full time again.
-      if (safety.current) clearTimeout(safety.current);
-      safety.current = setTimeout(() => {
-        safety.current = null;
-        complete();
-      }, ROUTE_PROGRESS_TIMEOUT_MS);
+      // start gives the run its full time again. A link click has its own, shorter cap: when it lapses only the click's
+      // part of the run ends, and `pending` or a run from code keeps the bar until their own `timeout`.
+      if (fromLink) {
+        startedAt.current = window.location.href;
+        if (linkSafety.current) clearTimeout(linkSafety.current);
+        linkSafety.current = setTimeout(() => {
+          linkSafety.current = null;
+          startedAt.current = null;
+          if (!pendingNow.current && !manual.current) complete();
+        }, linkCap);
+      } else if (finite) {
+        if (safety.current) clearTimeout(safety.current);
+        safety.current = setTimeout(() => {
+          safety.current = null;
+          complete();
+        }, timeout);
+      }
       if (running) return;
       /** A tracked link click has arrived; true when nothing else (`pending`) keeps the run going. */
       const done = () => {
@@ -176,7 +204,7 @@ export function RouteProgress({
         }, TICK_MS);
       }, revealDelay);
     },
-    [clearTimers, complete, revealDelay],
+    [clearTimers, complete, revealDelay, finite, timeout, linkCap],
   );
 
   const wasPending = useRef(false);
@@ -192,6 +220,7 @@ export function RouteProgress({
   }, [pending, start, complete]);
 
   const tracking = trackLinks ?? pending === undefined;
+  const countQuery = trackLinks === "query";
   useEffect(() => {
     if (!tracking) return;
     const onClick = (event: MouseEvent) => {
@@ -203,13 +232,16 @@ export function RouteProgress({
       if (target && target !== "_self") return;
       const next = new URL(anchor.getAttribute("href")!, window.location.href);
       const here = window.location;
-      // Another path only: a query or hash change is not a page change and would leave the bar waiting for ever.
-      if (next.origin !== here.origin || next.pathname === here.pathname) return;
+      if (next.origin !== here.origin) return;
+      // Another path, or with `"query"` another query string. A hash change is never a navigation: the address changes
+      // at once and nothing loads.
+      const samePath = next.pathname === here.pathname;
+      if (samePath && !(countQuery && next.search !== here.search)) return;
       start(true);
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
-  }, [tracking, start]);
+  }, [tracking, countQuery, start]);
 
   const startEvent = events.start;
   const doneEvent = events.done;

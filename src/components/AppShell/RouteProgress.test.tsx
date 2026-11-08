@@ -180,6 +180,94 @@ describe("RouteProgress", () => {
     expect(bar(container)).toBeNull();
   });
 
+  describe("trackLinks query", () => {
+    beforeEach(() => window.history.pushState({}, "", "/list?page=1"));
+
+    it("starts for a link that changes only the query, and finishes when the address changes", () => {
+      const { container } = render(<RouteProgress routeKey="/list" trackLinks="query" />);
+      fireEvent.click(addLink("/list?page=2"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+      window.history.pushState({}, "", "/list?page=2");
+      advance(400);
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("still ignores a link to the same address and a hash-only link", () => {
+      const { container } = render(<RouteProgress routeKey="/list" trackLinks="query" />);
+      fireEvent.click(addLink("/list?page=1"));
+      fireEvent.click(addLink("/list?page=1#details"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1000);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("tracks links alongside pending, as trackLinks does", () => {
+      const { container } = render(<RouteProgress routeKey="/list" pending={false} trackLinks="query" />);
+      fireEvent.click(addLink("/list?page=3"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+    });
+  });
+
+  describe("timeout", () => {
+    it("keeps a pending run past the default with a longer timeout, then ends it", () => {
+      const { container } = render(<RouteProgress routeKey="/a" pending timeout={20_000} />);
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(15_000);
+      expect(bar(container)).not.toBeNull();
+      advance(5_400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("never cuts a pending run short with Infinity, and finishes it when pending ends", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/a" pending timeout={Infinity} />);
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(60_000);
+      expect(bar(container)).not.toBeNull();
+      rerender(<RouteProgress routeKey="/a" pending={false} timeout={Infinity} />);
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("applies to a run started from code", () => {
+      const { container } = render(<RouteProgress routeKey="/a" timeout={Infinity} />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(60_000);
+      expect(bar(container)).not.toBeNull();
+      act(() => doneRouteProgress());
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("still caps a run that only a link click started at 10 seconds", () => {
+      const { container } = render(<RouteProgress routeKey="/a" timeout={Infinity} />);
+      fireEvent.click(addLink("/x"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(ROUTE_PROGRESS_TIMEOUT_MS + 400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("caps a link run at a shorter timeout", () => {
+      const { container } = render(<RouteProgress routeKey="/a" timeout={3_000} />);
+      fireEvent.click(addLink("/x"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(3_400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("keeps a pending run when the cap of a link clicked meanwhile lapses", () => {
+      window.history.pushState({}, "", "/start");
+      const { container } = render(<RouteProgress routeKey="/start" pending trackLinks timeout={Infinity} />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      advance(ROUTE_PROGRESS_TIMEOUT_MS + 5_000);
+      expect(bar(container)).not.toBeNull();
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+    });
+  });
+
   describe("pending and link tracking together", () => {
     beforeEach(() => window.history.pushState({}, "", "/start"));
 

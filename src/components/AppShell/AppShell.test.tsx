@@ -237,6 +237,31 @@ describe("AppShell", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 
+  it("names the menu button and the sheet's close button with openMenu and closeMenu when given", async () => {
+    const user = userEvent.setup();
+    setup({ labels: { ...labels, openMenu: "Open menu", closeMenu: "Close menu" } });
+    const menu = screen.getByRole("button", { name: "Open menu" });
+    await user.click(menu);
+    const dialog = screen.getByRole("dialog", { name: "Menu" });
+    expect(within(dialog).getByRole("button", { name: "Close menu" })).toBeInTheDocument();
+  });
+
+  it("keeps the menu name on the button and the provider's close label on the sheet without them", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    expect(
+      within(screen.getByRole("dialog", { name: "Menu" })).getByRole("button", { name: "Close" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the floating bar on wide screens and the slot on phones whatever the stylesheet order", () => {
+    // One class from MobileFloatBar or Button that loads later must not win: the shell's rules are scoped under it.
+    expect(css).toMatch(/\.shell \.float \{\s*display: none;/);
+    expect(css).toMatch(/@media \(width < 60rem\)[\s\S]*\.shell \.primarySlot \{\s*display: none;/);
+    expect(css).not.toMatch(/^\.float,?\s/m);
+  });
+
   it("closes the sheet when a footer link is followed", async () => {
     const user = userEvent.setup();
     setup();
@@ -540,6 +565,29 @@ describe("AppShell slots", () => {
       rerender(view("First, renamed"));
       expect(within(floatBar()).getByRole("button", { name: "Second" })).toBeInTheDocument();
       expect(within(floatBar()).queryByRole("button", { name: "First, renamed" })).toBeNull();
+    });
+
+    it("sizes the desktop slot: md by default, a Button size, or touch for 44px", () => {
+      const { unmount } = renderShell(null, { primaryAction: { label: "Default action" } });
+      const slot = () => within(screen.getByRole("main")).getByRole("button", { name: "Default action" });
+      expect(slot()).toHaveAttribute("data-size", "md");
+      expect(slot()).not.toHaveAttribute("data-touch");
+      unmount();
+      for (const [size, data, touch] of [
+        ["lg", "lg", false],
+        ["touch", "md", true],
+      ] as const) {
+        const view = render(
+          <AppShell groups={groups} labels={labels} primaryAction={{ label: "Default action" }}>
+            <ShellPrimaryActionSlot size={size} />
+          </AppShell>,
+        );
+        expect(slot()).toHaveAttribute("data-size", data);
+        if (touch) expect(slot()).toHaveAttribute("data-touch", "true");
+        else expect(slot()).not.toHaveAttribute("data-touch");
+        view.unmount();
+      }
+      expect(css).toMatch(/\.primarySlot\[data-touch\] \{\s*min-block-size: 2\.75rem;/);
     });
 
     it("forwards the action's data attributes in the desktop slot, as a button and as a link", () => {

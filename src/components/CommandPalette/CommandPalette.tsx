@@ -59,7 +59,19 @@ export type CommandPaletteLabels = {
   loading?: string;
 };
 
-export type CommandPaletteProps = {
+/** `data-*` attributes for the palette's outermost layer (a scoped theme, an analytics hook, a test id). */
+export type CommandPaletteDataAttributes = {
+  [name: `data-${string}`]: string | number | boolean | undefined;
+};
+
+export type CommandPaletteProps = CommandPaletteDataAttributes & {
+  /**
+   * Added to the outermost layer, the fixed root that holds the backdrop and the dialog. The palette is portalled out of
+   * the app's tree, so a palette or theme an app scopes to a class or a `data-*` attribute on its own wrapper does not
+   * reach it: put the same class or attribute here (`data-*` attributes go to the same layer; `data-lufia-theme` and
+   * `data-lufia-mode` work too).
+   */
+  className?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   items: readonly CommandItem[];
@@ -101,10 +113,15 @@ export type CommandPaletteProps = {
   groupOrder?: readonly string[];
   /**
    * Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function
-   * gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are
-   * not announced. The field keeps focus.
+   * gets the current query. While it is set the field is not a listbox: arrows do nothing, Enter calls `onSubmit`, and the
+   * results are not announced. The field keeps focus.
    */
   bodyOverride?: ReactNode | ((state: { query: string }) => ReactNode);
+  /**
+   * Called with the query when Enter is pressed while `bodyOverride` is shown (ask the question again, send it to an
+   * assistant). The palette stays open. Not called while the commands are listed: there Enter runs the highlighted one.
+   */
+  onSubmit?: (query: string) => void;
   /**
    * Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the
    * palette then stays open, and the next Escape closes it. Return anything else to close.
@@ -158,6 +175,9 @@ export function CommandPalette({
   escapeClearsQuery = false,
   shortcut = true,
   container,
+  onSubmit,
+  className,
+  ...data
 }: CommandPaletteProps) {
   const { labels: lufia } = useLufia();
   const id = useId();
@@ -249,8 +269,24 @@ export function CommandPalette({
     item.onSelect();
   };
 
+  /** A pointer pick of a command that keeps the palette open: focus goes back to the field, so typing carries on. */
+  const pick = (item: CommandItem) => {
+    run(item);
+    if (!item.keepOpen) return;
+    const focused = document.activeElement;
+    // The command may have moved focus on purpose (into its answer, another dialog): only a focus the click left on the
+    // panel or the page is taken back.
+    if (focused === null || focused === document.body || focused === panel.current) field.current?.focus();
+  };
+
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (overridden) return;
+    if (overridden) {
+      if (event.key === "Enter" && onSubmit && !event.nativeEvent.isComposing) {
+        event.preventDefault();
+        onSubmit(query);
+      }
+      return;
+    }
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setActive(flat.length ? (activeIndex + 1) % flat.length : 0);
@@ -287,7 +323,12 @@ export function CommandPalette({
   let index = -1;
 
   return createPortal(
-    <div className={styles.root} data-state={phase === "open" ? "open" : "closed"}>
+    <div
+      {...data}
+      className={[styles.root, className].filter(Boolean).join(" ")}
+      data-state={phase === "open" ? "open" : "closed"}
+      data-lufia-part="command-palette-layer"
+    >
       <div className={styles.backdrop} onClick={close} aria-hidden="true" />
       <div
         ref={panel}
@@ -375,7 +416,7 @@ export function CommandPalette({
                             data-active={position === activeIndex || undefined}
                             className={styles.option}
                             onMouseMove={() => position !== activeIndex && setActive(position)}
-                            onClick={() => run(item)}
+                            onClick={() => pick(item)}
                           >
                             {item.icon ? (
                               <span

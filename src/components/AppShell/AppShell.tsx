@@ -48,8 +48,17 @@ export type AppShellLabels = {
   skipToContent: string;
   /** Accessible name of the navigation, in the sidebar and in the sheet. */
   navigation: string;
-  /** Name of the menu button on the floating bar and of the sheet. */
+  /** Name of the navigation sheet, and of the menu button on the floating bar unless `openMenu` is given. */
   menu: string;
+  /**
+   * Name of the floating bar's menu button ("Open menu"), so it differs from the sheet it opens. Defaults to `menu`.
+   */
+  openMenu?: string;
+  /**
+   * Name of the sheet's close button ("Close menu"). Defaults to the `close` label of `LufiaProvider`, as before: a close
+   * button named after the menu itself would not say what it does.
+   */
+  closeMenu?: string;
   /** Name of the floating bar. */
   floatBar: string;
   /** Name of the sidebar's rail button while the sidebar is open. */
@@ -225,10 +234,16 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /**
    * Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then
    * shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar
-   * alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks.
-   * `RouteProgress` `trackLinks`.
+   * alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks, or
+   * `"query"` to also count links that change only the query string. `RouteProgress` `trackLinks`.
    */
-  routeTrackLinks?: boolean;
+  routeTrackLinks?: boolean | "query";
+  /**
+   * Longest a run driven by `routePending` or by code may show before it ends by itself (`RouteProgress` `timeout`).
+   * Default 10 seconds; `Infinity` keeps the bar for as long as the page is pending. Runs started by a link click alone
+   * still end after at most 10 seconds.
+   */
+  routeTimeout?: number;
   /**
    * A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook
    * its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs
@@ -309,6 +324,7 @@ export function AppShell({
   routeKey,
   routePending,
   routeTrackLinks,
+  routeTimeout,
   routeTransitionProps,
   routeProgress = true,
   routeProgressEvents,
@@ -488,6 +504,7 @@ export function AppShell({
             routeKey={routeKey}
             pending={routePending}
             trackLinks={routeTrackLinks}
+            timeout={routeTimeout}
             events={routeProgressEvents}
           />
         ) : null}
@@ -533,7 +550,7 @@ export function AppShell({
           ) : null}
           <MobileFloatBarButton
             variant="icon"
-            label={labels.menu}
+            label={labels.openMenu ?? labels.menu}
             icon={<MenuIcon />}
             aria-haspopup="dialog"
             aria-expanded={sheetOpen}
@@ -545,6 +562,7 @@ export function AppShell({
           open={sheetOpen && !wide}
           onOpenChange={setSheetOpen}
           label={labels.menu}
+          closeLabel={labels.closeMenu}
           renderAs={sheetAs}
           container={sheetContainer}
           layerProps={sheetLayer}
