@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { PendingIcon } from "../ActionIcons";
+import { StatusBadge, type BadgeTone } from "../Badge";
 import styles from "./StatusTimeline.module.css";
 
 /**
@@ -39,72 +39,49 @@ export type StatusTimelineTrack = {
 
 export type StatusTimelineProps = HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[] };
 
-const NODE_TONE: Record<StatusTimelineNodeState, "neutral" | "warn" | "danger" | "ok"> = {
+const NODE_TONE: Record<StatusTimelineNodeState, BadgeTone> = {
   needsTimestamp: "neutral",
-  pending: "warn",
+  pending: "warning",
   overdue: "danger",
-  done: "ok",
+  done: "success",
   notApplicable: "neutral",
 };
 
-function CheckIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M3.5 8.5l3 3 6-7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+/* One marker family: every glyph is drawn on the same 16-unit grid, with the same stroke weight and round caps, and
+   centred on (8, 8), so the shape alone tells the states apart (WCAG 1.4.1) and none sits off-centre in its ring. */
+const GLYPH_STROKE = {
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+} as const;
 
-function OverdueIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 3L12.5 10.5H3.5L8 3z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M8 5.6v2.4M8 9.3v.1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function NeedsTimestampIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="5.8" stroke="currentColor" strokeWidth="1.4" strokeDasharray="2.4 2.4" />
-    </svg>
-  );
-}
-
-function NotApplicableIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M4.5 8h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-const NODE_ICON: Record<StatusTimelineNodeState, () => ReactNode> = {
-  needsTimestamp: NeedsTimestampIcon,
-  pending: () => <PendingIcon size={13} />,
-  overdue: OverdueIcon,
-  done: CheckIcon,
-  notApplicable: NotApplicableIcon,
+const NODE_GLYPH: Record<StatusTimelineNodeState, ReactNode> = {
+  done: <path d="M4.6 8.3l2.3 2.3 4.5-4.9" {...GLYPH_STROKE} />,
+  pending: <path d="M8 4.6V8l2.4 1.6" {...GLYPH_STROKE} />,
+  overdue: <path d="M8 4.5v4.3M8 11.5v.01" {...GLYPH_STROKE} />,
+  needsTimestamp: <path d="M5 8h.01M8 8h.01M11 8h.01" {...GLYPH_STROKE} />,
+  notApplicable: <path d="M5 8h6" {...GLYPH_STROKE} />,
 };
 
+function NodeMarker({ state }: { state: StatusTimelineNodeState }) {
+  return (
+    <svg className={styles.glyph} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      {NODE_GLYPH[state]}
+    </svg>
+  );
+}
+
 function StatusTimelineNodeItem({ node }: { node: StatusTimelineNode }) {
-  const Icon = NODE_ICON[node.state];
   return (
     <li className={`${styles.node} ${styles[node.state]}`}>
       <span className={styles.icon}>
-        <Icon />
+        <NodeMarker state={node.state} />
       </span>
       <div className={styles.body}>
         <div className={styles.head}>
           <strong className={styles.label}>{node.label}</strong>
-          <span className={`${styles.pill} ${styles[NODE_TONE[node.state]]}`}>{node.stateLabel}</span>
+          <StatusBadge tone={NODE_TONE[node.state]}>{node.stateLabel}</StatusBadge>
         </div>
         {node.timestampLabel && <span className={styles.timestamp}>{node.timestampLabel}</span>}
         {!node.timestampLabel && node.deadlineLabel && (

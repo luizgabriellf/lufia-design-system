@@ -11775,7 +11775,7 @@
       },
       "docs": {
         "mdx": "src/components/StatusTimeline/StatusTimeline.mdx",
-        "overview": "A vertical, connected timeline of obligations or steps grouped into tracks. Each node has an icon, a state pill, an\noptional timestamp or deadline, a hint, and an optional inline action.",
+        "overview": "A vertical, connected timeline of obligations or steps grouped into tracks. Each node has a marker, a state\n`StatusBadge`, an optional timestamp or deadline, a hint, and an optional inline action.",
         "usage": {
           "language": "tsx",
           "code": "import { StatusTimeline } from \"@lufia/design-system/components/StatusTimeline\";\n\n<StatusTimeline\n  tracks={[\n    {\n      id: \"review\",\n      title: \"Review\",\n      nodes: [\n        {\n          id: \"n1\",\n          label: \"Notify the team\",\n          state: \"done\",\n          stateLabel: \"Done\",\n          timestampLabel: formatted,\n        },\n      ],\n    },\n  ]}\n/>;"
@@ -11794,11 +11794,11 @@
         "keyboardNotes": null,
         "notes": [
           "Each track is a `<section>` with an `<h3>`; each node list is an ordered list, so order and count are announced.",
-          "**State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a meaningful `stateLabel`.",
-          "Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated `on-solid` text token that passes AA in light and dark.",
+          "**State is named in words** through `stateLabel` in the `StatusBadge`; colour and marker are reinforcement only. Always pass a meaningful `stateLabel`.",
+          "Markers are one family (same ring, stroke and centring) and each state has its own glyph shape: a check (done), clock hands (pending), an exclamation mark (overdue), three dots (needs a timestamp) and a dash (not applicable), so states differ without colour.",
           "Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.",
           "Actions are slots; keep them keyboard operable and labelled.",
-          "In forced-colors mode the pill keeps a visible border."
+          "In forced-colors mode the badge keeps a visible border (the `Badge` rule)."
         ]
       },
       "motion": {
@@ -11810,12 +11810,12 @@
         "--lufia-color-border-strong",
         "--lufia-color-border-subtle",
         "--lufia-color-status-danger-bg",
+        "--lufia-color-status-danger-border",
         "--lufia-color-status-danger-fg",
-        "--lufia-color-status-danger-on-solid",
-        "--lufia-color-status-danger-solid",
         "--lufia-color-status-neutral-bg",
         "--lufia-color-status-neutral-fg",
         "--lufia-color-status-success-bg",
+        "--lufia-color-status-success-border",
         "--lufia-color-status-success-fg",
         "--lufia-color-status-warning-bg",
         "--lufia-color-status-warning-border",
@@ -11823,9 +11823,6 @@
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
         "--lufia-font-family-display",
-        "--lufia-font-family-mono",
-        "--lufia-font-weight-semibold",
-        "--lufia-radius-sm",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
