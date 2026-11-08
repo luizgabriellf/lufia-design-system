@@ -677,7 +677,7 @@ describe("MoreActions", () => {
       scope.remove();
     });
 
-    it("copies a nested theme with the mode of that scope, never an inner theme with an unrelated outer mode", async () => {
+    it("copies a nested theme with its own mode only, never an unrelated outer mode", async () => {
       measure({ triggerLeft: 200 });
       const outer = document.createElement("section");
       outer.setAttribute("data-lufia-mode", "dark");
@@ -686,12 +686,20 @@ describe("MoreActions", () => {
       outer.append(inner);
       document.body.append(outer);
       const user = userEvent.setup();
-      render(<MoreActions label="More" items={items} />, { container: inner });
+      const view = render(<MoreActions label="More" items={items} />, { container: inner });
       await user.click(screen.getByRole("button", { name: "More" }));
-      const menu = screen.getByRole("menu");
-      // The theme scope is inside the dark scope: the pair is theme b in dark, taken from the scope that declares them.
-      expect(menu).toHaveAttribute("data-lufia-theme", "b");
-      expect(menu).toHaveAttribute("data-lufia-mode", "dark");
+      // Theme CSS ignores a mode above the theme element: theme b here follows the OS scheme, so the menu gets no mode.
+      expect(screen.getByRole("menu")).toHaveAttribute("data-lufia-theme", "b");
+      expect(screen.getByRole("menu")).not.toHaveAttribute("data-lufia-mode");
+      view.unmount();
+      // A theme element that declares its own mode passes that mode on.
+      const own = document.createElement("div");
+      own.setAttribute("data-lufia-theme", "b");
+      own.setAttribute("data-lufia-mode", "dark");
+      outer.append(own);
+      render(<MoreActions label="More" items={items} />, { container: own });
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(screen.getByRole("menu")).toHaveAttribute("data-lufia-mode", "dark");
       outer.remove();
     });
   });

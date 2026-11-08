@@ -159,9 +159,10 @@ function inheritContext(root: HTMLElement, menu: HTMLElement, host: HTMLElement)
   const theme = root.closest<HTMLElement>("[data-lufia-theme]");
   if (theme && !theme.contains(host)) {
     copy("data-lufia-theme", theme);
-    // The mode that applies to the theme scope: its own, else the closest one above it.
-    const mode = theme.closest<HTMLElement>("[data-lufia-mode]");
-    if (mode) menu.setAttribute("data-lufia-mode", mode.getAttribute("data-lufia-mode") ?? "");
+    // Theme CSS reads a mode only on the theme element itself (no mode there means it follows the OS scheme), so copy the
+    // mode from that element alone, never from an ancestor.
+    const mode = theme.getAttribute("data-lufia-mode");
+    if (mode !== null) menu.setAttribute("data-lufia-mode", mode);
   } else copy("data-lufia-mode", root.closest<HTMLElement>("[data-lufia-mode]"));
   copy("dir", root.closest<HTMLElement>("[dir]"));
   copy("lang", root.closest<HTMLElement>("[lang]"));
