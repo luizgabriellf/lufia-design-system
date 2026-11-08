@@ -43,6 +43,27 @@ render as links through the `linkComponent` set on `LufiaProvider`.
 <Canvas of={Stories.AlignedToStart} />
 <Canvas of={Stories.LongLabels} />
 
+### Popover placement
+
+The open popover is portalled to `document.body` (or into the open modal the button sits in, so the modal's focus trap and
+inert page do not lock it out) and placed with `position: fixed` from the button's box. An ancestor with `overflow: hidden`,
+such as a card with rounded corners, cannot clip it. It lines up with `align`, flips to the other edge when it would run past
+the viewport, opens upward when there is not enough room below and more above, scrolls inside when the list is taller than
+the room it has, and follows the button on scroll (of any ancestor) and resize. Before the component has mounted (server
+render, hydration) the menu renders in place. In `narrowOnlyScope="container"` the portalled menu reads the container's
+width when it opens, and on resize, because it has left the container its `@container` query would reach.
+
+Because the menu leaves the component's subtree once mounted, find it by role (`getByRole("menu")`), not inside the
+component's root. What the subtree set that the body does not is copied onto the menu: a nested `data-lufia-theme` or
+`data-lufia-mode` scope, `dir` and `lang`, and any `--lufia-*` custom properties in the root's inline `style`. Custom
+properties set by a stylesheet rule on an ancestor are not copied; set them on the theme scope or on `:root`. The menu
+closes, without moving focus, when its button becomes hidden or scrolls out of view. Stacking is `--lufia-z-dropdown`; a
+page with a sticky or fixed layer above it (the menu is on the body, outside that layer's stacking context) raises
+`--lufia-z-dropdown` on `:root`, the way `--lufia-overlay-z` is raised for the sheet.
+
+<Canvas of={Stories.InClippingCardNearBottom} story={{ inline: false, height: "24rem" }} />
+<Canvas of={Stories.InClippingCardNearTop} story={{ inline: false, height: "24rem" }} />
+
 ### Sheet presentation
 
 `presentation` chooses how the open menu is shown. `"popover"` (the default) hangs it from the button. `"sheet"` shows a
@@ -145,7 +166,7 @@ has closed, so a dialog it opens returns focus to the button when it closes.
 - The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
   trigger on close or selection.
 - Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.
-- Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.
+- Choosing a link item also returns focus to the button. The popover flips to the other edge of the button when it would run past the viewport, and opens upward when there is no room below. With no items, no button is rendered.
 - A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
   never carries the meaning alone.
 - A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's

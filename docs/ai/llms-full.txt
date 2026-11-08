@@ -3443,7 +3443,7 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `presentation` | `"popover" \| "auto" \| "sheet"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
-| `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. `PageActions` sets this from its `collapse` prop. |
+| `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop. |
 | `defaultOpen` | `boolean` | no | `false` | Renders the menu open on first paint. For documentation and tests; people open it themselves. A popover opens without moving focus; a sheet is modal, so it always moves focus to its first item. |
 
 Other native element attributes pass through to the root element.
@@ -3484,7 +3484,7 @@ Keyboard:
 - The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
 - The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
 - Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.
-- Choosing a link item also returns focus to the button. The menu flips to the other edge of the button when it would run past the viewport. With no items, no button is rendered.
+- Choosing a link item also returns focus to the button. The popover flips to the other edge of the button when it would run past the viewport, and opens upward when there is no room below. With no items, no button is rendered.
 - A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
 - A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's
 - Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.
@@ -3522,6 +3522,9 @@ phrase.
 - `components-actions-moreactions--sheet-phone-320`
 - `components-actions-moreactions--sheet-over-dock`
 - `components-actions-moreactions--open-a-dialog-from-a-menu-item`
+- `components-actions-moreactions--in-clipping-card-near-bottom`
+- `components-actions-moreactions--in-clipping-card-near-top`
+- `components-actions-moreactions--container-scope-narrow-host`
 
 ## NavRow
 
@@ -6517,7 +6520,7 @@ Closes a non-modal popup (dropdown, menu, popover) when Escape is pressed or the
 Closes a non-modal popup (dropdown, menu, popover) on Escape or a pointer press outside it. Escape returns focus to the `toggle` that opened it. A copy with no layout boxes (a desktop and a phone instance of the same control, one hidden by CSS) never listens, so the two do not close each other.
 
 ```ts
-useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined): void
+useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined, portalled?: RefObject<HTMLElement | null> | undefined): void
 ```
 
 | Parameter | Type | Required | Description |
@@ -6526,6 +6529,7 @@ useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>
 | `close` | `() => void` | yes |  |
 | `root` | `RefObject<HTMLElement \| null>` | yes |  |
 | `toggle` | `RefObject<HTMLElement \| null>` | no |  |
+| `portalled` | `RefObject<HTMLElement \| null>` | no | A second element that counts as inside, for a popup portalled out of `root`. |
 
 ### Example
 

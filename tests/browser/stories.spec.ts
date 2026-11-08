@@ -190,6 +190,74 @@ test.describe("page actions sheet", () => {
   });
 });
 
+test.describe("more actions popover", () => {
+  for (const [story, side] of [
+    ["in-clipping-card-near-bottom", "top"],
+    ["in-clipping-card-near-top", "bottom"],
+  ] as const) {
+    test(`inside an overflow-hidden card the last item is visible and clickable (${side})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await openStory(page, `components-actions-moreactions--${story}`);
+      const menu = page.getByRole("menu", { name: "More actions" });
+      await expect(menu).toBeVisible();
+      const last = menu.getByRole("menuitem", { name: "Delete record" });
+      // Poll: the menu fades in, so measure once it has settled.
+      await expect
+        .poll(async () =>
+          page.evaluate(() => {
+            const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].at(-1);
+            const menuElement = item?.closest<HTMLElement>('[role="menu"]');
+            if (!item || !menuElement) return "missing";
+            const box = item.getBoundingClientRect();
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            const inViewport =
+              box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth;
+            const card = document.querySelector('[data-testid="clipping-card"]');
+            return {
+              hit: !!hit && item.contains(hit),
+              inViewport,
+              escaped: !!card && !card.contains(menuElement),
+              side: menuElement.getAttribute("data-side"),
+            };
+          }),
+        )
+        .toEqual({ hit: true, inViewport: true, escaped: true, side });
+      await last.click();
+      await expect(menu).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "More actions" })).toBeFocused();
+    });
+  }
+});
+
+test.describe("more actions container scope", () => {
+  test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await openStory(page, "components-actions-moreactions--container-scope-narrow-host");
+    const trigger = page.getByRole("button", { name: "More actions" });
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    const menu = page.getByRole("menu", { name: "More actions" });
+    const share = menu.getByRole("menuitem", { name: "Share" });
+    await expect(share).toBeVisible();
+    await expect(share).toBeFocused();
+    await expect
+      .poll(async () =>
+        share.evaluate((item) => {
+          const box = item.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !!hit && item.contains(hit);
+        }),
+      )
+      .toBe(true);
+    await share.click();
+    await expect(menu).toHaveCount(0);
+  });
+});
+
 test.describe("page actions breakpoints", () => {
   const root = (page: Page) => page.locator('[data-lufia-part="page-actions"]');
 

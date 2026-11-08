@@ -28,7 +28,7 @@ Closes a non-modal popup (dropdown, menu, popover) when Escape is pressed or the
 Closes a non-modal popup (dropdown, menu, popover) on Escape or a pointer press outside it. Escape returns focus to the `toggle` that opened it. A copy with no layout boxes (a desktop and a phone instance of the same control, one hidden by CSS) never listens, so the two do not close each other.
 
 ```ts
-useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined): void
+useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>, toggle?: RefObject<HTMLElement | null> | undefined, portalled?: RefObject<HTMLElement | null> | undefined): void
 ```
 
 | Parameter | Type | Required | Description |
@@ -37,6 +37,7 @@ useDismiss(open: boolean, close: () => void, root: RefObject<HTMLElement | null>
 | `close` | `() => void` | yes |  |
 | `root` | `RefObject<HTMLElement \| null>` | yes |  |
 | `toggle` | `RefObject<HTMLElement \| null>` | no |  |
+| `portalled` | `RefObject<HTMLElement \| null>` | no | A second element that counts as inside, for a popup portalled out of `root`. |
 
 ## Example
 

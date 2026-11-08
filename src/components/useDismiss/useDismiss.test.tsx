@@ -50,6 +50,33 @@ describe("useDismiss", () => {
     expect(screen.queryByRole("list", { name: "Menu" })).not.toBeInTheDocument();
   });
 
+  it("counts a second element, such as a portalled popup, as inside", async () => {
+    function Portalled() {
+      const [open, setOpen] = useState(true);
+      const root = useRef<HTMLDivElement>(null);
+      const popup = useRef<HTMLUListElement>(null);
+      useDismiss(open, () => setOpen(false), root, undefined, popup);
+      return (
+        <>
+          <button type="button">Outside</button>
+          <div ref={root} />
+          {open ? (
+            <ul ref={popup} aria-label="Menu">
+              <li>Item</li>
+            </ul>
+          ) : null}
+        </>
+      );
+    }
+    const user = userEvent.setup();
+    withLayout();
+    render(<Portalled />);
+    await user.click(screen.getByText("Item"));
+    expect(screen.getByRole("list", { name: "Menu" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+    expect(screen.queryByRole("list", { name: "Menu" })).not.toBeInTheDocument();
+  });
+
   it("ignores a copy that has no layout boxes", async () => {
     const user = userEvent.setup();
     render(<Menu />); // jsdom has no layout: every getClientRects() is empty
