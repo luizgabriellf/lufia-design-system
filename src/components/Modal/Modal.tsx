@@ -20,6 +20,7 @@ import { useTopModalDialog } from "./topModalDialog";
 import { useHeaderBlockSize } from "./useHeaderBlockSize";
 import { useNativeDialog } from "./useNativeDialog";
 import { useMediaQuery } from "../useMediaQuery";
+import { CloseIcon } from "../Icon/icons";
 import styles from "./Modal.module.css";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl";
@@ -267,15 +268,7 @@ export function Modal({
               disabled={busy}
               onClick={requestClose}
             >
-              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                <path
-                  d="m3.5 3.5 9 9m0-9-9 9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <CloseIcon />
             </button>
           )}
         </div>

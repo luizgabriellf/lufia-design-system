@@ -1,4 +1,5 @@
 import type { ThHTMLAttributes } from "react";
+import { ArrowDownIcon, ArrowUpIcon } from "../Icon/icons";
 import styles from "./SortableTh.module.css";
 
 export type SortDirection = "asc" | "desc";
@@ -26,7 +27,7 @@ export function SortableTh({ label, active, dir, onSort, className, ...rest }: S
         {label}
         {active ? (
           <span aria-hidden="true" className={styles.arrow}>
-            {dir === "asc" ? "↑" : "↓"}
+            {dir === "asc" ? <ArrowUpIcon size="sm" /> : <ArrowDownIcon size="sm" />}
           </span>
         ) : null}
       </button>

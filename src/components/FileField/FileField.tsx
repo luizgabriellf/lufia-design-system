@@ -15,6 +15,7 @@ import { FieldError } from "../FormField/FieldMessages";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
 import { VisuallyHidden } from "../VisuallyHidden";
+import { CloseIcon, UploadIcon } from "../Icon/icons";
 import styles from "./FileField.module.css";
 import { formatFileSize, matchesAccept, sameFile } from "./fileUtils";
 
@@ -224,16 +225,7 @@ export function FileField({
           onChange={(event) => add(Array.from(event.target.files ?? []))}
         />
         <label htmlFor={baseId} className={styles.trigger} aria-hidden={named ? "true" : undefined}>
-          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false">
-            <path
-              d="M10 13V3m0 0L6 7m4-4 4 4M4 13v2.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V13"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <UploadIcon />
           {triggerText}
         </label>
         {dropLabel ? (
@@ -255,14 +247,7 @@ export function FileField({
                 disabled={control.disabled}
                 onClick={() => remove(file)}
               >
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-                  <path
-                    d="M4 4l8 8M12 4l-8 8"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <CloseIcon size="sm" />
                 {removeText ? <span>{removeText}</span> : null}
               </button>
             </li>

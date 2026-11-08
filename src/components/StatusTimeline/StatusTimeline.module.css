@@ -36,19 +36,13 @@
   padding-bottom: 0;
 }
 
+/* The marker is a StatusIcon ring; the timeline sets its diameter and a heavier border, and lifts it above the connector. */
 .icon {
+  --lufia-status-icon-size: 1.5rem;
+  --lufia-status-icon-ring-border-width: var(--lufia-border-width-thick);
+
   position: relative;
   z-index: 1;
-  flex: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--lufia-color-border-strong);
-  background: var(--lufia-color-bg-surface-raised);
-  color: var(--lufia-color-text-muted);
 }
 
 /* Connector edge between this node and the next. Anchored on `.node` (not
@@ -69,39 +63,6 @@
   transform: translateX(-50%);
   width: 2px;
   background: var(--lufia-color-border-subtle);
-}
-
-/* Every state uses the same ring: tinted background, tone border, glyph in the tone colour. The glyph shape names the
-   state; colour only reinforces it. */
-.node.done .icon {
-  border-color: var(--lufia-color-status-success-border);
-  background: var(--lufia-color-status-success-bg);
-  color: var(--lufia-color-status-success-fg);
-}
-
-.node.pending .icon {
-  border-color: var(--lufia-color-status-warning-border);
-  background: var(--lufia-color-status-warning-bg);
-  color: var(--lufia-color-status-warning-fg);
-}
-
-.node.overdue .icon {
-  border-color: var(--lufia-color-status-danger-border);
-  background: var(--lufia-color-status-danger-bg);
-  color: var(--lufia-color-status-danger-fg);
-}
-
-.node.needsTimestamp .icon,
-.node.notApplicable .icon {
-  border-color: var(--lufia-color-border-strong);
-  background: var(--lufia-color-status-neutral-bg);
-  color: var(--lufia-color-status-neutral-fg);
-}
-
-.glyph {
-  display: block;
-  width: 14px;
-  height: 14px;
 }
 
 .body {
@@ -151,8 +112,7 @@
   }
 
   .icon {
-    width: 28px;
-    height: 28px;
+    --lufia-status-icon-size: 1.75rem;
   }
 
   /* Keep the connector's top offset and horizontal centering matched to the

@@ -19,8 +19,10 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 - [ ] Contrast check in CI: every text/background semantic pair meets WCAG 2.2 AA (4.5:1 for body text, 3:1 for large text and UI), in every theme.
 
 ## 2. Iconography and assets
-- [ ] One icon set. Ship it as tree-shakeable React components with a consistent `size`/`aria-label`/`aria-hidden` API.
-- [ ] Icon guidelines: decorative vs. meaningful, sizes, stroke width.
+- [x] One icon set, owned by the package (geometry adapted from Lucide, ISC; notice in `THIRD_PARTY_NOTICES.md`), shipped as tree-shakeable React components from `@lufia/design-system/icons`: one 24-unit grid, `currentColor` strokes with round caps and joins, stroke from `--lufia-icon-stroke` (`--lufia-icon-stroke-sm` at the small size), sizes `sm`/`md`/`lg` from `--lufia-icon-size-*` plus `1em`, decorative by default and named by `title` or `aria-label`.
+- [x] Icon guidelines: the Icons foundation page (grid, stroke, sizes, decorative vs. meaningful, `createIcon` for an app's own glyphs, the status icons).
+- [x] **Rule: no hand-drawn inline SVG icons in components, and no text glyphs (multiplication sign, check marks, arrows) as icons.** Use a named icon, `StatusIcon` for a status, or `createIcon` for a glyph the set lacks. ESLint enforces it in `src/components` and `src/motion` (`no-restricted-syntax`; charts such as `Sparkline` are exempt, and so are tests and stories).
+- [x] One status family: `StatusIcon` (`success`, `warning`, `danger`, `info`, `pending`, `neutral`, `needsInput`), each tone a distinct shape so it reads without colour. Every status marker in the package uses it.
 
 ## 3. Components: API conventions
 - [ ] One API style guide (`docs/API_CONVENTIONS.md`):

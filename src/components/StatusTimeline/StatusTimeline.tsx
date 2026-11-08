@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
+import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
 import { StatusBadge, type BadgeTone } from "../Badge";
 import styles from "./StatusTimeline.module.css";
 
@@ -47,37 +48,19 @@ const NODE_TONE: Record<StatusTimelineNodeState, BadgeTone> = {
   notApplicable: "neutral",
 };
 
-/* One marker family: every glyph is drawn on the same 16-unit grid, with the same stroke weight and round caps, and
-   centred on (8, 8), so the shape alone tells the states apart (WCAG 1.4.1) and none sits off-centre in its ring. */
-const GLYPH_STROKE = {
-  stroke: "currentColor",
-  strokeWidth: 1.8,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-} as const;
-
-const NODE_GLYPH: Record<StatusTimelineNodeState, ReactNode> = {
-  done: <path d="M4.6 8.3l2.3 2.3 4.5-4.9" {...GLYPH_STROKE} />,
-  pending: <path d="M8 4.6V8l2.4 1.6" {...GLYPH_STROKE} />,
-  overdue: <path d="M8 4.5v4.3M8 11.5v.01" {...GLYPH_STROKE} />,
-  needsTimestamp: <path d="M5 8h.01M8 8h.01M11 8h.01" {...GLYPH_STROKE} />,
-  notApplicable: <path d="M5 8h6" {...GLYPH_STROKE} />,
+/* The marker is the shared status family: its shape names the state (WCAG 1.4.1), the colour only reinforces it. */
+const NODE_STATUS: Record<StatusTimelineNodeState, StatusTone> = {
+  needsTimestamp: "needsInput",
+  pending: "pending",
+  overdue: "danger",
+  done: "success",
+  notApplicable: "neutral",
 };
-
-function NodeMarker({ state }: { state: StatusTimelineNodeState }) {
-  return (
-    <svg className={styles.glyph} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      {NODE_GLYPH[state]}
-    </svg>
-  );
-}
 
 function StatusTimelineNodeItem({ node }: { node: StatusTimelineNode }) {
   return (
-    <li className={`${styles.node} ${styles[node.state]}`}>
-      <span className={styles.icon}>
-        <NodeMarker state={node.state} />
-      </span>
+    <li className={styles.node} data-state={node.state}>
+      <StatusIcon tone={NODE_STATUS[node.state]} variant="ring" className={styles.icon} />
       <div className={styles.body}>
         <div className={styles.head}>
           <strong className={styles.label}>{node.label}</strong>

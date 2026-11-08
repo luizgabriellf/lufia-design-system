@@ -28,6 +28,7 @@ import type {
   NotificationTab,
 } from "./types";
 import { useUnreadAnnouncement } from "./useUnreadAnnouncement";
+import { CheckCheckIcon, ChevronRightIcon, CloseIcon } from "../Icon/icons";
 import styles from "./NotificationPanel.module.css";
 
 /** What a notification centre shows: shared by `NotificationPanel` and `NotificationCenter`. */
@@ -100,42 +101,6 @@ const ARRIVAL_MS = 900;
 const CASCADE_MS = 700;
 /** Where the arrows go in a tab row. */
 const ROW_ENDS = ["Home", "End"];
-
-function ChevronIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="1rem" height="1rem" fill="none" focusable="false" aria-hidden="true">
-      <path
-        d="M6 3.5 10.5 8 6 12.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CheckAllIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="1rem" height="1rem" fill="none" focusable="false" aria-hidden="true">
-      <path
-        d="M1.5 8.5 4.5 11.5 10 5M7 11.5l.5.5L14 5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="1rem" height="1rem" fill="none" focusable="false" aria-hidden="true">
-      <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 /**
  * The content of a notification centre, without the bell: a header with the unread count and "Mark all as read", tabs, an
@@ -468,13 +433,18 @@ export function NotificationPanel({
                 }}
               >
                 <span className={styles.markAllIcon} aria-hidden="true">
-                  <CheckAllIcon />
+                  <CheckCheckIcon size="sm" />
                 </span>
                 <span className={styles.markAllText}>{markAllLabel}</span>
               </Button>
             ) : null}
             {onClose ? (
-              <IconButton size="sm" icon={<CloseIcon />} aria-label={labels.close} onClick={onClose} />
+              <IconButton
+                size="sm"
+                icon={<CloseIcon size="sm" />}
+                aria-label={labels.close}
+                onClick={onClose}
+              />
             ) : null}
           </span>
         </header>
@@ -537,7 +507,7 @@ export function NotificationPanel({
                 onClick={() => run(() => footer.onSelect?.())}
               >
                 {footer.label}
-                <ChevronIcon />
+                <ChevronRightIcon size="sm" />
               </LufiaLink>
             ) : (
               <button
@@ -546,7 +516,7 @@ export function NotificationPanel({
                 onClick={() => run(() => footer.onSelect?.())}
               >
                 {footer.label}
-                <ChevronIcon />
+                <ChevronRightIcon size="sm" />
               </button>
             )}
           </div>

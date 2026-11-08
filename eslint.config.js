@@ -34,6 +34,33 @@ export default tseslint.config(
     },
   },
   {
+    // No hand-drawn icons in components (docs/STANDARDS.md, "Icons"): use the icon set, `StatusIcon`, or `createIcon`.
+    // Charts draw data, not icons, so they are exempt.
+    files: ["src/components/**/*.tsx", "src/motion/**/*.tsx"],
+    ignores: [
+      "src/components/Icon/**",
+      "src/components/StatusIcon/**",
+      "src/components/Sparkline/**",
+      "**/*.test.tsx",
+      "**/*.stories.tsx",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXOpeningElement[name.name='svg']",
+          message:
+            "Hand-drawn inline SVG icon. Use a named icon or StatusIcon from components/Icon, or createIcon() for a new glyph.",
+        },
+        {
+          selector:
+            "JSXText[value=/[\\u2713\\u2714\\u2715\\u2716\\u00D7\\u2191\\u2193\\u2190\\u2192\\u203A\\u2039\\u22EE\\u26A0]/]",
+          message: "Unicode glyph used as an icon. Use a named icon from components/Icon instead.",
+        },
+      ],
+    },
+  },
+  {
     files: ["**/*.test.{ts,tsx}", "src/test/**"],
     languageOptions: { globals: { ...globals.vitest } },
   },

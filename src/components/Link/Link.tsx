@@ -1,6 +1,7 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { LufiaLink } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
+import { ExternalLinkIcon } from "../Icon/icons";
 import styles from "./Link.module.css";
 
 export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children"> & {
@@ -13,28 +14,6 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "
    */
   externalLabel?: string;
 };
-
-function ExternalIcon() {
-  return (
-    <svg
-      className={styles.indicator}
-      viewBox="0 0 16 16"
-      width="1em"
-      height="1em"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M6.5 3.5H3.5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3M9.5 2.5h4v4M13.5 2.5l-6 6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * An inline text link. It renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works. An
@@ -59,7 +38,8 @@ export function Link({ externalLabel, className, children, ...rest }: LinkProps)
       {children}
       {external ? (
         <>
-          <ExternalIcon /> <VisuallyHidden>{externalLabel}</VisuallyHidden>
+          <ExternalLinkIcon size="1em" className={styles.indicator} />{" "}
+          <VisuallyHidden>{externalLabel}</VisuallyHidden>
         </>
       ) : null}
     </LufiaLink>

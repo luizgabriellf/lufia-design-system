@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "react";
+import { StatusIcon } from "../StatusIcon/StatusIcon";
 import styles from "./Stepper.module.css";
 
 export type StepDef = {
@@ -43,7 +44,7 @@ export function Stepper({ steps, current, onStepClick, className, ...rest }: Ste
       <ol className={styles.list}>
         {steps.map((step, i) => {
           const state = i < current ? "done" : i === current ? "active" : "todo";
-          const mark = state === "done" ? "✓" : i + 1;
+          const mark = state === "done" ? <StatusIcon tone="success" variant="mark" size="sm" /> : i + 1;
           const name = `${i + 1}. ${step.label}`;
           return (
             <li
