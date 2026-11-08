@@ -61,7 +61,7 @@ export const ENTRIES: Entry[] = [
     "Actions",
     "The action bar of a page: one primary action, the rest collapsed on narrow screens.",
   ),
-  c("ActionIcons", "Actions", "A small, consistent set of stroke icons for common row and page actions."),
+  c("ActionIcons", "Actions", "Deprecated aliases of six action icons; use the named icons of Icon instead."),
 
   c(
     "FormField",
@@ -195,6 +195,11 @@ export const ENTRIES: Entry[] = [
     apg("Alert", "alert"),
   ),
   c("SuccessCheck", "Feedback", "An animated check mark for a completed action."),
+  c(
+    "StatusIcon",
+    "Feedback",
+    "One family of status markers, each tone with its own shape so it reads without colour.",
+  ),
   c("EmptyState", "Feedback", "What to show when a list or panel has nothing yet, with the one next step."),
 
   c(
@@ -239,6 +244,11 @@ export const ENTRIES: Entry[] = [
     "LufiaProvider",
     "Utilities",
     "Sets the link adapter and the aria-only labels once, at the root of an app.",
+  ),
+  c(
+    "Icon",
+    "Utilities",
+    "The icon set: named stroke icons on one 24-unit grid, the Icon primitive and createIcon for an app's own glyphs.",
   ),
   c("VisuallyHidden", "Utilities", "Hides text visually and keeps it for assistive technology."),
 

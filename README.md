@@ -94,4 +94,5 @@ The Geist Project Authors, under the SIL Open Font License 1.1. The files are se
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The icon geometry is adapted from [Lucide](https://lucide.dev) (ISC); see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

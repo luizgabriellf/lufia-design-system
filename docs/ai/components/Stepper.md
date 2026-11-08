@@ -76,4 +76,5 @@ what fits under a dot.
 - `components-navigation-stepper--long-labels`
 - `components-navigation-stepper--mobile`
 - `components-navigation-stepper--interactive`
+- `components-navigation-stepper--in-scrolled-modal`
 - `components-navigation-stepper--all-themes`

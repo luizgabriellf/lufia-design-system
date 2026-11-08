@@ -80,6 +80,7 @@ navigation is data, so both layouts always agree.
 | `statusRow` | `ReactNode` | no |  | A row between `topBar` and the page: sync state, a notice. Give it the live-region semantics it needs. |
 | `sheetAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`). |
 | `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
+| `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
 | `onMenuOpenChange` | `(open: boolean) => void` | no |  |  |
 | `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
@@ -164,6 +165,8 @@ No props of its own.
 | `dragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the sheet: a share of its height kept between a shortest and a longest distance, or a quick flick. Each field you leave out keeps its default (`SHEET_DRAG_THRESHOLD`: 18% of the height, kept between 64 and 112 pixels; a flick of 0.6 px/ms over 24 pixels). Applies to the grabber, the header and the body alike. |
 | `closeOnNavigate` | `boolean` | no | `false` | Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`. |
 | `container` | `HTMLElement \| null` | no |  | Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. |
+| `layerProps` | `NavSheetLayerProps` | no |  | A class and `data-*` attributes for the outermost layer: the fixed root that holds the backdrop and the panel, or the `<dialog>` with `renderAs="dialog"`. The sheet is portalled out of the app's tree, so a palette an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here. The theme attributes `data-lufia-theme` and `data-lufia-mode` work too. |
+| `inheritThemeFrom` | `RefObject<HTMLElement \| null>` | no |  | An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`, which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet. Attributes given in `layerProps` win. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both. |
 | `children` | `ReactNode` | yes |  |  |
 
@@ -391,9 +394,11 @@ Returned members:
 - `AppShellPrimaryAction`: `{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellRouteTransitionProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellSheetProps`: `{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes`
 - `AppShellSlotState`: `{ collapsed: boolean; surface: "sidebar" | "sheet" | "topBar"; closeSheet: () => void; openSheet: () => void; }`
 - `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }`
+- `NavSheetLayerProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `RouteProgressEvents`: `{ start: string; done: string; }`
 - `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }`
 - `SheetDragThreshold`: `{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }`
@@ -487,6 +492,7 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--static-headings`
 - `components-navigation-appshell--float-bar-data-attributes`
 - `components-navigation-appshell--native-dialog-sheet`
+- `components-navigation-appshell--sheet-in-scoped-dark-mode`
 - `components-navigation-appshell--registered-primary-action`
 - `components-navigation-appshell--counts-and-badges`
 - `components-navigation-appshell--footer`

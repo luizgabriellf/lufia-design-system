@@ -1,0 +1,98 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Icon.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Icon"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The icon set of the package: named icons such as `CloseIcon`, `CheckIcon` or `SearchIcon`, the `Icon` primitive they are
+built on, and `createIcon` for an app's own glyphs. Every icon shares one 24-unit grid, a `currentColor` stroke with round
+caps and joins, a stroke width from `--lufia-icon-stroke`, and sizes from `--lufia-icon-size-*`. The full guide, with the
+status icons and the rules, is the [Icons foundation](?path=/docs/foundations-icons--docs).
+
+<Canvas of={Stories.Gallery} />
+
+### Usage
+
+```tsx
+import { CloseIcon, SearchIcon, createIcon } from "@lufia/design-system/icons";
+
+<button type="button" aria-label="Close">
+  <CloseIcon />
+</button>;
+
+<SearchIcon size="sm" />;
+
+// An app's own glyph, on the same grid and stroke.
+const RouteIcon = createIcon("route", [
+  "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+  "M8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7",
+]);
+```
+
+The icons are also exported from the package root and from `@lufia/design-system/components/Icon`. Each icon is a separate
+pure export, so a bundler keeps only the ones an app imports.
+
+</Section>
+
+<Section id="examples">
+
+### Sizes
+
+`sm`, `md` (default) and `lg` read `--lufia-icon-size-sm|md|lg` (16, 20 and 24px). `sm` also takes the heavier
+`--lufia-icon-stroke-sm`, so a small icon keeps the visual weight of a larger one. A number is a size in px; `1em` follows
+the text.
+
+<Canvas of={Stories.Sizes} />
+<Canvas of={Stories.InlineWithText} />
+
+### An app's own icon
+
+<Canvas of={Stories.AppIcon} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- **Decorative by default**: `aria-hidden="true"` and `focusable="false"`, so assistive technology skips it.
+- **Meaningful on request**: `title` (rendered as an SVG `title`) or `aria-label` adds `role="img"` with that name. Prefer
+  naming the button or link around the icon, so the name is announced once.
+- Icons inherit `currentColor`: their contrast is that of the text colour they sit in (3:1 for non-text content).
+- Under `forced-colors` the stroke follows the system text colour.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Beside a visible label in buttons, menus and navigation (decorative).
+- As the only content of an icon button, with an accessible name on the button.
+
+### When not to use
+
+- For a status: use `StatusIcon`, whose tones each have their own shape.
+- As the only carrier of meaning without a name.
+- Do not draw an inline `svg` in a component, and do not use a text glyph (a multiplication sign, a check mark, an arrow)
+  as an icon. Use a named icon, or `createIcon` for a glyph the set does not have.
+
+</Section>

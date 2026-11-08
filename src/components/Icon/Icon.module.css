@@ -1,0 +1,33 @@
+/* Every rule sits in :where(), so it has no specificity: a className from a component or an app always wins. The width,
+   height and stroke-width attributes on the <svg> are fallbacks for an app that does not load this stylesheet. */
+:where(.icon) {
+  flex: none;
+  stroke-width: var(--lufia-icon-stroke, 1.75);
+  vertical-align: middle;
+}
+
+:where(.icon[data-stroke="sm"]) {
+  stroke-width: var(--lufia-icon-stroke-sm, 2);
+}
+
+:where(.icon[data-size="sm"]) {
+  inline-size: var(--lufia-icon-size-sm, 1rem);
+  block-size: var(--lufia-icon-size-sm, 1rem);
+}
+
+:where(.icon[data-size="md"]) {
+  inline-size: var(--lufia-icon-size-md, 1.25rem);
+  block-size: var(--lufia-icon-size-md, 1.25rem);
+}
+
+:where(.icon[data-size="lg"]) {
+  inline-size: var(--lufia-icon-size-lg, 1.5rem);
+  block-size: var(--lufia-icon-size-lg, 1.5rem);
+}
+
+/* `1em` follows the text and sits on its baseline like a glyph. */
+:where(.icon[data-size="em"]) {
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: -0.125em;
+}

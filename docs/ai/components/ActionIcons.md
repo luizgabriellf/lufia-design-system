@@ -1,8 +1,8 @@
 # ActionIcons
 
-> A small, consistent set of stroke icons for common row and page actions.
+> Deprecated aliases of six action icons; use the named icons of Icon instead.
 
-- Status: beta
+- Status: deprecated
 - Category: Actions
 - Import: `import { ACTION_ICONS, DeleteIcon, DuplicateIcon, EditIcon, OpenIcon, PendingIcon, ReportIcon } from "@lufia/design-system/components/ActionIcons"`
 - Also from: `@lufia/design-system`
@@ -11,8 +11,21 @@
 
 ## Purpose
 
-Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIcon`, `DuplicateIcon`, `PendingIcon`,
-`OpenIcon` and `ReportIcon`. They share a 16x16 grid, a 1.4 stroke and round caps, and inherit `currentColor`.
+**Deprecated.** These six names are now aliases of the [icon set](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-utilities-icon--docs) and will be
+removed in the next minor release. Replace them as follows:
+
+| Deprecated      | Use instead     |
+| --------------- | --------------- |
+| `DeleteIcon`    | `TrashIcon`     |
+| `EditIcon`      | `EditIcon`      |
+| `DuplicateIcon` | `CopyIcon`      |
+| `PendingIcon`   | `ClockIcon`     |
+| `OpenIcon`      | `RotateCcwIcon` |
+| `ReportIcon`    | `FileTextIcon`  |
+| `ACTION_ICONS`  | `ICONS`         |
+
+The aliases draw on the set's 24-unit grid and default to the `md` size (20px). Pass `size={13}` for the size of the old
+16-unit icons.
 
 ## When to use
 
@@ -41,21 +54,23 @@ Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIco
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `size` | `number` | no |  | Rendered width and height in px. |
+| `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
+| `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
+| `ref` | `Ref<SVGSVGElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `IconProps`: `Omit<SVGProps<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
+- `IconProps`: `Omit<SVGProps<SVGSVGElement>, "width" | "height" | "viewBox" | "children" | "ref"> & { size?: IconSize | undefined; title?: string | undefined; ref?: Ref<SVGSVGElement> | undefined; }`
 
 ## Example
 
 ```tsx
-import { DeleteIcon } from "@lufia/design-system/components/ActionIcons";
+import { TrashIcon } from "@lufia/design-system/icons";
 
 <button type="button">
-  <DeleteIcon /> Delete
+  <TrashIcon size="sm" /> Delete
 </button>;
 ```
 

@@ -93,7 +93,7 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 ## Types
 
 - `OverlayLayer`: `{ isTop: () => boolean; release: () => void; }`
-- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: "container" | "first" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
+- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | "container" | "first" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
 
 ## Example
 

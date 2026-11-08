@@ -16,7 +16,8 @@ import { createPortal } from "react-dom";
 import { useModalDialogs } from "../Modal/topModalDialog";
 import { usePrefersReducedMotion } from "../../motion/usePrefersReducedMotion";
 import { useLufia } from "../LufiaProvider";
-import { SuccessCheck } from "../SuccessCheck";
+import { CloseIcon } from "../Icon/icons";
+import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
 import styles from "./Toast.module.css";
 
 export type ToastTone = "info" | "success" | "warning" | "error";
@@ -376,16 +377,12 @@ export function ToastProvider({
   );
 }
 
-function ToneIcon({ tone }: { tone: ToastTone }) {
-  if (tone === "success") return <SuccessCheck size={14} />;
-  const path =
-    tone === "error" ? "m4.5 4.5 7 7m0-7-7 7" : tone === "warning" ? "M8 4v5m0 2.6v.1" : "M8 7v5m0-8.1v.1";
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true" focusable="false">
-      <path d={path} stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
+const TONE_STATUS: Record<ToastTone, StatusTone> = {
+  info: "info",
+  success: "success",
+  warning: "warning",
+  error: "danger",
+};
 
 type ToastItemProps = {
   item: Item;
@@ -438,9 +435,12 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
         }
       }}
     >
-      <span className={styles.icon} aria-hidden="true">
-        <ToneIcon tone={item.tone} />
-      </span>
+      <StatusIcon
+        tone={TONE_STATUS[item.tone]}
+        variant="ring"
+        drawOn={item.tone === "success"}
+        className={styles.icon}
+      />
       <div className={styles.message}>{item.message}</div>
       {item.action ? (
         <button
@@ -460,15 +460,7 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
         aria-label={dismissLabel}
         onClick={() => onDismiss(item.id)}
       >
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-          <path
-            d="m3.5 3.5 9 9m0-9-9 9"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-          />
-        </svg>
+        <CloseIcon size="sm" />
       </button>
     </li>
   );

@@ -20,6 +20,7 @@ import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useMediaQuery } from "../useMediaQuery";
 import { VisuallyHidden } from "../VisuallyHidden";
 import type { ButtonVariant } from "../Button";
+import { MoreIcon } from "../Icon/icons";
 import styles from "./MoreActions.module.css";
 
 export type MoreActionItem = {
@@ -169,16 +170,6 @@ function inheritContext(root: HTMLElement, menu: HTMLElement, host: HTMLElement)
   for (const name of Array.from(root.style)) {
     if (name.startsWith("--lufia-")) menu.style.setProperty(name, root.style.getPropertyValue(name));
   }
-}
-
-function DotsIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="1.125rem" height="1.125rem" fill="currentColor" focusable="false">
-      <circle cx="3" cy="8" r="1.4" />
-      <circle cx="8" cy="8" r="1.4" />
-      <circle cx="13" cy="8" r="1.4" />
-    </svg>
-  );
 }
 
 /**
@@ -526,7 +517,7 @@ export function MoreActions({
     >
       <IconButton
         ref={triggerRef}
-        icon={icon ?? <DotsIcon />}
+        icon={icon ?? <MoreIcon />}
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}

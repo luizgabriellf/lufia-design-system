@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
@@ -341,6 +341,41 @@ describe('NavSheet renderAs="dialog"', () => {
     render(<Harness renderAs="dialog" initial />);
     // The browser makes the page behind inert; jsdom does not, so check the dialog alone.
     expect(await axe(sheet()!)).toHaveNoViolations();
+  });
+});
+
+describe("NavSheet theming hooks", () => {
+  function Scoped({ layerProps }: { layerProps?: Parameters<typeof NavSheet>[0]["layerProps"] }) {
+    const anchor = useRef<HTMLDivElement>(null);
+    return (
+      <div data-lufia-theme="default" data-lufia-mode="dark">
+        <div ref={anchor} />
+        <NavSheet open onOpenChange={() => {}} label="Menu" layerProps={layerProps} inheritThemeFrom={anchor}>
+          <a href="/one">One</a>
+        </NavSheet>
+      </div>
+    );
+  }
+
+  it("marks its parts and carries layer props onto the portalled root", () => {
+    render(<Scoped layerProps={{ className: "app-palette", "data-scope": "app" }} />);
+    const layer = document.body.querySelector('[data-lufia-part="nav-sheet-layer"]');
+    expect(layer).toHaveClass("app-palette");
+    expect(layer).toHaveAttribute("data-scope", "app");
+    expect(layer?.parentElement).toBe(document.body);
+    expect(document.body.querySelector('[data-lufia-part="nav-sheet-backdrop"]')).not.toBeNull();
+    expect(screen.getByRole("dialog", { name: "Menu" })).toHaveAttribute("data-lufia-part", "nav-sheet");
+  });
+
+  it("copies a scoped theme and mode onto the layer, and lets layer props win", () => {
+    const { unmount } = render(<Scoped />);
+    let layer = document.body.querySelector('[data-lufia-part="nav-sheet-layer"]');
+    expect(layer).toHaveAttribute("data-lufia-theme", "default");
+    expect(layer).toHaveAttribute("data-lufia-mode", "dark");
+    unmount();
+    render(<Scoped layerProps={{ "data-lufia-mode": "light" }} />);
+    layer = document.body.querySelector('[data-lufia-part="nav-sheet-layer"]');
+    expect(layer).toHaveAttribute("data-lufia-mode", "light");
   });
 });
 

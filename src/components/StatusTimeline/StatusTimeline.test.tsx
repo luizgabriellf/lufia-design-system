@@ -50,6 +50,31 @@ describe("StatusTimeline", () => {
     expect(screen.getByText("Hint text")).toBeInTheDocument();
   });
 
+  it("renders each state as the package StatusBadge, toned by state", () => {
+    render(<StatusTimeline tracks={tracks} />);
+    expect(screen.getByText("Done")).toHaveAttribute("data-tone", "success");
+    expect(screen.getByText("Overdue")).toHaveAttribute("data-tone", "danger");
+    expect(screen.getByText("Needs date")).toHaveAttribute("data-tone", "neutral");
+  });
+
+  it("draws a distinct marker glyph per state, so states differ without colour", () => {
+    const states = ["needsTimestamp", "pending", "overdue", "done", "notApplicable"] as const;
+    const { container } = render(
+      <StatusTimeline
+        tracks={[
+          {
+            id: "all",
+            title: "All",
+            nodes: states.map((state) => ({ id: state, label: state, state, stateLabel: state })),
+          },
+        ]}
+      />,
+    );
+    const glyphs = [...container.querySelectorAll("li svg path")].map((path) => path.getAttribute("d"));
+    expect(glyphs).toHaveLength(states.length);
+    expect(new Set(glyphs).size).toBe(states.length);
+  });
+
   it("renders inline actions", () => {
     render(<StatusTimeline tracks={tracks} />);
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();

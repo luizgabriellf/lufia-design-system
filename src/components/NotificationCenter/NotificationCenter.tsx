@@ -22,6 +22,7 @@ import { useMediaQuery } from "../useMediaQuery";
 import { VisuallyHidden } from "../VisuallyHidden";
 import { NotificationPanel, type NotificationContentProps } from "./NotificationPanel";
 import { useUnreadAnnouncement } from "./useUnreadAnnouncement";
+import { BellIcon } from "../Icon/icons";
 import styles from "./NotificationCenter.module.css";
 
 export type NotificationCenterProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "title"> &
@@ -50,20 +51,6 @@ export type NotificationCenterProps = Omit<HTMLAttributes<HTMLDivElement>, "chil
 /** The room kept between a nudged popover and the edge of the viewport. */
 const EDGE_GUTTER_PX = 8;
 const SHEET_QUERY = "(width < 60rem)";
-
-function BellIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="1.25rem" height="1.25rem" fill="none" focusable="false">
-      <path
-        d="M6 9.5a6 6 0 1 1 12 0c0 4.2 1.3 5.6 2 6.5H4c.7-.9 2-2.3 2-6.5ZM10 19.5a2 2 0 0 0 4 0"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * A bell button with an unread count that opens a `NotificationPanel`: a popover hung from the bell on wide pages, a modal

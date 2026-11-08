@@ -11,8 +11,8 @@
 
 ## Purpose
 
-A vertical, connected timeline of obligations or steps grouped into tracks. Each node has an icon, a state pill, an
-optional timestamp or deadline, a hint, and an optional inline action.
+A vertical, connected timeline of obligations or steps grouped into tracks. Each node has a marker, a state
+`StatusBadge`, an optional timestamp or deadline, a hint, and an optional inline action.
 
 ## When to use
 
@@ -66,11 +66,11 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
 ## Accessibility
 
 - Each track is a `<section>` with an `<h3>`; each node list is an ordered list, so order and count are announced.
-- **State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a meaningful `stateLabel`.
-- Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated `on-solid` text token that passes AA in light and dark.
+- **State is named in words** through `stateLabel` in the `StatusBadge`; colour and marker are reinforcement only. Always pass a meaningful `stateLabel`.
+- Markers are one family (same ring, stroke and centring) and each state has its own glyph shape: a check (done), clock hands (pending), an exclamation mark (overdue), three dots (needs a timestamp) and a dash (not applicable), so states differ without colour.
 - Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.
 - Actions are slots; keep them keyboard operable and labelled.
-- In forced-colors mode the pill keeps a visible border.
+- In forced-colors mode the badge keeps a visible border (the `Badge` rule).
 
 ## Motion
 
@@ -78,7 +78,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-weight-semibold`, `--lufia-radius-sm`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-border-subtle`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-display`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-status-icon-ring-border-width`, `--lufia-status-icon-size`.
 
 ## Content guidelines
 

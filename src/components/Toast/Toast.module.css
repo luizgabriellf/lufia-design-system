@@ -65,7 +65,6 @@
 
 .item {
   --toast-tone: var(--lufia-color-text-muted);
-  --toast-tone-bg: var(--lufia-color-status-neutral-bg);
 
   display: flex;
   align-items: var(--lufia-toast-align-items, flex-start);
@@ -92,22 +91,18 @@
 
 .item[data-tone="info"] {
   --toast-tone: var(--lufia-color-accent-default);
-  --toast-tone-bg: var(--lufia-color-accent-subtle);
 }
 
 .item[data-tone="success"] {
   --toast-tone: var(--lufia-color-status-success-fg);
-  --toast-tone-bg: var(--lufia-color-status-success-bg);
 }
 
 .item[data-tone="warning"] {
   --toast-tone: var(--lufia-color-status-warning-fg);
-  --toast-tone-bg: var(--lufia-color-status-warning-bg);
 }
 
 .item[data-tone="error"] {
   --toast-tone: var(--lufia-color-status-danger-fg);
-  --toast-tone-bg: var(--lufia-color-status-danger-bg);
 }
 
 .item[data-moved][data-state="open"] {
@@ -119,15 +114,9 @@
   pointer-events: none;
 }
 
+/* The tone ring is a StatusIcon; the toast only sets its diameter. */
 .icon {
-  display: grid;
-  place-items: center;
-  flex: none;
-  inline-size: var(--lufia-toast-icon-size, 1.5rem);
-  block-size: var(--lufia-toast-icon-size, 1.5rem);
-  color: var(--toast-tone);
-  background: var(--toast-tone-bg);
-  border-radius: var(--lufia-radius-full);
+  --lufia-status-icon-size: var(--lufia-toast-icon-size, 1.5rem);
 }
 
 .message {
@@ -211,9 +200,5 @@
   .item {
     border-color: CanvasText;
     border-inline-start-color: Highlight;
-  }
-
-  .icon {
-    border: var(--lufia-border-width-thin) solid CanvasText;
   }
 }

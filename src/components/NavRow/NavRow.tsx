@@ -2,6 +2,7 @@
 
 import type { HTMLAttributes, MouseEvent, ReactNode } from "react";
 import { useLufia } from "../LufiaProvider";
+import { ChevronRightIcon } from "../Icon/icons";
 import styles from "./NavRow.module.css";
 
 export type NavRowProps = Omit<HTMLAttributes<HTMLElement>, "title" | "onClick"> & {
@@ -20,28 +21,6 @@ export type NavRowProps = Omit<HTMLAttributes<HTMLElement>, "title" | "onClick">
   onClick?: (event: MouseEvent<HTMLElement>) => void;
   disabled?: boolean;
 };
-
-function Chevron() {
-  return (
-    <svg
-      className={styles.chevron}
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="m9 6 6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * A compact, clickable list row with a title, optional description and meta, a badge, an icon and a trailing chevron.
@@ -79,7 +58,7 @@ export function NavRow({
         {description ? <span className={styles.description}>{description}</span> : null}
         {meta ? <span className={styles.meta}>{meta}</span> : null}
       </span>
-      {href || onClick ? <Chevron /> : null}
+      {href || onClick ? <ChevronRightIcon className={styles.chevron} /> : null}
     </>
   );
 

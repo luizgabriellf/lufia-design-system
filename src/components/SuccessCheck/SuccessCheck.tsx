@@ -1,12 +1,9 @@
-import type { SVGAttributes } from "react";
+import { Icon, type IconProps } from "../Icon/Icon";
 import styles from "./SuccessCheck.module.css";
 
-export type SuccessCheckProps = Omit<
-  SVGAttributes<SVGSVGElement>,
-  "width" | "height" | "viewBox" | "children"
-> & {
-  /** Rendered width and height, in px. */
-  size?: number;
+export type SuccessCheckProps = Omit<IconProps, "size"> & {
+  /** Rendered size: a number of px, or a size token of `Icon` (`sm`, `md`, `lg`, `1em`). Default 16. */
+  size?: IconProps["size"];
 };
 
 /**
@@ -15,21 +12,13 @@ export type SuccessCheckProps = Omit<
  */
 export function SuccessCheck({ size = 16, className, ...rest }: SuccessCheckProps) {
   return (
-    <svg
-      focusable="false"
-      aria-hidden="true"
+    <Icon
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      size={size}
+      data-lufia-icon="success-check"
     >
-      <path className={styles.path} pathLength={1} d="M3.5 8.5 6.8 11.5 12.5 4.8" />
-    </svg>
+      <path className={styles.path} pathLength={1} d="M20 6 9 17l-5-5" />
+    </Icon>
   );
 }

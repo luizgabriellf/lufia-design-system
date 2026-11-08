@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { PendingIcon } from "../ActionIcons";
+import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
+import { StatusBadge, type BadgeTone } from "../Badge";
 import styles from "./StatusTimeline.module.css";
 
 /**
@@ -39,72 +40,31 @@ export type StatusTimelineTrack = {
 
 export type StatusTimelineProps = HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[] };
 
-const NODE_TONE: Record<StatusTimelineNodeState, "neutral" | "warn" | "danger" | "ok"> = {
+const NODE_TONE: Record<StatusTimelineNodeState, BadgeTone> = {
   needsTimestamp: "neutral",
-  pending: "warn",
+  pending: "warning",
   overdue: "danger",
-  done: "ok",
+  done: "success",
   notApplicable: "neutral",
 };
 
-function CheckIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M3.5 8.5l3 3 6-7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function OverdueIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 3L12.5 10.5H3.5L8 3z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M8 5.6v2.4M8 9.3v.1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function NeedsTimestampIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="5.8" stroke="currentColor" strokeWidth="1.4" strokeDasharray="2.4 2.4" />
-    </svg>
-  );
-}
-
-function NotApplicableIcon() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M4.5 8h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-const NODE_ICON: Record<StatusTimelineNodeState, () => ReactNode> = {
-  needsTimestamp: NeedsTimestampIcon,
-  pending: () => <PendingIcon size={13} />,
-  overdue: OverdueIcon,
-  done: CheckIcon,
-  notApplicable: NotApplicableIcon,
+/* The marker is the shared status family: its shape names the state (WCAG 1.4.1), the colour only reinforces it. */
+const NODE_STATUS: Record<StatusTimelineNodeState, StatusTone> = {
+  needsTimestamp: "needsInput",
+  pending: "pending",
+  overdue: "danger",
+  done: "success",
+  notApplicable: "neutral",
 };
 
 function StatusTimelineNodeItem({ node }: { node: StatusTimelineNode }) {
-  const Icon = NODE_ICON[node.state];
   return (
-    <li className={`${styles.node} ${styles[node.state]}`}>
-      <span className={styles.icon}>
-        <Icon />
-      </span>
+    <li className={styles.node} data-state={node.state}>
+      <StatusIcon tone={NODE_STATUS[node.state]} variant="ring" className={styles.icon} />
       <div className={styles.body}>
         <div className={styles.head}>
           <strong className={styles.label}>{node.label}</strong>
-          <span className={`${styles.pill} ${styles[NODE_TONE[node.state]]}`}>{node.stateLabel}</span>
+          <StatusBadge tone={NODE_TONE[node.state]}>{node.stateLabel}</StatusBadge>
         </div>
         {node.timestampLabel && <span className={styles.timestamp}>{node.timestampLabel}</span>}
         {!node.timestampLabel && node.deadlineLabel && (

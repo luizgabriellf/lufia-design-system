@@ -3,7 +3,7 @@
 import { useId, useRef, useState, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { Collapse } from "../../motion";
 import { useLufia } from "../LufiaProvider";
-import { ChevronGlyph, SidebarGlyph } from "./icons";
+import { ChevronRightIcon, SidebarIcon } from "../Icon/icons";
 import { formatShellCount, type ShellBadgeTone, type ShellDataAttributes } from "./navigation";
 import { NavSurfaceContext, useNavSurface } from "./navSurface";
 import { useNavScrollHints } from "./useNavScrollHints";
@@ -76,7 +76,7 @@ export function Sidebar({
               onClick={() => onCollapsedChange(!collapsed)}
               {...collapseTip.trigger}
             >
-              <SidebarGlyph />
+              <SidebarIcon />
             </button>
           ) : null}
           {collapseTip.tooltip}
@@ -164,7 +164,7 @@ export function SidebarGroup({
           </span>
         ) : null}
         <span className={styles.label}>{label}</span>
-        <ChevronGlyph className={styles.chevron} width={16} height={16} />
+        <ChevronRightIcon className={styles.chevron} size="sm" />
       </button>
       <Collapse id={`${id}-items`} open={open} className={styles.items}>
         {list}

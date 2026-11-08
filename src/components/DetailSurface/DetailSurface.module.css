@@ -81,15 +81,9 @@
   gap: 0.8rem;
 }
 
+/* The mark is a StatusIcon ring (lg, 2rem): it carries its own tone colours. */
 .attentionMark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
   flex: 0 0 auto;
-  font-weight: 800;
 }
 
 .attentionCopy {
@@ -126,36 +120,15 @@
   border-color: var(--lufia-color-border-strong);
 }
 
-.attentionCard[data-tone="ok"] .attentionMark {
-  color: var(--lufia-color-status-success-fg);
-  background: var(--lufia-color-status-success-bg);
-}
-
 .attentionCard[data-tone="warn"] {
   border-color: var(--lufia-color-status-warning-border);
   background: color-mix(in srgb, var(--lufia-color-status-warning-bg) 55%, var(--lufia-color-bg-surface));
-}
-
-.attentionCard[data-tone="warn"] .attentionMark {
-  color: var(--lufia-color-status-warning-fg);
-  background: var(--lufia-color-status-warning-bg);
 }
 
 .attentionCard[data-tone="danger"],
 .attentionCard[data-tone="critical"] {
   border-color: var(--lufia-color-status-danger-border);
   background: color-mix(in srgb, var(--lufia-color-status-danger-bg) 50%, var(--lufia-color-bg-surface));
-}
-
-.attentionCard[data-tone="danger"] .attentionMark,
-.attentionCard[data-tone="critical"] .attentionMark {
-  color: var(--lufia-color-status-danger-fg);
-  background: var(--lufia-color-status-danger-bg);
-}
-
-.attentionCard[data-tone="neutral"] .attentionMark {
-  color: var(--lufia-color-text-muted);
-  background: var(--lufia-color-bg-surface-raised);
 }
 
 @media (width <= 959px) {

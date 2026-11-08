@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { CloseIcon, SearchIcon } from "../Icon/icons";
 import styles from "./TableToolbar.module.css";
 
 export type SearchFieldProps = {
@@ -15,17 +16,7 @@ export type SearchFieldProps = {
 export function SearchField({ value, onChange, placeholder, clearLabel, style }: SearchFieldProps) {
   return (
     <div className={styles.search} style={style}>
-      <svg
-        className={styles.searchIcon}
-        width="17"
-        height="17"
-        viewBox="0 0 20 20"
-        fill="none"
-        aria-hidden="true"
-      >
-        <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
-        <path d="M14 14l3.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
+      <SearchIcon className={styles.searchIcon} size="sm" />
       <input
         className={styles.searchInput}
         autoComplete="off"
@@ -37,7 +28,7 @@ export function SearchField({ value, onChange, placeholder, clearLabel, style }:
       />
       {value ? (
         <button type="button" className={styles.clear} aria-label={clearLabel} onClick={() => onChange("")}>
-          <span aria-hidden="true">✕</span>
+          <CloseIcon size="sm" />
         </button>
       ) : null}
     </div>

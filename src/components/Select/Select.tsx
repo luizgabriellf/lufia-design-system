@@ -2,6 +2,7 @@
 
 import type { ReactNode, Ref, SelectHTMLAttributes } from "react";
 import { useFormFieldControl } from "../FormField";
+import { ChevronDownIcon } from "../Icon/icons";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import styles from "./Select.module.css";
 
@@ -86,16 +87,7 @@ export function Select({
         {children}
       </select>
       <span className={[fieldStyles.affix, styles.chevron].join(" ")} aria-hidden="true">
-        <svg viewBox="0 0 16 16" width="16" height="16" focusable="false">
-          <path
-            d="M3.5 6l4.5 4.5L12.5 6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ChevronDownIcon size="md" />
       </span>
     </span>
   );

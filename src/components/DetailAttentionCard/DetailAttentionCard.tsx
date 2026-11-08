@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
+import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
 import styles from "../DetailSurface/DetailSurface.module.css";
 
 export type DetailAttentionTone = "ok" | "warn" | "danger" | "critical" | "neutral";
@@ -17,12 +18,12 @@ export type DetailAttentionCardProps = Omit<HTMLAttributes<HTMLElement>, "title"
   toneLabel?: string;
 };
 
-const MARKS: Record<DetailAttentionTone, string> = {
-  ok: "✓",
-  warn: "!",
-  danger: "!",
-  critical: "!",
-  neutral: "·",
+const MARKS: Record<DetailAttentionTone, StatusTone> = {
+  ok: "success",
+  warn: "warning",
+  danger: "danger",
+  critical: "danger",
+  neutral: "neutral",
 };
 
 /** High-signal status card for deadlines, risk and missing-data states. */
@@ -43,9 +44,7 @@ export function DetailAttentionCard({
       data-tone={tone}
     >
       <div className={styles.attentionHeader}>
-        <span className={styles.attentionMark} aria-hidden="true">
-          {MARKS[tone]}
-        </span>
+        <StatusIcon tone={MARKS[tone]} variant="ring" size="lg" className={styles.attentionMark} />
         <div className={styles.attentionCopy}>
           <h3 className={styles.attentionTitle}>
             {toneLabel ? <span className={styles.srOnly}>{toneLabel}: </span> : null}

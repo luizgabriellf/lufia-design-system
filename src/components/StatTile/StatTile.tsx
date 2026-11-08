@@ -2,6 +2,8 @@ import { useId, type HTMLAttributes, type MouseEventHandler, type ReactNode } fr
 import { Skeleton } from "../../motion/Skeleton";
 import { LufiaLink } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
+import type { IconComponent } from "../Icon/Icon";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon, MinusIcon } from "../Icon/icons";
 import styles from "./StatTile.module.css";
 
 export type StatTileTone = "neutral" | "success" | "warning" | "danger";
@@ -46,24 +48,15 @@ export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
   loadingLabel?: string;
 };
 
-const ARROWS: Record<StatTileTrend, string> = {
-  up: "M3 10l5-5 5 5",
-  down: "M3 6l5 5 5-5",
-  flat: "M3 8h10",
+const ARROWS: Record<StatTileTrend, IconComponent> = {
+  up: ChevronUpIcon,
+  down: ChevronDownIcon,
+  flat: MinusIcon,
 };
 
 function TrendArrow({ trend }: { trend: StatTileTrend }) {
-  return (
-    <svg className={styles.arrow} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-      <path
-        d={ARROWS[trend]}
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  const Arrow = ARROWS[trend];
+  return <Arrow className={styles.arrow} size="sm" />;
 }
 
 /**
@@ -135,17 +128,7 @@ export function StatTile({
       data-loading={loading || undefined}
       aria-busy={loading || undefined}
     >
-      {isPressed !== undefined ? (
-        <svg className={styles.check} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-          <path
-            d="M3 8.5l3.2 3.2L13 4.8"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : null}
+      {isPressed !== undefined ? <CheckIcon className={styles.check} size="sm" /> : null}
       <div className={styles.body}>
         <span className={styles.label}>{labelNode}</span>
         <span className={styles.valueRow}>

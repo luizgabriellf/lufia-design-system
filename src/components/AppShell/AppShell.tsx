@@ -12,7 +12,7 @@ import {
 } from "react";
 import { RouteTransition } from "../../motion/RouteTransition";
 import { useMediaQuery } from "../useMediaQuery";
-import { MenuGlyph, SearchGlyph } from "./icons";
+import { MenuIcon, SearchIcon } from "../Icon/icons";
 import {
   MobileFloatBar,
   MobileFloatBarButton,
@@ -84,6 +84,9 @@ export type AppShellMainProps = Omit<HTMLAttributes<HTMLElement>, "children"> & 
  */
 export type AppShellRouteTransitionProps = { className?: string } & ShellDataAttributes;
 
+/** `AppShell` `sheetProps`: where the phone sheet mounts, and a class and `data-*` attributes for its outermost layer. */
+export type AppShellSheetProps = { className?: string; container?: HTMLElement | null } & ShellDataAttributes;
+
 /** The sidebar's search entry. A component of its own because the rail's tooltip is a hook. */
 function SearchEntry({ search, collapsed }: { search: AppShellSearch; collapsed: boolean }) {
   const tip = useShellTooltip(search.label, collapsed);
@@ -100,7 +103,7 @@ function SearchEntry({ search, collapsed }: { search: AppShellSearch; collapsed:
         data-rail={collapsed || undefined}
         {...tip.trigger}
       >
-        <SearchGlyph width={16} height={16} />
+        <SearchIcon size="sm" />
         {collapsed ? null : <span className={styles.searchLabel}>{search.label}</span>}
         {search.shortcut && !collapsed ? <kbd className={styles.shortcut}>{search.shortcut}</kbd> : null}
       </button>
@@ -178,6 +181,13 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   sheetAs?: "portal" | "dialog";
   /** When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. */
   sheetDragThreshold?: SheetDragThreshold;
+  /**
+   * A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts
+   * (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper
+   * does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and
+   * `data-lufia-mode` from the closest ancestor of the shell that sets them.
+   */
+  sheetProps?: AppShellSheetProps;
   /**
    * The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and
    * hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it.
@@ -290,6 +300,7 @@ export function AppShell({
   statusRow,
   context,
   sheetAs = "portal",
+  sheetProps,
   sheetDragThreshold,
   menuOpen: menuOpenProp,
   onMenuOpenChange,
@@ -391,6 +402,7 @@ export function AppShell({
   const pendingMain = mainPending !== undefined && mainPending !== null && mainPending !== false;
   const main = useRef<HTMLElement>(null);
   const page = useRef<HTMLDivElement>(null);
+  const { container: sheetContainer, ...sheetLayer } = sheetProps ?? {};
   const consumerBusy = mainProps?.["aria-busy"] === true || mainProps?.["aria-busy"] === "true";
   // The page is about to be hidden: focus inside it would be lost to the document, so it goes to <main>.
   useLayoutEffect(() => {
@@ -486,7 +498,7 @@ export function AppShell({
               <MobileFloatBarButton
                 variant="search"
                 label={search.label}
-                icon={<SearchGlyph width={18} height={18} />}
+                icon={<SearchIcon size={18} />}
                 onClick={search.onSelect}
                 {...search.data}
               />
@@ -522,7 +534,7 @@ export function AppShell({
           <MobileFloatBarButton
             variant="icon"
             label={labels.menu}
-            icon={<MenuGlyph width={19} height={19} />}
+            icon={<MenuIcon />}
             aria-haspopup="dialog"
             aria-expanded={sheetOpen}
             onClick={() => setSheetOpen(true)}
@@ -534,6 +546,9 @@ export function AppShell({
           onOpenChange={setSheetOpen}
           label={labels.menu}
           renderAs={sheetAs}
+          container={sheetContainer}
+          layerProps={sheetLayer}
+          inheritThemeFrom={main}
           dragThreshold={sheetDragThreshold}
           closeOnNavigate
           header={resolve(brand, slotState("sheet"))}

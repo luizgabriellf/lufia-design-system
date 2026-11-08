@@ -15,6 +15,7 @@ import { usePresence } from "../internal/usePresence";
 import { FieldSpinner } from "../FormField/FieldSpinner";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
+import { CloseIcon, SearchIcon } from "../Icon/icons";
 import styles from "./CommandPalette.module.css";
 
 export type CommandItemTone = "default" | "accent" | "danger";
@@ -300,21 +301,7 @@ export function CommandPalette({
         }}
       >
         <div className={styles.header}>
-          <svg
-            className={styles.glyph}
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <circle cx="11" cy="11" r="6" />
-            <path d="m20 20-4.2-4.2" />
-          </svg>
+          <SearchIcon className={styles.glyph} />
           <input
             ref={field}
             className={styles.input}
@@ -340,19 +327,7 @@ export function CommandPalette({
             Esc
           </kbd>
           <button type="button" className={styles.close} aria-label={lufia.close} onClick={close}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
+            <CloseIcon size="sm" />
           </button>
         </div>
         {(hintPlacement === "top" && hintRow) || (!overridden && notice) ? (

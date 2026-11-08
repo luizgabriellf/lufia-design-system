@@ -108,6 +108,9 @@ still `Verify`.
   visible focus, and works at 320 / 390 / 768 / 1440 px, at 200% zoom, in light and dark, and under `forced-colors`.
 - **Reduced motion.** Honour `prefers-reduced-motion`; animate only `transform` and `opacity`; nothing over 300 ms. Rules in
   `docs/MOTION.md`.
+- **Icons.** No hand-drawn inline `<svg>` and no text glyphs as icons in components (ESLint enforces it). Use a named icon
+  from `src/components/Icon/icons.tsx`, `StatusIcon` for a status, or `createIcon`. A new icon is Lucide geometry on the
+  24 grid, strokes only; the notice is in `THIRD_PARTY_NOTICES.md`. Rules: `src/docs/Foundations/Icons.mdx`.
 - **Status labels.** Every component page declares `alpha`, `beta`, `stable` or `deprecated` in its `DocHeader`.
 
 ## Adding or changing a component
@@ -157,6 +160,7 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 | Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                            |
 | Change the `lufia-ai` CLI or MCP server | `src/cli/lufia-ai/core.js`, `scripts/ai/lufia-ai.test.mjs`, `scripts/postbuild.mjs`, `docs/ai/README.md` |
 | Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md`      |
+| Add or change an icon or a status glyph | `src/components/Icon/`, `src/components/StatusIcon/`, `src/docs/Foundations/Icons.mdx`                   |
 | Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`                 |
 | Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                                 |
 | Write or fix stories and docs pages     | `src/docs/blocks/`, `src/docs/taxonomy.ts`, an existing `.mdx` of the same shape                         |

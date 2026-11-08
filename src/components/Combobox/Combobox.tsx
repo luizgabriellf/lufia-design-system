@@ -15,6 +15,7 @@ import {
 } from "react";
 import { useFormFieldControl, useFormFieldLabelId } from "../FormField";
 import { FieldSpinner } from "../FormField/FieldSpinner";
+import { CheckIcon, ChevronDownIcon, CloseIcon } from "../Icon/icons";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
@@ -475,9 +476,7 @@ export function Combobox({
               input.current?.focus();
             }}
           >
-            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-              <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <CloseIcon size="sm" />
           </button>
         ) : null}
         <button
@@ -494,23 +493,7 @@ export function Combobox({
             input.current?.focus();
           }}
         >
-          <svg
-            className={styles.chevron}
-            viewBox="0 0 16 16"
-            width="16"
-            height="16"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              d="M3.5 6l4.5 4.5L12.5 6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ChevronDownIcon className={styles.chevron} size="md" />
         </button>
       </span>
       {name ? <input type="hidden" name={name} value={value ?? ""} /> : null}
@@ -553,23 +536,7 @@ export function Combobox({
                       ) : null}
                     </span>
                     {option.value === selected?.value ? (
-                      <svg
-                        className={styles.check}
-                        viewBox="0 0 16 16"
-                        width="16"
-                        height="16"
-                        aria-hidden="true"
-                        focusable="false"
-                      >
-                        <path
-                          d="M3 8.5l3.2 3.2L13 4.8"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      <CheckIcon className={styles.check} size="sm" />
                     ) : null}
                   </li>
                 );

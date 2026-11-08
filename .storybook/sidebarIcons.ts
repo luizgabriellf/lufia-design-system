@@ -20,6 +20,7 @@ const PATHS: Record<string, string> = {
   Spacing: "M4 6v12M20 6v12M4 12h16M7 9l-3 3 3 3M17 9l3 3-3 3",
   Elevation: "m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5",
   "Radius and borders": "M5 19V9a4 4 0 0 1 4-4h10",
+  Icons: "M4 4h6v6H4zM14 7a3 3 0 1 0 6 0 3 3 0 0 0-6 0M4 20l3-6 3 6zM14 14h6v6h-6z",
   "Creating a theme": "M4 20l6-6M14 4l6 6-8 8-6-6z",
 };
 

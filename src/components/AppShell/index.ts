@@ -7,6 +7,7 @@ export {
   type AppShellProps,
   type AppShellRouteTransitionProps,
   type AppShellSearch,
+  type AppShellSheetProps,
 } from "./AppShell";
 export {
   doneRouteProgress,
@@ -33,7 +34,7 @@ export {
   type MobileFloatBarButtonProps,
   type MobileFloatBarProps,
 } from "./MobileFloatBar";
-export { NavSheet, type NavSheetProps } from "./NavSheet";
+export { NavSheet, type NavSheetLayerProps, type NavSheetProps } from "./NavSheet";
 export {
   SHELL_COUNT_CAP,
   findActiveNavKey,
