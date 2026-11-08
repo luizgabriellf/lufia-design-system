@@ -927,7 +927,7 @@
               "type": "boolean",
               "required": false,
               "default": "true",
-              "description": "Let the grabber and header be dragged down to dismiss. Default `true`."
+              "description": "Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`."
             },
             {
               "name": "closeOnNavigate",

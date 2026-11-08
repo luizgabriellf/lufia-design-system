@@ -296,7 +296,7 @@ its icon. All keep their accessible names.
 <Canvas of={SheetStories.Default} />
 
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
-made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
+made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabber, the header and the body alike.
 
 ### All states
 
@@ -355,10 +355,12 @@ mounted page takes over from the older one.
   the breakpoint, so a phone never sees two.
 - **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button shows the active style
   to point at the page inside it.
-- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet; the body keeps native scrolling
-  because only the drag zone captures the gesture. Escape and the close button always work. A short drag springs back; a
-  past-threshold release or a quick flick dismisses. The offset follows the finger even under reduced motion, because it
-  is direct manipulation.
+- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet. The body keeps native scrolling:
+  a drag that starts in the body counts only when the body is scrolled to the top and moves down, and then it follows the
+  finger (and cancels the browser's pull to refresh) as on a native bottom sheet; any other move scrolls, and a sideways one
+  is left alone. The click the lifted finger would send to a link under it is swallowed. Escape and the close button always
+  work. A short drag springs back; a past-threshold release or a quick flick dismisses. The offset follows the finger even
+  under reduced motion, because it is direct manipulation.
 - **Focus.** The sheet traps focus, lands it on the dialog itself (nothing is chosen for the person, and no keyboard
   pops up on touch), and gives it back to the opener. Body scroll is locked.
 - **The floating bar is a labelled group**, not an ARIA toolbar: a toolbar promises arrow-key movement and every control
