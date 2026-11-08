@@ -111,30 +111,60 @@ function containerIsNarrow(from: HTMLElement, rem: number): boolean | undefined 
   return undefined;
 }
 
-/** Whether `box` lies wholly outside the viewport or outside a scroll container that clips it. */
+/**
+ * Whether `box` lies wholly outside the viewport or outside a scroll container that clips it. Only an ancestor in the
+ * trigger's containing-block chain clips: an absolutely positioned element escapes the static ancestors between it and its
+ * containing block, and a fixed one escapes every ancestor. A clip is the ancestor's padding box.
+ */
 function isScrolledAway(box: DOMRect, from: HTMLElement): boolean {
   const outside = (clip: { left: number; right: number; top: number; bottom: number }) =>
     box.bottom < clip.top || box.top > clip.bottom || box.right < clip.left || box.left > clip.right;
   const viewport = document.documentElement;
   if (outside({ left: 0, top: 0, right: viewport.clientWidth, bottom: viewport.clientHeight })) return true;
+  const number = (value: string | undefined) => parseFloat(value ?? "") || 0;
+  let below = getComputedStyle(from).position || "static";
   for (let node = from.parentElement; node && node !== document.body; node = node.parentElement) {
-    const { overflowX, overflowY } = getComputedStyle(node);
-    if (/^(visible|)$/.test(overflowX) && /^(visible|)$/.test(overflowY)) continue;
-    if (outside(node.getBoundingClientRect())) return true;
+    if (below === "fixed") break;
+    const style = getComputedStyle(node);
+    const position = style.position || "static";
+    const transformed = (style.transform || "none") !== "none";
+    // An absolutely positioned element is not placed by a static, untransformed ancestor, so that one cannot clip it.
+    if (below === "absolute" && position === "static" && !transformed) continue;
+    below = position;
+    if (/^(visible|)$/.test(style.overflowX ?? "") && /^(visible|)$/.test(style.overflowY ?? "")) continue;
+    const rect = node.getBoundingClientRect();
+    if (
+      outside({
+        left: rect.left + number(style.borderLeftWidth),
+        right: rect.right - number(style.borderRightWidth),
+        top: rect.top + number(style.borderTopWidth),
+        bottom: rect.bottom - number(style.borderBottomWidth),
+      })
+    )
+      return true;
   }
   return false;
 }
 
 /**
- * The portalled menu leaves the root's subtree, so what the subtree sets that the body does not is copied over: a theme or
- * mode scope, the writing direction and language, and the root's inline `--lufia-*` custom properties.
+ * The portalled menu leaves the root's subtree, so what the subtree sets that the body does not is copied over: a theme and
+ * mode scope (as the pair the scope declares, never a mix of an inner theme with an unrelated outer mode), the writing
+ * direction and language, and the root's inline `--lufia-*` custom properties.
  */
 function inheritContext(root: HTMLElement, menu: HTMLElement, host: HTMLElement) {
-  for (const name of ["data-lufia-theme", "data-lufia-mode", "dir", "lang"]) {
-    const holder = root.closest<HTMLElement>(`[${name}]`);
-    // A holder that is also above the host (the document element, usually) already reaches the menu by inheritance.
+  // A holder that is also above the host (the document element, usually) already reaches the menu by inheritance.
+  const copy = (name: string, holder: HTMLElement | null) => {
     if (holder && !holder.contains(host)) menu.setAttribute(name, holder.getAttribute(name) ?? "");
-  }
+  };
+  const theme = root.closest<HTMLElement>("[data-lufia-theme]");
+  if (theme && !theme.contains(host)) {
+    copy("data-lufia-theme", theme);
+    // The mode that applies to the theme scope: its own, else the closest one above it.
+    const mode = theme.closest<HTMLElement>("[data-lufia-mode]");
+    if (mode) menu.setAttribute("data-lufia-mode", mode.getAttribute("data-lufia-mode") ?? "");
+  } else copy("data-lufia-mode", root.closest<HTMLElement>("[data-lufia-mode]"));
+  copy("dir", root.closest<HTMLElement>("[dir]"));
+  copy("lang", root.closest<HTMLElement>("[lang]"));
   for (const name of Array.from(root.style)) {
     if (name.startsWith("--lufia-")) menu.style.setProperty(name, root.style.getPropertyValue(name));
   }
@@ -250,13 +280,17 @@ export function MoreActions({
     const root = rootRef.current;
     const menuAtStart = menuRef.current;
     if (root && menuAtStart) inheritContext(root, menuAtStart, host);
+    // Without a layout engine (a test DOM) nothing has a box: the hidden and scrolled-away checks would close the menu at
+    // once, so they apply only when the trigger had layout as the menu opened.
+    const hadLayout = (triggerRef.current?.getClientRects().length ?? 0) > 0;
     const place = () => {
       const menu = menuRef.current;
       const trigger = triggerRef.current;
       if (!menu || !trigger || !root) return;
       const anchor = trigger.getBoundingClientRect();
       // Closed without moving focus: the trigger cannot take it, and a menu left on screen would float with nothing to hang from.
-      if (trigger.getClientRects().length === 0 || isScrolledAway(anchor, trigger)) return setOpen(false);
+      if (hadLayout && (trigger.getClientRects().length === 0 || isScrolledAway(anchor, trigger)))
+        return setOpen(false);
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const gap = rem * 0.5;
       menu.toggleAttribute("data-container-narrow", containerIsNarrow(root, rem) ?? false);

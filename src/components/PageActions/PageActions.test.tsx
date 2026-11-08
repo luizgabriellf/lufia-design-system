@@ -277,3 +277,40 @@ describe("PageActions", () => {
     expect(screen.getByRole("menuitem", { name: "Share" })).toHaveAttribute("data-tour", "share");
   });
 });
+
+describe("PageActions without a layout engine", () => {
+  // A test DOM has no layout; the overflow menu must still open and work with no mocks.
+  const setup = () => {
+    const onSelect = vi.fn();
+    render(
+      <PageActions
+        moreLabel="More"
+        primary={{ key: "n", label: "New" }}
+        overflow={[{ key: "o", label: "Export", onSelect }]}
+      />,
+    );
+    return { onSelect, user: userEvent.setup(), trigger: screen.getByRole("button", { name: "More" }) };
+  };
+
+  it("opens the overflow menu by click", async () => {
+    const first = setup();
+    await first.user.click(first.trigger);
+    expect(screen.getByRole("menuitem", { name: "Export" })).toBeInTheDocument();
+  });
+
+  it("opens by keyboard", async () => {
+    const { user, trigger } = setup();
+    trigger.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menu", { name: "More" })).toBeInTheDocument();
+  });
+
+  it("selects an item: onSelect runs, the menu closes and focus returns to the trigger", async () => {
+    const { user, trigger, onSelect } = setup();
+    await user.click(trigger);
+    await user.click(screen.getByRole("menuitem", { name: "Export" }));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+});

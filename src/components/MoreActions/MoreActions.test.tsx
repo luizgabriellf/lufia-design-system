@@ -555,14 +555,104 @@ describe("MoreActions", () => {
       scroller.remove();
     });
 
-    it("keeps the list's scroll position when it repositions", async () => {
+    it("writes the list's scroll position back after it re-measures", async () => {
       measure({ triggerLeft: 200 });
       const { menu } = await open();
-      menu.scrollTop = 30;
+      // A height cap that is cleared and set again resets a real list's scroll; the saved value must be written back.
+      let top = 30;
+      const writes: number[] = [];
+      Object.defineProperty(menu, "scrollTop", {
+        configurable: true,
+        get: () => top,
+        set: (value: number) => {
+          writes.push(value);
+          top = value;
+        },
+      });
       act(() => {
         window.dispatchEvent(new Event("resize"));
       });
+      expect(writes).toEqual([30]);
       expect(menu.scrollTop).toBe(30);
+    });
+
+    it("coalesces several scroll events into one placement per frame", async () => {
+      measure({ triggerLeft: 200 });
+      const { menu } = await open();
+      expect(menu).toBeInTheDocument();
+      const frames: FrameRequestCallback[] = [];
+      vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => frames.push(callback));
+      let placements = 0;
+      measure({
+        triggerLeft: 200,
+        boxOf: (element) => {
+          if (element.hasAttribute("aria-haspopup")) placements += 1;
+          return undefined;
+        },
+      });
+      // `open()` ran under the synchronous stub; scroll again under the queued one.
+      act(() => {
+        for (let i = 0; i < 3; i += 1) window.dispatchEvent(new Event("scroll"));
+      });
+      expect(frames).toHaveLength(1);
+      expect(placements).toBe(0);
+      act(() => frames.forEach((frame) => frame(0)));
+      expect(placements).toBe(1);
+    });
+
+    it("keeps a fixed-position trigger open when an overflow ancestor it escapes is scrolled away", async () => {
+      measure({ triggerLeft: 200 });
+      const scroller = document.createElement("div");
+      document.body.append(scroller);
+      let rootElement: HTMLElement | null = null;
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) => {
+        if (element === scroller) return { overflowX: "visible", overflowY: "auto" } as CSSStyleDeclaration;
+        if (element === rootElement) return { position: "fixed" } as CSSStyleDeclaration;
+        return real(element, pseudo);
+      });
+      const user = userEvent.setup();
+      render(<MoreActions label="More" items={items} />, { container: scroller });
+      rootElement = scroller.firstElementChild as HTMLElement;
+      await user.click(screen.getByRole("button", { name: "More" }));
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      // The scroller's box is 0..100 tall, the trigger sits at 120: a static trigger would be clipped, a fixed one is not.
+      measure({
+        triggerLeft: 200,
+        triggerTop: 120,
+        boxOf: (element) => (element === scroller ? box(0, 0, 300, 100) : undefined),
+      });
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+      scroller.remove();
+    });
+
+    it("measures the clip as the ancestor's padding box, inside its border", async () => {
+      measure({ triggerLeft: 200 });
+      const scroller = document.createElement("div");
+      document.body.append(scroller);
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) =>
+        element === scroller
+          ? ({ overflowX: "visible", overflowY: "auto", borderBottomWidth: "10px" } as CSSStyleDeclaration)
+          : real(element, pseudo),
+      );
+      const user = userEvent.setup();
+      render(<MoreActions label="More" items={items} />, { container: scroller });
+      await user.click(screen.getByRole("button", { name: "More" }));
+      // The trigger (top 95) is below the padding box (bottom 100 - 10 = 90) but inside the border box.
+      measure({
+        triggerLeft: 200,
+        triggerTop: 95,
+        boxOf: (element) => (element === scroller ? box(0, 0, 300, 100) : undefined),
+      });
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      scroller.remove();
     });
 
     it("copies the theme scope, direction and the root's custom properties onto the portalled menu", async () => {
@@ -585,6 +675,24 @@ describe("MoreActions", () => {
       expect(menu).toHaveAttribute("lang", "ar");
       expect(menu.style.getPropertyValue("--lufia-color-accent")).toBe("red");
       scope.remove();
+    });
+
+    it("copies a nested theme with the mode of that scope, never an inner theme with an unrelated outer mode", async () => {
+      measure({ triggerLeft: 200 });
+      const outer = document.createElement("section");
+      outer.setAttribute("data-lufia-mode", "dark");
+      const inner = document.createElement("div");
+      inner.setAttribute("data-lufia-theme", "b");
+      outer.append(inner);
+      document.body.append(outer);
+      const user = userEvent.setup();
+      render(<MoreActions label="More" items={items} />, { container: inner });
+      await user.click(screen.getByRole("button", { name: "More" }));
+      const menu = screen.getByRole("menu");
+      // The theme scope is inside the dark scope: the pair is theme b in dark, taken from the scope that declares them.
+      expect(menu).toHaveAttribute("data-lufia-theme", "b");
+      expect(menu).toHaveAttribute("data-lufia-mode", "dark");
+      outer.remove();
     });
   });
 
@@ -851,4 +959,42 @@ describe("MoreActions", () => {
       "viewport",
     );
   });
+});
+
+describe("MoreActions without a layout engine", () => {
+  // A test DOM has no layout: every getClientRects() is empty. The menu must still open and stay open, with no mocks.
+  const list: MoreActionItem[] = [
+    { key: "a", label: "Alpha", onSelect },
+    { key: "b", label: "Beta" },
+  ];
+
+  beforeEach(() => onSelect.mockClear());
+
+  it("opens by click and stays open, with its items reachable by role", async () => {
+    const user = userEvent.setup();
+    render(<MoreActions label="More" items={list} />);
+    await user.click(screen.getByRole("button", { name: "More" }));
+    expect(screen.getByRole("menu", { name: "More" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Alpha" })).toBeInTheDocument();
+  });
+
+  it("opens by keyboard", async () => {
+    const user = userEvent.setup();
+    render(<MoreActions label="More" items={list} />);
+    screen.getByRole("button", { name: "More" }).focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menu", { name: "More" })).toBeInTheDocument();
+  });
+
+  it("selects an item: onSelect runs, the menu closes and focus is back on the trigger", async () => {
+    const user = userEvent.setup();
+    render(<MoreActions label="More" items={list} />);
+    await user.click(screen.getByRole("button", { name: "More" }));
+    await user.click(screen.getByRole("menuitem", { name: "Alpha" }));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More" })).toHaveFocus();
+  });
+
+  // Escape and a press outside need layout even before this change: `useDismiss` ignores a copy with no boxes.
 });
