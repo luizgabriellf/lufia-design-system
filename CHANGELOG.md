@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.16.0
+
+### Minor Changes
+
+- [#64](https://github.com/luizgabriellf/lufia-design-system/pull/64) [`b576c9c`](https://github.com/luizgabriellf/lufia-design-system/commit/b576c9c8b92929c7a985e9e23f411697c1c261f0) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add a `pressed` prop to `StatTile`. On a button tile it sets `aria-pressed` and shows a selected state (accent border and background, a thicker inset border and a check mark), so a row of tiles can act as list filters. It is ignored for link, plain and loading tiles.
+
 ## 0.15.0
 
 ### Minor Changes
