@@ -1,5 +1,22 @@
 # @lufia/design-system
 
+## 0.21.0
+
+### Minor Changes
+
+- [#77](https://github.com/luizgabriellf/lufia-design-system/pull/77) [`46a4b40`](https://github.com/luizgabriellf/lufia-design-system/commit/46a4b40edab371cc813b26cd8d8bbeae64b598dc) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - AppShell: a `context` slot (sidebar and sheet) and slot functions that receive the surface with `closeSheet` and `openSheet`; a controllable phone sheet (`menuOpen`, `onMenuOpenChange`, `hideSheetNavigation`); route motion and progress (`routeKey`, `routePending`, `routeProgress`, new `RouteProgress`) and a `mainPending` skeleton that keeps the page mounted; `primaryAction.onIntent` and `desktopPrimaryFallback`; an opt-in fade under the floating bar (`floatScrim`); and navigation scroll hints (edge fades, current page brought into view).
+  
+  The page now always sits in a wrapper element inside `<main>` (`display: contents`, so layout is unchanged); app CSS that targets the page through `main > …` child selectors needs to target one level deeper. `<main>` also defaults to `tabIndex={-1}` so the skip link and pending focus can land on it (override with `mainProps.tabIndex`).
+
+- [#76](https://github.com/luizgabriellf/lufia-design-system/pull/76) [`93348b0`](https://github.com/luizgabriellf/lufia-design-system/commit/93348b0295fae78396ff0f53d88c32c48e542c0d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - AppShell: nav items take `count` (capped, toned, hidden at 0), `badgeTone`, `className` and `data-*`; new `ShellFooter` and `ShellFooterItem` (link, external link, button, active, pending, count); a real tooltip in the rail instead of the native `title`; `mainProps`, `mainKey` and `mainStart` for the shell's `<main>`; `serializeShellState` and `parseShellState` for a cookie that restores the rail and open groups on the first paint.
+
+- [#78](https://github.com/luizgabriellf/lufia-design-system/pull/78) [`958323b`](https://github.com/luizgabriellf/lufia-design-system/commit/958323b8c0bac3b410a7489b628b530f335729b9) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - NavSheet and AppShell: the phone navigation sheet can also be dragged down from its body when the body is scrolled to the top (cancelling the browser's pull to refresh and swallowing the click after the drag), besides the grabber and the header. `swipeToDismiss={false}` turns off all of it.
+
+- [#79](https://github.com/luizgabriellf/lufia-design-system/pull/79) [`f33b520`](https://github.com/luizgabriellf/lufia-design-system/commit/f33b520a324bbbcf9a0c7597c15d5828da0c863c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `computeStatDelta`, a pure helper that turns a current and a previous number into the `delta`, `trend`,
+  `trendLabel` and `deltaTone` props of `StatTile`. It formats a percentage by default, switches to an absolute change on a
+  zero or small base (`minBase`, default 5), treats changes within `flatThreshold` as flat, maps `goodDirection` to the tone
+  and returns `null` without a previous value. All text comes in through `labels`.
+
 ## 0.20.0
 
 ### Minor Changes
