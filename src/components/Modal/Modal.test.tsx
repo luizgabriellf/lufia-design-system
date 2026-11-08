@@ -801,4 +801,23 @@ describe("Modal footer layout", () => {
     }
     expect(narrow).toContain("column-reverse");
   });
+
+  it('stacks from the sheet width with footerStackAt="sheet", and only with the stack layout', () => {
+    const view = (props: Partial<Parameters<typeof Modal>[0]>) => (
+      <Modal open onClose={() => {}} title="Edit" footer={<button type="button">Save</button>} {...props}>
+        body
+      </Modal>
+    );
+    const footer = () => document.querySelector("[data-lufia-part='footer']");
+    const { rerender } = render(view({ footerLayout: "stack" }));
+    expect(footer()).toHaveAttribute("data-footer-stack-at", "narrow");
+    rerender(view({ footerLayout: "stack", footerStackAt: "sheet" }));
+    expect(footer()).toHaveAttribute("data-footer-stack-at", "sheet");
+    rerender(view({ footerStackAt: "sheet" }));
+    expect(footer()).not.toHaveAttribute("data-footer-stack-at");
+    const sheet = /@media \(width <= 37\.5rem\) \{([\s\S]*?)\n\}\n/.exec(css)?.[1] ?? "";
+    expect(sheet).toMatch(
+      /\.footer\[data-footer-layout="stack"\]\[data-footer-stack-at="sheet"\]\s*\{\s*flex-direction: column-reverse;/,
+    );
+  });
 });

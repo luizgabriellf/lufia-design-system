@@ -306,6 +306,12 @@
   .footer {
     padding-block-end: max(var(--lufia-space-4), env(safe-area-inset-bottom));
   }
+
+  /* `footerStackAt="sheet"`: the stack starts where the dialog becomes a sheet, not only on a narrow phone. */
+  .footer[data-footer-layout="stack"][data-footer-stack-at="sheet"] {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
 }
 
 /* Phones, narrow: the footer stays a row, in DOM order, so the primary action sits at the inline end (and RTL mirrors it).

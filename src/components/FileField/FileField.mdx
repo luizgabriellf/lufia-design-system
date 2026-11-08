@@ -62,6 +62,15 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.WithFiles} />
 <Canvas of={Stories.Rejected} />
 
+### Image preview
+
+`preview` adds a small thumbnail beside each chosen image (a file whose type starts with `image/`); pass a function to
+decide per file. It is read from the person's device with an object URL that is released when the file leaves the list,
+it is decorative (the name beside it is what is read out), and nothing is uploaded by it. The visible label, the hint and a
+server error come from the surrounding `FormField`, as for every form control.
+
+<Canvas of={Stories.WithPreview} />
+
 ### States
 
 <Canvas of={Stories.SingleFile} />

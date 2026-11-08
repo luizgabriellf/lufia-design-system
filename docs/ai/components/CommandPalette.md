@@ -48,6 +48,7 @@ arrow keys, run with Enter.
 | `groupOrder` | `readonly string[]` | no |  | The order of the group headings, by name. Groups not listed follow, in the order they are first used; listed groups with no results are left out. Default: the order of first use. |
 | `bodyOverride` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are not announced. The field keeps focus. |
 | `onEscape` | `() => boolean \| void` | no |  | Called on Escape before the palette closes. Return `true` when you handled it (left a sub-mode, cleared an answer): the palette then stays open, and the next Escape closes it. Return anything else to close. |
+| `escapeClearsQuery` | `boolean` | no | `false` | Two-step Escape: while the field holds text, Escape first clears it (and calls `onQueryChange("")`), and the next Escape closes. `onEscape` is asked first and wins when it returns `true`. Default `false`: Escape closes at once. |
 | `shortcut` | `boolean` | no | `true` | Open on Ctrl+K and Cmd+K. Default `true`. |
 | `container` | `HTMLElement \| null` | no |  | Where the palette is mounted. Defaults to `document.body`. |
 
@@ -105,7 +106,7 @@ Keyboard:
 | Type | Filters; the first match is highlighted |
 | Down / Up | Moves the highlight, wrapping at the ends |
 | Enter | Runs the highlighted command |
-| Escape | Closes; focus returns to where it was |
+| Escape | Closes; focus returns to where it was (with `escapeClearsQuery`, first clears typed text) |
 | Tab | Cycles between the field and the close button |
 
 ## Motion
@@ -129,6 +130,7 @@ people might type that the label does not contain.
 - `components-overlays-commandpalette--long-text`
 - `components-overlays-commandpalette--phone-390`
 - `components-overlays-commandpalette--phone-320`
+- `components-overlays-commandpalette--escape-clears-query`
 - `components-overlays-commandpalette--fixed-section-order`
 - `components-overlays-commandpalette--answer-replaces-results`
 - `components-overlays-commandpalette--server-side-search`

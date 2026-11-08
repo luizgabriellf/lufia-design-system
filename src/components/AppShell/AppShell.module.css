@@ -207,3 +207,10 @@
     border-color: CanvasText;
   }
 }
+
+/* A page that will register its own action marks itself (`ShellPrimaryActionOwner`): the shell's default stays out of
+   sight, keeping its place, until the page's action replaces it. */
+.shell:has([data-lufia-shell-primary-owner]) .float [data-fallback],
+.shell:has([data-lufia-shell-primary-owner]) .primarySlot[data-fallback] {
+  visibility: hidden;
+}

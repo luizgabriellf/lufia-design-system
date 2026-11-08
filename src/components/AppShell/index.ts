@@ -8,8 +8,23 @@ export {
   type AppShellRouteTransitionProps,
   type AppShellSearch,
 } from "./AppShell";
-export { RouteProgress, type RouteProgressProps } from "./RouteProgress";
-export { ShellPrimaryActionSlot, useShellPrimaryAction, type AppShellPrimaryAction } from "./primaryAction";
+export {
+  doneRouteProgress,
+  RouteProgress,
+  ROUTE_PROGRESS_DONE_EVENT,
+  ROUTE_PROGRESS_START_EVENT,
+  startRouteProgress,
+  type RouteProgressEvents,
+  type RouteProgressProps,
+} from "./RouteProgress";
+export {
+  ShellPrimaryActionOwner,
+  ShellPrimaryActionSlot,
+  useShellPrimaryAction,
+  useShellPrimaryActionState,
+  type AppShellPrimaryAction,
+  type ShellPrimaryActionState,
+} from "./primaryAction";
 export {
   MobileFloatBar,
   MobileFloatBarButton,
@@ -47,4 +62,4 @@ export {
   type SidebarItemProps,
   type SidebarProps,
 } from "./Sidebar";
-export { useSheetDrag } from "./useSheetDrag";
+export { SHEET_DRAG_THRESHOLD, useSheetDrag, type SheetDragThreshold } from "./useSheetDrag";

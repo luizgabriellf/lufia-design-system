@@ -110,6 +110,17 @@
   border-radius: var(--lufia-radius-control);
 }
 
+/* A local preview of a chosen image. Decorative: the name beside it carries the meaning. */
+.thumb {
+  flex: 0 0 auto;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  object-fit: cover;
+  background: var(--lufia-color-bg-surface-raised);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-xs);
+}
+
 .name {
   flex: 1 1 auto;
   min-inline-size: 0;

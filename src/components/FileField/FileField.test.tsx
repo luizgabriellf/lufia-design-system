@@ -294,4 +294,65 @@ describe("FileField", () => {
     await user.upload(input(), [file("a.pdf"), file("b.png", 1, "image/png")]);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  describe("preview", () => {
+    const created: string[] = [];
+    const revoked: string[] = [];
+    beforeEach(() => {
+      created.length = 0;
+      revoked.length = 0;
+      let next = 0;
+      Object.assign(URL, {
+        createObjectURL: (blob: Blob) => {
+          void blob;
+          const url = `blob:preview-${(next += 1)}`;
+          created.push(url);
+          return url;
+        },
+        revokeObjectURL: (url: string) => void revoked.push(url),
+      });
+    });
+    afterEach(() => {
+      const loose = URL as unknown as Record<string, unknown>;
+      delete loose.createObjectURL;
+      delete loose.revokeObjectURL;
+    });
+
+    const thumbs = () =>
+      Array.from(document.querySelectorAll<HTMLImageElement>("[data-lufia-part='preview']"));
+
+    it("shows a decorative thumbnail for chosen images only, and none by default", async () => {
+      const user = userEvent.setup();
+      const { unmount } = renderField({ multiple: true });
+      await user.upload(input(), [file("photo.png", 100, "image/png")]);
+      expect(thumbs()).toHaveLength(0);
+      unmount();
+      renderField({ multiple: true, preview: true });
+      await user.upload(input(), [file("photo.png", 100, "image/png"), file("notes.pdf")]);
+      expect(thumbs()).toHaveLength(1);
+      expect(thumbs()[0]).toHaveAttribute("alt", "");
+      expect(thumbs()[0]).toHaveAttribute("src", "blob:preview-1");
+      expect(
+        await axe(document.querySelector("[data-lufia-part='field']") ?? document.body),
+      ).toHaveNoViolations();
+    });
+
+    it("takes a function that decides per file", async () => {
+      const user = userEvent.setup();
+      renderField({ multiple: true, preview: (chosen) => chosen.name.startsWith("show") });
+      await user.upload(input(), [file("show.png", 100, "image/png"), file("hide.png", 100, "image/png")]);
+      expect(thumbs()).toHaveLength(1);
+    });
+
+    it("releases the object URL when the file is removed and when the field unmounts", async () => {
+      const user = userEvent.setup();
+      const { unmount } = renderField({ multiple: true, preview: true });
+      await user.upload(input(), [file("one.png", 100, "image/png"), file("two.png", 200, "image/png")]);
+      expect(thumbs()).toHaveLength(2);
+      await user.click(screen.getByRole("button", { name: "Remove one.png" }));
+      expect(revoked).toContain(created[0]);
+      unmount();
+      expect(revoked).toEqual(expect.arrayContaining(created));
+    });
+  });
 });

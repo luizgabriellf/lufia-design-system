@@ -416,6 +416,46 @@ describe("CommandPalette extension points", () => {
     });
   });
 
+  describe("escapeClearsQuery", () => {
+    it("clears the typed text first, then closes on the next Escape", async () => {
+      const user = userEvent.setup();
+      const onQueryChange = vi.fn();
+      render(<Harness escapeClearsQuery onQueryChange={onQueryChange} />);
+      await user.type(field(), "exp");
+      expect(screen.getAllByRole("option")).toHaveLength(1);
+      await user.keyboard("{Escape}");
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(field()).toHaveValue("");
+      expect(field()).toHaveFocus();
+      expect(onQueryChange).toHaveBeenLastCalledWith("");
+      expect(screen.getAllByRole("option")).toHaveLength(4);
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("closes at once on an empty field, and leaves the default alone", async () => {
+      const user = userEvent.setup();
+      const { unmount } = render(<Harness escapeClearsQuery />);
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+      unmount();
+      render(<Harness />);
+      await user.type(field(), "exp");
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("asks onEscape first", async () => {
+      const user = userEvent.setup();
+      const onEscape = vi.fn(() => true);
+      render(<Harness escapeClearsQuery onEscape={onEscape} />);
+      await user.type(field(), "exp");
+      await user.keyboard("{Escape}");
+      expect(onEscape).toHaveBeenCalledTimes(1);
+      expect(field()).toHaveValue("exp");
+    });
+  });
+
   describe("server search", () => {
     it("holds the empty message back while loading and marks the body busy", () => {
       const { rerender } = render(<Harness commands={[]} loading />);

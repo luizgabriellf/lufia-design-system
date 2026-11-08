@@ -1,7 +1,15 @@
 import { readFileSync } from "node:fs";
 import { act, fireEvent, render } from "@testing-library/react";
 import { axe } from "../../test/axe";
-import { RouteProgress, ROUTE_PROGRESS_REVEAL_DELAY_MS, ROUTE_PROGRESS_TIMEOUT_MS } from "./RouteProgress";
+import {
+  doneRouteProgress,
+  RouteProgress,
+  ROUTE_PROGRESS_DONE_EVENT,
+  ROUTE_PROGRESS_REVEAL_DELAY_MS,
+  ROUTE_PROGRESS_START_EVENT,
+  ROUTE_PROGRESS_TIMEOUT_MS,
+  startRouteProgress,
+} from "./RouteProgress";
 
 const css = readFileSync("src/components/AppShell/RouteProgress.module.css", "utf8");
 
@@ -230,6 +238,112 @@ describe("RouteProgress", () => {
       advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
       expect(bar(container)).not.toBeNull();
       advance(ROUTE_PROGRESS_TIMEOUT_MS + 400);
+      expect(bar(container)).toBeNull();
+    });
+  });
+
+  describe("started from code", () => {
+    it("starts on startRouteProgress() and finishes on doneRouteProgress()", () => {
+      const { container } = render(<RouteProgress routeKey="/a" />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+      act(() => doneRouteProgress());
+      expect(bar(container)).toHaveAttribute("data-finishing");
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("never shows when done arrives within the reveal delay", () => {
+      const { container } = render(<RouteProgress routeKey="/a" />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS - 20);
+      act(() => doneRouteProgress());
+      advance(1000);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("finishes on a route key change", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/a" />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      rerender(<RouteProgress routeKey="/b" />);
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("works with pending: done leaves the bar while pending is true, pending false then finishes it", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/a" pending />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      act(() => doneRouteProgress());
+      advance(400);
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+      rerender(<RouteProgress routeKey="/a" pending={false} />);
+      expect(bar(container)).toHaveAttribute("data-finishing");
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("works with pending: pending false leaves a run started from code until done", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/a" pending={false} />);
+      act(() => startRouteProgress());
+      rerender(<RouteProgress routeKey="/a" pending />);
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      rerender(<RouteProgress routeKey="/a" pending={false} />);
+      advance(400);
+      expect(bar(container)).not.toBeNull();
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+      act(() => doneRouteProgress());
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("works with trackLinks: done leaves a link click that has not arrived", () => {
+      const { container } = render(<RouteProgress routeKey="/a" />);
+      fireEvent.click(addLink("/elsewhere"));
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      act(() => doneRouteProgress());
+      advance(400);
+      expect(bar(container)).not.toBeNull();
+    });
+
+    it("ignores a done with nothing started from code", () => {
+      const { container } = render(<RouteProgress routeKey="/a" pending />);
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      act(() => doneRouteProgress());
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+    });
+
+    it("listens for custom event names, and dispatches the documented defaults", () => {
+      const seen: string[] = [];
+      const record = (event: Event) => seen.push(event.type);
+      window.addEventListener(ROUTE_PROGRESS_START_EVENT, record);
+      window.addEventListener(ROUTE_PROGRESS_DONE_EVENT, record);
+      startRouteProgress();
+      doneRouteProgress();
+      window.removeEventListener(ROUTE_PROGRESS_START_EVENT, record);
+      window.removeEventListener(ROUTE_PROGRESS_DONE_EVENT, record);
+      expect(seen).toEqual(["lufia:route-progress-start", "lufia:route-progress-done"]);
+
+      const { container } = render(
+        <RouteProgress routeKey="/a" events={{ start: "app:nav-start", done: "app:nav-end" }} />,
+      );
+      act(() => void window.dispatchEvent(new Event("app:nav-start")));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+      act(() => startRouteProgress());
+      act(() => void window.dispatchEvent(new Event("app:nav-end")));
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("stops listening when unmounted", () => {
+      const { container, unmount } = render(<RouteProgress routeKey="/a" />);
+      unmount();
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
       expect(bar(container)).toBeNull();
     });
   });

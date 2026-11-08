@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
-import { dragDismisses, finishSheetDrag } from "./useSheetDrag";
+import { dragDismisses, finishSheetDrag, type SheetDragThreshold } from "./useSheetDrag";
 
 /** Movement before a touch is read as a scroll or a drag: a tap and a tiny wobble stay taps. */
 const SLOP = 8;
@@ -65,10 +65,13 @@ export function useSheetBodyDrag(
   panel: RefObject<HTMLElement | null>,
   enabled: boolean,
   onDismiss: () => void,
+  threshold?: SheetDragThreshold,
 ) {
   const dismiss = useRef(onDismiss);
+  const limits = useRef(threshold);
   useEffect(() => {
     dismiss.current = onDismiss;
+    limits.current = threshold;
   });
 
   useEffect(() => {
@@ -171,7 +174,7 @@ export function useSheetBodyDrag(
       const offset = Math.max(0, touch.clientY - current.y);
       finishSheetDrag(
         element,
-        dragDismisses(offset, current.velocity, element.getBoundingClientRect().height),
+        dragDismisses(offset, current.velocity, element.getBoundingClientRect().height, limits.current),
         () => dismiss.current(),
       );
     };

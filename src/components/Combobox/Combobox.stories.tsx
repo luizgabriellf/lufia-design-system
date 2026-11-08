@@ -147,6 +147,28 @@ export const ManyOptions: Story = {
   },
   play: openList,
 };
+/**
+ * `maxResults` with a custom `filter`: a long local list shows its first 8 matches, the filter also reads the description,
+ * and `resultsLabel` gets the total so it can say how many more there are.
+ */
+export const CappedResults: Story = {
+  args: {
+    options: Array.from({ length: 120 }, (_, index) => ({
+      value: `site-${index}`,
+      label: `Site ${index + 1}`,
+      description: ["North", "South", "East", "West"][index % 4],
+    })),
+    maxResults: 8,
+    filter: (option: ComboboxOption, query: string) =>
+      `${option.label} ${option.description ?? ""}`.toLowerCase().includes(query.trim().toLowerCase()),
+    resultsLabel: (count: number, total: number) =>
+      count < total ? `${count} of ${total} sites shown. Type to narrow.` : `${count} sites`,
+    hint: "Shows the first 8 matches; type a name or a region.",
+    label: "Site",
+    placeholder: "Search for a site",
+  },
+  play: openList,
+};
 /** Inside a dialog, Escape closes the list first and the dialog on the next press. */
 export const InsideDialog: Story = {
   render: (args) => {

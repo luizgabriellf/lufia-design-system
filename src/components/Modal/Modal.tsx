@@ -95,6 +95,12 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
    * labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top.
    */
   footerLayout?: "row" | "stack";
+  /**
+   * Up to which width `footerLayout="stack"` stacks the actions. `narrow` (default) stacks at 30rem (480px) and below;
+   * `sheet` stacks at 37.5rem (600px) and below, the width where the dialog becomes a bottom sheet, so a footer with long
+   * labels never sits side by side in a sheet. Ignored with `footerLayout="row"`.
+   */
+  footerStackAt?: "narrow" | "sheet";
   /** Accessible name of the close button. Defaults to the provider's `labels.close`. */
   closeLabel?: string;
   /** Leave out the close button, e.g. when the footer already offers the way out. Escape and outside click still apply. */
@@ -145,6 +151,7 @@ export function Modal({
   headerAction,
   footer,
   footerLayout = "row",
+  footerStackAt = "narrow",
   closeLabel,
   hideCloseButton = false,
   busy = false,
@@ -297,6 +304,7 @@ export function Modal({
           className={cx(styles.footer, classNames?.footer)}
           data-lufia-part="footer"
           data-footer-layout={footerLayout}
+          data-footer-stack-at={footerLayout === "stack" ? footerStackAt : undefined}
         >
           {footer}
         </footer>

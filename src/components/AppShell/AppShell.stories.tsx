@@ -24,7 +24,14 @@ import { Button } from "../Button";
 import { AppShell } from "./AppShell";
 import { useState } from "react";
 import { ShellFooter, ShellFooterItem } from "./ShellFooter";
-import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
+import { CommandPalette, type CommandItem } from "../CommandPalette";
+import {
+  ShellPrimaryActionOwner,
+  ShellPrimaryActionSlot,
+  useShellPrimaryAction,
+  useShellPrimaryActionState,
+} from "./primaryAction";
+import { doneRouteProgress, startRouteProgress } from "./RouteProgress";
 import type { ShellNavGroup } from "./navigation";
 
 const meta = {
@@ -418,6 +425,127 @@ function PendingPage(args: Parameters<typeof DemoShell>[0]) {
 export const RouteMotionAndPending: Story = {
   render: (args) => <PendingPage {...args} />,
   globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+function ProgressFromCode(args: Parameters<typeof DemoShell>[0]) {
+  const [pending, setPending] = useState(false);
+  return (
+    <DemoShell
+      {...args}
+      trackRoute
+      routePending={pending}
+      routeTrackLinks
+      mainStart={
+        <div style={{ ...barStyle, marginBlockEnd: "1rem", flexWrap: "wrap" }}>
+          <span>Start the bar from code, without a link.</span>
+          <span style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <Button size="sm" onClick={() => startRouteProgress()}>
+              startRouteProgress()
+            </Button>
+            <Button size="sm" onClick={() => doneRouteProgress()}>
+              doneRouteProgress()
+            </Button>
+            <Button size="sm" aria-pressed={pending} onClick={() => setPending((now) => !now)}>
+              {pending ? "routePending: on" : "routePending: off"}
+            </Button>
+          </span>
+        </div>
+      }
+    />
+  );
+}
+
+/**
+ * `startRouteProgress()` and `doneRouteProgress()` drive the bar from code (a save that navigates, a search-param change).
+ * They combine with `routePending` and tracked link clicks: the bar stays while any of them is in progress.
+ */
+export const RouteProgressFromCode: Story = {
+  render: (args) => <ProgressFromCode {...args} />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+function PaletteActions() {
+  const [open, setOpen] = useState(false);
+  const shell = useShellPrimaryActionState();
+  const items: CommandItem[] = [
+    ...(shell?.action
+      ? [
+          {
+            key: "primary",
+            label: shell.action.label,
+            description: shell.action.description,
+            group: "Actions",
+            onSelect: () => shell.action?.onSelect?.(),
+          },
+        ]
+      : []),
+    { key: "inbox", label: "Inbox", group: "Go to", onSelect: () => {} },
+  ];
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open the palette</Button>
+      <CommandPalette
+        open={open}
+        onOpenChange={setOpen}
+        items={items}
+        shortcut={false}
+        labels={{
+          title: "Search or run a command",
+          placeholder: "Type a command…",
+          empty: (query) => `No results for “${query}”`,
+          resultCount: (count) => `${count} results`,
+        }}
+      />
+    </>
+  );
+}
+
+function OrdersPage() {
+  useShellPrimaryAction({
+    label: "New order",
+    description: "Start an order for a customer",
+    icon: <PlusIcon size={16} />,
+    onSelect: () => {},
+  });
+  return (
+    <div style={{ display: "grid", gap: "1rem", justifyItems: "start" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <h1 style={{ margin: 0 }}>Orders</h1>
+        <ShellPrimaryActionSlot />
+      </div>
+      <PaletteActions />
+    </div>
+  );
+}
+
+/**
+ * `useShellPrimaryActionState` reads the shell's current action without registering one: here a command palette lists it
+ * under Actions, with the `description` the page registered.
+ */
+export const PrimaryActionInPalette: Story = {
+  args: { primaryAction: undefined },
+  render: (args) => (
+    <DemoShell {...args}>
+      <OrdersPage />
+    </DemoShell>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/**
+ * `ShellPrimaryActionOwner`: a page that will register its own action marks itself in the server markup, so the shell's
+ * default stays hidden (its place kept) on a hard load instead of flashing before the page's action arrives. This page
+ * renders the mark and never registers, so the default stays hidden.
+ */
+export const PrimaryActionOwnerMark: Story = {
+  render: (args) => (
+    <DemoShell {...args}>
+      <ShellPrimaryActionOwner />
+      <h1 style={{ margin: 0 }}>Orders</h1>
+      <ShellPrimaryActionSlot />
+    </DemoShell>
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
 };
 
 /** `desktopPrimaryFallback={false}` and `primaryAction.onIntent`: the default action stays on the phone bar only. */

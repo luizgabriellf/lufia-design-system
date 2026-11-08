@@ -705,3 +705,146 @@ test.describe("app shell navigation", () => {
     await expect(admin).toHaveAttribute("data-active");
   });
 });
+
+test.describe("route progress from code", () => {
+  test("startRouteProgress shows the bar and doneRouteProgress ends it, alongside routePending", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--route-progress-from-code");
+    const bar = page.locator("[data-route-progress]");
+    await page.getByRole("button", { name: "startRouteProgress()" }).click();
+    await expect(bar).toBeVisible();
+    await page.getByRole("button", { name: "doneRouteProgress()" }).click();
+    await expect(bar).toHaveCount(0);
+
+    // Code and routePending together: the bar stays until both are done.
+    await page.getByRole("button", { name: "startRouteProgress()" }).click();
+    await page.getByRole("button", { name: "routePending: off" }).click();
+    await expect(bar).toBeVisible();
+    await page.getByRole("button", { name: "doneRouteProgress()" }).click();
+    await page.waitForTimeout(400);
+    await expect(bar).toBeVisible();
+    await page.getByRole("button", { name: "routePending: on" }).click();
+    await expect(bar).toHaveCount(0);
+  });
+});
+
+test.describe("shell primary action", () => {
+  test("the palette lists the page's registered action with its description", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--primary-action-in-palette");
+    await expect(page.getByRole("main").getByRole("button", { name: "New order" })).toBeVisible();
+    await page.getByRole("button", { name: "Open the palette" }).click();
+    const option = page.getByRole("option", { name: /New order/ });
+    await expect(option).toBeVisible();
+    await expect(option).toContainText("Start an order for a customer");
+  });
+
+  test("an owner mark keeps the shell's default hidden on the phone bar, its place kept", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--primary-action-owner-mark");
+    const bar = page.getByRole("group", { name: "Quick navigation" });
+    const fallback = bar.locator("[data-fallback]");
+    await expect(fallback).toHaveCount(1);
+    await expect(fallback).toBeHidden();
+    await expect(fallback).toHaveCSS("visibility", "hidden");
+    await expect(bar.getByRole("button", { name: "Menu" })).toBeVisible();
+  });
+});
+
+test.describe("nav sheet drag threshold", () => {
+  test("a custom minimum keeps the sheet open on a short drag and closes it on a long one", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell-navsheet--custom-drag-threshold");
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+    // Let the sheet finish rising, so the grabber is where the pointer goes.
+    await sheet.evaluate((element) =>
+      Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+    );
+    const grabber = sheet.locator("[data-swipe]");
+    const box = (await grabber.boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + 8;
+    const drag = async (distance: number) => {
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      for (let step = 1; step <= 10; step += 1) {
+        await page.mouse.move(x, y + (distance * step) / 10);
+        await page.waitForTimeout(30);
+      }
+      await page.waitForTimeout(120);
+      await page.mouse.up();
+    };
+    // 90px would pass the default 64px floor; the story asks for at least 96.
+    await drag(90);
+    await expect(sheet).toBeVisible();
+    await expect(sheet).not.toHaveAttribute("data-dragging");
+    // Let it spring back before the next drag.
+    await page.waitForTimeout(400);
+    await drag(260);
+    await expect(sheet).toHaveCount(0);
+  });
+});
+
+test.describe("modal footer stack breakpoint", () => {
+  test('footerStackAt="sheet" stacks at 540px where the default stack is still a row', async ({ page }) => {
+    await page.setViewportSize({ width: 540, height: 800 });
+    await openStory(page, "components-overlays-modal--sheet-footer-stacked");
+    const footer = page.locator("[data-lufia-part='footer']");
+    await expect(footer).toHaveCSS("flex-direction", "column-reverse");
+    await openStory(page, "components-overlays-modal--phone-footer-stacked");
+    await expect(page.locator("[data-lufia-part='footer']")).not.toHaveCSS(
+      "flex-direction",
+      "column-reverse",
+    );
+    await page.setViewportSize({ width: 390, height: 800 });
+    await expect(page.locator("[data-lufia-part='footer']")).toHaveCSS("flex-direction", "column-reverse");
+  });
+});
+
+test.describe("command palette two-step Escape", () => {
+  test("the first Escape clears the text, the second closes", async ({ page }) => {
+    await openStory(page, "components-overlays-commandpalette--escape-clears-query");
+    const field = page.getByRole("combobox", { name: "Search or run a command" });
+    await field.fill("set");
+    await page.keyboard.press("Escape");
+    await expect(field).toHaveValue("");
+    await expect(field).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+});
+
+test.describe("file field preview", () => {
+  test("chosen images get a loaded, decorative thumbnail; other files do not", async ({ page }) => {
+    await openStory(page, "components-forms-filefield--with-preview");
+    const thumbs = page.locator("[data-lufia-part='preview']");
+    await expect(thumbs).toHaveCount(2);
+    await expect
+      .poll(() => thumbs.first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
+      .toBeGreaterThan(0);
+    await expect(thumbs.first()).toHaveAttribute("alt", "");
+    await page.getByRole("button", { name: "Remove entrance-before.svg" }).click();
+    await expect(thumbs).toHaveCount(1);
+  });
+});
+
+test.describe("combobox result cap", () => {
+  test("shows only maxResults matches and narrows with the custom filter", async ({ page }) => {
+    await openStory(page, "components-forms-combobox--capped-results");
+    const box = page.getByRole("combobox", { name: "Site" });
+    await expect(page.getByRole("option")).toHaveCount(8);
+    await box.fill("west");
+    await expect(page.getByRole("option")).toHaveCount(8);
+    await expect(page.getByRole("option").first()).toContainText("West");
+    await box.fill("site 12");
+    // Site 12 and Site 120: under the cap, so both show.
+    await expect(page.getByRole("option")).toHaveCount(2);
+  });
+});

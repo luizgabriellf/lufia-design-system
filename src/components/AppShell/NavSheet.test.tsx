@@ -5,6 +5,7 @@ import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { NavSheet } from "./NavSheet";
+import { dragDismisses, SHEET_DRAG_THRESHOLD } from "./useSheetDrag";
 
 function Harness({
   swipe = true,
@@ -340,5 +341,79 @@ describe('NavSheet renderAs="dialog"', () => {
     render(<Harness renderAs="dialog" initial />);
     // The browser makes the page behind inert; jsdom does not, so check the dialog alone.
     expect(await axe(sheet()!)).toHaveNoViolations();
+  });
+});
+
+describe("NavSheet dragThreshold", () => {
+  beforeEach(() => mockReducedMotion(true));
+  afterEach(() => vi.restoreAllMocks());
+
+  it("keeps the documented defaults", () => {
+    expect(SHEET_DRAG_THRESHOLD).toEqual({
+      ratio: 0.18,
+      min: 64,
+      max: 112,
+      flickVelocity: 0.6,
+      flickDistance: 24,
+    });
+    // 18% of 400 is 72: inside the 64..112 band.
+    expect(dragDismisses(71, 0, 400)).toBe(false);
+    expect(dragDismisses(72, 0, 400)).toBe(true);
+    // A short sheet still needs 64, a tall one never more than 112.
+    expect(dragDismisses(63, 0, 100)).toBe(false);
+    expect(dragDismisses(112, 0, 2000)).toBe(true);
+    expect(dragDismisses(30, 0.7, 2000)).toBe(true);
+    expect(dragDismisses(20, 0.7, 2000)).toBe(false);
+  });
+
+  it("applies each field given and keeps the default for the rest", () => {
+    expect(dragDismisses(72, 0, 400, { min: 100 })).toBe(false);
+    expect(dragDismisses(100, 0, 400, { min: 100 })).toBe(true);
+    expect(dragDismisses(50, 0, 1000, { ratio: 0.05, min: 0 })).toBe(true);
+    expect(dragDismisses(40, 0, 2000, { max: 40 })).toBe(true);
+    expect(dragDismisses(30, 0.7, 2000, { flickVelocity: 1 })).toBe(false);
+    expect(dragDismisses(30, 0.7, 2000, { flickDistance: 40 })).toBe(false);
+    expect(dragDismisses(72, 0, 400, { min: undefined })).toBe(true);
+  });
+
+  const grabber = () => document.querySelector<HTMLElement>("[data-swipe]")!;
+  const slowDrag = (to: number) => {
+    let now = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => (now += 500));
+    fireEvent.pointerDown(grabber(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+    fireEvent.pointerMove(grabber(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+    act(() => {
+      fireEvent.pointerUp(grabber(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+    });
+  };
+
+  it("the grabber honours a longer distance", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <NavSheet open onOpenChange={onOpenChange} label="Menu" dragThreshold={{ min: 300, max: 300 }}>
+        <a href="/one">One</a>
+      </NavSheet>,
+    );
+    slowDrag(200);
+    expect(onOpenChange).not.toHaveBeenCalled();
+    slowDrag(320);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("the body honours a shorter distance", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <NavSheet open onOpenChange={onOpenChange} label="Menu" dragThreshold={{ min: 30, max: 30 }}>
+        <a href="/one">One</a>
+      </NavSheet>,
+    );
+    let now = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => (now += 500));
+    const body = document.querySelector<HTMLElement>("[data-sheet-body]")!;
+    fireEvent.touchStart(body, { touches: [{ identifier: 1, clientX: 50, clientY: 100 }] });
+    fireEvent.touchMove(body, { touches: [{ identifier: 1, clientX: 50, clientY: 120 }] });
+    fireEvent.touchMove(body, { touches: [{ identifier: 1, clientX: 50, clientY: 140 }] });
+    fireEvent.touchEnd(body, { touches: [], changedTouches: [{ identifier: 1, clientX: 50, clientY: 140 }] });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

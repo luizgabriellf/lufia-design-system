@@ -12,6 +12,37 @@ export const ROUTE_PROGRESS_TIMEOUT_MS = 10_000;
 /** It creeps toward this and waits there: the bar never claims the page is nearly ready when it does not know. */
 const CEILING = 85;
 
+/** The window event `startRouteProgress()` dispatches. Any `RouteProgress` on the page listens for it. */
+export const ROUTE_PROGRESS_START_EVENT = "lufia:route-progress-start";
+/** The window event `doneRouteProgress()` dispatches. */
+export const ROUTE_PROGRESS_DONE_EVENT = "lufia:route-progress-done";
+
+/** Names of the window events a `RouteProgress` listens for. */
+export type RouteProgressEvents = { start: string; done: string };
+
+const DEFAULT_EVENTS: RouteProgressEvents = {
+  start: ROUTE_PROGRESS_START_EVENT,
+  done: ROUTE_PROGRESS_DONE_EVENT,
+};
+
+/**
+ * Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a
+ * `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it
+ * works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second
+ * timeout. Does nothing on the server.
+ */
+export function startRouteProgress(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(ROUTE_PROGRESS_START_EVENT));
+}
+
+/**
+ * Ends a run started by `startRouteProgress()` (a cancelled or failed navigation). The bar finishes unless `pending` or a
+ * tracked link click still keeps it going. Dispatches `ROUTE_PROGRESS_DONE_EVENT` on `window`; does nothing on the server.
+ */
+export function doneRouteProgress(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(ROUTE_PROGRESS_DONE_EVENT));
+}
+
 export type RouteProgressProps = {
   /**
    * Identifies the page being shown (the pathname). When it changes, the navigation has arrived and the bar finishes.
@@ -35,13 +66,21 @@ export type RouteProgressProps = {
   trackLinks?: boolean;
   /** Milliseconds to wait before showing the bar. Default 150. */
   revealDelay?: number;
+  /**
+   * The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and
+   * `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when
+   * existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and
+   * `trackLinks`: the bar shows while any of them is in progress.
+   */
+  events?: RouteProgressEvents;
   className?: string;
 };
 
 /**
  * A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it
  * shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades
- * out (opacity, with the exit token). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity`
+ * out (opacity, with the exit token). Code starts and ends a run with `startRouteProgress()` and `doneRouteProgress()`
+ * (window events, see `events`). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity`
  * move, with the motion tokens, so under reduced motion it steps without easing.
  */
 export function RouteProgress({
@@ -49,6 +88,7 @@ export function RouteProgress({
   pending,
   trackLinks,
   revealDelay = ROUTE_PROGRESS_REVEAL_DELAY_MS,
+  events = DEFAULT_EVENTS,
   className,
 }: RouteProgressProps) {
   const previousRoute = useRef(routeKey);
@@ -58,6 +98,8 @@ export function RouteProgress({
   const safety = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** Set when a link click started the run: the address it left, to notice when it changed. */
   const startedAt = useRef<string | null>(null);
+  /** A run started from code (`startRouteProgress()` or `events.start`) that has not been told it is done. */
+  const manual = useRef(false);
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
 
@@ -71,6 +113,7 @@ export function RouteProgress({
 
   const complete = useCallback(() => {
     startedAt.current = null;
+    manual.current = false;
     // Still waiting to be shown: the navigation was fast enough that the bar never needs to appear.
     if (reveal.current) {
       clearTimers();
@@ -114,7 +157,7 @@ export function RouteProgress({
       const done = () => {
         if (startedAt.current === null || window.location.href === startedAt.current) return false;
         startedAt.current = null;
-        return !pendingNow.current;
+        return !pendingNow.current && !manual.current;
       };
       reveal.current = setTimeout(() => {
         reveal.current = null;
@@ -143,8 +186,8 @@ export function RouteProgress({
       start();
     } else if (wasPending.current) {
       wasPending.current = false;
-      // A tracked link click that has not arrived keeps the bar; it ends on its own terms.
-      if (startedAt.current === null) complete();
+      // A tracked link click that has not arrived, or a run started from code, keeps the bar; each ends on its own terms.
+      if (startedAt.current === null && !manual.current) complete();
     }
   }, [pending, start, complete]);
 
@@ -167,6 +210,26 @@ export function RouteProgress({
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, [tracking, start]);
+
+  const startEvent = events.start;
+  const doneEvent = events.done;
+  useEffect(() => {
+    const onStart = () => {
+      manual.current = true;
+      start();
+    };
+    const onDone = () => {
+      if (!manual.current) return;
+      manual.current = false;
+      if (!pendingNow.current && startedAt.current === null) complete();
+    };
+    window.addEventListener(startEvent, onStart);
+    window.addEventListener(doneEvent, onDone);
+    return () => {
+      window.removeEventListener(startEvent, onStart);
+      window.removeEventListener(doneEvent, onDone);
+    };
+  }, [startEvent, doneEvent, start, complete]);
 
   useEffect(() => {
     if (routeKey === previousRoute.current) return;
