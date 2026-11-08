@@ -705,3 +705,152 @@ test.describe("app shell navigation", () => {
     await expect(admin).toHaveAttribute("data-active");
   });
 });
+
+test.describe("icons", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`the icon gallery passes axe and every glyph sits centred on the grid (${mode})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await openStory(page, "components-utilities-icon--gallery", "default", mode);
+      const icons = page.locator("svg[data-lufia-icon]");
+      expect(await icons.count()).toBeGreaterThan(40);
+      // The centre of each drawing's bounding box stays within 1.5 units of the grid centre (12, 12).
+      const offCentre = await icons.evaluateAll((nodes) =>
+        nodes
+          .map((node) => {
+            const box = (node as SVGSVGElement).getBBox();
+            const dx = box.x + box.width / 2 - 12;
+            const dy = box.y + box.height / 2 - 12;
+            return { name: node.getAttribute("data-lufia-icon"), off: Math.hypot(dx, dy) };
+          })
+          .filter((icon) => icon.off > 1.5),
+      );
+      expect(offCentre).toEqual([]);
+      await page.addScriptTag({ path: axePath });
+      const violations = await page.evaluate(async () => {
+        const axe = (
+          window as unknown as {
+            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
+          }
+        ).axe;
+        const result = await axe.run(document.querySelector("#storybook-root"));
+        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
+      });
+      expect(violations).toEqual([]);
+    });
+  }
+
+  test("the size tokens render 16, 20 and 24px with the stroke tokens", async ({ page }) => {
+    await openStory(page, "components-utilities-icon--sizes");
+    const measure = (size: string) =>
+      page
+        .locator(`svg[data-size="${size}"]`)
+        .first()
+        .evaluate((node) => {
+          const style = getComputedStyle(node);
+          return { width: node.getBoundingClientRect().width, stroke: style.strokeWidth };
+        });
+    expect(await measure("sm")).toEqual({ width: 16, stroke: "2px" });
+    expect(await measure("md")).toEqual({ width: 20, stroke: "1.75px" });
+    expect(await measure("lg")).toEqual({ width: 24, stroke: "1.75px" });
+  });
+
+  for (const mode of ["light", "dark"] as const) {
+    test(`status icons pass axe in every tone and variant (${mode})`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 900 });
+      await openStory(page, "components-feedback-statusicon--tones", "default", mode);
+      await expect(page.locator("[data-variant='ring']")).toHaveCount(7);
+      await page.addScriptTag({ path: axePath });
+      const violations = await page.evaluate(async () => {
+        const axe = (
+          window as unknown as {
+            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
+          }
+        ).axe;
+        const result = await axe.run(document.querySelector("#storybook-root"));
+        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
+      });
+      expect(violations).toEqual([]);
+    });
+  }
+
+  test("a stepper scrolled under a modal's sticky header stays under it", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 700 });
+    await openStory(page, "components-navigation-stepper--in-scrolled-modal");
+    const header = page.locator('[data-lufia-part="header"]');
+    await expect(header).toBeVisible();
+    const panel = page.locator('[data-lufia-part="panel"]');
+    // Scroll so the step dots sit right under the header, whatever the play function managed.
+    await panel.evaluate((node) => {
+      const head = node.querySelector('[data-lufia-part="header"]')!.getBoundingClientRect();
+      const dot = node.querySelector(
+        '[data-testid="stepper-in-modal"] ol li span, [data-testid="stepper-in-modal"] ol li button',
+      )!;
+      node.scrollTop += dot.getBoundingClientRect().top - head.top - 4;
+    });
+    const covered = await page.evaluate(() => {
+      const head = document.querySelector('[data-lufia-part="header"]')!.getBoundingClientRect();
+      const dots = Array.from(
+        document.querySelectorAll('[data-testid="stepper-in-modal"] ol li > :first-child'),
+      ).map((dot) => dot.getBoundingClientRect());
+      const under = dots.filter((rect) => rect.top < head.bottom && rect.bottom > head.top);
+      return {
+        count: under.length,
+        inHeader: under.every((rect) => {
+          const y = Math.min(Math.max(rect.top + 4, head.top + 1), head.bottom - 1);
+          const hit = document.elementFromPoint(rect.left + rect.width / 2, y);
+          return Boolean(hit?.closest('[data-lufia-part="header"]'));
+        }),
+      };
+    });
+    expect(covered.count).toBeGreaterThan(0);
+    expect(covered.inHeader).toBe(true);
+  });
+
+  test("the phone sheet takes the dark mode of a scoped wrapper", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-navigation-appshell--sheet-in-scoped-dark-mode");
+    const layer = page.locator('[data-lufia-part="nav-sheet-layer"]');
+    await expect(layer).toHaveAttribute("data-lufia-mode", "dark");
+    await expect(layer).toHaveAttribute("data-demo", "scoped-sheet");
+    const luminance = await page.locator('[data-lufia-part="nav-sheet"]').evaluate((node) => {
+      const [r, g, b] = getComputedStyle(node)
+        .backgroundColor.match(/[\d.]+/g)!
+        .map(Number);
+      return (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255;
+    });
+    expect(luminance).toBeLessThan(0.3);
+  });
+});
+
+test.describe("docs pages", () => {
+  for (const width of [390, 1440]) {
+    test(`the code bar sits below the canvas and the copy button below the code at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/iframe.html?viewMode=docs&id=components-data-display-badge--docs");
+      const preview = page.locator(".sbdocs-preview").first();
+      const actions = page.locator(".sbdocs-preview-actions").first();
+      await expect(actions).toBeVisible();
+      const p = (await preview.boundingBox())!;
+      const a = (await actions.boundingBox())!;
+      expect(a.y).toBeGreaterThanOrEqual(p.y + p.height - 1);
+
+      const source = page.locator(".sbdocs-content .docblock-source").first();
+      const s = (await source.boundingBox())!;
+      const code = (await source.locator("[data-radix-scroll-area-viewport]").boundingBox())!;
+      const copy = (await source.getByRole("button", { name: /copy/i }).boundingBox())!;
+      // Below the code on a phone, beside it when the block is wide: never on top of it.
+      const overlaps =
+        copy.x < code.x + code.width - 1 &&
+        copy.x + copy.width > code.x + 1 &&
+        copy.y < code.y + code.height - 1 &&
+        copy.y + copy.height > code.y + 1;
+      expect(overlaps).toBe(false);
+      expect(copy.x + copy.width).toBeLessThanOrEqual(s.x + s.width - 4);
+      expect(copy.y + copy.height).toBeLessThanOrEqual(s.y + s.height - 4);
+    });
+  }
+});
