@@ -493,7 +493,7 @@ export function Combobox({
             input.current?.focus();
           }}
         >
-          <ChevronDownIcon className={styles.chevron} size="sm" />
+          <ChevronDownIcon className={styles.chevron} size="md" />
         </button>
       </span>
       {name ? <input type="hidden" name={name} value={value ?? ""} /> : null}

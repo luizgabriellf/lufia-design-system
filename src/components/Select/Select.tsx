@@ -87,7 +87,7 @@ export function Select({
         {children}
       </select>
       <span className={[fieldStyles.affix, styles.chevron].join(" ")} aria-hidden="true">
-        <ChevronDownIcon size="sm" />
+        <ChevronDownIcon size="md" />
       </span>
     </span>
   );
