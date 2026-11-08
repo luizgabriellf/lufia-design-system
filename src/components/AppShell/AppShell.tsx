@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type HTMLAttributes, type ReactNode } from "react";
+import { useId, useState, type HTMLAttributes, type Key, type ReactNode } from "react";
 import { useMediaQuery } from "../useMediaQuery";
 import { MenuGlyph, SearchGlyph } from "./icons";
 import {
@@ -15,9 +15,15 @@ import {
   useShellPrimaryActionRegistry,
   type AppShellPrimaryAction,
 } from "./primaryAction";
-import { findActiveNavKey, type ShellNavGroup, type ShellNavItem } from "./navigation";
+import {
+  findActiveNavKey,
+  type ShellDataAttributes,
+  type ShellNavGroup,
+  type ShellNavItem,
+} from "./navigation";
 import { ShellNavigation, useGroupDisclosure } from "./ShellNavigation";
 import { Sidebar } from "./Sidebar";
+import { useShellTooltip } from "./ShellTooltip";
 import styles from "./AppShell.module.css";
 
 /** Wider than this the sidebar is shown; narrower, the top bar, floating bar and sheet take over (60rem = 960px). */
@@ -54,6 +60,34 @@ export type AppShellSearch = {
 };
 
 export type { AppShellPrimaryAction };
+
+/** Attributes of the shell's `<main>`: an `id`, a class, `data-*` hooks, a `tabIndex`, ARIA. Not its children. */
+export type AppShellMainProps = Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes;
+
+/** The sidebar's search entry. A component of its own because the rail's tooltip is a hook. */
+function SearchEntry({ search, collapsed }: { search: AppShellSearch; collapsed: boolean }) {
+  const tip = useShellTooltip(search.label, collapsed);
+  return (
+    <>
+      <button
+        type="button"
+        className={styles.search}
+        onClick={search.onSelect}
+        aria-keyshortcuts={search.keyShortcuts}
+        aria-haspopup={search.opensDialog ? "dialog" : undefined}
+        // A rail has room for the icon only: the label stays as the name and the tooltip.
+        aria-label={collapsed ? search.label : undefined}
+        data-rail={collapsed || undefined}
+        {...tip.trigger}
+      >
+        <SearchGlyph width={16} height={16} />
+        {collapsed ? null : <span className={styles.searchLabel}>{search.label}</span>}
+        {search.shortcut && !collapsed ? <kbd className={styles.shortcut}>{search.shortcut}</kbd> : null}
+      </button>
+      {tip.tooltip}
+    </>
+  );
+}
 
 type SlotState = { collapsed: boolean };
 type Slot = ReactNode | ((state: SlotState) => ReactNode);
@@ -109,6 +143,22 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   onOpenGroupsChange?: (keys: readonly string[]) => void;
   /** Hide the rail button. Default `false`. */
   fixedSidebar?: boolean;
+  /**
+   * Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA.
+   * `className` is added to the shell's own.
+   */
+  mainProps?: AppShellMainProps;
+  /**
+   * Remounts the `<main>` and everything in it when it changes, as React's `key` does: a workspace or scope switch that
+   * must drop the page's state. Leave it out for a page change, which `children` handles.
+   */
+  mainKey?: Key;
+  /**
+   * The first thing inside `<main>`, before `children`: banners that belong to the page area and scroll with it (a trial
+   * notice, a cookie or install hint). Unlike `topBar` and `statusRow`, which sit beside `<main>` and stay put, this
+   * remounts with `mainKey` and takes the page's padding.
+   */
+  mainStart?: ReactNode;
   /** The page. The shell renders the one `<main>` landmark around it. */
   children: ReactNode;
 };
@@ -145,11 +195,15 @@ export function AppShell({
   defaultOpenGroups,
   onOpenGroupsChange,
   fixedSidebar = false,
+  mainProps,
+  mainKey,
+  mainStart,
   className,
   children,
   ...rest
 }: AppShellProps) {
-  const mainId = useId();
+  const generatedMainId = useId();
+  const mainId = mainProps?.id ?? generatedMainId;
   const [innerCollapsed, setInnerCollapsed] = useState(defaultCollapsed);
   const collapsed = collapsedProp ?? innerCollapsed;
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -196,23 +250,7 @@ export function AppShell({
     />
   );
 
-  const defaultSearchEntry = search ? (
-    <button
-      type="button"
-      className={styles.search}
-      onClick={search.onSelect}
-      aria-keyshortcuts={search.keyShortcuts}
-      aria-haspopup={search.opensDialog ? "dialog" : undefined}
-      // A rail has room for the icon only: the label stays as the name and the tooltip.
-      aria-label={collapsed ? search.label : undefined}
-      title={collapsed ? search.label : undefined}
-      data-rail={collapsed || undefined}
-    >
-      <SearchGlyph width={16} height={16} />
-      {collapsed ? null : <span className={styles.searchLabel}>{search.label}</span>}
-      {search.shortcut && !collapsed ? <kbd className={styles.shortcut}>{search.shortcut}</kbd> : null}
-    </button>
-  ) : null;
+  const defaultSearchEntry = search ? <SearchEntry search={search} collapsed={collapsed} /> : null;
 
   const searchEntry =
     searchTrigger !== undefined ? resolve(searchTrigger, { collapsed }) : defaultSearchEntry;
@@ -257,7 +295,13 @@ export function AppShell({
         {/* Siblings of <main>, not a wrapper: adding or removing a bar at runtime never remounts the page. */}
         {topBar ? <div className={styles.contextBar}>{topBar}</div> : null}
         {statusRow ? <div className={styles.statusRow}>{statusRow}</div> : null}
-        <main id={mainId} className={styles.main}>
+        <main
+          {...mainProps}
+          key={mainKey}
+          id={mainId}
+          className={[styles.main, mainProps?.className].filter(Boolean).join(" ")}
+        >
+          {mainStart}
           {children}
         </main>
         <MobileFloatBar label={labels.floatBar} className={styles.float}>
@@ -308,6 +352,7 @@ export function AppShell({
           onOpenChange={setSheetOpen}
           label={labels.menu}
           renderAs={sheetAs}
+          closeOnNavigate
           header={resolve(brand, openState)}
           footer={resolve(footer, openState)}
         >

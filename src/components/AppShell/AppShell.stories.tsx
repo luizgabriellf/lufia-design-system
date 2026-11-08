@@ -7,10 +7,20 @@ import {
   demoGroups,
   demoLabels,
 } from "../../docs/demo/AppShellDemo";
-import { PlusIcon } from "../../docs/demo";
+import {
+  ArrowRightIcon,
+  ChartIcon,
+  DocumentIcon,
+  HelpIcon,
+  HomeIcon,
+  InboxIcon,
+  PlusIcon,
+  SettingsIcon,
+} from "../../docs/demo";
 import { Skeleton } from "../../motion";
 import { Button } from "../Button";
 import { AppShell } from "./AppShell";
+import { ShellFooter, ShellFooterItem } from "./ShellFooter";
 import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
 
 const meta = {
@@ -32,7 +42,7 @@ export const Desktop: Story = {
   globals: { viewport: { value: "w1440", isRotated: false } },
 };
 
-/** The sidebar as a rail: icons only, names kept for assistive technology, tooltips from `title`. */
+/** The sidebar as a rail: icons only, names kept for assistive technology, and a tooltip on hover and keyboard focus (never on touch). */
 export const Rail: Story = {
   args: { defaultCollapsed: true },
   globals: { viewport: { value: "w1440", isRotated: false } },
@@ -200,5 +210,95 @@ export const RegisteredPrimaryAction: Story = {
       <RegisteredPage />
     </DemoShell>
   ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** Counts with a tone, capped at 99+ and hidden at 0; a word badge with its own tone. In the rail the count sits on the icon. */
+export const CountsAndBadges: Story = {
+  args: {
+    groups: [
+      {
+        key: "work",
+        items: [
+          { key: "home", label: "Overview", href: "/", exact: true, icon: <HomeIcon size={18} /> },
+          {
+            key: "messages",
+            label: "Inbox",
+            href: "/inbox",
+            icon: <InboxIcon size={18} />,
+            count: 7,
+            countTone: "danger",
+          },
+          {
+            key: "tasks",
+            label: "Tasks",
+            href: "/tasks",
+            icon: <DocumentIcon size={18} />,
+            count: 240,
+            countTone: "warning",
+          },
+          {
+            key: "archive",
+            label: "Archive",
+            href: "/archive",
+            icon: <ChartIcon size={18} />,
+            count: 0,
+            badge: "New",
+            badgeTone: "neutral",
+          },
+        ],
+      },
+    ],
+  },
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** `ShellFooter` and `ShellFooterItem`: links and buttons with an icon and a label, a count and a pending state. */
+export const Footer: Story = {
+  render: (args) => (
+    <DemoShell
+      {...args}
+      footer={
+        <ShellFooter aria-label="Account and help">
+          <ShellFooterItem label="Settings" href="/settings" icon={<SettingsIcon size={18} />} active />
+          <ShellFooterItem
+            label="Help"
+            href="#help"
+            icon={<HelpIcon size={18} />}
+            count={3}
+            countTone="danger"
+          />
+          <ShellFooterItem label="Sign out" icon={<ArrowRightIcon size={18} />} pending />
+        </ShellFooter>
+      }
+    />
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** The same footer in the rail: icons only, the tooltip names each one, the count sits on the icon. */
+export const FooterInRail: Story = {
+  ...Footer,
+  args: { defaultCollapsed: true },
+};
+
+/** `mainProps`, `mainKey` and `mainStart`: the `<main>` is the shell's, and a banner can live inside it. */
+export const MainSlots: Story = {
+  args: {
+    mainProps: { id: "content", "data-page-area": "demo" },
+    mainStart: (
+      <div
+        role="note"
+        style={{ ...barStyle, marginBlockEnd: "1rem", border: "1px solid var(--lufia-color-border-subtle)" }}
+      >
+        Your trial ends in 5 days. This banner scrolls with the page and remounts with `mainKey`.
+      </div>
+    ),
+    topBar: (
+      <div style={barStyle}>
+        <strong>Beside the sidebar, above the page: stays put</strong>
+      </div>
+    ),
+  },
   globals: { viewport: { value: "w1440", isRotated: false } },
 };

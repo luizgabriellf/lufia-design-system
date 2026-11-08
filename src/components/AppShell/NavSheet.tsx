@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useSyncExternalStore, type HTMLAttributes, type ReactNode } from "react";
+import { useRef, useSyncExternalStore, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
@@ -25,6 +25,11 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   closeLabel?: string;
   /** Let the grabber and header be dragged down to dismiss. Default `true`. */
   swipeToDismiss?: boolean;
+  /**
+   * Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an
+   * open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`.
+   */
+  closeOnNavigate?: boolean;
   /** Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. */
   container?: HTMLElement | null;
   /**
@@ -54,6 +59,7 @@ export function NavSheet({
   footer,
   closeLabel,
   swipeToDismiss = true,
+  closeOnNavigate = false,
   container,
   renderAs = "portal",
   className,
@@ -82,6 +88,14 @@ export function NavSheet({
   useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
   useBodyScrollLock(shown);
   const drag = useSheetDrag(close, swipeToDismiss);
+  const closeOnLink = (event: MouseEvent<HTMLElement>) => {
+    // A router's link prevents the default itself, so `defaultPrevented` says nothing about whether it navigates.
+    if (!closeOnNavigate) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
+    if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
+    close();
+  };
 
   const target = container ?? (client ? document.body : null);
   if (!shown || !target) return null;
@@ -106,14 +120,22 @@ export function NavSheet({
           </button>
         </div>
       </div>
-      <div className={styles.body}>{children}</div>
-      {footer ? <div className={styles.foot}>{footer}</div> : null}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside */}
+      <div className={styles.body} onClick={closeOnLink}>
+        {children}
+      </div>
+      {footer ? (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
+        <div className={styles.foot} onClick={closeOnLink}>
+          {footer}
+        </div>
+      ) : null}
     </>
   );
 
   if (native) {
     return createPortal(
-      <NavSurfaceContext.Provider value={{ collapsed: false }}>
+      <NavSurfaceContext.Provider value={{ collapsed: false, surface: "sheet" }}>
         <dialog
           {...(rest as HTMLAttributes<HTMLDialogElement>)}
           {...nativeDialog}
@@ -132,7 +154,7 @@ export function NavSheet({
   }
 
   return createPortal(
-    <NavSurfaceContext.Provider value={{ collapsed: false }}>
+    <NavSurfaceContext.Provider value={{ collapsed: false, surface: "sheet" }}>
       <div className={styles.root} data-state={phase === "open" ? "open" : "closed"}>
         <div className={styles.backdrop} onClick={close} aria-hidden="true" />
         <div
