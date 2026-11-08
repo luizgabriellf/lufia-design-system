@@ -427,7 +427,7 @@ export function Combobox({
           aria-controls={expanded ? listId : undefined}
           aria-autocomplete="list"
           aria-activedescendant={expanded && active ? optionId(active) : undefined}
-          aria-required={control.required || undefined}
+          aria-required={control.required || control["aria-required"] || undefined}
           aria-busy={loading || undefined}
           required={undefined}
           placeholder={placeholder}
