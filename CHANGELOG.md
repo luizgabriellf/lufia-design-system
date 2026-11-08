@@ -1,5 +1,14 @@
 # @lufia/design-system
 
+## 0.19.0
+
+### Minor Changes
+
+- [#71](https://github.com/luizgabriellf/lufia-design-system/pull/71) [`e4b873d`](https://github.com/luizgabriellf/lufia-design-system/commit/e4b873d1f3ec5e2e22869bda7964a7b81834c544) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Style browser autofill on every field control from tokens. The new optional `--lufia-color-bg-field-autofill` token
+  defaults to `bg.field`, so existing themes need no change. An invalid field keeps its inner danger line, read-only and
+  disabled fields use the surface colour, forced-colors hands the colours to the system, and fields with a prefix or suffix
+  square their inner corners. `Select` gains a `groups` prop that renders labelled `<optgroup>`s.
+
 ## 0.18.0
 
 ### Minor Changes
