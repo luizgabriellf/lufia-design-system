@@ -10934,7 +10934,7 @@
         {
           "name": "computeStatDelta",
           "kind": "function",
-          "description": "Computes the props of `StatTile` that describe a change against a previous period: `delta`, `trend`, `trendLabel` and `deltaTone`. Spread the result into the tile. Returns `null` when there is no previous value, so the tile shows no change until there is history. It is pure and locale-aware, so it is safe on the server. The default format is a percentage with one decimal under 10% and none above. On a zero or small base (`|previous|` below `minBase`) it switches to the absolute change, so a tile never says \"+Infinity%\" or \"+400%\" for going from 1 to 5.",
+          "description": "Computes the props of `StatTile` that describe a change against a previous period: `delta`, `trend`, `trendLabel` and `deltaTone`. Spread the result into the tile. Returns `null` when there is no previous value, so the tile shows no change until there is history. It is pure and locale-aware, so it is safe on the server. The default format is a percentage with one decimal under 10% and none above. On a zero or small base (`|previous|` below `minBase`) it switches to the absolute change, so a tile never says \"+Infinity%\" or \"+400%\" for going from 1 to 5. It also returns `null` when the change overflows.",
           "signature": "(input: StatDeltaInput): StatDelta | null"
         }
       ],

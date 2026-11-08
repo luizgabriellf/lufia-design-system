@@ -36,9 +36,12 @@ export type StatDeltaInput = {
   mode?: "percent" | "absolute";
   /** Below this `|previous|` the default mode shows an absolute change instead of a percentage. Default 5. */
   minBase?: number;
-  /** Formats the size of an absolute change (a non-negative number, no sign: the helper adds it). Default `Intl.NumberFormat`. */
+  /** Formats the size of an absolute change (a non-negative number, no sign: the helper adds it). Default `Intl.NumberFormat`. A size that formats the same as `0` counts as flat. */
   formatValue?: (magnitude: number) => string;
-  /** A percentage change within plus or minus this many percent counts as flat. Default 0.5. Absolute mode is flat only when equal. */
+  /**
+   * A percentage change within plus or minus this many percent, compared as shown (after rounding), counts as flat. Default
+   * 0.5. A change whose text reads zero is always flat. A flat change is shown without a sign.
+   */
   flatThreshold?: number;
 };
 
@@ -52,18 +55,27 @@ export type StatDelta = {
 export const DEFAULT_MIN_BASE = 5;
 export const DEFAULT_FLAT_THRESHOLD = 0.5;
 
-function signs(locale: string | undefined): { plus: string; minus: string } {
-  const parts = (n: number) => new Intl.NumberFormat(locale, { signDisplay: "always" }).formatToParts(n);
-  return {
-    plus: parts(1).find((p) => p.type === "plusSign")?.value ?? "+",
-    minus: parts(-1).find((p) => p.type === "minusSign")?.value ?? "-",
-  };
+/** Everything Intl writes before the digits for a signed number: the sign and any bidi mark that belongs with it. */
+function signPrefix(locale: string | undefined, sign: 1 | -1): string {
+  const parts = new Intl.NumberFormat(locale, { signDisplay: "always" }).formatToParts(sign);
+  const digits = parts.findIndex((p) => p.type === "integer");
+  return parts
+    .slice(0, digits)
+    .map((p) => p.value)
+    .join("");
 }
 
-function formatPercent(percent: number, locale: string | undefined): string {
+/** Rounds half away from zero, after dropping binary float noise (10.05 - 10 is not exactly 0.05). */
+function roundTo(n: number, digits: number): number {
+  const clean = Number(n.toPrecision(12));
+  const factor = 10 ** digits;
+  return (Math.sign(clean) * Math.round(Math.abs(clean) * factor)) / factor;
+}
+
+function formatPercent(percent: number, locale: string | undefined, signed: boolean): string {
   return new Intl.NumberFormat(locale, {
     style: "percent",
-    signDisplay: "exceptZero",
+    signDisplay: signed ? "exceptZero" : "never",
     minimumFractionDigits: 0,
     maximumFractionDigits: Math.abs(percent) < 10 ? 1 : 0,
   }).format(percent / 100);
@@ -85,7 +97,7 @@ function tone(
  *
  * It is pure and locale-aware, so it is safe on the server. The default format is a percentage with one decimal under 10%
  * and none above. On a zero or small base (`|previous|` below `minBase`) it switches to the absolute change, so a tile
- * never says "+Infinity%" or "+400%" for going from 1 to 5.
+ * never says "+Infinity%" or "+400%" for going from 1 to 5. It also returns `null` when the change overflows.
  */
 export function computeStatDelta(input: StatDeltaInput): StatDelta | null {
   const {
@@ -113,18 +125,23 @@ export function computeStatDelta(input: StatDeltaInput): StatDelta | null {
   const absolute =
     previous === 0 || mode === "absolute" || (mode === undefined && Math.abs(previous) < minBase);
   const percent = absolute ? 0 : (diff / Math.abs(previous)) * 100;
-  const flat = absolute ? diff === 0 : Math.abs(percent) <= flatThreshold;
-  const trend: StatTileTrend = flat ? "flat" : diff > 0 ? "up" : "down";
+  if (!Number.isFinite(diff) || !Number.isFinite(percent)) return null;
 
+  // Trend and tone are decided on what the text shows, never on the raw number: a change that rounds to zero is flat.
   let change: string;
-  if (!absolute) {
-    change = formatPercent(percent, locale);
-  } else if (formatValue) {
-    const { plus, minus } = signs(locale);
-    change = `${diff > 0 ? plus : diff < 0 ? minus : ""}${formatValue(Math.abs(diff))}`;
+  let flat: boolean;
+  if (absolute) {
+    const format = formatValue ?? ((magnitude: number) => new Intl.NumberFormat(locale).format(magnitude));
+    const magnitude = format(Math.abs(Number(diff.toPrecision(12))));
+    flat = magnitude === format(0);
+    const prefix = flat ? "" : signPrefix(locale, diff > 0 ? 1 : -1);
+    change = `${prefix}${magnitude}`;
   } else {
-    change = new Intl.NumberFormat(locale, { signDisplay: "exceptZero" }).format(diff);
+    const shown = roundTo(percent, Math.abs(percent) < 10 ? 1 : 0);
+    flat = shown === 0 || Math.abs(shown) <= flatThreshold;
+    change = formatPercent(shown, locale, !flat);
   }
+  const trend: StatTileTrend = flat ? "flat" : diff > 0 ? "up" : "down";
 
   const { comparison } = labels;
   return {

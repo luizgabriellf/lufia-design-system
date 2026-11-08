@@ -77,9 +77,9 @@ describe("computeStatDelta", () => {
     expect(run({ current: 2, previous: -2 })?.delta).toBe("+4 vs previous 30 days");
   });
 
-  it("counts a change within the flat threshold as flat, and shows the real figure", () => {
+  it("counts a change within the flat threshold as flat, and shows its size without a sign", () => {
     expect(run({ current: 100.5, previous: 100 })).toMatchObject({
-      delta: "+0.5% vs previous 30 days",
+      delta: "0.5% vs previous 30 days",
       trend: "flat",
       trendLabel: "No change",
       deltaTone: "neutral",
@@ -124,8 +124,65 @@ describe("computeStatDelta", () => {
     expect(r?.delta).toBe("30 days: +12%");
   });
 
-  it("lets the caller's explicit props win when spread after the result", () => {
-    const merged = { ...run({ current: 112, previous: 100 }), trend: "down", deltaTone: "danger" };
-    expect(merged).toMatchObject({ delta: "+12% vs previous 30 days", trend: "down", deltaTone: "danger" });
+  it("decides trend and tone on the rounded text, not the raw number", () => {
+    const flat = { delta: "0 vs previous 30 days", trend: "flat", deltaTone: "neutral" };
+    expect(run({ current: 3.0001, previous: 3 })).toMatchObject(flat);
+    expect(run({ current: 0.3, previous: 0.1 + 0.2 })).toMatchObject(flat);
+    expect(run({ current: 1e-5, previous: 0 })).toMatchObject(flat);
+    expect(run({ current: 1e-5, previous: 0, goodDirection: "down" })).toMatchObject(flat);
+    expect(run({ current: 100.004, previous: 100, flatThreshold: 0 })).toMatchObject({
+      delta: "0% vs previous 30 days",
+      trend: "flat",
+    });
+  });
+
+  it("treats the threshold the same on both sides of float noise", () => {
+    const a = run({ current: 10.05, previous: 10 });
+    const b = run({ current: 201, previous: 200 });
+    expect(a).toMatchObject({ delta: "0.5% vs previous 30 days", trend: "flat" });
+    expect(b).toMatchObject({ delta: "0.5% vs previous 30 days", trend: "flat" });
+    expect(run({ current: 10.06, previous: 10 })).toMatchObject({
+      delta: "+0.6% vs previous 30 days",
+      trend: "up",
+    });
+  });
+
+  it("reads a flat change without a sign, so it does not contradict the direction word", () => {
+    expect(run({ current: 100.3, previous: 100 })?.delta).toBe("0.3% vs previous 30 days");
+    expect(run({ current: 99.7, previous: 100 })?.delta).toBe("0.3% vs previous 30 days");
+    expect(run({ current: 4.0001, previous: 4, formatValue: (n) => `${n.toFixed(0)} items` })?.delta).toBe(
+      "0 items vs previous 30 days",
+    );
+  });
+
+  it("drops binary float noise before rounding", () => {
+    expect(run({ current: 100.35, previous: 100 })?.delta).toBe("0.4% vs previous 30 days");
+    expect(run({ current: 100.55, previous: 100 })?.delta).toBe("+0.6% vs previous 30 days");
+    expect(run({ current: 0.3, previous: 0.1, formatValue: String })?.delta).toBe("+0.2 vs previous 30 days");
+  });
+
+  it("rounds 9.95 to 9.99 percent up to 10%", () => {
+    for (const current of [109.95, 109.96, 109.99]) {
+      expect(run({ current, previous: 100 })?.delta).toBe("+10% vs previous 30 days");
+    }
+    expect(run({ current: 90.05, previous: 100 })?.delta).toBe("-10% vs previous 30 days");
+  });
+
+  it("returns null when the change overflows", () => {
+    expect(run({ current: 5, previous: Infinity })).toBeNull();
+    expect(run({ current: Infinity, previous: 10 })).toBeNull();
+    expect(run({ current: 1e308, previous: -1e308 })).toBeNull();
+    expect(run({ current: 1e308, previous: -1e308, mode: "absolute" })).toBeNull();
+    expect(run({ current: 1e308, previous: 1e-300, mode: "percent" })).toBeNull();
+  });
+
+  it("keeps the bidi mark with the sign in right-to-left locales", () => {
+    const formatValue = (n: number) => String(n);
+    const r = run({ current: 4, previous: 1, locale: "ar-EG", formatValue });
+    const mark = new Intl.NumberFormat("ar-EG", { signDisplay: "always" }).formatToParts(1)[0];
+    expect(mark?.type).toBe("literal");
+    expect(r?.delta.startsWith(`${mark?.value}+3`)).toBe(true);
+    const down = run({ current: 1, previous: 4, locale: "ar-EG", formatValue });
+    expect(down?.delta.startsWith(`${mark?.value}-3`)).toBe(true);
   });
 });
