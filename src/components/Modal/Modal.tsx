@@ -89,6 +89,12 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   headerAction?: ReactNode;
   /** Content of the footer bar, usually the actions. The bar is left out when this is empty. */
   footer?: ReactNode;
+  /**
+   * How the footer actions are laid out on a narrow phone (30rem and below). `row` (default) keeps them side by side in
+   * DOM order, so the primary action goes last, at the inline end; text actions grow to fill the bar and wrap if their
+   * labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top.
+   */
+  footerLayout?: "row" | "stack";
   /** Accessible name of the close button. Defaults to the provider's `labels.close`. */
   closeLabel?: string;
   /** Leave out the close button, e.g. when the footer already offers the way out. Escape and outside click still apply. */
@@ -138,6 +144,7 @@ export function Modal({
   renderAs = "portal",
   headerAction,
   footer,
+  footerLayout = "row",
   closeLabel,
   hideCloseButton = false,
   busy = false,
@@ -286,7 +293,11 @@ export function Modal({
         {children}
       </div>
       {footer ? (
-        <footer className={cx(styles.footer, classNames?.footer)} data-lufia-part="footer">
+        <footer
+          className={cx(styles.footer, classNames?.footer)}
+          data-lufia-part="footer"
+          data-footer-layout={footerLayout}
+        >
           {footer}
         </footer>
       ) : null}

@@ -172,6 +172,11 @@ A portal modal opened while a native modal dialog is open renders inside that di
 dialog element. Everything the person reads arrives through props; only the close button's accessible name has an English
 default (`closeLabel`, or `labels.close` from [LufiaProvider](?path=/docs/components-utilities-lufiaprovider--docs)).
 
+On a narrow phone (30rem and below) the footer stays a row. Text actions grow to fill the bar, labels centred, the last
+one in DOM order (the primary) at the inline end, in right-to-left too. A label that cannot fit wraps the action onto its
+own line instead of overflowing. Icon-only triggers, such as a `MoreActions` placed first, keep their natural size. Pass
+`footerLayout="stack"` for the older full-width column with the primary on top.
+
 </Section>
 
 <Section id="accessibility">

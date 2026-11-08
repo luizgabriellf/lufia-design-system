@@ -6600,6 +6600,13 @@
               "description": "Content of the footer bar, usually the actions. The bar is left out when this is empty."
             },
             {
+              "name": "footerLayout",
+              "type": "\"row\" | \"stack\"",
+              "required": false,
+              "default": "\"row\"",
+              "description": "How the footer actions are laid out on a narrow phone (30rem and below). `row` (default) keeps them side by side in DOM order, so the primary action goes last, at the inline end; text actions grow to fill the bar and wrap if their labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top."
+            },
+            {
               "name": "closeLabel",
               "type": "string",
               "required": false,
@@ -6796,6 +6803,14 @@
           {
             "export": "StackedModals",
             "id": "components-overlays-modal--stacked-modals"
+          },
+          {
+            "export": "PhoneFooter",
+            "id": "components-overlays-modal--phone-footer"
+          },
+          {
+            "export": "PhoneFooterStacked",
+            "id": "components-overlays-modal--phone-footer-stacked"
           },
           {
             "export": "AllThemes",

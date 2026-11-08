@@ -332,6 +332,18 @@ function ModalInCell() {
   );
 }
 
+/** The footer stays a row on a phone: Cancel and Save share the width, the primary at the inline end. */
+export const PhoneFooter: Story = {
+  args: { startOpen: true },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+
+/** `footerLayout="stack"`: full-width buttons in a column, the primary on top. */
+export const PhoneFooterStacked: Story = {
+  args: { startOpen: true, footerLayout: "stack" },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+
 export const AllThemes: Story = {
   render: () => (
     <ThemeMatrix>

@@ -308,8 +308,22 @@
   }
 }
 
+/* Phones, narrow: the footer stays a row, in DOM order, so the primary action sits at the inline end (and RTL mirrors it).
+   Text actions grow to fill the bar. The flex basis is the label's own width, so actions that cannot fit side by side
+   wrap onto their own line instead of overflowing; `max-inline-size: 100%` and normal white space let one very long
+   label wrap inside its button rather than leave the screen. Icon-only triggers (a "more
+   actions" button, or the `MoreActions` wrapper, which is not a button) keep their natural size. */
 @media (width <= 30rem) {
-  .footer {
+  .footer[data-footer-layout="row"] > :where(button, a, [data-lufia-part]):not([data-icon-only]) {
+    flex: 1 1 auto;
+    max-inline-size: 100%;
+    white-space: normal;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Opt-in `footerLayout="stack"`: full-width buttons, the primary on top. */
+  .footer[data-footer-layout="stack"] {
     flex-direction: column-reverse;
     align-items: stretch;
   }
