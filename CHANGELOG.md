@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.18.0
+
+### Minor Changes
+
+- [#69](https://github.com/luizgabriellf/lufia-design-system/pull/69) [`7c876f4`](https://github.com/luizgabriellf/lufia-design-system/commit/7c876f433a511fcfb1c885279b15036af8a625a3) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Close the gaps that kept apps from replacing a local combobox with `Combobox`. New `freeText` prop: the typed text is the value when no option is chosen (trimmed, `null` when empty), it follows every keystroke, Enter, Tab, Escape, the toggle button and blur settle it, and Enter never picks an unhighlighted first match. The list now opens upward and shortens to the room left in every overflow-clipping ancestor and the viewport, and re-measures on scroll and resize (one measure per frame). `maxLength` and a given `id` (`<id>-listbox`, `<id>-option-<encoded value>`) are now covered by tests and docs. Existing usage is unchanged.
+
+- [#68](https://github.com/luizgabriellf/lufia-design-system/pull/68) [`ee54d65`](https://github.com/luizgabriellf/lufia-design-system/commit/ee54d65964e8c52010c29639f67d4584aeedb541) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Close the gaps of a server-backed `CommandPalette`. `labels.loading` shows a spinner row below the commands while `loading` is true and announces it once, `hint` may be a function of `{ query }` and `hintPlacement="top"` keeps it above the list, `notice` renders a message (such as an error) above the results without replacing them so keyboard selection keeps working, and `CommandItem.tone` (`default`, `accent`, `danger`) tints an item's icon. Existing usage is unchanged.
+
 ## 0.17.0
 
 ### Minor Changes
