@@ -92,6 +92,11 @@
   text-align: center;
 }
 
+.count[data-tone="success"] {
+  background: var(--lufia-color-status-success-bg);
+  color: var(--lufia-color-status-success-fg);
+}
+
 .count[data-tone="warning"] {
   background: var(--lufia-color-status-warning-bg);
   color: var(--lufia-color-status-warning-fg);

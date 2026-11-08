@@ -2,7 +2,8 @@
 
 import type { HTMLAttributes, MouseEvent, ReactNode } from "react";
 import { useLufia } from "../LufiaProvider";
-import { formatShellCount, useNavSurface, type ShellBadgeTone, type ShellDataAttributes } from "./navigation";
+import { formatShellCount, type ShellBadgeTone, type ShellDataAttributes } from "./navigation";
+import { useNavSurface } from "./navSurface";
 import { useShellTooltip } from "./ShellTooltip";
 import styles from "./ShellFooter.module.css";
 

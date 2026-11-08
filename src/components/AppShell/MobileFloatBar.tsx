@@ -1,7 +1,8 @@
 "use client";
 
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { useRef, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { useLufia } from "../LufiaProvider";
+import { useVisualViewportOffset } from "./useVisualViewportOffset";
 import styles from "./MobileFloatBar.module.css";
 
 export type MobileFloatBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -9,6 +10,12 @@ export type MobileFloatBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children
   label: string;
   /** `MobileFloatBarButton` and `MobileFloatBarSeparator`, in reading order. */
   children: ReactNode;
+  /**
+   * Follow the visual viewport: when the on-screen keyboard or a browser toolbar covers the bottom of the page (iOS
+   * Safari keeps `position: fixed` on the layout viewport, behind them), the bar moves up above it, once per frame. Does
+   * nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`.
+   */
+  followViewport?: boolean;
 };
 
 /**
@@ -19,10 +26,19 @@ export type MobileFloatBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children
  * It is a labelled group, not an ARIA toolbar: a toolbar promises arrow-key movement, and here every control is a
  * plain tab stop.
  */
-export function MobileFloatBar({ label, className, children, ...rest }: MobileFloatBarProps) {
+export function MobileFloatBar({
+  label,
+  followViewport = true,
+  className,
+  children,
+  ...rest
+}: MobileFloatBarProps) {
+  const bar = useRef<HTMLDivElement>(null);
+  useVisualViewportOffset(bar, followViewport);
   return (
     <div
       {...rest}
+      ref={bar}
       role="group"
       aria-label={label}
       className={[styles.bar, className].filter(Boolean).join(" ")}

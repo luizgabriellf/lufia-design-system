@@ -62,6 +62,63 @@ describe("findActiveNavKey", () => {
   });
 });
 
+describe("findActiveNavKey with match and sub-items", () => {
+  const nested: ShellNavGroup[] = [
+    {
+      key: "main",
+      items: [
+        {
+          key: "admin",
+          label: "Admin",
+          href: "/admin",
+          items: [
+            { key: "users", label: "Users", href: "/admin?section=users", match: "query" },
+            { key: "audit", label: "Audit", href: "/admin?section=audit&view=log", match: "query" },
+            {
+              key: "deep",
+              label: "Deep",
+              href: "/admin/deep",
+              items: [{ key: "ignored", label: "x", href: "/x" }],
+            },
+          ],
+        },
+        { key: "exact", label: "Exact", href: "/exact", match: "exact" },
+        { key: "custom", label: "Custom", href: "/c", match: (current) => current.startsWith("/c?") },
+      ],
+    },
+  ];
+
+  it("matches a query item only when its parameters are in currentPath", () => {
+    expect(findActiveNavKey(nested, "/admin?section=users")).toBe("users");
+    expect(findActiveNavKey(nested, "/admin?page=2&section=users#top")).toBe("users");
+    expect(findActiveNavKey(nested, "/admin?section=audit")).toBe("admin");
+    expect(findActiveNavKey(nested, "/admin?view=log&section=audit")).toBe("audit");
+    expect(findActiveNavKey(nested, "/admin")).toBe("admin");
+    expect(findActiveNavKey(nested, "/admin/other?section=users")).toBe("admin");
+  });
+
+  it("finds sub-items by path, one level deep only", () => {
+    expect(findActiveNavKey(nested, "/admin/deep/more")).toBe("deep");
+    expect(findActiveNavKey(nested, "/x")).toBeUndefined();
+  });
+
+  it("treats match exact like exact", () => {
+    expect(findActiveNavKey(nested, "/exact")).toBe("exact");
+    expect(findActiveNavKey(nested, "/exact/child")).toBeUndefined();
+  });
+
+  it("hands the full currentPath to a match function, which beats the other matches", () => {
+    expect(findActiveNavKey(nested, "/c?x=1")).toBe("custom");
+    expect(findActiveNavKey(nested, "/c")).toBeUndefined();
+  });
+
+  it("asks isActive about a sub-item before the item that holds it", () => {
+    expect(findActiveNavKey(nested, undefined, (item) => item.href?.startsWith("/admin") ?? false)).toBe(
+      "users",
+    );
+  });
+});
+
 describe("formatShellCount", () => {
   it("hides nothing-to-show values", () => {
     for (const value of [undefined, 0, -3, 0.4, Number.NaN, Number.POSITIVE_INFINITY]) {

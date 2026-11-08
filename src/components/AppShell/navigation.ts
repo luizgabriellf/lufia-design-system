@@ -1,10 +1,12 @@
-import { createContext, useContext, type ReactNode } from "react";
+import type { ReactNode } from "react";
+
+export { parseShellState, serializeShellState, type ShellState } from "./shellState";
 
 /** `data-*` attributes passed through to an element (analytics hooks, guided-tour anchors, test ids). */
 export type ShellDataAttributes = { [name: `data-${string}`]: string | number | boolean | undefined };
 
 /** The colour of a badge or count. It never carries the meaning alone: the text is always there. */
-export type ShellBadgeTone = "neutral" | "warning" | "danger";
+export type ShellBadgeTone = "neutral" | "success" | "warning" | "danger";
 
 /** A count above this shows as "99+". */
 export const SHELL_COUNT_CAP = 99;
@@ -22,6 +24,21 @@ export function formatShellCount(
   if (whole <= 0) return undefined;
   return whole > cap ? `${cap}+` : String(whole);
 }
+
+/**
+ * How an item decides that `currentPath` is its page.
+ *
+ * - `prefix` (the default): the path equals the item's or sits below it (`/settings/billing` belongs to `/settings`).
+ * - `exact`: the path equals the item's, and not the pages below it.
+ * - `query`: the path equals the item's and every query parameter in the item's `href` has the same value in
+ *   `currentPath`, for sections chosen by a query string (`/admin?section=users`). Pass `currentPath` with its query.
+ * - a function: return true when `currentPath` (as you passed it, query included) is this item's page.
+ *
+ * Query strings and hashes are ignored by `prefix` and `exact`. When several items match, a function beats `query`,
+ * `query` beats a plain path, and between paths the longest wins, so two items are never current at once.
+ */
+export type ShellNavMatch =
+  "prefix" | "exact" | "query" | ((currentPath: string, item: ShellNavItem) => boolean);
 
 export type ShellNavItem = {
   /** Stable key. */
@@ -49,8 +66,19 @@ export type ShellNavItem = {
    * speech-control users can say what they see (WCAG 2.5.3).
    */
   ariaLabel?: string;
-  /** With `currentPath`, match this path only and not the pages under it. */
+  /** With `currentPath`, match this path only and not the pages under it. Same as `match: "exact"`. */
   exact?: boolean;
+  /** How `currentPath` is matched to this item. Default `prefix` (or `exact` when `exact` is set). See `ShellNavMatch`. */
+  match?: ShellNavMatch;
+  /**
+   * Sub-items, one level deep (the sub-items' own `items` are ignored): sections under one page. They are listed under
+   * the item, indented, while the item or one of them is current, or always with `expanded`. In the rail they are
+   * hidden: the item's icon links to its own `href` and it is marked current (`aria-current="true"`) while one of them
+   * is. So give an item with sub-items an `href` (its overview or first section).
+   */
+  items?: readonly ShellNavItem[];
+  /** Always list the sub-items, not only while this branch is current. */
+  expanded?: boolean;
   /** Called when the item is chosen (before navigation for links). */
   onSelect?: () => void;
 };
@@ -76,73 +104,65 @@ const pathOf = (href: string) => {
   return path.slice(0, end);
 };
 
+const queryOf = (href: string) => {
+  const withoutHash = href.split("#")[0] ?? "";
+  const at = withoutHash.indexOf("?");
+  return new URLSearchParams(at === -1 ? "" : withoutHash.slice(at + 1));
+};
+
 /**
- * The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the
- * item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so
- * two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.
+ * Every item of the groups, sub-items included, each sub-item before the item that holds it, so the more specific entry
+ * comes first.
+ */
+export function flattenNavItems(groups: readonly ShellNavGroup[]): ShellNavItem[] {
+  return groups.flatMap((group) => group.items.flatMap((item) => [...(item.items ?? []), item]));
+}
+
+/** The item is `key`, or holds it as a sub-item. */
+export function navItemHolds(item: ShellNavItem, key: string | undefined): boolean {
+  if (key === undefined) return false;
+  return item.key === key || (item.items ?? []).some((child) => child.key === key);
+}
+
+/** How strongly `item` claims `currentPath`: 0 for not at all; higher wins. */
+function matchScore(item: ShellNavItem, currentPath: string, path: string): number {
+  if (item.href === undefined || item.disabled) return 0;
+  const match = item.match ?? (item.exact ? "exact" : "prefix");
+  if (typeof match === "function") return match(currentPath, item) ? 3_000_000 : 0;
+  const target = pathOf(item.href);
+  if (match === "query") {
+    if (path !== target) return 0;
+    const wanted = queryOf(item.href);
+    const actual = queryOf(currentPath);
+    let count = 0;
+    for (const [name, value] of wanted) {
+      if (!actual.getAll(name).includes(value)) return 0;
+      count += 1;
+    }
+    return 2_000_000 + count * 10_000 + target.length;
+  }
+  const matches = path === target || (match !== "exact" && target !== "/" && path.startsWith(`${target}/`));
+  return matches ? 1_000_000 + target.length : 0;
+}
+
+/**
+ * The key of the item that `currentPath` belongs to, or `undefined`, sub-items included. Each item matches as its
+ * `match` says (see `ShellNavMatch`); when several match, the strongest claim wins, so two items are never current at
+ * once. With `isActive` the first item it returns true for wins, a sub-item before the item that holds it.
  */
 export function findActiveNavKey(
   groups: readonly ShellNavGroup[],
   currentPath: string | undefined,
   isActive?: (item: ShellNavItem) => boolean,
 ): string | undefined {
-  const items = groups.flatMap((group) => group.items);
+  const items = flattenNavItems(groups);
   if (isActive) return items.find((item) => isActive(item))?.key;
   if (currentPath === undefined) return undefined;
   const path = pathOf(currentPath);
-  let best: { key: string; length: number } | undefined;
+  let best: { key: string; score: number } | undefined;
   for (const item of items) {
-    if (item.href === undefined || item.disabled) continue;
-    const target = pathOf(item.href);
-    const matches = path === target || (!item.exact && target !== "/" && path.startsWith(`${target}/`));
-    if (matches && (!best || target.length > best.length)) best = { key: item.key, length: target.length };
+    const score = matchScore(item, currentPath, path);
+    if (score > 0 && (!best || score > best.score)) best = { key: item.key, score };
   }
   return best?.key;
-}
-
-export type ShellState = {
-  /** The sidebar is a rail. */
-  collapsed: boolean;
-  /** Keys of the open collapsible groups; `undefined` when the person never chose, so the defaults apply. */
-  openGroups: readonly string[] | undefined;
-};
-
-/**
- * Turns the person's sidebar choices into a short cookie value (`c=1&g=insights&g=admin`), for the app to store. The
- * package never stores anything itself; see "Remembering the rail and the groups" in the docs. Pass `openGroups` as
- * `undefined` to leave the groups to their defaults.
- */
-export function serializeShellState(state: ShellState): string {
-  const params = new URLSearchParams();
-  params.set("c", state.collapsed ? "1" : "0");
-  for (const key of state.openGroups ?? []) params.append("g", key);
-  if (state.openGroups) params.set("s", "1");
-  return params.toString();
-}
-
-/**
- * Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the
- * values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or
- * malformed value gives the defaults: expanded, groups undecided.
- */
-export function parseShellState(raw: string | null | undefined): ShellState {
-  const params = new URLSearchParams(raw ?? "");
-  return {
-    collapsed: params.get("c") === "1",
-    openGroups: params.get("s") === "1" ? params.getAll("g") : undefined,
-  };
-}
-
-/** What the sidebar items need to know about the surface they sit in. */
-export type NavSurface = {
-  /** The sidebar is a rail: icons only, labels kept for assistive technology. */
-  collapsed: boolean;
-  /** Where the parts are drawn: the desktop sidebar or the phone sheet. */
-  surface: "sidebar" | "sheet";
-};
-
-export const NavSurfaceContext = createContext<NavSurface>({ collapsed: false, surface: "sidebar" });
-
-export function useNavSurface(): NavSurface {
-  return useContext(NavSurfaceContext);
 }

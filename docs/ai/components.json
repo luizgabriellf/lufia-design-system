@@ -655,6 +655,20 @@
               "description": "A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself."
             },
             {
+              "name": "routeTrackLinks",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks. `RouteProgress` `trackLinks`."
+            },
+            {
+              "name": "routeTransitionProps",
+              "type": "AppShellRouteTransitionProps",
+              "required": false,
+              "default": null,
+              "description": "A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs `routeKey`."
+            },
+            {
               "name": "routeProgress",
               "type": "boolean",
               "required": false,
@@ -731,6 +745,12 @@
           "definition": null
         },
         {
+          "name": "AppShellRouteTransitionProps",
+          "kind": "type",
+          "description": "Attributes of the region that plays the route motion (`RouteTransition`) around the page: a class and `data-*` hooks, for an app's own stagger or entrance CSS. The region exists only when `routeKey` is given.",
+          "definition": "{ className?: string | undefined; } & ShellDataAttributes"
+        },
+        {
           "name": "AppShellSearch",
           "kind": "type",
           "description": "",
@@ -766,6 +786,13 @@
               "required": true,
               "default": null,
               "description": "`MobileFloatBarButton` and `MobileFloatBarSeparator`, in reading order."
+            },
+            {
+              "name": "followViewport",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Follow the visual viewport: when the on-screen keyboard or a browser toolbar covers the bottom of the page (iOS Safari keeps `position: fixed` on the layout viewport, behind them), the bar moves up above it, once per frame. Does nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`."
             }
           ],
           "nativeProps": true
@@ -873,7 +900,7 @@
           "name": "MobileFloatBarProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }"
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }"
         },
         {
           "name": "MobileFloatBarSeparator",
@@ -990,14 +1017,14 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": "A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar. When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves."
+              "description": "A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation (a query-string change the link tracking does not see). Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar, unless a tracked link click is still on its way. When you pass it (even as `false`), link clicks stop starting the bar unless `trackLinks` is set explicitly."
             },
             {
               "name": "trackLinks",
               "type": "boolean",
               "required": false,
-              "default": "true",
-              "description": "Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true`."
+              "default": null,
+              "description": "Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with `pending` and the bar shows while either is in progress."
             },
             {
               "name": "revealDelay",
@@ -1031,7 +1058,7 @@
           "name": "ShellBadgeTone",
           "kind": "type",
           "description": "The colour of a badge or count. It never carries the meaning alone: the text is always there.",
-          "definition": "\"neutral\" | \"warning\" | \"danger\""
+          "definition": "\"neutral\" | \"success\" | \"warning\" | \"danger\""
         },
         {
           "name": "ShellDataAttributes",
@@ -1145,7 +1172,7 @@
             },
             {
               "name": "countTone",
-              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
               "description": ""
@@ -1211,6 +1238,12 @@
           "kind": "type",
           "description": "",
           "definition": null
+        },
+        {
+          "name": "ShellNavMatch",
+          "kind": "type",
+          "description": "How an item decides that `currentPath` is its page. - `prefix` (the default): the path equals the item's or sits below it (`/settings/billing` belongs to `/settings`). - `exact`: the path equals the item's, and not the pages below it. - `query`: the path equals the item's and every query parameter in the item's `href` has the same value in `currentPath`, for sections chosen by a query string (`/admin?section=users`). Pass `currentPath` with its query. - a function: return true when `currentPath` (as you passed it, query included) is this item's page. Query strings and hashes are ignored by `prefix` and `exact`. When several items match, a function beats `query`, `query` beats a plain path, and between paths the longest wins, so two items are never current at once.",
+          "definition": "\"prefix\" | \"exact\" | \"query\" | ((currentPath: string, item: ShellNavItem) => boolean)"
         },
         {
           "name": "ShellNavigation",
@@ -1493,7 +1526,7 @@
             },
             {
               "name": "badgeTone",
-              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"warning\"",
               "description": "Colour of `badge`. Default `warning`."
@@ -1507,7 +1540,7 @@
             },
             {
               "name": "countTone",
-              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
               "description": "Colour of `count`. Default `neutral`."
@@ -1560,6 +1593,34 @@
               "required": false,
               "default": null,
               "description": ""
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never in the rail, where this item stands in for them."
+            },
+            {
+              "name": "expanded",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Show the sub-items (`children`). They open and close with the `Collapse` motion. Default `false`."
+            },
+            {
+              "name": "currentBranch",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and `aria-current=\"true\"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current=\"page\"`."
+            },
+            {
+              "name": "highlightedBranch",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Draw the branch as current without claiming it: a click is heading to one of the sub-items."
             }
           ],
           "nativeProps": false
@@ -1579,7 +1640,7 @@
         {
           "name": "findActiveNavKey",
           "kind": "function",
-          "description": "The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.",
+          "description": "The key of the item that `currentPath` belongs to, or `undefined`, sub-items included. Each item matches as its `match` says (see `ShellNavMatch`); when several match, the strongest claim wins, so two items are never current at once. With `isActive` the first item it returns true for wins, a sub-item before the item that holds it.",
           "signature": "(groups: readonly ShellNavGroup[], currentPath: string | undefined, isActive?: ((item: ShellNavItem) => boolean) | undefined): string | undefined"
         },
         {
@@ -1591,7 +1652,7 @@
         {
           "name": "parseShellState",
           "kind": "function",
-          "description": "Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or malformed value gives the defaults: expanded, groups undecided.",
+          "description": "Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or malformed value gives the defaults: expanded, groups undecided. Safe in a React Server Component: import it from `@lufia/design-system/app-shell-state`.",
           "signature": "(raw: string | null | undefined): ShellState"
         },
         {
@@ -1668,15 +1729,17 @@
         "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
         "AppShellMainProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes",
         "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellRouteTransitionProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellSlotState": "{ collapsed: boolean; surface: \"sidebar\" | \"sheet\" | \"topBar\"; closeSheet: () => void; openSheet: () => void; }",
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
-        "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }",
+        "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }",
         "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }",
-        "ShellBadgeTone": "\"neutral\" | \"warning\" | \"danger\"",
+        "ShellBadgeTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "ShellFooterProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }",
         "ShellNavGroup": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }",
+        "ShellNavMatch": "\"prefix\" | \"exact\" | \"query\" | ((currentPath: string, item: ShellNavItem) => boolean)",
         "ShellState": "{ collapsed: boolean; openGroups: readonly string[] | undefined; }"
       },
       "story": {
@@ -1777,6 +1840,22 @@
           {
             "export": "PrimaryActionFallbackOnPhonesOnly",
             "id": "components-navigation-appshell--primary-action-fallback-on-phones-only"
+          },
+          {
+            "export": "NestedNavigation",
+            "id": "components-navigation-appshell--nested-navigation"
+          },
+          {
+            "export": "NestedNavigationRail",
+            "id": "components-navigation-appshell--nested-navigation-rail"
+          },
+          {
+            "export": "NestedNavigationPhone",
+            "id": "components-navigation-appshell--nested-navigation-phone"
+          },
+          {
+            "export": "StaggeredRouteEntrance",
+            "id": "components-navigation-appshell--staggered-route-entrance"
           }
         ]
       },

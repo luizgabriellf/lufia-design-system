@@ -40,6 +40,9 @@ import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
   (`@lufia/design-system/components/useDismiss`).
 - Motion primitives come from `@lufia/design-system/motion`.
 - Token data is available as `@lufia/design-system/tokens` (typed map) and `@lufia/design-system/tokens.json`.
+- `parseShellState` and `serializeShellState` (the AppShell cookie value) also come from
+  `@lufia/design-system/app-shell-state`, a pure module with no React: import them from there in a React Server Component,
+  a route handler or middleware.
 - The root export `@lufia/design-system` re-exports everything, but the subpaths keep bundles small.
 
 ### Live Storybook MCP for local agents
@@ -640,6 +643,8 @@ navigation is data, so both layouts always agree.
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `routeKey` | `string` | no |  | Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`. |
 | `routePending` | `boolean` | no |  | A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself. |
+| `routeTrackLinks` | `boolean` | no |  | Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks. `RouteProgress` `trackLinks`. |
+| `routeTransitionProps` | `AppShellRouteTransitionProps` | no |  | A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs `routeKey`. |
 | `routeProgress` | `boolean` | no | `true` | Draw the progress bar when `routeKey` is given. Default `true`. |
 | `mainPending` | `ReactNode` | no |  | A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for. |
 | `floatScrim` | `boolean` | no | `false` | Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for. |
@@ -656,6 +661,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the bar. |
 | `children` | `ReactNode` | yes |  | `MobileFloatBarButton` and `MobileFloatBarSeparator`, in reading order. |
+| `followViewport` | `boolean` | no | `true` | Follow the visual viewport: when the on-screen keyboard or a browser toolbar covers the bottom of the page (iOS Safari keeps `position: fixed` on the layout viewport, behind them), the bar moves up above it, once per frame. Does nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`. |
 
 Other native element attributes pass through to the root element.
 
@@ -717,8 +723,8 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `routeKey` | `string` | yes |  | Identifies the page being shown (the pathname). When it changes, the navigation has arrived and the bar finishes. `AppShell` passes its own `routeKey`. |
-| `pending` | `boolean` | no |  | A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar. When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves. |
-| `trackLinks` | `boolean` | no | `true` | Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true`. |
+| `pending` | `boolean` | no |  | A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation (a query-string change the link tracking does not see). Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar, unless a tracked link click is still on its way. When you pass it (even as `false`), link clicks stop starting the bar unless `trackLinks` is set explicitly. |
+| `trackLinks` | `boolean` | no |  | Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with `pending` and the bar shows while either is in progress. |
 | `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
 | `className` | `string` | no |  |  |
 
@@ -746,7 +752,7 @@ Other native element attributes pass through to the root element.
 | `pending` | `boolean` | no | `false` | The action is running (signing out): dimmed, `aria-busy`, and further clicks are ignored. Focus stays put. |
 | `disabled` | `boolean` | no | `false` |  |
 | `count` | `number` | no |  | A number after the label (unread replies). Hidden at 0, "99+" above 99, on the icon in the rail. |
-| `countTone` | `"neutral" \| "warning" \| "danger"` | no | `"neutral"` |  |
+| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` |  |
 | `ariaLabel` | `string` | no |  | Accessible name when it should add to the label ("Help, 2 unread"). Keep the visible label in it. |
 | `pressed` | `boolean` | no |  | `pressed` makes it a toggle button (`aria-pressed`): theme, density. Buttons only. |
 | `tone` | `"warning" \| "default"` | no | `"default"` | `warning` colours it as a caution (an admin area). |
@@ -813,9 +819,9 @@ Other native element attributes pass through to the root element.
 | `href` | `string` | no |  | Makes the item a link, rendered through the configured `linkComponent`. |
 | `icon` | `ReactNode` | no |  |  |
 | `badge` | `ReactNode` | no |  | A short mark after the label, such as "New". For a number use `count`. |
-| `badgeTone` | `"neutral" \| "warning" \| "danger"` | no | `"warning"` | Colour of `badge`. Default `warning`. |
+| `badgeTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"warning"` | Colour of `badge`. Default `warning`. |
 | `count` | `number` | no |  | A number after the label. Hidden at 0, and capped at `maxCount` ("99+"). In the rail it sits on the icon. |
-| `countTone` | `"neutral" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `count`. Default `neutral`. |
+| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `count`. Default `neutral`. |
 | `maxCount` | `number` | no |  | Where `count` stops growing and shows a plus sign. Default 99. |
 | `data` | `ShellDataAttributes` | no |  | `data-*` attributes on the link or button (analytics, guided tours, test ids). |
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
@@ -823,10 +829,14 @@ Other native element attributes pass through to the root element.
 | `disabled` | `boolean` | no | `false` |  |
 | `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
 | `className` | `string` | no |  |  |
+| `children` | `ReactNode` | no |  | Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never in the rail, where this item stands in for them. |
+| `expanded` | `boolean` | no | `false` | Show the sub-items (`children`). They open and close with the `Collapse` motion. Default `false`. |
+| `currentBranch` | `boolean` | no | `false` | One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and `aria-current="true"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current="page"`. |
+| `highlightedBranch` | `boolean` | no |  | Draw the branch as current without claiming it: a click is heading to one of the sub-items. |
 
 #### `findActiveNavKey`
 
-The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.
+The key of the item that `currentPath` belongs to, or `undefined`, sub-items included. Each item matches as its `match` says (see `ShellNavMatch`); when several match, the strongest claim wins, so two items are never current at once. With `isActive` the first item it returns true for wins, a sub-item before the item that holds it.
 
 ```ts
 findActiveNavKey(groups: readonly ShellNavGroup[], currentPath: string | undefined, isActive?: ((item: ShellNavItem) => boolean) | undefined): string | undefined
@@ -842,7 +852,7 @@ formatShellCount(count: number | undefined, cap?: number): string | undefined
 
 #### `parseShellState`
 
-Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or malformed value gives the defaults: expanded, groups undecided.
+Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or malformed value gives the defaults: expanded, groups undecided. Safe in a React Server Component: import it from `@lufia/design-system/app-shell-state`.
 
 ```ts
 parseShellState(raw: string | null | undefined): ShellState
@@ -895,15 +905,17 @@ useShellPrimaryAction(action: AppShellPrimaryAction | null): boolean
 - `AppShellLabels`: `{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }`
 - `AppShellMainProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes`
 - `AppShellPrimaryAction`: `{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }`
+- `AppShellRouteTransitionProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `AppShellSearch`: `{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }`
 - `AppShellSlotState`: `{ collapsed: boolean; surface: "sidebar" | "sheet" | "topBar"; closeSheet: () => void; openSheet: () => void; }`
 - `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
-- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; }`
+- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }`
 - `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }`
-- `ShellBadgeTone`: `"neutral" | "warning" | "danger"`
+- `ShellBadgeTone`: `"neutral" | "success" | "warning" | "danger"`
 - `ShellDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
 - `ShellFooterProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { "aria-label": string; children: ReactNode; }`
 - `ShellNavGroup`: `{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }`
+- `ShellNavMatch`: `"prefix" | "exact" | "query" | ((currentPath: string, item: ShellNavItem) => boolean)`
 - `ShellState`: `{ collapsed: boolean; openGroups: readonly string[] | undefined; }`
 
 ### Example
@@ -997,6 +1009,10 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--controlled-sheet-with-switcher`
 - `components-navigation-appshell--route-motion-and-pending`
 - `components-navigation-appshell--primary-action-fallback-on-phones-only`
+- `components-navigation-appshell--nested-navigation`
+- `components-navigation-appshell--nested-navigation-rail`
+- `components-navigation-appshell--nested-navigation-phone`
+- `components-navigation-appshell--staggered-route-entrance`
 
 ## AttentionList
 

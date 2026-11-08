@@ -36,6 +36,9 @@ import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
   (`@lufia/design-system/components/useDismiss`).
 - Motion primitives come from `@lufia/design-system/motion`.
 - Token data is available as `@lufia/design-system/tokens` (typed map) and `@lufia/design-system/tokens.json`.
+- `parseShellState` and `serializeShellState` (the AppShell cookie value) also come from
+  `@lufia/design-system/app-shell-state`, a pure module with no React: import them from there in a React Server Component,
+  a route handler or middleware.
 - The root export `@lufia/design-system` re-exports everything, but the subpaths keep bundles small.
 
 ## Live Storybook MCP for local agents

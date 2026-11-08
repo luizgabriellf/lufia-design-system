@@ -16,6 +16,8 @@ import {
   InboxIcon,
   PlusIcon,
   SettingsIcon,
+  ShieldIcon,
+  UsersIcon,
 } from "../../docs/demo";
 import { Skeleton } from "../../motion";
 import { Button } from "../Button";
@@ -23,6 +25,7 @@ import { AppShell } from "./AppShell";
 import { useState } from "react";
 import { ShellFooter, ShellFooterItem } from "./ShellFooter";
 import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
+import type { ShellNavGroup } from "./navigation";
 
 const meta = {
   title: "Components/Navigation/AppShell",
@@ -214,7 +217,7 @@ export const RegisteredPrimaryAction: Story = {
   globals: { viewport: { value: "w1440", isRotated: false } },
 };
 
-/** Counts with a tone, capped at 99+ and hidden at 0; a word badge with its own tone. In the rail the count sits on the icon. */
+/** Counts with a tone (`neutral`, `success`, `warning`, `danger`), capped at 99+ and hidden at 0; a word badge with its own tone. In the rail the count sits on the icon. */
 export const CountsAndBadges: Story = {
   args: {
     groups: [
@@ -246,6 +249,22 @@ export const CountsAndBadges: Story = {
             count: 0,
             badge: "New",
             badgeTone: "neutral",
+          },
+          {
+            key: "backups",
+            label: "Backups",
+            href: "/backups",
+            icon: <ShieldIcon size={18} />,
+            badge: "Healthy",
+            badgeTone: "success",
+          },
+          {
+            key: "done",
+            label: "Completed",
+            href: "/done",
+            icon: <DocumentIcon size={18} />,
+            count: 12,
+            countTone: "success",
           },
         ],
       },
@@ -408,4 +427,101 @@ export const PrimaryActionFallbackOnPhonesOnly: Story = {
     primaryAction: { label: "New item", icon: <PlusIcon size={16} />, onIntent: () => {} },
   },
   globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+const nestedGroups: ShellNavGroup[] = [
+  {
+    key: "workspace",
+    label: "Workspace",
+    items: [
+      { key: "home", label: "Overview", href: "/", exact: true, icon: <HomeIcon size={18} /> },
+      { key: "inbox", label: "Inbox", href: "/inbox", icon: <InboxIcon size={18} />, count: 4 },
+      {
+        key: "admin",
+        label: "Administration",
+        href: "/admin",
+        icon: <SettingsIcon size={18} />,
+        items: [
+          { key: "admin-people", label: "People", href: "/admin?section=people", match: "query" },
+          { key: "admin-roles", label: "Roles", href: "/admin?section=roles", match: "query" },
+          {
+            key: "admin-audit",
+            label: "Audit log",
+            href: "/admin?section=audit",
+            match: "query",
+            badge: "Clean",
+            badgeTone: "success",
+          },
+        ],
+      },
+      {
+        key: "teams",
+        label: "Teams",
+        href: "/teams",
+        icon: <UsersIcon size={18} />,
+        items: [
+          { key: "teams-active", label: "Active", href: "/teams/active" },
+          { key: "teams-archived", label: "Archived", href: "/teams/archived" },
+        ],
+      },
+    ],
+  },
+];
+
+/**
+ * Sub-items under one item: sections chosen by a query string (`match: "query"`, with `currentPath` passed with its
+ * query) and plain child paths. The sub-items of the current branch are listed; the other branches stay folded.
+ */
+export const NestedNavigation: Story = {
+  render: (args) => <DemoShell {...args} groups={nestedGroups} initialPath="/admin?section=roles" />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/**
+ * In the rail the sub-items are hidden: the item that holds the current one takes the active look and
+ * `aria-current="true"`, and its icon links to the item's own page.
+ */
+export const NestedNavigationRail: Story = {
+  render: (args) => (
+    <DemoShell {...args} groups={nestedGroups} initialPath="/admin?section=roles" defaultCollapsed />
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** The same sub-items in the phone navigation sheet. */
+export const NestedNavigationPhone: Story = {
+  render: (args) => <DemoShell {...args} groups={nestedGroups} initialPath="/admin?section=roles" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * `routeTransitionProps`: a class on the region that plays the route motion, so an app's own CSS can stagger the
+ * sections of the arriving page (here 40 ms apart, transform and opacity only, nothing under reduced motion). Choose
+ * another item to see it.
+ */
+export const StaggeredRouteEntrance: Story = {
+  render: (args) => (
+    <>
+      <style>{`
+        .demo-stagger > [data-route-enter] > * {
+          animation: demo-stagger-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+        }
+        .demo-stagger > [data-route-enter] > :nth-child(2) { animation-delay: 40ms; }
+        .demo-stagger > [data-route-enter] > :nth-child(3) { animation-delay: 80ms; }
+        .demo-stagger > [data-route-enter] > :nth-child(n + 4) { animation-delay: 120ms; }
+        @keyframes demo-stagger-in {
+          from { opacity: 0; transform: translateY(var(--lufia-motion-distance-rise)); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .demo-stagger > [data-route-enter] > * { animation: none; }
+        }
+      `}</style>
+      <DemoShell
+        {...args}
+        trackRoute
+        routeTransitionProps={{ className: "demo-stagger", "data-stagger": "" }}
+      />
+    </>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
 };

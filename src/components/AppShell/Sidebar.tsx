@@ -4,13 +4,8 @@ import { useId, useRef, useState, type HTMLAttributes, type MouseEvent, type Rea
 import { Collapse } from "../../motion";
 import { useLufia } from "../LufiaProvider";
 import { ChevronGlyph, SidebarGlyph } from "./icons";
-import {
-  NavSurfaceContext,
-  formatShellCount,
-  useNavSurface,
-  type ShellBadgeTone,
-  type ShellDataAttributes,
-} from "./navigation";
+import { formatShellCount, type ShellBadgeTone, type ShellDataAttributes } from "./navigation";
+import { NavSurfaceContext, useNavSurface } from "./navSurface";
 import { useNavScrollHints } from "./useNavScrollHints";
 import { useShellTooltip } from "./ShellTooltip";
 import styles from "./Sidebar.module.css";
@@ -204,6 +199,20 @@ export type SidebarItemProps = {
   disabled?: boolean;
   onClick?: (event: MouseEvent<HTMLElement>) => void;
   className?: string;
+  /**
+   * Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never
+   * in the rail, where this item stands in for them.
+   */
+  children?: ReactNode;
+  /** Show the sub-items (`children`). They open and close with the `Collapse` motion. Default `false`. */
+  expanded?: boolean;
+  /**
+   * One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and
+   * `aria-current="true"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current="page"`.
+   */
+  currentBranch?: boolean;
+  /** Draw the branch as current without claiming it: a click is heading to one of the sub-items. */
+  highlightedBranch?: boolean;
 };
 
 /** One destination. A link when it has an `href`, otherwise a button. In a rail only the icon shows. */
@@ -223,10 +232,19 @@ export function SidebarItem({
   disabled = false,
   onClick,
   className,
+  children,
+  expanded = false,
+  currentBranch = false,
+  highlightedBranch,
 }: SidebarItemProps) {
   const { linkComponent: Link } = useLufia();
   const { collapsed } = useNavSurface();
-  const looksActive = highlighted ?? active;
+  const subId = useId();
+  const hasChildren = children !== undefined && children !== null && children !== false;
+  const looksBranch = highlightedBranch ?? currentBranch;
+  // In the rail the sub-items are hidden, so the item that holds the current one stands in for it.
+  const looksActive = (highlighted ?? active) || (collapsed && looksBranch);
+  const ariaCurrent = active ? ("page" as const) : collapsed && currentBranch ? ("true" as const) : undefined;
   const countText = formatShellCount(count, maxCount);
   // The label stays in the DOM as a rail's accessible name; the tooltip tells sighted people what the icon is.
   const tip = useShellTooltip(label, collapsed);
@@ -235,7 +253,8 @@ export function SidebarItem({
     ...tip.trigger,
     className: [styles.item, className].filter(Boolean).join(" "),
     "data-active": looksActive || undefined,
-    "aria-current": active ? ("page" as const) : undefined,
+    "data-branch": (hasChildren && !collapsed && looksBranch) || undefined,
+    "aria-current": ariaCurrent,
     "aria-label": ariaLabel,
   };
   const content = (
@@ -271,6 +290,11 @@ export function SidebarItem({
         </button>
       )}
       {tip.tooltip}
+      {hasChildren && !collapsed ? (
+        <Collapse id={subId} open={expanded} className={styles.subItems} data-sub-items="">
+          <ul className={styles.list}>{children}</ul>
+        </Collapse>
+      ) : null}
     </li>
   );
 }

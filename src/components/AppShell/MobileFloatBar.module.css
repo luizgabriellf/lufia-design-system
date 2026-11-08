@@ -18,6 +18,10 @@
   box-shadow: var(--lufia-shadow-lg);
   white-space: nowrap;
   isolation: isolate;
+
+  /* Lifted above the on-screen keyboard or a covering toolbar (`followViewport`). It follows the viewport frame by
+     frame, so it does not ease: easing would trail the keyboard. */
+  transform: translateY(calc(-1 * var(--lufia-float-bar-viewport-offset, 0px)));
 }
 
 .button {

@@ -81,7 +81,7 @@ The shell is built from parts that are exported, so an app with another arrangem
 | `RouteProgress`                                                     | The thin top progress bar for a loading navigation                             |
 | `ShellFooter`, `ShellFooterItem`                                    | The icon-and-label actions at the foot of the sidebar and of the sheet         |
 | `NavSheet`                                                          | The modal bottom sheet with swipe-to-dismiss                                   |
-| `serializeShellState`, `parseShellState`                            | The cookie value that remembers the rail and the open groups                   |
+| `serializeShellState`, `parseShellState`                            | The cookie value that remembers the rail and the open groups (server-safe)     |
 | `findActiveNavKey`                                                  | The matcher behind `currentPath`                                               |
 
 <Canvas of={SidebarStories.Composition} />
@@ -89,8 +89,20 @@ The shell is built from parts that are exported, so an app with another arrangem
 #### Marking the current page
 
 `currentPath` makes the item whose `href` equals it, or contains it, current. The most specific item wins, so
-`/settings/billing` is never current together with `/settings`; `exact: true` limits an item to its own path. Query strings
-and hashes are ignored. Pass `isActive` instead when your routes do not map to paths.
+`/settings/billing` is never current together with `/settings`; `exact: true` (or `match: "exact"`) limits an item to its
+own path. Query strings and hashes are ignored unless an item asks for them with `match`:
+
+| `match`               | The item is current when                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| `"prefix"` (default)  | the path equals its `href` or sits below it                                                            |
+| `"exact"`             | the path equals its `href`                                                                             |
+| `"query"`             | the path equals its `href` and every query parameter of its `href` has the same value in `currentPath` |
+| `(currentPath, item)` | the function returns true; it receives `currentPath` as you passed it, query included                  |
+
+For `"query"` and for functions, pass `currentPath` with its query string (`pathname + "?" + search`); the other items
+keep ignoring it. When several items match, a function beats `"query"`, `"query"` beats a path, and between paths the
+longest wins, so one item is current at a time. Pass `isActive` on the shell instead when your routes do not map to paths
+at all.
 
 A click on a link makes it look current at once and closes the sheet; `aria-current` stays on the real page until
 `currentPath` changes.
@@ -108,13 +120,46 @@ A click on a link makes it look current at once and closes the sheet; `aria-curr
 
 <Canvas of={Stories.Rail} />
 
+#### Sub-items
+
+An item can hold one level of `items`: sections under one page, such as the parts of a settings or back-office area chosen
+by a query string. They are listed under the item, indented on a guide line, while the item or one of them is current
+(`expanded: true` lists them always), and they open and close with `Collapse`. Deeper `items` are ignored.
+
+```tsx
+{
+  key: "admin",
+  label: "Administration",
+  href: "/admin",
+  icon: <GearIcon />,
+  items: [
+    { key: "people", label: "People", href: "/admin?section=people", match: "query" },
+    { key: "roles", label: "Roles", href: "/admin?section=roles", match: "query" },
+  ],
+}
+```
+
+- **Current state.** The current sub-item has `aria-current="page"`; the item that holds it is drawn as the open branch
+  (`data-branch`) and has no `aria-current`, so exactly one link is the page. A collapsible group that holds the current
+  sub-item opens like it does for its own items.
+- **Keyboard.** Sub-items are ordinary links after their item in the tab order. Folded sub-items are `inert`, so Tab never
+  lands on something hidden.
+- **The rail** hides the sub-items rather than opening a flyout: a flyout would be a second menu pattern to learn and to
+  reach by keyboard. The item's icon links to its own `href`, its tooltip names it, and while one of its sub-items is
+  current it takes the active look and `aria-current="true"` (current within the set, not the page itself). So give an
+  item with sub-items an `href`: its overview or its first section. In the phone sheet the sub-items show as in the open
+  sidebar.
+
+<Canvas of={Stories.NestedNavigation} />
+<Canvas of={Stories.NestedNavigationRail} />
+
 #### Nav item extras
 
 A `ShellNavItem` takes more than a label and an `href`:
 
 - `count` is a number after the label: hidden at 0, shown as `99+` above 99, in the tone of `countTone` (`neutral`,
-  `warning` or `danger`). In the rail it sits on the corner of the icon. Pair it with `ariaLabel` ("Inbox, 7 unread")
-  so the tone's meaning is also in words. `badge` stays for a word such as "New", with `badgeTone` (default `warning`); in
+  `success`, `warning` or `danger`). In the rail it sits on the corner of the icon. Pair it with `ariaLabel` ("Inbox, 7 unread")
+  so the tone's meaning is also in words. `badge` stays for a word such as "New", with `badgeTone` (default `warning`, or `neutral`, `success`, `danger`); in
   the rail a word badge steps aside for a count on the same item.
 - `className` and `data` (an object of `data-*` attributes) go on the link or button itself: styling hooks, analytics,
   guided-tour anchors, test ids.
@@ -200,18 +245,21 @@ A followed link inside the sheet, footer and slots included, closes it.
 Give the shell the current page's `routeKey` (the pathname, not the query) and it takes care of the motion around a
 navigation; every piece is optional and none remounts the page.
 
-| Prop            | What it does                                                                                                                                                                                                                                                                                                                                                                       |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `routeKey`      | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                         |
-| `routePending`  | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck. |
-| `mainPending`   | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
-| `routeProgress` | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
+| Prop                   | What it does                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `routeKey`             | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                         |
+| `routePending`         | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck. |
+| `mainPending`          | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
+| `routeTrackLinks`      | Link clicks start the bar alongside `routePending`: the bar shows while either is in progress. Default `true` without `routePending` and `false` with it. Set it `true` to drive query-string navigations (which link tracking ignores) through `routePending` and keep tracking link clicks. The 10-second safety timeout still ends any run.                                     |
+| `routeTransitionProps` | A `className` and `data-*` attributes for the region that plays the route motion, so your own CSS can stagger the arriving page's sections off the `data-route-enter` its children get. Animate `transform` and `opacity` only and turn it off under `prefers-reduced-motion` (the shell sets no marker then anyway).                                                              |
+| `routeProgress`        | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
 
 Timing is yours: when to show `mainPending` (most apps wait a few hundred milliseconds, so fast navigations never show a
 skeleton), when a wait is long enough to offer a retry, and what the skeleton looks like. `RouteProgress` is also exported
 for an app that draws the bar itself.
 
 <Canvas of={Stories.RouteMotionAndPending} />
+<Canvas of={Stories.StaggeredRouteEntrance} />
 
 #### Floating bar fade
 
@@ -246,8 +294,12 @@ the first paint is already the right one and nothing flashes open and then shuts
 value and `parseShellState` reads it back on the server or in the browser; hand the result to `defaultCollapsed` and
 `defaultOpenGroups`, and save on the two change hooks.
 
+Both also come from `@lufia/design-system/app-shell-state`, a module with no React and no `"use client"`, so a React Server
+Component, a route handler or middleware can import them without pulling the shell's client code into the server layer.
+
 ```tsx
 // Server component (any framework that exposes the request cookie)
+import { parseShellState } from "@lufia/design-system/app-shell-state";
 const saved = parseShellState(cookieStore.get("shell")?.value);
 
 <AppShellClient initial={saved} />;
@@ -296,6 +348,12 @@ where `backdrop-filter` is missing). It holds a search entry, the page's one mai
 entry gives way first when the bar is crowded; the main action then ends in an ellipsis, and below 22.5rem it shows only
 its icon. All keep their accessible names.
 
+The bar follows the visual viewport (`followViewport`, default on): where the on-screen keyboard or a browser toolbar
+covers the bottom of the page (iOS Safari keeps fixed elements on the layout viewport, behind them), it moves up above it,
+read from `window.visualViewport` once per frame and written as `--lufia-float-bar-viewport-offset`, with
+`data-viewport-lifted` while lifted. It moves with `transform` and does not ease, so it never trails the keyboard. It does
+nothing while the page is pinch-zoomed and where `visualViewport` does not exist.
+
 #### Navigation sheet
 
 <Canvas of={SheetStories.Default} />
@@ -338,7 +396,9 @@ mounted page takes over from the older one.
 
 ### Data attributes
 
-`data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-open` on an open group,
+`data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-branch` on an item whose
+sub-item is current, `data-sub-items` on the folding list of sub-items, `data-open` on an open group,
+`data-viewport-lifted` on the floating bar while it is above the keyboard,
 `data-state="open|closed"` on the sheet and `data-dragging` while it is dragged. Use them to style slot content.
 
 </Section>
@@ -359,7 +419,7 @@ mounted page takes over from the older one.
   The sidebar and the sheet each hold a `<nav>` named by `labels.navigation`. The sidebar is hidden (`display: none`) below
   the breakpoint, so a phone never sees two.
 - **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button shows the active style
-  to point at the page inside it.
+  to point at the page inside it. In the rail, an item whose hidden sub-item is current has `aria-current="true"`.
 - **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet. The body keeps native scrolling:
   a drag that starts in the body counts only when the body is scrolled to the top and moves down, and then it follows the
   finger (and cancels the browser's pull to refresh) as on a native bottom sheet. A list inside the body that scrolls on its
