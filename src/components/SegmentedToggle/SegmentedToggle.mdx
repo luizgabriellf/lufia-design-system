@@ -12,7 +12,7 @@ import * as Stories from "./SegmentedToggle.stories";
 
 <Section id="overview">
 
-Two to four compact choices in one bordered group, where exactly one is always chosen. An indicator slides behind the chosen
+Two to four compact choices in one bordered group, where one is chosen (always, unless `value` is `null`). An indicator slides behind the chosen
 segment.
 
 <Canvas of={Stories.Default} />
@@ -47,6 +47,34 @@ With `name`, the chosen value is submitted with the form.
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.Fill} />
 
+### Status picker
+
+A per-row picker where a fresh row has no status. `value={null}` (controlled) means nothing is chosen: no segment is checked and
+the indicator is hidden; it appears, without sliding in from elsewhere, when a segment is first chosen. `tone` colours the
+chosen segment with the status tokens, `size="sm"` fits dense rows and `allowDeselect` clears the choice when the chosen
+segment is activated again.
+
+<Canvas of={Stories.StatusPicker} />
+
+```tsx
+<SegmentedToggle
+  label="Status"
+  size="sm"
+  allowDeselect
+  value={status} // string | null
+  onValueChange={setStatus} // (value: string | null) => void, because of allowDeselect
+  options={[
+    { value: "pass", label: "Pass", tone: "success" },
+    { value: "fail", label: "Fail", tone: "danger" },
+    { value: "na", label: "N/A", tone: "neutral" },
+  ]}
+/>
+```
+
+`onValueChange` receives a `string`, and also `null` only when `allowDeselect` is set (the prop types are a union on
+`allowDeselect`), so existing handlers typed `(value: string) => void` keep compiling. With `name`, nothing is submitted while
+the value is `null`.
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -74,15 +102,17 @@ segments. It is a radiogroup and not a tablist because it chooses a value and do
 
 | Key / action       | Behaviour                                                                                |
 | ------------------ | ---------------------------------------------------------------------------------------- |
-| Tab / Shift+Tab    | Enters the group at the chosen segment; leaves it. One tab stop.                         |
+| Tab / Shift+Tab    | Enters the group at the chosen segment (the first enabled one when none is); leaves it.  |
 | Right / Down arrow | Moves to the next enabled segment and chooses it. Wraps. Reversed in RTL for Left/Right. |
 | Left / Up arrow    | Moves to the previous enabled segment and chooses it. Wraps.                             |
-| Space / click      | Chooses the focused segment.                                                             |
+| Space / click      | Chooses the focused segment; with `allowDeselect`, clears it when already chosen.        |
 
 - `label` names the group and is required. Icons are decorative.
 - The indicator animates `transform` only, jumps on resize, and does not animate under `prefers-reduced-motion`.
 - Before scripts run the chosen segment paints its own border and fill, so the choice is visible without the indicator.
 - Under `forced-colors` the chosen segment keeps a `Highlight` border.
+- Selection follows focus: an arrow key moves focus and chooses, also when nothing was chosen. Space or a click on a focused segment chooses it.
+- `tone` is never the only cue: the chosen segment also has the selected border and the indicator. Text and fill pairs are the status `fg` on `bg` pairs checked by `npm run contrast`.
 
 </Section>
 

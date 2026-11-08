@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { GridIcon, InboxIcon, ServerIcon } from "../../docs/demo";
@@ -80,4 +81,51 @@ export const AllThemes: Story = {
       </div>
     </ThemeMatrix>
   ),
+};
+
+const resultOptions: SegmentedToggleOption[] = [
+  { value: "pass", label: "Pass", tone: "success" },
+  { value: "fail", label: "Fail", tone: "danger" },
+  { value: "na", label: "N/A", tone: "neutral" },
+];
+
+/**
+ * A per-row status picker for a checklist. A fresh row has no status (`value={null}`), each result has a tone, rows use the
+ * small size and `allowDeselect` lets the user clear a choice by activating it again.
+ */
+export const StatusPicker: Story = {
+  render: () => {
+    const [rows, setRows] = useState<Record<string, string | null>>({
+      "Fire exits are clear": "pass",
+      "Extinguishers are inspected": null,
+      "First aid kit is stocked": "fail",
+    });
+    return (
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.75rem" }}>
+        {Object.entries(rows).map(([item, status]) => (
+          <li
+            key={item}
+            data-testid="status-row"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: "0.75rem",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>{item}</span>
+            <SegmentedToggle
+              label={`Status: ${item}`}
+              size="sm"
+              allowDeselect
+              options={resultOptions}
+              value={status}
+              onValueChange={(next) => setRows((current) => ({ ...current, [item]: next }))}
+            />
+          </li>
+        ))}
+      </ul>
+    );
+  },
 };

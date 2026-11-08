@@ -591,3 +591,29 @@ test.describe("stat tile as filters", () => {
     expect((await look(open)).background).not.toBe((await look(overdue)).background);
   });
 });
+
+test.describe("segmented toggle status picker", () => {
+  for (const theme of ["default", "example-brand"] as const) {
+    test(`an unset row shows no checked radio or indicator, and a tone colours the chosen one (${theme})`, async ({
+      page,
+    }) => {
+      await openStory(page, "components-forms-segmentedtoggle--status-picker", theme);
+      const rows = page.getByTestId("status-row");
+      const unset = rows.nth(1);
+      await expect(unset.getByRole("radio", { checked: true })).toHaveCount(0);
+      await expect(unset.locator('[class*="indicator"]')).toBeHidden();
+
+      const indicatorBackground = (row: typeof unset) =>
+        row.locator('[class*="indicator"]').evaluate((el) => getComputedStyle(el).backgroundColor);
+      const passBackground = await indicatorBackground(rows.nth(0));
+
+      await unset.getByRole("radio", { name: "Fail" }).click();
+      await expect(unset.getByRole("radio", { name: "Fail" })).toBeChecked();
+      await expect(unset.locator('[class*="indicator"]')).toBeVisible();
+      expect(await indicatorBackground(unset)).not.toBe(passBackground);
+
+      await unset.getByRole("radio", { name: "Fail" }).click();
+      await expect(unset.getByRole("radio", { checked: true })).toHaveCount(0);
+    });
+  }
+});
