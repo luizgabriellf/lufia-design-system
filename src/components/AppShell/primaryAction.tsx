@@ -11,7 +11,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Button } from "../Button";
+import { Button, type ButtonSize } from "../Button";
 import type { FloatBarDataAttributes } from "./MobileFloatBar";
 import styles from "./AppShell.module.css";
 
@@ -157,26 +157,43 @@ export function ShellPrimaryActionOwner() {
   return <span hidden data-lufia-shell-primary-owner="" />;
 }
 
+/** `ShellPrimaryActionSlot` `size`: a `Button` size, or `touch` for the medium look at a 44px (2.75rem) target height. */
+export type ShellPrimaryActionSlotSize = ButtonSize | "touch";
+
+export type ShellPrimaryActionSlotProps = {
+  /** Added to the button's own classes. */
+  className?: string;
+  /**
+   * Size of the button. A `Button` size (`sm` 32px, `md` 40px, `lg` 48px), or `touch`: the `md` type and padding at the
+   * 44px (2.75rem) height of a touch target, to line up with 44px controls beside it. Default `md`.
+   */
+  size?: ShellPrimaryActionSlotSize;
+};
+
 /**
  * Where the shell's primary action shows on wide screens: put it in the page header. Renders nothing when no action is
  * registered, outside a shell, and on phones (the floating bar carries it there). With `desktopPrimaryFallback={false}` on
  * the shell it also stays empty until a page registers its own, so the default never flashes in the wrong place on a hard load.
  */
-export function ShellPrimaryActionSlot({ className }: { className?: string }) {
+export function ShellPrimaryActionSlot({ className, size = "md" }: ShellPrimaryActionSlotProps) {
   const registry = useContext(ShellPrimaryActionContext);
   const action = registry?.action;
   if (!action || (registry.isFallback && !registry.desktopFallback)) return null;
   const classes = [styles.primarySlot, className].filter(Boolean).join(" ");
+  const touch = size === "touch";
   const intent = {
     onPointerEnter: action.onIntent,
     onFocus: action.onIntent,
     "data-fallback": registry.isFallback || undefined,
+    "data-touch": touch || undefined,
   };
+  const buttonSize: ButtonSize = touch ? "md" : size;
   return action.href !== undefined ? (
     <Button
       {...action.data}
       {...intent}
       variant="primary"
+      size={buttonSize}
       href={action.href}
       iconStart={action.icon}
       className={classes}
@@ -189,6 +206,7 @@ export function ShellPrimaryActionSlot({ className }: { className?: string }) {
       {...action.data}
       {...intent}
       variant="primary"
+      size={buttonSize}
       iconStart={action.icon}
       className={classes}
       onClick={action.onSelect}

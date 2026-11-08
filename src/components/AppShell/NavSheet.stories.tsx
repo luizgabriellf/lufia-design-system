@@ -93,3 +93,48 @@ export const LongListDraggedFromBody: Story = {
     </NavSheet>
   ),
 };
+
+function BrandLinkDemo() {
+  const [open, setOpen] = useState(true);
+  const [followed, setFollowed] = useState(0);
+  return (
+    <div style={{ padding: "1rem", display: "grid", gap: "0.75rem", justifyItems: "start" }}>
+      <Button onClick={() => setOpen(true)}>Open the menu</Button>
+      <p data-followed={followed} style={{ margin: 0 }}>
+        Brand link followed {followed} {followed === 1 ? "time" : "times"}
+      </p>
+      <NavSheet
+        open={open}
+        onOpenChange={setOpen}
+        label={demoLabels.menu}
+        header={
+          <a
+            href="#home"
+            style={{ color: "inherit", textDecoration: "none" }}
+            onClick={(event) => {
+              event.preventDefault();
+              setFollowed((count) => count + 1);
+            }}
+          >
+            <DemoBrand />
+          </a>
+        }
+      >
+        <nav aria-label={demoLabels.navigation}>
+          <ShellNavigation
+            groups={demoGroups}
+            currentPath="/inbox"
+            openGroups={["insights"]}
+            onToggleGroup={() => {}}
+          />
+        </nav>
+      </NavSheet>
+    </div>
+  );
+}
+
+/**
+ * The header is a brand link that fills most of it. A drag that starts on the link still dismisses the sheet (past a short
+ * slop), and the link is not followed; a plain tap follows it.
+ */
+export const DragFromBrandLink: Story = { render: () => <BrandLinkDemo /> };

@@ -51,6 +51,23 @@ describe("PendingSubmit", () => {
     expect(button()).toHaveAttribute("aria-busy", "true");
   });
 
+  it("drops the package look with variant unstyled and keeps the pending behaviour", () => {
+    render(
+      <PendingSubmit pendingLabel="Saving…" variant="unstyled" className="legacy-button" size="lg" pending>
+        Save changes
+      </PendingSubmit>,
+    );
+    const button = screen.getByRole("button", { name: "Save changes" });
+    expect(button).toHaveClass("legacy-button");
+    expect(button).toHaveAttribute("data-variant", "unstyled");
+    expect(button).toHaveAttribute("type", "submit");
+    // No Button look: no size, no Button root class.
+    expect(button).not.toHaveAttribute("data-size");
+    expect(button.className.split(" ")).toHaveLength(2);
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("status")).toHaveTextContent("Saving…");
+  });
+
   it("when pending, is busy, says so politely and keeps its name and focus", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<PendingSubmit pendingLabel="Saving…">Save changes</PendingSubmit>);

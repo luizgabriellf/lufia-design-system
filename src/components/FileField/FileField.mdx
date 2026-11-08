@@ -43,6 +43,40 @@ Strings in the snippet are plain literals. In your app they arrive through props
 `formatRejection` is required: every refusal reaches the person in your wording. It gets `{ file, reason }`, where `reason` is
 `"type"`, `"size"` or `"count"`, and the limits in force, so the message can name them.
 
+### Standalone use and moving over from an app's own file input
+
+`FileField` works on its own: name it with `aria-label` (or `aria-labelledby`; with neither, the button text names it) and
+mark it with `invalid`. A visible label, a hint and an error are `FormField`'s job, which wires the ids, `aria-describedby`,
+`aria-invalid`, `required` and `disabled` for every control of the package. `FileField` takes no `label`, `hint` or
+`error` props of its own on purpose: a second copy of that wiring would drift from the first.
+
+| An app's own file input | With the package                                                               |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| `label`                 | `<FormField label>` around the field                                           |
+| `labelClassName`        | `FormField` `className`, with `[data-lufia-part="label"]` inside it            |
+| `hint`                  | `<FormField hint>`                                                             |
+| `error`                 | `<FormField error>` (a rejection the field finds itself is shown by the field) |
+| `ariaLabel`             | `aria-label` on `FileField`, without a `FormField`                             |
+| `onFiles(files)`        | `onFilesChange(files)`: the whole list after each pick, drop or removal        |
+| `clearable`             | built in: every chosen file has a remove button (`removeLabel`, `removeText`)  |
+
+`onFilesChange` gets the whole list, which for a single-file picker is the one file just chosen. It is not renamed or
+aliased: one callback per event keeps the API small. The remove button is always there because a picked file that cannot
+be taken back is a trap; focus returns to the input after a removal.
+
+```tsx
+<FormField label="Contract" hint="PDF, up to 5 MB." error={serverError} className="app-field">
+  <FileField
+    name="contract"
+    accept=".pdf"
+    chooseLabel="Choose file"
+    replaceLabel="Replace file"
+    formatRejection={formatRejection}
+    onFilesChange={(files) => setContract(files[0] ?? null)}
+  />
+</FormField>
+```
+
 </Section>
 
 <Section id="examples">

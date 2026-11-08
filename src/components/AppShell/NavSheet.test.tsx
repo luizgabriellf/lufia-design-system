@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
@@ -220,10 +221,114 @@ describe("NavSheet", () => {
       expect(sheet()).not.toHaveAttribute("data-dragging");
     });
 
+    describe("from a link in the header", () => {
+      function BrandLinkSheet({ onFollow }: { onFollow: () => void }) {
+        const [open, setOpen] = useState(true);
+        return (
+          <NavSheet
+            open={open}
+            onOpenChange={setOpen}
+            label="Menu"
+            header={
+              <a
+                href="/home"
+                onClick={(event) => {
+                  event.preventDefault();
+                  onFollow();
+                }}
+              >
+                Brand
+              </a>
+            }
+          >
+            <a href="/one">One</a>
+          </NavSheet>
+        );
+      }
+      const brand = () => screen.getByRole("link", { name: "Brand" });
+
+      it("starts a drag past the slop and cancels the link's click", async () => {
+        const onFollow = vi.fn();
+        render(<BrandLinkSheet onFollow={onFollow} />);
+        fireEvent.pointerDown(brand(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(brand(), { pointerId: 1, clientY: 105, pointerType: "touch" });
+        // Inside the link's larger slop nothing moves yet.
+        expect(sheet()).not.toHaveAttribute("data-dragging");
+        // A short drag: it springs back, so the link is still there for the click its release sends.
+        fireEvent.pointerMove(brand(), { pointerId: 1, clientY: 120, pointerType: "touch" });
+        expect(sheet()).toHaveAttribute("data-dragging", "true");
+        fireEvent.pointerUp(brand(), { pointerId: 1, clientY: 120, pointerType: "touch" });
+        const click = new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 });
+        brand().dispatchEvent(click);
+        expect(click.defaultPrevented).toBe(true);
+        expect(onFollow).not.toHaveBeenCalled();
+        // Only that one click: the next tap follows the link again.
+        await userEvent.setup().click(brand());
+        expect(onFollow).toHaveBeenCalledOnce();
+      });
+
+      it("dismisses on a long drag that began on the link", async () => {
+        render(<BrandLinkSheet onFollow={() => {}} />);
+        fireEvent.pointerDown(brand(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(brand(), { pointerId: 1, clientY: 300, pointerType: "touch" });
+        act(() => {
+          fireEvent.pointerUp(brand(), { pointerId: 1, clientY: 300, pointerType: "touch" });
+        });
+        await waitFor(() => expect(sheet()).toBeNull());
+      });
+
+      it("keeps a plain tap on the link", async () => {
+        const onFollow = vi.fn();
+        render(<BrandLinkSheet onFollow={onFollow} />);
+        fireEvent.pointerDown(brand(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(brand(), { pointerId: 1, clientY: 103, pointerType: "touch" });
+        fireEvent.pointerUp(brand(), { pointerId: 1, clientY: 103, pointerType: "touch" });
+        await userEvent.setup().click(brand());
+        expect(onFollow).toHaveBeenCalledOnce();
+        expect(sheet()).not.toBeNull();
+      });
+
+      it("does not let the browser drag the link itself", () => {
+        render(<BrandLinkSheet onFollow={() => {}} />);
+        const event = new Event("dragstart", { bubbles: true, cancelable: true });
+        brand().dispatchEvent(event);
+        expect(event.defaultPrevented).toBe(true);
+      });
+    });
+
     it("is off when swipeToDismiss is false", () => {
       render(<Harness initial swipe={false} />);
       expect(document.querySelector("[data-swipe]")).toBeNull();
     });
+  });
+
+  it("renders context in its own fixed region between the header and the scrolling body", () => {
+    render(
+      <NavSheet
+        open
+        onOpenChange={() => {}}
+        label="Menu"
+        context={<button type="button">Acme Lisbon</button>}
+      >
+        <a href="/one">One</a>
+      </NavSheet>,
+    );
+    const region = document.querySelector<HTMLElement>('[data-lufia-part="nav-sheet-context"]')!;
+    expect(region).toContainElement(screen.getByRole("button", { name: "Acme Lisbon" }));
+    expect(region.closest("[data-swipe]")).toBeNull();
+    expect(region.nextElementSibling).toHaveAttribute("data-sheet-body");
+    const css = readFileSync("src/components/AppShell/NavSheet.module.css", "utf8");
+    expect(css).toMatch(
+      /\.context \{[^}]*max-block-size: 30dvh;[^}]*border-block-end:[^}]*overflow: hidden auto;/,
+    );
+    expect(css).toMatch(
+      /\.context \+ \.body \{[^}]*min-block-size: min\(8rem, 25dvh\);[^}]*padding-block-start/,
+    );
+  });
+
+  it("renders no context region without context", () => {
+    render(<Harness initial />);
+    expect(document.querySelector('[data-lufia-part="nav-sheet-context"]')).toBeNull();
   });
 
   it("waits for the exit animation unless motion is reduced", async () => {

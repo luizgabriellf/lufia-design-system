@@ -24,6 +24,9 @@ import { useEffect } from "react";
  * jump sideways when the scrollbar disappears (overlay scrollbars on touch devices have no width and need nothing).
  *
  * Locks are reference-counted, so stacked overlays are safe.
+ *
+ * The scroll position comes back with `behavior: "instant"`, so a page that sets `scroll-behavior: smooth` does not animate
+ * the jump back to where it was when the overlay closes.
  */
 
 function findInnerScrollTarget(body: HTMLElement, selectors: readonly string[]): HTMLElement | null {
@@ -88,7 +91,7 @@ function releaseLock() {
 
     if (innerScrollMode && lockedElement) {
       lockedElement.style.overflowY = savedOverflow;
-      lockedElement.scrollTo(0, savedScrollY);
+      lockedElement.scrollTo({ top: savedScrollY, left: 0, behavior: "instant" });
     } else {
       body.style.overflow = savedOverflow;
       body.style.paddingRight = savedPaddingRight;
@@ -96,7 +99,7 @@ function releaseLock() {
       body.style.position = "";
       body.style.top = "";
       body.style.width = "";
-      window.scrollTo(0, savedScrollY);
+      window.scrollTo({ top: savedScrollY, left: 0, behavior: "instant" });
     }
 
     html.style.overscrollBehavior = savedHtmlOverscroll;

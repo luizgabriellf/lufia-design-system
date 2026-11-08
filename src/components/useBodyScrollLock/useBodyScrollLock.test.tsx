@@ -23,6 +23,12 @@ describe("useBodyScrollLock", () => {
     expect(document.body.style.position).toBe("");
   });
 
+  it("restores the scroll instantly, so scroll-behavior: smooth does not animate it", () => {
+    const { rerender } = render(<Overlay locked />);
+    rerender(<Overlay locked={false} />);
+    expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, left: 0, behavior: "instant" });
+  });
+
   it("unlocks on unmount", () => {
     const { unmount } = render(<Overlay locked />);
     expect(isBodyScrollLocked()).toBe(true);
@@ -53,6 +59,7 @@ describe("useBodyScrollLock", () => {
     expect(document.body.style.position).toBe("");
     unmount();
     expect(shell.style.overflowY).toBe("auto");
+    expect(shell.scrollTo).toHaveBeenLastCalledWith({ top: 0, left: 0, behavior: "instant" });
     shell.remove();
   });
 

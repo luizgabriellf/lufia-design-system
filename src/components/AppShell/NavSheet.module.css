@@ -126,6 +126,19 @@
   outline-offset: 2px;
 }
 
+/* The context sits in the fixed part, under the header: it never scrolls away with the navigation. It keeps its own
+   height (the list gives way first), up to a cap past which it scrolls on its own, so the navigation keeps a usable
+   height. The divider matches the footer's. */
+.context {
+  flex: none;
+  max-block-size: 30dvh;
+  box-sizing: border-box;
+  padding: 0 var(--lufia-space-3) var(--lufia-space-3);
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+
 .body {
   flex: 1 1 auto;
   min-block-size: 0;
@@ -133,6 +146,12 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
+}
+
+/* Beside a context, the list starts clear of the divider and never shrinks to nothing. */
+.context + .body {
+  min-block-size: min(8rem, 25dvh);
+  padding-block-start: var(--lufia-space-2);
 }
 
 .body[data-more="start"] {
@@ -184,6 +203,17 @@
   }
 }
 
+/* A short window (a phone held sideways): the context takes a smaller share. */
+@media (height < 30rem) {
+  .context {
+    max-block-size: 20dvh;
+  }
+
+  .context + .body {
+    min-block-size: min(4.5rem, 18dvh);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .panel,
   .backdrop,
@@ -197,7 +227,9 @@
 }
 
 @media (forced-colors: active) {
-  .panel {
+  .panel,
+  .context,
+  .foot {
     border-color: CanvasText;
   }
 }

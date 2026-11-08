@@ -1,6 +1,11 @@
 "use client";
 
-import { useRef, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useRef,
+  type DragEvent as ReactDragEvent,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 
 /** A quick flick (px per ms) dismisses from a shorter distance. */
 export const FLICK_VELOCITY = 0.6;
@@ -34,6 +39,10 @@ export const SHEET_DRAG_THRESHOLD: Required<SheetDragThreshold> = {
 };
 /** Movement before the gesture counts as a drag, so a tap on the handle stays a tap. */
 const SLOP = 4;
+/** A link under the finger needs more movement than the bare handle before the gesture is a drag, so a tap stays a tap. */
+const LINK_SLOP = 8;
+/** How long after a drag the click its release would send to a link is still swallowed, if nothing new has started. */
+const CLICK_GUARD_MS = 400;
 
 /** Whether a release at `offset` pixels (and `velocity` px per ms) dismisses a sheet `height` pixels tall. */
 export function dragDismisses(
@@ -77,6 +86,8 @@ type Gesture = {
   lastTime: number;
   velocity: number;
   moved: boolean;
+  /** The gesture began on a link: the pointer is captured only once it is a drag, so a plain tap still reaches the link. */
+  onLink: boolean;
 };
 
 /**
@@ -90,10 +101,20 @@ type Gesture = {
  * sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the
  * keyboard route, so the gesture is never the only way out.
  *
+ * A drag may start on a link in the header (a brand link): past a slightly larger slop the gesture becomes a drag, and the
+ * click the release would send to the link is cancelled. A tap on the link, without movement, still follows it. Buttons
+ * and form fields in the zone keep their own pointer.
+ *
  * `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.
  */
 export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: SheetDragThreshold) {
   const gesture = useRef<Gesture | null>(null);
+  /** Set when a drag that began on a link ends: the click that follows is not a tap and must not navigate. */
+  const swallowClick = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopSwallowing = () => {
+    if (swallowClick.current) clearTimeout(swallowClick.current);
+    swallowClick.current = null;
+  };
 
   const panelOf = (event: ReactPointerEvent<HTMLElement>) =>
     event.currentTarget.closest<HTMLElement>('[role="dialog"], dialog');
@@ -105,11 +126,15 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
 
   return {
     onPointerDown(event: ReactPointerEvent<HTMLElement>) {
+      stopSwallowing();
       if (!enabled || gesture.current) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      // The close button and any link in the header keep their own click.
-      if ((event.target as Element).closest("button, a, input, select, textarea")) return;
-      event.currentTarget.setPointerCapture?.(event.pointerId);
+      const target = event.target as Element;
+      // The close button and the fields keep their own pointer.
+      if (target.closest("button, input, select, textarea, [contenteditable]")) return;
+      const onLink = target.closest("a[href]") !== null;
+      // Capturing at once would retarget the release, and so the click, away from a link: wait until it is a drag.
+      if (!onLink) event.currentTarget.setPointerCapture?.(event.pointerId);
       gesture.current = {
         id: event.pointerId,
         startY: event.clientY,
@@ -117,6 +142,7 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
         lastTime: performance.now(),
         velocity: 0,
         moved: false,
+        onLink,
       };
     },
     onPointerMove(event: ReactPointerEvent<HTMLElement>) {
@@ -124,7 +150,8 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
       const element = panelOf(event);
       if (!current || !element || event.pointerId !== current.id) return;
       const offset = Math.max(0, event.clientY - current.startY);
-      if (!current.moved && offset < SLOP) return;
+      if (!current.moved && offset < (current.onLink ? LINK_SLOP : SLOP)) return;
+      if (!current.moved && current.onLink) event.currentTarget.setPointerCapture?.(event.pointerId);
       current.moved = true;
       const elapsed = performance.now() - current.lastTime;
       if (elapsed > 0) current.velocity = (event.clientY - current.lastY) / elapsed;
@@ -138,6 +165,10 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
       const element = panelOf(event);
       if (!current || !element || event.pointerId !== current.id) return;
       const offset = Math.max(0, event.clientY - current.startY);
+      if (current.moved && current.onLink) {
+        stopSwallowing();
+        swallowClick.current = setTimeout(stopSwallowing, CLICK_GUARD_MS);
+      }
       finish(
         element,
         current.moved &&
@@ -146,6 +177,17 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
     },
     onPointerCancel(event: ReactPointerEvent<HTMLElement>) {
       if (gesture.current && event.pointerId === gesture.current.id) finish(panelOf(event), false);
+    },
+    /** Cancels the click a drag's release sends to a link, before the link (or a router's handler) sees it. */
+    onClickCapture(event: ReactMouseEvent<HTMLElement>) {
+      if (!swallowClick.current) return;
+      stopSwallowing();
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    /** A link would start the browser's own drag (of its address) and cancel the pointer: the sheet's drag wins. */
+    onDragStart(event: ReactDragEvent<HTMLElement>) {
+      if (enabled) event.preventDefault();
     },
   };
 }

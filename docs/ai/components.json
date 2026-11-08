@@ -575,7 +575,7 @@
               "type": "Slot",
               "required": false,
               "default": null,
-              "description": "Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`."
+              "description": "Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`."
             },
             {
               "name": "footer",
@@ -754,10 +754,17 @@
             },
             {
               "name": "routeTrackLinks",
-              "type": "boolean",
+              "type": "boolean | \"query\"",
               "required": false,
               "default": null,
-              "description": "Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks. `RouteProgress` `trackLinks`."
+              "description": "Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks, or `\"query\"` to also count links that change only the query string. `RouteProgress` `trackLinks`."
+            },
+            {
+              "name": "routeTimeout",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "Longest a run driven by `routePending` or by code may show before it ends by itself (`RouteProgress` `timeout`). Default 10 seconds; `Infinity` keeps the bar for as long as the page is pending. Runs started by a link click alone still end after at most 10 seconds."
             },
             {
               "name": "routeTransitionProps",
@@ -829,7 +836,7 @@
           "name": "AppShellLabels",
           "kind": "type",
           "description": "",
-          "definition": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }"
+          "definition": "{ skipToContent: string; navigation: string; menu: string; openMenu?: string | undefined; closeMenu?: string | undefined; floatBar: string; collapseSidebar: string; expandSidebar: string; }"
         },
         {
           "name": "AppShellMainProps",
@@ -1061,6 +1068,13 @@
               "description": "Below the scrolling body, pinned to the bottom: account and help links."
             },
             {
+              "name": "context",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Under the brand and close row, outside the scrolling body: the workspace, company or account the person is in, and its switcher. It stays in view while the navigation scrolls, and a divider keeps it apart from the first item. A tall one is capped (30% of the viewport) and scrolls on its own, so the navigation always keeps a usable height."
+            },
+            {
               "name": "closeLabel",
               "type": "string",
               "required": false,
@@ -1151,7 +1165,7 @@
         {
           "name": "RouteProgress",
           "kind": "component",
-          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). Code starts and ends a run with `startRouteProgress()` and `doneRouteProgress()` (window events, see `events`). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
+          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). Code starts and ends a run with `startRouteProgress()` and `doneRouteProgress()` (window events, see `events`). A run that is never finished ends by itself after `timeout` (10 seconds by default). It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
           "props": [
             {
               "name": "routeKey",
@@ -1169,10 +1183,17 @@
             },
             {
               "name": "trackLinks",
-              "type": "boolean",
+              "type": "boolean | \"query\"",
               "required": false,
               "default": null,
-              "description": "Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with `pending` and the bar shows while either is in progress."
+              "description": "Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. `\"query\"` also counts a link to the same path with another query string (a filter or a tab kept in the URL); a hash-only link never counts. A run started this way ends when `location.href` changes, when `routeKey` changes, or after `timeout` (at most 10 seconds), whichever comes first. Default `true` without `pending` and `false` with it; set it together with `pending` and the bar shows while either is in progress."
+            },
+            {
+              "name": "timeout",
+              "type": "number",
+              "required": false,
+              "default": "ROUTE_PROGRESS_TIMEOUT_MS",
+              "description": "Milliseconds a run started by `pending` or from code may show before it ends by itself, for a navigation nothing ever finishes. Default 10 000. `Infinity` (or any value that is not a finite positive number) never cuts it short: use it for pages that can take long and whose `pending` always settles. A run started only by a link click is still capped at 10 seconds (or `timeout`, when shorter), because nothing else tells the bar it was cancelled."
             },
             {
               "name": "revealDelay",
@@ -1208,7 +1229,7 @@
           "name": "RouteProgressProps",
           "kind": "type",
           "description": "",
-          "definition": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }"
+          "definition": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | \"query\" | undefined; timeout?: number | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }"
         },
         {
           "name": "SHEET_DRAG_THRESHOLD",
@@ -1415,7 +1436,7 @@
           "name": "ShellNavMatch",
           "kind": "type",
           "description": "How an item decides that `currentPath` is its page. - `prefix` (the default): the path equals the item's or sits below it (`/settings/billing` belongs to `/settings`). - `exact`: the path equals the item's, and not the pages below it. - `query`: the path equals the item's and every query parameter in the item's `href` has the same value in `currentPath`, for sections chosen by a query string (`/admin?section=users`). Pass `currentPath` with its query. - a function: return true when `currentPath` (as you passed it, query included) is this item's page. Query strings and hashes are ignored by `prefix` and `exact`. When several items match, a function beats `query`, `query` beats a plain path, and between paths the longest wins, so two items are never current at once.",
-          "definition": "\"prefix\" | \"exact\" | \"query\" | ((currentPath: string, item: ShellNavItem) => boolean)"
+          "definition": "\"prefix\" | \"query\" | \"exact\" | ((currentPath: string, item: ShellNavItem) => boolean)"
         },
         {
           "name": "ShellNavigation",
@@ -1497,10 +1518,29 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Added to the button's own classes."
+            },
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\" | \"lg\" | \"touch\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "Size of the button. A `Button` size (`sm` 32px, `md` 40px, `lg` 48px), or `touch`: the `md` type and padding at the 44px (2.75rem) height of a touch target, to line up with 44px controls beside it. Default `md`."
             }
           ],
           "nativeProps": false
+        },
+        {
+          "name": "ShellPrimaryActionSlotProps",
+          "kind": "type",
+          "description": "",
+          "definition": "{ className?: string | undefined; size?: ShellPrimaryActionSlotSize | undefined; }"
+        },
+        {
+          "name": "ShellPrimaryActionSlotSize",
+          "kind": "type",
+          "description": "`ShellPrimaryActionSlot` `size`: a `Button` size, or `touch` for the medium look at a 44px (2.75rem) target height.",
+          "definition": "\"sm\" | \"md\" | \"lg\" | \"touch\""
         },
         {
           "name": "ShellPrimaryActionState",
@@ -1651,7 +1691,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "The current page is inside this group. While the group is closed its button stands in for it."
+              "description": "The current page is inside this group. While the group is closed its button stands in for it: the active look and `aria-current=\"true\"`."
             },
             {
               "name": "children",
@@ -1855,14 +1895,14 @@
         {
           "name": "startRouteProgress",
           "kind": "function",
-          "description": "Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the 10-second timeout. Does nothing on the server.",
+          "description": "Starts the route progress bar from code, for a navigation no link click or `pending` state describes (a `router.push` after a save, a search-param change). It dispatches `ROUTE_PROGRESS_START_EVENT` on `window`, so it works from anywhere, outside React too. The run ends on `doneRouteProgress()`, a `routeKey` change or the `timeout` (10 seconds by default). Does nothing on the server.",
           "signature": "(): void"
         },
         {
           "name": "useSheetDrag",
           "kind": "hook",
-          "description": "Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role=\"dialog\"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.",
-          "signature": "(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }",
+          "description": "Swipe-down-to-dismiss for a bottom sheet, on pointer events. Spread the returned handlers on the drag zone only (the grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration. The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh. While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role=\"dialog\"]` (or native `dialog`) and `data-dragging` is set on it; the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the keyboard route, so the gesture is never the only way out. A drag may start on a link in the header (a brand link): past a slightly larger slop the gesture becomes a drag, and the click the release would send to the link is cancelled. A tap on the link, without movement, still follows it. Buttons and form fields in the zone keep their own pointer. `threshold` changes when a release dismisses (see `SheetDragThreshold`); the defaults suit a navigation sheet.",
+          "signature": "(onDismiss: () => void, enabled?: boolean, threshold?: SheetDragThreshold | undefined): { onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; onClickCapture(event: MouseEvent<HTMLElement, MouseEvent>): void; onDragStart(event: DragEvent<HTMLElement>): void; }",
           "parameters": [
             {
               "name": "onDismiss",
@@ -1883,7 +1923,7 @@
               "description": ""
             }
           ],
-          "returns": "{ onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; }",
+          "returns": "{ onPointerDown(event: PointerEvent<HTMLElement>): void; onPointerMove(event: PointerEvent<HTMLElement>): void; onPointerUp(event: PointerEvent<HTMLElement>): void; onPointerCancel(event: PointerEvent<HTMLElement>): void; onClickCapture(event: MouseEvent<HTMLElement, MouseEvent>): void; onDragStart(event: DragEvent<HTMLElement>): void; }",
           "returnMembers": [
             {
               "name": "onPointerDown",
@@ -1908,6 +1948,18 @@
               "type": "(event: PointerEvent<HTMLElement>) => void",
               "required": true,
               "description": ""
+            },
+            {
+              "name": "onClickCapture",
+              "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
+              "required": true,
+              "description": "Cancels the click a drag's release sends to a link, before the link (or a router's handler) sees it."
+            },
+            {
+              "name": "onDragStart",
+              "type": "(event: DragEvent<HTMLElement>) => void",
+              "required": true,
+              "description": "A link would start the browser's own drag (of its address) and cancel the pointer: the sheet's drag wins."
             }
           ]
         },
@@ -1951,7 +2003,7 @@
         }
       ],
       "aliases": {
-        "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
+        "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; openMenu?: string | undefined; closeMenu?: string | undefined; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
         "AppShellMainProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes",
         "AppShellPrimaryAction": "{ label: string; description?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellRouteTransitionProps": "{ className?: string | undefined; } & ShellDataAttributes",
@@ -1962,13 +2014,15 @@
         "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }",
         "NavSheetLayerProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "RouteProgressEvents": "{ start: string; done: string; }",
-        "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }",
+        "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | \"query\" | undefined; timeout?: number | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }",
         "SheetDragThreshold": "{ ratio?: number | undefined; min?: number | undefined; max?: number | undefined; flickVelocity?: number | undefined; flickDistance?: number | undefined; }",
         "ShellBadgeTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "ShellFooterProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }",
         "ShellNavGroup": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }",
-        "ShellNavMatch": "\"prefix\" | \"exact\" | \"query\" | ((currentPath: string, item: ShellNavItem) => boolean)",
+        "ShellNavMatch": "\"prefix\" | \"query\" | \"exact\" | ((currentPath: string, item: ShellNavItem) => boolean)",
+        "ShellPrimaryActionSlotProps": "{ className?: string | undefined; size?: ShellPrimaryActionSlotSize | undefined; }",
+        "ShellPrimaryActionSlotSize": "\"sm\" | \"md\" | \"lg\" | \"touch\"",
         "ShellPrimaryActionState": "{ action: AppShellPrimaryAction | undefined; isFallback: boolean; }",
         "ShellState": "{ collapsed: boolean; openGroups: readonly string[] | undefined; }"
       },
@@ -2106,6 +2160,34 @@
           {
             "export": "StaggeredRouteEntrance",
             "id": "components-navigation-appshell--staggered-route-entrance"
+          },
+          {
+            "export": "TallFooterShortWindow",
+            "id": "components-navigation-appshell--tall-footer-short-window"
+          },
+          {
+            "export": "ClosedGroupHoldsCurrentPage",
+            "id": "components-navigation-appshell--closed-group-holds-current-page"
+          },
+          {
+            "export": "TouchSizes",
+            "id": "components-navigation-appshell--touch-sizes"
+          },
+          {
+            "export": "DistinctMenuNames",
+            "id": "components-navigation-appshell--distinct-menu-names"
+          },
+          {
+            "export": "RouteProgressForQueryLinks",
+            "id": "components-navigation-appshell--route-progress-for-query-links"
+          },
+          {
+            "export": "SheetContextStaysInView",
+            "id": "components-navigation-appshell--sheet-context-stays-in-view"
+          },
+          {
+            "export": "SheetTallContext",
+            "id": "components-navigation-appshell--sheet-tall-context"
           }
         ]
       },
@@ -2114,7 +2196,7 @@
         "overview": "The frame of an application. On wide screens a sidebar with groups that open and close and that can shrink to a rail. On\nphones a sticky top bar, a floating bar within thumb reach, and a navigation sheet that rises from the bottom. The\nnavigation is data, so both layouts always agree.",
         "usage": {
           "language": "tsx",
-          "code": "import { AppShell } from \"@lufia/design-system/components/AppShell\";\n\n<AppShell\n  groups={[\n    {\n      key: \"workspace\",\n      label: \"Workspace\",\n      items: [\n        { key: \"home\", label: \"Overview\", href: \"/\", icon: <HomeIcon />, exact: true },\n        { key: \"inbox\", label: \"Inbox\", href: \"/inbox\", icon: <InboxIcon />, badge: 3 },\n      ],\n    },\n    {\n      key: \"insights\",\n      label: \"Insights\",\n      collapsible: true,\n      items: [{ key: \"reports\", label: \"Reports\", href: \"/insights/reports\" }],\n    },\n  ]}\n  currentPath={pathname}\n  labels={{\n    skipToContent: \"Skip to content\",\n    navigation: \"Main navigation\",\n    menu: \"Menu\",\n    floatBar: \"Quick navigation\",\n    collapseSidebar: \"Collapse sidebar\",\n    expandSidebar: \"Expand sidebar\",\n  }}\n  brand={({ collapsed }) => <Logo compact={collapsed} />}\n  footer={<AccountLinks />}\n  search={{ label: \"Search…\", shortcut: \"Ctrl K\", onSelect: openPalette }}\n  primaryAction={{ label: \"New item\", icon: <PlusIcon />, onSelect: createItem }}\n>\n  <PageContent />\n</AppShell>;"
+          "code": "import { AppShell } from \"@lufia/design-system/components/AppShell\";\n\n<AppShell\n  groups={[\n    {\n      key: \"workspace\",\n      label: \"Workspace\",\n      items: [\n        { key: \"home\", label: \"Overview\", href: \"/\", icon: <HomeIcon />, exact: true },\n        { key: \"inbox\", label: \"Inbox\", href: \"/inbox\", icon: <InboxIcon />, badge: 3 },\n      ],\n    },\n    {\n      key: \"insights\",\n      label: \"Insights\",\n      collapsible: true,\n      items: [{ key: \"reports\", label: \"Reports\", href: \"/insights/reports\" }],\n    },\n  ]}\n  currentPath={pathname}\n  labels={{\n    skipToContent: \"Skip to content\",\n    navigation: \"Main navigation\",\n    menu: \"Menu\",\n    openMenu: \"Open menu\",\n    closeMenu: \"Close menu\",\n    floatBar: \"Quick navigation\",\n    collapseSidebar: \"Collapse sidebar\",\n    expandSidebar: \"Expand sidebar\",\n  }}\n  brand={({ collapsed }) => <Logo compact={collapsed} />}\n  footer={<AccountLinks />}\n  search={{ label: \"Search…\", shortcut: \"Ctrl K\", onSelect: openPalette }}\n  primaryAction={{ label: \"New item\", icon: <PlusIcon />, onSelect: createItem }}\n>\n  <PageContent />\n</AppShell>;"
         },
         "whenToUse": [
           "A signed-in application with a handful of top-level areas, on both phones and desktops."
@@ -4626,6 +4708,13 @@
           "description": "A search-and-run overlay opened with Ctrl+K or Cmd+K. It follows the WAI-ARIA APG \"Combobox with listbox popup\" pattern inside a modal dialog: the text field keeps focus, Up and Down move a highlighted option that the field points at with `aria-activedescendant`, and Enter runs it. Escape, a tap on the dimmed page or the close button closes it, and focus returns to where it was.",
           "props": [
             {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Added to the outermost layer, the fixed root that holds the backdrop and the dialog. The palette is portalled out of the app's tree, so a palette or theme an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here (`data-*` attributes go to the same layer; `data-lufia-theme` and `data-lufia-mode` work too)."
+            },
+            {
               "name": "open",
               "type": "boolean",
               "required": true,
@@ -4707,7 +4796,14 @@
               "type": "ReactNode | ((state: { query: string; }) => ReactNode)",
               "required": false,
               "default": null,
-              "description": "Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows and Enter do nothing, and the results are not announced. The field keeps focus."
+              "description": "Replaces the results (and the empty message and hint) with your own content, such as an answer to the query. A function gets the current query. While it is set the field is not a listbox: arrows do nothing, Enter calls `onSubmit`, and the results are not announced. The field keeps focus."
+            },
+            {
+              "name": "onSubmit",
+              "type": "(query: string) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the query when Enter is pressed while `bodyOverride` is shown (ask the question again, send it to an assistant). The palette stays open. Not called while the commands are listed: there Enter runs the highlighted one."
             },
             {
               "name": "onEscape",
@@ -4741,6 +4837,12 @@
           "nativeProps": false
         },
         {
+          "name": "CommandPaletteDataAttributes",
+          "kind": "type",
+          "description": "`data-*` attributes for the palette's outermost layer (a scoped theme, an analytics hook, a test id).",
+          "definition": "{ [name: `data-${string}`]: string | number | boolean | undefined; }"
+        },
+        {
           "name": "CommandPaletteLabels",
           "kind": "type",
           "description": "",
@@ -4762,6 +4864,7 @@
       "aliases": {
         "CommandItem": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; tone?: CommandItemTone | undefined; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }",
         "CommandItemTone": "\"default\" | \"accent\" | \"danger\"",
+        "CommandPaletteDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "CommandPaletteLabels": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; loading?: string | undefined; }"
       },
       "story": {
@@ -4814,6 +4917,14 @@
           {
             "export": "IconTones",
             "id": "components-overlays-commandpalette--icon-tones"
+          },
+          {
+            "export": "SubmitWhileAnswering",
+            "id": "components-overlays-commandpalette--submit-while-answering"
+          },
+          {
+            "export": "ScopedLayer",
+            "id": "components-overlays-commandpalette--scoped-layer"
           }
         ]
       },
@@ -4852,7 +4963,7 @@
           },
           {
             "keys": "Enter",
-            "action": "Runs the highlighted command"
+            "action": "Runs the highlighted command; with `bodyOverride` shown, calls `onSubmit(query)`"
           },
           {
             "keys": "Escape",
@@ -10949,24 +11060,24 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\"",
               "required": false,
               "default": "\"primary\"",
-              "description": "Look of the underlying `Button`. Default `\"primary\"`."
+              "description": "Look of the underlying `Button`. Default `\"primary\"`. `\"unstyled\"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Size of the underlying `Button`. Ignored with `variant=\"unstyled\"`."
             },
             {
               "name": "fullWidth",
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Stretches to the full width of its container. Ignored with `variant=\"unstyled\"`."
             },
             {
               "name": "ref",
@@ -10983,10 +11094,17 @@
           "kind": "type",
           "description": "",
           "definition": null
+        },
+        {
+          "name": "PendingSubmitVariant",
+          "kind": "type",
+          "description": "A `Button` variant, or `unstyled` for a plain button that takes its whole look from `className`.",
+          "definition": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
         }
       ],
       "aliases": {
-        "PendingProgress": "readonly (readonly [afterMs: number, label: string])[]"
+        "PendingProgress": "readonly (readonly [afterMs: number, label: string])[]",
+        "PendingSubmitVariant": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
       },
       "story": {
         "docsId": "components-forms-pendingsubmit--docs",
@@ -11014,6 +11132,10 @@
           {
             "export": "Disabled",
             "id": "components-forms-pendingsubmit--disabled"
+          },
+          {
+            "export": "Unstyled",
+            "id": "components-forms-pendingsubmit--unstyled"
           },
           {
             "export": "InAForm",
@@ -11070,6 +11192,8 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-color-focus-ring",
         "--lufia-space-2"
       ]
     },

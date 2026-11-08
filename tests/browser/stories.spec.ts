@@ -1094,3 +1094,262 @@ test.describe("skeleton blocks", () => {
     });
   }
 });
+
+test.describe("shell follow-ups", () => {
+  /**
+   * Simulates a stylesheet order the shell does not control (a dev server's chunk order): the existing sheets are put in
+   * reverse order, then a sheet that loads last gives every class of the element its component's own `display`, at one
+   * class of specificity. The shell's hiding rules must still win.
+   */
+  async function loadCssInReverseThenLate(page: Page, selector: string, display: string) {
+    await page.evaluate(
+      ({ selector, display }) => {
+        const sheets = Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]'));
+        for (const sheet of sheets.reverse()) document.head.append(sheet);
+        const element = document.querySelector(selector)!;
+        const late = document.createElement("style");
+        late.textContent = Array.from(element.classList)
+          .map((name) => `.${CSS.escape(name)} { display: ${display}; }`)
+          .join("\n");
+        document.head.append(late);
+      },
+      { selector, display },
+    );
+  }
+
+  test("the floating bar stays hidden on wide screens whatever the stylesheet order", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--desktop");
+    const bar = page.locator('[role="group"][aria-label="Quick navigation"]');
+    await expect(bar).toBeHidden();
+    await loadCssInReverseThenLate(page, '[role="group"][aria-label="Quick navigation"]', "flex");
+    await expect(bar).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeVisible();
+  });
+
+  test("the primary action slot stays hidden on phones whatever the stylesheet order", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--touch-sizes");
+    const slot = page.locator("main [data-touch]");
+    await expect(slot).toHaveCount(1);
+    await expect(slot).toBeHidden();
+    await loadCssInReverseThenLate(page, "main [data-touch]", "inline-flex");
+    await expect(slot).toBeHidden();
+    await expect(page.getByRole("group", { name: "Quick navigation" })).toBeVisible();
+  });
+
+  test("the touch-sized slot is 44px tall and items take the height token", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--touch-sizes");
+    const slot = page.getByRole("main").getByRole("button", { name: "New item" });
+    expect((await slot.boundingBox())!.height).toBeCloseTo(44, 0);
+    const item = page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name: "People" });
+    expect((await item.boundingBox())!.height).toBeCloseTo(48, 0);
+  });
+
+  test("at 1280 by 480 a tall footer scrolls on its own and the navigation keeps its height", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 480 });
+    await openStory(page, "components-navigation-appshell--tall-footer-short-window");
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    const footer = page.getByRole("group", { name: "Account and help" }).first();
+    const sizes = await footer.evaluate((element) => {
+      const foot = element.parentElement!;
+      const sidebar = foot.parentElement!;
+      return {
+        foot: foot.getBoundingClientRect().height,
+        scrolls: foot.scrollHeight > foot.clientHeight,
+        sidebar: sidebar.getBoundingClientRect().height,
+      };
+    });
+    expect(sizes.scrolls).toBe(true);
+    expect(sizes.foot).toBeLessThanOrEqual(sizes.sidebar * 0.4 + 1);
+    expect((await nav.boundingBox())!.height).toBeGreaterThan(120);
+    await expect(nav.getByRole("link", { name: "Overview" })).toBeInViewport();
+    // The last footer link is reachable by scrolling the footer, and focus scrolls it into view.
+    const signOut = page.getByRole("button", { name: "Sign out" });
+    await signOut.focus();
+    await expect(signOut).toBeInViewport();
+  });
+
+  test("a closed group holding the current page stands in for it", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--closed-group-holds-current-page");
+    const group = page.getByRole("button", { name: "Insights" });
+    await expect(group).toHaveAttribute("aria-expanded", "false");
+    await expect(group).toHaveAttribute("aria-current", "true");
+    await expect(group).toHaveAttribute("data-active");
+    await group.click();
+    await expect(group).not.toHaveAttribute("aria-current");
+    await expect(page.getByRole("link", { name: "Trends" })).toHaveAttribute("aria-current", "page");
+  });
+
+  test("the menu button and the sheet's close button take their own names", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--distinct-menu-names");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+    await sheet.getByRole("button", { name: "Close menu" }).click();
+    await expect(sheet).toHaveCount(0);
+  });
+
+  test("a link that changes only the query starts the bar, and the address changing ends it", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--route-progress-for-query-links");
+    const bar = page.locator("[data-route-progress]");
+    await page.getByRole("link", { name: "Page 2" }).click();
+    await expect(bar).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Results, page 2" })).toBeVisible({ timeout: 5_000 });
+    await expect(bar).toHaveCount(0);
+  });
+
+  test("a drag that starts on the header's brand link dismisses the sheet; a tap follows the link", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell-navsheet--drag-from-brand-link");
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+    await sheet.evaluate((element) =>
+      Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+    );
+    const brand = sheet.getByRole("link", { name: "Acme Cloud" });
+    const box = (await brand.boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    for (let step = 1; step <= 10; step += 1) {
+      await page.mouse.move(x, y + 26 * step);
+      await page.waitForTimeout(30);
+    }
+    await page.waitForTimeout(120);
+    await page.mouse.up();
+    await expect(sheet).toHaveCount(0);
+    await expect(page.locator("[data-followed]")).toHaveAttribute("data-followed", "0");
+
+    await page.getByRole("button", { name: "Open the menu" }).click();
+    await expect(sheet).toBeVisible();
+    await sheet.getByRole("link", { name: "Acme Cloud" }).click();
+    await expect(page.locator("[data-followed]")).toHaveAttribute("data-followed", "1");
+    await expect(sheet).toBeVisible();
+  });
+
+  test("the palette returns focus to the field after a keepOpen pick, and Enter submits the answer's query", async ({
+    page,
+  }) => {
+    await openStory(page, "components-overlays-commandpalette--submit-while-answering");
+    const field = page.getByRole("combobox", { name: "Search or run a command" });
+    await page.getByRole("option", { name: /Ask a question/ }).click();
+    await expect(field).toBeFocused();
+    await page.keyboard.type("what changed");
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Asked: what changed")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Search or run a command" })).toBeVisible();
+  });
+
+  test("the palette carries className and data-* on its portalled layer", async ({ page }) => {
+    await openStory(page, "components-overlays-commandpalette--scoped-layer");
+    const layer = page.locator('[data-lufia-part="command-palette-layer"]');
+    await expect(layer).toHaveClass(/app-palette/);
+    await expect(layer).toHaveAttribute("data-tour", "palette");
+    await expect(layer).toHaveAttribute("data-lufia-mode", "dark");
+  });
+
+  test("releasing the scroll lock restores the scroll at once under scroll-behavior: smooth", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "hooks-usebodyscrolllock--document-scroll");
+    await page.evaluate(() => {
+      const spacer = document.createElement("div");
+      spacer.style.blockSize = "4000px";
+      document.body.append(spacer);
+      document.documentElement.style.scrollBehavior = "smooth";
+      window.scrollTo({ top: 600, behavior: "instant" });
+    });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
+    // Dispatched clicks: a real click would scroll the button into view first.
+    await page.getByRole("button", { name: "Open overlay" }).dispatchEvent("click");
+    await expect(page.getByRole("dialog", { name: "Demo overlay" })).toBeVisible();
+    await page.evaluate(() => {
+      const seen: number[] = [];
+      (window as unknown as { seen: number[] }).seen = seen;
+      window.addEventListener("scroll", () => seen.push(window.scrollY));
+    });
+    await page.getByRole("button", { name: "Close" }).dispatchEvent("click");
+    await expect(page.getByRole("dialog", { name: "Demo overlay" })).toHaveCount(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(600);
+    await page.waitForTimeout(300);
+    const seen = await page.evaluate(() => (window as unknown as { seen: number[] }).seen);
+    // Instant: the position is back before the next frame, with no intermediate positions on the way.
+    expect(seen.filter((y) => y !== 600)).toEqual([]);
+  });
+});
+
+test.describe("nav sheet context", () => {
+  for (const size of [
+    { width: 390, height: 844 },
+    { width: 390, height: 600 },
+    { width: 320, height: 568 },
+    { width: 844, height: 390 },
+  ]) {
+    test(`stays in view while the body scrolls, apart from the first item (${size.width}x${size.height})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await openStory(page, "components-navigation-appshell--sheet-context-stays-in-view");
+      const sheet = page.getByRole("dialog", { name: "Menu" });
+      await expect(sheet).toBeVisible();
+      await sheet.evaluate((element) =>
+        Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+      );
+      const picker = sheet.locator("[data-demo-context] button").first();
+      const firstItem = sheet.getByRole("navigation", { name: "Main navigation" }).getByRole("link").first();
+      const body = sheet.locator("[data-sheet-body]");
+      // The sheet scrolls the current item into view; measure the gap with the list at its top.
+      await body.evaluate((element) => element.scrollTo({ top: 0, behavior: "instant" }));
+      const pickerBox = (await picker.boundingBox())!;
+      const itemBox = (await firstItem.boundingBox())!;
+      expect(itemBox.y - (pickerBox.y + pickerBox.height)).toBeGreaterThanOrEqual(8);
+
+      // A usable list: more than one item tall, even held sideways.
+      expect((await body.boundingBox())!.height).toBeGreaterThan(64);
+      await body.evaluate((element) => element.scrollTo({ top: element.scrollHeight, behavior: "instant" }));
+      await expect.poll(() => body.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+      await expect(picker).toBeInViewport({ ratio: 1 });
+      expect((await picker.boundingBox())!.y).toBeCloseTo(pickerBox.y, 0);
+      // Nothing is pushed out of the sheet: the footer stays whole.
+      await expect(sheet.getByRole("button", { name: "Sign out" })).toBeInViewport({ ratio: 1 });
+    });
+  }
+
+  test("a tall context is capped and the navigation keeps a usable height at 390x600", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 600 });
+    await openStory(page, "components-navigation-appshell--sheet-tall-context");
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+    const region = sheet.locator('[data-lufia-part="nav-sheet-context"]');
+    const sizes = await region.evaluate((element) => ({
+      height: element.getBoundingClientRect().height,
+      scrolls: element.scrollHeight > element.clientHeight,
+    }));
+    expect(sizes.height).toBeLessThanOrEqual(600 * 0.3 + 1);
+    expect(sizes.scrolls).toBe(true);
+    expect((await sheet.locator("[data-sheet-body]").boundingBox())!.height).toBeGreaterThanOrEqual(120);
+  });
+
+  test("the header stays a drag zone, and the context sits outside it", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--sheet-context-stays-in-view");
+    const zone = page.getByRole("dialog", { name: "Menu" }).locator("[data-swipe]");
+    await expect(zone).toHaveCSS("touch-action", "none");
+    await expect(zone.locator('[data-lufia-part="nav-sheet-context"]')).toHaveCount(0);
+  });
+});

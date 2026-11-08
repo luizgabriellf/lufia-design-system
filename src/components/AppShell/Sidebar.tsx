@@ -104,7 +104,10 @@ export type SidebarGroupProps = Omit<HTMLAttributes<HTMLDivElement>, "children">
   /** Initial open state when uncontrolled. Default `true`. */
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  /** The current page is inside this group. While the group is closed its button stands in for it. */
+  /**
+   * The current page is inside this group. While the group is closed its button stands in for it: the active look and
+   * `aria-current="true"`.
+   */
   current?: boolean;
   /** `SidebarItem`s. */
   children: ReactNode;
@@ -152,6 +155,8 @@ export function SidebarGroup({
         className={`${styles.item} ${styles.disclosure}`}
         aria-expanded={open}
         aria-controls={`${id}-items`}
+        // The closed group hides the current page, so its button stands in for it: the active look and `aria-current`.
+        aria-current={stands ? "true" : undefined}
         data-active={stands || undefined}
         onClick={() => {
           if (openProp === undefined) setInner(!open);

@@ -51,8 +51,14 @@
 }
 
 .topBar,
-.float,
 .floatScrim {
+  display: none;
+}
+
+/* Raised above a single class on purpose: `MobileFloatBar` and `Button` set their own `display` with one class, and a
+   stylesheet that loads after this one (a dev server's chunk order, an app's CSS) would otherwise show them where the shell
+   hides them. A descendant selector of the shell wins whatever the order. */
+.shell .float {
   display: none;
 }
 
@@ -127,6 +133,11 @@
   flex: none;
 }
 
+/* `size="touch"`: the medium button at the 44px height of a touch target. */
+.primarySlot[data-touch] {
+  min-block-size: 2.75rem;
+}
+
 .sheetNav {
   display: flex;
   flex-direction: column;
@@ -167,7 +178,7 @@
     margin-inline-start: auto;
   }
 
-  .float {
+  .shell .float {
     display: flex;
   }
 
@@ -183,7 +194,7 @@
     pointer-events: none;
   }
 
-  .primarySlot {
+  .shell .primarySlot {
     display: none;
   }
 

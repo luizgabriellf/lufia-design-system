@@ -24,6 +24,8 @@ export {
   useShellPrimaryAction,
   useShellPrimaryActionState,
   type AppShellPrimaryAction,
+  type ShellPrimaryActionSlotProps,
+  type ShellPrimaryActionSlotSize,
   type ShellPrimaryActionState,
 } from "./primaryAction";
 export {

@@ -54,7 +54,15 @@ modal). The `AppShell` `search` entry is the natural trigger: `search={{ label, 
 The default matcher (`filterCommands`, exported) requires every word of the query to appear in the label, description, group
 or keywords, ignoring case and accents. Pass `filter` to replace it. For a server search, pass `filter={() => true}`, listen
 to `onQueryChange` and feed the answer back through `items`. A command with `keepOpen` leaves the palette open after it
-runs, for commands that show their answer inside.
+runs, for commands that show their answer inside. Picked with the pointer, it gives focus back to the field, so typing
+carries on (unless the command moved focus on purpose).
+
+#### Scoping the portalled palette
+
+The palette is portalled to `document.body`, out of the app's tree, so a palette or theme an app scopes to a class or a
+`data-*` attribute on its own wrapper does not reach it. `className` and any `data-*` props go on the palette's outermost
+layer (`data-lufia-part="command-palette-layer"`, the fixed root of the backdrop and the dialog): repeat the scope there,
+`<CommandPalette className="app-dark" data-tour="palette" />`. `data-lufia-theme` and `data-lufia-mode` work too.
 
 </Section>
 
@@ -69,7 +77,8 @@ runs, for commands that show their answer inside.
 
 - `groupOrder` fixes the order of the section headings; other groups follow in order of first use.
 - `bodyOverride` replaces the results with your own content (an answer to the query). While it is set the field is not a
-  listbox and the arrow keys and Enter do nothing. A function gets `{ query }`.
+  listbox and the arrow keys do nothing. A function gets `{ query }`. Enter calls `onSubmit(query)` when you pass it (ask
+  the question, send it to an assistant); the palette stays open.
 - `onEscape` runs before Escape closes the palette. Return `true` after leaving a sub-mode (clearing the answer) and the
   palette stays open; the next Escape closes it.
 - `escapeClearsQuery` makes Escape two-step on its own: with text in the field the first Escape clears it (and calls
@@ -110,7 +119,7 @@ It follows the WAI-ARIA APG pattern for a combobox with a listbox popup, inside 
 | Ctrl/Cmd + K | Opens the palette; closes it when open (`shortcut={false}` turns it off)                  |
 | Type         | Filters; the first match is highlighted                                                   |
 | Down / Up    | Moves the highlight, wrapping at the ends                                                 |
-| Enter        | Runs the highlighted command                                                              |
+| Enter        | Runs the highlighted command; with `bodyOverride` shown, calls `onSubmit(query)`          |
 | Escape       | Closes; focus returns to where it was (with `escapeClearsQuery`, first clears typed text) |
 | Tab          | Cycles between the field and the close button                                             |
 

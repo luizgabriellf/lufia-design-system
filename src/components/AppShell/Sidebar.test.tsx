@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -71,6 +72,32 @@ describe("Sidebar", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(reports.closest("[inert]")).toBeNull();
     expect(toggle).toHaveAttribute("aria-controls", expect.stringContaining("-items"));
+  });
+
+  it("lets a closed group that holds the current page stand in for it, with aria-current and the active look", async () => {
+    const user = userEvent.setup();
+    render(
+      <Sidebar label="Main">
+        <SidebarGroup label="Modules" collapsible defaultOpen={false} current>
+          <SidebarItem label="Reports" href="/reports" active />
+        </SidebarGroup>
+      </Sidebar>,
+    );
+    const toggle = screen.getByRole("button", { name: "Modules" });
+    expect(toggle).toHaveAttribute("aria-current", "true");
+    expect(toggle).toHaveAttribute("data-active");
+    // Open, the page's own item carries the state again.
+    await user.click(toggle);
+    expect(toggle).not.toHaveAttribute("aria-current");
+    expect(toggle).not.toHaveAttribute("data-active");
+  });
+
+  it("caps the footer so the navigation keeps its height, and lets the item height be themed", () => {
+    const css = readFileSync("src/components/AppShell/Sidebar.module.css", "utf8");
+    expect(css).toMatch(
+      /\.foot \{[^}]*max-block-size: var\(--lufia-shell-footer-max-block-size, 40%\);[^}]*overflow: hidden auto;/,
+    );
+    expect(css).toMatch(/min-block-size: var\(--lufia-shell-item-min-block-size, 2\.75rem\);/);
   });
 
   it("reports the rail button and names it for the state it will move to", async () => {
