@@ -74,6 +74,8 @@ runs, for commands that show their answer inside.
   palette stays open; the next Escape closes it.
 - `loading` marks the results `aria-busy` and holds the empty message back until a server search answers. Pair it with
   `onQueryChange` and `filter={() => true}`.
+- `labels.empty` may return `null`, `undefined`, `false` or `""`: no empty row is rendered, so no blank gap is left when a
+  `notice` already explains the state.
 
 <Canvas of={Stories.AnswerReplacesResults} />
 <Canvas of={Stories.ServerSideSearch} />

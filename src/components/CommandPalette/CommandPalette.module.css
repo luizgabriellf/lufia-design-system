@@ -127,6 +127,11 @@
   overscroll-behavior: contain;
 }
 
+/* Nothing to list (the consumer's notice explains the state): no padding, so no blank gap under the pinned area. */
+.body[data-empty] {
+  padding: 0;
+}
+
 .group + .group {
   margin-block-start: var(--lufia-space-2);
   padding-block-start: var(--lufia-space-2);
