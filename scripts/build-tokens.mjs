@@ -31,6 +31,7 @@ const FORCED = {
   "color-bg-surface-raised": "Canvas",
   "color-bg-surface-solid": "Canvas",
   "color-bg-field": "Field",
+  "color-bg-field-autofill": "Field",
   "color-text-default": "CanvasText",
   "color-text-muted": "CanvasText",
   "color-text-subtle": "CanvasText",

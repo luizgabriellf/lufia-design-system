@@ -78,8 +78,8 @@ export function Select({
           </option>
         ) : null}
         {options?.map(renderOption)}
-        {groups?.map((group) => (
-          <optgroup key={group.label} label={group.label} disabled={group.disabled}>
+        {groups?.map((group, index) => (
+          <optgroup key={`${index}:${group.label}`} label={group.label} disabled={group.disabled}>
             {group.options.map(renderOption)}
           </optgroup>
         ))}

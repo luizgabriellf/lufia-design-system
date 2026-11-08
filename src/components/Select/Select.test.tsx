@@ -33,6 +33,22 @@ describe("Select", () => {
     expect(screen.getByRole("combobox")).toHaveValue("lisbon");
   });
 
+  it("accepts two groups with the same label without a key warning", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    render(
+      <Select
+        aria-label="City"
+        groups={[
+          { label: "Same", options: [{ value: "a", label: "A" }] },
+          { label: "Same", options: [{ value: "b", label: "B" }] },
+        ]}
+      />,
+    );
+    expect(screen.getAllByRole("group")).toHaveLength(2);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
   it("has no axe violations with groups", async () => {
     const { container } = render(
       <Select
