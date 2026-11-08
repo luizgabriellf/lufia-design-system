@@ -76,6 +76,9 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 ## Components: Feedback
 
 - [EmptyState](https://luizgabriellf.github.io/lufia-design-system/ai/components/EmptyState.md): What to show when a list or panel has nothing yet, with the one next step. (beta)
+- [SkeletonCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/SkeletonCard.md): A loading card: title bar, text lines and an optional block in the card's padding. (beta)
+- [SkeletonPageHeader](https://luizgabriellf.github.io/lufia-design-system/ai/components/SkeletonPageHeader.md): The top of a loading page, on PageHeader's own layout and breakpoints. (beta)
+- [SkeletonTable](https://luizgabriellf.github.io/lufia-design-system/ai/components/SkeletonTable.md): Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths. (beta)
 - [StatusIcon](https://luizgabriellf.github.io/lufia-design-system/ai/components/StatusIcon.md): One family of status markers, each tone with its own shape so it reads without colour. (beta)
 - [SuccessCheck](https://luizgabriellf.github.io/lufia-design-system/ai/components/SuccessCheck.md): An animated check mark for a completed action. (beta)
 - [Toast](https://luizgabriellf.github.io/lufia-design-system/ai/components/Toast.md): A transient message that confirms an action without taking focus. (beta)

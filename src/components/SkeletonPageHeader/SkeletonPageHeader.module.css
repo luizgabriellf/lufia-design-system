@@ -1,0 +1,25 @@
+/* Layout, spacing and breakpoints come from PageHeader's own classes; this file only shapes the bars. Each bar sits in the
+   line box of the text it stands for. */
+.line > span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.actions {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* The size and radius of a medium Button. */
+.actions > span[data-variant] {
+  --skeleton-width: 6.5rem;
+  --skeleton-height: 2.5rem;
+
+  border-radius: var(--lufia-radius-control);
+}
+
+@media (pointer: coarse) {
+  .actions > span[data-variant] {
+    --skeleton-height: 2.75rem;
+  }
+}

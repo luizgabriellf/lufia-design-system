@@ -1992,6 +1992,10 @@
             "id": "components-navigation-appshell--phone"
           },
           {
+            "export": "PhoneShortPage",
+            "id": "components-navigation-appshell--phone-short-page"
+          },
+          {
             "export": "SmallPhone",
             "id": "components-navigation-appshell--small-phone"
           },
@@ -12681,7 +12685,386 @@
         "--lufia-color-border-subtle",
         "--lufia-radius-card",
         "--lufia-radius-full",
-        "--lufia-radius-sm"
+        "--lufia-radius-sm",
+        "--lufia-skeleton-bg",
+        "--lufia-skeleton-shine"
+      ]
+    },
+    {
+      "name": "SkeletonCard",
+      "category": "Feedback",
+      "summary": "A loading card: title bar, text lines and an optional block in the card's padding.",
+      "status": "beta",
+      "source": "src/components/SkeletonCard",
+      "entry": {
+        "subpath": "@lufia/design-system/components/SkeletonCard",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "SkeletonCard",
+          "kind": "component",
+          "description": "A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the loaded card takes exactly its place. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once, for example with a labelled `Skeleton`.",
+          "props": [
+            {
+              "name": "padding",
+              "type": "\"none\" | \"sm\" | \"md\" | \"lg\"",
+              "required": false,
+              "default": null,
+              "description": "Inner spacing of every slot. Defaults to `md`."
+            },
+            {
+              "name": "header",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Draws a title bar on the line box of the card's title, spaced from the body like the card's header. Default `true`."
+            },
+            {
+              "name": "lines",
+              "type": "number",
+              "required": false,
+              "default": "3",
+              "description": "Number of body text lines. The last one is shorter, like the end of a paragraph. Default 3."
+            },
+            {
+              "name": "block",
+              "type": "string | boolean",
+              "required": false,
+              "default": "false",
+              "description": "A block under the lines, for a chart or a media area: `true` for 6rem, or a CSS height. Default `false`."
+            },
+            {
+              "name": "still",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Turn the shimmer off. It also stops under `prefers-reduced-motion`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SkeletonCardProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"footer\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
+        }
+      ],
+      "aliases": {
+        "SkeletonCardProps": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"footer\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
+      },
+      "story": {
+        "docsId": "components-feedback-skeletoncard--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-skeletoncard--default"
+          },
+          {
+            "export": "WithBlock",
+            "id": "components-feedback-skeletoncard--with-block"
+          },
+          {
+            "export": "BlockOnly",
+            "id": "components-feedback-skeletoncard--block-only"
+          },
+          {
+            "export": "BesideLoaded",
+            "id": "components-feedback-skeletoncard--beside-loaded"
+          },
+          {
+            "export": "Paddings",
+            "id": "components-feedback-skeletoncard--paddings"
+          },
+          {
+            "export": "Widths",
+            "id": "components-feedback-skeletoncard--widths"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-skeletoncard--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/SkeletonCard/SkeletonCard.mdx",
+        "overview": "A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the\nloaded card takes exactly its place.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { SkeletonCard } from \"@lufia/design-system/components/SkeletonCard\";\n\n<div aria-busy={loading}>{loading ? <SkeletonCard lines={2} block /> : <StorageCard />}</div>;"
+        },
+        "whenToUse": [
+          "A grid or a stack of cards whose content is loading."
+        ],
+        "whenNotToUse": [
+          "A key figure: `StatTile` has its own `loading` state that keeps the tile's exact height.",
+          "A detail section with a known layout of its own: compose `Skeleton` inside that section."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The card is decorative (`aria-hidden`) and has no heading. Name the loading state once for the region, for example with a `Skeleton` that has a `label`, and mark the region `aria-busy=\"true\"`.",
+          "The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-font-family-display",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-md"
+      ]
+    },
+    {
+      "name": "SkeletonPageHeader",
+      "category": "Feedback",
+      "summary": "The top of a loading page, on PageHeader's own layout and breakpoints.",
+      "status": "beta",
+      "source": "src/components/SkeletonPageHeader",
+      "entry": {
+        "subpath": "@lufia/design-system/components/SkeletonPageHeader",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "SkeletonPageHeader",
+          "kind": "component",
+          "description": "The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description lines take the same line boxes, the title grows at the same breakpoint and the actions wrap under the text the same way. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once.",
+          "props": [
+            {
+              "name": "eyebrow",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Draws the eyebrow line above the title. Default `false`."
+            },
+            {
+              "name": "description",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Draws the description line under the title. Default `true`."
+            },
+            {
+              "name": "actions",
+              "type": "number",
+              "required": false,
+              "default": "0",
+              "description": "Number of action placeholders, each the size of a medium `Button`. Default 0."
+            },
+            {
+              "name": "still",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Turn the shimmer off. It also stops under `prefers-reduced-motion`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SkeletonPageHeaderProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { eyebrow?: boolean | undefined; description?: boolean | undefined; actions?: number | undefined; still?: boolean | undefined; }"
+        }
+      ],
+      "aliases": {
+        "SkeletonPageHeaderProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { eyebrow?: boolean | undefined; description?: boolean | undefined; actions?: number | undefined; still?: boolean | undefined; }"
+      },
+      "story": {
+        "docsId": "components-feedback-skeletonpageheader--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-skeletonpageheader--default"
+          },
+          {
+            "export": "TitleOnly",
+            "id": "components-feedback-skeletonpageheader--title-only"
+          },
+          {
+            "export": "TwoActions",
+            "id": "components-feedback-skeletonpageheader--two-actions"
+          },
+          {
+            "export": "AboveLoaded",
+            "id": "components-feedback-skeletonpageheader--above-loaded"
+          },
+          {
+            "export": "Widths",
+            "id": "components-feedback-skeletonpageheader--widths"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-skeletonpageheader--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/SkeletonPageHeader/SkeletonPageHeader.mdx",
+        "overview": "The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description take\nthe same line boxes, the title grows at the same breakpoint (48rem) and the actions wrap under the text the same way.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { SkeletonPageHeader } from \"@lufia/design-system/components/SkeletonPageHeader\";\n\n{\n  loading ? <SkeletonPageHeader eyebrow actions={1} /> : <PageHeader title={title} actions={actions} />;\n}"
+        },
+        "whenToUse": [
+          "A page whose title comes from data that is still loading."
+        ],
+        "whenNotToUse": [
+          "A title you already know: render the real `PageHeader` and load only the rest."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "Decorative (`aria-hidden`), and a plain `div`: no heading and no landmark until the real `PageHeader` arrives. Name the loading state once for the page, and mark the region `aria-busy=\"true\"`.",
+          "The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-radius-control"
+      ]
+    },
+    {
+      "name": "SkeletonTable",
+      "category": "Feedback",
+      "summary": "Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths.",
+      "status": "beta",
+      "source": "src/components/SkeletonTable",
+      "entry": {
+        "subpath": "@lufia/design-system/components/SkeletonTable",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "SkeletonTable",
+          "kind": "component",
+          "description": "Placeholder rows for a table or a list that is loading. The columns share the width equally and every bar is a share of its own cell, so nothing overflows at any width; below `stackBelow` each row stacks its cells. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once, for example with a labelled `Skeleton`.",
+          "props": [
+            {
+              "name": "rows",
+              "type": "number",
+              "required": false,
+              "default": "5",
+              "description": "Number of placeholder rows. Give the page size of the table that will replace it, so nothing jumps. Default 5."
+            },
+            {
+              "name": "columns",
+              "type": "number",
+              "required": false,
+              "default": "3",
+              "description": "Number of columns in each row. Default 3."
+            },
+            {
+              "name": "stackBelow",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "CSS length. Below this width of the table each row stacks its cells in one column, like a table that turns into a list on phones. Default `45rem`."
+            },
+            {
+              "name": "still",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Turn the shimmer off. It also stops under `prefers-reduced-motion`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SkeletonTableProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { rows?: number | undefined; columns?: number | undefined; stackBelow?: string | undefined; still?: boolean | undefined; }"
+        }
+      ],
+      "aliases": {
+        "SkeletonTableProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { rows?: number | undefined; columns?: number | undefined; stackBelow?: string | undefined; still?: boolean | undefined; }"
+      },
+      "story": {
+        "docsId": "components-feedback-skeletontable--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-skeletontable--default"
+          },
+          {
+            "export": "InACard",
+            "id": "components-feedback-skeletontable--in-a-card"
+          },
+          {
+            "export": "ManyColumns",
+            "id": "components-feedback-skeletontable--many-columns"
+          },
+          {
+            "export": "Widths",
+            "id": "components-feedback-skeletontable--widths"
+          },
+          {
+            "export": "Still",
+            "id": "components-feedback-skeletontable--still"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-skeletontable--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/SkeletonTable/SkeletonTable.mdx",
+        "overview": "Placeholder rows for a table or a list that is loading. The columns share the width equally, every bar is a share of its\nown cell, and below `stackBelow` (45rem by default) each row stacks its cells in one column, so nothing overflows at any\nwidth.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { SkeletonTable } from \"@lufia/design-system/components/SkeletonTable\";\nimport { VisuallyHidden } from \"@lufia/design-system/components/VisuallyHidden\";\n\n<div aria-busy={loading}>\n  {loading ? (\n    <>\n      <VisuallyHidden role=\"status\">Loading invoices</VisuallyHidden>\n      <SkeletonTable rows={10} columns={4} />\n    </>\n  ) : (\n    <InvoiceTable />\n  )}\n</div>;"
+        },
+        "whenToUse": [
+          "A table or a list whose columns are known while its rows load."
+        ],
+        "whenNotToUse": [
+          "A table that loads in under about 300 ms: show nothing.",
+          "An empty result: use [EmptyState](?path=/docs/components-feedback-emptystate--docs)."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The whole table is decorative (`aria-hidden`), whatever props it gets. Name the loading state once for the region, for example with a `VisuallyHidden` status or a `Skeleton` that has a `label`, and mark the region `aria-busy=\"true\"`.",
+          "The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.",
+          "In `forced-colors` mode the bars become outlined boxes."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-border-subtle",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-size-sm",
+        "--lufia-skeleton-bg",
+        "--lufia-skeleton-shine",
+        "--lufia-skeleton-table-gap",
+        "--lufia-skeleton-table-row-padding"
       ]
     },
     {

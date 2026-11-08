@@ -1,0 +1,96 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./SkeletonTable.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="SkeletonTable"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Placeholder rows for a table or a list that is loading. The columns share the width equally, every bar is a share of its
+own cell, and below `stackBelow` (45rem by default) each row stacks its cells in one column, so nothing overflows at any
+width.
+
+<Canvas of={Stories.InACard} />
+
+### Usage
+
+```tsx
+import { SkeletonTable } from "@lufia/design-system/components/SkeletonTable";
+import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
+
+<div aria-busy={loading}>
+  {loading ? (
+    <>
+      <VisuallyHidden role="status">Loading invoices</VisuallyHidden>
+      <SkeletonTable rows={10} columns={4} />
+    </>
+  ) : (
+    <InvoiceTable />
+  )}
+</div>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use;
+the package has none.
+
+### Layout
+
+- The row is a grid of `columns` equal tracks. One track definition holds both layouts, so `stackBelow` can be any CSS
+  length: above it the tracks fit exactly `columns`, below it there is one.
+- The width that decides is the table's own, not the viewport's: a narrow side panel stacks on a wide screen.
+- Each cell holds one line box of body text, so a row is as tall as a loaded row of single-line cells.
+- `--lufia-skeleton-table-row-padding` and `--lufia-skeleton-table-gap` adjust the row padding and the column gap.
+
+</Section>
+
+<Section id="examples">
+
+<Canvas of={Stories.ManyColumns} />
+<Canvas of={Stories.Widths} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The whole table is decorative (`aria-hidden`), whatever props it gets. Name the loading state once for the region, for
+  example with a `VisuallyHidden` status or a `Skeleton` that has a `label`, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+- In `forced-colors` mode the bars become outlined boxes.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A table or a list whose columns are known while its rows load.
+
+### When not to use
+
+- A table that loads in under about 300 ms: show nothing.
+- An empty result: use [EmptyState](?path=/docs/components-feedback-emptystate--docs).
+
+### Do and don't
+
+- **Do** pass the page size as `rows` and the visible column count as `columns`.
+- **Don't** set `stackBelow` wider than the width where the loaded table turns into a list.
+
+</Section>

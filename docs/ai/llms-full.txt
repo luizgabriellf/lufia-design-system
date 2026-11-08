@@ -1058,6 +1058,7 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--rail`
 - `components-navigation-appshell--group-open-on-arrival`
 - `components-navigation-appshell--phone`
+- `components-navigation-appshell--phone-short-page`
 - `components-navigation-appshell--small-phone`
 - `components-navigation-appshell--tablet`
 - `components-navigation-appshell--phone-without-primary-action`
@@ -5572,7 +5573,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-sm`.
+Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-skeleton-bg`, `--lufia-skeleton-shine`.
 
 ### Stories
 
@@ -5582,6 +5583,237 @@ Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-bo
 - `components-motion-skeleton--still`
 - `components-motion-skeleton--composed`
 - `components-motion-skeleton--all-themes`
+
+## SkeletonCard
+
+> A loading card: title bar, text lines and an optional block in the card's padding.
+
+- Status: beta
+- Category: Feedback
+- Import: `import { SkeletonCard } from "@lufia/design-system/components/SkeletonCard"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/SkeletonCard](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/SkeletonCard)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-skeletoncard--docs)
+
+### Purpose
+
+A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the
+loaded card takes exactly its place.
+
+### When to use
+
+- A grid or a stack of cards whose content is loading.
+
+### When not to use
+
+- A key figure: `StatTile` has its own `loading` state that keeps the tile's exact height.
+- A detail section with a known layout of its own: compose `Skeleton` inside that section.
+
+### API
+
+#### `SkeletonCard`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `padding` | `"none" \| "sm" \| "md" \| "lg"` | no |  | Inner spacing of every slot. Defaults to `md`. |
+| `header` | `boolean` | no | `true` | Draws a title bar on the line box of the card's title, spaced from the body like the card's header. Default `true`. |
+| `lines` | `number` | no | `3` | Number of body text lines. The last one is shorter, like the end of a paragraph. Default 3. |
+| `block` | `string \| boolean` | no | `false` | A block under the lines, for a chart or a media area: `true` for 6rem, or a CSS height. Default `false`. |
+| `still` | `boolean` | no | `false` | Turn the shimmer off. It also stops under `prefers-reduced-motion`. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `SkeletonCardProps`: `Omit<CardProps, "children" | "href" | "title" | "headingLevel" | "description" | "headerAction" | "footer" | "flush" | "divider"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }`
+
+### Example
+
+```tsx
+import { SkeletonCard } from "@lufia/design-system/components/SkeletonCard";
+
+<div aria-busy={loading}>{loading ? <SkeletonCard lines={2} block /> : <StorageCard />}</div>;
+```
+
+### Accessibility
+
+- The card is decorative (`aria-hidden`) and has no heading. Name the loading state once for the region, for example with a `Skeleton` that has a `label`, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-font-family-display`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`.
+
+### Stories
+
+- `components-feedback-skeletoncard--default`
+- `components-feedback-skeletoncard--with-block`
+- `components-feedback-skeletoncard--block-only`
+- `components-feedback-skeletoncard--beside-loaded`
+- `components-feedback-skeletoncard--paddings`
+- `components-feedback-skeletoncard--widths`
+- `components-feedback-skeletoncard--all-themes`
+
+## SkeletonPageHeader
+
+> The top of a loading page, on PageHeader's own layout and breakpoints.
+
+- Status: beta
+- Category: Feedback
+- Import: `import { SkeletonPageHeader } from "@lufia/design-system/components/SkeletonPageHeader"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/SkeletonPageHeader](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/SkeletonPageHeader)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-skeletonpageheader--docs)
+
+### Purpose
+
+The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description take
+the same line boxes, the title grows at the same breakpoint (48rem) and the actions wrap under the text the same way.
+
+### When to use
+
+- A page whose title comes from data that is still loading.
+
+### When not to use
+
+- A title you already know: render the real `PageHeader` and load only the rest.
+
+### API
+
+#### `SkeletonPageHeader`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `eyebrow` | `boolean` | no | `false` | Draws the eyebrow line above the title. Default `false`. |
+| `description` | `boolean` | no | `true` | Draws the description line under the title. Default `true`. |
+| `actions` | `number` | no | `0` | Number of action placeholders, each the size of a medium `Button`. Default 0. |
+| `still` | `boolean` | no | `false` | Turn the shimmer off. It also stops under `prefers-reduced-motion`. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `SkeletonPageHeaderProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { eyebrow?: boolean | undefined; description?: boolean | undefined; actions?: number | undefined; still?: boolean | undefined; }`
+
+### Example
+
+```tsx
+import { SkeletonPageHeader } from "@lufia/design-system/components/SkeletonPageHeader";
+
+{
+  loading ? <SkeletonPageHeader eyebrow actions={1} /> : <PageHeader title={title} actions={actions} />;
+}
+```
+
+### Accessibility
+
+- Decorative (`aria-hidden`), and a plain `div`: no heading and no landmark until the real `PageHeader` arrives. Name the loading state once for the page, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-radius-control`.
+
+### Stories
+
+- `components-feedback-skeletonpageheader--default`
+- `components-feedback-skeletonpageheader--title-only`
+- `components-feedback-skeletonpageheader--two-actions`
+- `components-feedback-skeletonpageheader--above-loaded`
+- `components-feedback-skeletonpageheader--widths`
+- `components-feedback-skeletonpageheader--all-themes`
+
+## SkeletonTable
+
+> Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths.
+
+- Status: beta
+- Category: Feedback
+- Import: `import { SkeletonTable } from "@lufia/design-system/components/SkeletonTable"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/SkeletonTable](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/SkeletonTable)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-skeletontable--docs)
+
+### Purpose
+
+Placeholder rows for a table or a list that is loading. The columns share the width equally, every bar is a share of its
+own cell, and below `stackBelow` (45rem by default) each row stacks its cells in one column, so nothing overflows at any
+width.
+
+### When to use
+
+- A table or a list whose columns are known while its rows load.
+
+### When not to use
+
+- A table that loads in under about 300 ms: show nothing.
+- An empty result: use [EmptyState](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-emptystate--docs).
+
+### API
+
+#### `SkeletonTable`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `rows` | `number` | no | `5` | Number of placeholder rows. Give the page size of the table that will replace it, so nothing jumps. Default 5. |
+| `columns` | `number` | no | `3` | Number of columns in each row. Default 3. |
+| `stackBelow` | `string` | no |  | CSS length. Below this width of the table each row stacks its cells in one column, like a table that turns into a list on phones. Default `45rem`. |
+| `still` | `boolean` | no | `false` | Turn the shimmer off. It also stops under `prefers-reduced-motion`. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `SkeletonTableProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { rows?: number | undefined; columns?: number | undefined; stackBelow?: string | undefined; still?: boolean | undefined; }`
+
+### Example
+
+```tsx
+import { SkeletonTable } from "@lufia/design-system/components/SkeletonTable";
+import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
+
+<div aria-busy={loading}>
+  {loading ? (
+    <>
+      <VisuallyHidden role="status">Loading invoices</VisuallyHidden>
+      <SkeletonTable rows={10} columns={4} />
+    </>
+  ) : (
+    <InvoiceTable />
+  )}
+</div>;
+```
+
+### Accessibility
+
+- The whole table is decorative (`aria-hidden`), whatever props it gets. Name the loading state once for the region, for example with a `VisuallyHidden` status or a `Skeleton` that has a `label`, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+- In `forced-colors` mode the bars become outlined boxes.
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-border-subtle`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-skeleton-bg`, `--lufia-skeleton-shine`, `--lufia-skeleton-table-gap`, `--lufia-skeleton-table-row-padding`.
+
+### Stories
+
+- `components-feedback-skeletontable--default`
+- `components-feedback-skeletontable--in-a-card`
+- `components-feedback-skeletontable--many-columns`
+- `components-feedback-skeletontable--widths`
+- `components-feedback-skeletontable--still`
+- `components-feedback-skeletontable--all-themes`
 
 ## SortableTh
 

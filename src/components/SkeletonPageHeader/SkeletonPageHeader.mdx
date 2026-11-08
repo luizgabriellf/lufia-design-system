@@ -1,0 +1,71 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./SkeletonPageHeader.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="SkeletonPageHeader"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description take
+the same line boxes, the title grows at the same breakpoint (48rem) and the actions wrap under the text the same way.
+
+<Canvas of={Stories.AboveLoaded} />
+
+### Usage
+
+```tsx
+import { SkeletonPageHeader } from "@lufia/design-system/components/SkeletonPageHeader";
+
+{
+  loading ? <SkeletonPageHeader eyebrow actions={1} /> : <PageHeader title={title} actions={actions} />;
+}
+```
+
+Each action placeholder has the size and radius of a medium `Button`, taller on coarse pointers like the button.
+
+</Section>
+
+<Section id="examples">
+
+<Canvas of={Stories.TitleOnly} />
+<Canvas of={Stories.TwoActions} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- Decorative (`aria-hidden`), and a plain `div`: no heading and no landmark until the real `PageHeader` arrives. Name the
+  loading state once for the page, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A page whose title comes from data that is still loading.
+
+### When not to use
+
+- A title you already know: render the real `PageHeader` and load only the rest.
+
+</Section>

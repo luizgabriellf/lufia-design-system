@@ -71,7 +71,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-sm`.
+Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-radius-card`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-skeleton-bg`, `--lufia-skeleton-shine`.
 
 ## Stories
 

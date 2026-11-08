@@ -1,0 +1,50 @@
+/* Theming hooks: --lufia-skeleton-table-row-padding (block padding of a row) and --lufia-skeleton-table-gap (space between
+   columns). The fill and the shine come from Skeleton (--lufia-skeleton-bg, --lufia-skeleton-shine). */
+.root {
+  --skeleton-table-gap: var(--lufia-skeleton-table-gap, 1rem);
+
+  display: grid;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* One track definition does both layouts, so the breakpoint can be a prop (a container query cannot read a variable).
+   Above --skeleton-table-stack the clamp picks its minimum, a share of the row that fits exactly `columns` tracks;
+   below it the middle term is huge and the clamp picks 100%, one track. Tracks are percentages of the row, so they never
+   overflow it. */
+.row {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      clamp(
+        (100% - (var(--skeleton-table-columns, 3) - 1) * var(--skeleton-table-gap)) /
+          var(--skeleton-table-columns, 3) - 0.01px,
+        (var(--skeleton-table-stack, 45rem) - 100%) * 999,
+        100%
+      ),
+      1fr
+    )
+  );
+  gap: 0.5rem var(--skeleton-table-gap);
+  padding-block: var(--lufia-skeleton-table-row-padding, 0.75rem);
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.row:last-child {
+  border-block-end: 0;
+}
+
+/* A cell holds one line box of body text, so the rows are as tall as the loaded ones. */
+.cell {
+  min-inline-size: 0;
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.cell > span {
+  display: inline-block;
+  vertical-align: middle;
+}

@@ -127,5 +127,16 @@
       }
     }
   },
-  "$description": "Demonstrates the theming API with its own palette; copy as a starting point for an app theme."
+  "$description": "Demonstrates the theming API with its own palette; copy as a starting point for an app theme.",
+  "skeleton": {
+    "$type": "color",
+    "bg": {
+      "$value": "{core.color.alpha.plum-950.14}",
+      "$description": "Fill of a loading placeholder. Decorative: it carries no information, so no contrast minimum applies (WCAG 1.4.11)."
+    },
+    "shine": {
+      "$value": "{core.color.alpha.white.60}",
+      "$description": "The band that sweeps across a placeholder while it loads. Lighter than the fill in both modes."
+    }
+  }
 }
