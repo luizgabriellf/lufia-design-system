@@ -1,0 +1,74 @@
+/* Theming hooks: --lufia-status-icon-size (ring diameter), --lufia-status-icon-ring-border-width and
+   --lufia-status-icon-mark-stroke (stroke of the mark inside a ring, in viewBox units). Each tone sets --status-fg, --status-bg
+   and --status-border; a host may set them too. */
+.root {
+  --status-fg: var(--lufia-color-status-neutral-fg);
+  --status-bg: var(--lufia-color-status-neutral-bg);
+  --status-border: var(--lufia-color-border-strong);
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--status-fg);
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.root[data-tone="success"] {
+  --status-fg: var(--lufia-color-status-success-fg);
+  --status-bg: var(--lufia-color-status-success-bg);
+  --status-border: var(--lufia-color-status-success-border);
+}
+
+.root[data-tone="warning"],
+.root[data-tone="pending"] {
+  --status-fg: var(--lufia-color-status-warning-fg);
+  --status-bg: var(--lufia-color-status-warning-bg);
+  --status-border: var(--lufia-color-status-warning-border);
+}
+
+.root[data-tone="danger"] {
+  --status-fg: var(--lufia-color-status-danger-fg);
+  --status-bg: var(--lufia-color-status-danger-bg);
+  --status-border: var(--lufia-color-status-danger-border);
+}
+
+.root[data-tone="info"] {
+  --status-fg: var(--lufia-color-text-accent);
+  --status-bg: var(--lufia-color-accent-subtle);
+  --status-border: var(--lufia-color-accent-border);
+}
+
+/* A mark takes the colour of its host. */
+.root[data-variant="mark"] {
+  color: inherit;
+}
+
+.root[data-variant="ring"] {
+  --status-ring: var(--lufia-status-icon-size, 1.5rem);
+
+  box-sizing: border-box;
+  inline-size: var(--status-ring);
+  block-size: var(--status-ring);
+  border: var(--lufia-status-icon-ring-border-width, var(--lufia-border-width-thin)) solid
+    var(--status-border);
+  border-radius: var(--lufia-radius-full);
+  background: var(--status-bg);
+}
+
+.root[data-variant="ring"][data-size="sm"] {
+  --status-ring: var(--lufia-status-icon-size, 1.25rem);
+}
+
+.root[data-variant="ring"][data-size="lg"] {
+  --status-ring: var(--lufia-status-icon-size, 2rem);
+}
+
+/* The mark fills 58% of the ring, so it keeps the ring's proportions at every size. Its stroke is heavier than a free
+   icon's: the mark is drawn at about 14px inside a filled disc. */
+.root[data-variant="ring"] .glyph {
+  inline-size: 58%;
+  block-size: 58%;
+  stroke-width: var(--lufia-status-icon-mark-stroke, 2.5);
+}

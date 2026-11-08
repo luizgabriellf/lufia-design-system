@@ -29,6 +29,25 @@
     "thin": { "$value": "{core.stroke.1}" },
     "thick": { "$value": "{core.stroke.2}" }
   },
+  "icon": {
+    "$description": "Icon grid: one 24-unit viewBox drawn with round caps and joins. Sizes in rem; strokes in viewBox units.",
+    "size": {
+      "$type": "dimension",
+      "sm": { "$value": "1rem", "$description": "16px: inside controls, inline with small text" },
+      "md": { "$value": "1.25rem", "$description": "20px: the default; buttons and navigation" },
+      "lg": { "$value": "1.5rem", "$description": "24px: headers and empty states" }
+    },
+    "stroke": {
+      "$type": "number",
+      "$value": 1.75,
+      "$description": "Stroke width in viewBox units at md and lg"
+    },
+    "stroke-sm": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Stroke width at sm: a little heavier, so a 16px icon keeps the optical weight of a 20px one"
+    }
+  },
   "font": {
     "family": {
       "display": {

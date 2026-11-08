@@ -35,6 +35,9 @@ import { LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
 - Import each component from its own subpath: `@lufia/design-system/components/<Name>`. Hooks live in the same place
   (`@lufia/design-system/components/useDismiss`).
 - Motion primitives come from `@lufia/design-system/motion`.
+- Icons come from `@lufia/design-system/icons`: the named icons (`CloseIcon`, `SearchIcon`...), `Icon`, `createIcon` for an
+  app's own glyphs, and `StatusIcon`. Each icon is a separate pure export, so only the imported ones are bundled. Do not
+  hand-draw inline SVG icons or use text glyphs as icons; see `docs/STANDARDS.md` and the Icons foundation page.
 - Token data is available as `@lufia/design-system/tokens` (typed map) and `@lufia/design-system/tokens.json`.
 - `parseShellState` and `serializeShellState` (the AppShell cookie value) also come from
   `@lufia/design-system/app-shell-state`, a pure module with no React: import them from there in a React Server Component,

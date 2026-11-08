@@ -1,0 +1,90 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./StatusIcon.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="StatusIcon"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+One family of status markers. Each tone has its own shape, so the status reads without colour. The same glyphs are used by
+`Toast`, the field error of `FormField`, `DetailAttentionCard`, `StatusTimeline` and `Stepper`.
+
+<Canvas of={Stories.Tones} />
+
+### Usage
+
+```tsx
+import { StatusIcon } from "@lufia/design-system/icons";
+
+<StatusIcon tone="danger" size="sm" />
+<StatusIcon tone="success" variant="ring" />
+<StatusIcon tone="pending" variant="ring" label="Pending" />
+```
+
+### Tones
+
+| Tone         | Bare glyph                    | Mark (in a ring) | Colour  |
+| ------------ | ----------------------------- | ---------------- | ------- |
+| `success`    | Circle with a check           | Check            | success |
+| `warning`    | Triangle with an exclamation  | Triangle         | warning |
+| `danger`     | Octagon with an exclamation   | Exclamation mark | danger  |
+| `info`       | Circle with an "i"            | "i"              | accent  |
+| `pending`    | Clock                         | Clock hands      | warning |
+| `neutral`    | Circle with a dash            | Dash             | neutral |
+| `needsInput` | Dashed circle with three dots | Three dots       | neutral |
+
+### Variants
+
+- `bare` (default): the outlined glyph alone, in the tone colour. For inline messages such as a field error.
+- `ring`: the mark on a tinted disc with a tone border. For toasts, cards and timelines. The diameter is 20, 24 or 32px
+  (`sm`, `md`, `lg`); `--lufia-status-icon-size` and `--lufia-status-icon-ring-border-width` override it.
+- `mark`: the mark alone in `currentColor`, for a host that draws its own container, such as a stepper dot.
+
+</Section>
+
+<Section id="examples">
+
+<Canvas of={Stories.Sizes} />
+<Canvas of={Stories.Labelled} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- Decorative by default (`aria-hidden`): text next to it names the status.
+- `label` makes it an image with that name (`role="img"`), for a marker that stands alone.
+- The tone never relies on colour alone (WCAG 1.4.1): each tone has its own shape.
+- The ring colours are the status tokens, mapped to system colours under `forced-colors`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Next to the text of a status: a message, a row state, a timeline node.
+
+### When not to use
+
+- For an action or an object: use a named icon from the set.
+- As the only signal: pair it with text, or give it a `label`.
+
+</Section>

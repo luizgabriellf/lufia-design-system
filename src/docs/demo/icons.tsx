@@ -1,214 +1,124 @@
-import type { ReactNode, SVGProps } from "react";
+/*
+ * Docs-only icons. Geometry adapted from Lucide (https://lucide.dev), ISC License; see THIRD_PARTY_NOTICES.md.
+ *
+ * The common ones come from the package's icon set. The rest are made with `createIcon`, exactly as a consuming app makes
+ * its own domain icons: same 24-unit grid, stroke and accessibility rules as the set.
+ */
+import { createIcon } from "../../components/Icon/Icon";
 
-type DemoIconProps = Omit<SVGProps<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & {
-  /** Rendered width and height in px. */
-  size?: number;
-};
+export {
+  ArrowRightIcon,
+  ChartIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  CloseIcon as CrossIcon,
+  ExternalLinkIcon as ExternalIcon,
+  FileTextIcon as DocumentIcon,
+  GridIcon,
+  HelpIcon,
+  HomeIcon,
+  InboxIcon,
+  MenuIcon,
+  PlusIcon,
+  SearchIcon,
+  SettingsIcon,
+  UploadIcon,
+  UsersIcon,
+} from "../../components/Icon/icons";
 
-/** Docs-only 24x24 / 1.6 stroke frame. Decorative: the label belongs on the control that holds the icon. */
-function Frame({ size = 20, children, ...rest }: DemoIconProps & { children: ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-      {...rest}
-    >
-      {children}
-    </svg>
-  );
-}
-
-export const DocumentIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-    <path d="M14 3v5h5M9 13h6M9 17h4" />
-  </Frame>
+export const SlidersIcon = /* @__PURE__ */ createIcon(
+  "sliders",
+  <>
+    <line />
+    <line />
+    <line />
+    <line />
+    <line />
+    <line />
+    <line />
+    <line />
+    <line />
+  </>,
 );
 
-export const SearchIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <circle cx="11" cy="11" r="6" />
-    <path d="m20 20-4.2-4.2" />
-  </Frame>
+export const ShieldIcon = /* @__PURE__ */ createIcon(
+  "shield",
+  <>
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  </>,
 );
 
-export const PlusIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M12 5v14M5 12h14" />
-  </Frame>
+export const WaveIcon = /* @__PURE__ */ createIcon(
+  "wave",
+  <>
+    <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />
+  </>,
 );
 
-export const UploadIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" />
-    <path d="M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" />
-  </Frame>
+export const ServerIcon = /* @__PURE__ */ createIcon(
+  "server",
+  <>
+    <rect width="20" height="8" x="2" y="2" rx="2" />
+    <rect width="20" height="8" x="2" y="14" rx="2" />
+    <line />
+    <line />
+  </>,
 );
 
-export const ArrowRightIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M5 12h14m0 0-5-5m5 5-5 5" />
-  </Frame>
+export const CodeIcon = /* @__PURE__ */ createIcon(
+  "code",
+  <>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </>,
 );
 
-export const CheckIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="m5 12.5 4.5 4.5L19 7.5" />
-  </Frame>
+export const BookIcon = /* @__PURE__ */ createIcon(
+  "book",
+  <>
+    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
+  </>,
 );
 
-export const GitHubIcon = ({ size = 20, ...rest }: DemoIconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable="false"
-    {...rest}
-  >
-    <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85 0 1.7.11 2.5.34 1.9-1.29 2.74-1.02 2.74-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z" />
-  </svg>
+export const LayersIcon = /* @__PURE__ */ createIcon(
+  "layers",
+  <>
+    <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+    <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+    <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+  </>,
 );
 
-export const SlidersIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 7h9m4 0h3M4 17h3m4 0h9" />
-    <circle cx="15" cy="7" r="2" />
-    <circle cx="9" cy="17" r="2" />
-  </Frame>
+export const KeyboardIcon = /* @__PURE__ */ createIcon(
+  "keyboard",
+  <>
+    <path d="M10 8h.01" />
+    <path d="M12 12h.01" />
+    <path d="M14 8h.01" />
+    <path d="M16 12h.01" />
+    <path d="M18 8h.01" />
+    <path d="M6 8h.01" />
+    <path d="M7 16h10" />
+    <path d="M8 12h.01" />
+    <rect width="20" height="16" x="2" y="4" rx="2" />
+  </>,
 );
 
-export const ShieldIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M12 3 5 6v5.5c0 4.2 2.8 7.6 7 9.5 4.2-1.9 7-5.3 7-9.5V6z" />
-    <path d="m9 12 2.2 2.2L15.5 10" />
-  </Frame>
+export const PaletteIcon = /* @__PURE__ */ createIcon(
+  "palette",
+  <>
+    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+  </>,
 );
 
-export const WaveIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M3 12c2.5-6 4.5-6 6 0s3.5 6 6 0 3.5-6 6 0" />
-  </Frame>
-);
-
-export const ServerIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <rect x="4" y="4" width="16" height="6" rx="1.5" />
-    <rect x="4" y="14" width="16" height="6" rx="1.5" />
-    <path d="M8 7h.01M8 17h.01" />
-  </Frame>
-);
-
-export const HomeIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" />
-  </Frame>
-);
-
-export const GridIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <rect x="4" y="4" width="7" height="7" rx="1" />
-    <rect x="13" y="4" width="7" height="7" rx="1" />
-    <rect x="4" y="13" width="7" height="7" rx="1" />
-    <rect x="13" y="13" width="7" height="7" rx="1" />
-  </Frame>
-);
-
-export const UsersIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <circle cx="9" cy="8" r="3" />
-    <path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17 15a5 5 0 0 1 4 5" />
-  </Frame>
-);
-
-export const ChartIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 4v15a1 1 0 0 0 1 1h15M9 16v-5M14 16V8M19 16v-3" />
-  </Frame>
-);
-
-export const InboxIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 13V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7M4 13l2 6h12l2-6M4 13h5a3 3 0 0 0 6 0h5" />
-  </Frame>
-);
-
-export const SettingsIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <circle cx="12" cy="12" r="3" />
-    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
-  </Frame>
-);
-
-export const MenuIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 7h16M4 12h16M4 17h16" />
-  </Frame>
-);
-
-export const HelpIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6M12 17h.01" />
-  </Frame>
-);
-
-export const ChevronRightIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="m9 6 6 6-6 6" />
-  </Frame>
-);
-
-export const CodeIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14" />
-  </Frame>
-);
-
-export const BookIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H20v14H5.5A1.5 1.5 0 0 0 4 19.5z" />
-    <path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3M9 8h7" />
-  </Frame>
-);
-
-export const CrossIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="m6 6 12 12M18 6 6 18" />
-  </Frame>
-);
-
-export const ExternalIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-  </Frame>
-);
-
-export const LayersIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="m12 3 9 5-9 5-9-5zM3 13l9 5 9-5" />
-  </Frame>
-);
-
-export const KeyboardIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <rect x="3" y="6" width="18" height="12" rx="2" />
-    <path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" />
-  </Frame>
-);
-
-export const PaletteIcon = (props: DemoIconProps) => (
-  <Frame {...props}>
-    <path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.5-1.8-.4-1.3.3-2.2 1.5-2.2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z" />
-    <path d="M7.5 11h.01M10 7.5h.01M14.5 7.5h.01" />
-  </Frame>
+export const GitHubIcon = /* @__PURE__ */ createIcon(
+  "github",
+  <>
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </>,
 );

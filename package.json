@@ -19,6 +19,10 @@
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.js"
     },
+    "./icons": {
+      "types": "./dist/icons.d.ts",
+      "import": "./dist/icons.js"
+    },
     "./app-shell-state": {
       "types": "./dist/components/AppShell/shellState.d.ts",
       "import": "./dist/components/AppShell/shellState.js"
@@ -41,7 +45,8 @@
   "files": [
     "dist",
     "docs/*.md",
-    "docs/adr"
+    "docs/adr",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "peerDependencies": {
     "react": "^19.0.0",

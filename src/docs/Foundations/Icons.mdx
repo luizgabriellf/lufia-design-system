@@ -1,0 +1,127 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import { PatternHeader } from "../patterns/PatternHeader";
+import * as IconStories from "../../components/Icon/Icon.stories";
+import * as StatusStories from "../../components/StatusIcon/StatusIcon.stories";
+
+<Meta title="Foundations/Icons" />
+
+<PatternHeader
+  kind="Foundation"
+  title="Icons"
+  summary="One grid, one stroke and three sizes for every icon, with a status family whose shapes read without colour."
+/>
+
+The package owns a curated icon set. It has no runtime dependency: the geometry of the icons is adapted from
+[Lucide](https://lucide.dev) (ISC License) and only the icons the package and its consuming apps need are vendored.
+
+<Canvas of={IconStories.Gallery} />
+
+## The grid
+
+- One `24 x 24` viewBox for every icon. Keep shapes inside a 2-unit padding (2 to 22) and centre them on (12, 12).
+- Strokes only: `fill="none"`, `stroke="currentColor"`, round caps and joins. The colour comes from the text the icon sits
+  in.
+- No stroke width on a shape: the `svg` sets it for the whole icon.
+
+## Stroke
+
+The stroke width is a token, in viewBox units:
+
+| Token                    | Default | Used at                                    |
+| ------------------------ | ------- | ------------------------------------------ |
+| `--lufia-icon-stroke`    | `1.75`  | `md`, `lg`                                 |
+| `--lufia-icon-stroke-sm` | `2`     | `sm`, and any numeric size of 18px or less |
+
+A stroke drawn in viewBox units gets thinner as the icon shrinks: `1.75` is 1.17px at 16px but 1.46px at 20px. The small
+size therefore takes a heavier stroke (2, so 1.33px at 16px), and icons of different sizes in the same view keep a similar
+visual weight. A theme may change either token.
+
+## Sizes
+
+<Canvas of={IconStories.Sizes} />
+
+| Size     | Token                  | Default  | Typical place                                   |
+| -------- | ---------------------- | -------- | ----------------------------------------------- |
+| `sm`     | `--lufia-icon-size-sm` | 16px     | Inside fields and small controls, clear buttons |
+| `md`     | `--lufia-icon-size-md` | 20px     | Buttons, menus, navigation (the default)        |
+| `lg`     | `--lufia-icon-size-lg` | 24px     | Headers, empty states                           |
+| `1em`    | none                   | the text | Inline in running text                          |
+| a number | none                   | px       | A fixed box a layout needs                      |
+
+## Accessibility
+
+- An icon is **decorative by default**: `aria-hidden="true"` and `focusable="false"`.
+- `title` or `aria-label` makes it **meaningful**: `role="img"` with that name. Prefer to name the control around the icon.
+- An icon-only button needs an accessible name on the button (`IconButton` requires one).
+- A status is never told by colour alone: use `StatusIcon`, whose tones each have a distinct shape.
+
+## Status icons
+
+<Canvas of={StatusStories.Tones} />
+
+| Tone         | Glyph                         | Used for                                 |
+| ------------ | ----------------------------- | ---------------------------------------- |
+| `success`    | Circle with a check           | Done, saved, approved                    |
+| `warning`    | Triangle with an exclamation  | Needs attention soon                     |
+| `danger`     | Octagon with an exclamation   | Error, failed, overdue                   |
+| `info`       | Circle with an "i"            | Something worth knowing                  |
+| `pending`    | Clock                         | Waiting, in progress, due later          |
+| `neutral`    | Circle with a dash            | Not applicable, no judgement             |
+| `needsInput` | Dashed circle with three dots | Missing data that someone has to fill in |
+
+`Toast`, the field error of `FormField`, `DetailAttentionCard`, `StatusTimeline` and the done steps of `Stepper` all use
+these glyphs. A `ring` puts the inner mark on a tinted disc; a `mark` is the inner mark alone, for a host with its own
+container.
+
+## Icons of your own
+
+A consuming app draws its domain icons with `createIcon`, so they inherit the grid, the stroke tokens, the sizes and the
+accessibility rules:
+
+```tsx
+import { createIcon } from "@lufia/design-system/icons";
+
+export const RouteIcon = createIcon("route", [
+  "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+  "M18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+  "M8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7",
+]);
+
+<RouteIcon size="sm" />;
+```
+
+- Pass SVG children (`path`, `circle`, `rect`, `line`) or path `d` strings, drawn on the 24 grid.
+- Leave out `fill`, `stroke` and `stroke-width`. A brand mark that must be filled is not an icon: keep it as an image.
+- Start from a Lucide icon when one fits, and keep its licence notice next to the geometry.
+- Use the set's icon when the concept exists (close, search, settings, sign out...), so one concept has one drawing.
+
+## Replacing hand-drawn icons
+
+| Concept                   | Export                                               |
+| ------------------------- | ---------------------------------------------------- |
+| Close, dismiss, clear     | `CloseIcon`                                          |
+| Check, selected           | `CheckIcon` (`CheckCheckIcon` for "all")             |
+| Open a list               | `ChevronDownIcon`                                    |
+| Next, previous            | `ChevronRightIcon`, `ChevronLeftIcon`                |
+| Back, forward             | `ArrowLeftIcon`, `ArrowRightIcon`                    |
+| Sort                      | `SortIcon`, `ArrowUpIcon`, `ArrowDownIcon`           |
+| Search, filter            | `SearchIcon`, `FilterIcon`                           |
+| More actions              | `MoreIcon`, `MoreVerticalIcon`                       |
+| Add, remove               | `PlusIcon`, `MinusIcon`                              |
+| Edit, copy, delete        | `EditIcon`, `CopyIcon`, `TrashIcon`                  |
+| Upload, download, export  | `UploadIcon`, `DownloadIcon`                         |
+| Opens elsewhere           | `ExternalLinkIcon`                                   |
+| Settings, help            | `SettingsIcon`, `HelpIcon`                           |
+| Sign out                  | `SignOutIcon`                                        |
+| Light and dark mode       | `SunIcon`, `MoonIcon`                                |
+| Navigation menu, sidebar  | `MenuIcon`, `SidebarIcon`                            |
+| Home, overview, reports   | `HomeIcon`, `GridIcon`, `ChartIcon`                  |
+| People                    | `UserIcon`, `UsersIcon`                              |
+| Documents                 | `FileIcon`, `FileTextIcon`                           |
+| Date, time, notifications | `CalendarIcon`, `ClockIcon`, `BellIcon`, `InboxIcon` |
+| Show and hide             | `EyeIcon`, `EyeOffIcon`                              |
+| AI-generated content      | `SparkleIcon`                                        |
+| A status                  | `StatusIcon` with a `tone`                           |
+
+Text glyphs (a multiplication sign, check marks, arrows, warning emoji) and CSS `content` or data-URI icons should be
+replaced too: a glyph depends on the font, does not follow the stroke token and is read aloud by screen readers.

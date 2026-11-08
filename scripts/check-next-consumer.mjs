@@ -115,6 +115,11 @@ try {
     if (!html.includes(text)) throw new Error(`Server HTML is missing: ${text}`);
   }
 
+  // The icon subpath renders in a Server Component.
+  if (!/<svg[^>]*data-lufia-icon="close"/.test(html) || !html.includes('aria-label="Server icon"')) {
+    throw new Error("The package icons from @lufia/design-system/icons were not server-rendered");
+  }
+
   // Markup that only the package's own components produce, rendered from a Server Component.
   if (!/<button[^>]*role="switch"[^>]*aria-checked="true"/.test(html)) {
     throw new Error('The package Switch was not server-rendered with role="switch" and aria-checked="true"');

@@ -84,6 +84,7 @@ const preview: Preview = {
             "Spacing",
             "Radius and borders",
             "Elevation",
+            "Icons",
             "Motion",
             "Creating a theme",
           ],
