@@ -705,6 +705,20 @@ describe("AppShell slots", () => {
       expect(surfaces).toContain("sheet:false");
     });
 
+    it("puts the context in the sheet's fixed part, outside the scrolling body, and in the body with hideSheetNavigation", async () => {
+      const user = userEvent.setup();
+      const { unmount } = setup({ context: <div role="region" aria-label="Scope" /> });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      let region = within(screen.getByRole("dialog")).getByRole("region", { name: "Scope" });
+      expect(region.closest("[data-sheet-body]")).toBeNull();
+      expect(region.closest('[data-lufia-part="nav-sheet-context"]')).not.toBeNull();
+      unmount();
+      setup({ context: <div role="region" aria-label="Scope" />, hideSheetNavigation: true });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      region = within(screen.getByRole("dialog")).getByRole("region", { name: "Scope" });
+      expect(region.closest("[data-sheet-body]")).not.toBeNull();
+    });
+
     it("gives the rail state to the sidebar context only", () => {
       const seen: string[] = [];
       setup({

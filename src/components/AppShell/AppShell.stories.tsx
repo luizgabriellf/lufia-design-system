@@ -803,3 +803,93 @@ export const RouteProgressForQueryLinks: Story = {
   ),
   globals: { viewport: { value: "w1440", isRotated: false } },
 };
+
+const longGroups: ShellNavGroup[] = [
+  ...demoGroups.map((group) => ({ ...group, collapsible: false })),
+  {
+    key: "more",
+    label: "More",
+    items: ["Calendar", "Tasks", "Assets", "Suppliers", "Contracts", "Audits"].map((label) => ({
+      key: label.toLowerCase(),
+      label,
+      href: `/${label.toLowerCase()}`,
+      icon: <DocumentIcon size={18} />,
+    })),
+  },
+];
+
+function SheetContextPicker({ tall = false }: { tall?: boolean }) {
+  return (
+    <div data-demo-context="" style={{ display: "grid", gap: "0.5rem" }}>
+      <button
+        type="button"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.6rem",
+          inlineSize: "100%",
+          minBlockSize: "2.75rem",
+          padding: "0.5rem 0.75rem",
+          border: "1px solid var(--lufia-color-border-subtle)",
+          borderRadius: "var(--lufia-radius-control)",
+          background: "var(--lufia-color-bg-surface-raised)",
+          color: "var(--lufia-color-text-default)",
+          font: "inherit",
+          textAlign: "start",
+        }}
+      >
+        <span style={{ display: "grid" }}>
+          <span style={{ fontSize: "var(--lufia-font-size-xs)", color: "var(--lufia-color-text-muted)" }}>
+            Company
+          </span>
+          <span style={{ fontWeight: 600 }}>Acme Lisbon</span>
+        </span>
+      </button>
+      {tall
+        ? ["North site", "South site", "Harbour office", "Warehouse"].map((site) => (
+            <button
+              key={site}
+              type="button"
+              style={{
+                minBlockSize: "2.75rem",
+                padding: "0.5rem 0.75rem",
+                border: "1px solid var(--lufia-color-border-subtle)",
+                borderRadius: "var(--lufia-radius-control)",
+                background: "transparent",
+                color: "var(--lufia-color-text-default)",
+                font: "inherit",
+                textAlign: "start",
+              }}
+            >
+              {site}
+            </button>
+          ))
+        : null}
+    </div>
+  );
+}
+
+/**
+ * The `context` slot in the phone sheet sits in its fixed part, under the brand and close row: scroll the navigation and
+ * the picker stays in view, with a divider between it and the first item.
+ */
+export const SheetContextStaysInView: Story = {
+  args: {
+    groups: longGroups,
+    menuOpen: true,
+    context: ({ surface }) => (surface === "sheet" ? <SheetContextPicker /> : null),
+  },
+  render: (args) => <DemoShell {...args} initialPath="/inbox" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** A tall context in a short window: it is capped and scrolls on its own, so the navigation keeps a usable height. */
+export const SheetTallContext: Story = {
+  args: {
+    groups: longGroups,
+    menuOpen: true,
+    context: ({ surface }) => (surface === "sheet" ? <SheetContextPicker tall /> : null),
+  },
+  render: (args) => <DemoShell {...args} initialPath="/inbox" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};

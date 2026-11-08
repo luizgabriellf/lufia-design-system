@@ -1262,9 +1262,11 @@ test.describe("shell follow-ups", () => {
     await expect(layer).toHaveAttribute("data-lufia-mode", "dark");
   });
 
-  test("closing a modal restores the scroll at once under scroll-behavior: smooth", async ({ page }) => {
+  test("releasing the scroll lock restores the scroll at once under scroll-behavior: smooth", async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await openStory(page, "components-overlays-modal--default");
+    await openStory(page, "hooks-usebodyscrolllock--document-scroll");
     await page.evaluate(() => {
       const spacer = document.createElement("div");
       spacer.style.blockSize = "4000px";
@@ -1273,19 +1275,81 @@ test.describe("shell follow-ups", () => {
       window.scrollTo({ top: 600, behavior: "instant" });
     });
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
-    await page.getByRole("button", { name: "Open modal" }).click();
-    await expect(page.getByRole("dialog", { name: "Edit project" })).toBeVisible();
+    // Dispatched clicks: a real click would scroll the button into view first.
+    await page.getByRole("button", { name: "Open overlay" }).dispatchEvent("click");
+    await expect(page.getByRole("dialog", { name: "Demo overlay" })).toBeVisible();
     await page.evaluate(() => {
       const seen: number[] = [];
       (window as unknown as { seen: number[] }).seen = seen;
       window.addEventListener("scroll", () => seen.push(window.scrollY));
     });
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog", { name: "Edit project" })).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
+    await page.getByRole("button", { name: "Close" }).dispatchEvent("click");
+    await expect(page.getByRole("dialog", { name: "Demo overlay" })).toHaveCount(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(600);
     await page.waitForTimeout(300);
     const seen = await page.evaluate(() => (window as unknown as { seen: number[] }).seen);
-    // Instant: no intermediate positions on the way back.
-    expect(seen.filter((y) => y !== 600 && y !== 0)).toEqual([]);
+    // Instant: the position is back before the next frame, with no intermediate positions on the way.
+    expect(seen.filter((y) => y !== 600)).toEqual([]);
+  });
+});
+
+test.describe("nav sheet context", () => {
+  for (const size of [
+    { width: 390, height: 844 },
+    { width: 390, height: 600 },
+    { width: 320, height: 568 },
+    { width: 844, height: 390 },
+  ]) {
+    test(`stays in view while the body scrolls, apart from the first item (${size.width}x${size.height})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await openStory(page, "components-navigation-appshell--sheet-context-stays-in-view");
+      const sheet = page.getByRole("dialog", { name: "Menu" });
+      await expect(sheet).toBeVisible();
+      await sheet.evaluate((element) =>
+        Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+      );
+      const picker = sheet.locator("[data-demo-context] button").first();
+      const firstItem = sheet.getByRole("navigation", { name: "Main navigation" }).getByRole("link").first();
+      const body = sheet.locator("[data-sheet-body]");
+      // The sheet scrolls the current item into view; measure the gap with the list at its top.
+      await body.evaluate((element) => element.scrollTo({ top: 0, behavior: "instant" }));
+      const pickerBox = (await picker.boundingBox())!;
+      const itemBox = (await firstItem.boundingBox())!;
+      expect(itemBox.y - (pickerBox.y + pickerBox.height)).toBeGreaterThanOrEqual(8);
+
+      // A usable list: more than one item tall, even held sideways.
+      expect((await body.boundingBox())!.height).toBeGreaterThan(64);
+      await body.evaluate((element) => element.scrollTo({ top: element.scrollHeight, behavior: "instant" }));
+      await expect.poll(() => body.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+      await expect(picker).toBeInViewport({ ratio: 1 });
+      expect((await picker.boundingBox())!.y).toBeCloseTo(pickerBox.y, 0);
+      // Nothing is pushed out of the sheet: the footer stays whole.
+      await expect(sheet.getByRole("button", { name: "Sign out" })).toBeInViewport({ ratio: 1 });
+    });
+  }
+
+  test("a tall context is capped and the navigation keeps a usable height at 390x600", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 600 });
+    await openStory(page, "components-navigation-appshell--sheet-tall-context");
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+    const region = sheet.locator('[data-lufia-part="nav-sheet-context"]');
+    const sizes = await region.evaluate((element) => ({
+      height: element.getBoundingClientRect().height,
+      scrolls: element.scrollHeight > element.clientHeight,
+    }));
+    expect(sizes.height).toBeLessThanOrEqual(600 * 0.3 + 1);
+    expect(sizes.scrolls).toBe(true);
+    expect((await sheet.locator("[data-sheet-body]").boundingBox())!.height).toBeGreaterThanOrEqual(120);
+  });
+
+  test("the header stays a drag zone, and the context sits outside it", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--sheet-context-stays-in-view");
+    const zone = page.getByRole("dialog", { name: "Menu" }).locator("[data-swipe]");
+    await expect(zone).toHaveCSS("touch-action", "none");
+    await expect(zone.locator('[data-lufia-part="nav-sheet-context"]')).toHaveCount(0);
   });
 });

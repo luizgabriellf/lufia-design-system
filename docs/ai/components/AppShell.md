@@ -67,7 +67,7 @@ navigation is data, so both layouts always agree.
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
 | `labels` | `AppShellLabels` | yes |  |  |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
-| `context` | `Slot` | no |  | Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`. |
+| `context` | `Slot` | no |  | Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
 | `topBarEnd` | `ReactNode` | no |  | Right side of the phone top bar: a workspace chip, a status. |
 | `search` | `AppShellSearch` | no |  | A search entry in the sidebar and on the floating bar. |
@@ -161,6 +161,7 @@ No props of its own.
 | `label` | `string` | yes |  | Accessible name of the dialog. |
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
+| `context` | `ReactNode` | no |  | Under the brand and close row, outside the scrolling body: the workspace, company or account the person is in, and its switcher. It stays in view while the navigation scrolls, and a divider keeps it apart from the first item. A tall one is capped (30% of the viewport) and scrolls on its own, so the navigation always keeps a usable height. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `close` label. |
 | `swipeToDismiss` | `boolean` | no | `true` | Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. |
 | `dragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the sheet: a share of its height kept between a shortest and a longest distance, or a quick flick. Each field you leave out keeps its default (`SHEET_DRAG_THRESHOLD`: 18% of the height, kept between 64 and 112 pixels; a flick of 0.6 px/ms over 24 pixels). Applies to the grabber, the header and the body alike. |
@@ -524,3 +525,5 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--touch-sizes`
 - `components-navigation-appshell--distinct-menu-names`
 - `components-navigation-appshell--route-progress-for-query-links`
+- `components-navigation-appshell--sheet-context-stays-in-view`
+- `components-navigation-appshell--sheet-tall-context`

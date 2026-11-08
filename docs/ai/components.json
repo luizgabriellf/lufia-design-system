@@ -575,7 +575,7 @@
               "type": "Slot",
               "required": false,
               "default": null,
-              "description": "Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`."
+              "description": "Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`."
             },
             {
               "name": "footer",
@@ -1066,6 +1066,13 @@
               "required": false,
               "default": null,
               "description": "Below the scrolling body, pinned to the bottom: account and help links."
+            },
+            {
+              "name": "context",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Under the brand and close row, outside the scrolling body: the workspace, company or account the person is in, and its switcher. It stays in view while the navigation scrolls, and a divider keeps it apart from the first item. A tall one is capped (30% of the viewport) and scrolls on its own, so the navigation always keeps a usable height."
             },
             {
               "name": "closeLabel",
@@ -2173,6 +2180,14 @@
           {
             "export": "RouteProgressForQueryLinks",
             "id": "components-navigation-appshell--route-progress-for-query-links"
+          },
+          {
+            "export": "SheetContextStaysInView",
+            "id": "components-navigation-appshell--sheet-context-stays-in-view"
+          },
+          {
+            "export": "SheetTallContext",
+            "id": "components-navigation-appshell--sheet-tall-context"
           }
         ]
       },

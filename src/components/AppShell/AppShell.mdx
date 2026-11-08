@@ -233,17 +233,22 @@ inside remount and drop their state. Leave it out for ordinary page changes.
 #### Context and the phone sheet
 
 `context` is the slot for where the person is working: a workspace, company or account card with its switcher. It sits
-between the brand and the search in the sidebar and above the navigation in the sheet. A function slot receives
+between the brand and the search in the sidebar. In the phone sheet it sits in the fixed part, under the brand and close
+row and outside the scrolling body, so it stays in view while the navigation scrolls; a divider like the footer's keeps it
+apart from the first item. A tall one is capped at 30% of the viewport (20% in a window under 30rem tall) and scrolls on its own, so the navigation keeps a
+usable height in a short or landscape window. A function slot receives
 `AppShellSlotState`: `surface` (`"sidebar"`, `"sheet"` or `"topBar"`), `collapsed` (only ever true in the sidebar rail),
 `closeSheet()` and `openSheet()`. So one switcher can open as a dropdown in the sidebar, inline in the sheet, and close the
 sheet when it navigates. `brand`, `footer`, `context` and `searchTrigger` all get this state, and each is rendered once per
 surface: do not give its parts a fixed `id`.
 
 The phone sheet can be controlled: `menuOpen` and `onMenuOpenChange` let a control of your own open it (a workspace chip in
-the top bar), and `hideSheetNavigation` leaves only `context` and the footer in it while a switcher has taken over.
+the top bar), and `hideSheetNavigation` leaves only `context` and the footer in it while a switcher has taken over; the
+context then fills the scrolling body, with the whole height of the sheet.
 A followed link inside the sheet, footer and slots included, closes it.
 
 <Canvas of={Stories.ContextSlot} />
+<Canvas of={Stories.SheetContextStaysInView} />
 <Canvas of={Stories.ControlledSheetWithSwitcher} />
 
 #### Route motion, progress and the pending page
@@ -429,8 +434,8 @@ would open in the page's default palette. Three ways to scope it:
   `sheetProps={{ className: "app-dark" }}`.
 - **`sheetProps.container`.** Mount the sheet inside your scoped wrapper instead of `document.body`.
 
-Stable hooks for styling: `data-lufia-part="nav-sheet-layer"` (the fixed root), `"nav-sheet-backdrop"` and `"nav-sheet"`
-(the panel). A `CommandPalette` is portalled the same way and takes the same fix: its `className` and `data-*` props go on
+Stable hooks for styling: `data-lufia-part="nav-sheet-layer"` (the fixed root), `"nav-sheet-backdrop"`, `"nav-sheet"`
+(the panel) and `"nav-sheet-context"` (the fixed region of `NavSheet` `context`). A `CommandPalette` is portalled the same way and takes the same fix: its `className` and `data-*` props go on
 its outermost layer.
 
 <Canvas of={Stories.SheetInScopedDarkMode} />

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
@@ -299,6 +300,35 @@ describe("NavSheet", () => {
       render(<Harness initial swipe={false} />);
       expect(document.querySelector("[data-swipe]")).toBeNull();
     });
+  });
+
+  it("renders context in its own fixed region between the header and the scrolling body", () => {
+    render(
+      <NavSheet
+        open
+        onOpenChange={() => {}}
+        label="Menu"
+        context={<button type="button">Acme Lisbon</button>}
+      >
+        <a href="/one">One</a>
+      </NavSheet>,
+    );
+    const region = document.querySelector<HTMLElement>('[data-lufia-part="nav-sheet-context"]')!;
+    expect(region).toContainElement(screen.getByRole("button", { name: "Acme Lisbon" }));
+    expect(region.closest("[data-swipe]")).toBeNull();
+    expect(region.nextElementSibling).toHaveAttribute("data-sheet-body");
+    const css = readFileSync("src/components/AppShell/NavSheet.module.css", "utf8");
+    expect(css).toMatch(
+      /\.context \{[^}]*max-block-size: 30dvh;[^}]*border-block-end:[^}]*overflow: hidden auto;/,
+    );
+    expect(css).toMatch(
+      /\.context \+ \.body \{[^}]*min-block-size: min\(8rem, 25dvh\);[^}]*padding-block-start/,
+    );
+  });
+
+  it("renders no context region without context", () => {
+    render(<Harness initial />);
+    expect(document.querySelector('[data-lufia-part="nav-sheet-context"]')).toBeNull();
   });
 
   it("waits for the exit animation unless motion is reduced", async () => {

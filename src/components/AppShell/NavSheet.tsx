@@ -35,6 +35,12 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   header?: ReactNode;
   /** Below the scrolling body, pinned to the bottom: account and help links. */
   footer?: ReactNode;
+  /**
+   * Under the brand and close row, outside the scrolling body: the workspace, company or account the person is in, and its
+   * switcher. It stays in view while the navigation scrolls, and a divider keeps it apart from the first item. A tall one
+   * is capped (30% of the viewport) and scrolls on its own, so the navigation always keeps a usable height.
+   */
+  context?: ReactNode;
   /** Accessible name of the close button. Defaults to the provider's `close` label. */
   closeLabel?: string;
   /** Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. */
@@ -109,6 +115,7 @@ export function NavSheet({
   label,
   header,
   footer,
+  context,
   closeLabel,
   swipeToDismiss = true,
   dragThreshold,
@@ -197,6 +204,12 @@ export function NavSheet({
           </button>
         </div>
       </div>
+      {context !== undefined && context !== null && context !== false ? (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
+        <div className={styles.context} data-lufia-part="nav-sheet-context" onClick={closeOnLink}>
+          {context}
+        </div>
+      ) : null}
       <SheetBody onClick={closeOnLink}>{children}</SheetBody>
       {footer ? (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside

@@ -17,6 +17,9 @@ Close follow-up gaps that consuming apps found after moving onto `AppShell`.
 - The sidebar footer is capped at 40% of the sidebar (`--lufia-shell-footer-max-block-size`) and scrolls on its own, so
   the navigation keeps a usable height in a short window.
 - A closed `SidebarGroup` that holds the current page gets `aria-current="true"` with its active look.
+- `NavSheet` `context`: a fixed region under the header, outside the scrolling body, with a divider. `AppShell` puts its
+  `context` slot there, so a scope or company picker stays in view while the navigation scrolls and never touches the
+  first item; a tall one is capped and scrolls on its own. With `hideSheetNavigation` it still fills the body.
 - `NavSheet`: a drag can start on a link in the header; past a short slop it becomes a drag and the link's click is
   cancelled, while a plain tap still follows the link.
 - `CommandPalette` `className` and `data-*` props go on its portalled outermost layer; `onSubmit(query)` runs on Enter

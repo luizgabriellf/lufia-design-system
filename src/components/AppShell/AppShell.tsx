@@ -147,7 +147,8 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /** Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. */
   brand?: Slot;
   /**
-   * Between the brand and the search, in the sidebar, and above the navigation in the sheet: the workspace, company or
+   * Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view
+   * while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or
    * account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher
    * can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its
    * parts a fixed `id`.
@@ -571,8 +572,11 @@ export function AppShell({
           closeOnNavigate
           header={resolve(brand, slotState("sheet"))}
           footer={resolve(footer, slotState("sheet"))}
+          // Beside the navigation the context stays in the sheet's fixed part, in view while the list scrolls. A switcher
+          // that takes the sheet over (`hideSheetNavigation`) gets the scrolling body and its full height instead.
+          context={hideSheetNavigation ? undefined : resolve(context, slotState("sheet"))}
         >
-          {resolve(context, slotState("sheet"))}
+          {hideSheetNavigation ? resolve(context, slotState("sheet")) : null}
           {hideSheetNavigation ? null : (
             <nav
               aria-label={labels.navigation}
