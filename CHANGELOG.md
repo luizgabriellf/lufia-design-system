@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.23.0
+
+### Minor Changes
+
+- [#83](https://github.com/luizgabriellf/lufia-design-system/pull/83) [`29aa92c`](https://github.com/luizgabriellf/lufia-design-system/commit/29aa92c65a26d8af544e8e1622270db7b2bb9312) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - FormField: new `nativeRequired` prop (default `true`). With `nativeRequired={false}` a required field gives its control `aria-required="true"` and no native `required`, for forms that run their own validation and messages. `useFormFieldControl` now also returns `aria-required`, and lists each `aria-describedby` id once, in order, when a control repeats an id the field already supplies.
+
 ## 0.22.0
 
 ### Minor Changes
