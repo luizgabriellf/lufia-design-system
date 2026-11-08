@@ -3815,7 +3815,13 @@
           "name": "CommandItem",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }"
+          "definition": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; tone?: CommandItemTone | undefined; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }"
+        },
+        {
+          "name": "CommandItemTone",
+          "kind": "type",
+          "description": "",
+          "definition": "\"default\" | \"accent\" | \"danger\""
         },
         {
           "name": "CommandPalette",
@@ -3852,10 +3858,24 @@
             },
             {
               "name": "hint",
+              "type": "ReactNode | ((state: { query: string; }) => ReactNode)",
+              "required": false,
+              "default": null,
+              "description": "A tip about what can be searched. A node is shown while the field is empty. A function is called with the current query on every render and decides for itself (return `null` to show nothing), so a hint can show for a short query (\"Type at least 2 characters\"). It is not shown while `bodyOverride` is set."
+            },
+            {
+              "name": "hintPlacement",
+              "type": "\"top\" | \"bottom\"",
+              "required": false,
+              "default": "\"bottom\"",
+              "description": "Where the hint sits: `bottom` (default) under the results, `top` above them so it stays in view in a long list."
+            },
+            {
+              "name": "notice",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": "Text under the list while the field is empty: a tip about what can be searched."
+              "description": "Content above the results that does not replace them (an error from the server search, a warning about stale results). It sits in a region outside the listbox, so it is not an option, and the arrows and Enter keep working on the commands. The palette gives it no role: wrap an error in `role=\"alert\"` and a plain note in nothing."
             },
             {
               "name": "filter",
@@ -3876,7 +3896,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "A search is in flight: `aria-busy` on the results, and the empty message waits, so \"No results\" does not flash before the server answers."
+              "description": "A search is in flight: `aria-busy` on the results, the empty message waits, so \"No results\" does not flash before the server answers, and `labels.loading` (when given) is shown below the commands and announced once."
             },
             {
               "name": "groupOrder",
@@ -3920,7 +3940,7 @@
           "name": "CommandPaletteLabels",
           "kind": "type",
           "description": "",
-          "definition": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }"
+          "definition": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; loading?: string | undefined; }"
         },
         {
           "name": "CommandPaletteProps",
@@ -3936,8 +3956,9 @@
         }
       ],
       "aliases": {
-        "CommandItem": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }",
-        "CommandPaletteLabels": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; }"
+        "CommandItem": "{ key: string; label: string; description?: string | undefined; group?: string | undefined; icon?: ReactNode; tone?: CommandItemTone | undefined; keywords?: string | undefined; keepOpen?: boolean | undefined; onSelect: () => void; }",
+        "CommandItemTone": "\"default\" | \"accent\" | \"danger\"",
+        "CommandPaletteLabels": "{ title: string; placeholder: string; empty: (query: string) => ReactNode; resultCount: (count: number) => string; loading?: string | undefined; }"
       },
       "story": {
         "docsId": "components-overlays-commandpalette--docs",
@@ -3977,6 +3998,14 @@
           {
             "export": "ServerSideSearch",
             "id": "components-overlays-commandpalette--server-side-search"
+          },
+          {
+            "export": "ServerSearchWithStatus",
+            "id": "components-overlays-commandpalette--server-search-with-status"
+          },
+          {
+            "export": "IconTones",
+            "id": "components-overlays-commandpalette--icon-tones"
           }
         ]
       },
@@ -4044,6 +4073,9 @@
         "--lufia-color-border-strong",
         "--lufia-color-border-subtle",
         "--lufia-color-focus-ring",
+        "--lufia-color-status-danger-bg",
+        "--lufia-color-status-danger-fg",
+        "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
@@ -4111,7 +4143,7 @@
             },
             {
               "name": "sheetPlacement",
-              "type": "\"bottom\" | \"top\"",
+              "type": "\"top\" | \"bottom\"",
               "required": false,
               "default": null,
               "description": "Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`."
@@ -6056,7 +6088,7 @@
             },
             {
               "name": "sheetPlacement",
-              "type": "\"bottom\" | \"top\"",
+              "type": "\"top\" | \"bottom\"",
               "required": false,
               "default": "\"bottom\"",
               "description": "Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`."

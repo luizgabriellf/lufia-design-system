@@ -78,6 +78,21 @@ runs, for commands that show their answer inside.
 <Canvas of={Stories.AnswerReplacesResults} />
 <Canvas of={Stories.ServerSideSearch} />
 
+### Server search status
+
+- `labels.loading` ("Searching…") shows a spinner row below the commands while `loading` is true, with a fixed height so
+  nothing above it moves. A polite status announces it once per search, not on every keystroke. Without the label,
+  `loading` shows nothing.
+- `hint` takes a node (shown while the field is empty) or a function of `{ query }` that returns the hint or `null`, so it
+  can ask for more characters. `hintPlacement="top"` keeps it above a long list; the default `bottom` is unchanged.
+- `notice` renders above the results without replacing them: an error from the server, or a note that the results are
+  stale. It lives outside the listbox, so it is not an option, and the arrow keys and Enter keep working. The palette gives
+  it no role: wrap an error in `role="alert"`. Use `bodyOverride` when the content should replace the commands.
+- `CommandItem.tone` tints the icon: `accent` for create or assistant actions, `danger` for destructive ones.
+
+<Canvas of={Stories.ServerSearchWithStatus} />
+<Canvas of={Stories.IconTones} />
+
 </Section>
 
 <Section id="accessibility">
