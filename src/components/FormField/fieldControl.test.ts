@@ -29,12 +29,19 @@ describe("field control autofill CSS", () => {
     expect(body).toContain("filter: none");
   });
 
-  it.each(["-webkit-autofill", "autofill"])("keeps the danger line above the cover for :%s", (pseudo) => {
-    const body = rule(baseCss, `.box[data-invalid] .native:${pseudo}`);
-    expect(body).toMatch(
-      /inset 0 0 0 var\(--lufia-border-width-thin\) var\(--lufia-color-status-danger-fg\),/,
+  it("draws the invalid inner line once, on the box, and not through autofill rules", () => {
+    const body = rule(baseCss, ".box[data-invalid]::after");
+    expect(body).toContain("position: absolute");
+    expect(body).toContain("pointer-events: none");
+    expect(body).toContain(
+      "box-shadow: inset 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-status-danger-fg)",
     );
-    expect(body).toContain(COVER);
+    expect(rule(baseCss, ".box[data-invalid]")).not.toContain("box-shadow");
+    const invalidAutofill = rules(source).filter((r) =>
+      r.selectors.some((x) => x.includes("data-invalid") && x.includes("autofill")),
+    );
+    expect(invalidAutofill).toEqual([]);
+    expect(rule(forcedCss, ".box[data-invalid]::after")).toContain("CanvasText");
   });
 
   it.each(["-webkit-autofill", "autofill"])(
@@ -49,14 +56,17 @@ describe("field control autofill CSS", () => {
     },
   );
 
-  it.each(["-webkit-autofill", "autofill"])("drops the cover for :%s under forced-colors", (pseudo) => {
-    const body = rule(forcedCss, `.native:${pseudo}`);
-    expect(body).toContain("box-shadow: none");
-    expect(body).toContain("FieldText");
-  });
+  it.each(["-webkit-autofill", "autofill"])(
+    "drops the cover for :%s under forced-colors, in every box state",
+    (pseudo) => {
+      const body = rule(forcedCss, `.box[class] .native:${pseudo}`);
+      expect(body).toContain("box-shadow: none");
+      expect(body).toContain("FieldText");
+    },
+  );
 
-  it("squares the inner corners beside an affix", () => {
-    expect(rule(baseCss, ".affix + .native")).toContain("border-start-start-radius: 0");
-    expect(rule(baseCss, ".native:has(+ .affix)")).toContain("border-end-end-radius: 0");
+  it("squares the inner corners beside any sibling", () => {
+    expect(rule(baseCss, "* + .native")).toContain("border-start-start-radius: 0");
+    expect(rule(baseCss, ".native:not(:last-child)")).toContain("border-end-end-radius: 0");
   });
 });
