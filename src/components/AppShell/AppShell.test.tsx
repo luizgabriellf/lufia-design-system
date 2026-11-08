@@ -5,9 +5,17 @@ import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { AppShell, type AppShellProps } from "./AppShell";
-import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
+import {
+  ShellPrimaryActionOwner,
+  ShellPrimaryActionSlot,
+  useShellPrimaryAction,
+  useShellPrimaryActionState,
+} from "./primaryAction";
+import { readFileSync } from "node:fs";
 import { useState, type ReactNode } from "react";
 import type { ShellNavGroup } from "./navigation";
+
+const css = readFileSync("src/components/AppShell/AppShell.module.css", "utf8");
 
 const groups: ShellNavGroup[] = [
   {
@@ -573,6 +581,62 @@ describe("AppShell slots", () => {
     it("renders nothing from the slot outside a shell", () => {
       const { container } = render(<ShellPrimaryActionSlot />);
       expect(container).toBeEmptyDOMElement();
+    });
+
+    it("exposes the current action and its description through useShellPrimaryActionState", async () => {
+      const user = userEvent.setup();
+      const onSelect = vi.fn();
+      const seen: Array<ReturnType<typeof useShellPrimaryActionState>> = [];
+      function Reader() {
+        const state = useShellPrimaryActionState();
+        seen.push(state);
+        return state?.action ? (
+          <button type="button" onClick={state.action.onSelect}>
+            {`Palette: ${state.action.label} (${state.action.description ?? "none"})`}
+          </button>
+        ) : null;
+      }
+      const { rerender } = render(
+        <AppShell groups={groups} labels={labels} primaryAction={{ label: "Default action" }}>
+          <Reader />
+        </AppShell>,
+      );
+      expect(seen.at(-1)).toMatchObject({ isFallback: true, action: { label: "Default action" } });
+      rerender(
+        <AppShell groups={groups} labels={labels} primaryAction={{ label: "Default action" }}>
+          <Reader />
+          <Page action={{ label: "New order", description: "Start an order", onSelect }} />
+        </AppShell>,
+      );
+      expect(seen.at(-1)).toMatchObject({ isFallback: false });
+      await user.click(screen.getByRole("button", { name: "Palette: New order (Start an order)" }));
+      expect(onSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns null from useShellPrimaryActionState outside a shell", () => {
+      let state: ReturnType<typeof useShellPrimaryActionState> | undefined;
+      function Reader() {
+        state = useShellPrimaryActionState();
+        return null;
+      }
+      render(<Reader />);
+      expect(state).toBeNull();
+    });
+
+    it("marks the shell's default as a fallback while a ShellPrimaryActionOwner is in the page", () => {
+      const markup = renderToString(
+        <AppShell groups={groups} labels={labels} primaryAction={{ label: "Default action" }}>
+          <ShellPrimaryActionSlot />
+          <ShellPrimaryActionOwner />
+        </AppShell>,
+      );
+      expect(markup).toContain("data-lufia-shell-primary-owner");
+      expect(markup).toMatch(/data-fallback="true"/);
+      expect(css).toMatch(
+        /\.shell:has\(\[data-lufia-shell-primary-owner\]\) \.float \[data-fallback\][^{]*\{\s*visibility: hidden/,
+      );
+      render(<ShellPrimaryActionOwner />);
+      expect(document.querySelector("[data-lufia-shell-primary-owner]")).toHaveAttribute("hidden");
     });
   });
 

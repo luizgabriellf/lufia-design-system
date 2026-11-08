@@ -252,6 +252,7 @@ navigation; every piece is optional and none remounts the page.
 | `mainPending`          | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
 | `routeTrackLinks`      | Link clicks start the bar alongside `routePending`: the bar shows while either is in progress. Default `true` without `routePending` and `false` with it. Set it `true` to drive query-string navigations (which link tracking ignores) through `routePending` and keep tracking link clicks. The 10-second safety timeout still ends any run.                                     |
 | `routeTransitionProps` | A `className` and `data-*` attributes for the region that plays the route motion, so your own CSS can stagger the arriving page's sections off the `data-route-enter` its children get. Animate `transform` and `opacity` only and turn it off under `prefers-reduced-motion` (the shell sets no marker then anyway).                                                              |
+| `routeProgressEvents`  | The window events that start and end the bar from code. Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch; pass `{ start, done }` names when existing code or a test already raises its own.                                                                                                                                                              |
 | `routeProgress`        | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
 
 Timing is yours: when to show `mainPending` (most apps wait a few hundred milliseconds, so fast navigations never show a
@@ -260,6 +261,30 @@ for an app that draws the bar itself.
 
 <Canvas of={Stories.RouteMotionAndPending} />
 <Canvas of={Stories.StaggeredRouteEntrance} />
+
+#### Starting the bar from code
+
+A navigation that no link click or `routePending` describes (a `router.push` after a save, a programmatic search-param
+change) starts the bar with `startRouteProgress()` and ends it with `doneRouteProgress()`. Both dispatch a window event
+(`ROUTE_PROGRESS_START_EVENT`, `ROUTE_PROGRESS_DONE_EVENT`), so they work from any module, outside React too, and do
+nothing on the server. A run started this way combines with `routePending` and tracked link clicks: the bar stays while
+any of them is in progress, and a `routeKey` change or the 10-second safety timeout still ends everything.
+
+```tsx
+import { doneRouteProgress, startRouteProgress } from "@lufia/design-system/components/AppShell";
+
+async function save() {
+  startRouteProgress();
+  try {
+    await submit();
+    router.push(next); // the routeKey change finishes the bar
+  } catch {
+    doneRouteProgress(); // nothing navigated: end the run
+  }
+}
+```
+
+<Canvas of={Stories.RouteProgressFromCode} />
 
 #### Floating bar fade
 
@@ -272,6 +297,17 @@ under the bar fades out instead of ending in a hard edge. Nothing is drawn unles
 `ShellPrimaryActionSlot`: warm the destination there. `desktopPrimaryFallback={false}` keeps the shell's default action out
 of the wide-screen slot until a page registers its own (the phone bar still shows the default), so a hard load never
 flashes an action the page is about to replace. The default is marked `data-fallback` until a page takes over, for CSS.
+
+A page registers in a layout effect, so a client navigation never paints the previous page's action. On a hard load the
+page registers only once it hydrates; render `ShellPrimaryActionOwner` in the page's server markup and the shell keeps its
+default hidden (its place kept), on the floating bar and in the slot, until the page's action arrives.
+
+`useShellPrimaryActionState()` reads the current action without registering one (`{ action, isFallback }`, or `null`
+outside a shell), so a command palette, a shortcut or a help panel can list it in step with the floating bar. The action's
+`description` is there for such lists; the shell itself does not draw it.
+
+<Canvas of={Stories.PrimaryActionInPalette} />
+<Canvas of={Stories.PrimaryActionOwnerMark} />
 
 #### A long navigation scrolls itself
 
@@ -360,6 +396,12 @@ nothing while the page is pinch-zoomed and where `visualViewport` does not exist
 
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
 made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabber, the header and the body alike.
+
+A release dismisses once the sheet has moved 18% of its height, kept between 64 and 112 pixels, or on a flick of 0.6 px/ms
+over at least 24 pixels. `dragThreshold` (`sheetDragThreshold` on the shell) changes any of these: `{ ratio, min, max,
+flickVelocity, flickDistance }`, each optional; `SHEET_DRAG_THRESHOLD` holds the defaults.
+
+<Canvas of={SheetStories.CustomDragThreshold} />
 
 ### All states
 

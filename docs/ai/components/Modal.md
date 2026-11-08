@@ -52,6 +52,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `headerAction` | `ReactNode` | no |  | Extra controls placed beside the close button in the header. |
 | `footer` | `ReactNode` | no |  | Content of the footer bar, usually the actions. The bar is left out when this is empty. |
 | `footerLayout` | `"row" \| "stack"` | no | `"row"` | How the footer actions are laid out on a narrow phone (30rem and below). `row` (default) keeps them side by side in DOM order, so the primary action goes last, at the inline end; text actions grow to fill the bar and wrap if their labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top. |
+| `footerStackAt` | `"sheet" \| "narrow"` | no | `"narrow"` | Up to which width `footerLayout="stack"` stacks the actions. `narrow` (default) stacks at 30rem (480px) and below; `sheet` stacks at 37.5rem (600px) and below, the width where the dialog becomes a bottom sheet, so a footer with long labels never sits side by side in a sheet. Ignored with `footerLayout="row"`. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `labels.close`. |
 | `hideCloseButton` | `boolean` | no | `false` | Leave out the close button, e.g. when the footer already offers the way out. Escape and outside click still apply. |
 | `busy` | `boolean` | no | `false` | An action that dismissing would not abort is in flight. Sets `aria-busy`, disables the close button and refuses every dismissal (Escape, outside click, the close button), so a refused dismissal is perceivable and not a silent no-op. |
@@ -152,4 +153,5 @@ primary action sits on top.
 - `components-overlays-modal--stacked-modals`
 - `components-overlays-modal--phone-footer`
 - `components-overlays-modal--phone-footer-stacked`
+- `components-overlays-modal--sheet-footer-stacked`
 - `components-overlays-modal--all-themes`

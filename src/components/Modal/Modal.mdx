@@ -175,7 +175,9 @@ default (`closeLabel`, or `labels.close` from [LufiaProvider](?path=/docs/compon
 On a narrow phone (30rem and below) the footer stays a row. Text actions grow to fill the bar, labels centred, the last
 one in DOM order (the primary) at the inline end, in right-to-left too. A label that cannot fit wraps the action onto its
 own line instead of overflowing. Icon-only triggers, such as a `MoreActions` placed first, keep their natural size. Pass
-`footerLayout="stack"` for the older full-width column with the primary on top.
+`footerLayout="stack"` for the older full-width column with the primary on top. It stacks at 30rem and below; add
+`footerStackAt="sheet"` to stack from 37.5rem, the width where the dialog becomes a bottom sheet, when long labels would
+otherwise share a row in the sheet.
 
 </Section>
 

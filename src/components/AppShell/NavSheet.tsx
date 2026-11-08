@@ -11,7 +11,7 @@ import { NavSurfaceContext } from "./navSurface";
 import { usePresence } from "../internal/usePresence";
 import { useNavScrollHints } from "./useNavScrollHints";
 import { useSheetBodyDrag } from "./useSheetBodyDrag";
-import { useSheetDrag } from "./useSheetDrag";
+import { useSheetDrag, type SheetDragThreshold } from "./useSheetDrag";
 import styles from "./NavSheet.module.css";
 
 export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "title"> & {
@@ -27,6 +27,12 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   closeLabel?: string;
   /** Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. */
   swipeToDismiss?: boolean;
+  /**
+   * When a released drag dismisses the sheet: a share of its height kept between a shortest and a longest distance, or a
+   * quick flick. Each field you leave out keeps its default (`SHEET_DRAG_THRESHOLD`: 18% of the height, kept between
+   * 64 and 112 pixels; a flick of 0.6 px/ms over 24 pixels). Applies to the grabber, the header and the body alike.
+   */
+  dragThreshold?: SheetDragThreshold;
   /**
    * Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an
    * open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`.
@@ -79,6 +85,7 @@ export function NavSheet({
   footer,
   closeLabel,
   swipeToDismiss = true,
+  dragThreshold,
   closeOnNavigate = false,
   container,
   renderAs = "portal",
@@ -107,9 +114,9 @@ export function NavSheet({
   });
   useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
   useBodyScrollLock(shown);
-  const drag = useSheetDrag(close, swipeToDismiss);
+  const drag = useSheetDrag(close, swipeToDismiss, dragThreshold);
   // The panel exists once the sheet is shown and has somewhere to mount (not before the first client render).
-  useSheetBodyDrag(panel, swipeToDismiss && shown && Boolean(container ?? client), close);
+  useSheetBodyDrag(panel, swipeToDismiss && shown && Boolean(container ?? client), close, dragThreshold);
   const closeOnLink = (event: MouseEvent<HTMLElement>) => {
     // A router's link prevents the default itself, so `defaultPrevented` says nothing about whether it navigates.
     if (!closeOnNavigate) return;

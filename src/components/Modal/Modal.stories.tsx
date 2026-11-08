@@ -344,6 +344,15 @@ export const PhoneFooterStacked: Story = {
   globals: { viewport: { value: "w320", isRotated: false } },
 };
 
+/**
+ * `footerStackAt="sheet"`: the stack starts at 37.5rem, where the dialog turns into a bottom sheet, so long labels never
+ * share a row in the sheet. Resize between 480 and 600 pixels to see it differ from the default.
+ */
+export const SheetFooterStacked: Story = {
+  args: { startOpen: true, footerLayout: "stack", footerStackAt: "sheet" },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
 export const AllThemes: Story = {
   render: () => (
     <ThemeMatrix>

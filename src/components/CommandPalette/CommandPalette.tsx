@@ -109,6 +109,11 @@ export type CommandPaletteProps = {
    * palette then stays open, and the next Escape closes it. Return anything else to close.
    */
   onEscape?: () => boolean | void;
+  /**
+   * Two-step Escape: while the field holds text, Escape first clears it (and calls `onQueryChange("")`), and the next Escape
+   * closes. `onEscape` is asked first and wins when it returns `true`. Default `false`: Escape closes at once.
+   */
+  escapeClearsQuery?: boolean;
   /** Open on Ctrl+K and Cmd+K. Default `true`. */
   shortcut?: boolean;
   /** Where the palette is mounted. Defaults to `document.body`. */
@@ -149,6 +154,7 @@ export function CommandPalette({
   groupOrder,
   bodyOverride,
   onEscape,
+  escapeClearsQuery = false,
   shortcut = true,
   container,
 }: CommandPaletteProps) {
@@ -202,7 +208,14 @@ export function CommandPalette({
   const overridden = bodyOverride !== undefined && bodyOverride !== null && bodyOverride !== false;
   useFocusTrap(phase === "open", panel, {
     onEscape: () => {
-      if (onEscape?.() !== true) close();
+      if (onEscape?.() === true) return;
+      if (escapeClearsQuery && query !== "") {
+        setQuery("");
+        setActive(0);
+        onQueryChange?.("");
+        return;
+      }
+      close();
     },
     initialFocus: field,
     inertBackground: true,

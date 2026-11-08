@@ -240,6 +240,50 @@ describe("Combobox typeahead and empty state", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2 cities");
   });
 
+  it("caps the list with maxResults after the filter, and tells resultsLabel the total", async () => {
+    const user = userEvent.setup();
+    const many: ComboboxOption[] = Array.from({ length: 30 }, (_, i) => ({
+      value: `site-${i}`,
+      label: `Site ${i}`,
+      description: i % 2 ? "North" : "South",
+    }));
+    render(
+      <Combobox
+        aria-label="City"
+        options={many}
+        {...texts}
+        maxResults={5}
+        // A filter that also reads the description, as a picker with search text does.
+        filter={(option, query) =>
+          `${option.label} ${option.description ?? ""}`.toLowerCase().includes(query.toLowerCase())
+        }
+        resultsLabel={(count, total) => `${count} of ${total} sites`}
+      />,
+    );
+    await user.click(box());
+    expect(screen.getAllByRole("option")).toHaveLength(5);
+    expect(screen.getByRole("status")).toHaveTextContent("5 of 30 sites");
+    await user.keyboard("north");
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Site 1North",
+      "Site 3North",
+      "Site 5North",
+      "Site 7North",
+      "Site 9North",
+    ]);
+    expect(screen.getByRole("status")).toHaveTextContent("5 of 15 sites");
+    await user.click(screen.getByRole("option", { name: /Site 9/ }));
+    expect(box()).toHaveValue("Site 9");
+  });
+
+  it("shows every match when they fit under maxResults", async () => {
+    const user = userEvent.setup();
+    renderCombobox({ maxResults: 10, resultsLabel: (n, total) => `${n}/${total}` });
+    await user.click(box());
+    expect(screen.getAllByRole("option")).toHaveLength(4);
+    expect(screen.getByRole("status")).toHaveTextContent("4/4");
+  });
+
   it("uses a custom filter, or none", async () => {
     const user = userEvent.setup();
     const { rerender } = renderCombobox({ filter: (option, query) => option.value === query });

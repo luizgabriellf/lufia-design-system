@@ -49,6 +49,12 @@ By default the label must contain the typed text, ignoring case and diacritics (
 the order you gave them. Typing highlights the first enabled match, so Enter picks it. Pass `filter={(option, query) => boolean}`
 to match another way, or `filter={false}` to show `options` as given.
 
+`maxResults` caps a long local list at its first matches, applied after the filter; typing narrows it. `resultsLabel` then
+gets both the number shown and the number that matched (`(count, total) => string`), so the announcement can say how many
+more there are.
+
+<Canvas of={Stories.CappedResults} />
+
 </Section>
 
 <Section id="examples">
