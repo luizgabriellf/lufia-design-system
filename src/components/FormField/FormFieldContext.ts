@@ -12,6 +12,8 @@ export type FormFieldControlProps = {
   "aria-invalid"?: true;
   /** Native `required`, for controls that have one. Other widgets map it to `aria-required`. */
   required?: boolean;
+  /** `true` for a required field that opted out of native `required` (`nativeRequired={false}`); absent otherwise. */
+  "aria-required"?: true;
   disabled?: boolean;
 };
 

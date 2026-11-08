@@ -16,6 +16,12 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
   error?: ReactNode;
   /** Marks the control required and shows an asterisk plus text for assistive technology. */
   required?: boolean;
+  /**
+   * Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the
+   * form validates on its own and shows its own messages: the control then gets `aria-required="true"` and no `required`,
+   * so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text.
+   */
+  nativeRequired?: boolean;
   disabled?: boolean;
   /**
    * Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of
@@ -44,6 +50,7 @@ export function FormField({
   hint,
   error,
   required,
+  nativeRequired = true,
   disabled,
   requiredLabel: requiredLabelProp,
   id,
@@ -61,7 +68,8 @@ export function FormField({
     id: baseId,
     "aria-describedby": [hintId, errorId].filter(Boolean).join(" ") || undefined,
     "aria-invalid": error ? true : undefined,
-    required: required || undefined,
+    required: (required && nativeRequired) || undefined,
+    "aria-required": required && !nativeRequired ? true : undefined,
     disabled: disabled || undefined,
   };
 

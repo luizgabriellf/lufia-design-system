@@ -64,6 +64,16 @@ Building your own control? `useFormFieldControl(props)` merges a control's own p
 An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears.
 A required field has an asterisk (a shape) and the accessible text `required`, defaults to the `required` label of `LufiaProvider`, so an app sets the localized word once. `requiredLabel` overrides it for one field.
 
+A required field also puts the native `required` attribute on its control. When the form runs its own validation and shows its own messages (from the server or the app), set `nativeRequired={false}`: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form does not need `noValidate`. The label still shows the asterisk and the text. Keep the default when the browser's own validation is what you want.
+
+```tsx
+<FormField label="Project name" required nativeRequired={false} error={errors.name}>
+  <TextInput name="name" />
+</FormField>
+```
+
+A control that repeats an id already in the field's `aria-describedby` (the error id, for example) does not list it twice.
+
 ### Styling hooks
 
 The parts carry stable attributes for app-level styling and tests: `data-lufia-part="field"` (the root), `"label"`, `"hint"`, `"error"` and `"control"`. `control` wraps the children with `display: contents`, so it adds no box and the control stays a direct item of the field.

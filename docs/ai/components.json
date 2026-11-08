@@ -5677,6 +5677,13 @@
               "description": "Marks the control required and shows an asterisk plus text for assistive technology."
             },
             {
+              "name": "nativeRequired",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the form validates on its own and shows its own messages: the control then gets `aria-required=\"true\"` and no `required`, so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "required": false,
@@ -5711,7 +5718,7 @@
           "name": "FormFieldControlProps",
           "kind": "type",
           "description": "What a control needs from the field around it.",
-          "definition": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }"
+          "definition": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; \"aria-required\"?: true | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "FormFieldProps",
@@ -5722,8 +5729,8 @@
         {
           "name": "useFormFieldControl",
           "kind": "hook",
-          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists, and a control is invalid, required or disabled when either side says so. Use this when building a control that should join a field; the controls of this package already do.",
-          "signature": "(own?: OwnProps): { id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; disabled: true | undefined; }",
+          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.",
+          "signature": "(own?: OwnProps): { id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; \"aria-required\": true | undefined; disabled: true | undefined; }",
           "parameters": [
             {
               "name": "own",
@@ -5732,7 +5739,7 @@
               "description": ""
             }
           ],
-          "returns": "{ id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; disabled: true | undefined; }",
+          "returns": "{ id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; \"aria-required\": true | undefined; disabled: true | undefined; }",
           "returnMembers": [
             {
               "name": "id",
@@ -5759,6 +5766,12 @@
               "description": ""
             },
             {
+              "name": "aria-required",
+              "type": "true | undefined",
+              "required": true,
+              "description": ""
+            },
+            {
               "name": "disabled",
               "type": "true | undefined",
               "required": true,
@@ -5777,7 +5790,7 @@
         }
       ],
       "aliases": {
-        "FormFieldControlProps": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }"
+        "FormFieldControlProps": "{ id: string; \"aria-describedby\"?: string | undefined; \"aria-invalid\"?: true | undefined; required?: boolean | undefined; \"aria-required\"?: true | undefined; disabled?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-forms-formfield--docs",

@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { axe } from "../../test/axe";
 import { LufiaProvider } from "../LufiaProvider";
 import { FormField } from "./FormField";
+import { TextInput } from "../TextInput";
+import { Combobox } from "../Combobox";
 import { useFormFieldControl } from "./useFormFieldControl";
 
 function Probe(props: { "aria-describedby"?: string; required?: boolean }) {
@@ -145,5 +147,73 @@ describe("FormField", () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("lists each described-by id once, in order, when the control repeats the error id", () => {
+    render(
+      <FormField label="Name" id="x" hint="Hint" error="Error">
+        <TextInput aria-describedby="x-error  extra  x-hint " />
+      </FormField>,
+    );
+    expect(screen.getByLabelText("Name")).toHaveAttribute("aria-describedby", "x-hint x-error extra");
+  });
+
+  it("sets no aria-describedby when every token is empty", () => {
+    render(<TextInput aria-label="Name" aria-describedby="  " />);
+    expect(screen.getByLabelText("Name")).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("puts native required on the control by default", () => {
+    render(
+      <FormField label="Name" required>
+        <TextInput />
+      </FormField>,
+    );
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("required");
+    expect(input).not.toHaveAttribute("aria-required");
+  });
+
+  it("gives aria-required and no native required with nativeRequired={false}", () => {
+    render(
+      <FormField label="Name" required nativeRequired={false}>
+        <TextInput />
+      </FormField>,
+    );
+    const input = screen.getByRole("textbox");
+    expect(input).not.toHaveAttribute("required");
+    expect(input).toHaveAttribute("aria-required", "true");
+    expect(input).toBeValid();
+  });
+
+  it("keeps the mark and text of a required field with nativeRequired={false}", () => {
+    render(
+      <FormField label="Name" required nativeRequired={false} requiredLabel="obrigatório">
+        <TextInput />
+      </FormField>,
+    );
+    expect(screen.getByRole("textbox", { name: /Name.*\(obrigatório\)/ })).toBeInTheDocument();
+  });
+
+  it("marks a Combobox aria-required, without blocking submit, with nativeRequired={false}", () => {
+    render(
+      <FormField label="City" required nativeRequired={false}>
+        <Combobox options={[{ value: "a", label: "A" }]} loadingLabel="Loading" emptyLabel="None" />
+      </FormField>,
+    );
+    const input = screen.getByRole("combobox");
+    expect(input).toHaveAttribute("aria-required", "true");
+    expect((input as HTMLInputElement).validity.valid).toBe(true);
+  });
+
+  it("does not turn a control's own required into aria-only", () => {
+    render(
+      <FormField label="Name" required nativeRequired={false}>
+        <TextInput required />
+      </FormField>,
+    );
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("required");
+    expect(input).not.toHaveAttribute("aria-required");
   });
 });

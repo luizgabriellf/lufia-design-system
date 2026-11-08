@@ -45,6 +45,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `hint` | `ReactNode` | no |  | Help shown under the control, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. |
+| `nativeRequired` | `boolean` | no | `true` | Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the form validates on its own and shows its own messages: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text. |
 | `disabled` | `boolean` | no |  |  |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
 | `children` | `ReactNode \| ((control: FormFieldControlProps) => ReactNode)` | yes |  | The control. A node reaches the controls of this package through context; a function receives the props to spread on any other control (a third-party input, a native element). |
@@ -57,10 +58,10 @@ No props of its own. Native element attributes pass through.
 
 ### `useFormFieldControl`
 
-Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists, and a control is invalid, required or disabled when either side says so. Use this when building a control that should join a field; the controls of this package already do.
+Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.
 
 ```ts
-useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby": string | undefined; "aria-invalid": true | undefined; required: true | undefined; disabled: true | undefined; }
+useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby": string | undefined; "aria-invalid": true | undefined; required: true | undefined; "aria-required": true | undefined; disabled: true | undefined; }
 ```
 
 | Parameter | Type | Required | Description |
@@ -75,6 +76,7 @@ Returned members:
 | `aria-describedby` | `string \| undefined` | yes |  |
 | `aria-invalid` | `true \| undefined` | yes |  |
 | `required` | `true \| undefined` | yes |  |
+| `aria-required` | `true \| undefined` | yes |  |
 | `disabled` | `true \| undefined` | yes |  |
 
 ### `useFormFieldLabelId`
@@ -87,7 +89,7 @@ useFormFieldLabelId(): string | undefined
 
 ## Types
 
-- `FormFieldControlProps`: `{ id: string; "aria-describedby"?: string | undefined; "aria-invalid"?: true | undefined; required?: boolean | undefined; disabled?: boolean | undefined; }`
+- `FormFieldControlProps`: `{ id: string; "aria-describedby"?: string | undefined; "aria-invalid"?: true | undefined; required?: boolean | undefined; "aria-required"?: true | undefined; disabled?: boolean | undefined; }`
 
 ## Example
 
