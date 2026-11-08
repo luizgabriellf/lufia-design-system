@@ -1190,7 +1190,7 @@ test.describe("shell follow-ups", () => {
   test("the menu button and the sheet's close button take their own names", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openStory(page, "components-navigation-appshell--distinct-menu-names");
-    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    await page.getByRole("button", { name: "Open menu" }).click();
     const sheet = page.getByRole("dialog", { name: "Menu" });
     await expect(sheet).toBeVisible();
     await sheet.getByRole("button", { name: "Close menu" }).click();
@@ -1407,7 +1407,9 @@ test.describe("floating bar scrim and the bar over the open menu", () => {
       page,
     }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await openStory(page, "components-navigation-appshell--phone-menu-open", "default", mode);
+      await openStory(page, "components-navigation-appshell--phone", "default", mode);
+      const opener = page.getByRole("button", { name: "Menu", exact: true });
+      await opener.click();
       const dialog = page.getByRole("dialog");
       const close = dialog.getByRole("button", { name: "Close", exact: true });
       await expect(close).toBeVisible();
@@ -1424,7 +1426,6 @@ test.describe("floating bar scrim and the bar over the open menu", () => {
       expect(await runAxe(page, "body", { rules: { region: { enabled: false } } })).toEqual([]);
       await close.click();
       await expect(dialog).toBeHidden();
-      const opener = page.getByRole("button", { name: "Menu", exact: true });
       await expect(opener).toBeFocused();
       const openerBox = (await opener.boundingBox())!;
       expect(Math.abs(openerBox.x - closeBox.x)).toBeLessThan(1);
