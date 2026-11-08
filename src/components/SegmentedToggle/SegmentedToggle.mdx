@@ -62,7 +62,8 @@ segment is activated again.
   size="sm"
   allowDeselect
   value={status} // string | null
-  onValueChange={setStatus} // (value: string | null) => void, because of allowDeselect
+  onValueChange={setStatus} // (value: string) => void
+  onDeselect={() => setStatus(null)}
   options={[
     { value: "pass", label: "Pass", tone: "success" },
     { value: "fail", label: "Fail", tone: "danger" },
@@ -71,9 +72,9 @@ segment is activated again.
 />
 ```
 
-`onValueChange` receives a `string`, and also `null` only when `allowDeselect` is set (the prop types are a union on
-`allowDeselect`), so existing handlers typed `(value: string) => void` keep compiling. With `name`, nothing is submitted while
-the value is `null`.
+`onValueChange` always receives a `string`, so the prop types stay one plain object type (wrappers, `Omit` and `ComponentProps`
+keep working). Clearing the choice with `allowDeselect` calls `onDeselect` instead, so `null` never reaches `onValueChange`.
+With `name`, nothing is submitted while the value is `null`. A form reset returns to `defaultValue`, which may be `null`.
 
 ### All themes
 

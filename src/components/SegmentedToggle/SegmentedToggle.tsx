@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
+import { useRef, useState, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormChangeEvents } from "../FormField/useFormChangeEvents";
 import { useFormReset } from "../FormField/useFormReset";
@@ -23,7 +23,7 @@ export type SegmentedToggleOption = {
 
 export type SegmentedToggleTone = "neutral" | "success" | "warning" | "danger";
 
-type SegmentedToggleBaseProps = Omit<
+export type SegmentedToggleProps = Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue" | "children"
 > & {
@@ -35,8 +35,20 @@ type SegmentedToggleBaseProps = Omit<
    * enabled segment is still the tab stop, and an arrow key chooses (selection follows focus) as it does with a value.
    */
   value?: string | null;
-  /** Initial value when `value` is not given. Defaults to the first enabled option. */
-  defaultValue?: string;
+  /**
+   * Initial value when `value` is not given; `null` starts with nothing chosen. Defaults to the first enabled option. A form
+   * reset goes back to it (to `null` when a controlled `value` started as `null`).
+   */
+  defaultValue?: string | null;
+  /** Called with the value the user chose. Never `null`: a deselect is reported by `onDeselect`. */
+  onValueChange?: (value: string) => void;
+  /**
+   * When true, activating the chosen segment again clears the choice and calls `onDeselect`. With a controlled `value`,
+   * set it to `null` there; an uncontrolled toggle clears itself.
+   */
+  allowDeselect?: boolean;
+  /** Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen. */
+  onDeselect?: () => void;
   disabled?: boolean;
   /** Submitted with the form as `name=value`. */
   name?: string;
@@ -46,24 +58,6 @@ type SegmentedToggleBaseProps = Omit<
   size?: "sm" | "md";
   ref?: Ref<HTMLDivElement>;
 };
-
-export type SegmentedToggleProps = SegmentedToggleBaseProps &
-  (
-    | {
-        /**
-         * When true, activating the chosen segment again clears the choice and calls `onValueChange(null)`. Use it with a
-         * controlled `value` (an uncontrolled toggle cannot show "nothing chosen" once it has a default).
-         */
-        allowDeselect: true;
-        /** Called with the chosen value, or `null` when the chosen segment is activated again. */
-        onValueChange?: (value: string | null) => void;
-      }
-    | {
-        allowDeselect?: false;
-        /** Called with the value the user chose. */
-        onValueChange?: (value: string) => void;
-      }
-  );
 
 /**
  * Two to four compact choices where one is chosen (always, unless `value` is `null`), such as a view or a mode, as a WAI-ARIA radio group with
@@ -81,6 +75,7 @@ export function SegmentedToggle({
   value: valueProp,
   defaultValue,
   onValueChange,
+  onDeselect,
   allowDeselect,
   disabled,
   name,
@@ -91,11 +86,16 @@ export function SegmentedToggle({
   ...rest
 }: SegmentedToggleProps) {
   const container = useRef<HTMLDivElement | null>(null);
-  const fallback = defaultValue ?? options.find((option) => !option.disabled)?.value ?? "";
-  const [value, setValue] = useControllableState<string | null>(
-    valueProp,
-    fallback,
-    onValueChange as ((next: string | null) => void) | undefined,
+  // A controlled `value` that starts as `null` resets to nothing chosen, as `defaultValue={null}` does.
+  const [startedUnset] = useState(valueProp === null);
+  const fallback =
+    defaultValue !== undefined
+      ? defaultValue
+      : startedUnset
+        ? null
+        : (options.find((option) => !option.disabled)?.value ?? "");
+  const [value, setValue] = useControllableState<string | null>(valueProp, fallback, (next) =>
+    next === null ? onDeselect?.() : onValueChange?.(next),
   );
   useFormReset(container, () => setValue(fallback));
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));

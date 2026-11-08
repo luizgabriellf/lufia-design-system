@@ -9620,10 +9620,31 @@
             },
             {
               "name": "defaultValue",
-              "type": "string",
+              "type": "string | null",
               "required": false,
               "default": null,
-              "description": "Initial value when `value` is not given. Defaults to the first enabled option."
+              "description": "Initial value when `value` is not given; `null` starts with nothing chosen. Defaults to the first enabled option. A form reset goes back to it (to `null` when a controlled `value` started as `null`)."
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: string) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the value the user chose. Never `null`: a deselect is reported by `onDeselect`."
+            },
+            {
+              "name": "allowDeselect",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "When true, activating the chosen segment again clears the choice and calls `onDeselect`. With a controlled `value`, set it to `null` there; an uncontrolled toggle clears itself."
+            },
+            {
+              "name": "onDeselect",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen."
             },
             {
               "name": "disabled",
@@ -9659,65 +9680,9 @@
               "required": false,
               "default": null,
               "description": ""
-            },
-            {
-              "name": "allowDeselect",
-              "type": "true | false",
-              "required": false,
-              "default": null,
-              "description": "When true, activating the chosen segment again clears the choice and calls `onValueChange(null)`. Use it with a controlled `value` (an uncontrolled toggle cannot show \"nothing chosen\" once it has a default)."
-            },
-            {
-              "name": "onValueChange",
-              "type": "(value: string | null) => void | (value: string) => void",
-              "required": false,
-              "default": null,
-              "description": "Called with the chosen value, or `null` when the chosen segment is activated again."
             }
           ],
-          "nativeProps": true,
-          "variants": {
-            "discriminant": "allowDeselect",
-            "nativeTypesDiffer": false,
-            "branches": [
-              {
-                "name": "allowDeselect: true",
-                "props": [
-                  {
-                    "name": "allowDeselect",
-                    "type": "true",
-                    "required": true,
-                    "description": "When true, activating the chosen segment again clears the choice and calls `onValueChange(null)`. Use it with a controlled `value` (an uncontrolled toggle cannot show \"nothing chosen\" once it has a default)."
-                  },
-                  {
-                    "name": "onValueChange",
-                    "type": "(value: string | null) => void",
-                    "required": false,
-                    "description": "Called with the chosen value, or `null` when the chosen segment is activated again.",
-                    "onlyTypeDiffers": true
-                  }
-                ]
-              },
-              {
-                "name": "allowDeselect: false",
-                "props": [
-                  {
-                    "name": "allowDeselect",
-                    "type": "false",
-                    "required": false,
-                    "description": ""
-                  },
-                  {
-                    "name": "onValueChange",
-                    "type": "(value: string) => void",
-                    "required": false,
-                    "description": "Called with the value the user chose.",
-                    "onlyTypeDiffers": true
-                  }
-                ]
-              }
-            ]
-          }
+          "nativeProps": true
         },
         {
           "name": "SegmentedToggleOption",
@@ -9840,7 +9805,6 @@
         "--lufia-color-status-danger-border",
         "--lufia-color-status-danger-fg",
         "--lufia-color-status-neutral-bg",
-        "--lufia-color-status-neutral-fg",
         "--lufia-color-status-success-bg",
         "--lufia-color-status-success-border",
         "--lufia-color-status-success-fg",

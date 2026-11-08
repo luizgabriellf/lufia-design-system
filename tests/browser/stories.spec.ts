@@ -593,11 +593,16 @@ test.describe("stat tile as filters", () => {
 });
 
 test.describe("segmented toggle status picker", () => {
-  for (const theme of ["default", "example-brand"] as const) {
-    test(`an unset row shows no checked radio or indicator, and a tone colours the chosen one (${theme})`, async ({
+  for (const [theme, mode] of [
+    ["default", "light"],
+    ["default", "dark"],
+    ["example-brand", "light"],
+    ["example-brand", "dark"],
+  ] as const) {
+    test(`an unset row shows no checked radio or indicator, and a tone colours the chosen one (${theme}, ${mode})`, async ({
       page,
     }) => {
-      await openStory(page, "components-forms-segmentedtoggle--status-picker", theme);
+      await openStory(page, "components-forms-segmentedtoggle--status-picker", theme, mode);
       const rows = page.getByTestId("status-row");
       const unset = rows.nth(1);
       await expect(unset.getByRole("radio", { checked: true })).toHaveCount(0);

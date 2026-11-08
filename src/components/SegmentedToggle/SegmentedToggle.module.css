@@ -127,14 +127,14 @@
 
 /* Tone: colours the chosen segment (and the indicator behind it) with the status tokens. */
 .segment[aria-checked="true"][data-tone="neutral"] {
-  color: var(--lufia-color-status-neutral-fg);
+  color: var(--lufia-color-text-default);
   background: var(--lufia-color-status-neutral-bg);
-  border-color: var(--lufia-color-border-strong);
+  border-color: var(--lufia-color-text-default);
 }
 
 .indicator[data-tone="neutral"] {
   background: var(--lufia-color-status-neutral-bg);
-  border-color: var(--lufia-color-border-strong);
+  border-color: var(--lufia-color-text-default);
 }
 
 .segment[aria-checked="true"][data-tone="success"] {

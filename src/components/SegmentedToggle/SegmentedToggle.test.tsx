@@ -183,6 +183,12 @@ describe("SegmentedToggle", () => {
       render(<SegmentedToggle label="View" options={options} value={null} />);
       expect(checked()).toEqual(["false", "false", "false", "false"]);
       expect(screen.getAllByRole("radio").map((r) => r.tabIndex)).toEqual([0, -1, -1, -1]);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-unset");
+    });
+
+    it("has no data-unset when a value is chosen", () => {
+      render(<SegmentedToggle label="View" options={options} value="board" />);
+      expect(screen.getByRole("radiogroup")).not.toHaveAttribute("data-unset");
     });
 
     it("keeps the indicator hidden until something is chosen", async () => {
@@ -254,9 +260,10 @@ describe("SegmentedToggle", () => {
   });
 
   describe("allowDeselect", () => {
-    it("calls onValueChange(null) when the chosen segment is activated again", async () => {
+    it("calls onDeselect, not onValueChange, when the chosen segment is activated again", async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
+      const onDeselect = vi.fn();
       function Harness() {
         const [value, setValue] = useState<string | null>("board");
         return (
@@ -269,22 +276,35 @@ describe("SegmentedToggle", () => {
               onValueChange(next);
               setValue(next);
             }}
+            onDeselect={() => {
+              onDeselect();
+              setValue(null);
+            }}
           />
         );
       }
       render(<Harness />);
       await user.click(screen.getByRole("radio", { name: "Board" }));
-      expect(onValueChange).toHaveBeenCalledWith(null);
+      expect(onDeselect).toHaveBeenCalledTimes(1);
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "false");
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(onValueChange).toHaveBeenCalledWith("board");
+    });
+
+    it("clears an uncontrolled toggle", async () => {
+      const user = userEvent.setup();
+      render(<SegmentedToggle label="View" options={options} defaultValue="board" allowDeselect />);
+      await user.click(screen.getByRole("radio", { name: "Board" }));
       expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "false");
     });
 
-    it("keeps reporting the chosen value, never null, without allowDeselect", async () => {
+    it("keeps reporting the chosen value without allowDeselect", async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
       render(<SegmentedToggle label="View" options={options} value="board" onValueChange={onValueChange} />);
       await user.click(screen.getByRole("radio", { name: "Board" }));
       expect(onValueChange).toHaveBeenCalledWith("board");
-      expect(onValueChange).not.toHaveBeenCalledWith(null);
     });
   });
 
@@ -311,21 +331,53 @@ describe("SegmentedToggle", () => {
       rerender(<SegmentedToggle label="Result" options={toned} size="sm" />);
       expect(screen.getByRole("radiogroup")).toHaveAttribute("data-size", "sm");
     });
+  });
 
-    it("disables a single option", async () => {
+  describe("form reset to nothing chosen", () => {
+    it("resets a controlled null value to null, not to the first option", async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
+      function Harness() {
+        const [value, setValue] = useState<string | null>(null);
+        return (
+          <form data-testid="form">
+            <SegmentedToggle
+              label="View"
+              options={options}
+              name="view"
+              value={value}
+              onValueChange={(next) => {
+                onValueChange(next);
+                setValue(next);
+              }}
+              onDeselect={() => setValue(null)}
+            />
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+      render(<Harness />);
+      await user.click(screen.getByRole("radio", { name: "Map" }));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).get("view")).toBe("map");
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      screen.getAllByRole("radio").forEach((radio) => expect(radio).toHaveAttribute("aria-checked", "false"));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).has("view")).toBe(false);
+    });
+
+    it("resets an uncontrolled defaultValue of null to nothing chosen", async () => {
+      const user = userEvent.setup();
       render(
-        <SegmentedToggle
-          label="Result"
-          options={[...toned.slice(0, 2), { ...toned[2]!, disabled: true }]}
-          value={null}
-          onValueChange={onValueChange}
-        />,
+        <form data-testid="form">
+          <SegmentedToggle label="View" options={options} name="view" defaultValue={null} />
+          <button type="reset">Reset</button>
+        </form>,
       );
-      expect(screen.getByRole("radio", { name: "N/A" })).toBeDisabled();
-      await user.click(screen.getByRole("radio", { name: "N/A" }));
-      expect(onValueChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-unset");
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      screen.getAllByRole("radio").forEach((radio) => expect(radio).toHaveAttribute("aria-checked", "false"));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).has("view")).toBe(false);
     });
   });
 

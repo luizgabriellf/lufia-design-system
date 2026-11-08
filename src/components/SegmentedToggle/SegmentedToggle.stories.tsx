@@ -96,9 +96,9 @@ const resultOptions: SegmentedToggleOption[] = [
 export const StatusPicker: Story = {
   render: () => {
     const [rows, setRows] = useState<Record<string, string | null>>({
-      "Fire exits are clear": "pass",
-      "Extinguishers are inspected": null,
-      "First aid kit is stocked": "fail",
+      "Build passes": "pass",
+      "Docs updated": null,
+      Reviewed: "fail",
     });
     return (
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.75rem" }}>
@@ -122,6 +122,7 @@ export const StatusPicker: Story = {
               options={resultOptions}
               value={status}
               onValueChange={(next) => setRows((current) => ({ ...current, [item]: next }))}
+              onDeselect={() => setRows((current) => ({ ...current, [item]: null }))}
             />
           </li>
         ))}
