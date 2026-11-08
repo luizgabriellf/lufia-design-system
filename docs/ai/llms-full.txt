@@ -704,7 +704,7 @@ No props of its own.
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
 | `closeLabel` | `string` | no |  | Accessible name of the close button. Defaults to the provider's `close` label. |
-| `swipeToDismiss` | `boolean` | no | `true` | Let the grabber and header be dragged down to dismiss. Default `true`. |
+| `swipeToDismiss` | `boolean` | no | `true` | Let the grabber and header be dragged down to dismiss, and the body too while it is scrolled to the top. Default `true`. |
 | `closeOnNavigate` | `boolean` | no | `false` | Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`. |
 | `container` | `HTMLElement \| null` | no |  | Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both. |
