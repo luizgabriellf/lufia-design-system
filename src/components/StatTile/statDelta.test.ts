@@ -185,4 +185,8 @@ describe("computeStatDelta", () => {
     const down = run({ current: 1, previous: 4, locale: "ar-EG", formatValue });
     expect(down?.delta.startsWith(`${mark?.value}-3`)).toBe(true);
   });
+  it("keeps every digit of a large absolute change", () => {
+    const result = computeStatDelta({ ...base, current: 123456789012345, previous: 0 });
+    expect(result?.delta).toContain("123,456,789,012,345");
+  });
 });

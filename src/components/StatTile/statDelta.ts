@@ -59,15 +59,22 @@ export const DEFAULT_FLAT_THRESHOLD = 0.5;
 function signPrefix(locale: string | undefined, sign: 1 | -1): string {
   const parts = new Intl.NumberFormat(locale, { signDisplay: "always" }).formatToParts(sign);
   const digits = parts.findIndex((p) => p.type === "integer");
-  return parts
+  const prefix = parts
     .slice(0, digits)
     .map((p) => p.value)
     .join("");
+  // A locale that writes its sign after the number would leave no prefix; never show a change unsigned.
+  return prefix || (sign > 0 ? "+" : "-");
+}
+
+/** Drops binary float noise (10.05 - 10) without losing digits of large values. */
+function denoise(n: number): number {
+  return Math.abs(n) < 1e12 ? Number(n.toPrecision(12)) : n;
 }
 
 /** Rounds half away from zero, after dropping binary float noise (10.05 - 10 is not exactly 0.05). */
 function roundTo(n: number, digits: number): number {
-  const clean = Number(n.toPrecision(12));
+  const clean = denoise(n);
   const factor = 10 ** digits;
   return (Math.sign(clean) * Math.round(Math.abs(clean) * factor)) / factor;
 }
@@ -132,7 +139,7 @@ export function computeStatDelta(input: StatDeltaInput): StatDelta | null {
   let flat: boolean;
   if (absolute) {
     const format = formatValue ?? ((magnitude: number) => new Intl.NumberFormat(locale).format(magnitude));
-    const magnitude = format(Math.abs(Number(diff.toPrecision(12))));
+    const magnitude = format(Math.abs(denoise(diff)));
     flat = magnitude === format(0);
     const prefix = flat ? "" : signPrefix(locale, diff > 0 ? 1 : -1);
     change = `${prefix}${magnitude}`;
