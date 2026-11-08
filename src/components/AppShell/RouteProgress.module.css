@@ -1,7 +1,7 @@
 /* Scaled, not resized: the bar grows by `transform` on the compositor, never by `width`. */
 .bar {
   position: fixed;
-  z-index: var(--lufia-z-toast);
+  z-index: var(--lufia-z-tooltip);
   inset-block-start: 0;
   inset-inline: 0;
   block-size: 0.1875rem;
@@ -15,8 +15,12 @@
   transform-origin: 100% 50%;
 }
 
+/* Arrived: it jumps to the end and fades out, so it does not just vanish. */
 .bar[data-finishing] {
-  transition-duration: var(--lufia-motion-duration-instant);
+  opacity: 0;
+  transition:
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    opacity var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in);
 }
 
 @media (forced-colors: active) {

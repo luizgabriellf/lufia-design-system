@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type HTMLAttributes, type Key, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type HTMLAttributes,
+  type Key,
+  type ReactNode,
+} from "react";
 import { RouteTransition } from "../../motion/RouteTransition";
 import { useMediaQuery } from "../useMediaQuery";
 import { MenuGlyph, SearchGlyph } from "./icons";
@@ -24,6 +33,7 @@ import {
 } from "./navigation";
 import { ShellNavigation, useGroupDisclosure } from "./ShellNavigation";
 import { RouteProgress } from "./RouteProgress";
+import { useSheetControl } from "./useSheetControl";
 import { Sidebar } from "./Sidebar";
 import { useShellTooltip } from "./ShellTooltip";
 import styles from "./AppShell.module.css";
@@ -189,7 +199,7 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /**
    * A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of
    * the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash,
-   * and plain link clicks start it by themselves.
+   * and, unless you pass this prop, a plain click on a link to another path starts it by itself.
    */
   routePending?: boolean;
   /** Draw the progress bar when `routeKey` is given. Default `true`. */
@@ -201,6 +211,11 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    * shape of the page it stands in for.
    */
   mainPending?: ReactNode;
+  /**
+   * Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge.
+   * Default `false`: nothing is drawn unless asked for.
+   */
+  floatScrim?: boolean;
   /**
    * Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA.
    * `className` is added to the shell's own.
@@ -255,6 +270,7 @@ export function AppShell({
   routePending,
   routeProgress = true,
   mainPending,
+  floatScrim = false,
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
@@ -273,15 +289,14 @@ export function AppShell({
   const mainId = mainProps?.id ?? generatedMainId;
   const [innerCollapsed, setInnerCollapsed] = useState(defaultCollapsed);
   const collapsed = collapsedProp ?? innerCollapsed;
-  const [innerSheetOpen, setInnerSheetOpen] = useState(false);
-  const sheetOpen = menuOpenProp ?? innerSheetOpen;
-  const setSheetOpen = (next: boolean) => {
-    if (menuOpenProp === undefined) setInnerSheetOpen(next);
-    onMenuOpenChange?.(next);
-  };
+  const {
+    open: sheetOpen,
+    setOpen: setSheetOpen,
+    forceClosed,
+  } = useSheetControl(menuOpenProp, onMenuOpenChange);
   const wide = useMediaQuery(APP_SHELL_BREAKPOINT);
   // The sheet belongs to phones: growing past the breakpoint (rotation, window drag) closes it for good.
-  if (wide && innerSheetOpen && menuOpenProp === undefined) setInnerSheetOpen(false);
+  if (wide && forceClosed) forceClosed();
   const closeRequest = useRef(onMenuOpenChange);
   useEffect(() => {
     closeRequest.current = onMenuOpenChange;
@@ -342,6 +357,15 @@ export function AppShell({
 
   // The page waits behind a skeleton: once it has been shown, the arriving page only fades (the skeleton held its layout).
   const pendingMain = mainPending !== undefined && mainPending !== null && mainPending !== false;
+  const main = useRef<HTMLElement>(null);
+  const page = useRef<HTMLDivElement>(null);
+  const consumerBusy = mainProps?.["aria-busy"] === true || mainProps?.["aria-busy"] === "true";
+  // The page is about to be hidden: focus inside it would be lost to the document, so it goes to <main>.
+  useLayoutEffect(() => {
+    if (pendingMain && page.current?.contains(document.activeElement)) {
+      main.current?.focus({ preventScroll: true });
+    }
+  }, [pendingMain]);
   const [arrival, setArrival] = useState({ key: routeKey, afterSkeleton: false, skeletonShown: false });
   if (pendingMain && !arrival.skeletonShown) setArrival({ ...arrival, skeletonShown: true });
   if (arrival.key !== routeKey) {
@@ -392,27 +416,29 @@ export function AppShell({
           key={mainKey}
           id={mainId}
           className={[styles.main, mainProps?.className].filter(Boolean).join(" ")}
-          aria-busy={pendingMain || undefined}
-          data-pending={pendingMain || undefined}
+          ref={main}
+          tabIndex={mainProps?.tabIndex ?? -1}
+          // The consumer's own busy state and `data-pending` are kept; the shell adds its pending page to them.
+          aria-busy={pendingMain || consumerBusy || undefined}
+          data-pending={pendingMain ? "" : mainProps?.["data-pending"]}
         >
-          {mainStart ? (
-            <div className={styles.mainStart} data-route-static="">
-              {mainStart}
-            </div>
-          ) : null}
-          {routeKey === undefined ? (
-            children
-          ) : (
-            <RouteTransition transitionKey={routeKey} variant={arrival.afterSkeleton ? "fade" : "rise"}>
-              {children}
-            </RouteTransition>
-          )}
+          {mainStart}
+          {/* Always here, so showing the skeleton never remounts the page; `hidden` takes it out of sight and of the tab order. */}
+          <div ref={page} className={styles.page} hidden={pendingMain || undefined}>
+            {routeKey === undefined ? (
+              children
+            ) : (
+              <RouteTransition transitionKey={routeKey} variant={arrival.afterSkeleton ? "fade" : "rise"}>
+                {children}
+              </RouteTransition>
+            )}
+          </div>
           {pendingMain ? <div data-shell-pending="">{mainPending}</div> : null}
         </main>
         {routeKey !== undefined && routeProgress ? (
           <RouteProgress routeKey={routeKey} pending={routePending} />
         ) : null}
-        <div className={styles.floatScrim} aria-hidden="true" />
+        {floatScrim ? <div className={styles.floatScrim} aria-hidden="true" /> : null}
         <MobileFloatBar label={labels.floatBar} className={styles.float}>
           {search ? (
             <>

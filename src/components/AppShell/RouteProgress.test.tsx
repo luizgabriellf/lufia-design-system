@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
 import { act, fireEvent, render } from "@testing-library/react";
 import { axe } from "../../test/axe";
-import { RouteProgress, ROUTE_PROGRESS_REVEAL_DELAY_MS } from "./RouteProgress";
+import { RouteProgress, ROUTE_PROGRESS_REVEAL_DELAY_MS, ROUTE_PROGRESS_TIMEOUT_MS } from "./RouteProgress";
+
+const css = readFileSync("src/components/AppShell/RouteProgress.module.css", "utf8");
 
 const bar = (container: HTMLElement) => container.querySelector<HTMLElement>("[data-route-progress]");
 const advance = (ms: number) => act(() => void vi.advanceTimersByTime(ms));
@@ -28,7 +31,7 @@ describe("RouteProgress", () => {
     advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
     expect(bar(container)).toHaveStyle({ transform: "scaleX(0.2)" });
     expect(bar(container)).toHaveAttribute("aria-hidden", "true");
-    advance(20_000);
+    advance(9_000);
     const scale = Number(/scaleX\(([\d.]+)\)/.exec(bar(container)!.style.transform)![1]);
     expect(scale).toBeGreaterThan(0.5);
     expect(scale).toBeLessThanOrEqual(0.85);
@@ -110,5 +113,68 @@ describe("RouteProgress", () => {
 
   afterEach(() => {
     document.querySelectorAll("body > a").forEach((node) => node.remove());
+    window.history.replaceState({}, "", "/");
+  });
+
+  it("does not start for a link to the same path with another query", () => {
+    const { container } = render(<RouteProgress routeKey="/a" />);
+    fireEvent.click(addLink(`${window.location.pathname}?page=2`));
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1000);
+    expect(bar(container)).toBeNull();
+  });
+
+  it("leaves link clicks alone when the app supplies pending, even as false", () => {
+    const { container, rerender } = render(<RouteProgress routeKey="/a" pending={false} />);
+    fireEvent.click(addLink("/x"));
+    advance(1000);
+    expect(bar(container)).toBeNull();
+    rerender(<RouteProgress routeKey="/a" pending />);
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+    expect(bar(container)).not.toBeNull();
+  });
+
+  it("finishes a run started by a link when the address changes, without a route key change", () => {
+    const { container } = render(<RouteProgress routeKey="/a" />);
+    fireEvent.click(addLink("/x"));
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+    expect(bar(container)).not.toBeNull();
+    window.history.pushState({}, "", "/x");
+    advance(400);
+    advance(400);
+    expect(bar(container)).toBeNull();
+  });
+
+  it("never shows a run whose address changed before the reveal delay", () => {
+    const { container } = render(<RouteProgress routeKey="/a" />);
+    fireEvent.click(addLink("/x"));
+    window.history.pushState({}, "", "/x");
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+    advance(1000);
+    expect(bar(container)).toBeNull();
+  });
+
+  it("ends a run nothing finishes (a cancelled or guarded navigation, a redirect back) after the safety timeout", () => {
+    const { container } = render(<RouteProgress routeKey="/a" />);
+    fireEvent.click(addLink("/x"));
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+    advance(ROUTE_PROGRESS_TIMEOUT_MS - 1000);
+    expect(bar(container)).not.toBeNull();
+    advance(1500);
+    advance(400);
+    expect(bar(container)).toBeNull();
+  });
+
+  it("ends a pending that never goes back to false after the safety timeout", () => {
+    const { container } = render(<RouteProgress routeKey="/a" pending />);
+    advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+    expect(bar(container)).not.toBeNull();
+    advance(ROUTE_PROGRESS_TIMEOUT_MS + 400);
+    expect(bar(container)).toBeNull();
+  });
+
+  it("fades out with opacity on the exit token when it finishes, and sits on the tooltip layer", () => {
+    expect(css).toMatch(/\[data-finishing\][^}]*opacity:\s*0/);
+    expect(css).toMatch(/opacity var\(--lufia-motion-duration-exit\)/);
+    expect(css).toMatch(/z-index:\s*var\(--lufia-z-tooltip\)/);
   });
 });

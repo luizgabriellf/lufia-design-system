@@ -663,6 +663,48 @@ describe("AppShell slots", () => {
       expect(onMenuOpenChange).toHaveBeenLastCalledWith(false);
     });
 
+    it("reports a change of the sheet only when it changes: not on a desktop click, once per phone tap", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ onMenuOpenChange });
+      const sidebar = screen.getByRole("navigation", { name: "Main navigation" });
+      const home = within(sidebar).getByRole("link", { name: "Home" });
+      home.addEventListener("click", (event) => event.preventDefault());
+      await user.click(home);
+      expect(onMenuOpenChange).not.toHaveBeenCalled();
+
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(1);
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(true);
+
+      const link = within(screen.getByRole("dialog", { name: "Menu" })).getByRole("link", { name: "Home" });
+      link.addEventListener("click", (event) => event.preventDefault());
+      await user.click(link);
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(2);
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it("reports one close for a followed footer link", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ onMenuOpenChange });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      onMenuOpenChange.mockClear();
+      const help = within(screen.getByRole("dialog", { name: "Menu" })).getByRole("link", { name: "Help" });
+      help.addEventListener("click", (event) => event.preventDefault());
+      await user.click(help);
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(1);
+    });
+
+    it("still reopens a controlled sheet the owner refused to open", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ menuOpen: false, onMenuOpenChange });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(2);
+    });
+
     it("calls onIntent on pointer entry and focus of the floating-bar action and of the slot", async () => {
       const user = userEvent.setup();
       const onIntent = vi.fn();
@@ -806,20 +848,66 @@ describe("AppShell slots", () => {
       }
     });
 
-    it("shows mainPending in place of the page, keeps the page mounted and the banner visible", () => {
+    it("shows mainPending in place of the page, hides the page through its own wrapper and keeps the banner visible", () => {
       const { rerender } = render(withRoute("/a"));
       const heading = screen.getByRole("heading");
       expect(screen.getByRole("main")).not.toHaveAttribute("aria-busy");
+      expect(heading).toBeVisible();
       rerender(withRoute("/a", { mainPending: <p>Loading skeleton</p> }));
       const main = screen.getByRole("main");
       expect(main).toHaveAttribute("aria-busy", "true");
       expect(main).toHaveAttribute("data-pending");
-      expect(screen.getByText("Loading skeleton")).toBeInTheDocument();
-      expect(screen.getByRole("heading", { hidden: true })).toBe(heading);
-      expect(screen.getByText("Banner").closest("[data-route-static]")).not.toBeNull();
+      expect(screen.getByText("Loading skeleton")).toBeVisible();
+      const hiddenHeading = screen.getByRole("heading", { hidden: true });
+      expect(hiddenHeading).toBe(heading);
+      expect(hiddenHeading).not.toBeVisible();
+      expect(hiddenHeading.closest("[hidden]")).not.toBeNull();
+      expect(screen.getByText("Banner")).toBeVisible();
       rerender(withRoute("/a"));
       expect(screen.queryByText("Loading skeleton")).toBeNull();
       expect(screen.getByRole("heading")).toBe(heading);
+      expect(heading).toBeVisible();
+    });
+
+    it("moves focus to main when the page that had it is hidden, and leaves focus elsewhere alone", () => {
+      const tree = (extra: Partial<AppShellProps> = {}) => (
+        <AppShell groups={groups} labels={labels} routeKey="/a" {...extra}>
+          <button type="button">In page</button>
+        </AppShell>
+      );
+      const { rerender } = render(tree());
+      screen.getByRole("button", { name: "In page" }).focus();
+      rerender(tree({ mainPending: <p>Skeleton</p> }));
+      expect(screen.getByRole("main")).toHaveFocus();
+      expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
+
+      rerender(tree());
+      const search = screen.getAllByRole("link", { name: "Home" })[0]!;
+      search.focus();
+      rerender(tree({ mainPending: <p>Skeleton</p> }));
+      expect(search).toHaveFocus();
+    });
+
+    it("keeps the consumer's busy state and data-pending on main, and adds the pending page to them", () => {
+      const { rerender } = render(
+        withRoute("/a", { mainProps: { "aria-busy": true, "data-pending": "mine" } }),
+      );
+      const main = screen.getByRole("main");
+      expect(main).toHaveAttribute("aria-busy", "true");
+      expect(main).toHaveAttribute("data-pending", "mine");
+      rerender(withRoute("/a", { mainProps: { "aria-busy": false }, mainPending: <p>Skeleton</p> }));
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+      expect(screen.getByRole("main")).toHaveAttribute("data-pending", "");
+      rerender(withRoute("/a", { mainProps: { "aria-busy": false } }));
+      expect(screen.getByRole("main")).not.toHaveAttribute("aria-busy", "true");
+    });
+
+    it("draws the fade behind the floating bar only when floatScrim is on", () => {
+      const scrim = () => document.querySelector('[class*="floatScrim"]');
+      const { rerender } = render(withRoute("/a"));
+      expect(scrim()).toBeNull();
+      rerender(withRoute("/a", { floatScrim: true }));
+      expect(scrim()).toHaveAttribute("aria-hidden", "true");
     });
 
     it("lets the arriving page only fade after a skeleton, and rise otherwise", () => {
