@@ -62,11 +62,12 @@ export type ComboboxProps = Omit<
   /** Label of the chosen option when it is not in `options` (a value set before the options loaded). */
   valueLabel?: string;
   /**
-   * Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty) and
-   * `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button that waits on the value
-   * does not stay stuck. Enter, Tab, Escape and blur settle the text. Enter with nothing highlighted keeps the text, and the
-   * first match is not highlighted on its own. Choosing an option still sets that option's `value`. Text equal to an
-   * option's `value` resolves to that option.
+   * Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty, also
+   * for whitespace only) and `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button
+   * that waits on the value does not stay stuck. Enter, Tab, Escape, the toggle button and blur settle the text. Enter with
+   * nothing highlighted keeps the text, closes the list and does not submit the form, and the first match is not highlighted
+   * on its own. Typed text never resolves to an option, even when it equals an option's `value`, and it wins over
+   * `valueLabel`. Choosing an option sets that option's `value`; a `value` set by the parent resolves to its option.
    */
   freeText?: boolean;
   /** Shows a clear button while something is chosen. Escape clears too, when the list is closed. */
@@ -103,37 +104,42 @@ const defaultFilter = (option: ComboboxOption, query: string) =>
 
 /** The room below the box under which the list opens upward instead, when there is more room above. */
 const FLIP_BELOW = 260;
-/** The list's own `max-block-size` (15rem), in px at the default font size. Rooms above this need no clamp. */
-const LIST_MAX = 240;
-/** Under this much room, flipping stops helping and the list is only clamped. */
-const LIST_MIN = 96;
+/** The list's own `max-block-size`, in rem. Rooms above this need no clamp. */
+const LIST_MAX_REM = 15;
+/** Under this much room (in rem), flipping stops helping and the list is only clamped. */
+const LIST_MIN_REM = 6;
 /** Room kept for the popup's border and the gap to the box. */
 const POPUP_CHROME = 12;
 
 type Placement = { side: "bottom" | "top"; maxHeight: number | undefined };
 
-const clips = (style: CSSStyleDeclaration) =>
-  /(auto|hidden|scroll|clip)/.test(`${style.overflowY} ${style.overflow}`);
+const clipsVertically = (style: CSSStyleDeclaration) => /(auto|hidden|scroll|clip)/.test(style.overflowY);
 
-/** The nearest ancestor that clips overflow. The absolutely placed list cannot paint outside it, whatever its height. */
-function clippingAncestor(element: HTMLElement | null): HTMLElement | null {
-  for (let node = element?.parentElement ?? null; node && node !== document.body; node = node.parentElement) {
-    if (clips(getComputedStyle(node))) return node;
+/** Every ancestor that clips overflow vertically. The absolutely placed list cannot paint outside any of them. */
+function clippingAncestors(element: HTMLElement): HTMLElement[] {
+  const found: HTMLElement[] = [];
+  for (let node = element.parentElement; node && node !== document.body; node = node.parentElement) {
+    if (clipsVertically(getComputedStyle(node))) found.push(node);
   }
-  return null;
+  return found;
 }
 
-/** Which side the list opens on, and how tall it may be, measured against the clipping ancestor and the viewport. */
+/** Which side the list opens on and how tall it may be, measured against the viewport and every clipping ancestor. */
 function measure(element: HTMLElement): Placement {
   const rect = element.getBoundingClientRect();
-  const clipper = clippingAncestor(element)?.getBoundingClientRect();
-  const top = Math.max(0, clipper?.top ?? 0);
-  const bottom = Math.min(window.innerHeight, clipper?.bottom ?? window.innerHeight);
+  let top = 0;
+  let bottom = window.innerHeight;
+  for (const clipper of clippingAncestors(element)) {
+    const box = clipper.getBoundingClientRect();
+    top = Math.max(top, box.top);
+    bottom = Math.min(bottom, box.bottom);
+  }
   const below = bottom - rect.bottom;
   const above = rect.top - top;
   const side = below < FLIP_BELOW && above > below ? "top" : "bottom";
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   const room = (side === "top" ? above : below) - POPUP_CHROME;
-  return { side, maxHeight: room < LIST_MAX ? Math.max(LIST_MIN, room) : undefined };
+  return { side, maxHeight: room < LIST_MAX_REM * rem ? Math.max(LIST_MIN_REM * rem, room) : undefined };
 }
 
 /**
@@ -185,11 +191,15 @@ export function Combobox({
   const [value, setValue] = useControllableState<string | null>(valueProp, defaultValue, undefined);
   // The last option chosen is remembered, so its label survives options that are replaced by a later search.
   const [chosen, setChosen] = useState<ComboboxOption | null>(null);
+  // In free text mode, the text the person typed is kept apart from option values: it never resolves to an option.
+  const [typedValue, setTypedValue] = useState<string | null>(null);
+  const isTypedValue = freeText && value !== null && value === typedValue;
   const selected =
-    value === null
+    value === null || isTypedValue
       ? null
       : (options.find((option) => option.value === value) ?? (chosen?.value === value ? chosen : null));
-  const selectedLabel = selected?.label ?? (value === null ? "" : (valueLabel ?? (freeText ? value : "")));
+  const selectedLabel =
+    selected?.label ?? (value === null ? "" : isTypedValue ? value : (valueLabel ?? (freeText ? value : "")));
 
   const [open, setOpen] = useState(false);
   // While the person edits the text, the box shows what they typed and the list is narrowed by it; otherwise the box shows
@@ -230,12 +240,15 @@ export function Combobox({
     setHighlighted(null);
   };
   // With free text, whatever stands in the box when the list closes is what is kept.
-  const settle = (text: string | null) => {
-    if (!freeText || text === null) return;
+  const commitText = (text: string) => {
     const trimmed = text.trim() === "" ? null : text.trim();
+    setTypedValue(trimmed);
     if (trimmed === value) return;
     setValue(trimmed);
-    onValueChange?.(trimmed, options.find((option) => option.value === trimmed) ?? null);
+    onValueChange?.(trimmed, null);
+  };
+  const settle = (text: string | null) => {
+    if (freeText && text !== null) commitText(text);
   };
   const closeAndSettle = () => {
     settle(typed);
@@ -245,12 +258,13 @@ export function Combobox({
   useFormReset(root, () => {
     setValue(defaultValue);
     setChosen(null);
+    setTypedValue(null);
     close();
     onValueChange?.(defaultValue, options.find((option) => option.value === defaultValue) ?? null);
   });
 
-  // Open upward when the room below is short and there is more above, measured against the nearest clipping ancestor as well
-  // as the viewport. It follows scrolling and resizing while open (one measure per frame); it never closes the list.
+  // Open upward when the room below is short and there is more above, measured against every clipping ancestor and the
+  // viewport. It follows scrolling and resizing while open (one measure per frame); it never closes the list.
   useLayoutEffect(() => {
     const element = root.current;
     if (!open || !element) return;
@@ -271,14 +285,12 @@ export function Combobox({
         });
       }
     };
-    const scroller: EventTarget = clippingAncestor(element) ?? window;
-    scroller.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("scroll", schedule, { passive: true });
+    // Capture phase: scroll does not bubble, and any container above the field may be the one that moves it.
+    document.addEventListener("scroll", schedule, { capture: true, passive: true });
     window.addEventListener("resize", schedule);
     return () => {
       if (frame !== 0) cancelAnimationFrame(frame);
-      scroller.removeEventListener("scroll", schedule);
-      window.removeEventListener("scroll", schedule);
+      document.removeEventListener("scroll", schedule, { capture: true });
       window.removeEventListener("resize", schedule);
     };
   }, [open]);
@@ -291,6 +303,7 @@ export function Combobox({
   const choose = (option: ComboboxOption | null) => {
     if (option?.disabled) return;
     setChosen(option);
+    setTypedValue(null);
     setValue(option ? option.value : null);
     onValueChange?.(option ? option.value : null, option);
     if (typed !== null || option === null) onQueryChange?.("");
@@ -320,12 +333,7 @@ export function Combobox({
     setHighlighted(null);
     setOpen(true);
     onQueryChange?.(event.target.value);
-    if (freeText) {
-      const text = event.target.value;
-      const next = text === "" ? null : text;
-      setValue(next);
-      onValueChange?.(next, options.find((option) => option.value === next) ?? null);
-    }
+    if (freeText) commitText(event.target.value);
   };
 
   const keyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -464,7 +472,7 @@ export function Combobox({
           aria-controls={expanded ? listId : undefined}
           disabled={control.disabled || readOnly}
           onClick={() => {
-            if (open) close();
+            if (open) closeAndSettle();
             else openList(selected?.value ?? null);
             input.current?.focus();
           }}
@@ -512,7 +520,7 @@ export function Combobox({
                     key={option.value}
                     id={optionId(option)}
                     role="option"
-                    aria-selected={option.value === value}
+                    aria-selected={option.value === selected?.value}
                     aria-disabled={option.disabled || undefined}
                     data-active={isActive}
                     className={styles.option}
@@ -527,7 +535,7 @@ export function Combobox({
                         <span className={styles.optionDescription}>{option.description}</span>
                       ) : null}
                     </span>
-                    {option.value === value ? (
+                    {option.value === selected?.value ? (
                       <svg
                         className={styles.check}
                         viewBox="0 0 16 16"

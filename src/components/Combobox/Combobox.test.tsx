@@ -598,6 +598,75 @@ describe("Combobox freeText", () => {
     expect(box()).toHaveValue("Lisbon");
   });
 
+  it("settles when the toggle button closes the list, and never submits or validates whitespace", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { container } = render(
+      <form>
+        <Combobox
+          aria-label="City"
+          options={options}
+          {...texts}
+          freeText
+          required
+          name="city"
+          onValueChange={onChange}
+        />
+        <button type="button">Elsewhere</button>
+      </form>,
+    );
+    await user.type(box(), "  ");
+    expect(onChange).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Show options" }));
+    await user.click(screen.getByRole("button", { name: "Elsewhere" }));
+    expect(container.querySelector('input[name="city"]')).toHaveValue("");
+    expect((box() as HTMLInputElement).checkValidity()).toBe(false);
+    await user.type(box(), " Faro ");
+    await user.click(screen.getByRole("button", { name: "Show options" }));
+    expect(onChange).toHaveBeenLastCalledWith("Faro", null);
+    expect(box()).toHaveValue("Faro");
+  });
+
+  it("reports the trimmed text on every keystroke", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderCombobox({ freeText: true, onValueChange: onChange });
+    await user.type(box(), " Fa");
+    expect(onChange.mock.calls).toEqual([
+      ["F", null],
+      ["Fa", null],
+    ]);
+  });
+
+  it("never resolves typed text to an option by its value, but resolves a value set by the parent", async () => {
+    const user = userEvent.setup();
+    const ids = [
+      { value: "12", label: "Paris" },
+      { value: "13", label: "Rome" },
+    ];
+    const { rerender } = renderCombobox({ freeText: true, options: ids, name: "city" });
+    await user.type(box(), "12");
+    await user.tab();
+    expect(box()).toHaveValue("12");
+    await user.click(box());
+    expect(screen.getAllByRole("option").every((o) => o.getAttribute("aria-selected") === "false")).toBe(
+      true,
+    );
+    expect(screen.queryByRole("option", { name: "Paris" })?.querySelector("svg")).toBeNull();
+    rerender(<Combobox aria-label="City" options={ids} {...texts} freeText value="13" />);
+    expect(box()).toHaveValue("Rome");
+  });
+
+  it("lets typed text win over valueLabel, which only applies to the value it was given for", async () => {
+    const user = userEvent.setup();
+    renderCombobox({ freeText: true, defaultValue: "x1", valueLabel: "Loaded later" });
+    expect(box()).toHaveValue("Loaded later");
+    await user.clear(box());
+    await user.type(box(), "Faro");
+    await user.tab();
+    expect(box()).toHaveValue("Faro");
+  });
+
   it("is the default behaviour off: typed text that is not chosen is discarded", async () => {
     const user = userEvent.setup();
     renderCombobox();
@@ -666,6 +735,70 @@ describe("Combobox placement", () => {
     expect(root.style.getPropertyValue("--combobox-list-max")).toBe("96px");
   });
 
+  it("measures against the intersection of every clipping ancestor", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(2000);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      if (this.dataset.clip === "inner") return rect(0, 1500);
+      if (this.dataset.clip === "outer") return rect(0, 500);
+      return rect(400, 440);
+    });
+    render(
+      <div data-clip="outer" style={{ overflowY: "auto" }}>
+        <div data-clip="inner" style={{ overflowY: "auto" }}>
+          <Combobox aria-label="City" options={options} {...texts} />
+        </div>
+      </div>,
+    );
+    await user.click(box());
+    expect(box().closest("[data-placement]")).toHaveAttribute("data-placement", "top");
+  });
+
+  it("ignores an ancestor that only clips horizontally", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(2000);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      return this.dataset.clip ? rect(100, 500) : rect(400, 440);
+    });
+    render(
+      <div data-clip="x" style={{ overflowX: "hidden" }}>
+        <Combobox aria-label="City" options={options} {...texts} />
+      </div>,
+    );
+    await user.click(box());
+    expect(box().closest("[data-placement]")).toHaveAttribute("data-placement", "bottom");
+  });
+
+  it("scales the list's maximum height with the root font size", async () => {
+    const user = userEvent.setup();
+    document.documentElement.style.fontSize = "20px";
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(480, 520));
+    renderCombobox();
+    await user.click(box());
+    const root = box().closest("[data-placement]") as HTMLElement;
+    document.documentElement.style.fontSize = "";
+    expect(root.style.getPropertyValue("--combobox-list-max")).toBe("268px");
+  });
+
+  it("re-measures when a container above the field scrolls, not only its own clipping ancestor", async () => {
+    const user = userEvent.setup();
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => frames.push(callback));
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(100, 140));
+    render(
+      <div data-testid="outer">
+        <Combobox aria-label="City" options={options} {...texts} />
+      </div>,
+    );
+    await user.click(box());
+    act(() => {
+      screen.getByTestId("outer").dispatchEvent(new Event("scroll"));
+    });
+    expect(frames).toHaveLength(1);
+  });
+
   it("re-measures on scroll, once per frame, and stops listening when closed", async () => {
     const user = userEvent.setup();
     const frames: FrameRequestCallback[] = [];
@@ -679,14 +812,14 @@ describe("Combobox placement", () => {
     expect(root).toHaveAttribute("data-placement", "bottom");
     top = 700;
     act(() => {
-      window.dispatchEvent(new Event("scroll"));
-      window.dispatchEvent(new Event("scroll"));
+      document.dispatchEvent(new Event("scroll"));
+      document.dispatchEvent(new Event("scroll"));
     });
     expect(frames).toHaveLength(1);
     act(() => frames.shift()!(0));
     expect(root).toHaveAttribute("data-placement", "top");
     await user.keyboard("{Escape}");
-    window.dispatchEvent(new Event("scroll"));
+    document.dispatchEvent(new Event("scroll"));
     expect(frames).toHaveLength(0);
   });
 });
