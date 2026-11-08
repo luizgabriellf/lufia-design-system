@@ -77,7 +77,7 @@
 }
 
 .list {
-  max-block-size: 15rem;
+  max-block-size: var(--combobox-list-max, 15rem);
   margin: 0;
   padding: var(--lufia-space-1);
   overflow-y: auto;

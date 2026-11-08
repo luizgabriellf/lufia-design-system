@@ -14,7 +14,7 @@
   {
     "name": "Combobox",
     "path": "dist/components/Combobox/**/*.{js,css}",
-    "limit": "5.7 kB",
+    "limit": "6.5 kB",
     "gzip": true
   },
   {

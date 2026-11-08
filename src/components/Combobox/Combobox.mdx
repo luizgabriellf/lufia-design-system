@@ -62,6 +62,17 @@ you can reset the list.
 
 <Canvas of={Stories.AsyncOptions} />
 
+### Free text
+
+Set `freeText` when the person may submit something that is not listed. The value is the typed text, trimmed (`null` when
+empty or whitespace only), and `onValueChange` reports it with `null` as the option. It follows every keystroke, so a button
+that waits on the value is enabled as soon as there is text. Enter, Tab, Escape, the toggle button and blur settle the text.
+Enter keeps what was typed, closes the list and does not submit the form, and it never picks the first match. Typed text is
+never matched to an option, even when it equals an option's `value` (an id such as "12" stays "12"), and it wins over
+`valueLabel`. Choosing an option sets its `value`; a `value` set by the parent resolves to its option as usual. Native attributes such as `maxLength` go to the input.
+
+<Canvas of={Stories.FreeText} />
+
 ### States
 
 <Canvas of={Stories.Empty} />
@@ -118,7 +129,8 @@ list autocomplete: `role="combobox"` on the input with `aria-autocomplete="list"
 - The highlighted option is shown with a fill and a bar on its start edge, and in forced-colors with the system highlight.
 - A `required` combobox is invalid until an option is chosen, whatever text is typed: the browser refuses to submit, focuses the box and shows its own message (or `requiredMessage`). It also carries `aria-required`.
 - A form `reset` returns it to `defaultValue`.
-- It opens upward when there is little room below the box. The list is placed inside the field and is not portaled, so a parent with `overflow: hidden` or `overflow: auto` (a scrollable dialog body, a table cell) clips it or makes the parent scroll. Give the field room, or place it where nothing clips. A portaled list that escapes clipping ancestors is planned as a follow-up.
+- It opens upward when there is little room below the box. Room is measured against the viewport and every ancestor that clips vertically (a scrollable dialog body, a table cell), taking the room they all leave, and the list is shortened to the room that is left (never under about six rem). The measure is repeated, once per frame, while the page or any container scrolls and when the window is resized; scrolling does not close the list. The list is placed inside the field and is not portaled, so a clipping parent still bounds it. A portaled list is planned as a follow-up.
+- Given an `id`, the input keeps it, the list is `<id>-listbox` and each option is `<id>-option-<encoded value>`: any character of the value outside `A-Za-z0-9-` is written as `_<hex code point>_`.
 
 Not yet recorded: a manual VoiceOver and NVDA pass (required before `stable`). Combobox is the component most likely to behave
 differently across screen readers.
@@ -135,7 +147,7 @@ differently across screen readers.
 ### When not to use
 
 - A short list: use `Select` (native, with the platform's picker on phones) or `RadioGroup`.
-- A free-text field with suggestions: the box here only accepts a listed option.
+- A plain text field: use `TextInput`. Without `freeText` the box only accepts a listed option.
 - Several choices at once: this is a single select.
 - A search that opens a results page: use `SearchInput`.
 

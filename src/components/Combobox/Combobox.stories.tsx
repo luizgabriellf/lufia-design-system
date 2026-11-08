@@ -72,6 +72,22 @@ export const Invalid: Story = { args: { required: true, error: "Choose a city to
 export const Disabled: Story = { args: { disabled: true, defaultValue: "lis" } };
 export const ReadOnly: Story = { args: { readOnly: true, defaultValue: "lis" } };
 export const Clearable: Story = { args: { clearable: true, clearLabel: "Clear city", defaultValue: "par" } };
+/** `freeText`: the typed text is the value when no option is chosen. Enter, Tab and blur settle it; Enter never picks the first match. */
+export const FreeText: Story = {
+  args: { freeText: true, hint: "Pick a city or type another place.", maxLength: 40 },
+  render: (args) => {
+    const [value, setValue] = useState<string | null>(null);
+    return (
+      <>
+        <Demo {...args} value={value} onValueChange={setValue} />
+        <p style={{ marginBlockStart: "0.5rem" }}>Value: {value === null ? "none" : `"${value}"`}</p>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.type(within(canvasElement).getByRole("combobox"), "Faro");
+  },
+};
 /** Typed text that matches nothing shows the empty state. It is announced, and the box has no list to point at. */
 export const Empty: Story = {
   play: async ({ canvasElement }) => {
@@ -146,6 +162,15 @@ export const InsideDialog: Story = {
       </>
     );
   },
+};
+/** Inside a short scrolling box the list flips and shrinks to the room the box leaves, instead of being clipped. */
+export const InsideClippingBox: Story = {
+  render: (args) => (
+    <div style={{ blockSize: "14rem", overflowY: "auto", paddingBlockStart: "9rem" }}>
+      <Demo {...args} />
+    </div>
+  ),
+  play: openList,
 };
 export const Phone320: Story = {
   args: { required: true, defaultValue: "sp" },
