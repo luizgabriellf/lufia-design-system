@@ -3896,7 +3896,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "A search is in flight: `aria-busy` on the results, the empty message waits, so \"No results\" does not flash before the server answers, and `labels.loading` (when given) is shown below the commands and announced once."
+              "description": "A search is in flight: `aria-busy` on the results, the empty message waits, so \"No results\" does not flash before the server answers, and `labels.loading` (when given) is shown below the commands and announced each time `loading` turns on."
             },
             {
               "name": "groupOrder",

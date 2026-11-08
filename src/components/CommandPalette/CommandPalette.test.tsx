@@ -426,9 +426,9 @@ describe("CommandPalette extension points", () => {
     const withLoading = { ...labels, loading: "Searching…" };
     const row = () => document.querySelector("[data-loading-row]");
 
-    it("shows a searching row below the listed commands and announces it once", async () => {
+    it("shows a searching row below the listed commands and announces it while loading stays true", async () => {
       const user = userEvent.setup();
-      render(<Harness labels={withLoading} loading />);
+      const { rerender } = render(<Harness labels={withLoading} loading />);
       await user.type(field(), "e");
       const rowEl = row();
       expect(rowEl).toHaveTextContent("Searching…");
@@ -438,6 +438,9 @@ describe("CommandPalette extension points", () => {
       expect(status).toHaveTextContent("Searching…");
       await user.type(field(), "x");
       expect(status).toHaveTextContent("Searching…");
+      rerender(<Harness labels={withLoading} loading={false} />);
+      expect(status).toHaveTextContent("results");
+      expect(status).not.toHaveTextContent("Searching…");
     });
 
     it("keeps the row visible and the empty message waiting while nothing matches", () => {
@@ -540,6 +543,26 @@ describe("CommandPalette extension points", () => {
     it("has no axe violations beside the results", async () => {
       render(<Harness notice={notice} />);
       expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("pinned content and aria-busy", () => {
+    const notice = <p role="alert">Search failed</p>;
+
+    it("keeps the notice and the top hint outside the scrolling results", () => {
+      render(<Harness notice={notice} hintPlacement="top" />);
+      const scroller = screen.getByRole("listbox").closest("[class*=body]")!;
+      expect(scroller).not.toContainElement(screen.getByRole("alert"));
+      expect(scroller).not.toContainElement(screen.getByText("Tip"));
+      expect(scroller).toContainElement(screen.getByRole("listbox"));
+    });
+
+    it("marks only the results busy, not the notice", () => {
+      render(<Harness notice={notice} loading />);
+      const busy = document.querySelector('[aria-busy="true"]')!;
+      expect(busy).toContainElement(screen.getByRole("listbox"));
+      expect(busy).not.toContainElement(screen.getByRole("alert"));
+      expect(screen.getByRole("alert").closest("[aria-busy]")).toBeNull();
     });
   });
 

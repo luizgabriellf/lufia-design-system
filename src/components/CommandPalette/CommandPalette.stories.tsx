@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DocumentIcon, HomeIcon, PlusIcon, SettingsIcon, UploadIcon, UsersIcon } from "../../docs/demo";
 import { Button } from "../Button";
 import {
@@ -230,6 +230,8 @@ function ServerSearchStatus() {
   const [rows, setRows] = useState<CommandItem[]>(serverDefaults);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
   return (
     <CommandPalette
       open
@@ -242,6 +244,8 @@ function ServerSearchStatus() {
       hint={({ query }) => (query.trim().length === 1 ? "Type at least 2 characters to search." : null)}
       notice={failed ? <p role="alert">Search is unavailable. Showing the default commands.</p> : null}
       onQueryChange={(query) => {
+        // Only the latest query may answer: cancel the one still in flight.
+        clearTimeout(timer.current);
         setFailed(false);
         if (query.trim().length < 2) {
           setLoading(false);
@@ -249,7 +253,7 @@ function ServerSearchStatus() {
           return;
         }
         setLoading(true);
-        setTimeout(() => {
+        timer.current = setTimeout(() => {
           if (query.trim() === "fail") {
             setFailed(true);
             setRows(serverDefaults);

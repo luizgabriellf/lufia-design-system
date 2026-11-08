@@ -216,6 +216,19 @@
   text-align: start;
 }
 
+/* The top hint and the notice sit between the field and the scrolling results, so they stay in view. */
+.pinned {
+  flex: none;
+  max-block-size: 40%;
+  padding: var(--lufia-space-2) var(--lufia-space-2) 0;
+  overflow-y: auto;
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.pinned .hint {
+  padding-block: var(--lufia-space-1) var(--lufia-space-2);
+}
+
 .notice {
   padding-block-end: var(--lufia-space-2);
 }
@@ -294,8 +307,9 @@
     outline: var(--lufia-border-width-thin) solid Highlight;
   }
 
-  /* System colours replace the tints; the icon keeps a visible outline either way. */
+  /* System colours replace the tints; a toned icon gets an outline so the tone is not lost (a default icon is unchanged). */
   .icon[data-tone] {
+    box-sizing: border-box;
     border: var(--lufia-border-width-thin) solid CanvasText;
     color: CanvasText;
     background: Canvas;

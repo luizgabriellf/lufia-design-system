@@ -50,7 +50,7 @@ export type CommandPaletteLabels = {
   resultCount: (count: number) => string;
   /**
    * Shown, with a spinner, below the listed commands while `loading` is true: "Searching…". It is also announced
-   * politely, once per search. Without it `loading` shows nothing.
+   * politely each time `loading` turns on; keep it true across keystrokes to announce once. Without it `loading` shows nothing.
    */
   loading?: string;
 };
@@ -87,7 +87,7 @@ export type CommandPaletteProps = {
   onQueryChange?: (query: string) => void;
   /**
    * A search is in flight: `aria-busy` on the results, the empty message waits, so "No results" does not flash before the
-   * server answers, and `labels.loading` (when given) is shown below the commands and announced once.
+   * server answers, and `labels.loading` (when given) is shown below the commands and announced each time `loading` turns on.
    */
   loading?: boolean;
   /**
@@ -335,79 +335,85 @@ export function CommandPalette({
             </svg>
           </button>
         </div>
-        <div className={styles.body} aria-busy={loading || undefined}>
-          {hintPlacement === "top" ? hintRow : null}
-          {!overridden && notice ? <div className={styles.notice}>{notice}</div> : null}
-          {overridden ? (
-            typeof bodyOverride === "function" ? (
-              bodyOverride({ query })
-            ) : (
-              bodyOverride
-            )
-          ) : expanded ? (
-            <div id={listId} role="listbox" aria-label={labels.title} className={styles.list}>
-              {groups.map((group, groupIndex) => {
-                const headingId = `${id}-group-${groupIndex}`;
-                return (
-                  <div
-                    key={group.name}
-                    role="group"
-                    aria-labelledby={group.name ? headingId : undefined}
-                    className={styles.group}
-                  >
-                    {group.name ? (
-                      <p id={headingId} className={styles.heading} role="presentation">
-                        {group.name}
-                      </p>
-                    ) : null}
-                    {group.items.map((item) => {
-                      index += 1;
-                      const position = index;
-                      return (
-                        // APG: options are never focusable, focus stays on the field and `aria-activedescendant` points
-                        // at the highlighted one; keyboard users run it with Enter on the field.
-                        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
-                        <div
-                          key={item.key}
-                          id={optionIdOf(item)}
-                          role="option"
-                          aria-selected={position === activeIndex}
-                          data-active={position === activeIndex || undefined}
-                          className={styles.option}
-                          onMouseMove={() => position !== activeIndex && setActive(position)}
-                          onClick={() => run(item)}
-                        >
-                          {item.icon ? (
-                            <span
-                              className={styles.icon}
-                              data-tone={item.tone && item.tone !== "default" ? item.tone : undefined}
-                              aria-hidden="true"
-                            >
-                              {item.icon}
-                            </span>
-                          ) : null}
-                          <span className={styles.copy}>
-                            <span className={styles.label}>{item.label}</span>
-                            {item.description ? (
-                              <span className={styles.description}>{item.description}</span>
+        {(hintPlacement === "top" && hintRow) || (!overridden && notice) ? (
+          <div className={styles.pinned} data-pinned="">
+            {hintPlacement === "top" ? hintRow : null}
+            {!overridden && notice ? <div className={styles.notice}>{notice}</div> : null}
+          </div>
+        ) : null}
+        <div className={styles.body}>
+          <div aria-busy={loading || undefined}>
+            {overridden ? (
+              typeof bodyOverride === "function" ? (
+                bodyOverride({ query })
+              ) : (
+                bodyOverride
+              )
+            ) : expanded ? (
+              <div id={listId} role="listbox" aria-label={labels.title} className={styles.list}>
+                {groups.map((group, groupIndex) => {
+                  const headingId = `${id}-group-${groupIndex}`;
+                  return (
+                    <div
+                      key={group.name}
+                      role="group"
+                      aria-labelledby={group.name ? headingId : undefined}
+                      className={styles.group}
+                    >
+                      {group.name ? (
+                        <p id={headingId} className={styles.heading} role="presentation">
+                          {group.name}
+                        </p>
+                      ) : null}
+                      {group.items.map((item) => {
+                        index += 1;
+                        const position = index;
+                        return (
+                          // APG: options are never focusable, focus stays on the field and `aria-activedescendant` points
+                          // at the highlighted one; keyboard users run it with Enter on the field.
+                          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
+                          <div
+                            key={item.key}
+                            id={optionIdOf(item)}
+                            role="option"
+                            aria-selected={position === activeIndex}
+                            data-active={position === activeIndex || undefined}
+                            className={styles.option}
+                            onMouseMove={() => position !== activeIndex && setActive(position)}
+                            onClick={() => run(item)}
+                          >
+                            {item.icon ? (
+                              <span
+                                className={styles.icon}
+                                data-tone={item.tone && item.tone !== "default" ? item.tone : undefined}
+                                aria-hidden="true"
+                              >
+                                {item.icon}
+                              </span>
                             ) : null}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          ) : loading ? null : (
-            <p className={styles.empty}>{labels.empty(query.trim())}</p>
-          )}
-          {searching ? (
-            <div className={styles.searching} data-loading-row="" aria-hidden="true">
-              <FieldSpinner />
-              <span>{labels.loading}</span>
-            </div>
-          ) : null}
+                            <span className={styles.copy}>
+                              <span className={styles.label}>{item.label}</span>
+                              {item.description ? (
+                                <span className={styles.description}>{item.description}</span>
+                              ) : null}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : loading ? null : (
+              <p className={styles.empty}>{labels.empty(query.trim())}</p>
+            )}
+            {searching ? (
+              <div className={styles.searching} data-loading-row="" aria-hidden="true">
+                <FieldSpinner />
+                <span>{labels.loading}</span>
+              </div>
+            ) : null}
+          </div>
           {hintPlacement === "bottom" ? hintRow : null}
         </div>
         <p className={styles.status} role="status">
