@@ -676,7 +676,7 @@ navigation is data, so both layouts always agree.
 | `routeProgress` | `boolean` | no | `true` | Draw the progress bar when `routeKey` is given. Default `true`. |
 | `routeProgressEvents` | `RouteProgressEvents` | no |  | The window events that start and end the progress bar from code (`RouteProgress` `events`). Default the ones `startRouteProgress()` and `doneRouteProgress()` dispatch. |
 | `mainPending` | `ReactNode` | no |  | A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for. |
-| `floatScrim` | `boolean` | no | `false` | Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for. |
+| `floatScrim` | `boolean` | no | `true` | Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge (`MobileFloatBar` `scrim`). Default `true`; `false` leaves the hard edge. |
 | `mainProps` | `AppShellMainProps` | no |  | Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA. `className` is added to the shell's own. |
 | `mainKey` | `Key` | no |  | Remounts the `<main>` and everything in it when it changes, as React's `key` does: a workspace or scope switch that must drop the page's state. Leave it out for a page change, which `children` handles. |
 | `mainStart` | `ReactNode` | no |  | The first thing inside `<main>`, before `children`: banners that belong to the page area and scroll with it (a trial notice, a cookie or install hint). Unlike `topBar` and `statusRow`, which sit beside `<main>` and stay put, this remounts with `mainKey` and takes the page's padding. |
@@ -691,6 +691,7 @@ Other native element attributes pass through to the root element.
 | `label` | `string` | yes |  | Accessible name of the bar. |
 | `children` | `ReactNode` | yes |  | `MobileFloatBarButton` and `MobileFloatBarSeparator`, in reading order. |
 | `followViewport` | `boolean` | no | `true` | Follow the visual viewport: when the on-screen keyboard or a browser toolbar covers the bottom of the page (iOS Safari keeps `position: fixed` on the layout viewport, behind them), the bar moves up above it, once per frame. Does nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`. |
+| `scrim` | `boolean` | no | `true` | Fade the page into the canvas behind the bar: a full-width gradient from a little above the bar to the bottom edge of the screen, so content scrolling under it does not end in a hard edge. It is part of the bar (shown while the bar is, lifted with it, never catches a tap). Tune it with `--lufia-float-bar-scrim-block-size` (default `6rem`, plus the safe area), `--lufia-float-bar-scrim-color` (default `--lufia-color-bg-canvas`) and `--lufia-float-bar-scrim-stop` (where the gradient reaches the colour, default `65%`). Default `true`. |
 
 Other native element attributes pass through to the root element.
 
@@ -747,6 +748,7 @@ No props of its own.
 | `layerProps` | `NavSheetLayerProps` | no |  | A class and `data-*` attributes for the outermost layer: the fixed root that holds the backdrop and the panel, or the `<dialog>` with `renderAs="dialog"`. The sheet is portalled out of the app's tree, so a palette an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here. The theme attributes `data-lufia-theme` and `data-lufia-mode` work too. |
 | `inheritThemeFrom` | `RefObject<HTMLElement \| null>` | no |  | An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`, which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet. Attributes given in `layerProps` win. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both. |
+| `dock` | `ReactNode` | no |  | A control bar kept in place at the bottom of the screen, above the sheet, while it is shown: `AppShell` passes its floating bar, with the menu button turned into the close button. It is part of the dialog (inside the focus trap, after the sheet's own content), it does not move with a drag, and the end of the sheet keeps clear of it (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock. |
 | `children` | `ReactNode` | yes |  |  |
 
 Other native element attributes pass through to the root element.
@@ -980,7 +982,7 @@ Returned members:
 - `AppShellSheetProps`: `{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes`
 - `AppShellSlotState`: `{ collapsed: boolean; surface: "sidebar" | "sheet" | "topBar"; closeSheet: () => void; openSheet: () => void; }`
 - `FloatBarDataAttributes`: `{ [name: 'data-${string}']: string | number | boolean | undefined; }`
-- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }`
+- `MobileFloatBarProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; scrim?: boolean | undefined; }`
 - `NavSheetLayerProps`: `{ className?: string | undefined; } & ShellDataAttributes`
 - `RouteProgressEvents`: `{ start: string; done: string; }`
 - `RouteProgressProps`: `{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | "query" | undefined; timeout?: number | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }`
@@ -1047,15 +1049,15 @@ Keyboard:
 | Enter | Link \| Follows it |
 | Enter / Space | Button, group head \| Activates it; a group head toggles `aria-expanded` |
 | Escape | Sheet \| Closes it; focus returns to the menu button |
-| Tab / Shift+Tab | Sheet \| Cycle inside the sheet; the page behind is inert |
+| Tab / Shift+Tab | Sheet \| Cycle inside the sheet, then the bar on top of it; the page behind is inert |
 
 ### Motion
 
-Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-font-size-2xs`, `--lufia-font-size-sm`, `--lufia-radius-control`, `--lufia-radius-xs`, `--lufia-shadow-md`, `--lufia-shell-sidebar-width`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-8`, `--lufia-z-sticky`, `--lufia-z-toast`.
+Reads these semantic tokens: `--lufia-app-shell-float-clearance`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-font-size-2xs`, `--lufia-font-size-sm`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-control`, `--lufia-radius-xs`, `--lufia-shadow-md`, `--lufia-shell-sidebar-width`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-8`, `--lufia-z-sticky`, `--lufia-z-toast`.
 
 ### Content guidelines
 
@@ -1068,6 +1070,7 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--rail`
 - `components-navigation-appshell--group-open-on-arrival`
 - `components-navigation-appshell--phone`
+- `components-navigation-appshell--phone-menu-open`
 - `components-navigation-appshell--phone-short-page`
 - `components-navigation-appshell--small-phone`
 - `components-navigation-appshell--tablet`

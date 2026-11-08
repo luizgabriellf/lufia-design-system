@@ -16,12 +16,20 @@ export type MobileFloatBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children
    * nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`.
    */
   followViewport?: boolean;
+  /**
+   * Fade the page into the canvas behind the bar: a full-width gradient from a little above the bar to the bottom edge of
+   * the screen, so content scrolling under it does not end in a hard edge. It is part of the bar (shown while the bar is,
+   * lifted with it, never catches a tap). Tune it with `--lufia-float-bar-scrim-block-size` (default `6rem`, plus the safe
+   * area), `--lufia-float-bar-scrim-color` (default `--lufia-color-bg-canvas`) and `--lufia-float-bar-scrim-stop` (where
+   * the gradient reaches the colour, default `65%`). Default `true`.
+   */
+  scrim?: boolean;
 };
 
 /**
  * A pill of the few actions a phone needs within thumb reach, floating above the page: search, the page's main action,
- * and the menu. Fixed to the bottom of the screen, clear of the safe area, translucent where the browser can blur.
- * It only exists below the shell's breakpoint.
+ * and the menu. Fixed to the bottom of the screen, clear of the safe area, translucent where the browser can blur, over a
+ * scrim that fades the page into the canvas behind it. It only exists below the shell's breakpoint.
  *
  * It is a labelled group, not an ARIA toolbar: a toolbar promises arrow-key movement, and here every control is a
  * plain tab stop.
@@ -29,6 +37,7 @@ export type MobileFloatBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children
 export function MobileFloatBar({
   label,
   followViewport = true,
+  scrim = true,
   className,
   children,
   ...rest
@@ -42,7 +51,9 @@ export function MobileFloatBar({
       role="group"
       aria-label={label}
       className={[styles.bar, className].filter(Boolean).join(" ")}
+      data-scrim={scrim || undefined}
     >
+      {scrim ? <span className={styles.scrim} aria-hidden="true" data-lufia-part="float-bar-scrim" /> : null}
       {children}
     </div>
   );

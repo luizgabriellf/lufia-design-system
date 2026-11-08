@@ -137,5 +137,65 @@
       "$value": "{core.color.alpha.white.8}",
       "$description": "The band that sweeps across a placeholder while it loads. Lighter than the fill in both modes."
     }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "$description": "Dark modes: a black shadow barely shows on a dark canvas, so the alpha is stronger and the floating levels add a 1px top highlight, the edge light catches.",
+    "sm": {
+      "$value": [
+        {
+          "color": "{core.shadow-color.40}",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "2px",
+          "spread": "0px"
+        }
+      ]
+    },
+    "md": {
+      "$value": [
+        {
+          "color": "{core.shadow-color.55}",
+          "offsetX": "0px",
+          "offsetY": "8px",
+          "blur": "24px",
+          "spread": "0px"
+        },
+        {
+          "color": "{core.color.alpha.white.8}",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "0px",
+          "spread": "0px",
+          "inset": true
+        }
+      ]
+    },
+    "lg": {
+      "$value": [
+        {
+          "color": "{core.shadow-color.70}",
+          "offsetX": "0px",
+          "offsetY": "18px",
+          "blur": "48px",
+          "spread": "0px"
+        },
+        {
+          "color": "{core.shadow-color.40}",
+          "offsetX": "0px",
+          "offsetY": "2px",
+          "blur": "6px",
+          "spread": "0px"
+        },
+        {
+          "color": "{core.color.alpha.white.12}",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "0px",
+          "spread": "0px",
+          "inset": true
+        }
+      ]
+    }
   }
 }

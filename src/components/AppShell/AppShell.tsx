@@ -12,7 +12,7 @@ import {
 } from "react";
 import { RouteTransition } from "../../motion/RouteTransition";
 import { useMediaQuery } from "../useMediaQuery";
-import { MenuIcon, SearchIcon } from "../Icon/icons";
+import { CloseIcon, MenuIcon, SearchIcon } from "../Icon/icons";
 import {
   MobileFloatBar,
   MobileFloatBarButton,
@@ -20,6 +20,7 @@ import {
   type FloatBarDataAttributes,
 } from "./MobileFloatBar";
 import { NavSheet } from "./NavSheet";
+import { useLufia } from "../LufiaProvider";
 import {
   ShellPrimaryActionContext,
   useShellPrimaryActionRegistry,
@@ -266,8 +267,8 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    */
   mainPending?: ReactNode;
   /**
-   * Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge.
-   * Default `false`: nothing is drawn unless asked for.
+   * Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge
+   * (`MobileFloatBar` `scrim`). Default `true`; `false` leaves the hard edge.
    */
   floatScrim?: boolean;
   /**
@@ -330,7 +331,7 @@ export function AppShell({
   routeProgress = true,
   routeProgressEvents,
   mainPending,
-  floatScrim = false,
+  floatScrim = true,
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
@@ -432,6 +433,75 @@ export function AppShell({
   if (arrival.key !== routeKey) {
     setArrival({ key: routeKey, afterSkeleton: arrival.skeletonShown, skeletonShown: pendingMain });
   }
+  // The floating bar's controls. Open, they are the copy that stays on top of the navigation sheet (its `dock`): the
+  // menu button has turned into the close button, and the other controls close the sheet before they act, so a search
+  // or the main action never opens over it.
+  const { labels: providerLabels } = useLufia();
+  const floatBarControls = (open: boolean) => {
+    const closeFirst = <T extends unknown[]>(action?: (...args: T) => void) =>
+      open
+        ? (...args: T) => {
+            setSheetOpen(false);
+            action?.(...args);
+          }
+        : action;
+    return (
+      <>
+        {search ? (
+          <>
+            <MobileFloatBarButton
+              variant="search"
+              label={search.label}
+              icon={<SearchIcon size={18} />}
+              onClick={closeFirst(search.onSelect)}
+              {...search.data}
+            />
+            <MobileFloatBarSeparator />
+          </>
+        ) : null}
+        {primaryAction ? (
+          primaryAction.href !== undefined ? (
+            <MobileFloatBarButton
+              variant="primary"
+              label={primaryAction.label}
+              icon={primaryAction.icon}
+              href={primaryAction.href}
+              onClick={closeFirst(primaryAction.onSelect)}
+              onPointerEnter={primaryAction.onIntent}
+              onFocus={primaryAction.onIntent}
+              data-fallback={registry.isFallback || undefined}
+              {...primaryAction.data}
+            />
+          ) : (
+            <MobileFloatBarButton
+              variant="primary"
+              label={primaryAction.label}
+              icon={primaryAction.icon}
+              onClick={closeFirst(primaryAction.onSelect)}
+              onPointerEnter={primaryAction.onIntent}
+              onFocus={primaryAction.onIntent}
+              data-fallback={registry.isFallback || undefined}
+              {...primaryAction.data}
+            />
+          )
+        ) : null}
+        <MobileFloatBarButton
+          variant="icon"
+          label={open ? (labels.closeMenu ?? providerLabels.close) : (labels.openMenu ?? labels.menu)}
+          icon={
+            <span className={styles.menuGlyph} data-open={open || undefined}>
+              <MenuIcon className={styles.menuGlyphMenu} />
+              <CloseIcon className={styles.menuGlyphClose} />
+            </span>
+          }
+          aria-haspopup={open ? undefined : "dialog"}
+          aria-expanded={open ? undefined : sheetOpen}
+          onClick={() => setSheetOpen(!open)}
+          {...menuData}
+        />
+      </>
+    );
+  };
   return (
     <ShellPrimaryActionContext.Provider value={registry}>
       <div
@@ -509,55 +579,13 @@ export function AppShell({
             events={routeProgressEvents}
           />
         ) : null}
-        {floatScrim ? <div className={styles.floatScrim} aria-hidden="true" /> : null}
-        <MobileFloatBar label={labels.floatBar} className={styles.float}>
-          {search ? (
-            <>
-              <MobileFloatBarButton
-                variant="search"
-                label={search.label}
-                icon={<SearchIcon size={18} />}
-                onClick={search.onSelect}
-                {...search.data}
-              />
-              <MobileFloatBarSeparator />
-            </>
-          ) : null}
-          {primaryAction ? (
-            primaryAction.href !== undefined ? (
-              <MobileFloatBarButton
-                variant="primary"
-                label={primaryAction.label}
-                icon={primaryAction.icon}
-                href={primaryAction.href}
-                onClick={primaryAction.onSelect}
-                onPointerEnter={primaryAction.onIntent}
-                onFocus={primaryAction.onIntent}
-                data-fallback={registry.isFallback || undefined}
-                {...primaryAction.data}
-              />
-            ) : (
-              <MobileFloatBarButton
-                variant="primary"
-                label={primaryAction.label}
-                icon={primaryAction.icon}
-                onClick={primaryAction.onSelect}
-                onPointerEnter={primaryAction.onIntent}
-                onFocus={primaryAction.onIntent}
-                data-fallback={registry.isFallback || undefined}
-                {...primaryAction.data}
-              />
-            )
-          ) : null}
-          <MobileFloatBarButton
-            variant="icon"
-            label={labels.openMenu ?? labels.menu}
-            icon={<MenuIcon />}
-            aria-haspopup="dialog"
-            aria-expanded={sheetOpen}
-            onClick={() => setSheetOpen(true)}
-            {...menuData}
-          />
+        <MobileFloatBar
+          label={labels.floatBar}
+          className={styles.float}
+          scrim={floatScrim}
+          data-menu-open={(sheetOpen && !wide) || undefined}
+        >
+          {floatBarControls(false)}
         </MobileFloatBar>
         <NavSheet
           open={sheetOpen && !wide}
@@ -565,6 +593,11 @@ export function AppShell({
           label={labels.menu}
           closeLabel={labels.closeMenu}
           renderAs={sheetAs}
+          dock={
+            <MobileFloatBar label={labels.floatBar} scrim={false} data-menu-dock="">
+              {floatBarControls(true)}
+            </MobileFloatBar>
+          }
           container={sheetContainer}
           layerProps={sheetLayer}
           inheritThemeFrom={main}

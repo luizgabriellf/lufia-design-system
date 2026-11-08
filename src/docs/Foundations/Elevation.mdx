@@ -13,6 +13,11 @@ import { ElevationDemo, LayerStack } from "../blocks/ShapeDemos";
 
 Structure is carried mostly by hairline borders; shadows are reserved for surfaces that float above the page.
 
+The shadows are mode aware. Light modes use the shared values below. Dark modes (`default` and `example-brand`) redefine
+them in their theme files: a black shadow at light-mode strength barely shows on a dark canvas, so the alpha is stronger and
+`md` and `lg` add a 1px inset top highlight that separates a floating surface from the page. Switch the colour mode to see
+the difference.
+
 <ElevationDemo />
 
 ## Layers

@@ -69,6 +69,20 @@ export const Phone: Story = {
   globals: { viewport: { value: "w390", isRotated: false } },
 };
 
+/**
+ * The phone menu open. The floating bar stays where it was, on top of the sheet, and its menu button has turned into the
+ * close button; the end of the sheet keeps clear of it. A drag down on the sheet closes it too.
+ */
+function MenuOpenOnArrival(args: Parameters<typeof DemoShell>[0]) {
+  const [open, setOpen] = useState(true);
+  return <DemoShell {...args} menuOpen={open} onMenuOpenChange={setOpen} />;
+}
+
+export const PhoneMenuOpen: Story = {
+  render: (args) => <MenuOpenOnArrival {...args} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
 /** A short page on a phone: the shell still paints the canvas down to the bottom of the viewport. */
 export const PhoneShortPage: Story = {
   render: (args) => (

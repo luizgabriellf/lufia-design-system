@@ -79,6 +79,13 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
    * dismiss and the layer stack work the same in both.
    */
   renderAs?: "portal" | "dialog";
+  /**
+   * A control bar kept in place at the bottom of the screen, above the sheet, while it is shown: `AppShell` passes its
+   * floating bar, with the menu button turned into the close button. It is part of the dialog (inside the focus trap,
+   * after the sheet's own content), it does not move with a drag, and the end of the sheet keeps clear of it
+   * (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock.
+   */
+  dock?: ReactNode;
   children: ReactNode;
 };
 
@@ -108,6 +115,9 @@ function SheetBody({
  * is inert and cannot scroll. Focus lands on the sheet itself when it opens and returns to the control that opened it.
  *
  * Under `prefers-reduced-motion` it appears and disappears at once; dragging still follows the finger.
+ *
+ * With a `dock` (the shell's floating bar, its menu button turned into a close button) the bar stays in place on top of
+ * the sheet, inside the dialog, and the sheet has no close button of its own.
  */
 export function NavSheet({
   open,
@@ -124,6 +134,7 @@ export function NavSheet({
   layerProps,
   inheritThemeFrom,
   renderAs = "portal",
+  dock,
   className,
   children,
   ...rest
@@ -133,6 +144,11 @@ export function NavSheet({
   const panel = useRef<HTMLDivElement & HTMLDialogElement>(null);
   const native = renderAs === "dialog";
   const layer = useRef<HTMLDivElement>(null);
+  const docked = dock !== undefined && dock !== null && dock !== false;
+  // With a dock, the native dialog is a full-screen layer that holds the sheet and the dock, so the dock stays out of the
+  // sheet's transform. Without one, the dialog is the sheet itself, as before.
+  const nativeLayer = useRef<HTMLDialogElement>(null);
+  const dialog = native && docked ? nativeLayer : panel;
   const client = useSyncExternalStore(
     subscribeNothing,
     () => true,
@@ -144,11 +160,17 @@ export function NavSheet({
   // A native dialog is shown for exactly as long as `open`; a portal sheet also stays for its exit animation.
   const shown = native ? open : phase !== "unmounted";
   const trapped = native ? open : phase === "open";
-  const nativeDialog = useNativeDialog(panel, native && open && client, {
+  const nativeDialog = useNativeDialog(dialog, native && open && client, {
     onCloseRequest: close,
-    handlers: { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
+    // Docked, the sheet's own props go to the inner panel, which handles them itself.
+    handlers: docked ? undefined : { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
   });
-  useFocusTrap(trapped, panel, { onEscape: close, inertBackground: !native, restoreFocus: !native });
+  // Docked, the whole layer is the dialog: Tab reaches the dock, and focus starts on the layer.
+  useFocusTrap(trapped, docked ? (native ? nativeLayer : layer) : panel, {
+    onEscape: close,
+    inertBackground: !native,
+    restoreFocus: !native,
+  });
   useBodyScrollLock(shown);
   const drag = useSheetDrag(close, swipeToDismiss, dragThreshold);
   // The panel exists once the sheet is shown and has somewhere to mount (not before the first client render).
@@ -166,7 +188,7 @@ export function NavSheet({
   const layerTheme = layerProps?.["data-lufia-theme"];
   const layerMode = layerProps?.["data-lufia-mode"];
   useLayoutEffect(() => {
-    const element = native ? panel.current : layer.current;
+    const element = native ? dialog.current : layer.current;
     const source = inheritThemeFrom?.current;
     if (!shown || !element || !source) return;
     const copy = (attribute: "data-lufia-theme" | "data-lufia-mode", own: unknown) => {
@@ -178,7 +200,7 @@ export function NavSheet({
     };
     copy("data-lufia-theme", layerTheme);
     copy("data-lufia-mode", layerMode);
-  }, [shown, native, inheritThemeFrom, layerTheme, layerMode]);
+  }, [shown, native, dialog, inheritThemeFrom, layerTheme, layerMode]);
 
   const target = container ?? (client ? document.body : null);
   const { className: layerClassName, ...layerData } = layerProps ?? {};
@@ -192,17 +214,21 @@ export function NavSheet({
         {...(swipeToDismiss ? drag : {})}
       >
         <span className={styles.grabber} aria-hidden="true" />
-        <div className={styles.head}>
-          <div className={styles.headContent}>{header}</div>
-          <button
-            type="button"
-            className={styles.close}
-            aria-label={closeLabel ?? labels.close}
-            onClick={close}
-          >
-            <CloseIcon />
-          </button>
-        </div>
+        {docked && !header ? null : (
+          <div className={styles.head}>
+            <div className={styles.headContent}>{header}</div>
+            {docked ? null : (
+              <button
+                type="button"
+                className={styles.close}
+                aria-label={closeLabel ?? labels.close}
+                onClick={close}
+              >
+                <CloseIcon />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       {context !== undefined && context !== null && context !== false ? (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
@@ -219,6 +245,49 @@ export function NavSheet({
       ) : null}
     </>
   );
+
+  const dockLayer = docked ? (
+    <div className={styles.dock} data-lufia-part="nav-sheet-dock">
+      {dock}
+    </div>
+  ) : null;
+
+  if (native && docked) {
+    return createPortal(
+      <NavSurfaceContext.Provider value={{ collapsed: false, surface: "sheet" }}>
+        <dialog
+          {...layerData}
+          {...nativeDialog}
+          ref={nativeLayer}
+          aria-modal="true"
+          aria-label={label}
+          tabIndex={-1}
+          data-state="open"
+          data-docked=""
+          data-lufia-part="nav-sheet-layer"
+          className={[styles.nativeLayer, layerClassName].filter(Boolean).join(" ")}
+        >
+          <div
+            className={styles.backdrop}
+            onClick={close}
+            aria-hidden="true"
+            data-lufia-part="nav-sheet-backdrop"
+          />
+          <div
+            {...rest}
+            ref={panel}
+            data-lufia-part="nav-sheet"
+            data-docked=""
+            className={[styles.panel, className].filter(Boolean).join(" ")}
+          >
+            {sheet}
+          </div>
+          {dockLayer}
+        </dialog>
+      </NavSurfaceContext.Provider>,
+      target,
+    );
+  }
 
   if (native) {
     return createPortal(
@@ -249,7 +318,10 @@ export function NavSheet({
         ref={layer}
         className={[styles.root, layerClassName].filter(Boolean).join(" ")}
         data-state={phase === "open" ? "open" : "closed"}
+        data-docked={docked || undefined}
         data-lufia-part="nav-sheet-layer"
+        // Docked, the layer is the dialog, so the dock (outside the sheet's transform) is inside it.
+        {...(docked ? { role: "dialog", "aria-modal": true, "aria-label": label, tabIndex: -1 } : {})}
       >
         <div
           className={styles.backdrop}
@@ -260,11 +332,12 @@ export function NavSheet({
         <div
           {...rest}
           ref={panel}
-          role="dialog"
-          aria-modal="true"
-          aria-label={label}
+          role={docked ? undefined : "dialog"}
+          aria-modal={docked ? undefined : "true"}
+          aria-label={docked ? undefined : label}
           tabIndex={-1}
           data-lufia-part="nav-sheet"
+          data-docked={docked || undefined}
           className={[styles.panel, className].filter(Boolean).join(" ")}
           onAnimationEnd={(event) => {
             if (event.target === event.currentTarget) finish();
@@ -272,6 +345,7 @@ export function NavSheet({
         >
           {sheet}
         </div>
+        {dockLayer}
       </div>
     </NavSurfaceContext.Provider>,
     target,

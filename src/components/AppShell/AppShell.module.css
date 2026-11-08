@@ -50,8 +50,7 @@
   outline: var(--lufia-border-width-thick) solid transparent;
 }
 
-.topBar,
-.floatScrim {
+.topBar {
   display: none;
 }
 
@@ -182,16 +181,10 @@
     display: flex;
   }
 
-  /* Content that scrolls under the floating bar fades out instead of ending in a hard edge behind it. */
-  .floatScrim {
-    position: fixed;
-    z-index: var(--lufia-z-sticky);
-    inset-inline: 0;
-    inset-block-end: 0;
-    display: block;
-    block-size: calc(5.5rem + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, var(--lufia-color-bg-canvas), transparent);
-    pointer-events: none;
+  /* While the navigation sheet is open its own copy of the bar (the dock, with the close button) stands in this one's
+     place, on top of the sheet. */
+  .shell .float[data-menu-open] {
+    visibility: hidden;
   }
 
   .shell .primarySlot {
@@ -199,13 +192,16 @@
   }
 
   .main {
-    padding: var(--lufia-space-4) var(--lufia-space-4) calc(6.5rem + env(safe-area-inset-bottom));
+    /* The end of the page scrolls fully clear of the floating bar and its scrim. */
+    padding: var(--lufia-space-4) var(--lufia-space-4)
+      calc(var(--lufia-app-shell-float-clearance, 6.5rem) + env(safe-area-inset-bottom));
   }
 
   /* Focus and in-page scrolling stop clear of the sticky bar and the floating bar. */
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
   :global(html):has(.shell) {
-    scroll-padding-block: 4.5rem calc(6.5rem + env(safe-area-inset-bottom));
+    scroll-padding-block: 4.5rem
+      calc(var(--lufia-app-shell-float-clearance, 6.5rem) + env(safe-area-inset-bottom));
   }
 }
 
@@ -228,4 +224,81 @@
 .shell:has([data-lufia-shell-primary-owner]) .float [data-fallback],
 .shell:has([data-lufia-shell-primary-owner]) .primarySlot[data-fallback] {
   visibility: hidden;
+}
+
+/* The menu button's glyph: the menu icon, and the close icon in its place on the copy of the bar over the open sheet. The
+   swap turns and cross-fades as the sheet comes and goes; under reduced motion the durations collapse and it just swaps. */
+.menuGlyph {
+  display: inline-grid;
+  place-items: center;
+}
+
+.menuGlyphMenu,
+.menuGlyphClose {
+  grid-area: 1 / 1;
+}
+
+.menuGlyphClose {
+  opacity: 0;
+}
+
+.menuGlyph[data-open] .menuGlyphMenu {
+  opacity: 0;
+  animation: menu-glyph-out var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.menuGlyph[data-open] .menuGlyphClose {
+  opacity: 1;
+  animation: menu-glyph-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+/* The sheet is leaving (a tap on the close button, the page behind, Escape or a drag down): the close icon turns back. */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
+:global([data-lufia-part="nav-sheet-layer"][data-state="closed"]) .menuGlyph[data-open] .menuGlyphMenu {
+  opacity: 1;
+  animation: menu-glyph-in var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) backwards;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
+:global([data-lufia-part="nav-sheet-layer"][data-state="closed"]) .menuGlyph[data-open] .menuGlyphClose {
+  opacity: 0;
+  animation: menu-glyph-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) backwards;
+}
+
+@keyframes menu-glyph-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes menu-glyph-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuGlyph[data-open] .menuGlyphMenu,
+  .menuGlyph[data-open] .menuGlyphClose {
+    animation: none;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
+  :global([data-lufia-part="nav-sheet-layer"][data-state="closed"]) .menuGlyph[data-open] .menuGlyphMenu,
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- :global is CSS Modules syntax */
+  :global([data-lufia-part="nav-sheet-layer"][data-state="closed"]) .menuGlyph[data-open] .menuGlyphClose {
+    animation: none;
+  }
 }

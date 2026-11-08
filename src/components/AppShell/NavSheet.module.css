@@ -56,11 +56,51 @@
   display: none;
 }
 
+/* Docked (`dock`): the native dialog is a transparent full-screen layer; the sheet and the dock are inside it, so the
+   dock stays out of the sheet's transform. The inner backdrop takes the taps outside the sheet. */
+.nativeLayer {
+  position: fixed;
+  inset: 0;
+  inline-size: 100%;
+  max-inline-size: none;
+  block-size: 100%;
+  max-block-size: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: hidden;
+}
+
+.nativeLayer:not([open]) {
+  display: none;
+}
+
+.nativeLayer:focus {
+  outline: var(--lufia-border-width-thick) solid transparent;
+}
+
+.nativeLayer::backdrop {
+  background: transparent;
+}
+
+/* The dock positions itself (a fixed bar); this box only holds it, above the sheet, and lets it go first on the way out. */
+.dock {
+  position: relative;
+  z-index: 1;
+}
+
+.root[data-state="closed"] .dock {
+  pointer-events: none;
+}
+
 .native::backdrop {
   background: color-mix(in srgb, var(--lufia-color-bg-canvas) 55%, transparent);
   animation: backdrop-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) both;
 }
 
+.root:focus,
 .panel:focus {
   outline: var(--lufia-border-width-thick) solid transparent;
 }
@@ -176,6 +216,12 @@
   flex: none;
   padding: var(--lufia-space-2) var(--lufia-space-3) calc(var(--lufia-space-3) + env(safe-area-inset-bottom));
   border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+/* Docked: the end of the sheet (the footer, or the list when there is none) keeps clear of the bar floating over it. */
+.panel[data-docked] > .body:last-child,
+.panel[data-docked] > .foot {
+  padding-block-end: calc(var(--lufia-nav-sheet-dock-clearance, 4.75rem) + env(safe-area-inset-bottom));
 }
 
 /* The keyframes animate one end only, so the resting state is the end state and a disabled animation leaves it visible. */
