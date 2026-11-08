@@ -43,7 +43,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `title` | `ReactNode` | yes |  | The dialog's accessible name and visible heading. |
 | `description` | `ReactNode` | no |  | Optional supporting text, wired to `aria-describedby`. |
 | `size` | `ModalSize \| (string & {})` | no | `"md"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet. Default `md`. |
-| `sheetPlacement` | `"bottom" \| "top"` | no | `"bottom"` | Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. |
+| `sheetPlacement` | `"top" \| "bottom"` | no | `"bottom"` | Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. |
 | `titleWrap` | `"wrap" \| "ellipsis"` | no | `"wrap"` | `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. |
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation. |
