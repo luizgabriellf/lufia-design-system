@@ -69,6 +69,16 @@ export const Phone: Story = {
   globals: { viewport: { value: "w390", isRotated: false } },
 };
 
+/** A short page on a phone: the shell still paints the canvas down to the bottom of the viewport. */
+export const PhoneShortPage: Story = {
+  render: (args) => (
+    <DemoShell {...args}>
+      <p style={{ margin: "1rem" }}>Nothing else on this page.</p>
+    </DemoShell>
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
 export const SmallPhone: Story = {
   globals: { viewport: { value: "w320", isRotated: false } },
 };
