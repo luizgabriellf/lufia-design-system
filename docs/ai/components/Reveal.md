@@ -21,7 +21,7 @@ shorter `--lufia-motion-duration-exit`.
 ## When not to use
 
 - Content that changes height in place: use [Collapse](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-motion-collapse--docs).
-- Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real
+- Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real state changes animate.
 - Dialogs and popovers. They need focus management that belongs to their own components.
 
 ## API
@@ -55,8 +55,8 @@ import { Reveal } from "@lufia/design-system/motion";
 
 - Under `prefers-reduced-motion` the content appears and disappears at once.
 - Nothing is conveyed by the motion alone: the content is in the DOM and the accessibility tree whenever it is shown.
-- If the content is an important status, put it in (or wrap it with) a live region so it is announced. `Reveal` adds no
-- During the exit the content is no longer clickable (`pointer-events: none`), but it is still focusable for the 160 ms
+- If the content is an important status, put it in (or wrap it with) a live region so it is announced. `Reveal` adds no roles.
+- During the exit the content is no longer clickable (`pointer-events: none`), but it is still focusable for the 160 ms it takes to leave. Move focus yourself if the focused element is inside.
 
 ## Motion
 

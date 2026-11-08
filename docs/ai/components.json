@@ -165,7 +165,7 @@
         "keyboardNotes": null,
         "notes": [
           "**Decorative by default**: `aria-hidden=\"true\"` and `focusable=\"false\"`, so assistive technology skips it.",
-          "**Meaningful on request**: `aria-label` switches to `role=\"img\"` with that name. Prefer labelling the surrounding button",
+          "**Meaningful on request**: `aria-label` switches to `role=\"img\"` with that name. Prefer labelling the surrounding button instead, so the name is announced once.",
           "Icons inherit `currentColor`; contrast is the responsibility of the text colour they sit in (3:1 for non-text content).",
           "Keyboard and focus behaviour belong to the enclosing control."
         ]
@@ -419,7 +419,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "It is not a live region. If the change matters to someone using a screen reader, announce it yourself (for example",
+          "It is not a live region. If the change matters to someone using a screen reader, announce it yourself (for example \"Total updated to 1,280 euros\" in a polite live region), or pair it with [ChangeHighlight](?path=/docs/components-motion-changehighlight--docs).",
           "Under `prefers-reduced-motion` the new value appears at once; there are never intermediate numbers.",
           "Formatting and locale are yours: pass a formatter built with the user's locale."
         ]
@@ -1739,7 +1739,7 @@
         "keyboard": [],
         "keyboardNotes": "A badge is not interactive and takes no focus. If it needs to act, use a `Button` or `Link`.",
         "notes": [
-          "The text is always present and carries the meaning. The tone and the dot only reinforce it (WCAG 1.4.1), so never omit",
+          "The text is always present and carries the meaning. The tone and the dot only reinforce it (WCAG 1.4.1), so never omit the text and never reuse one word for two tones.",
           "The dot is decorative and hidden from assistive technology.",
           "Every tone's text meets 4.5:1 on its own background in light and dark; the contrast check enforces the status pairs.",
           "In forced-colors mode the border and dot use system colours, so the shape remains."
@@ -2732,7 +2732,7 @@
         "notes": [
           "`title` renders as a heading (`headingLevel`, default 3). Choose the level that keeps the page outline in order.",
           "In the interactive variant, put nothing interactive in `headerAction` and `footer` that duplicates the link's destination.",
-          "Contrast of text on the surface is checked in every theme. The border and focus ring use semantic tokens; in",
+          "Contrast of text on the surface is checked in every theme. The border and focus ring use semantic tokens; in forced-colors mode the border is `CanvasText` and the ring `Highlight`.",
           "Hover only adds an accent border and shadow; nothing is revealed on hover alone."
         ]
       },
@@ -2839,7 +2839,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Decoration only. It is not announced and carries no meaning by itself: if the change matters, make it readable in",
+          "Decoration only. It is not announced and carries no meaning by itself: if the change matters, make it readable in text, or announce it in a polite live region.",
           "It does not play under `prefers-reduced-motion`, and is removed in `forced-colors` mode."
         ]
       },
@@ -3141,7 +3141,7 @@
           "Disclosures, accordions, \"show more\" areas, inline filter panels."
         ],
         "whenNotToUse": [
-          "Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the",
+          "Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the approved route.",
           "Content that should leave the page entirely: use [Reveal](?path=/docs/components-motion-reveal--docs)."
         ],
         "contentGuidelines": null
@@ -3152,7 +3152,7 @@
         "keyboardNotes": null,
         "notes": [
           "The trigger is yours. It must be a button with `aria-expanded` and `aria-controls` pointing at the `id` you pass.",
-          "While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen",
+          "While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen readers, but it is still in the server-rendered HTML.",
           "Opening and closing are instant under `prefers-reduced-motion`.",
           "The inner wrapper clips overflow while animating and when open; leave room for focus rings of controls at its edge.",
           "Browsers without `grid-template-rows` transitions (older than 2023) still work: the panel snaps open and closed."
@@ -4339,10 +4339,10 @@
           "code": "import { ConfirmDialog } from \"@lufia/design-system/components/ConfirmDialog\";\n\n<ConfirmDialog\n  open={open}\n  title=\"Delete invoice 2041?\"\n  message=\"The invoice and its payment history are removed. This cannot be undone.\"\n  confirmLabel=\"Delete invoice\"\n  cancelLabel=\"Keep invoice\"\n  destructive\n  busy={deleting}\n  onConfirm={deleteInvoice}\n  onCancel={() => setOpen(false)}\n/>;"
         },
         "whenToUse": [
-          "An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard,"
+          "An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard, publish, remove access."
         ],
         "whenNotToUse": [
-          "Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](?path=/docs/components-feedback-toast--docs): it is",
+          "Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](?path=/docs/components-feedback-toast--docs): it is faster and does not train people to click through confirmations.",
           "Collecting input. Use a Modal with a form."
         ],
         "contentGuidelines": "Title: the question, with the object (\"Delete invoice 2041?\"). Message: the consequence, one or two sentences. Buttons:\nthe verb (\"Delete invoice\" / \"Keep invoice\"), never \"Yes\" / \"No\" or \"OK\"."
@@ -4358,7 +4358,7 @@
           "`role=\"alertdialog\"`, named by the title and described by the message, so a screen reader reads both when it opens.",
           "No close button: the two explicit choices are the way out. Escape still cancels.",
           "Focus returns to the control that opened it.",
-          "Under `prefers-reduced-motion` the dialog appears at once and the busy spinner stops (the dimmed button and `aria-busy`"
+          "Under `prefers-reduced-motion` the dialog appears at once and the busy spinner stops (the dimmed button and `aria-busy` still carry the state)."
         ]
       },
       "motion": {
@@ -4528,9 +4528,9 @@
         "keyboardNotes": null,
         "notes": [
           "Renders a `<section>` with an `<h3>`. Make sure the page's heading hierarchy fits, or wrap it in a labelled region.",
-          "The tone is shown by colour and a glyph (`✓`, `!`, `·`) that are hidden from assistive technology. **Pass `toneLabel`**",
+          "The tone is shown by colour and a glyph (`✓`, `!`, `·`) that are hidden from assistive technology. **Pass `toneLabel`** (for example \"Overdue\") whenever the tone carries meaning; it is prepended to the heading as visually hidden text.",
           "Foreground and background pairs in every tone pass AA in all theme and mode combinations (see Foundations / Colors).",
-          "The action is a plain slot; its keyboard behaviour is the control you pass in. On narrow screens buttons and links in"
+          "The action is a plain slot; its keyboard behaviour is the control you pass in. On narrow screens buttons and links in the slot stretch to full width."
         ]
       },
       "motion": {
@@ -4628,7 +4628,7 @@
         "keyboardNotes": null,
         "notes": [
           "Uses `<dl>`, `<dt>` and `<dd>`, which expose the label-value relationship to screen readers without extra ARIA.",
-          "The label column is capped at 40% and wraps. A long label never pushes values out of their container, so the layout",
+          "The label column is capped at 40% and wraps. A long label never pushes values out of their container, so the layout reflows at 320px.",
           "Values may be any React node; links and buttons inside keep their own focus behaviour."
         ]
       },
@@ -4867,7 +4867,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The root is `role=\"status\"`, a polite live region. When the empty state replaces a list after a filter changes, the",
+          "The root is `role=\"status\"`, a polite live region. When the empty state replaces a list after a filter changes, the new message is announced. If it is present on first render it is not announced, which is the right behaviour.",
           "The icon is decorative (`aria-hidden`). Never put essential information only in the icon.",
           "Title and body use the text and muted-text tokens, which pass AA on every surface.",
           "The action slot keeps the keyboard behaviour of the control you pass in."
@@ -5142,10 +5142,10 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The real input is the control: it has the field's accessible name and description, `aria-invalid`, and `required`.",
+          "The real input is the control: it has the field's accessible name and description, `aria-invalid`, and `required`. The visible button is its label and is hidden from assistive technology, so the name is not read twice.",
           "Focus on the input draws the focus ring on the button.",
           "Refusals use `role=\"alert\"` and are part of the input's description. Several are shown as a list.",
-          "Each remove button is named after its file (\"Remove report.pdf\"; change it with `removeLabel`). After a removal focus returns",
+          "Each remove button is named after its file (\"Remove report.pdf\"; change it with `removeLabel`). After a removal focus returns to the input.",
           "Pass `describeFiles` to have a polite status announce the new count (\"2 files chosen\") after a pick.",
           "The drop area is a dashed border that fills with the accent when files are dragged over it, which is not colour alone."
         ]
@@ -5858,7 +5858,7 @@
         "keyboardNotes": null,
         "notes": [
           "Links are underlined, so colour is not the only cue (WCAG 1.4.1).",
-          "`externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new",
+          "`externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.",
           "External links get `rel=\"noopener noreferrer\"`.",
           "Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`."
         ]
@@ -6032,7 +6032,7 @@
           "Nested, to change the language or the router of one subtree."
         ],
         "whenNotToUse": [
-          "For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns"
+          "For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns them. `labels` is only text that assistive technology reads."
         ],
         "contentGuidelines": null
       },
@@ -6041,8 +6041,8 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always",
-          "A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and"
+          "The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always override them: a Portuguese page with an English \"Close\" button is an accessibility defect.",
+          "A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and \"open in new tab\"."
         ]
       },
       "motion": {
@@ -6370,13 +6370,13 @@
           "code": "import { Modal } from \"@lufia/design-system/components/Modal\";\n\n<Modal\n  open={open}\n  onClose={() => setOpen(false)}\n  title=\"Edit project\"\n  description=\"Rename the project or change who can see it.\"\n  footer={\n    <>\n      <button onClick={() => setOpen(false)}>Cancel</button>\n      <button onClick={save}>Save changes</button>\n    </>\n  }\n>\n  <form>...</form>\n</Modal>;"
         },
         "whenToUse": [
-          "A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking",
+          "A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking from a list, confirming settings.",
           "Anything that interrupts and needs an answer: build on it with [ConfirmDialog](?path=/docs/components-overlays-confirmdialog--docs)."
         ],
         "whenNotToUse": [
           "A message that does not need a response: use a [Toast](?path=/docs/components-feedback-toast--docs).",
-          "Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the",
-          "Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive"
+          "Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the context a modal hides.",
+          "Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive `open` with `useModalState`."
         ],
         "contentGuidelines": "Titles say what the dialog is for (\"Edit project\", \"Delete invoice 2041?\"), not \"Are you sure?\". Buttons say what they do\n(\"Save changes\"), not \"OK\". Put the primary action last and the cancel action before it; on phones the order reverses so the\nprimary action sits on top."
       },
@@ -6388,12 +6388,12 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "`role=\"dialog\"` (or `alertdialog`), `aria-modal=\"true\"`, `aria-labelledby` the title and `aria-describedby` the",
-          "The page behind is made `inert` and page scroll is locked, so neither keyboard, pointer nor screen reader can reach it.",
-          "The dialog is the scroll container, with the header and footer sticky. Long content scrolls with the arrow keys while",
-          "Close button: 36 px on desktop and 44 px on phones. Focus is always visible. Under `forced-colors` the border uses",
-          "Motion uses `--lufia-motion-duration-enter` (240 ms) and `-exit` (160 ms), scale on desktop and rise on phones. Under",
-          "Choose the initial focus deliberately. The default (the dialog) is safe for informational content; for a destructive"
+          "`role=\"dialog\"` (or `alertdialog`), `aria-modal=\"true\"`, `aria-labelledby` the title and `aria-describedby` the description when there is one.",
+          "The page behind is made `inert` and page scroll is locked, so neither keyboard, pointer nor screen reader can reach it. The notification region of `ToastProvider` stays live.",
+          "The dialog is the scroll container, with the header and footer sticky. Long content scrolls with the arrow keys while focus is on the dialog, with no extra tab stop.",
+          "Close button: 36 px on desktop and 44 px on phones. Focus is always visible. Under `forced-colors` the border uses `CanvasText`.",
+          "Motion uses `--lufia-motion-duration-enter` (240 ms) and `-exit` (160 ms), scale on desktop and rise on phones. Under `prefers-reduced-motion` it appears and disappears at once.",
+          "Choose the initial focus deliberately. The default (the dialog) is safe for informational content; for a destructive prompt focus the safe action (`ConfirmDialog` does)."
         ]
       },
       "motion": {
@@ -6690,13 +6690,13 @@
         "keyboardNotes": null,
         "notes": [
           "The trigger is an `IconButton` named by `label`, with `aria-haspopup=\"menu\"`, `aria-expanded` and `aria-controls`.",
-          "The list is `role=\"menu\"` with `role=\"menuitem\"` entries; focus moves between items (roving focus) and returns to the",
+          "The list is `role=\"menu\"` with `role=\"menuitem\"` entries; focus moves between items (roving focus) and returns to the trigger on close or selection.",
           "Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.",
           "Choosing a link item also returns focus to the button. The popover flips to the other edge of the button when it would run past the viewport, and opens upward when there is no room below. With no items, no button is rendered.",
-          "A destructive item (`tone=\"danger\"`) is styled red, but its label must say what it does (\"Delete record\"), since colour",
-          "A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's",
+          "A destructive item (`tone=\"danger\"`) is styled red, but its label must say what it does (\"Delete record\"), since colour never carries the meaning alone.",
+          "A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's name and is hidden from assistive technology. Under reduced motion it appears without the slide and fade.",
           "Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.",
-          "In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears"
+          "In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears without the fade."
         ]
       },
       "motion": {
@@ -6883,10 +6883,10 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading",
+          "A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own `aria-label` only when it contains the visible text.",
           "Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.",
-          "A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled.",
-          "Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum",
+          "A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled. Disabled rows read at reduced contrast by design; keep the reason in the meta line.",
+          "Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum height is 3.5rem, well above the 24px target size.",
           "Put rows in a `ul` so a screen reader announces the count."
         ]
       },
@@ -7516,14 +7516,14 @@
         ],
         "keyboardNotes": null,
         "notes": [
-          "The bell is a button named by `label` and the count, \"Notifications, 4 unread\", with `aria-haspopup=\"dialog\"`,",
-          "The popover is a non-modal `role=\"dialog\"` labelled by its heading. Focus moves to it on open; Escape returns focus to the",
+          "The bell is a button named by `label` and the count, \"Notifications, 4 unread\", with `aria-haspopup=\"dialog\"`, `aria-expanded` and `aria-controls`. The visible count repeats the name and is hidden from assistive technology.",
+          "The popover is a non-modal `role=\"dialog\"` labelled by its heading. Focus moves to it on open; Escape returns focus to the bell. The sheet is `aria-modal`, traps focus and makes the page behind inert.",
           "Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items. The arrow keys mirror in right-to-left text. A row of tabs that does not fit scrolls sideways, and the edge that hides more fades.",
-          "Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the",
+          "Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the tint alone. Rows are links or buttons, so the whole row is the target and is at least 3.5rem tall.",
           "A polite live region announces changes of `unreadCount` (\"Notifications, 5 unread\"). It says nothing on first paint.",
-          "\"Mark all as read\" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is",
+          "\"Mark all as read\" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is read.",
           "Loading is one polite status with skeleton rows; a failure is an alert.",
-          "In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the"
+          "In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the summary's progress segments draw with borders."
         ]
       },
       "motion": {
@@ -7894,7 +7894,7 @@
         "keyboard": [],
         "keyboardNotes": "The header is not interactive. Its actions follow the keyboard behaviour of the controls you pass.",
         "notes": [
-          "The title is a real heading. A page should have one level 1; use `headingLevel` for secondary headers so the outline stays in",
+          "The title is a real heading. A page should have one level 1; use `headingLevel` for secondary headers so the outline stays in order.",
           "The eyebrow is a paragraph above the heading, not part of its name.",
           "Text contrast is checked in every theme. At 320px the title wraps instead of overflowing."
         ]
@@ -8362,9 +8362,9 @@
         "notes": [
           "Always give `label`: a page often has several navigations or tablists.",
           "Icons are decorative. The description is part of the link's or tab's name.",
-          "A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until",
-          "Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that",
-          "Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under"
+          "A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until the route changes. Modified clicks (open in new tab) change nothing.",
+          "Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that hides more. On narrow screens the description is hidden and the icon moves above the label.",
+          "Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border."
         ]
       },
       "motion": {
@@ -8574,8 +8574,8 @@
         "keyboardNotes": null,
         "notes": [
           "`aria-busy` and `aria-disabled` are set while pending (Button dims it, which is right while it waits). The button keeps its accessible name (the idle label).",
-          "A live region next to the button (`role=\"status\"`) announces `pendingLabel` when the wait starts and clears afterwards.",
-          "The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under",
+          "A live region next to the button (`role=\"status\"`) announces `pendingLabel` when the wait starts and clears afterwards. It sits outside the button because a live region inside a button is often ignored.",
+          "The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under `prefers-reduced-motion` and the label still changes.",
           "The button keeps the width of its longest label (invisible copies reserve it), so it does not jump when the label changes.",
           "Target height is at least 44px; focus is a 2px ring."
         ]
@@ -9000,7 +9000,7 @@
         "keyboardNotes": null,
         "notes": [
           "In right-to-left layouts Left and Right swap.",
-          "`role=\"radiogroup\"` named by the label; each option is `role=\"radio\"` with `aria-checked`, named by its label and",
+          "`role=\"radiogroup\"` named by the label; each option is `role=\"radio\"` with `aria-checked`, named by its label and described by its description.",
           "A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.",
           "The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.",
           "Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.",
@@ -9141,7 +9141,7 @@
         ],
         "whenNotToUse": [
           "Content that changes height in place: use [Collapse](?path=/docs/components-motion-collapse--docs).",
-          "Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real",
+          "Content that is on screen from the first paint. `Reveal` does not animate on mount unless you set `appear`: only real state changes animate.",
           "Dialogs and popovers. They need focus management that belongs to their own components."
         ],
         "contentGuidelines": null
@@ -9153,8 +9153,8 @@
         "notes": [
           "Under `prefers-reduced-motion` the content appears and disappears at once.",
           "Nothing is conveyed by the motion alone: the content is in the DOM and the accessibility tree whenever it is shown.",
-          "If the content is an important status, put it in (or wrap it with) a live region so it is announced. `Reveal` adds no",
-          "During the exit the content is no longer clickable (`pointer-events: none`), but it is still focusable for the 160 ms"
+          "If the content is an important status, put it in (or wrap it with) a live region so it is announced. `Reveal` adds no roles.",
+          "During the exit the content is no longer clickable (`pointer-events: none`), but it is still focusable for the 160 ms it takes to leave. Move focus yourself if the focused element is inside."
         ]
       },
       "motion": {
@@ -9460,7 +9460,7 @@
         "notes": [
           "Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.",
           "The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.",
-          "While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under",
+          "While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under `prefers-reduced-motion`.",
           "Results are not announced by this component: the list you update should announce its own count (a live region)."
         ]
       },
@@ -10184,9 +10184,9 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite",
+          "Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite `role=\"status\"` message (\"Loading profile\"). The string is yours, so it can be translated.",
           "Mark the region `aria-busy=\"true\"` while loading.",
-          "The shimmer is `transform` only, and it stops under `prefers-reduced-motion` (the shape stays). `still` turns it off",
+          "The shimmer is `transform` only, and it stops under `prefers-reduced-motion` (the shape stays). `still` turns it off everywhere.",
           "In `forced-colors` mode the skeleton becomes an outlined box and the shimmer is removed.",
           "No information is carried by the motion."
         ]
@@ -10315,8 +10315,8 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Follows the WAI-ARIA Authoring Practices **sortable table** pattern: `aria-sort=\"ascending\" | \"descending\" | \"none\"` is",
-          "The direction arrow is `aria-hidden`; `aria-sort` is what assistive technology announces, so the arrow does not",
+          "Follows the WAI-ARIA Authoring Practices **sortable table** pattern: `aria-sort=\"ascending\" | \"descending\" | \"none\"` is set on the column header, the control inside is a native button (Tab to focus, Enter or Space to activate).",
+          "The direction arrow is `aria-hidden`; `aria-sort` is what assistive technology announces, so the arrow does not pollute the button's name.",
           "A visible focus ring (2px, `--lufia-color-focus-ring`) is always present and the target is at least 24px tall.",
           "The button inherits header typography, so it looks like plain text until focused."
         ]
@@ -10486,6 +10486,189 @@
         "--lufia-motion-duration-instant",
         "--lufia-motion-duration-medium",
         "--lufia-motion-easing-out"
+      ]
+    },
+    {
+      "name": "StackedBar",
+      "category": "Data display",
+      "summary": "One bar split into proportional segments, with a legend and a text alternative.",
+      "status": "beta",
+      "source": "src/components/StackedBar",
+      "entry": {
+        "subpath": "@lufia/design-system/components/StackedBar",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "StackedBar",
+          "kind": "component",
+          "description": "A single bar split into proportional segments, with a legend: a part-of-whole breakdown such as a plan mix. The text is the accessible data: every segment is a list item with its label, value and share, and the bar is `aria-hidden` shape on top of it. The legend can be hidden visually (`legend=\"hidden\"`) and the list stays. A zero total draws an empty track and reads 0% for every segment. Segments are told apart by a thin gap, an optional `pattern` and, in `forced-colors` mode, one fill pattern each. The bar draws in once on mount and is removed under reduced motion. For several measures per period use `ColumnChart`; for one value against a target use `BulletBar`.",
+          "props": [
+            {
+              "name": "segments",
+              "type": "readonly StackedBarSegment[]",
+              "required": true,
+              "default": null,
+              "description": "The parts of the whole, in drawing order. Segments with no value are not drawn but stay in the legend and the text."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Accessible name of the whole bar (\"Plan mix\"). Required: the bar is a group that a screen reader reads by its parts."
+            },
+            {
+              "name": "formatValue",
+              "type": "(value: number) => string",
+              "required": false,
+              "default": "String",
+              "description": "Formats each value for the legend and the text alternative (\"1,240\", \"3 sites\"). Defaults to `String(value)`."
+            },
+            {
+              "name": "formatPercent",
+              "type": "(percent: number) => string",
+              "required": false,
+              "default": "defaultPercent",
+              "description": "Formats each share, given as a number from 0 to 100, for the legend and the text alternative. Defaults to the rounded number and `%` (\"38%\"), and to \"<1%\" for a segment with a value whose share rounds to 0. Rounded shares may not add up to 100. Pass it to localise the number or the symbol."
+            },
+            {
+              "name": "legend",
+              "type": "\"hidden\" | \"auto\"",
+              "required": false,
+              "default": "\"auto\"",
+              "description": "`\"auto\"` prints the legend under the bar: a swatch, the label and the value of every segment. `\"hidden\"` keeps the same list in the page for screen readers only, so the bar never loses its text alternative. Defaults to `\"auto\"`."
+            },
+            {
+              "name": "showPercent",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Prints each share next to its value in the legend. Off by default; the share is always read by assistive technology."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "StackedBarProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "StackedBarSegment",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; label: string; value: number; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
+        }
+      ],
+      "aliases": {
+        "StackedBarSegment": "{ key: string; label: string; value: number; tone?: ChartTone | undefined; pattern?: \"hatch\" | undefined; }"
+      },
+      "story": {
+        "docsId": "components-data-display-stackedbar--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-stackedbar--default"
+          },
+          {
+            "export": "WithPercent",
+            "id": "components-data-display-stackedbar--with-percent"
+          },
+          {
+            "export": "FormattedValues",
+            "id": "components-data-display-stackedbar--formatted-values"
+          },
+          {
+            "export": "LegendHidden",
+            "id": "components-data-display-stackedbar--legend-hidden"
+          },
+          {
+            "export": "ZeroSegment",
+            "id": "components-data-display-stackedbar--zero-segment"
+          },
+          {
+            "export": "ZeroTotal",
+            "id": "components-data-display-stackedbar--zero-total"
+          },
+          {
+            "export": "SingleSegment",
+            "id": "components-data-display-stackedbar--single-segment"
+          },
+          {
+            "export": "Hatched",
+            "id": "components-data-display-stackedbar--hatched"
+          },
+          {
+            "export": "ManySegments",
+            "id": "components-data-display-stackedbar--many-segments"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-data-display-stackedbar--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-stackedbar--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/StackedBar/StackedBar.mdx",
+        "overview": "One bar split into proportional segments, with a legend. It shows how a whole divides into parts, such as a plan mix or\naccounts by status.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { StackedBar } from \"@lufia/design-system/components/StackedBar\";\n\n<StackedBar\n  label=\"Accounts by status\"\n  segments={[\n    { key: \"active\", label: \"Active\", value: 48, tone: \"accent\" },\n    { key: \"trial\", label: \"Trial\", value: 21, tone: \"success\" },\n    { key: \"expired\", label: \"Expired\", value: 9, tone: \"warning\" },\n  ]}\n  formatValue={(value) => value.toLocaleString(\"en\")}\n/>;"
+        },
+        "whenToUse": [
+          "A part-of-whole breakdown of one total, with a handful of segments.",
+          "A compact composition next to a figure or inside a card."
+        ],
+        "whenNotToUse": [
+          "Several measures per period: use `ColumnChart`.",
+          "One value against a target: use `BulletBar`; one completion fraction: use `ProgressBar`.",
+          "Values that are compared across rows on a shared scale: use `BarList`.",
+          "Many segments (more than about five): the tones run out and the slices become unreadable. Use `BarList`."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The root is a `role=\"group\"` named by `label` (required). The drawing is `aria-hidden`; the text alternative is a list with one item per segment: its label, its value and its share (\"Active 48 (62%)\").",
+          "`legend=\"hidden\"` hides the legend visually and keeps that list for screen readers. `showPercent` only changes whether the share is printed.",
+          "Colour is never the only cue: every segment is named in the list, neighbours are separated by a gap, and a `pattern` adds stripes.",
+          "A zero total draws an empty track and every share reads 0%. Zero segments are not drawn but stay in the list.",
+          "A segment with a value whose share rounds to 0 reads `\"<1%\"` by default. Rounded shares may not add up to 100.",
+          "A negative or non-finite value is drawn as 0 and its share reads 0, but the list shows the number as given, so bad data stays visible to assistive technology.",
+          "The draw-in is `transform` only and plays once, on mount; it is removed under `prefers-reduced-motion`.",
+          "In `forced-colors` mode each segment, and its legend swatch, gets its own fill pattern in `CanvasText`.",
+          "Layout uses logical properties and the draw-in starts from the inline start, so right-to-left works."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-bg-surface",
+        "--lufia-color-border-subtle",
+        "--lufia-color-status-danger-solid",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-color-text-subtle",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-duration-medium",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-full"
       ]
     },
     {
@@ -11010,8 +11193,8 @@
         "keyboardNotes": null,
         "notes": [
           "Each track is a `<section>` with an `<h3>`; each node list is an ordered list, so order and count are announced.",
-          "**State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a",
-          "Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated",
+          "**State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a meaningful `stateLabel`.",
+          "Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated `on-solid` text token that passes AA in light and dark.",
           "Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.",
           "Actions are slots; keep them keyboard operable and labelled.",
           "In forced-colors mode the pill keeps a visible border."
@@ -11164,9 +11347,9 @@
         "keyboardNotes": null,
         "notes": [
           "A visually hidden `role=\"status\"` live region announces \"2 / 4: Review\" when `current` changes, at every viewport.",
-          "The active step's list item has `aria-current=\"step\"`; every step exposes the name \"2. Review\" (visually hidden text, or",
-          "Only already-visited steps are rendered as buttons, and only when `onStepClick` is given. Upcoming and current steps are",
-          "Dots are 32px; focus shows a 2px ring. The connector fill is a transform transition and stops under"
+          "The active step's list item has `aria-current=\"step\"`; every step exposes the name \"2. Review\" (visually hidden text, or the button's `aria-label`).",
+          "Only already-visited steps are rendered as buttons, and only when `onStepClick` is given. Upcoming and current steps are plain text, so there are no disabled controls to Tab past. Without a handler the component is purely informational.",
+          "Dots are 32px; focus shows a 2px ring. The connector fill is a transform transition and stops under `prefers-reduced-motion`. In forced-colors mode connectors use `CanvasText`."
         ]
       },
       "motion": {
@@ -11264,7 +11447,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Decorative: `aria-hidden=\"true\"` and `focusable=\"false\"`. The adjacent text carries the meaning, so the check is never",
+          "Decorative: `aria-hidden=\"true\"` and `focusable=\"false\"`. The adjacent text carries the meaning, so the check is never the only cue.",
           "The draw uses `--lufia-motion-duration-enter` and stops under `prefers-reduced-motion`, leaving the finished check."
         ]
       },
@@ -11525,7 +11708,7 @@
           "`SwitchInput` is a native checkbox with `role=\"switch\"`, so the checked state is exposed natively and Space toggles it (Enter does not, as on any checkbox); the label, hint and error wiring is the same.",
           "`role=\"switch\"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.",
           "If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.",
-          "Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,"
+          "Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`, mirrored in right-to-left, and stays still under `prefers-reduced-motion`."
         ]
       },
       "motion": {
@@ -11713,7 +11896,7 @@
         "keyboardNotes": null,
         "notes": [
           "Chips are toggle buttons with `aria-pressed`; the group has `role=\"group\"` (add `aria-label` through props to name it).",
-          "The search input is `type=\"search\"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised);",
+          "The search input is `type=\"search\"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.",
           "The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.",
           "Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px."
         ]
@@ -11899,7 +12082,7 @@
         "keyboardNotes": null,
         "notes": [
           "Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.",
-          "The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`",
+          "The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors` the ring uses `Highlight`, and an invalid control gets a thicker border.",
           "Height is at least 44px; the text is 16px so iOS does not zoom on focus."
         ]
       },
@@ -12357,7 +12540,7 @@
           "Offering **Undo** right after a reversible action. It is better than a confirmation dialog."
         ],
         "whenNotToUse": [
-          "Anything that must be answered or read before moving on: use [ConfirmDialog](?path=/docs/components-overlays-confirmdialog--docs)",
+          "Anything that must be answered or read before moving on: use [ConfirmDialog](?path=/docs/components-overlays-confirmdialog--docs) or an inline message. A toast disappears, so a form's validation errors do not belong in one.",
           "Information the person will need again (instructions, a long explanation). Put it on the page.",
           "More than one at a time for the same outcome: identical string messages are de-duplicated, and `limit` caps the stack."
         ],
@@ -12371,14 +12554,14 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Announcing is separate from showing. Visually hidden live regions (`role=\"alert\"` for errors, `role=\"status\"` for the",
-          "The announcer regions keep `role=\"alert\"` and `role=\"status\"` while empty, on purpose. A live region only announces",
-          "In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole(\"status\")`",
-          "Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a",
-          "The notification region stays live while a [Modal](?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest",
+          "Announcing is separate from showing. Visually hidden live regions (`role=\"alert\"` for errors, `role=\"status\"` for the rest) hold a text copy of each message. One pair lives in `document.body`; another is created inside each open modal `<dialog>` for as long as it is open, because the browser makes the body inert behind it. A message goes to the announcer of the topmost open dialog, or the body's, and each one exists before anything is added to it. The visible stack is a labelled `region` that moves into the topmost dialog and back. Errors interrupt, the rest wait.",
+          "The announcer regions keep `role=\"alert\"` and `role=\"status\"` while empty, on purpose. A live region only announces content added after it exists, so both must be mounted first. `aria-live` alone is meant to be enough, but the explicit role is what the screen reader and browser pairs we know of announce most reliably (older VoiceOver and JAWS builds are the usual failures with a bare `aria-live`), and `role=\"alert\"` is what marks the assertive region as errors. An empty live region is not read out, so the node costs nothing to users. We kept the roles rather than risk a silent toast.",
+          "In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole(\"status\")` (`\"alert\"` for errors) and query the visible toast inside the `Notifications` region.",
+          "Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a focused toast dismisses it. While a toast has focus its timer is paused.",
+          "The notification region stays live while a [Modal](?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest of the page `inert`, except `data-lufia-inert-exempt`), though Tab cycles only inside the modal while it is open.",
           "Targets: the dismiss button and action are at least 28 px tall (WCAG 2.5.8 asks for 24 px).",
-          "Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under",
-          "Colour is never the only signal: each tone has its own icon, and the message says what happened. Under `forced-colors`",
+          "Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under `prefers-reduced-motion` toasts appear and disappear at once. The success check (`SuccessCheck`) stops drawing.",
+          "Colour is never the only signal: each tone has its own icon, and the message says what happened. Under `forced-colors` the border uses system colours.",
           "Not recorded yet: a manual VoiceOver and NVDA pass (required before `stable`)."
         ]
       },
@@ -12502,7 +12685,7 @@
         "keyboardNotes": null,
         "notes": [
           "It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.",
-          "WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain"
+          "WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain the visible text."
         ]
       },
       "motion": {
@@ -12591,7 +12774,7 @@
         "notes": [
           "Locking scroll does not move focus or trap it. Pair it with a focus trap and `aria-modal` on the dialog.",
           "The previous scroll position is restored on release, so keyboard and screen-reader users return to where they were.",
-          "It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup,"
+          "It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup, including on unmount."
         ]
       },
       "motion": {
@@ -12682,9 +12865,9 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Escape closes and returns focus to the control that opened the popup (WAI-ARIA APG menu button pattern). The key is",
+          "Escape closes and returns focus to the control that opened the popup (WAI-ARIA APG menu button pattern). The key is ignored when another handler already used it (`defaultPrevented`), so a nested control can claim it first.",
           "Tab is not intercepted: leaving the popup by keyboard is allowed, and the consumer decides whether that closes it.",
-          "A hidden copy of the control (same component rendered for desktop and phone, one hidden by CSS) never listens, because"
+          "A hidden copy of the control (same component rendered for desktop and phone, one hidden by CSS) never listens, because it has no layout boxes."
         ]
       },
       "motion": {
@@ -12807,7 +12990,7 @@
           "Any overlay that blocks the page behind it: dialogs, drawers, sheets."
         ],
         "whenNotToUse": [
-          "Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss",
+          "Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss helper instead.",
           "A native `<dialog>` opened with `showModal()`. The browser already traps focus."
         ],
         "contentGuidelines": null
@@ -12817,10 +13000,10 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The default `initialFocus` is the container, which needs a name (`aria-label` or `aria-labelledby`) and `tabIndex={-1}`.",
-          "Tabbable elements are found by selector and visibility (`hidden`, `inert`, `display: none`, `visibility: hidden` are",
-          "On close, whatever is focused is blurred first (iOS Safari resets its zoom on a real blur), then focus is restored. If",
-          "Pair it with `aria-modal=\"true\"` on the dialog; `inertBackground` makes the effect real for browsers and assistive"
+          "The default `initialFocus` is the container, which needs a name (`aria-label` or `aria-labelledby`) and `tabIndex={-1}`. It avoids opening a mobile keyboard and never picks an action for the person. For a destructive confirmation, point `initialFocus` at the safe button.",
+          "Tabbable elements are found by selector and visibility (`hidden`, `inert`, `display: none`, `visibility: hidden` are skipped). Fixed-position children count.",
+          "On close, whatever is focused is blurred first (iOS Safari resets its zoom on a real blur), then focus is restored. If something moved focus elsewhere on purpose in the meantime, it is left alone.",
+          "Pair it with `aria-modal=\"true\"` on the dialog; `inertBackground` makes the effect real for browsers and assistive technologies that ignore `aria-modal`."
         ]
       },
       "motion": {
@@ -12910,8 +13093,8 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The server cannot know the query, so it renders `defaultValue` (default `false`). On the client React re-reads the real",
-          "Do not hide content from assistive technology based on a media query; hide it with CSS so the accessibility tree and"
+          "The server cannot know the query, so it renders `defaultValue` (default `false`). On the client React re-reads the real value during hydration, which can cause one extra render but never a hydration mismatch. Pick the default that is safest without JavaScript.",
+          "Do not hide content from assistive technology based on a media query; hide it with CSS so the accessibility tree and the visual result stay in step."
         ]
       },
       "motion": {
@@ -13071,9 +13254,9 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "A refresh reopens the modal, and there is no opener to return focus to. Focus then goes back to the page body when it",
+          "A refresh reopens the modal, and there is no opener to return focus to. Focus then goes back to the page body when it closes. If that matters, manage focus in the consumer.",
           "`open` pushes a history entry and `close` replaces it, so Back closes the modal and does not stack closed states.",
-          "Opening and closing are real navigations: in a routed app, let `onNavigate` drive the same loading indication as"
+          "Opening and closing are real navigations: in a routed app, let `onNavigate` drive the same loading indication as other navigations."
         ]
       },
       "motion": {
@@ -13228,7 +13411,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Render the controls in a `nav` with a label, disable (not hide) Previous/Next at the ends, and announce the position",
+          "Render the controls in a `nav` with a label, disable (not hide) Previous/Next at the ends, and announce the position with a polite live region (\"Page 2 of 3\").",
           "The page is clamped, so a list that shrinks while on the last page shows the new last page instead of an empty one.",
           "When the page changes, keep keyboard focus on the control that was activated; do not move it into the list."
         ]
@@ -13278,10 +13461,10 @@
           "code": "import { usePrefersReducedMotion } from \"@lufia/design-system/motion\";\n\nconst reduced = usePrefersReducedMotion();\nif (reduced) showFinalState();"
         },
         "whenToUse": [
-          "Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects,"
+          "Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects, or waiting for an exit animation before unmounting."
         ],
         "whenNotToUse": [
-          "Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a"
+          "Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a `@media (prefers-reduced-motion: reduce)` rule. See [Motion](?path=/docs/foundations-motion--docs)."
         ],
         "contentGuidelines": null
       },
@@ -13291,7 +13474,7 @@
         "keyboardNotes": null,
         "notes": [
           "Reduced motion means _less_ motion, not none of the information: render the final state, do not hide the change.",
-          "On the server the hook returns `false` (full motion), because the preference is unknown. React re-reads the real value",
+          "On the server the hook returns `false` (full motion), because the preference is unknown. React re-reads the real value on hydration, and CSS has already collapsed durations through the tokens.",
           "Without `matchMedia` (old environments, some test runners) it returns `false`."
         ]
       },
@@ -13395,8 +13578,8 @@
         "notes": [
           "The indicator is decorative: give it `aria-hidden=\"true\"`. State stays on the items (`aria-current`, `aria-pressed`).",
           "It starts `hidden`, so with no script or before the first measure the active item keeps its own styling.",
-          "The slide is switched on one frame after the first position, so it never glides in from the corner. A resize jumps",
-          "Positions are measured, physical coordinates; the indicator uses `left: 0` on purpose and follows the items in RTL"
+          "The slide is switched on one frame after the first position, so it never glides in from the corner. A resize jumps instead of sliding. Under `prefers-reduced-motion` the duration tokens collapse and the indicator simply appears in place.",
+          "Positions are measured, physical coordinates; the indicator uses `left: 0` on purpose and follows the items in RTL layouts too."
         ]
       },
       "motion": {
@@ -13465,7 +13648,7 @@
           "code": "import { useStepDirection } from \"@lufia/design-system/components/useStepDirection\";\n\nconst direction = useStepDirection(step, open);\n\n<div data-step-direction={direction}>{current}</div>;"
         },
         "whenToUse": [
-          "Wizards and stepped dialogs, where direction helps people keep their place (\"one direction language\": forward is right,"
+          "Wizards and stepped dialogs, where direction helps people keep their place (\"one direction language\": forward is right, back is left)."
         ],
         "whenNotToUse": [
           "Tabs or other non-linear navigation, where there is no forward."
@@ -13477,7 +13660,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens",
+          "The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens so they collapse under `prefers-reduced-motion` (see Motion).",
           "The direction must never be the only signal of the new step: announce it (`Stepper` does) and keep the heading current.",
           "Opening the flow returns `undefined`, so a wizard never slides on first paint."
         ]

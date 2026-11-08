@@ -59,9 +59,9 @@ import { Skeleton } from "@lufia/design-system/motion";
 
 ## Accessibility
 
-- Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite
+- Skeletons are `aria-hidden` by default. Set `label` on **one** skeleton per loading region: it renders a polite `role="status"` message ("Loading profile"). The string is yours, so it can be translated.
 - Mark the region `aria-busy="true"` while loading.
-- The shimmer is `transform` only, and it stops under `prefers-reduced-motion` (the shape stays). `still` turns it off
+- The shimmer is `transform` only, and it stops under `prefers-reduced-motion` (the shape stays). `still` turns it off everywhere.
 - In `forced-colors` mode the skeleton becomes an outlined box and the shimmer is removed.
 - No information is carried by the motion.
 

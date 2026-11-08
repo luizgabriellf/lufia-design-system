@@ -21,7 +21,7 @@ components fall back on. The package imports no router and no i18n library; this
 
 ## When not to use
 
-- For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns
+- For visible copy (titles, messages, button text). Those are props on each component, so the app's own i18n layer owns them. `labels` is only text that assistive technology reads.
 
 ## Exports
 
@@ -87,8 +87,8 @@ import NextLink from "next/link";
 
 ## Accessibility
 
-- The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always
-- A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and
+- The defaults are neutral English so a missing provider never leaves a control without a name. In a localised app, always override them: a Portuguese page with an English "Close" button is an accessibility defect.
+- A custom `linkComponent` must render a real anchor (`<a href>`) so links keep link semantics, middle-click and "open in new tab".
 
 ## Motion
 

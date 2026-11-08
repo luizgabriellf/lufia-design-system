@@ -20,7 +20,7 @@ does so without measuring anything in JavaScript (`grid-template-rows` from `0fr
 
 ## When not to use
 
-- Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the
+- Do not animate `height` or `max-height` yourself for the same purpose. `verify-motion` flags it, and `Collapse` is the approved route.
 - Content that should leave the page entirely: use [Reveal](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-motion-reveal--docs).
 
 ## API
@@ -53,7 +53,7 @@ import { Collapse } from "@lufia/design-system/motion";
 ## Accessibility
 
 - The trigger is yours. It must be a button with `aria-expanded` and `aria-controls` pointing at the `id` you pass.
-- While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen
+- While closed the content is `inert` and `visibility: hidden`: it cannot receive focus and is not read by screen readers, but it is still in the server-rendered HTML.
 - Opening and closing are instant under `prefers-reduced-motion`.
 - The inner wrapper clips overflow while animating and when open; leave room for focus rings of controls at its edge.
 - Browsers without `grid-template-rows` transitions (older than 2023) still work: the panel snaps open and closed.

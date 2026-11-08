@@ -77,13 +77,13 @@ Keyboard:
 | Tab / Shift+Tab | Sheet \| Next / previous item, wrapping: focus stays in the sheet |
 
 - The trigger is an `IconButton` named by `label`, with `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`.
-- The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the
+- The list is `role="menu"` with `role="menuitem"` entries; focus moves between items (roving focus) and returns to the trigger on close or selection.
 - Disabled items are `aria-disabled`: they stay focusable and readable (APG) but cannot be activated.
 - Choosing a link item also returns focus to the button. The popover flips to the other edge of the button when it would run past the viewport, and opens upward when there is no room below. With no items, no button is rendered.
-- A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour
-- A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's
+- A destructive item (`tone="danger"`) is styled red, but its label must say what it does ("Delete record"), since colour never carries the meaning alone.
+- A sheet traps focus, makes the page behind inert and restores focus to the button; the visible heading repeats the menu's name and is hidden from assistive technology. Under reduced motion it appears without the slide and fade.
 - Items are at least 2.5rem tall, 3rem on narrow screens. The menu is limited to the viewport width and wraps long labels.
-- In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears
+- In forced-colors mode the menu border is `CanvasText` and the focus ring `Highlight`. Under reduced motion the menu appears without the fade.
 
 ## Motion
 

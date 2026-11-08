@@ -52,8 +52,8 @@ import { SortableTh } from "@lufia/design-system/components/SortableTh";
 
 Follows the WAI-ARIA Authoring Practices pattern: [Sortable table](https://www.w3.org/WAI/ARIA/apg/patterns/table/).
 
-- Follows the WAI-ARIA Authoring Practices **sortable table** pattern: `aria-sort="ascending" | "descending" | "none"` is
-- The direction arrow is `aria-hidden`; `aria-sort` is what assistive technology announces, so the arrow does not
+- Follows the WAI-ARIA Authoring Practices **sortable table** pattern: `aria-sort="ascending" | "descending" | "none"` is set on the column header, the control inside is a native button (Tab to focus, Enter or Space to activate).
+- The direction arrow is `aria-hidden`; `aria-sort` is what assistive technology announces, so the arrow does not pollute the button's name.
 - A visible focus ring (2px, `--lufia-color-focus-ring`) is always present and the target is at least 24px tall.
 - The button inherits header typography, so it looks like plain text until focused.
 

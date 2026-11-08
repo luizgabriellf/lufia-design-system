@@ -79,9 +79,9 @@ Keyboard:
 
 - Always give `label`: a page often has several navigations or tablists.
 - Icons are decorative. The description is part of the link's or tab's name.
-- A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until
-- Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that
-- Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under
+- A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until the route changes. Modified clicks (open in new tab) change nothing.
+- Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that hides more. On narrow screens the description is hidden and the icon moves above the label.
+- Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border.
 
 ## Motion
 

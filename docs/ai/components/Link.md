@@ -59,7 +59,7 @@ Keyboard:
 | Enter | Follows the link |
 
 - Links are underlined, so colour is not the only cue (WCAG 1.4.1).
-- `externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new
+- `externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.
 - External links get `rel="noopener noreferrer"`.
 - Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`.
 

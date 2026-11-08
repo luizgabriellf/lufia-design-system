@@ -59,9 +59,9 @@ import { DetailAttentionCard } from "@lufia/design-system/components/DetailAtten
 ## Accessibility
 
 - Renders a `<section>` with an `<h3>`. Make sure the page's heading hierarchy fits, or wrap it in a labelled region.
-- The tone is shown by colour and a glyph (`✓`, `!`, `·`) that are hidden from assistive technology. **Pass `toneLabel`**
+- The tone is shown by colour and a glyph (`✓`, `!`, `·`) that are hidden from assistive technology. **Pass `toneLabel`** (for example "Overdue") whenever the tone carries meaning; it is prepended to the heading as visually hidden text.
 - Foreground and background pairs in every tone pass AA in all theme and mode combinations (see Foundations / Colors).
-- The action is a plain slot; its keyboard behaviour is the control you pass in. On narrow screens buttons and links in
+- The action is a plain slot; its keyboard behaviour is the control you pass in. On narrow screens buttons and links in the slot stretch to full width.
 
 ## Motion
 

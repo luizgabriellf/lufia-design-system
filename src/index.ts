@@ -39,6 +39,7 @@ export * from "./components/SegmentedToggle";
 export * from "./components/Select";
 export * from "./components/SortableTh";
 export * from "./components/Sparkline";
+export * from "./components/StackedBar";
 export * from "./components/StatTile";
 export * from "./components/StatusTimeline";
 export * from "./components/Stepper";

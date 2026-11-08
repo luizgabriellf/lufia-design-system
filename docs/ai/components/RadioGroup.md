@@ -75,7 +75,7 @@ import { RadioGroup } from "@lufia/design-system/components/RadioGroup";
 Follows the WAI-ARIA Authoring Practices pattern: [Radio group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
 
 - In right-to-left layouts Left and Right swap.
-- `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and
+- `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and described by its description.
 - A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
 - The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.
 - Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.

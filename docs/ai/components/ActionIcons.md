@@ -62,7 +62,7 @@ import { DeleteIcon } from "@lufia/design-system/components/ActionIcons";
 ## Accessibility
 
 - **Decorative by default**: `aria-hidden="true"` and `focusable="false"`, so assistive technology skips it.
-- **Meaningful on request**: `aria-label` switches to `role="img"` with that name. Prefer labelling the surrounding button
+- **Meaningful on request**: `aria-label` switches to `role="img"` with that name. Prefer labelling the surrounding button instead, so the name is announced once.
 - Icons inherit `currentColor`; contrast is the responsibility of the text colour they sit in (3:1 for non-text content).
 - Keyboard and focus behaviour belong to the enclosing control.
 

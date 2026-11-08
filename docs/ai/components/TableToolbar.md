@@ -66,7 +66,7 @@ import { TableToolbar } from "@lufia/design-system/components/TableToolbar";
 ## Accessibility
 
 - Chips are toggle buttons with `aria-pressed`; the group has `role="group"` (add `aria-label` through props to name it).
-- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised);
+- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.
 - The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.
 - Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px.
 

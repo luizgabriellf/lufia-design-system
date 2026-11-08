@@ -60,8 +60,8 @@ const indicator = useSlidingIndicator(nav, `[data-key="${active}"]`, active);
 
 - The indicator is decorative: give it `aria-hidden="true"`. State stays on the items (`aria-current`, `aria-pressed`).
 - It starts `hidden`, so with no script or before the first measure the active item keeps its own styling.
-- The slide is switched on one frame after the first position, so it never glides in from the corner. A resize jumps
-- Positions are measured, physical coordinates; the indicator uses `left: 0` on purpose and follows the items in RTL
+- The slide is switched on one frame after the first position, so it never glides in from the corner. A resize jumps instead of sliding. Under `prefers-reduced-motion` the duration tokens collapse and the indicator simply appears in place.
+- Positions are measured, physical coordinates; the indicator uses `left: 0` on purpose and follows the items in RTL layouts too.
 
 ## Motion
 

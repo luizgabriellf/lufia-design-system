@@ -47,7 +47,7 @@ import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
 ## Accessibility
 
 - It uses the clip pattern (not `display: none`), so the text stays in the accessibility tree.
-- WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain
+- WCAG 2.5.3 (Label in Name): when the visible label differs from the accessible name, the accessible name must contain the visible text.
 
 ## Motion
 

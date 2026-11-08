@@ -60,8 +60,8 @@ import { PendingSubmit } from "@lufia/design-system/components/PendingSubmit";
 ## Accessibility
 
 - `aria-busy` and `aria-disabled` are set while pending (Button dims it, which is right while it waits). The button keeps its accessible name (the idle label).
-- A live region next to the button (`role="status"`) announces `pendingLabel` when the wait starts and clears afterwards.
-- The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under
+- A live region next to the button (`role="status"`) announces `pendingLabel` when the wait starts and clears afterwards. It sits outside the button because a live region inside a button is often ignored.
+- The ring and the progress labels are `aria-hidden`; the status carries the meaning. The ring stops under `prefers-reduced-motion` and the label still changes.
 - The button keeps the width of its longest label (invisible copies reserve it), so it does not jump when the label changes.
 - Target height is at least 44px; focus is a 2px ring.
 

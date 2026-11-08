@@ -15,7 +15,7 @@ Tells a multi-step flow which way it just moved, so the new step can slide in fr
 
 ## When to use
 
-- Wizards and stepped dialogs, where direction helps people keep their place ("one direction language": forward is right,
+- Wizards and stepped dialogs, where direction helps people keep their place ("one direction language": forward is right, back is left).
 
 ## When not to use
 
@@ -52,7 +52,7 @@ const direction = useStepDirection(step, open);
 
 ## Accessibility
 
-- The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens
+- The hook only returns a value; it moves nothing. Keep the keyframes `from`-only and driven by `--lufia-motion-*` tokens so they collapse under `prefers-reduced-motion` (see Motion).
 - The direction must never be the only signal of the new step: announce it (`Stepper` does) and keep the heading current.
 - Opening the flow returns `undefined`, so a wizard never slides on first paint.
 

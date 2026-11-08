@@ -20,7 +20,7 @@ it opens and returns to the opener when it closes. It is what `Modal` and `Confi
 
 ## When not to use
 
-- Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss
+- Non-modal popovers, menus and dropdowns. They close on Escape or an outside press and let Tab leave; use a dismiss helper instead.
 - A native `<dialog>` opened with `showModal()`. The browser already traps focus.
 
 ## Exports
@@ -113,10 +113,10 @@ function Panel({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 ## Accessibility
 
-- The default `initialFocus` is the container, which needs a name (`aria-label` or `aria-labelledby`) and `tabIndex={-1}`.
-- Tabbable elements are found by selector and visibility (`hidden`, `inert`, `display: none`, `visibility: hidden` are
-- On close, whatever is focused is blurred first (iOS Safari resets its zoom on a real blur), then focus is restored. If
-- Pair it with `aria-modal="true"` on the dialog; `inertBackground` makes the effect real for browsers and assistive
+- The default `initialFocus` is the container, which needs a name (`aria-label` or `aria-labelledby`) and `tabIndex={-1}`. It avoids opening a mobile keyboard and never picks an action for the person. For a destructive confirmation, point `initialFocus` at the safe button.
+- Tabbable elements are found by selector and visibility (`hidden`, `inert`, `display: none`, `visibility: hidden` are skipped). Fixed-position children count.
+- On close, whatever is focused is blurred first (iOS Safari resets its zoom on a real blur), then focus is restored. If something moved focus elsewhere on purpose in the meantime, it is left alone.
+- Pair it with `aria-modal="true"` on the dialog; `inertBackground` makes the effect real for browsers and assistive technologies that ignore `aria-modal`.
 
 ## Motion
 

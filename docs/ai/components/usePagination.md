@@ -70,7 +70,7 @@ const { slice, page, totalPages, hasPrev, hasNext, goPrev, goNext, show } = useP
 
 ## Accessibility
 
-- Render the controls in a `nav` with a label, disable (not hide) Previous/Next at the ends, and announce the position
+- Render the controls in a `nav` with a label, disable (not hide) Previous/Next at the ends, and announce the position with a polite live region ("Page 2 of 3").
 - The page is clamped, so a list that shrinks while on the last page shows the new last page instead of an empty one.
 - When the page changes, keep keyboard focus on the control that was activated; do not move it into the list.
 

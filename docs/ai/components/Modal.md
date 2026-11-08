@@ -16,14 +16,14 @@ containment, scroll lock, an inert background and an enter/exit motion.
 
 ## When to use
 
-- A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking
+- A focused task or a decision that must be finished or abandoned before returning to the page: editing a record, picking from a list, confirming settings.
 - Anything that interrupts and needs an answer: build on it with [ConfirmDialog](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-confirmdialog--docs).
 
 ## When not to use
 
 - A message that does not need a response: use a [Toast](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-toast--docs).
-- Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the
-- Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive
+- Content the person should be able to compare with the page. A side panel or an inline expansion lets them keep the context a modal hides.
+- Navigation. If the content has its own URL and is more than a step, make it a page. To make a modal linkable, drive `open` with `useModalState`.
 
 ## Exports
 
@@ -101,12 +101,12 @@ import { Modal } from "@lufia/design-system/components/Modal";
 
 Follows the WAI-ARIA Authoring Practices pattern: [Dialog (modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
 
-- `role="dialog"` (or `alertdialog`), `aria-modal="true"`, `aria-labelledby` the title and `aria-describedby` the
-- The page behind is made `inert` and page scroll is locked, so neither keyboard, pointer nor screen reader can reach it.
-- The dialog is the scroll container, with the header and footer sticky. Long content scrolls with the arrow keys while
-- Close button: 36 px on desktop and 44 px on phones. Focus is always visible. Under `forced-colors` the border uses
-- Motion uses `--lufia-motion-duration-enter` (240 ms) and `-exit` (160 ms), scale on desktop and rise on phones. Under
-- Choose the initial focus deliberately. The default (the dialog) is safe for informational content; for a destructive
+- `role="dialog"` (or `alertdialog`), `aria-modal="true"`, `aria-labelledby` the title and `aria-describedby` the description when there is one.
+- The page behind is made `inert` and page scroll is locked, so neither keyboard, pointer nor screen reader can reach it. The notification region of `ToastProvider` stays live.
+- The dialog is the scroll container, with the header and footer sticky. Long content scrolls with the arrow keys while focus is on the dialog, with no extra tab stop.
+- Close button: 36 px on desktop and 44 px on phones. Focus is always visible. Under `forced-colors` the border uses `CanvasText`.
+- Motion uses `--lufia-motion-duration-enter` (240 ms) and `-exit` (160 ms), scale on desktop and rise on phones. Under `prefers-reduced-motion` it appears and disappears at once.
+- Choose the initial focus deliberately. The default (the dialog) is safe for informational content; for a destructive prompt focus the safe action (`ConfirmDialog` does).
 
 ## Motion
 

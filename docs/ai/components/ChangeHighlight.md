@@ -48,7 +48,7 @@ import { ChangeHighlight } from "@lufia/design-system/motion";
 
 ## Accessibility
 
-- Decoration only. It is not announced and carries no meaning by itself: if the change matters, make it readable in
+- Decoration only. It is not announced and carries no meaning by itself: if the change matters, make it readable in text, or announce it in a polite live region.
 - It does not play under `prefers-reduced-motion`, and is removed in `forced-colors` mode.
 
 ## Motion

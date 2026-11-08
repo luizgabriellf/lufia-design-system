@@ -78,7 +78,7 @@ Follows the WAI-ARIA Authoring Practices pattern: [Switch](https://www.w3.org/WA
 - `SwitchInput` is a native checkbox with `role="switch"`, so the checked state is exposed natively and Space toggles it (Enter does not, as on any checkbox); the label, hint and error wiring is the same.
 - `role="switch"` with `aria-checked`, on a `<button>`. The label is a real `<label for>`; the track is 44 by 28px.
 - If saving can fail, do the optimistic update, and on failure set the state back and pass `error`.
-- Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`,
+- Under `forced-colors` the on track uses `Highlight` and the thumb `HighlightText`. The thumb slides with `transform`, mirrored in right-to-left, and stays still under `prefers-reduced-motion`.
 
 ## Motion
 

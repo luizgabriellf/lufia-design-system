@@ -86,9 +86,9 @@ const { modal, id, open, close } = useModalState();
 
 ## Accessibility
 
-- A refresh reopens the modal, and there is no opener to return focus to. Focus then goes back to the page body when it
+- A refresh reopens the modal, and there is no opener to return focus to. Focus then goes back to the page body when it closes. If that matters, manage focus in the consumer.
 - `open` pushes a history entry and `close` replaces it, so Back closes the modal and does not stack closed states.
-- Opening and closing are real navigations: in a routed app, let `onNavigate` drive the same loading indication as
+- Opening and closing are real navigations: in a routed app, let `onNavigate` drive the same loading indication as other navigations.
 
 ## Motion
 

@@ -1,0 +1,203 @@
+.root {
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.625rem;
+  color: var(--lufia-color-text-default);
+}
+
+.track {
+  display: flex;
+  overflow: hidden;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 0.75rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-border-subtle);
+}
+
+/* The bar is the part that draws in, so the track and its end caps stay put. */
+.bar {
+  display: flex;
+  inline-size: 100%;
+  block-size: 100%;
+  transform-origin: left center;
+  animation: stacked-grow var(--lufia-motion-duration-medium) var(--lufia-motion-easing-out) backwards;
+}
+
+.bar:dir(rtl) {
+  transform-origin: right center;
+}
+
+.segment,
+.item {
+  --chart-color: var(--lufia-color-accent-default);
+}
+
+.segment[data-tone="success"],
+.item[data-tone="success"] {
+  --chart-color: var(--lufia-color-status-success-fg);
+}
+
+.segment[data-tone="warning"],
+.item[data-tone="warning"] {
+  --chart-color: var(--lufia-color-status-warning-fg);
+}
+
+.segment[data-tone="danger"],
+.item[data-tone="danger"] {
+  --chart-color: var(--lufia-color-status-danger-solid);
+}
+
+.segment[data-tone="neutral"],
+.item[data-tone="neutral"] {
+  --chart-color: var(--lufia-color-text-subtle);
+}
+
+.segment {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  min-inline-size: 0.125rem;
+  background: var(--chart-color);
+}
+
+/* A thin gap in the card colour between neighbours, so two close tones never read as one. */
+.segment + .segment {
+  border-inline-start: 0.125rem solid var(--lufia-color-bg-surface);
+}
+
+/* Opt-in: stripes in the card colour over the segment colour, so the segment is told apart without colour. */
+.segment[data-pattern="hatch"],
+.item[data-pattern="hatch"]::before {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 0.1875rem,
+    var(--lufia-color-bg-surface) 0.1875rem 0.3125rem
+  );
+}
+
+/* The list is the text alternative: always in the page, and only seen when `legend` is on. */
+.legend {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  list-style: none;
+  white-space: nowrap;
+}
+
+.legend[data-visible] {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: visible;
+  inline-size: auto;
+  block-size: auto;
+  margin: 0;
+  gap: 0.25rem 1rem;
+  clip-path: none;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  white-space: normal;
+}
+
+/* The swatch colour is set at the lowest specificity (as in ColumnChart), so the hatch and forced-colors patterns override it. */
+.item::before {
+  background: var(--chart-color);
+}
+
+.legend[data-visible] .item {
+  display: flex;
+  min-inline-size: 0;
+  align-items: center;
+  gap: 0.375rem;
+  overflow-wrap: anywhere;
+}
+
+.legend[data-visible] .item::before {
+  content: "";
+  flex: none;
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 0.125rem;
+}
+
+.legend[data-visible] strong {
+  color: var(--lufia-color-text-default);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+/* The share is read by a screen reader even when it is not printed. */
+.percent:not([data-visible]) {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Draw-in: once, on mount; transform only, so the final widths are real from the first frame and nothing reflows. */
+@keyframes stacked-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .track {
+    border: var(--lufia-border-width-thin) solid CanvasText;
+  }
+
+  /* Tones collapse to one colour, so each segment gets its own fill pattern, in the bar and in the legend. */
+  .segment,
+  .item::before {
+    background: Canvas;
+    forced-color-adjust: none;
+  }
+
+  .segment + .segment {
+    border-inline-start-color: CanvasText;
+  }
+
+  .segment[data-series="0"],
+  .item[data-series="0"]::before {
+    background: Canvas linear-gradient(CanvasText, CanvasText);
+  }
+
+  .segment[data-series="1"],
+  .item[data-series="1"]::before {
+    background: Canvas repeating-linear-gradient(45deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  .segment[data-series="2"],
+  .item[data-series="2"]::before {
+    background: Canvas radial-gradient(CanvasText 1.5px, transparent 1.5px) 0 0 / 6px 6px;
+  }
+
+  .segment[data-series="3"],
+  .item[data-series="3"]::before {
+    background: Canvas repeating-linear-gradient(90deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  .segment[data-series="4"],
+  .item[data-series="4"]::before {
+    background: Canvas repeating-linear-gradient(0deg, CanvasText 0 2px, Canvas 2px 6px);
+  }
+
+  .legend[data-visible] .item::before {
+    box-sizing: border-box;
+    border: var(--lufia-border-width-thin) solid CanvasText;
+  }
+}
