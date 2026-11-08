@@ -1,11 +1,12 @@
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
 import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { AppShell, type AppShellProps } from "./AppShell";
 import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { ShellNavGroup } from "./navigation";
 
 const groups: ShellNavGroup[] = [
@@ -114,6 +115,101 @@ describe("AppShell", () => {
     expect(screen.getAllByText("B").length).toBeGreaterThan(0);
   });
 
+  it("renders the saved rail and open groups on the server, so the first paint is already right", () => {
+    const render = (props: Partial<AppShellProps>) =>
+      renderToString(
+        <AppShell groups={groups} labels={labels} currentPath="/" {...props}>
+          <h1>Page</h1>
+        </AppShell>,
+      );
+    expect(render({ defaultCollapsed: true })).toMatch(/class="[^"]*shell[^"]*"[^>]*data-collapsed/);
+    expect(render({})).not.toContain("data-collapsed");
+    expect(render({ defaultOpenGroups: ["modules"] })).toContain('aria-expanded="true"');
+    expect(render({ defaultOpenGroups: [] })).toContain('aria-expanded="false"');
+  });
+
+  it("passes nav item counts, tone, class and data-* down to the links", () => {
+    setup({
+      groups: [
+        {
+          key: "g",
+          items: [
+            {
+              key: "alerts",
+              label: "Alerts",
+              href: "/alerts",
+              count: 150,
+              countTone: "danger",
+              badge: "New",
+              badgeTone: "neutral",
+              className: "app-hook",
+              data: { "data-tour": "alerts" },
+            },
+            { key: "quiet", label: "Quiet", href: "/quiet", count: 0 },
+          ],
+        },
+      ],
+    });
+    const [link] = screen.getAllByRole("link", { name: /^Alerts/ });
+    expect(link).toHaveClass("app-hook");
+    expect(link).toHaveAttribute("data-tour", "alerts");
+    expect(within(link!).getByText("99+")).toHaveAttribute("data-tone", "danger");
+    expect(within(link!).getByText("New")).toHaveAttribute("data-tone", "neutral");
+    expect(screen.getAllByRole("link", { name: "Quiet" })[0]).toHaveTextContent(/^Quiet$/);
+  });
+
+  it("takes attributes for the main landmark and follows its id with the skip link", () => {
+    setup({ mainProps: { id: "content", className: "page-area", "data-page": "x", tabIndex: -1 } });
+    const main = screen.getByRole("main");
+    expect(main).toHaveAttribute("id", "content");
+    expect(main).toHaveClass("page-area");
+    expect(main).toHaveAttribute("data-page", "x");
+    expect(main).toHaveAttribute("tabindex", "-1");
+    expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute("href", "#content");
+  });
+
+  it("remounts the main landmark and its page when mainKey changes, and only then", () => {
+    function Probe() {
+      const [stamp] = useState(() => Math.random());
+      return <p data-stamp={stamp}>probe</p>;
+    }
+    const render1 = (key: string) => (
+      <AppShell groups={groups} labels={labels} mainKey={key}>
+        <Probe />
+      </AppShell>
+    );
+    const { rerender } = render(render1("a"));
+    const first = screen.getByText("probe");
+    const main = screen.getByRole("main");
+    rerender(render1("a"));
+    expect(screen.getByText("probe")).toBe(first);
+    rerender(render1("b"));
+    expect(screen.getByText("probe")).not.toBe(first);
+    expect(screen.getByRole("main")).not.toBe(main);
+  });
+
+  it("puts mainStart inside main, before the page, and leaves statusRow outside it", () => {
+    setup({ mainStart: <div role="note">Trial ends soon</div>, statusRow: <p>Offline</p> });
+    const main = screen.getByRole("main");
+    const note = within(main).getByRole("note");
+    const page = within(main).getByRole("heading", { name: "Page" });
+    expect(note.compareDocumentPosition(page) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(main).queryByText("Offline")).not.toBeInTheDocument();
+    expect(screen.getByText("Offline")).toBeInTheDocument();
+  });
+
+  it("shows a tooltip, not a native title, on the rail's search entry", async () => {
+    const user = userEvent.setup();
+    setup({ defaultCollapsed: true });
+    const entry = screen.getAllByRole("button", { name: "Search…" })[0]!;
+    expect(entry).not.toHaveAttribute("title");
+    await user.tab();
+    await user.tab();
+    await user.tab();
+    entry.focus();
+    expect(screen.getByRole("tooltip", { hidden: true })).toHaveTextContent("Search…");
+  });
+
   it("hides the rail button when the sidebar is fixed", () => {
     setup({ fixedSidebar: true });
     expect(screen.queryByRole("button", { name: "Collapse sidebar" })).not.toBeInTheDocument();
@@ -130,6 +226,17 @@ describe("AppShell", () => {
     const link = within(dialog).getByRole("link", { name: "Home" });
     link.addEventListener("click", (event) => event.preventDefault());
     await user.click(link);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("closes the sheet when a footer link is followed", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    const dialog = screen.getByRole("dialog", { name: "Menu" });
+    const help = within(dialog).getByRole("link", { name: "Help" });
+    help.addEventListener("click", (event) => event.preventDefault());
+    await user.click(help);
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 

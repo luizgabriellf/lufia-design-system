@@ -1,4 +1,11 @@
-import { findActiveNavKey, type ShellNavGroup } from "./navigation";
+import {
+  SHELL_COUNT_CAP,
+  findActiveNavKey,
+  formatShellCount,
+  parseShellState,
+  serializeShellState,
+  type ShellNavGroup,
+} from "./navigation";
 
 const groups: ShellNavGroup[] = [
   {
@@ -52,5 +59,49 @@ describe("findActiveNavKey", () => {
 
   it("lets a matcher take over", () => {
     expect(findActiveNavKey(groups, "/settings", (item) => item.key === "action")).toBe("action");
+  });
+});
+
+describe("formatShellCount", () => {
+  it("hides nothing-to-show values", () => {
+    for (const value of [undefined, 0, -3, 0.4, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(formatShellCount(value)).toBeUndefined();
+    }
+  });
+
+  it("shows the number up to the cap and the cap with a plus above it", () => {
+    expect(formatShellCount(1)).toBe("1");
+    expect(formatShellCount(SHELL_COUNT_CAP)).toBe("99");
+    expect(formatShellCount(SHELL_COUNT_CAP + 1)).toBe("99+");
+    expect(formatShellCount(10, 9)).toBe("9+");
+    expect(formatShellCount(9, 9)).toBe("9");
+  });
+});
+
+describe("shell state cookie value", () => {
+  it("round-trips the rail and the open groups", () => {
+    const raw = serializeShellState({ collapsed: true, openGroups: ["insights", "a&b,c"] });
+    expect(parseShellState(raw)).toEqual({ collapsed: true, openGroups: ["insights", "a&b,c"] });
+  });
+
+  it("tells an empty choice from no choice", () => {
+    expect(parseShellState(serializeShellState({ collapsed: false, openGroups: [] }))).toEqual({
+      collapsed: false,
+      openGroups: [],
+    });
+    expect(parseShellState(serializeShellState({ collapsed: false, openGroups: undefined }))).toEqual({
+      collapsed: false,
+      openGroups: undefined,
+    });
+  });
+
+  it("gives the defaults for a missing or malformed value", () => {
+    for (const raw of [undefined, null, "", "garbage", "%E0%A4%A"]) {
+      expect(parseShellState(raw)).toEqual({ collapsed: false, openGroups: undefined });
+    }
+  });
+
+  it("writes only cookie-safe characters", () => {
+    expect(serializeShellState({ collapsed: true, openGroups: ["a b;c"] })).not.toMatch(/[\s;,"\\]/);
   });
 });

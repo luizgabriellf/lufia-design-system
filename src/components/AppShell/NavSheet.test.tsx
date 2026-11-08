@@ -10,10 +10,12 @@ function Harness({
   swipe = true,
   initial = false,
   renderAs,
+  closeOnNavigate,
 }: {
   swipe?: boolean;
   initial?: boolean;
   renderAs?: "portal" | "dialog";
+  closeOnNavigate?: boolean;
 }) {
   const [open, setOpen] = useState(initial);
   return (
@@ -29,9 +31,16 @@ function Harness({
         header={<b>Brand</b>}
         swipeToDismiss={swipe}
         renderAs={renderAs}
+        closeOnNavigate={closeOnNavigate}
+        footer={closeOnNavigate === undefined ? undefined : <a href="/help">Help</a>}
       >
         <a href="/one">One</a>
         <a href="/two">Two</a>
+        {closeOnNavigate === undefined ? null : (
+          <a href="/new" target="_blank" rel="noreferrer">
+            New tab
+          </a>
+        )}
       </NavSheet>
     </>
   );
@@ -295,6 +304,36 @@ describe('NavSheet renderAs="dialog"', () => {
       fireEvent.pointerUp(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
     });
     await waitFor(() => expect(sheet()).toBeNull());
+  });
+
+  it("closes on a followed link in the body or footer only when closeOnNavigate is on", async () => {
+    const user = userEvent.setup();
+    const stop = (event: Event) => event.preventDefault();
+    const { unmount } = render(<Harness initial closeOnNavigate={false} />);
+    const off = screen.getByRole("link", { name: "One" });
+    off.addEventListener("click", stop);
+    await user.click(off);
+    expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
+    unmount();
+
+    render(<Harness initial closeOnNavigate />);
+    const help = screen.getByRole("link", { name: "Help" });
+    help.addEventListener("click", stop);
+    await user.click(help);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("with closeOnNavigate leaves the sheet open for a new-tab click, a modified click and a _blank link", async () => {
+    const user = userEvent.setup();
+    render(<Harness initial closeOnNavigate />);
+    const one = screen.getByRole("link", { name: "One" });
+    const newTab = screen.getByRole("link", { name: "New tab" });
+    for (const link of [one, newTab]) link.addEventListener("click", (event) => event.preventDefault());
+    await user.keyboard("{Control>}");
+    await user.click(one);
+    await user.keyboard("{/Control}");
+    await user.click(newTab);
+    expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
   });
 
   it("has no axe violations open", async () => {

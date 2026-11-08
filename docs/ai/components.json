@@ -606,6 +606,27 @@
               "description": "Hide the rail button. Default `false`."
             },
             {
+              "name": "mainProps",
+              "type": "AppShellMainProps",
+              "required": false,
+              "default": null,
+              "description": "Attributes for the `<main>` the shell owns: `id` (the skip link follows it), `className`, `data-*`, `tabIndex`, ARIA. `className` is added to the shell's own."
+            },
+            {
+              "name": "mainKey",
+              "type": "Key",
+              "required": false,
+              "default": null,
+              "description": "Remounts the `<main>` and everything in it when it changes, as React's `key` does: a workspace or scope switch that must drop the page's state. Leave it out for a page change, which `children` handles."
+            },
+            {
+              "name": "mainStart",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "The first thing inside `<main>`, before `children`: banners that belong to the page area and scroll with it (a trial notice, a cookie or install hint). Unlike `topBar` and `statusRow`, which sit beside `<main>` and stay put, this remounts with `mainKey` and takes the page's padding."
+            },
+            {
               "name": "children",
               "type": "ReactNode",
               "required": true,
@@ -620,6 +641,12 @@
           "kind": "type",
           "description": "",
           "definition": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }"
+        },
+        {
+          "name": "AppShellMainProps",
+          "kind": "type",
+          "description": "Attributes of the shell's `<main>`: an `id`, a class, `data-*` hooks, a `tabIndex`, ARIA. Not its children.",
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes"
         },
         {
           "name": "AppShellPrimaryAction",
@@ -732,7 +759,7 @@
                   },
                   {
                     "name": "type",
-                    "type": "\"submit\" | \"reset\" | \"button\"",
+                    "type": "\"button\" | \"submit\" | \"reset\"",
                     "required": false,
                     "description": "",
                     "native": true
@@ -834,6 +861,13 @@
               "description": "Let the grabber and header be dragged down to dismiss. Default `true`."
             },
             {
+              "name": "closeOnNavigate",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Close the sheet when a link inside it is followed (a plain click on an `<a href>` in the body or footer; not an open-in-new-tab click). `AppShell` turns it on so footer and slot links behave like the navigation's own. Default `false`."
+            },
+            {
               "name": "container",
               "type": "HTMLElement | null",
               "required": false,
@@ -864,6 +898,184 @@
           "definition": null
         },
         {
+          "name": "SHELL_COUNT_CAP",
+          "kind": "constant",
+          "type": "99"
+        },
+        {
+          "name": "ShellBadgeTone",
+          "kind": "type",
+          "description": "The colour of a badge or count. It never carries the meaning alone: the text is always there.",
+          "definition": "\"neutral\" | \"warning\" | \"danger\""
+        },
+        {
+          "name": "ShellDataAttributes",
+          "kind": "type",
+          "description": "`data-*` attributes passed through to an element (analytics hooks, guided-tour anchors, test ids).",
+          "definition": "{ [name: `data-${string}`]: string | number | boolean | undefined; }"
+        },
+        {
+          "name": "ShellFooter",
+          "kind": "component",
+          "description": "The row of small actions at the bottom of the sidebar and of the phone sheet: theme, settings, help, sign out. One column in the sidebar, icons only in the rail, two columns in the sheet. Fill it with `ShellFooterItem`.",
+          "props": [
+            {
+              "name": "aria-label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Defines a string value that labels the current element. Accessible name of the group (\"Account and site\")."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "`ShellFooterItem`s."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ShellFooterItem",
+          "kind": "component",
+          "description": "One action of the footer: an icon and a label, as a link, a plain external link or a button. In the rail only the icon shows and a tooltip names it; the label stays as the accessible name. Supports an active page, a pending state and a count.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "The name of the action. Visible beside the icon, kept as the accessible name and the tooltip in the rail."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon. Shown alone in the rail."
+            },
+            {
+              "name": "href",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the item a link, rendered through the configured `linkComponent`. Without it the item is a button."
+            },
+            {
+              "name": "external",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Render a plain `<a>` that leaves the app (another site), not the router's link. Needs `href`."
+            },
+            {
+              "name": "target",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Link target, with `href`. `_blank` also sets `rel=\"noopener noreferrer\"` unless `rel` is given."
+            },
+            {
+              "name": "rel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "type",
+              "type": "\"button\" | \"submit\"",
+              "required": false,
+              "default": "\"button\"",
+              "description": "Button type. Use `submit` inside a form (a sign-out form). Default `button`."
+            },
+            {
+              "name": "active",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "This is the current page: `aria-current=\"page\"` and the active style."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "The action is running (signing out): dimmed, `aria-busy`, and further clicks are ignored. Focus stays put."
+            },
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": ""
+            },
+            {
+              "name": "count",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "A number after the label (unread replies). Hidden at 0, \"99+\" above 99, on the icon in the rail."
+            },
+            {
+              "name": "countTone",
+              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "required": false,
+              "default": "\"neutral\"",
+              "description": ""
+            },
+            {
+              "name": "ariaLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Accessible name when it should add to the label (\"Help, 2 unread\"). Keep the visible label in it."
+            },
+            {
+              "name": "pressed",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "`pressed` makes it a toggle button (`aria-pressed`): theme, density. Buttons only."
+            },
+            {
+              "name": "tone",
+              "type": "\"warning\" | \"default\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "`warning` colours it as a caution (an admin area)."
+            },
+            {
+              "name": "onClick",
+              "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": false
+        },
+        {
+          "name": "ShellFooterItemProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "ShellFooterProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }"
+        },
+        {
           "name": "ShellNavGroup",
           "kind": "type",
           "description": "",
@@ -873,7 +1085,7 @@
           "name": "ShellNavItem",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }"
+          "definition": null
         },
         {
           "name": "ShellNavigation",
@@ -952,6 +1164,12 @@
             }
           ],
           "nativeProps": false
+        },
+        {
+          "name": "ShellState",
+          "kind": "type",
+          "description": "",
+          "definition": "{ collapsed: boolean; openGroups: readonly string[] | undefined; }"
         },
         {
           "name": "Sidebar",
@@ -1139,7 +1357,42 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A short mark after the label, such as \"New\". For a number use `count`."
+            },
+            {
+              "name": "badgeTone",
+              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "required": false,
+              "default": "\"warning\"",
+              "description": "Colour of `badge`. Default `warning`."
+            },
+            {
+              "name": "count",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "A number after the label. Hidden at 0, and capped at `maxCount` (\"99+\"). In the rail it sits on the icon."
+            },
+            {
+              "name": "countTone",
+              "type": "\"neutral\" | \"warning\" | \"danger\"",
+              "required": false,
+              "default": "\"neutral\"",
+              "description": "Colour of `count`. Default `neutral`."
+            },
+            {
+              "name": "maxCount",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "Where `count` stops growing and shows a plus sign. Default 99."
+            },
+            {
+              "name": "data",
+              "type": "ShellDataAttributes",
+              "required": false,
+              "default": null,
+              "description": "`data-*` attributes on the link or button (analytics, guided tours, test ids)."
             },
             {
               "name": "active",
@@ -1196,6 +1449,24 @@
           "kind": "function",
           "description": "The key of the item that `currentPath` belongs to, or `undefined`. A path belongs to an item when it is equal to the item's `href` or below it (`/settings/billing` belongs to `/settings`); when several match, the most specific wins, so two items are never current at once. `exact` items match only themselves. Query strings and hashes are ignored.",
           "signature": "(groups: readonly ShellNavGroup[], currentPath: string | undefined, isActive?: ((item: ShellNavItem) => boolean) | undefined): string | undefined"
+        },
+        {
+          "name": "formatShellCount",
+          "kind": "function",
+          "description": "The text of a count badge: `undefined` for nothing to show (not a number, zero or negative), the number itself up to `cap`, and `\"99+\"` (with the cap) above it.",
+          "signature": "(count: number | undefined, cap?: number): string | undefined"
+        },
+        {
+          "name": "parseShellState",
+          "kind": "function",
+          "description": "Reads what `serializeShellState` wrote, on the server (from the request's cookie) or in the browser, and returns the values to hand to `defaultCollapsed` and `defaultOpenGroups` so the first paint is already right. A missing or malformed value gives the defaults: expanded, groups undecided.",
+          "signature": "(raw: string | null | undefined): ShellState"
+        },
+        {
+          "name": "serializeShellState",
+          "kind": "function",
+          "description": "Turns the person's sidebar choices into a short cookie value (`c=1&g=insights&g=admin`), for the app to store. The package never stores anything itself; see \"Remembering the rail and the groups\" in the docs. Pass `openGroups` as `undefined` to leave the groups to their defaults.",
+          "signature": "(state: ShellState): string"
         },
         {
           "name": "useSheetDrag",
@@ -1263,12 +1534,16 @@
       ],
       "aliases": {
         "AppShellLabels": "{ skipToContent: string; navigation: string; menu: string; floatBar: string; collapseSidebar: string; expandSidebar: string; }",
+        "AppShellMainProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & ShellDataAttributes",
         "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; }",
+        "ShellBadgeTone": "\"neutral\" | \"warning\" | \"danger\"",
+        "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
+        "ShellFooterProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { \"aria-label\": string; children: ReactNode; }",
         "ShellNavGroup": "{ key: string; label?: string | undefined; icon?: ReactNode; items: readonly ShellNavItem[]; collapsible?: boolean | undefined; defaultOpen?: boolean | undefined; }",
-        "ShellNavItem": "{ key: string; label: string; href?: string | undefined; icon?: ReactNode; badge?: ReactNode; disabled?: boolean | undefined; ariaLabel?: string | undefined; exact?: boolean | undefined; onSelect?: (() => void) | undefined; }"
+        "ShellState": "{ collapsed: boolean; openGroups: readonly string[] | undefined; }"
       },
       "story": {
         "docsId": "components-navigation-appshell--docs",
@@ -1336,6 +1611,22 @@
           {
             "export": "RegisteredPrimaryAction",
             "id": "components-navigation-appshell--registered-primary-action"
+          },
+          {
+            "export": "CountsAndBadges",
+            "id": "components-navigation-appshell--counts-and-badges"
+          },
+          {
+            "export": "Footer",
+            "id": "components-navigation-appshell--footer"
+          },
+          {
+            "export": "FooterInRail",
+            "id": "components-navigation-appshell--footer-in-rail"
+          },
+          {
+            "export": "MainSlots",
+            "id": "components-navigation-appshell--main-slots"
           }
         ]
       },
