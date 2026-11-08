@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.17.0
+
+### Minor Changes
+
+- [#66](https://github.com/luizgabriellf/lufia-design-system/pull/66) [`3493864`](https://github.com/luizgabriellf/lufia-design-system/commit/3493864df80b210408b3f1ac13dfdb5c8fe7d4c3) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Make `SegmentedToggle` usable as a status picker. `value={null}` (or `defaultValue={null}`) means nothing is chosen (no checked segment, hidden indicator, and a form reset returns to it), `allowDeselect` clears the choice when the chosen segment is activated again and reports it through the new `onDeselect` callback (`onValueChange` still always receives a `string`), `SegmentedToggleOption.tone` colours the chosen segment with the status tokens, `size="sm"` gives a denser variant, and the hidden `name` input submits nothing while unset. Existing usage is unchanged.
+
 ## 0.16.0
 
 ### Minor Changes
