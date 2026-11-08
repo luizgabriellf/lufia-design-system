@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { readFileSync } from "node:fs";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
@@ -760,5 +761,44 @@ describe("Modal migration hooks", () => {
     expect(screen.getByRole("dialog")).toHaveClass("legacy-root");
     expect(screen.getByRole("button", { name: "Close" })).toHaveAttribute("data-lufia-part", "close");
     expect(await axe(document.body)).toHaveNoViolations();
+  });
+});
+
+describe("Modal footer layout", () => {
+  const css = readFileSync("src/components/Modal/Modal.module.css", "utf8");
+
+  it("is a row by default and a stack on request", () => {
+    const { rerender } = render(
+      <Modal open onClose={() => {}} title="Edit" footer={<button type="button">Save</button>}>
+        body
+      </Modal>,
+    );
+    const footer = () => document.querySelector("[data-lufia-part='footer']");
+    expect(footer()).toHaveAttribute("data-footer-layout", "row");
+    rerender(
+      <Modal
+        open
+        onClose={() => {}}
+        title="Edit"
+        footerLayout="stack"
+        footer={<button type="button">Save</button>}
+      >
+        body
+      </Modal>,
+    );
+    expect(footer()).toHaveAttribute("data-footer-layout", "stack");
+  });
+
+  it("keeps the footer a row on phones, with stacking only as an opt-in", () => {
+    const narrow = /@media \(width <= 30rem\) \{([\s\S]*?)\n\}\n/.exec(css)?.[1] ?? "";
+    expect(narrow).toMatch(
+      /\.footer\[data-footer-layout="row"\] > [^{]*:not\(\[data-icon-only\]\)\s*\{[^}]*flex: 1 1 0;/,
+    );
+    expect(narrow).toMatch(/min-inline-size: max-content/);
+    // column-reverse may only appear under the stack opt-in.
+    for (const block of narrow.split("}")) {
+      if (block.includes("column-reverse")) expect(block).toContain('[data-footer-layout="stack"]');
+    }
+    expect(narrow).toContain("column-reverse");
   });
 });
