@@ -201,6 +201,21 @@ export const ENTRIES: Entry[] = [
     "One family of status markers, each tone with its own shape so it reads without colour.",
   ),
   c("EmptyState", "Feedback", "What to show when a list or panel has nothing yet, with the one next step."),
+  c(
+    "SkeletonTable",
+    "Feedback",
+    "Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths.",
+  ),
+  c(
+    "SkeletonCard",
+    "Feedback",
+    "A loading card: title bar, text lines and an optional block in the card's padding.",
+  ),
+  c(
+    "SkeletonPageHeader",
+    "Feedback",
+    "The top of a loading page, on PageHeader's own layout and breakpoints.",
+  ),
 
   c(
     "AnimatedNumber",

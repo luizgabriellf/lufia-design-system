@@ -3,6 +3,7 @@
 
   display: grid;
   grid-template-columns: var(--lufia-shell-sidebar-width) minmax(0, 1fr);
+  min-block-size: 100vh;
   min-block-size: 100dvh;
   background: var(--lufia-color-bg-canvas);
   color: var(--lufia-color-text-default);
@@ -134,9 +135,12 @@
 }
 
 @media (width < 60rem) {
+  /* The shell still paints the canvas down to the bottom of the viewport on a short page, so the page background never
+     shows under it with a seam. `100vh` is the fallback for browsers without dynamic viewport units. */
   .shell {
     display: block;
-    min-block-size: 0;
+    min-block-size: 100vh;
+    min-block-size: 100dvh;
   }
 
   .sidebarSlot {

@@ -32,9 +32,9 @@ import { StatusIcon } from "@lufia/design-system/icons";
 | Tone         | Bare glyph                    | Mark (in a ring) | Colour  |
 | ------------ | ----------------------------- | ---------------- | ------- |
 | `success`    | Circle with a check           | Check            | success |
-| `warning`    | Triangle with an exclamation  | Triangle         | warning |
-| `danger`     | Octagon with an exclamation   | Exclamation mark | danger  |
-| `info`       | Circle with an "i"            | "i"              | accent  |
+| `warning`    | Triangle with an exclamation  | Exclamation mark | warning |
+| `danger`     | Octagon with an exclamation   | Cross            | danger  |
+| `info`       | Circle with an "i"            | Serifed "i"      | accent  |
 | `pending`    | Clock                         | Clock hands      | warning |
 | `neutral`    | Circle with a dash            | Dash             | neutral |
 | `needsInput` | Dashed circle with three dots | Three dots       | neutral |
@@ -45,6 +45,10 @@ import { StatusIcon } from "@lufia/design-system/icons";
 - `ring`: the mark on a tinted disc with a tone border. For toasts, cards and timelines. The diameter is 20, 24 or 32px
   (`sm`, `md`, `lg`); `--lufia-status-icon-size` and `--lufia-status-icon-ring-border-width` override it.
 - `mark`: the mark alone in `currentColor`, for a host that draws its own container, such as a stepper dot.
+
+In a `ring` or a `mark` every tone is one simple mark, never a second outline inside the disc: a check, an exclamation
+mark, a cross, a serifed "i", clock hands, a dash or three dots. The marks share one stroke width and are optically
+centred.
 
 ### Draw-on entrance
 

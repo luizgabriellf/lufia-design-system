@@ -1,6 +1,6 @@
 /* Theming hooks: --lufia-status-icon-size (ring diameter), --lufia-status-icon-ring-border-width and
-   --lufia-status-icon-mark-stroke (stroke of the mark inside a ring, in viewBox units). Each tone sets --status-fg, --status-bg
-   and --status-border; a host may set them too. */
+   --lufia-status-icon-mark-stroke (stroke of the mark, in viewBox units: 2.5 in a ring, 2.25 alone). Each tone sets
+   --status-fg, --status-bg and --status-border; a host may set them too. */
 .root {
   --status-fg: var(--lufia-color-status-neutral-fg);
   --status-bg: var(--lufia-color-status-neutral-bg);
@@ -40,9 +40,14 @@
   --status-border: var(--lufia-color-accent-border);
 }
 
-/* A mark takes the colour of its host. */
+/* A mark takes the colour of its host. Its stroke is a little heavier than a free icon's, so the dots of the "i", the
+   "!" and the ellipsis hold their shape at 16 and 20px. */
 .root[data-variant="mark"] {
   color: inherit;
+}
+
+.root[data-variant="mark"] .glyph {
+  stroke-width: var(--lufia-status-icon-mark-stroke, 2.25);
 }
 
 .root[data-variant="ring"] {
@@ -65,11 +70,11 @@
   --status-ring: var(--lufia-status-icon-size, 2rem);
 }
 
-/* The mark fills 58% of the ring, so it keeps the ring's proportions at every size. Its stroke is heavier than a free
-   icon's: the mark is drawn at about 14px inside a filled disc. */
+/* The mark fills 66% of the ring, so it keeps the ring's proportions at every size. Its stroke is heavier than a free
+   icon's: the mark is drawn at about 16px inside a filled disc. */
 .root[data-variant="ring"] .glyph {
-  inline-size: 58%;
-  block-size: 58%;
+  inline-size: 66%;
+  block-size: 66%;
   stroke-width: var(--lufia-status-icon-mark-stroke, 2.5);
 }
 

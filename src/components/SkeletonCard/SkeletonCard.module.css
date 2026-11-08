@@ -1,0 +1,22 @@
+/* The children sit in the card's body, which already has the body text size and the card's padding. The header bar takes
+   the line box of the card's title and the gap the card's header leaves above the body (the card padding). */
+.header {
+  margin-block-end: var(--card-padding);
+  font-family: var(--lufia-font-family-display);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.header > span,
+.line > span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.block {
+  margin-block-start: 0.75rem;
+}
+
+.header + .block {
+  margin-block-start: 0;
+}

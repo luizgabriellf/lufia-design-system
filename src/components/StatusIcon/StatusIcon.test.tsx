@@ -20,6 +20,23 @@ describe("StatusIcon", () => {
     }
   });
 
+  it("draws a single simple mark, never an outline shape, in the ring and mark variants", () => {
+    for (const variant of ["ring", "mark"] as const) {
+      for (const tone of STATUS_TONES) {
+        const { container, unmount } = render(<StatusIcon tone={tone} variant={variant} />);
+        const svg = container.querySelector("svg")!;
+        expect(svg.children, `${variant} ${tone}`).toHaveLength(1);
+        expect(svg.querySelector("circle, rect, polygon"), `${variant} ${tone}`).toBeNull();
+        unmount();
+      }
+    }
+  });
+
+  it("keeps the outlined shapes in the bare variant", () => {
+    const { container } = render(<StatusIcon tone="warning" />);
+    expect(container.querySelectorAll("svg path").length).toBeGreaterThan(1);
+  });
+
   it("is decorative without a label and a named image with one", () => {
     const { container, getByRole } = render(
       <>

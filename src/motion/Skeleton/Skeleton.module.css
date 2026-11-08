@@ -4,7 +4,7 @@
   inline-size: var(--skeleton-width, 100%);
   max-inline-size: 100%;
   overflow: hidden;
-  background: var(--lufia-color-border-subtle);
+  background: var(--lufia-skeleton-bg, var(--lufia-color-border-subtle));
   border-radius: var(--lufia-radius-sm);
 }
 
@@ -23,8 +23,10 @@
   border-radius: var(--lufia-radius-full);
 }
 
-/* The shimmer is a gradient sliding across on the compositor (transform only). An endless loop keeps its own
-   pace, so it is the one literal duration allowed; it is stopped, not shortened, under reduced motion. */
+/* The fill and the shine are the theme tokens --lufia-skeleton-bg and --lufia-skeleton-shine; a theme that predates them
+   falls back to the subtle border and the solid surface. The shimmer is a gradient sliding across on the compositor
+   (transform only). An endless loop keeps its own pace, so it is the one literal duration allowed; it is stopped, not
+   shortened, under reduced motion. */
 .root:not([data-still])::after {
   position: absolute;
   inset: 0;
@@ -32,7 +34,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--lufia-color-bg-surface-solid) 60%, transparent),
+    var(--lufia-skeleton-shine, color-mix(in srgb, var(--lufia-color-bg-surface-solid) 60%, transparent)),
     transparent
   );
   transform: translateX(-100%);

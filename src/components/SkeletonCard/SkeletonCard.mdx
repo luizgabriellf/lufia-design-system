@@ -1,0 +1,75 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./SkeletonCard.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="SkeletonCard"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the
+loaded card takes exactly its place.
+
+<Canvas of={Stories.BesideLoaded} />
+
+### Usage
+
+```tsx
+import { SkeletonCard } from "@lufia/design-system/components/SkeletonCard";
+
+<div aria-busy={loading}>{loading ? <SkeletonCard lines={2} block /> : <StorageCard />}</div>;
+```
+
+### Layout
+
+- It is a real `Card`, so the border, radius, shadow and `padding` (`sm`, `md`, `lg`) are the card's own.
+- The title bar sits on the line box of the card's title and leaves the same gap above the body as the card's header.
+- The lines take the line box of the card's body text; the last one is shorter.
+- `block` adds a rect for a chart or a media area: `true` for 6rem, or a CSS height.
+
+</Section>
+
+<Section id="examples">
+
+<Canvas of={Stories.WithBlock} />
+<Canvas of={Stories.Paddings} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The card is decorative (`aria-hidden`) and has no heading. Name the loading state once for the region, for example
+  with a `Skeleton` that has a `label`, and mark the region `aria-busy="true"`.
+- The shimmer comes from `Skeleton`: `transform` only, stopped under `prefers-reduced-motion`, and `still` turns it off.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A grid or a stack of cards whose content is loading.
+
+### When not to use
+
+- A key figure: `StatTile` has its own `loading` state that keeps the tile's exact height.
+- A detail section with a known layout of its own: compose `Skeleton` inside that section.
+
+</Section>

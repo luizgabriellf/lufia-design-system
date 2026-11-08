@@ -59,6 +59,11 @@ Every theme must define: `bg.canvas`, `bg.surface`, `bg.surface-raised`, `bg.sur
 Optional: `bg.field-autofill`, the fill behind text the browser autofilled. It defaults to `bg.field`; define it when your
 field colour is translucent or the autofilled state needs its own tint.
 
+Optional: `skeleton.bg` and `skeleton.shine` (`--lufia-skeleton-bg`, `--lufia-skeleton-shine`), the fill of a loading
+placeholder and the band that sweeps across it. Without them a skeleton uses `border.subtle` and a 60% mix of
+`bg.surface-solid`. Keep the shine lighter than the fill in both modes. Skeletons are decorative, so no contrast minimum
+applies.
+
 ## Checklist
 
 - Text on every surface: 4.5:1 or better. Focus ring and accent against canvas: 3:1 or better.

@@ -98,16 +98,19 @@ const GLYPH: Record<StatusTone, ReactNode> = {
   ),
 };
 
-/* The inner marks, drawn to fill the grid because they sit inside a container. Warning keeps its triangle: a lone "!"
-   would match danger, and the triangle is the shape people read as a warning. */
+/* The inner marks: one simple mark per tone, drawn to fill the grid because they sit inside a container (the ring's disc
+   or the host's own dot). Each is distinct by shape alone: check, exclamation, cross, a serifed "i" (its flag and foot
+   keep it from reading as an upside-down "!"), clock hands, dash and ellipsis. Every mark but the clock is centred on
+   the box of its inked strokes, round caps included; the clock hands are centred on their stroke mass, so the pivot
+   sits a little down and left of the centre. All share the variant's stroke width. */
 const MARK: Record<StatusTone, ReactNode> = {
-  success: <path d="M20 6 9 17l-5-5" />,
-  warning: GLYPH.warning,
-  danger: <path d="M12 4.5v9M12 19.5h.01" />,
-  info: <path d="M12 10.5v9M12 4.5h.01" />,
-  pending: <path d="M12 4.5V12l5 3" />,
-  neutral: <path d="M5 12h14" />,
-  needsInput: <path d="M5 12h.01M12 12h.01M19 12h.01" />,
+  success: <path d="M19 7.5 9.5 17 5 12.5" />,
+  warning: <path d="M12 5v8.5M12 19h.01" />,
+  danger: <path d="M7 7l10 10M17 7 7 17" />,
+  info: <path d="M12 5.5h.01M10.5 9.5H12v9M10 18.5h4" />,
+  pending: <path d="M10.5 4.5v9l6.5 4" />,
+  neutral: <path d="M6.5 12h11" />,
+  needsInput: <path d="M6.5 12h.01M12 12h.01M17.5 12h.01" />,
 };
 
 /* Every stroke gets `pathLength={1}`, so one dash pattern draws any shape in. */

@@ -481,6 +481,7 @@ Item labels are one or two words. Put the rarely used areas in a collapsible gro
 - `components-navigation-appshell--rail`
 - `components-navigation-appshell--group-open-on-arrival`
 - `components-navigation-appshell--phone`
+- `components-navigation-appshell--phone-short-page`
 - `components-navigation-appshell--small-phone`
 - `components-navigation-appshell--tablet`
 - `components-navigation-appshell--phone-without-primary-action`
