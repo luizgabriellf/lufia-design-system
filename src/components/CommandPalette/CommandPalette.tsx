@@ -267,6 +267,9 @@ export function CommandPalette({
   const searching = loading && !overridden && labels.loading;
   const expanded = flat.length > 0 && !overridden;
   const emptyContent = !overridden && !expanded && !loading ? labels.empty(query.trim()) : null;
+  // Nothing to show (a notice explains the state): the body keeps no padding, so it leaves no gap.
+  const bodyEmpty =
+    !overridden && !expanded && !emptyContent && !searching && !(hintPlacement === "bottom" && hintRow);
   let index = -1;
 
   return createPortal(
@@ -345,7 +348,7 @@ export function CommandPalette({
             {!overridden && notice ? <div className={styles.notice}>{notice}</div> : null}
           </div>
         ) : null}
-        <div className={styles.body}>
+        <div className={styles.body} data-empty={bodyEmpty ? "" : undefined}>
           <div aria-busy={loading || undefined}>
             {overridden ? (
               typeof bodyOverride === "function" ? (
