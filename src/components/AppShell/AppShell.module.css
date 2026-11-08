@@ -36,13 +36,12 @@
   padding: var(--lufia-space-8);
 }
 
-/* The banners sit in a box of their own so a skeleton can hide the page without hiding them; the box adds no layout. */
-.mainStart {
+/* The page's own box adds no layout; `hidden` (a skeleton is showing) takes it out of sight, and out of the tab order. */
+.page {
   display: contents;
 }
 
-/* A slow navigation: the page stays mounted (its state and providers survive) but out of sight; the skeleton takes its place. */
-.main[data-pending] > :not([data-route-static], [data-shell-pending]) {
+.page[hidden] {
   display: none;
 }
 

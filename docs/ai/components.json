@@ -652,7 +652,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": "A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and plain link clicks start it by themselves."
+              "description": "A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself."
             },
             {
               "name": "routeProgress",
@@ -667,6 +667,13 @@
               "required": false,
               "default": null,
               "description": "A skeleton shown in `<main>` in place of the page while a slow navigation loads. The page stays mounted but hidden, so its state and the providers around it survive, and `mainStart` stays visible. `<main>` is `aria-busy` meanwhile. Decide when to show it (most apps wait a few hundred milliseconds so fast navigations never flash one) and give it the shape of the page it stands in for."
+            },
+            {
+              "name": "floatScrim",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for."
             },
             {
               "name": "mainProps",
@@ -969,7 +976,7 @@
         {
           "name": "RouteProgress",
           "kind": "component",
-          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
+          "description": "A thin progress bar fixed to the top of the window while a navigation is loading. It is a signal, not an overlay: it shows only when the wait outlasts `revealDelay`, creeps toward 85%, jumps to the end when `routeKey` changes and fades out (opacity, with the exit token). A run that is never finished ends by itself after 10 seconds. It is decorative (`aria-hidden`); announce a long wait with your own live region. Only `transform` and `opacity` move, with the motion tokens, so under reduced motion it steps without easing.",
           "props": [
             {
               "name": "routeKey",
@@ -982,15 +989,15 @@
               "name": "pending",
               "type": "boolean",
               "required": false,
-              "default": "false",
-              "description": "A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar."
+              "default": null,
+              "description": "A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar. When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves."
             },
             {
               "name": "trackLinks",
               "type": "boolean",
               "required": false,
               "default": "true",
-              "description": "Also start on a plain click on a same-origin link that leads to another page (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads and the current page. Default `true`."
+              "description": "Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after 10 seconds, whichever comes first. Default `true`."
             },
             {
               "name": "revealDelay",
