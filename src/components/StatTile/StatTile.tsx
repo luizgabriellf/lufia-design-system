@@ -31,6 +31,12 @@ export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
   /** Called on press. Alone, it makes the whole tile a button. Together with `href` it runs before navigation. */
   onClick?: MouseEventHandler<HTMLElement>;
   /**
+   * Turns a button tile into a toggle, for a row of tiles that filters a list: the button exposes `aria-pressed` and the
+   * tile shows a selected state (accent border and background, a thicker inset border and a check mark, so it is not
+   * colour alone). Ignored unless the tile is a button, so a link tile, a plain tile and a `loading` tile never get it.
+   */
+  pressed?: boolean;
+  /**
    * Shows skeletons in place of the figure, the change, the hint and the chart, and disables the link or button. Each
    * skeleton has the line box of the content it stands for, so the loaded tile has exactly the same height. Pass the same
    * `delta`, `hint` and `sparkline` you will pass once loaded (placeholders are fine): they decide which lines are held.
@@ -68,7 +74,7 @@ function TrendArrow({ trend }: { trend: StatTileTrend }) {
  * description, so a screen reader announces "label, link, 12, up 3 since yesterday" without reading the tile twice.
  * Hover and press are small `transform` moves from motion tokens, removed under reduced motion. While `loading`, the
  * skeletons take the line boxes of the figure, the change, the hint and the chart, so the tile does not change height
- * when the data arrives.
+ * when the data arrives. With `onClick` and `pressed` the tile is a toggle button (`aria-pressed`) for filtering.
  */
 export function StatTile({
   label,
@@ -82,6 +88,7 @@ export function StatTile({
   sparkline,
   href,
   onClick,
+  pressed,
   loading = false,
   loadingLabel,
   className,
@@ -94,6 +101,7 @@ export function StatTile({
   const hasDelta = delta !== undefined && delta !== null;
   const hasHint = hint !== undefined && hint !== null;
   const interactive = !loading && (href !== undefined || onClick !== undefined);
+  const isPressed = interactive && href === undefined && pressed !== undefined ? pressed : undefined;
   const describedBy = [valueId, hasDelta ? deltaId : null, hasHint ? hintId : null].filter(Boolean).join(" ");
 
   let labelNode: ReactNode = label;
@@ -105,7 +113,13 @@ export function StatTile({
     );
   } else if (interactive) {
     labelNode = (
-      <button type="button" className={styles.link} onClick={onClick} aria-describedby={describedBy}>
+      <button
+        type="button"
+        className={styles.link}
+        onClick={onClick}
+        aria-pressed={isPressed}
+        aria-describedby={describedBy}
+      >
         {label}
       </button>
     );
@@ -117,9 +131,21 @@ export function StatTile({
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-tone={tone}
       data-interactive={interactive || undefined}
+      data-pressed={isPressed || undefined}
       data-loading={loading || undefined}
       aria-busy={loading || undefined}
     >
+      {isPressed !== undefined ? (
+        <svg className={styles.check} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+          <path
+            d="M3 8.5l3.2 3.2L13 4.8"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : null}
       <div className={styles.body}>
         <span className={styles.label}>{labelNode}</span>
         <span className={styles.valueRow}>
