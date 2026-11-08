@@ -1,5 +1,20 @@
 # @lufia/design-system
 
+## 0.20.0
+
+### Minor Changes
+
+- [#74](https://github.com/luizgabriellf/lufia-design-system/pull/74) [`ca2f285`](https://github.com/luizgabriellf/lufia-design-system/commit/ca2f285bbeaa3b9b553953695c9a7f5893774075) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `StackedBar`: one bar split into proportional segments, with an optional legend. Each segment has a label, a value and
+  a chart tone (or a `hatch` pattern). The text alternative lists every label, value and share, `formatValue` and
+  `formatPercent` format them, a zero total and zero segments are handled, forced-colors gives each segment its own fill
+  pattern, and the draw-in is removed under reduced motion.
+
+### Patch Changes
+
+- [#73](https://github.com/luizgabriellf/lufia-design-system/pull/73) [`abea566`](https://github.com/luizgabriellf/lufia-design-system/commit/abea566c01dcf03ea2ba26b64fe230fc7b989c48) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `CommandPalette` no longer renders an empty row when `labels.empty` returns `null`, `undefined`, `false` or an empty
+  string, and the results area drops its padding when nothing is left to show (no results, no hint, no loading row), so a
+  notice that explains the state leaves no blank gap.
+
 ## 0.19.0
 
 ### Minor Changes
