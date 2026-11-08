@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -93,6 +94,83 @@ describe("StatTile", () => {
     await user.keyboard("{Enter}");
     await user.click(button);
     expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  describe("pressed", () => {
+    it("a button tile exposes aria-pressed, true and false", () => {
+      const { container, rerender } = render(<StatTile label="Open" value="1" onClick={() => {}} pressed />);
+      expect(screen.getByRole("button", { name: "Open" })).toHaveAttribute("aria-pressed", "true");
+      expect(container.firstElementChild).toHaveAttribute("data-pressed");
+      rerender(<StatTile label="Open" value="1" onClick={() => {}} pressed={false} />);
+      expect(screen.getByRole("button", { name: "Open" })).toHaveAttribute("aria-pressed", "false");
+      expect(container.firstElementChild).not.toHaveAttribute("data-pressed");
+    });
+
+    it("has no aria-pressed when pressed is not given", () => {
+      render(<StatTile label="Open" value="1" onClick={() => {}} />);
+      expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
+    });
+
+    it("is ignored by link, plain and loading tiles", () => {
+      const { container } = render(
+        <div>
+          <StatTile label="Link" value="1" href="/a" pressed />
+          <StatTile label="Plain" value="2" pressed />
+          <StatTile label="Busy" value="3" onClick={() => {}} pressed loading />
+        </div>,
+      );
+      expect(container.querySelector("[aria-pressed]")).toBeNull();
+      expect(container.querySelector("[data-pressed]")).toBeNull();
+      expect(container.querySelector("svg[class*=check]")).toBeNull();
+    });
+
+    it("toggles when the consumer flips it on click", async () => {
+      const user = userEvent.setup();
+      function Filters() {
+        const [active, setActive] = useState("a");
+        return (
+          <div>
+            {["a", "b"].map((key) => (
+              <StatTile
+                key={key}
+                label={`Tile ${key}`}
+                value="1"
+                pressed={active === key}
+                onClick={() => setActive(key)}
+              />
+            ))}
+          </div>
+        );
+      }
+      render(<Filters />);
+      const a = screen.getByRole("button", { name: "Tile a" });
+      const b = screen.getByRole("button", { name: "Tile b" });
+      expect(a).toHaveAttribute("aria-pressed", "true");
+      expect(b).toHaveAttribute("aria-pressed", "false");
+      await user.click(b);
+      expect(a).toHaveAttribute("aria-pressed", "false");
+      expect(b).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("has no axe violations, pressed and unpressed", async () => {
+      const { container } = render(
+        <div>
+          <StatTile label="One" value="1" onClick={() => {}} pressed />
+          <StatTile label="Two" value="2" onClick={() => {}} pressed={false} tone="warning" />
+        </div>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it("uses tokens, a non-colour cue, motion tokens and no transition under reduced motion", () => {
+      const rule = css.match(/\.root\[data-pressed\] \{([^}]*)\}/)![1]!;
+      expect(rule).toMatch(/accent-default/);
+      expect(rule).toMatch(/accent-subtle/);
+      expect(rule).toMatch(/box-shadow:\s*inset/);
+      expect(css).toMatch(/\.check \{[^}]*var\(--lufia-motion-duration-instant\)/);
+      const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
+      expect(reduced?.[1]).toMatch(/\.check[\s\S]*transition:\s*none/);
+    });
   });
 
   it("href together with onClick runs the callback on the link", async () => {

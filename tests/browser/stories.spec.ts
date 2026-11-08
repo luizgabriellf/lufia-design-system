@@ -563,3 +563,31 @@ test.describe("badge", () => {
     expect(lines).toBe(1);
   });
 });
+
+test.describe("stat tile as filters", () => {
+  test("clicking a tile moves aria-pressed and the selected look", async ({ page }) => {
+    await openStory(page, "components-data-display-stattile--as-filters");
+    const open = page.getByRole("button", { name: "Open items" });
+    const overdue = page.getByRole("button", { name: "Overdue" });
+    const look = (tile: typeof open) =>
+      tile.evaluate((button) => {
+        const root = button.closest("[data-interactive]")!;
+        const style = getComputedStyle(root);
+        return { border: style.borderTopColor, background: style.backgroundColor, shadow: style.boxShadow };
+      });
+
+    await expect(open).toHaveAttribute("aria-pressed", "true");
+    await expect(overdue).toHaveAttribute("aria-pressed", "false");
+    const pressedLook = await look(open);
+    const idleLook = await look(overdue);
+    expect(pressedLook.background).not.toBe(idleLook.background);
+    expect(pressedLook.shadow).not.toBe("none");
+
+    await overdue.click();
+    await page.mouse.move(0, 0);
+    await expect(overdue).toHaveAttribute("aria-pressed", "true");
+    await expect(open).toHaveAttribute("aria-pressed", "false");
+    await expect.poll(async () => (await look(overdue)).shadow).not.toBe("none");
+    expect((await look(open)).background).not.toBe((await look(overdue)).background);
+  });
+});

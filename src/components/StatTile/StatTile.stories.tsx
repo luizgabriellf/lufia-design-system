@@ -84,6 +84,36 @@ export const AsLink: Story = {
   args: { href: "#items", delta: "12% vs last week", trend: "up", trendLabel: "Up" },
 };
 export const AsButton: Story = { args: { onClick: () => {} } };
+function FilterRow() {
+  const [active, setActive] = useState("open");
+  const filters = [
+    { key: "open", label: "Open items", value: "128" },
+    { key: "overdue", label: "Overdue", value: "4", tone: "danger" as const },
+    { key: "done", label: "Completed", value: "96%", tone: "success" as const },
+    { key: "all", label: "All", value: "412" },
+  ];
+  return (
+    <div
+      style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))" }}
+    >
+      {filters.map(({ key, ...tile }) => (
+        <StatTile key={key} {...tile} pressed={active === key} onClick={() => setActive(key)} />
+      ))}
+    </div>
+  );
+}
+/** A row of tiles that filters a list: `pressed` marks the active one and the button exposes `aria-pressed`. */
+export const AsFilters: Story = {
+  name: "As filters",
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "min(100%, 56rem)" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => <FilterRow />,
+};
 export const Loading: Story = { args: { loading: true, loadingLabel: "Loading open items" } };
 const full = {
   label: "Open items",
