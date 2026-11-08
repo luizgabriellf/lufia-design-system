@@ -112,3 +112,74 @@
     border-color: Highlight;
   }
 }
+
+/* Size: the denser variant for rows in a list or a table (still at least 24px tall). */
+.root[data-size="sm"] {
+  padding: 0.125rem;
+}
+
+.root[data-size="sm"] .segment {
+  min-block-size: 1.75rem;
+  padding-block: 0.125rem;
+  padding-inline: var(--lufia-space-3);
+  font-size: var(--lufia-font-size-xs);
+}
+
+/* Tone: colours the chosen segment (and the indicator behind it) with the status tokens. */
+.segment[aria-checked="true"][data-tone="neutral"] {
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-status-neutral-bg);
+  border-color: var(--lufia-color-text-default);
+}
+
+.indicator[data-tone="neutral"] {
+  background: var(--lufia-color-status-neutral-bg);
+  border-color: var(--lufia-color-text-default);
+}
+
+.segment[aria-checked="true"][data-tone="success"] {
+  color: var(--lufia-color-status-success-fg);
+  background: var(--lufia-color-status-success-bg);
+  border-color: var(--lufia-color-status-success-border);
+}
+
+.indicator[data-tone="success"] {
+  background: var(--lufia-color-status-success-bg);
+  border-color: var(--lufia-color-status-success-border);
+}
+
+.segment[aria-checked="true"][data-tone="warning"] {
+  color: var(--lufia-color-status-warning-fg);
+  background: var(--lufia-color-status-warning-bg);
+  border-color: var(--lufia-color-status-warning-border);
+}
+
+.indicator[data-tone="warning"] {
+  background: var(--lufia-color-status-warning-bg);
+  border-color: var(--lufia-color-status-warning-border);
+}
+
+.segment[aria-checked="true"][data-tone="danger"] {
+  color: var(--lufia-color-status-danger-fg);
+  background: var(--lufia-color-status-danger-bg);
+  border-color: var(--lufia-color-status-danger-border);
+}
+
+.indicator[data-tone="danger"] {
+  background: var(--lufia-color-status-danger-bg);
+  border-color: var(--lufia-color-status-danger-border);
+}
+
+/* The indicator wins the chrome once it is shown (specificity matches the rule above, so it must come after the tones). */
+.root:has(> .indicator:not([hidden])) .segment[aria-checked="true"][data-tone] {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Forced colors drop the tone fills: the selected border and the system colours carry the choice. */
+@media (forced-colors: active) {
+  .indicator[data-tone],
+  .segment[aria-checked="true"][data-tone] {
+    border-color: Highlight;
+  }
+}

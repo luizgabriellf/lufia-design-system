@@ -176,6 +176,245 @@ describe("SegmentedToggle", () => {
     expect(screen.getByRole("radio", { name: "Map" })).toHaveAttribute("aria-checked", "true");
   });
 
+  describe("unset value", () => {
+    const checked = () => screen.getAllByRole("radio").map((r) => r.getAttribute("aria-checked"));
+
+    it("checks nothing and keeps the first enabled segment as the one tab stop", () => {
+      render(<SegmentedToggle label="View" options={options} value={null} />);
+      expect(checked()).toEqual(["false", "false", "false", "false"]);
+      expect(screen.getAllByRole("radio").map((r) => r.tabIndex)).toEqual([0, -1, -1, -1]);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-unset");
+    });
+
+    it("has no data-unset when a value is chosen", () => {
+      render(<SegmentedToggle label="View" options={options} value="board" />);
+      expect(screen.getByRole("radiogroup")).not.toHaveAttribute("data-unset");
+    });
+
+    it("keeps the indicator hidden until something is chosen", async () => {
+      const user = userEvent.setup();
+      function Harness() {
+        const [value, setValue] = useState<string | null>(null);
+        return <SegmentedToggle label="View" options={options} value={value} onValueChange={setValue} />;
+      }
+      const { container } = render(<Harness />);
+      const indicator = container.querySelector<HTMLElement>(".indicator")!;
+      expect(indicator.hidden).toBe(true);
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(indicator.hidden).toBe(false);
+    });
+
+    it("lets Tab enter on the first segment and an arrow key move focus and choose", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      function Harness() {
+        const [value, setValue] = useState<string | null>(null);
+        return (
+          <SegmentedToggle
+            label="View"
+            options={options}
+            value={value}
+            onValueChange={(next) => {
+              onValueChange(next);
+              setValue(next);
+            }}
+          />
+        );
+      }
+      render(<Harness />);
+      await user.tab();
+      expect(screen.getByRole("radio", { name: "List" })).toHaveFocus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("radio", { name: "Board" })).toHaveFocus();
+      expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "true");
+      expect(onValueChange).toHaveBeenCalledWith("board");
+    });
+
+    it("keeps the default of the first enabled option when no value is given", () => {
+      render(<SegmentedToggle label="View" options={options} />);
+      expect(checked()).toEqual(["true", "false", "false", "false"]);
+    });
+
+    it("submits nothing under name while unset, and the value once chosen", async () => {
+      const user = userEvent.setup();
+      function Harness() {
+        const [value, setValue] = useState<string | null>(null);
+        return (
+          <form data-testid="form">
+            <SegmentedToggle
+              label="View"
+              options={options}
+              name="view"
+              value={value}
+              onValueChange={setValue}
+            />
+          </form>
+        );
+      }
+      render(<Harness />);
+      const form = screen.getByTestId("form") as HTMLFormElement;
+      expect(new FormData(form).has("view")).toBe(false);
+      await user.click(screen.getByRole("radio", { name: "Map" }));
+      expect(new FormData(form).get("view")).toBe("map");
+    });
+  });
+
+  describe("allowDeselect", () => {
+    it("calls onDeselect, not onValueChange, when the chosen segment is activated again", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const onDeselect = vi.fn();
+      function Harness() {
+        const [value, setValue] = useState<string | null>("board");
+        return (
+          <SegmentedToggle
+            label="View"
+            options={options}
+            value={value}
+            allowDeselect
+            onValueChange={(next) => {
+              onValueChange(next);
+              setValue(next);
+            }}
+            onDeselect={() => {
+              onDeselect();
+              setValue(null);
+            }}
+          />
+        );
+      }
+      render(<Harness />);
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(onDeselect).toHaveBeenCalledTimes(1);
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "false");
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(onValueChange).toHaveBeenCalledWith("board");
+    });
+
+    it("clears an uncontrolled toggle", async () => {
+      const user = userEvent.setup();
+      render(<SegmentedToggle label="View" options={options} defaultValue="board" allowDeselect />);
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(screen.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "false");
+    });
+
+    it("keeps reporting the chosen value without allowDeselect", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<SegmentedToggle label="View" options={options} value="board" onValueChange={onValueChange} />);
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      expect(onValueChange).toHaveBeenCalledWith("board");
+    });
+  });
+
+  describe("tone and size", () => {
+    const toned: SegmentedToggleOption[] = [
+      { value: "pass", label: "Pass", tone: "success" },
+      { value: "fail", label: "Fail", tone: "danger" },
+      { value: "na", label: "N/A", tone: "neutral" },
+    ];
+
+    it("marks each option with its tone and the indicator with the chosen one", () => {
+      const { container } = render(<SegmentedToggle label="Result" options={toned} value="fail" />);
+      expect(screen.getAllByRole("radio").map((r) => r.getAttribute("data-tone"))).toEqual([
+        "success",
+        "danger",
+        "neutral",
+      ]);
+      expect(container.querySelector(".indicator")).toHaveAttribute("data-tone", "danger");
+    });
+
+    it("sets data-size on the group, md by default", () => {
+      const { rerender } = render(<SegmentedToggle label="Result" options={toned} />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-size", "md");
+      rerender(<SegmentedToggle label="Result" options={toned} size="sm" />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-size", "sm");
+    });
+  });
+
+  describe("form reset to nothing chosen", () => {
+    it("resets a controlled null value to null, not to the first option", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      function Harness() {
+        const [value, setValue] = useState<string | null>(null);
+        return (
+          <form data-testid="form">
+            <SegmentedToggle
+              label="View"
+              options={options}
+              name="view"
+              value={value}
+              onValueChange={(next) => {
+                onValueChange(next);
+                setValue(next);
+              }}
+              onDeselect={() => setValue(null)}
+            />
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+      render(<Harness />);
+      await user.click(screen.getByRole("radio", { name: "Map" }));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).get("view")).toBe("map");
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      screen.getAllByRole("radio").forEach((radio) => expect(radio).toHaveAttribute("aria-checked", "false"));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).has("view")).toBe(false);
+    });
+
+    it("does not report a deselect when a reset finds nothing chosen", async () => {
+      const user = userEvent.setup();
+      const onDeselect = vi.fn();
+      render(
+        <form>
+          <SegmentedToggle label="View" options={options} name="view" value={null} onDeselect={onDeselect} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(onDeselect).not.toHaveBeenCalled();
+    });
+
+    it("resets an uncontrolled defaultValue of null to nothing chosen", async () => {
+      const user = userEvent.setup();
+      render(
+        <form data-testid="form">
+          <SegmentedToggle label="View" options={options} name="view" defaultValue={null} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-unset");
+      await user.click(screen.getByRole("radio", { name: "Board" }));
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      screen.getAllByRole("radio").forEach((radio) => expect(radio).toHaveAttribute("aria-checked", "false"));
+      expect(new FormData(screen.getByTestId("form") as HTMLFormElement).has("view")).toBe(false);
+    });
+  });
+
+  it("has no axe violations while unset", async () => {
+    const { container } = render(<SegmentedToggle label="View" options={options} value={null} />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("has no axe violations with a tone, a small size and a chosen value", async () => {
+    const { container } = render(
+      <SegmentedToggle
+        label="Result"
+        size="sm"
+        allowDeselect
+        value="fail"
+        options={[
+          { value: "pass", label: "Pass", tone: "success" },
+          { value: "fail", label: "Fail", tone: "danger" },
+        ]}
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<SegmentedToggle label="View" options={options} />);
     expect(await axe(container)).toHaveNoViolations();

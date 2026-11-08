@@ -1,1 +1,6 @@
-export { SegmentedToggle, type SegmentedToggleOption, type SegmentedToggleProps } from "./SegmentedToggle";
+export {
+  SegmentedToggle,
+  type SegmentedToggleOption,
+  type SegmentedToggleProps,
+  type SegmentedToggleTone,
+} from "./SegmentedToggle";

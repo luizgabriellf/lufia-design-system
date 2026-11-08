@@ -9595,7 +9595,7 @@
         {
           "name": "SegmentedToggle",
           "kind": "component",
-          "description": "Two to four compact choices where exactly one is always chosen, such as a view or a mode, as a WAI-ARIA radio group with roving arrow keys. An indicator slides behind the chosen segment. It is a choice that applies to what is shown, not a navigation (use `PeerNav`) and not on/off (use `Switch`). When the user chooses a segment (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from the hidden input (from the group when there is no `name`), so a native `addEventListener(\"change\")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there. A `value` set by the parent, a form reset and choosing the segment already chosen dispatch nothing.",
+          "description": "Two to four compact choices where one is chosen (always, unless `value` is `null`), such as a view or a mode, as a WAI-ARIA radio group with roving arrow keys. An indicator slides behind the chosen segment. It is a choice that applies to what is shown, not a navigation (use `PeerNav`) and not on/off (use `Switch`). With `value={null}` nothing is chosen yet (a status picker on a fresh row), `allowDeselect` lets the user clear the choice, `tone` colours a chosen option and `size=\"sm\"` fits dense rows. When the user chooses a segment (a click or an arrow key), a bubbling `input` and then `change` Event is dispatched from the hidden input (from the group when there is no `name`), so a native `addEventListener(\"change\")` on the form, or a React `onInput`, sees it as it would a native radio. A React `onChange` on the form does not: React ignores hidden inputs there. A `value` set by the parent, a form reset and choosing the segment already chosen dispatch nothing.",
           "props": [
             {
               "name": "label",
@@ -9613,24 +9613,38 @@
             },
             {
               "name": "value",
-              "type": "string",
+              "type": "string | null",
               "required": false,
               "default": null,
-              "description": "Controlled value."
+              "description": "Controlled value. `null` is controlled with nothing chosen: no segment is checked and the indicator is hidden. The first enabled segment is still the tab stop, and an arrow key chooses (selection follows focus) as it does with a value."
             },
             {
               "name": "defaultValue",
-              "type": "string",
+              "type": "string | null",
               "required": false,
               "default": null,
-              "description": "Initial value when `value` is not given. Defaults to the first enabled option."
+              "description": "Initial value when `value` is not given; `null` starts with nothing chosen. Defaults to the first enabled option. A form reset goes back to it (to `null` when a controlled `value` started as `null`)."
             },
             {
               "name": "onValueChange",
               "type": "(value: string) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the value the user chose. Never `null`: a deselect is reported by `onDeselect`."
+            },
+            {
+              "name": "allowDeselect",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "When true, activating the chosen segment again clears the choice and calls `onDeselect`. With a controlled `value`, set it to `null` there; an uncontrolled toggle clears itself."
+            },
+            {
+              "name": "onDeselect",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen."
             },
             {
               "name": "disabled",
@@ -9654,6 +9668,13 @@
               "description": "`\"fit\"` (default) shrinks to its content; `\"fill\"` shares the full width between the segments."
             },
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`\"md\"` (default) or the denser `\"sm\"` for rows in a list or a table."
+            },
+            {
               "name": "ref",
               "type": "Ref<HTMLDivElement>",
               "required": false,
@@ -9667,17 +9688,24 @@
           "name": "SegmentedToggleOption",
           "kind": "type",
           "description": "",
-          "definition": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }"
+          "definition": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; tone?: SegmentedToggleTone | undefined; }"
         },
         {
           "name": "SegmentedToggleProps",
           "kind": "type",
           "description": "",
           "definition": null
+        },
+        {
+          "name": "SegmentedToggleTone",
+          "kind": "type",
+          "description": "",
+          "definition": "\"neutral\" | \"success\" | \"warning\" | \"danger\""
         }
       ],
       "aliases": {
-        "SegmentedToggleOption": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; }"
+        "SegmentedToggleOption": "{ value: string; label: ReactNode; icon?: ReactNode; disabled?: boolean | undefined; tone?: SegmentedToggleTone | undefined; }",
+        "SegmentedToggleTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\""
       },
       "story": {
         "docsId": "components-forms-segmentedtoggle--docs",
@@ -9721,12 +9749,16 @@
           {
             "export": "AllThemes",
             "id": "components-forms-segmentedtoggle--all-themes"
+          },
+          {
+            "export": "StatusPicker",
+            "id": "components-forms-segmentedtoggle--status-picker"
           }
         ]
       },
       "docs": {
         "mdx": "src/components/SegmentedToggle/SegmentedToggle.mdx",
-        "overview": "Two to four compact choices in one bordered group, where exactly one is always chosen. An indicator slides behind the chosen\nsegment.",
+        "overview": "Two to four compact choices in one bordered group, where one is chosen (always, unless `value` is `null`). An indicator slides behind the chosen\nsegment.",
         "usage": {
           "language": "tsx",
           "code": "import { SegmentedToggle } from \"@lufia/design-system/components/SegmentedToggle\";\n\n<SegmentedToggle\n  label=\"View\"\n  value={view}\n  onValueChange={setView}\n  options={[\n    { value: \"list\", label: \"List\" },\n    { value: \"board\", label: \"Board\" },\n  ]}\n/>;"
@@ -9752,7 +9784,9 @@
           "`label` names the group and is required. Icons are decorative.",
           "The indicator animates `transform` only, jumps on resize, and does not animate under `prefers-reduced-motion`.",
           "Before scripts run the chosen segment paints its own border and fill, so the choice is visible without the indicator.",
-          "Under `forced-colors` the chosen segment keeps a `Highlight` border."
+          "Under `forced-colors` the chosen segment keeps a `Highlight` border.",
+          "Selection follows focus: an arrow key moves focus and chooses, also when nothing was chosen. Space or a click on a focused segment chooses it.",
+          "`tone` is never the only cue: the chosen segment also has the selected border and the indicator. Text and fill pairs are the status `fg` on `bg` pairs checked by `npm run contrast`."
         ]
       },
       "motion": {
@@ -9767,11 +9801,22 @@
         "--lufia-color-bg-surface",
         "--lufia-color-border-strong",
         "--lufia-color-focus-ring",
+        "--lufia-color-status-danger-bg",
+        "--lufia-color-status-danger-border",
+        "--lufia-color-status-danger-fg",
+        "--lufia-color-status-neutral-bg",
+        "--lufia-color-status-success-bg",
+        "--lufia-color-status-success-border",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-bg",
+        "--lufia-color-status-warning-border",
+        "--lufia-color-status-warning-fg",
         "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-font-line-height-tight",
         "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-instant",
@@ -9781,6 +9826,7 @@
         "--lufia-radius-md",
         "--lufia-shadow-sm",
         "--lufia-space-2",
+        "--lufia-space-3",
         "--lufia-space-4"
       ]
     },
