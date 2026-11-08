@@ -9,6 +9,7 @@ import { useNativeDialog } from "../Modal/useNativeDialog";
 import { CloseGlyph } from "./icons";
 import { NavSurfaceContext } from "./navigation";
 import { usePresence } from "../internal/usePresence";
+import { useNavScrollHints } from "./useNavScrollHints";
 import { useSheetDrag } from "./useSheetDrag";
 import styles from "./NavSheet.module.css";
 
@@ -43,6 +44,24 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
 };
 
 const subscribeNothing = () => () => {};
+
+/** The scrolling body: it mounts with the sheet, so the scroll hints start when the sheet opens. */
+function SheetBody({
+  onClick,
+  children,
+}: {
+  onClick: (event: MouseEvent<HTMLElement>) => void;
+  children: ReactNode;
+}) {
+  const body = useRef<HTMLDivElement>(null);
+  useNavScrollHints(body);
+  return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
+    <div ref={body} className={styles.body} onClick={onClick}>
+      {children}
+    </div>
+  );
+}
 
 /**
  * A modal bottom sheet that holds the app's navigation on a phone. It rises from the bottom edge, dims the page, traps
@@ -120,10 +139,7 @@ export function NavSheet({
           </button>
         </div>
       </div>
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside */}
-      <div className={styles.body} onClick={closeOnLink}>
-        {children}
-      </div>
+      <SheetBody onClick={closeOnLink}>{children}</SheetBody>
       {footer ? (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- delegates clicks of the links inside
         <div className={styles.foot} onClick={closeOnLink}>
