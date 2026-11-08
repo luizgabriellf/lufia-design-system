@@ -837,6 +837,9 @@ test.describe("docs pages", () => {
       const p = (await preview.boundingBox())!;
       const a = (await actions.boundingBox())!;
       expect(a.y).toBeGreaterThanOrEqual(p.y + p.height - 1);
+      // The bar is the canvas's footer: exactly as wide as the frame above it.
+      expect(Math.abs(a.x - p.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(a.x + a.width - (p.x + p.width))).toBeLessThanOrEqual(1);
 
       const source = page.locator(".sbdocs-content .docblock-source").first();
       const s = (await source.boundingBox())!;

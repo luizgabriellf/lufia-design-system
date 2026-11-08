@@ -134,6 +134,9 @@
   display: flex;
   justify-content: flex-end;
   padding: 0 0.75rem 0.75rem;
+
+  /* Storybook paints this box in the canvas colour, a square patch over the block's rounded corner. */
+  background: none;
 }
 
 .sbdocs .docblock-source > div:has(> button) button {
@@ -173,6 +176,7 @@
 }
 
 .sbdocs .sbdocs-preview-actions {
+  box-sizing: border-box;
   flex-wrap: wrap;
   gap: var(--lufia-space-1);
   margin: 0 0 1.25rem;
