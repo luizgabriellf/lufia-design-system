@@ -435,7 +435,12 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
         }
       }}
     >
-      <StatusIcon tone={TONE_STATUS[item.tone]} variant="ring" className={styles.icon} />
+      <StatusIcon
+        tone={TONE_STATUS[item.tone]}
+        variant="ring"
+        drawOn={item.tone === "success"}
+        className={styles.icon}
+      />
       <div className={styles.message}>{item.message}</div>
       {item.action ? (
         <button

@@ -72,3 +72,22 @@
   block-size: 58%;
   stroke-width: var(--lufia-status-icon-mark-stroke, 2.5);
 }
+
+/* `drawOn`: the strokes draw in once, the motion of SuccessCheck. The keyframes animate `from` only, so the resting state
+   is the fully drawn glyph and a disabled animation leaves it visible. */
+.root[data-draw-on] .glyph > * {
+  stroke-dasharray: 1;
+  animation: status-draw var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) 80ms both;
+}
+
+@keyframes status-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-draw-on] .glyph > * {
+    animation: none;
+  }
+}

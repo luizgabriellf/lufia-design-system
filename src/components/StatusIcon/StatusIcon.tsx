@@ -1,4 +1,11 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { Icon } from "../Icon/Icon";
 import styles from "./StatusIcon.module.css";
 
@@ -35,6 +42,11 @@ export type StatusIconProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> 
    * names the status: the icon is then decorative.
    */
   label?: string;
+  /**
+   * Draw the glyph's strokes in once when it mounts, the motion of `SuccessCheck` (for a toast or a confirmation that has
+   * just appeared). Under `prefers-reduced-motion` the glyph is simply drawn. Default `false`.
+   */
+  drawOn?: boolean;
 };
 
 /* The outlined glyphs: a distinct outer shape or inner mark per tone. */
@@ -98,6 +110,16 @@ const MARK: Record<StatusTone, ReactNode> = {
   needsInput: <path d="M5 12h.01M12 12h.01M19 12h.01" />,
 };
 
+/* Every stroke gets `pathLength={1}`, so one dash pattern draws any shape in. */
+function measured(node: ReactNode): ReactNode {
+  return Children.map(node, (child) => {
+    if (!isValidElement(child)) return child;
+    const element = child as ReactElement<{ children?: ReactNode; pathLength?: number }>;
+    if (element.props.children) return cloneElement(element, {}, measured(element.props.children));
+    return cloneElement(element, { pathLength: 1 });
+  });
+}
+
 /**
  * One family of status markers: success, warning, danger, info, pending, neutral and needs-input, each with its own
  * shape. `Toast`, the field error, `DetailAttentionCard`, `StatusTimeline` and `Stepper` all draw their markers with it, so
@@ -108,10 +130,12 @@ export function StatusIcon({
   variant = "bare",
   size = "md",
   label,
+  drawOn = false,
   className,
   ...rest
 }: StatusIconProps) {
-  const glyph = variant === "bare" ? GLYPH[tone] : MARK[tone];
+  const shape = variant === "bare" ? GLYPH[tone] : MARK[tone];
+  const glyph = drawOn ? measured(shape) : shape;
   return (
     <span
       role={label ? "img" : undefined}
@@ -122,6 +146,7 @@ export function StatusIcon({
       data-tone={tone}
       data-variant={variant}
       data-size={size}
+      data-draw-on={drawOn || undefined}
     >
       <Icon
         size={variant === "ring" ? "sm" : size}

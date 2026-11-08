@@ -60,3 +60,20 @@ describe("StatusIcon", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("StatusIcon drawOn", () => {
+  it("measures every stroke so it can draw in, and marks the root", () => {
+    const { container } = render(<StatusIcon tone="success" variant="ring" drawOn />);
+    const root = container.firstElementChild;
+    expect(root).toHaveAttribute("data-draw-on");
+    const paths = root!.querySelectorAll("svg path");
+    expect(paths.length).toBeGreaterThan(0);
+    paths.forEach((path) => expect(path).toHaveAttribute("pathLength", "1"));
+  });
+
+  it("draws nothing in by default", () => {
+    const { container } = render(<StatusIcon tone="success" variant="ring" />);
+    expect(container.firstElementChild).not.toHaveAttribute("data-draw-on");
+    expect(container.querySelector("path")).not.toHaveAttribute("pathLength");
+  });
+});

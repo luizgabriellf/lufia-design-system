@@ -46,6 +46,11 @@ import { StatusIcon } from "@lufia/design-system/icons";
   (`sm`, `md`, `lg`); `--lufia-status-icon-size` and `--lufia-status-icon-ring-border-width` override it.
 - `mark`: the mark alone in `currentColor`, for a host that draws its own container, such as a stepper dot.
 
+### Draw-on entrance
+
+`drawOn` draws the glyph's strokes in once when it mounts, with the motion of `SuccessCheck`: a short stroke reveal on the
+`enter` duration token. `Toast` uses it for success. Under `prefers-reduced-motion` the glyph is simply drawn.
+
 </Section>
 
 <Section id="examples">
