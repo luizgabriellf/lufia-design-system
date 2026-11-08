@@ -25,7 +25,10 @@
   color: var(--lufia-color-text-default);
 }
 
+/* Its own stacking context: the dots lift above the connector (z-index 1) without painting over a sticky header or any other
+   layer around the stepper, such as a modal header scrolled over it. */
 .list {
+  isolation: isolate;
   display: flex;
   align-items: flex-start;
   gap: var(--lufia-space-1);

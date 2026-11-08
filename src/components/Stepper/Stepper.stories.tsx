@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Button } from "../Button";
+import { Modal } from "../Modal";
 import { Stepper } from "./Stepper";
 
 const steps = [
@@ -56,6 +57,49 @@ function Flow() {
 }
 
 export const Interactive: Story = { render: () => <Flow /> };
+
+function InModal() {
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="New request"
+        footer={<Button onClick={() => setOpen(false)}>Close</Button>}
+      >
+        <p style={{ margin: "0 0 1rem" }}>Scroll the dialog: the step dots pass under the sticky header.</p>
+        <div style={{ blockSize: "6rem" }} />
+        <Stepper steps={steps} current={2} onStepClick={() => {}} data-testid="stepper-in-modal" />
+        {Array.from({ length: 12 }, (_, i) => (
+          <p key={i}>
+            Step content line {i + 1}. Long enough to make the dialog scroll, so its header sticks over the
+            stepper.
+          </p>
+        ))}
+      </Modal>
+    </>
+  );
+}
+
+/**
+ * A stepper inside a modal whose panel scrolls. The step list is its own stacking context, so the dots (lifted above the
+ * connector) never paint over the modal's sticky header.
+ */
+export const InScrolledModal: Story = {
+  render: () => <InModal />,
+  play: async ({ canvasElement }) => {
+    const doc = canvasElement.ownerDocument;
+    const panel = doc.querySelector<HTMLElement>('[data-lufia-part="panel"]');
+    const stepper = doc.querySelector<HTMLElement>('[data-testid="stepper-in-modal"]');
+    const header = doc.querySelector<HTMLElement>('[data-lufia-part="header"]');
+    if (!panel || !stepper || !header) return;
+    // Put the step dots right under the sticky header.
+    const offset = stepper.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+    panel.scrollTop += offset + 12;
+  },
+};
 export const AllThemes: Story = {
   render: (args) => (
     <ThemeMatrix>
