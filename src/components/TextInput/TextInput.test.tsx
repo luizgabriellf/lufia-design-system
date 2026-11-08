@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
@@ -5,7 +6,28 @@ import { axe } from "../../test/axe";
 import { FormField } from "../FormField";
 import { TextInput } from "./TextInput";
 
+const fieldCss = readFileSync("src/components/FormField/fieldControl.module.css", "utf8");
+const [baseCss = "", forcedCss = ""] = fieldCss
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .split("@media (forced-colors: active) {");
+
+/** Declarations of the first rule whose selector list contains `selector`. */
+const declarationsFor = (css: string, selector: string) =>
+  [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)].find((m) =>
+    (m[1] ?? "").split(",").some((x) => x.trim() === selector),
+  )?.[2] ?? "";
+
 describe("TextInput", () => {
+  it.each([".native:-webkit-autofill", ".native:autofill"])(
+    "styles %s from tokens, and hands colours to the system when forced",
+    (selector) => {
+      const declarations = declarationsFor(baseCss, selector);
+      expect(declarations).toContain("var(--lufia-color-bg-field-autofill)");
+      expect(declarations).toContain("-webkit-text-fill-color: var(--lufia-color-text-default)");
+      expect(declarationsFor(forcedCss, selector)).toContain("box-shadow: none");
+    },
+  );
+
   it("renders a native input of the given type and forwards rest props and ref", () => {
     const ref = createRef<HTMLInputElement>();
     render(

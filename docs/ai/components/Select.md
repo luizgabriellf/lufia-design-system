@@ -29,7 +29,8 @@ typeahead and mobile picker.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `options` | `readonly SelectOption[]` | no |  | The choices. Use `children` instead for `<optgroup>`s. |
+| `options` | `readonly SelectOption[]` | no |  | The choices. Use `groups` for `<optgroup>`s. |
+| `groups` | `readonly SelectOptionGroup[]` | no |  | Labelled groups of choices, rendered as `<optgroup>`s after `options`. |
 | `children` | `ReactNode` | no |  | `<option>` and `<optgroup>` elements, when `options` is not enough. |
 | `placeholder` | `string` | no |  | Text of the empty first choice ("Choose a country"). It is selectable only before a choice is made: once chosen, the person cannot go back to nothing unless the field is optional, so set `allowEmpty` for that. |
 | `allowEmpty` | `boolean` | no | `false` | Keeps the placeholder choosable after a value is picked, for optional fields. |
@@ -42,6 +43,7 @@ Other native element attributes pass through to the root element.
 ## Types
 
 - `SelectOption`: `{ value: string; label: string; disabled?: boolean | undefined; }`
+- `SelectOptionGroup`: `{ label: string; options: readonly SelectOption[]; disabled?: boolean | undefined; }`
 
 ## Example
 
@@ -91,6 +93,7 @@ ranges). The placeholder is an instruction, "Choose a country", never the label 
 - `components-forms-select--invalid`
 - `components-forms-select--disabled`
 - `components-forms-select--with-groups`
+- `components-forms-select--with-child-groups`
 - `components-forms-select--long-text`
 - `components-forms-select--phone-320`
 - `components-forms-select--right-to-left`

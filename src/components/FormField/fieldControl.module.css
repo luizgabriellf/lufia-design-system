@@ -107,6 +107,22 @@
   opacity: 1;
 }
 
+/*
+ * Autofilled text. Browsers paint their own tint over the field and ignore background; an opaque inset shadow covers it and
+ * the text fill replaces its colour. Two rules, because a selector list with one unknown pseudo-class is dropped whole.
+ */
+.native:-webkit-autofill {
+  -webkit-text-fill-color: var(--lufia-color-text-default);
+  caret-color: var(--lufia-color-text-default);
+  box-shadow: 0 0 0 100rem var(--lufia-color-bg-field-autofill) inset;
+}
+
+.native:autofill {
+  -webkit-text-fill-color: var(--lufia-color-text-default);
+  caret-color: var(--lufia-color-text-default);
+  box-shadow: 0 0 0 100rem var(--lufia-color-bg-field-autofill) inset;
+}
+
 .native:disabled {
   cursor: not-allowed;
 }
@@ -116,6 +132,17 @@
 }
 
 @media (forced-colors: active) {
+  /* The system chooses the colours; drop the cover so its own autofill indication shows. */
+  .native:autofill {
+    -webkit-text-fill-color: FieldText;
+    box-shadow: none;
+  }
+
+  .native:-webkit-autofill {
+    -webkit-text-fill-color: FieldText;
+    box-shadow: none;
+  }
+
   .box:has(:focus-visible),
   .box[data-open] {
     outline-color: Highlight;

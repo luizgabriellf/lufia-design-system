@@ -37,7 +37,7 @@ import { Select } from "@lufia/design-system/components/Select";
 ```
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
-Pass `<option>` and `<optgroup>` elements as `children` when you need groups.
+Pass `groups` (`{ label, options, disabled? }`) for `<optgroup>`s, rendered after `options`. `<option>` and `<optgroup>` elements as `children` still work for anything else.
 
 </Section>
 
