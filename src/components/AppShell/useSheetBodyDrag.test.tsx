@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { mockReducedMotion } from "../../test/motion";
 import { NavSheet } from "./NavSheet";
 
@@ -9,6 +9,9 @@ function setup({ swipe = true, onOpenChange = vi.fn() } = {}) {
       <a href="/one" onClick={onLink}>
         One
       </a>
+      <div data-testid="inner" style={{ overflowY: "auto" }}>
+        <a href="/two">Two</a>
+      </div>
     </NavSheet>,
   );
   const panel = screen.getByRole("dialog", { name: "Menu" });
@@ -24,6 +27,11 @@ const lift = (clientX: number, clientY: number) => ({
 
 function scrolledTo(element: HTMLElement, top: number) {
   Object.defineProperty(element, "scrollTop", { configurable: true, value: top });
+}
+
+function sized(element: HTMLElement, client: number, scroll: number) {
+  Object.defineProperty(element, "clientHeight", { configurable: true, value: client });
+  Object.defineProperty(element, "scrollHeight", { configurable: true, value: scroll });
 }
 
 describe("dragging the sheet down from its body", () => {
@@ -87,21 +95,91 @@ describe("dragging the sheet down from its body", () => {
     expect(onOpenChange).not.toHaveBeenCalled();
   });
 
-  it("stops the browser's pull to refresh by cancelling the first downward move at the top", () => {
-    const { body } = setup();
+  it("decides nothing inside the slop: a first small move is not cancelled, and a sideways swipe never is", () => {
+    const { panel, body } = setup();
     fireEvent.touchStart(body, touch(50, 100));
-    // Not cancelled would return true: a cancelled event returns false.
-    expect(fireEvent.touchMove(body, touch(50, 103))).toBe(false);
+    // Not cancelled returns true, a cancelled event returns false.
+    expect(fireEvent.touchMove(body, touch(50, 103))).toBe(true);
+    expect(panel).not.toHaveAttribute("data-dragging");
+    fireEvent.touchEnd(body, lift(50, 103));
+
+    // A row that scrolls sideways, at the top of the sheet, with a little downward drift.
+    fireEvent.touchStart(body, touch(50, 100));
+    expect(fireEvent.touchMove(body, touch(60, 104))).toBe(true);
+    expect(fireEvent.touchMove(body, touch(150, 112))).toBe(true);
+    expect(fireEvent.touchMove(body, touch(250, 120))).toBe(true);
+    expect(panel).not.toHaveAttribute("data-dragging");
   });
 
-  it("does not cancel a scroll in the middle of the body", () => {
+  it("cancels a downward move once it is known to be the sheet (so no pull to refresh starts)", () => {
     const { body } = setup();
-    Object.defineProperty(body, "clientHeight", { configurable: true, value: 100 });
-    Object.defineProperty(body, "scrollHeight", { configurable: true, value: 400 });
+    fireEvent.touchStart(body, touch(50, 100));
+    expect(fireEvent.touchMove(body, touch(50, 112))).toBe(false);
+  });
+
+  it("cancels a scroll that has nowhere to go at the bottom, and not one that can still move", () => {
+    const { body } = setup();
+    sized(body, 100, 400);
+    scrolledTo(body, 300);
+    fireEvent.touchStart(body, touch(50, 100));
+    fireEvent.touchMove(body, touch(50, 90));
+    expect(fireEvent.touchMove(body, touch(50, 70))).toBe(false);
+    fireEvent.touchEnd(body, lift(50, 70));
+
     scrolledTo(body, 50);
     fireEvent.touchStart(body, touch(50, 100));
-    expect(fireEvent.touchMove(body, touch(50, 90))).toBe(true);
+    expect(fireEvent.touchMove(body, touch(50, 70))).toBe(true);
     expect(fireEvent.touchMove(body, touch(50, 140))).toBe(true);
+  });
+
+  it("respects an inner list that can still scroll: no sheet drag and no cancelled scroll", () => {
+    const { panel, body } = setup();
+    const inner = screen.getByTestId("inner");
+    sized(inner, 100, 300);
+    scrolledTo(inner, 60);
+    fireEvent.touchStart(inner, touch(50, 100));
+    expect(fireEvent.touchMove(inner, touch(50, 112))).toBe(true);
+    expect(fireEvent.touchMove(inner, touch(50, 180))).toBe(true);
+    expect(panel).not.toHaveAttribute("data-dragging");
+    fireEvent.touchEnd(body, lift(50, 180));
+  });
+
+  it("drags the sheet from an inner list that is at its top while the body is too", () => {
+    const { panel, onOpenChange } = setup();
+    const inner = screen.getByTestId("inner");
+    sized(inner, 100, 300);
+    scrolledTo(inner, 0);
+    fireEvent.touchStart(inner, touch(50, 100));
+    fireEvent.touchMove(inner, touch(50, 112));
+    fireEvent.touchMove(inner, touch(50, 190));
+    expect(panel).toHaveAttribute("data-dragging", "true");
+    fireEvent.touchEnd(inner, lift(50, 190));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("does not drag the sheet while the body is scrolled, even from an inner list at its top", () => {
+    const { panel, body } = setup();
+    const inner = screen.getByTestId("inner");
+    sized(inner, 100, 300);
+    scrolledTo(inner, 0);
+    scrolledTo(body, 40);
+    sized(body, 100, 400);
+    fireEvent.touchStart(inner, touch(50, 100));
+    expect(fireEvent.touchMove(inner, touch(50, 112))).toBe(true);
+    expect(fireEvent.touchMove(inner, touch(50, 190))).toBe(true);
+    expect(panel).not.toHaveAttribute("data-dragging");
+  });
+
+  it("treats an inner list that does not overflow as no scroller", () => {
+    const { panel } = setup();
+    const inner = screen.getByTestId("inner");
+    // Nothing to scroll, whatever its style or a stale offset says.
+    sized(inner, 100, 100);
+    scrolledTo(inner, 30);
+    fireEvent.touchStart(inner, touch(50, 100));
+    fireEvent.touchMove(inner, touch(50, 112));
+    fireEvent.touchMove(inner, touch(50, 150));
+    expect(panel).toHaveAttribute("data-dragging", "true");
   });
 
   it("swallows the click the lifted finger would send to the link under it", () => {
@@ -114,6 +192,48 @@ describe("dragging the sheet down from its body", () => {
     expect(onLink).not.toHaveBeenCalled();
     fireEvent.click(link, { detail: 1 });
     expect(onLink).toHaveBeenCalledTimes(1);
+  });
+
+  describe("the swallowed click", () => {
+    const dragAndLift = (body: HTMLElement) => {
+      fireEvent.touchStart(body, touch(50, 100));
+      fireEvent.touchMove(body, touch(50, 112));
+      fireEvent.touchMove(body, touch(50, 125));
+      fireEvent.touchEnd(body, lift(50, 125));
+    };
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it("lapses by itself shortly after the drag, so it cannot eat someone else's click", () => {
+      const { body, link, onLink } = setup();
+      dragAndLift(body);
+      act(() => void vi.advanceTimersByTime(500));
+      fireEvent.click(link, { detail: 1 });
+      expect(onLink).toHaveBeenCalledTimes(1);
+    });
+
+    it("lapses at the next pointer down", () => {
+      const { body, link, onLink } = setup();
+      dragAndLift(body);
+      fireEvent.pointerDown(link);
+      fireEvent.click(link, { detail: 1 });
+      expect(onLink).toHaveBeenCalledTimes(1);
+    });
+
+    it("still swallows the click that follows the drag at once", () => {
+      const { body, link, onLink } = setup();
+      dragAndLift(body);
+      fireEvent.click(link, { detail: 1 });
+      expect(onLink).not.toHaveBeenCalled();
+    });
+
+    it("does not swallow anything after a plain tap that never dragged", () => {
+      const { body, link, onLink } = setup();
+      fireEvent.touchStart(body, touch(50, 100));
+      fireEvent.touchEnd(body, lift(50, 100));
+      fireEvent.click(link, { detail: 1 });
+      expect(onLink).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("does nothing with swipeToDismiss off", () => {

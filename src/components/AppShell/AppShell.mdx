@@ -362,8 +362,10 @@ mounted page takes over from the older one.
   to point at the page inside it.
 - **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet. The body keeps native scrolling:
   a drag that starts in the body counts only when the body is scrolled to the top and moves down, and then it follows the
-  finger (and cancels the browser's pull to refresh) as on a native bottom sheet; any other move scrolls, and a sideways one
-  is left alone. The click the lifted finger would send to a link under it is swallowed. Escape and the close button always
+  finger (and cancels the browser's pull to refresh) as on a native bottom sheet. A list inside the body that scrolls on its
+  own is respected: the drag starts only when it and the body are both at the top. Any other move scrolls, nothing is cancelled
+  until the direction is known (so a row that scrolls sideways still does), and a sideways move is left alone. The click the
+  lifted finger would send to a link under it is swallowed for a moment, never longer than the next touch. Escape and the close button always
   work. A short drag springs back; a past-threshold release or a quick flick dismisses. The offset follows the finger even
   under reduced motion, because it is direct manipulation.
 - **Focus.** The sheet traps focus, lands it on the dialog itself (nothing is chosen for the person, and no keyboard
