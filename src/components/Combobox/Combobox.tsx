@@ -193,6 +193,8 @@ export function Combobox({
   const [chosen, setChosen] = useState<ComboboxOption | null>(null);
   // In free text mode, the text the person typed is kept apart from option values: it never resolves to an option.
   const [typedValue, setTypedValue] = useState<string | null>(null);
+  // A value that is not the one the typed text produced was set from outside: it resolves to its option again.
+  if (typedValue !== null && value !== typedValue) setTypedValue(null);
   const isTypedValue = freeText && value !== null && value === typedValue;
   const selected =
     value === null || isTypedValue
@@ -243,7 +245,8 @@ export function Combobox({
   const commitText = (text: string) => {
     const trimmed = text.trim() === "" ? null : text.trim();
     setTypedValue(trimmed);
-    if (trimmed === value) return;
+    // An equal string still is a change when it turns a chosen option into free text.
+    if (trimmed === value && typedValue === trimmed) return;
     setValue(trimmed);
     onValueChange?.(trimmed, null);
   };

@@ -667,6 +667,70 @@ describe("Combobox freeText", () => {
     expect(box()).toHaveValue("Faro");
   });
 
+  it("resolves a value the parent sets to its option, even if it equals text typed earlier", async () => {
+    const user = userEvent.setup();
+    const ids = [
+      { value: "12", label: "Paris" },
+      { value: "13", label: "Rome" },
+    ];
+    function Harness() {
+      const [value, setValue] = useState<string | null>(null);
+      const [follow, setFollow] = useState(false);
+      return (
+        <>
+          <Combobox
+            aria-label="City"
+            options={ids}
+            {...texts}
+            freeText
+            value={value}
+            onValueChange={(next) => follow && setValue(next)}
+          />
+          <button type="button" onClick={() => setFollow(true)}>
+            Follow
+          </button>
+          {["12", "13"].map((id) => (
+            <button key={id} type="button" onClick={() => setValue(id)}>
+              Set {id}
+            </button>
+          ))}
+        </>
+      );
+    }
+    render(<Harness />);
+    await user.type(box(), "12");
+    await user.click(screen.getByRole("button", { name: "Set 12" }));
+    expect(box()).toHaveValue("Paris");
+    await user.click(screen.getByRole("button", { name: "Follow" }));
+    await user.click(box());
+    await user.keyboard("{Control>}a{/Control}");
+    await user.keyboard("12");
+    await user.tab();
+    expect(box()).toHaveValue("12");
+    await user.click(screen.getByRole("button", { name: "Set 13" }));
+    expect(box()).toHaveValue("Rome");
+    await user.click(screen.getByRole("button", { name: "Set 12" }));
+    expect(box()).toHaveValue("Paris");
+  });
+
+  it("reports the switch from a chosen option to free text that equals its value", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderCombobox({
+      freeText: true,
+      options: [{ value: "7", label: "Seven" }],
+      defaultValue: "7",
+      onValueChange: onChange,
+    });
+    expect(box()).toHaveValue("Seven");
+    box().focus();
+    (box() as HTMLInputElement).select();
+    await user.keyboard("7");
+    expect(onChange).toHaveBeenLastCalledWith("7", null);
+    await user.tab();
+    expect(box()).toHaveValue("7");
+  });
+
   it("is the default behaviour off: typed text that is not chosen is discarded", async () => {
     const user = userEvent.setup();
     renderCombobox();
@@ -677,6 +741,10 @@ describe("Combobox freeText", () => {
 });
 
 describe("Combobox placement", () => {
+  afterEach(() => {
+    document.documentElement.style.fontSize = "";
+  });
+
   const rect = (top: number, bottom: number) =>
     ({
       top,
@@ -777,7 +845,6 @@ describe("Combobox placement", () => {
     renderCombobox();
     await user.click(box());
     const root = box().closest("[data-placement]") as HTMLElement;
-    document.documentElement.style.fontSize = "";
     expect(root.style.getPropertyValue("--combobox-list-max")).toBe("268px");
   });
 
