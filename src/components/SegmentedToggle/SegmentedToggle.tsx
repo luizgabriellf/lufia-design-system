@@ -97,7 +97,10 @@ export function SegmentedToggle({
   const [value, setValue] = useControllableState<string | null>(valueProp, fallback, (next) =>
     next === null ? onDeselect?.() : onValueChange?.(next),
   );
-  useFormReset(container, () => setValue(fallback));
+  // Skip a reset that changes nothing, so it never reports a phantom deselect or change.
+  useFormReset(container, () => {
+    if (value !== fallback) setValue(fallback);
+  });
   const items = options.map((option) => ({ value: option.value, disabled: disabled || option.disabled }));
   const field = useRef<HTMLInputElement>(null);
   const announce = useFormChangeEvents(value, () => field.current ?? container.current);

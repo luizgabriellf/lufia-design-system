@@ -365,6 +365,19 @@ describe("SegmentedToggle", () => {
       expect(new FormData(screen.getByTestId("form") as HTMLFormElement).has("view")).toBe(false);
     });
 
+    it("does not report a deselect when a reset finds nothing chosen", async () => {
+      const user = userEvent.setup();
+      const onDeselect = vi.fn();
+      render(
+        <form>
+          <SegmentedToggle label="View" options={options} name="view" value={null} onDeselect={onDeselect} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(onDeselect).not.toHaveBeenCalled();
+    });
+
     it("resets an uncontrolled defaultValue of null to nothing chosen", async () => {
       const user = userEvent.setup();
       render(
