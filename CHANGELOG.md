@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.22.0
+
+### Minor Changes
+
+- [#81](https://github.com/luizgabriellf/lufia-design-system/pull/81) [`98ddeb8`](https://github.com/luizgabriellf/lufia-design-system/commit/98ddeb86957e904e3ea86339045cfc139246d602) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Modal: on a narrow phone the footer actions now stay in a row (primary at the inline end, shared width, wrapping when the labels cannot fit; icon-only triggers keep their size). New `footerLayout` prop (`"row"` default, `"stack"` for the previous full-width column).
+
 ## 0.21.0
 
 ### Minor Changes
