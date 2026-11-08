@@ -5,8 +5,8 @@
     {
       "name": "ActionIcons",
       "category": "Actions",
-      "summary": "A small, consistent set of stroke icons for common row and page actions.",
-      "status": "beta",
+      "summary": "Deprecated aliases of six action icons; use the named icons of Icon instead.",
+      "status": "deprecated",
       "source": "src/components/ActionIcons",
       "entry": {
         "subpath": "@lufia/design-system/components/ActionIcons",
@@ -16,7 +16,7 @@
         {
           "name": "ACTION_ICONS",
           "kind": "constant",
-          "type": "{ readonly DeleteIcon: (props: IconProps) => Element; readonly EditIcon: (props: IconProps) => Element; readonly DuplicateIcon: (props: IconProps) => Element; readonly PendingIcon: (props: IconProps) => Element; readonly OpenIcon: (props: IconProps) => Element; readonly ReportIcon: (props: IconProps) => Element; }"
+          "type": "Readonly<{ readonly DeleteIcon: IconComponent; readonly EditIcon: IconComponent; readonly DuplicateIcon: IconComponent; readonly PendingIcon: IconComponent; readonly OpenIcon: IconComponent; readonly ReportIcon: IconComponent; }>"
         },
         {
           "name": "DeleteIcon",
@@ -25,10 +25,24 @@
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
@@ -40,10 +54,24 @@
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
@@ -51,14 +79,28 @@
         {
           "name": "EditIcon",
           "kind": "component",
-          "description": "",
+          "description": "Edit.",
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
@@ -67,7 +109,7 @@
           "name": "IconProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+          "definition": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\" | \"ref\"> & { size?: IconSize | undefined; title?: string | undefined; ref?: Ref<SVGSVGElement> | undefined; }"
         },
         {
           "name": "OpenIcon",
@@ -76,10 +118,24 @@
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
@@ -91,10 +147,24 @@
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
@@ -106,17 +176,31 @@
           "props": [
             {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": null,
-              "description": "Rendered width and height in px."
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
             }
           ],
           "nativeProps": true
         }
       ],
       "aliases": {
-        "IconProps": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+        "IconProps": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\" | \"ref\"> & { size?: IconSize | undefined; title?: string | undefined; ref?: Ref<SVGSVGElement> | undefined; }"
       },
       "story": {
         "docsId": "components-actions-actionicons--docs",
@@ -145,10 +229,10 @@
       },
       "docs": {
         "mdx": "src/components/ActionIcons/ActionIcons.mdx",
-        "overview": "Six small outline icons for action menus and row actions: `DeleteIcon`, `EditIcon`, `DuplicateIcon`, `PendingIcon`,\n`OpenIcon` and `ReportIcon`. They share a 16x16 grid, a 1.4 stroke and round caps, and inherit `currentColor`.",
+        "overview": "**Deprecated.** These six names are now aliases of the [icon set](?path=/docs/components-utilities-icon--docs) and will be\nremoved in the next minor release. Replace them as follows:\n\n| Deprecated      | Use instead     |\n| --------------- | --------------- |\n| `DeleteIcon`    | `TrashIcon`     |\n| `EditIcon`      | `EditIcon`      |\n| `DuplicateIcon` | `CopyIcon`      |\n| `PendingIcon`   | `ClockIcon`     |\n| `OpenIcon`      | `RotateCcwIcon` |\n| `ReportIcon`    | `FileTextIcon`  |\n| `ACTION_ICONS`  | `ICONS`         |\n\nThe aliases draw on the set's 24-unit grid and default to the `md` size (20px). Pass `size={13}` for the size of the old\n16-unit icons.",
         "usage": {
           "language": "tsx",
-          "code": "import { DeleteIcon } from \"@lufia/design-system/components/ActionIcons\";\n\n<button type=\"button\">\n  <DeleteIcon /> Delete\n</button>;"
+          "code": "import { TrashIcon } from \"@lufia/design-system/icons\";\n\n<button type=\"button\">\n  <TrashIcon size=\"sm\" /> Delete\n</button>;"
         },
         "whenToUse": [
           "Beside a visible text label in menus and buttons (decorative).",
@@ -571,6 +655,13 @@
               "description": "`portal` (default) or a native `<dialog>` for the phone navigation sheet (`NavSheet` `renderAs`)."
             },
             {
+              "name": "sheetProps",
+              "type": "AppShellSheetProps",
+              "required": false,
+              "default": null,
+              "description": "A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them."
+            },
+            {
               "name": "menuOpen",
               "type": "boolean",
               "required": false,
@@ -755,6 +846,12 @@
           "kind": "type",
           "description": "",
           "definition": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }"
+        },
+        {
+          "name": "AppShellSheetProps",
+          "kind": "type",
+          "description": "`AppShell` `sheetProps`: where the phone sheet mounts, and a class and `data-*` attributes for its outermost layer.",
+          "definition": "{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes"
         },
         {
           "name": "AppShellSlotState",
@@ -978,6 +1075,20 @@
               "description": "Where the sheet is mounted. Defaults to `document.body`, so the rest of the page can be made inert."
             },
             {
+              "name": "layerProps",
+              "type": "NavSheetLayerProps",
+              "required": false,
+              "default": null,
+              "description": "A class and `data-*` attributes for the outermost layer: the fixed root that holds the backdrop and the panel, or the `<dialog>` with `renderAs=\"dialog\"`. The sheet is portalled out of the app's tree, so a palette an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here. The theme attributes `data-lufia-theme` and `data-lufia-mode` work too."
+            },
+            {
+              "name": "inheritThemeFrom",
+              "type": "RefObject<HTMLElement | null>",
+              "required": false,
+              "default": null,
+              "description": "An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`, which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet. Attributes given in `layerProps` win."
+            },
+            {
               "name": "renderAs",
               "type": "\"portal\" | \"dialog\"",
               "required": false,
@@ -993,6 +1104,12 @@
             }
           ],
           "nativeProps": true
+        },
+        {
+          "name": "NavSheetLayerProps",
+          "kind": "type",
+          "description": "A class and `data-*` attributes for the sheet's outermost layer.",
+          "definition": "{ className?: string | undefined; } & ShellDataAttributes"
         },
         {
           "name": "NavSheetProps",
@@ -1731,9 +1848,11 @@
         "AppShellPrimaryAction": "{ label: string; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; onIntent?: (() => void) | undefined; data?: FloatBarDataAttributes | undefined; }",
         "AppShellRouteTransitionProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "AppShellSearch": "{ label: string; onSelect: () => void; shortcut?: string | undefined; keyShortcuts?: string | undefined; opensDialog?: boolean | undefined; data?: FloatBarDataAttributes | undefined; }",
+        "AppShellSheetProps": "{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes",
         "AppShellSlotState": "{ collapsed: boolean; surface: \"sidebar\" | \"sheet\" | \"topBar\"; closeSheet: () => void; openSheet: () => void; }",
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
         "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }",
+        "NavSheetLayerProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | undefined; revealDelay?: number | undefined; className?: string | undefined; }",
         "ShellBadgeTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "ShellDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
@@ -1804,6 +1923,10 @@
           {
             "export": "NativeDialogSheet",
             "id": "components-navigation-appshell--native-dialog-sheet"
+          },
+          {
+            "export": "SheetInScopedDarkMode",
+            "id": "components-navigation-appshell--sheet-in-scoped-dark-mode"
           },
           {
             "export": "RegisteredPrimaryAction",
@@ -5960,6 +6083,1648 @@
       ]
     },
     {
+      "name": "Icon",
+      "category": "Utilities",
+      "summary": "The icon set: named stroke icons on one 24-unit grid, the Icon primitive and createIcon for an app's own glyphs.",
+      "status": "beta",
+      "source": "src/components/Icon",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Icon",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "ArrowDownIcon",
+          "kind": "component",
+          "description": "Descending, move down.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ArrowLeftIcon",
+          "kind": "component",
+          "description": "Go back.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ArrowRightIcon",
+          "kind": "component",
+          "description": "Go forward, continue.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ArrowUpIcon",
+          "kind": "component",
+          "description": "Ascending, move up.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "BellIcon",
+          "kind": "component",
+          "description": "Notifications.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CalendarIcon",
+          "kind": "component",
+          "description": "Date, schedule.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChartIcon",
+          "kind": "component",
+          "description": "Reports, analytics.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CheckCheckIcon",
+          "kind": "component",
+          "description": "Mark all as read.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CheckIcon",
+          "kind": "component",
+          "description": "Selected, done, confirm.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChevronDownIcon",
+          "kind": "component",
+          "description": "Open a list, expand.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChevronLeftIcon",
+          "kind": "component",
+          "description": "Previous, back.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChevronRightIcon",
+          "kind": "component",
+          "description": "Next, drill in.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChevronUpIcon",
+          "kind": "component",
+          "description": "Collapse, increase.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ClockIcon",
+          "kind": "component",
+          "description": "Time, pending.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CloseIcon",
+          "kind": "component",
+          "description": "Close, dismiss, clear, remove.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CopyIcon",
+          "kind": "component",
+          "description": "Copy, duplicate.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "DownloadIcon",
+          "kind": "component",
+          "description": "Download, export.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "EditIcon",
+          "kind": "component",
+          "description": "Edit.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "EnterIcon",
+          "kind": "component",
+          "description": "The Enter key, submit.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ErrorIcon",
+          "kind": "component",
+          "description": "Error, danger, overdue.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ExternalLinkIcon",
+          "kind": "component",
+          "description": "Opens elsewhere (new tab, other site).",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "EyeIcon",
+          "kind": "component",
+          "description": "Show, visible.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "EyeOffIcon",
+          "kind": "component",
+          "description": "Hide, hidden.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "FileIcon",
+          "kind": "component",
+          "description": "File, document.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "FileTextIcon",
+          "kind": "component",
+          "description": "Report, text document.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "FilterIcon",
+          "kind": "component",
+          "description": "Filter.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "GridIcon",
+          "kind": "component",
+          "description": "Overview, dashboard, grid view.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "HelpIcon",
+          "kind": "component",
+          "description": "Help.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "HomeIcon",
+          "kind": "component",
+          "description": "Home.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ICONS",
+          "kind": "constant",
+          "type": "Readonly<{ readonly CloseIcon: IconComponent; readonly CheckIcon: IconComponent; readonly CheckCheckIcon: IconComponent; readonly PlusIcon: IconComponent; readonly MinusIcon: IconComponent; readonly SearchIcon: IconComponent; readonly FilterIcon: IconComponent; readonly SortIcon: IconComponent; readonly ChevronDownIcon: IconComponent; readonly ChevronUpIcon: IconComponent; readonly ChevronLeftIcon: IconComponent; readonly ChevronRightIcon: IconComponent; readonly ArrowLeftIcon: IconComponent; readonly ArrowRightIcon: IconComponent; readonly ArrowUpIcon: IconComponent; readonly ArrowDownIcon: IconComponent; readonly EnterIcon: IconComponent; readonly ExternalLinkIcon: IconComponent; readonly MoreIcon: IconComponent; readonly MoreVerticalIcon: IconComponent; readonly MenuIcon: IconComponent; readonly SidebarIcon: IconComponent; readonly EditIcon: IconComponent; readonly CopyIcon: IconComponent; readonly TrashIcon: IconComponent; readonly UploadIcon: IconComponent; readonly DownloadIcon: IconComponent; readonly RotateCcwIcon: IconComponent; readonly SettingsIcon: IconComponent; readonly SignOutIcon: IconComponent; readonly SunIcon: IconComponent; readonly MoonIcon: IconComponent; readonly SparkleIcon: IconComponent; readonly EyeIcon: IconComponent; readonly EyeOffIcon: IconComponent; readonly InfoIcon: IconComponent; readonly SuccessIcon: IconComponent; readonly WarningIcon: IconComponent; readonly ErrorIcon: IconComponent; readonly HelpIcon: IconComponent; readonly ClockIcon: IconComponent; readonly CalendarIcon: IconComponent; readonly BellIcon: IconComponent; readonly InboxIcon: IconComponent; readonly FileIcon: IconComponent; readonly FileTextIcon: IconComponent; readonly UserIcon: IconComponent; readonly UsersIcon: IconComponent; readonly HomeIcon: IconComponent; readonly GridIcon: IconComponent; readonly ChartIcon: IconComponent; }>"
+        },
+        {
+          "name": "Icon",
+          "kind": "component",
+          "description": "The base icon: a 24x24 viewBox, `fill=\"none\"`, a `currentColor` stroke with round caps and joins, and a stroke width read from `--lufia-icon-stroke` (`--lufia-icon-stroke-sm` at the small size). Decorative by default (`aria-hidden`); a `title` or an `aria-label` makes it an image with that name. Use it directly with your own children, or make a reusable icon with `createIcon`.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": "\"md\"",
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "IconComponent",
+          "kind": "type",
+          "description": "A component made by `createIcon`.",
+          "definition": "((props: IconProps) => ReactNode) & { displayName?: string | undefined; iconName: string; }"
+        },
+        {
+          "name": "IconGeometry",
+          "kind": "type",
+          "description": "What `createIcon` draws: SVG children on the 24-unit grid, or one or more path `d` strings.",
+          "definition": "ReactNode | readonly string[]"
+        },
+        {
+          "name": "IconProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\" | \"ref\"> & { size?: IconSize | undefined; title?: string | undefined; ref?: Ref<SVGSVGElement> | undefined; }"
+        },
+        {
+          "name": "IconSize",
+          "kind": "type",
+          "description": "A size token (`sm` 16px, `md` 20px, `lg` 24px by default), `\"1em\"` to follow the font size, or a number of px.",
+          "definition": "number | \"sm\" | \"md\" | \"lg\" | \"1em\""
+        },
+        {
+          "name": "InboxIcon",
+          "kind": "component",
+          "description": "Inbox, queue.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "InfoIcon",
+          "kind": "component",
+          "description": "Information.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MenuIcon",
+          "kind": "component",
+          "description": "Open the navigation menu.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MinusIcon",
+          "kind": "component",
+          "description": "Remove, collapse, no change.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MoonIcon",
+          "kind": "component",
+          "description": "Dark mode.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MoreIcon",
+          "kind": "component",
+          "description": "More actions (horizontal).",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MoreVerticalIcon",
+          "kind": "component",
+          "description": "More actions (vertical).",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "PlusIcon",
+          "kind": "component",
+          "description": "Add, create, expand.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "RotateCcwIcon",
+          "kind": "component",
+          "description": "Reopen, undo, reset.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SearchIcon",
+          "kind": "component",
+          "description": "Search.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SettingsIcon",
+          "kind": "component",
+          "description": "Settings.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SidebarIcon",
+          "kind": "component",
+          "description": "Collapse or expand a sidebar.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SignOutIcon",
+          "kind": "component",
+          "description": "Sign out.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SortIcon",
+          "kind": "component",
+          "description": "Sort (unsorted column).",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SparkleIcon",
+          "kind": "component",
+          "description": "AI-generated or assisted content.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SuccessIcon",
+          "kind": "component",
+          "description": "Success.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SunIcon",
+          "kind": "component",
+          "description": "Light mode.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TrashIcon",
+          "kind": "component",
+          "description": "Delete.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "UploadIcon",
+          "kind": "component",
+          "description": "Upload, import.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "UserIcon",
+          "kind": "component",
+          "description": "A person, the account.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "UsersIcon",
+          "kind": "component",
+          "description": "People, a team.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "WarningIcon",
+          "kind": "component",
+          "description": "Warning.",
+          "props": [
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "createIcon",
+          "kind": "function",
+          "description": "Makes a named icon component that inherits the grid, stroke, sizes and accessibility rules of `Icon`. Draw on a 24x24 grid with strokes only (no fills, no stroke widths of your own) so the icon matches the rest of the set. ```tsx const RouteIcon = createIcon(\"route\", [\"M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z\", \"M18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z\"]); ```",
+          "signature": "(name: string, geometry: IconGeometry): IconComponent"
+        }
+      ],
+      "aliases": {
+        "IconComponent": "((props: IconProps) => ReactNode) & { displayName?: string | undefined; iconName: string; }",
+        "IconGeometry": "ReactNode | readonly string[]",
+        "IconProps": "Omit<SVGProps<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\" | \"ref\"> & { size?: IconSize | undefined; title?: string | undefined; ref?: Ref<SVGSVGElement> | undefined; }",
+        "IconSize": "number | \"sm\" | \"md\" | \"lg\" | \"1em\""
+      },
+      "story": {
+        "docsId": "components-utilities-icon--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-utilities-icon--default"
+          },
+          {
+            "export": "Gallery",
+            "id": "components-utilities-icon--gallery"
+          },
+          {
+            "export": "Sizes",
+            "id": "components-utilities-icon--sizes"
+          },
+          {
+            "export": "InlineWithText",
+            "id": "components-utilities-icon--inline-with-text"
+          },
+          {
+            "export": "Meaningful",
+            "id": "components-utilities-icon--meaningful"
+          },
+          {
+            "export": "AppIcon",
+            "id": "components-utilities-icon--app-icon"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-utilities-icon--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Icon/Icon.mdx",
+        "overview": "The icon set of the package: named icons such as `CloseIcon`, `CheckIcon` or `SearchIcon`, the `Icon` primitive they are\nbuilt on, and `createIcon` for an app's own glyphs. Every icon shares one 24-unit grid, a `currentColor` stroke with round\ncaps and joins, a stroke width from `--lufia-icon-stroke`, and sizes from `--lufia-icon-size-*`. The full guide, with the\nstatus icons and the rules, is the [Icons foundation](?path=/docs/foundations-icons--docs).",
+        "usage": {
+          "language": "tsx",
+          "code": "import { CloseIcon, SearchIcon, createIcon } from \"@lufia/design-system/icons\";\n\n<button type=\"button\" aria-label=\"Close\">\n  <CloseIcon />\n</button>;\n\n<SearchIcon size=\"sm\" />;\n\n// An app's own glyph, on the same grid and stroke.\nconst RouteIcon = createIcon(\"route\", [\n  \"M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z\",\n  \"M8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7\",\n]);"
+        },
+        "whenToUse": [
+          "Beside a visible label in buttons, menus and navigation (decorative).",
+          "As the only content of an icon button, with an accessible name on the button."
+        ],
+        "whenNotToUse": [
+          "For a status: use `StatusIcon`, whose tones each have their own shape.",
+          "As the only carrier of meaning without a name.",
+          "Do not draw an inline `svg` in a component, and do not use a text glyph (a multiplication sign, a check mark, an arrow) as an icon. Use a named icon, or `createIcon` for a glyph the set does not have."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "**Decorative by default**: `aria-hidden=\"true\"` and `focusable=\"false\"`, so assistive technology skips it.",
+          "**Meaningful on request**: `title` (rendered as an SVG `title`) or `aria-label` adds `role=\"img\"` with that name. Prefer naming the button or link around the icon, so the name is announced once.",
+          "Icons inherit `currentColor`: their contrast is that of the text colour they sit in (3:1 for non-text content).",
+          "Under `forced-colors` the stroke follows the system text colour."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-icon-size-lg",
+        "--lufia-icon-size-md",
+        "--lufia-icon-size-sm",
+        "--lufia-icon-stroke",
+        "--lufia-icon-stroke-sm"
+      ]
+    },
+    {
       "name": "IconButton",
       "category": "Actions",
       "summary": "A button with only an icon, which therefore requires an accessible name.",
@@ -5976,6 +7741,13 @@
           "description": "A button that shows only an icon. It shares `Button`'s variants, sizes, loading state and link rendering, and adds a required `aria-label` and a `title` tooltip.",
           "props": [
             {
+              "name": "ref",
+              "type": "Ref<HTMLButtonElement> | Ref<HTMLAnchorElement>",
+              "required": false,
+              "default": null,
+              "description": "Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do)."
+            },
+            {
               "name": "href",
               "type": "string",
               "required": false,
@@ -5988,13 +7760,6 @@
               "required": true,
               "default": null,
               "description": "Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one."
-            },
-            {
-              "name": "ref",
-              "type": "Ref<HTMLButtonElement> | Ref<HTMLAnchorElement>",
-              "required": false,
-              "default": null,
-              "description": "Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do)."
             },
             {
               "name": "title",
@@ -6735,7 +8500,7 @@
             },
             {
               "name": "initialFocus",
-              "type": "\"container\" | \"first\" | RefObject<HTMLElement | null>",
+              "type": "RefObject<HTMLElement | null> | \"container\" | \"first\"",
               "required": false,
               "default": "\"container\"",
               "description": "Where focus lands on open. Default: the dialog itself (named by the title, no keyboard pops up)."
@@ -11692,6 +13457,163 @@
       ]
     },
     {
+      "name": "StatusIcon",
+      "category": "Feedback",
+      "summary": "One family of status markers, each tone with its own shape so it reads without colour.",
+      "status": "beta",
+      "source": "src/components/StatusIcon",
+      "entry": {
+        "subpath": "@lufia/design-system/components/StatusIcon",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "STATUS_TONES",
+          "kind": "constant",
+          "type": "readonly StatusTone[]"
+        },
+        {
+          "name": "StatusIcon",
+          "kind": "component",
+          "description": "One family of status markers: success, warning, danger, info, pending, neutral and needs-input, each with its own shape. `Toast`, the field error, `DetailAttentionCard`, `StatusTimeline` and `Stepper` all draw their markers with it, so a status looks the same everywhere. Decorative unless `label` is given.",
+          "props": [
+            {
+              "name": "tone",
+              "type": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"pending\" | \"neutral\" | \"needsInput\"",
+              "required": true,
+              "default": null,
+              "description": "The status. Each tone has its own shape, so it reads without colour (WCAG 1.4.1)."
+            },
+            {
+              "name": "variant",
+              "type": "\"bare\" | \"ring\" | \"mark\"",
+              "required": false,
+              "default": "\"bare\"",
+              "description": "`bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot)."
+            },
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\" | \"lg\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm`, `md` (default) or `lg`. A bare glyph or a mark is 16, 20 or 24px (`--lufia-icon-size-*`); a ring is 20, 24 or 32px, and `--lufia-status-icon-size` overrides its diameter."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the status for assistive technology (`role=\"img\"`). Leave it out when visible text next to the icon already names the status: the icon is then decorative."
+            },
+            {
+              "name": "drawOn",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Draw the glyph's strokes in once when it mounts, the motion of `SuccessCheck` (for a toast or a confirmation that has just appeared). Under `prefers-reduced-motion` the glyph is simply drawn. Default `false`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "StatusIconProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"bare\" | \"ring\" | \"mark\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }"
+        },
+        {
+          "name": "StatusTone",
+          "kind": "type",
+          "description": "The status vocabulary shared by every status marker in the package.",
+          "definition": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"pending\" | \"neutral\" | \"needsInput\""
+        }
+      ],
+      "aliases": {
+        "StatusIconProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"bare\" | \"ring\" | \"mark\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }",
+        "StatusTone": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"pending\" | \"neutral\" | \"needsInput\""
+      },
+      "story": {
+        "docsId": "components-feedback-statusicon--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-statusicon--default"
+          },
+          {
+            "export": "Tones",
+            "id": "components-feedback-statusicon--tones"
+          },
+          {
+            "export": "Sizes",
+            "id": "components-feedback-statusicon--sizes"
+          },
+          {
+            "export": "Labelled",
+            "id": "components-feedback-statusicon--labelled"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-statusicon--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/StatusIcon/StatusIcon.mdx",
+        "overview": "One family of status markers. Each tone has its own shape, so the status reads without colour. The same glyphs are used by\n`Toast`, the field error of `FormField`, `DetailAttentionCard`, `StatusTimeline` and `Stepper`.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { StatusIcon } from \"@lufia/design-system/icons\";\n\n<StatusIcon tone=\"danger\" size=\"sm\" />\n<StatusIcon tone=\"success\" variant=\"ring\" />\n<StatusIcon tone=\"pending\" variant=\"ring\" label=\"Pending\" />"
+        },
+        "whenToUse": [
+          "Next to the text of a status: a message, a row state, a timeline node."
+        ],
+        "whenNotToUse": [
+          "For an action or an object: use a named icon from the set.",
+          "As the only signal: pair it with text, or give it a `label`."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "Decorative by default (`aria-hidden`): text next to it names the status.",
+          "`label` makes it an image with that name (`role=\"img\"`), for a marker that stands alone.",
+          "The tone never relies on colour alone (WCAG 1.4.1): each tone has its own shape.",
+          "The ring colours are the status tokens, mapped to system colours under `forced-colors`."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-border",
+        "--lufia-color-accent-subtle",
+        "--lufia-color-border-strong",
+        "--lufia-color-status-danger-bg",
+        "--lufia-color-status-danger-border",
+        "--lufia-color-status-danger-fg",
+        "--lufia-color-status-neutral-bg",
+        "--lufia-color-status-neutral-fg",
+        "--lufia-color-status-success-bg",
+        "--lufia-color-status-success-border",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-bg",
+        "--lufia-color-status-warning-border",
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-accent",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-full",
+        "--lufia-status-icon-mark-stroke",
+        "--lufia-status-icon-ring-border-width",
+        "--lufia-status-icon-size"
+      ]
+    },
+    {
       "name": "StatusTimeline",
       "category": "Data display",
       "summary": "A vertical timeline of states with their dates.",
@@ -11806,20 +13728,8 @@
         "notes": null
       },
       "tokens": [
-        "--lufia-color-bg-surface-raised",
-        "--lufia-color-border-strong",
+        "--lufia-border-width-thick",
         "--lufia-color-border-subtle",
-        "--lufia-color-status-danger-bg",
-        "--lufia-color-status-danger-border",
-        "--lufia-color-status-danger-fg",
-        "--lufia-color-status-neutral-bg",
-        "--lufia-color-status-neutral-fg",
-        "--lufia-color-status-success-bg",
-        "--lufia-color-status-success-border",
-        "--lufia-color-status-success-fg",
-        "--lufia-color-status-warning-bg",
-        "--lufia-color-status-warning-border",
-        "--lufia-color-status-warning-fg",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
         "--lufia-font-family-display",
@@ -11827,7 +13737,9 @@
         "--lufia-space-2",
         "--lufia-space-3",
         "--lufia-space-4",
-        "--lufia-space-5"
+        "--lufia-space-5",
+        "--lufia-status-icon-ring-border-width",
+        "--lufia-status-icon-size"
       ]
     },
     {
@@ -11919,6 +13831,10 @@
             "id": "components-navigation-stepper--interactive"
           },
           {
+            "export": "InScrolledModal",
+            "id": "components-navigation-stepper--in-scrolled-modal"
+          },
+          {
             "export": "AllThemes",
             "id": "components-navigation-stepper--all-themes"
           }
@@ -11989,11 +13905,25 @@
           "description": "A check mark whose stroke draws in once when it appears. Decorative (`aria-hidden`): the text next to it says what happened, so never use it as the only signal. Under `prefers-reduced-motion` it is simply drawn.",
           "props": [
             {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the icon meaningful: rendered as an SVG `<title>`, with `role=\"img\"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead."
+            },
+            {
               "name": "size",
-              "type": "number",
+              "type": "IconSize",
               "required": false,
               "default": "16",
-              "description": "Rendered width and height, in px."
+              "description": "Rendered size: a number of px, or a size token of `Icon` (`sm`, `md`, `lg`, `1em`). Default 16."
             }
           ],
           "nativeProps": true
@@ -12002,11 +13932,11 @@
           "name": "SuccessCheckProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<SVGAttributes<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+          "definition": "Omit<IconProps, \"size\"> & { size?: IconSize | undefined; }"
         }
       ],
       "aliases": {
-        "SuccessCheckProps": "Omit<SVGAttributes<SVGSVGElement>, \"width\" | \"height\" | \"viewBox\" | \"children\"> & { size?: number | undefined; }"
+        "SuccessCheckProps": "Omit<IconProps, \"size\"> & { size?: IconSize | undefined; }"
       },
       "story": {
         "docsId": "components-feedback-successcheck--docs",
@@ -13170,17 +15100,12 @@
       "tokens": [
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
-        "--lufia-color-accent-subtle",
         "--lufia-color-bg-surface-raised",
         "--lufia-color-bg-surface-solid",
         "--lufia-color-border-strong",
         "--lufia-color-focus-ring",
-        "--lufia-color-status-danger-bg",
         "--lufia-color-status-danger-fg",
-        "--lufia-color-status-neutral-bg",
-        "--lufia-color-status-success-bg",
         "--lufia-color-status-success-fg",
-        "--lufia-color-status-warning-bg",
         "--lufia-color-status-warning-fg",
         "--lufia-color-text-accent",
         "--lufia-color-text-default",
@@ -13195,13 +15120,13 @@
         "--lufia-motion-easing-in",
         "--lufia-motion-easing-out",
         "--lufia-radius-card",
-        "--lufia-radius-full",
         "--lufia-radius-md",
         "--lufia-shadow-md",
         "--lufia-space-3",
         "--lufia-space-4",
         "--lufia-space-5",
         "--lufia-space-6",
+        "--lufia-status-icon-size",
         "--lufia-toast-align-items",
         "--lufia-toast-border-width",
         "--lufia-toast-gap",
@@ -13495,7 +15420,7 @@
           "name": "UseFocusTrapOptions",
           "kind": "type",
           "description": "",
-          "definition": "{ onEscape?: (() => void) | undefined; initialFocus?: \"container\" | \"first\" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+          "definition": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
         },
         {
           "name": "getFocusableElements",
@@ -13558,7 +15483,7 @@
       ],
       "aliases": {
         "OverlayLayer": "{ isTop: () => boolean; release: () => void; }",
-        "UseFocusTrapOptions": "{ onEscape?: (() => void) | undefined; initialFocus?: \"container\" | \"first\" | RefObject<HTMLElement | null> | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+        "UseFocusTrapOptions": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
       },
       "story": {
         "docsId": "hooks-usefocustrap--docs",

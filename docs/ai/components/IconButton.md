@@ -29,9 +29,9 @@ A `Button` that shows only an icon. The accessible name is required by the types
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `ref` | `Ref<HTMLButtonElement> \| Ref<HTMLAnchorElement>` | no |  | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
 | `href` | `string` | no |  | When present the button renders as a link (through the `LufiaProvider` link component). |
 | `aria-label` | `string` | yes |  | Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one. |
-| `ref` | `Ref<HTMLButtonElement> \| Ref<HTMLAnchorElement>` | no |  | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
 | `title` | `string` | no |  | Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name. |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
 | `size` | `"sm" \| "md" \| "lg"` | no |  |  |

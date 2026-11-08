@@ -27,13 +27,15 @@ A check mark whose stroke draws in once as it appears. The shared "it worked" ma
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `size` | `number` | no | `16` | Rendered width and height, in px. |
+| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
+| `size` | `IconSize` | no | `16` | Rendered size: a number of px, or a size token of `Icon` (`sm`, `md`, `lg`, `1em`). Default 16. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `SuccessCheckProps`: `Omit<SVGAttributes<SVGSVGElement>, "width" | "height" | "viewBox" | "children"> & { size?: number | undefined; }`
+- `SuccessCheckProps`: `Omit<IconProps, "size"> & { size?: IconSize | undefined; }`
 
 ## Example
 

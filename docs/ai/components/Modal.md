@@ -57,7 +57,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `busy` | `boolean` | no | `false` | An action that dismissing would not abort is in flight. Sets `aria-busy`, disables the close button and refuses every dismissal (Escape, outside click, the close button), so a refused dismissal is perceivable and not a silent no-op. |
 | `closeOnEscape` | `boolean` | no | `true` | Escape calls `onClose`. Default `true`. |
 | `closeOnOutsideClick` | `boolean` | no | `true` | A click on the backdrop calls `onClose`. Default `true`. Turn it off for forms with unsaved input. |
-| `initialFocus` | `"container" \| "first" \| RefObject<HTMLElement \| null>` | no | `"container"` | Where focus lands on open. Default: the dialog itself (named by the title, no keyboard pops up). |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| "container" \| "first"` | no | `"container"` | Where focus lands on open. Default: the dialog itself (named by the title, no keyboard pops up). |
 | `role` | `"dialog" \| "alertdialog"` | no | `"dialog"` | `alertdialog` for an interruption that needs an answer (see `ConfirmDialog`). Default `dialog`. |
 | `container` | `Element \| DocumentFragment \| null` | no |  | Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported. |
 | `scrollContainerSelectors` | `readonly string[]` | no |  | Inner scroll containers to lock instead of the document, for app shells that scroll an inner pane. |
