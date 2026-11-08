@@ -172,6 +172,68 @@ describe("RouteProgress", () => {
     expect(bar(container)).toBeNull();
   });
 
+  describe("pending and link tracking together", () => {
+    beforeEach(() => window.history.pushState({}, "", "/start"));
+
+    it("leaves link clicks to the app once pending is passed, unless trackLinks is set", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/start" pending={false} />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(1000);
+      expect(bar(container)).toBeNull();
+      rerender(<RouteProgress routeKey="/start" pending={false} trackLinks />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+    });
+
+    it("keeps the bar after pending ends while a clicked link is still on its way", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/start" pending trackLinks />);
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      fireEvent.click(addLink("/elsewhere"));
+      rerender(<RouteProgress routeKey="/start" pending={false} trackLinks />);
+      advance(1000);
+      expect(bar(container)).not.toBeNull();
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+      window.history.pushState({}, "", "/elsewhere");
+      advance(400);
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("keeps the bar after a clicked link arrives while pending is still true", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/start" pending={false} trackLinks />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      rerender(<RouteProgress routeKey="/start" pending trackLinks />);
+      window.history.pushState({}, "", "/elsewhere");
+      advance(1000);
+      expect(bar(container)).not.toBeNull();
+      expect(bar(container)).not.toHaveAttribute("data-finishing");
+      rerender(<RouteProgress routeKey="/start" pending={false} trackLinks />);
+      expect(bar(container)).toHaveAttribute("data-finishing");
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("finishes both at once when the route key changes", () => {
+      const { container, rerender } = render(<RouteProgress routeKey="/start" pending trackLinks />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      rerender(<RouteProgress routeKey="/elsewhere" pending trackLinks />);
+      advance(400);
+      expect(bar(container)).toBeNull();
+    });
+
+    it("still ends by itself after the safety timeout", () => {
+      const { container } = render(<RouteProgress routeKey="/start" pending trackLinks />);
+      fireEvent.click(addLink("/elsewhere"));
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      expect(bar(container)).not.toBeNull();
+      advance(ROUTE_PROGRESS_TIMEOUT_MS + 400);
+      expect(bar(container)).toBeNull();
+    });
+  });
+
   it("fades out with opacity on the exit token when it finishes, and sits on the tooltip layer", () => {
     expect(css).toMatch(/\[data-finishing\][^}]*opacity:\s*0/);
     expect(css).toMatch(/opacity var\(--lufia-motion-duration-exit\)/);

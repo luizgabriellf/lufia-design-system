@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { SidebarGroup, SidebarItem } from "./Sidebar";
-import { findActiveNavKey, type ShellNavGroup, type ShellNavItem } from "./navigation";
+import { findActiveNavKey, navItemHolds, type ShellNavGroup, type ShellNavItem } from "./navigation";
 
 export type ShellNavigationProps = {
   groups: readonly ShellNavGroup[];
@@ -30,6 +30,25 @@ export function ShellNavigation({
   onItemChoose,
 }: ShellNavigationProps) {
   const activeKey = findActiveNavKey(groups, currentPath, isActive);
+  const itemProps = (item: ShellNavItem) => ({
+    label: item.label,
+    ariaLabel: item.ariaLabel,
+    href: item.href,
+    icon: item.icon,
+    badge: item.badge,
+    badgeTone: item.badgeTone,
+    count: item.count,
+    countTone: item.countTone,
+    className: item.className,
+    data: item.data,
+    disabled: item.disabled,
+    onClick: (event: MouseEvent<HTMLElement>) => {
+      const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+      if (item.href && modified) return;
+      item.onSelect?.();
+      onItemChoose?.(item);
+    },
+  });
   return (
     <>
       {groups.map((group) => {
@@ -42,33 +61,35 @@ export function ShellNavigation({
             collapsible={group.collapsible}
             open={open}
             onOpenChange={(next) => onToggleGroup(group.key, next)}
-            current={group.items.some((item) => item.key === activeKey)}
+            current={group.items.some((item) => navItemHolds(item, activeKey))}
           >
-            {group.items.map((item) => (
-              <SidebarItem
-                key={item.key}
-                label={item.label}
-                ariaLabel={item.ariaLabel}
-                href={item.href}
-                icon={item.icon}
-                badge={item.badge}
-                badgeTone={item.badgeTone}
-                count={item.count}
-                countTone={item.countTone}
-                className={item.className}
-                data={item.data}
-                disabled={item.disabled}
-                active={item.key === activeKey}
-                highlighted={pendingKey ? item.key === pendingKey : item.key === activeKey}
-                onClick={(event) => {
-                  const modified =
-                    event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
-                  if (item.href && modified) return;
-                  item.onSelect?.();
-                  onItemChoose?.(item);
-                }}
-              />
-            ))}
+            {group.items.map((item) => {
+              const children = item.items?.length ? item.items : undefined;
+              const branch = children ? children.some((child) => child.key === activeKey) : false;
+              const heading = pendingKey !== undefined && navItemHolds(item, pendingKey);
+              return (
+                <SidebarItem
+                  key={item.key}
+                  {...itemProps(item)}
+                  active={item.key === activeKey}
+                  highlighted={pendingKey ? item.key === pendingKey : item.key === activeKey}
+                  currentBranch={branch}
+                  highlightedBranch={
+                    children && pendingKey ? children.some((child) => child.key === pendingKey) : undefined
+                  }
+                  expanded={Boolean(children) && (item.expanded || navItemHolds(item, activeKey) || heading)}
+                >
+                  {children?.map((child) => (
+                    <SidebarItem
+                      key={child.key}
+                      {...itemProps(child)}
+                      active={child.key === activeKey}
+                      highlighted={pendingKey ? child.key === pendingKey : child.key === activeKey}
+                    />
+                  ))}
+                </SidebarItem>
+              );
+            })}
           </SidebarGroup>
         );
       })}

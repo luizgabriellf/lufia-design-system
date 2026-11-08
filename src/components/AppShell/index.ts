@@ -5,6 +5,7 @@ export {
   type AppShellMainProps,
   type AppShellSlotState,
   type AppShellProps,
+  type AppShellRouteTransitionProps,
   type AppShellSearch,
 } from "./AppShell";
 export { RouteProgress, type RouteProgressProps } from "./RouteProgress";
@@ -28,6 +29,7 @@ export {
   type ShellDataAttributes,
   type ShellNavGroup,
   type ShellNavItem,
+  type ShellNavMatch,
   type ShellState,
 } from "./navigation";
 export {

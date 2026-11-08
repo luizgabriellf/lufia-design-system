@@ -19,6 +19,10 @@
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.js"
     },
+    "./app-shell-state": {
+      "types": "./dist/components/AppShell/shellState.d.ts",
+      "import": "./dist/components/AppShell/shellState.js"
+    },
     "./tokens.json": "./dist/tokens.json",
     "./tokens.css": "./dist/tokens.css",
     "./themes/default.css": "./dist/themes/default.css",

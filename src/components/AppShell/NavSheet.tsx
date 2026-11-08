@@ -7,7 +7,7 @@ import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
 import { useNativeDialog } from "../Modal/useNativeDialog";
 import { CloseGlyph } from "./icons";
-import { NavSurfaceContext } from "./navigation";
+import { NavSurfaceContext } from "./navSurface";
 import { usePresence } from "../internal/usePresence";
 import { useNavScrollHints } from "./useNavScrollHints";
 import { useSheetBodyDrag } from "./useSheetBodyDrag";

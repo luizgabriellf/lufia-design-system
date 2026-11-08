@@ -163,7 +163,10 @@ export type DemoShellProps = Partial<AppShellProps> & {
 /** A complete shell wired to local state: navigation updates `currentPath`, like a router would. */
 export function DemoShell({ initialPath = "/", trackRoute = false, children, ...props }: DemoShellProps) {
   const [path, setPath] = useState(initialPath);
-  const title = demoGroups.flatMap((g) => g.items).find((item) => item.href === path)?.label ?? "Overview";
+  const title =
+    (props.groups ?? demoGroups)
+      .flatMap((g) => g.items.flatMap((item) => [item, ...(item.items ?? [])]))
+      .find((item) => item.href === path)?.label ?? "Overview";
   return (
     <LufiaProvider linkComponent={demoLink(setPath)}>
       <AppShellWithDefaults path={path} routeKey={trackRoute ? path : undefined} {...props}>

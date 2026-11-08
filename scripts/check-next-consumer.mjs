@@ -110,6 +110,7 @@ try {
     "Client button",
     "Open modal",
     "Email notifications",
+    "Shell state: rail",
   ]) {
     if (!html.includes(text)) throw new Error(`Server HTML is missing: ${text}`);
   }

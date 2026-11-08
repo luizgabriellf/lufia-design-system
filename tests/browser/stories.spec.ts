@@ -1,4 +1,7 @@
+import { createRequire } from "node:module";
 import { expect, test, type Page } from "@playwright/test";
+
+const axePath = createRequire(import.meta.url).resolve("axe-core/axe.min.js");
 
 type Theme = "default" | "example-brand";
 type Mode = "light" | "dark";
@@ -644,5 +647,61 @@ test.describe("command palette server search", () => {
     await field.press("ArrowDown");
     await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
     await expect(options.first()).toHaveAttribute("aria-selected", "false");
+  });
+});
+
+test.describe("app shell navigation", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`success badges and counts pass axe colour contrast (${mode})`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await openStory(page, "components-navigation-appshell--counts-and-badges", "default", mode);
+      const nav = page.getByRole("navigation", { name: "Main navigation" });
+      await expect(nav.getByText("Healthy")).toHaveAttribute("data-tone", "success");
+      await expect(nav.getByText("12", { exact: true })).toHaveAttribute("data-tone", "success");
+      await page.addScriptTag({ path: axePath });
+      const violations = await page.evaluate(async () => {
+        const axe = (
+          window as unknown as {
+            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
+          }
+        ).axe;
+        const result = await axe.run(document.querySelector("nav"), { runOnly: ["color-contrast"] });
+        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
+      });
+      expect(violations).toEqual([]);
+    });
+  }
+
+  test("sub-items: one aria-current page, keyboard order, and query sections", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--nested-navigation");
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    const roles = nav.getByRole("link", { name: "Roles" });
+    await expect(roles).toHaveAttribute("aria-current", "page");
+    await expect(nav.locator("[aria-current]")).toHaveCount(1);
+    await expect(nav.getByRole("link", { name: "Administration" })).toHaveAttribute("data-branch");
+    // The folded branch is out of the tab order.
+    await expect(nav.getByRole("link", { name: "Archived" })).toBeHidden();
+
+    await roles.focus();
+    await page.keyboard.press("Tab");
+    await expect(nav.getByRole("link", { name: /Audit log/ })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(nav.getByRole("link", { name: /Audit log/ })).toHaveAttribute("aria-current", "page");
+    await expect(nav.locator("[aria-current]")).toHaveCount(1);
+
+    await nav.getByRole("link", { name: "Teams" }).click();
+    await expect(nav.getByRole("link", { name: "Archived" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "People" })).toBeHidden();
+  });
+
+  test("sub-items in the rail: hidden, and their item is current within the set", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-navigation-appshell--nested-navigation-rail");
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav.getByRole("link", { name: "Roles" })).toHaveCount(0);
+    const admin = nav.getByRole("link", { name: "Administration" });
+    await expect(admin).toHaveAttribute("aria-current", "true");
+    await expect(admin).toHaveAttribute("data-active");
   });
 });

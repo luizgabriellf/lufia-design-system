@@ -6,6 +6,12 @@
     "gzip": true
   },
   {
+    "name": "app-shell-state",
+    "path": "dist/components/AppShell/shellState.js",
+    "limit": "310 B",
+    "gzip": true
+  },
+  {
     "name": "Modal",
     "path": "dist/components/Modal/**/*.{js,css}",
     "limit": "8 kB",
@@ -26,7 +32,7 @@
   {
     "name": "AppShell",
     "path": "dist/components/AppShell/**/*.{js,css}",
-    "limit": "27 kB",
+    "limit": "31 kB",
     "gzip": true
   },
   {

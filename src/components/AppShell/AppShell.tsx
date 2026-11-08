@@ -27,6 +27,7 @@ import {
 } from "./primaryAction";
 import {
   findActiveNavKey,
+  navItemHolds,
   type ShellDataAttributes,
   type ShellNavGroup,
   type ShellNavItem,
@@ -75,6 +76,12 @@ export type { AppShellPrimaryAction };
 
 /** Attributes of the shell's `<main>`: an `id`, a class, `data-*` hooks, a `tabIndex`, ARIA. Not its children. */
 export type AppShellMainProps = Omit<HTMLAttributes<HTMLElement>, "children"> & ShellDataAttributes;
+
+/**
+ * Attributes of the region that plays the route motion (`RouteTransition`) around the page: a class and `data-*`
+ * hooks, for an app's own stagger or entrance CSS. The region exists only when `routeKey` is given.
+ */
+export type AppShellRouteTransitionProps = { className?: string } & ShellDataAttributes;
 
 /** The sidebar's search entry. A component of its own because the rail's tooltip is a hook. */
 function SearchEntry({ search, collapsed }: { search: AppShellSearch; collapsed: boolean }) {
@@ -202,6 +209,19 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    * and, unless you pass this prop, a plain click on a link to another path starts it by itself.
    */
   routePending?: boolean;
+  /**
+   * Let a plain click on a link to another path start the progress bar as well, alongside `routePending`: the bar then
+   * shows while either is in progress. Default: `true` without `routePending`, `false` with it (the app drives the bar
+   * alone). Set it `true` to drive query-string navigations through `routePending` and still track link clicks.
+   * `RouteProgress` `trackLinks`.
+   */
+  routeTrackLinks?: boolean;
+  /**
+   * A class and `data-*` attributes for the region that wraps the page and plays the route motion, so an app can hook
+   * its own entrance CSS (a stagger over the page's sections) onto the `data-route-enter` its children get. Needs
+   * `routeKey`.
+   */
+  routeTransitionProps?: AppShellRouteTransitionProps;
   /** Draw the progress bar when `routeKey` is given. Default `true`. */
   routeProgress?: boolean;
   /**
@@ -268,6 +288,8 @@ export function AppShell({
   desktopPrimaryFallback = true,
   routeKey,
   routePending,
+  routeTrackLinks,
+  routeTransitionProps,
   routeProgress = true,
   mainPending,
   floatScrim = false,
@@ -307,7 +329,7 @@ export function AppShell({
 
   const activeKey = findActiveNavKey(groups, currentPath, isActive);
   const activeGroupKey = groups.find(
-    (group) => group.collapsible && group.items.some((i) => i.key === activeKey),
+    (group) => group.collapsible && group.items.some((i) => navItemHolds(i, activeKey)),
   )?.key;
   const disclosure = useGroupDisclosure(
     groups,
@@ -428,7 +450,11 @@ export function AppShell({
             {routeKey === undefined ? (
               children
             ) : (
-              <RouteTransition transitionKey={routeKey} variant={arrival.afterSkeleton ? "fade" : "rise"}>
+              <RouteTransition
+                {...routeTransitionProps}
+                transitionKey={routeKey}
+                variant={arrival.afterSkeleton ? "fade" : "rise"}
+              >
                 {children}
               </RouteTransition>
             )}
@@ -436,7 +462,7 @@ export function AppShell({
           {pendingMain ? <div data-shell-pending="">{mainPending}</div> : null}
         </main>
         {routeKey !== undefined && routeProgress ? (
-          <RouteProgress routeKey={routeKey} pending={routePending} />
+          <RouteProgress routeKey={routeKey} pending={routePending} trackLinks={routeTrackLinks} />
         ) : null}
         {floatScrim ? <div className={styles.floatScrim} aria-hidden="true" /> : null}
         <MobileFloatBar label={labels.floatBar} className={styles.float}>

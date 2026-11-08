@@ -20,15 +20,17 @@ export type RouteProgressProps = {
   routeKey: string;
   /**
    * A navigation has started and not arrived. Set it from the router's pending state, or from your own click handler for
-   * a programmatic navigation. Going back to `false` without a new `routeKey` (a cancelled navigation) finishes the bar.
-   * When you pass it (even as `false`) the app is in charge, and link clicks no longer start the bar by themselves.
+   * a programmatic navigation (a query-string change the link tracking does not see). Going back to `false` without a
+   * new `routeKey` (a cancelled navigation) finishes the bar, unless a tracked link click is still on its way. When you
+   * pass it (even as `false`), link clicks stop starting the bar unless `trackLinks` is set explicitly.
    */
   pending?: boolean;
   /**
-   * Without `pending`, also start on a plain click on a same-origin link that leads to another path (`<a href>`, which
-   * includes a router's links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link
-   * that only changes the query string or hash. A run started this way ends when `location.href` changes, when `routeKey`
-   * changes, or after 10 seconds, whichever comes first. Default `true`.
+   * Start on a plain click on a same-origin link that leads to another path (`<a href>`, which includes a router's
+   * links). Not for modified clicks, `target` other than `_self`, downloads, the current path or a link that only changes
+   * the query string or hash. A run started this way ends when `location.href` changes, when `routeKey` changes, or after
+   * 10 seconds, whichever comes first. Default `true` without `pending` and `false` with it; set it `true` together with
+   * `pending` and the bar shows while either is in progress.
    */
   trackLinks?: boolean;
   /** Milliseconds to wait before showing the bar. Default 150. */
@@ -45,7 +47,7 @@ export type RouteProgressProps = {
 export function RouteProgress({
   routeKey,
   pending,
-  trackLinks = true,
+  trackLinks,
   revealDelay = ROUTE_PROGRESS_REVEAL_DELAY_MS,
   className,
 }: RouteProgressProps) {
@@ -88,27 +90,42 @@ export function RouteProgress({
     }, FINISH_MS);
   }, [clearTimers]);
 
+  /** The latest `pending`, read by the timers. */
+  const pendingNow = useRef(Boolean(pending));
+  useEffect(() => {
+    pendingNow.current = Boolean(pending);
+  }, [pending]);
+
   const start = useCallback(
     (fromLink = false) => {
-      if (reveal.current || ticker.current) return;
-      if (finish.current) clearTimers();
-      startedAt.current = fromLink ? window.location.href : null;
-      // Nothing may keep the bar on screen for ever: a cancelled or guarded navigation never announces itself.
+      if (fromLink) startedAt.current = window.location.href;
+      const running = reveal.current !== null || ticker.current !== null;
+      // A bar that is finishing starts over.
+      if (!running && finish.current) clearTimers();
+      // Nothing may keep the bar on screen for ever: a cancelled or guarded navigation never announces itself. Each new
+      // start (a click, `pending`) gives the run its full time again.
+      if (safety.current) clearTimeout(safety.current);
       safety.current = setTimeout(() => {
         safety.current = null;
         complete();
       }, ROUTE_PROGRESS_TIMEOUT_MS);
-      const arrived = () => startedAt.current !== null && window.location.href !== startedAt.current;
+      if (running) return;
+      /** A tracked link click has arrived; true when nothing else (`pending`) keeps the run going. */
+      const done = () => {
+        if (startedAt.current === null || window.location.href === startedAt.current) return false;
+        startedAt.current = null;
+        return !pendingNow.current;
+      };
       reveal.current = setTimeout(() => {
         reveal.current = null;
-        if (arrived()) {
+        if (done()) {
           complete();
           return;
         }
         setProgress(20);
         setVisible(true);
         ticker.current = setInterval(() => {
-          if (arrived()) {
+          if (done()) {
             complete();
             return;
           }
@@ -126,13 +143,14 @@ export function RouteProgress({
       start();
     } else if (wasPending.current) {
       wasPending.current = false;
-      complete();
+      // A tracked link click that has not arrived keeps the bar; it ends on its own terms.
+      if (startedAt.current === null) complete();
     }
   }, [pending, start, complete]);
 
-  const controlled = pending !== undefined;
+  const tracking = trackLinks ?? pending === undefined;
   useEffect(() => {
-    if (!trackLinks || controlled) return;
+    if (!tracking) return;
     const onClick = (event: MouseEvent) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       if (!(event.target instanceof Element)) return;
@@ -148,7 +166,7 @@ export function RouteProgress({
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
-  }, [trackLinks, controlled, start]);
+  }, [tracking, start]);
 
   useEffect(() => {
     if (routeKey === previousRoute.current) return;

@@ -952,4 +952,153 @@ describe("AppShell slots", () => {
       expect(dialogMock.showModal).not.toHaveBeenCalled();
     });
   });
+
+  describe("route transition hooks", () => {
+    it("puts routeTransitionProps on the region that plays the route motion", () => {
+      render(
+        <AppShell
+          groups={groups}
+          labels={labels}
+          routeKey="/a"
+          routeTransitionProps={{ className: "app-stagger", "data-stagger": "sections" }}
+        >
+          <h1>Page</h1>
+        </AppShell>,
+      );
+      const region = screen.getByRole("heading").parentElement!;
+      expect(region).toHaveClass("app-stagger");
+      expect(region).toHaveAttribute("data-stagger", "sections");
+    });
+
+    it("tracks link clicks next to routePending with routeTrackLinks", () => {
+      vi.useFakeTimers();
+      window.history.pushState({}, "", "/a");
+      try {
+        render(
+          <AppShell groups={groups} labels={labels} routeKey="/a" routePending={false} routeTrackLinks>
+            <a href="/b">Go</a>
+          </AppShell>,
+        );
+        act(() => screen.getByRole("link", { name: "Go" }).click());
+        act(() => void vi.advanceTimersByTime(200));
+        expect(document.querySelector("[data-route-progress]")).not.toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  describe("sub-items", () => {
+    const nested: ShellNavGroup[] = [
+      {
+        key: "main",
+        items: [
+          { key: "home", label: "Home", href: "/", exact: true },
+          {
+            key: "admin",
+            label: "Admin",
+            href: "/admin",
+            items: [
+              { key: "users", label: "Users", href: "/admin?section=users", match: "query" },
+              {
+                key: "audit",
+                label: "Audit",
+                href: "/admin?section=audit",
+                match: "query",
+                badge: "OK",
+                badgeTone: "success",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        key: "more",
+        label: "More",
+        collapsible: true,
+        items: [
+          {
+            key: "tools",
+            label: "Tools",
+            href: "/tools",
+            items: [{ key: "import", label: "Import", href: "/tools/import" }],
+          },
+        ],
+      },
+    ];
+    const sidebar = () => screen.getByRole("navigation", { name: "Main navigation" });
+    const shell = (props: Partial<AppShellProps> = {}) => (
+      <AppShell groups={nested} labels={labels} currentPath="/admin?section=users" {...props}>
+        <h1>Page</h1>
+      </AppShell>
+    );
+
+    it("lists the sub-items of the current branch and marks the current one", () => {
+      render(shell());
+      const nav = sidebar();
+      const users = within(nav).getByRole("link", { name: "Users" });
+      expect(users).toHaveAttribute("aria-current", "page");
+      const admin = within(nav).getByRole("link", { name: "Admin" });
+      expect(admin).not.toHaveAttribute("aria-current");
+      expect(admin).toHaveAttribute("data-branch");
+      expect(admin).not.toHaveAttribute("data-active");
+      // The sub-list is nested in the item's own list entry.
+      expect(users.closest("ul")!.closest("li")).toBe(admin.closest("li"));
+      expect(
+        within(nav)
+          .getAllByRole("link")
+          .filter((l) => l.getAttribute("aria-current")),
+      ).toHaveLength(1);
+    });
+
+    it("matches the item itself without the query, and hides sub-items of other branches", () => {
+      render(shell({ currentPath: "/admin" }));
+      const nav = sidebar();
+      expect(within(nav).getByRole("link", { name: "Admin" })).toHaveAttribute("aria-current", "page");
+      // The Tools branch is not current: its sub-items are inert, out of the tab order.
+      const tucked = within(nav).getByText("Import").closest("[data-sub-items]")!;
+      expect(tucked).toHaveAttribute("data-state", "closed");
+      expect(tucked).toHaveAttribute("inert");
+    });
+
+    it("opens the collapsible group that holds the current sub-item", () => {
+      render(shell({ currentPath: "/tools/import" }));
+      const nav = sidebar();
+      expect(within(nav).getByRole("button", { name: "More" })).toHaveAttribute("aria-expanded", "true");
+      expect(within(nav).getByRole("link", { name: "Import" })).toHaveAttribute("aria-current", "page");
+    });
+
+    it("always lists the sub-items with expanded", () => {
+      const always = nested.map((group) => ({
+        ...group,
+        items: group.items.map((item) => (item.key === "tools" ? { ...item, expanded: true } : item)),
+      }));
+      render(shell({ groups: always, defaultOpenGroups: ["more"] }));
+      const list = within(sidebar()).getByText("Import").closest("[data-sub-items]")!;
+      expect(list).toHaveAttribute("data-state", "open");
+      expect(list).not.toHaveAttribute("inert");
+    });
+
+    it("in the rail hides the sub-items and marks the item that holds the current one", () => {
+      render(shell({ defaultCollapsed: true }));
+      const nav = sidebar();
+      expect(within(nav).queryByRole("link", { name: "Users" })).toBeNull();
+      const admin = within(nav).getByRole("link", { name: "Admin" });
+      expect(admin).toHaveAttribute("aria-current", "true");
+      expect(admin).toHaveAttribute("data-active");
+    });
+
+    it("draws a success badge with its tone", () => {
+      render(shell());
+      expect(within(sidebar()).getByText("OK")).toHaveAttribute("data-tone", "success");
+    });
+
+    it("has no axe violations, expanded and as a rail", async () => {
+      const { container, unmount } = render(shell());
+      expect(await axe(container)).toHaveNoViolations();
+      unmount();
+      const rail = render(shell({ defaultCollapsed: true }));
+      expect(await axe(rail.container)).toHaveNoViolations();
+    });
+  });
 });
