@@ -20,11 +20,11 @@ export const ReportIcon = FileTextIcon;
 export { EditIcon };
 
 /** @deprecated Use the named icons, or `ICONS` for a gallery. Removed in the next minor release. */
-export const ACTION_ICONS = {
+export const ACTION_ICONS = /* @__PURE__ */ Object.freeze({
   DeleteIcon,
   EditIcon,
   DuplicateIcon,
   PendingIcon,
   OpenIcon,
   ReportIcon,
-} as const;
+} as const);

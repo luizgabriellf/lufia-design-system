@@ -499,8 +499,11 @@ export const ChartIcon = /* @__PURE__ */ createIcon(
   </>,
 );
 
-/** Every icon of the set, by export name: for galleries and docs. Importing it pulls in the whole set. */
-export const ICONS = {
+/**
+ * Every icon of the set, by export name: for galleries and docs. Importing it pulls in the whole set. Frozen, so tooling
+ * that decorates exports (a docs generator adding `displayName`) cannot add entries to it.
+ */
+export const ICONS = /* @__PURE__ */ Object.freeze({
   CloseIcon,
   CheckIcon,
   CheckCheckIcon,
@@ -552,4 +555,4 @@ export const ICONS = {
   HomeIcon,
   GridIcon,
   ChartIcon,
-} as const;
+} as const);
