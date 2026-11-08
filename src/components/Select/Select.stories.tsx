@@ -62,6 +62,29 @@ export const Invalid: Story = {
 };
 export const Disabled: Story = { args: { disabled: true, hint: "Fixed by your plan." } };
 export const WithGroups: Story = {
+  args: {
+    label: "City",
+    options: undefined,
+    defaultValue: "lisbon",
+    groups: [
+      {
+        label: "Portugal",
+        options: [
+          { value: "lisbon", label: "Lisbon" },
+          { value: "porto", label: "Porto" },
+        ],
+      },
+      {
+        label: "Spain",
+        options: [
+          { value: "madrid", label: "Madrid" },
+          { value: "seville", label: "Seville", disabled: true },
+        ],
+      },
+    ],
+  },
+};
+export const WithChildGroups: Story = {
   args: { options: undefined },
   render: (args) => (
     <Demo {...args} label="City">

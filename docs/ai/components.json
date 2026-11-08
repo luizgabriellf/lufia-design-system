@@ -9899,7 +9899,14 @@
               "type": "readonly SelectOption[]",
               "required": false,
               "default": null,
-              "description": "The choices. Use `children` instead for `<optgroup>`s."
+              "description": "The choices. Use `groups` for `<optgroup>`s."
+            },
+            {
+              "name": "groups",
+              "type": "readonly SelectOptionGroup[]",
+              "required": false,
+              "default": null,
+              "description": "Labelled groups of choices, rendered as `<optgroup>`s after `options`."
             },
             {
               "name": "children",
@@ -9953,6 +9960,12 @@
           "definition": "{ value: string; label: string; disabled?: boolean | undefined; }"
         },
         {
+          "name": "SelectOptionGroup",
+          "kind": "type",
+          "description": "",
+          "definition": "{ label: string; options: readonly SelectOption[]; disabled?: boolean | undefined; }"
+        },
+        {
           "name": "SelectProps",
           "kind": "type",
           "description": "",
@@ -9960,7 +9973,8 @@
         }
       ],
       "aliases": {
-        "SelectOption": "{ value: string; label: string; disabled?: boolean | undefined; }"
+        "SelectOption": "{ value: string; label: string; disabled?: boolean | undefined; }",
+        "SelectOptionGroup": "{ label: string; options: readonly SelectOption[]; disabled?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-forms-select--docs",
@@ -9996,6 +10010,10 @@
           {
             "export": "WithGroups",
             "id": "components-forms-select--with-groups"
+          },
+          {
+            "export": "WithChildGroups",
+            "id": "components-forms-select--with-child-groups"
           },
           {
             "export": "LongText",

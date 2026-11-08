@@ -13,6 +13,7 @@ const TEXT_ON: Record<string, string[]> = {
   "surface-raised": ["bg.canvas", "bg.surface-raised"],
   "surface-solid": ["bg.canvas", "bg.surface-solid"],
   field: ["bg.canvas", "bg.field"],
+  "field-autofill": ["bg.canvas", "bg.field-autofill"],
 };
 
 const pairs: Pair[] = [];

@@ -16,6 +16,10 @@
       },
       "field": {
         "$value": "{core.color.plum.850}"
+      },
+      "field-autofill": {
+        "$value": "{core.color.plum.850}",
+        "$description": "Fill behind text the browser autofilled. Opaque: the browser paints its own tint unless an opaque inset shadow covers it."
       }
     },
     "text": {

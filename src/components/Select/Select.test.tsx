@@ -12,6 +12,53 @@ const options: SelectOption[] = [
 ];
 
 describe("Select", () => {
+  it("renders option groups as optgroups, after the flat options", async () => {
+    const user = userEvent.setup();
+    render(
+      <Select
+        aria-label="City"
+        options={[{ value: "any", label: "Anywhere" }]}
+        groups={[
+          { label: "Portugal", options: [{ value: "lisbon", label: "Lisbon" }] },
+          { label: "Spain", disabled: true, options: [{ value: "madrid", label: "Madrid" }] },
+        ]}
+      />,
+    );
+    const groups = screen.getAllByRole("group");
+    expect(groups.map((g) => g.getAttribute("label"))).toEqual(["Portugal", "Spain"]);
+    expect(groups[0]).toContainElement(screen.getByRole("option", { name: "Lisbon" }));
+    expect(groups[1]).toBeDisabled();
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Anywhere", "Lisbon", "Madrid"]);
+    await user.selectOptions(screen.getByRole("combobox"), "lisbon");
+    expect(screen.getByRole("combobox")).toHaveValue("lisbon");
+  });
+
+  it("accepts two groups with the same label without a key warning", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    render(
+      <Select
+        aria-label="City"
+        groups={[
+          { label: "Same", options: [{ value: "a", label: "A" }] },
+          { label: "Same", options: [{ value: "b", label: "B" }] },
+        ]}
+      />,
+    );
+    expect(screen.getAllByRole("group")).toHaveLength(2);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it("has no axe violations with groups", async () => {
+    const { container } = render(
+      <Select
+        aria-label="City"
+        groups={[{ label: "Portugal", options: [{ value: "l", label: "Lisbon" }] }]}
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("is a native select with the given options", () => {
     render(<Select aria-label="Country" options={options} name="country" />);
     const select = screen.getByRole("combobox", { name: "Country" });
