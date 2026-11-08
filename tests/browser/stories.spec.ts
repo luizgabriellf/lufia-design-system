@@ -3,6 +3,44 @@ import { expect, test, type Page } from "@playwright/test";
 
 const axePath = createRequire(import.meta.url).resolve("axe-core/axe.min.js");
 
+/**
+ * Runs axe-core on one element of the story and returns its violations as "id: count". Storybook's a11y addon runs its
+ * own axe in the same frame after every render, and axe refuses a second run while one is in flight ("Axe is already
+ * running"), which made these checks flaky in WebKit. This waits for that run to finish by retrying on that one error.
+ */
+async function runAxe(
+  page: Page,
+  selector: string,
+  options: Record<string, unknown> = {},
+): Promise<string[]> {
+  await page.addScriptTag({ path: axePath });
+  const deadline = Date.now() + 15_000;
+  for (;;) {
+    const outcome = await page.evaluate(
+      async ({ selector, options }) => {
+        const axe = (
+          window as unknown as {
+            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
+          }
+        ).axe;
+        try {
+          const result = await axe.run(document.querySelector(selector), options);
+          return {
+            violations: result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`),
+          };
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : String(error) };
+        }
+      },
+      { selector, options },
+    );
+    if (outcome.violations) return outcome.violations;
+    const message = outcome.error ?? "axe returned no result";
+    if (!/already running/i.test(message) || Date.now() > deadline) throw new Error(message);
+    await page.waitForTimeout(200);
+  }
+}
+
 type Theme = "default" | "example-brand";
 type Mode = "light" | "dark";
 
@@ -658,19 +696,24 @@ test.describe("app shell navigation", () => {
       const nav = page.getByRole("navigation", { name: "Main navigation" });
       await expect(nav.getByText("Healthy")).toHaveAttribute("data-tone", "success");
       await expect(nav.getByText("12", { exact: true })).toHaveAttribute("data-tone", "success");
-      await page.addScriptTag({ path: axePath });
-      const violations = await page.evaluate(async () => {
-        const axe = (
-          window as unknown as {
-            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
-          }
-        ).axe;
-        const result = await axe.run(document.querySelector("nav"), { runOnly: ["color-contrast"] });
-        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
-      });
+      const violations = await runAxe(page, "nav", { runOnly: ["color-contrast"] });
       expect(violations).toEqual([]);
     });
   }
+
+  test("on a short page at 390px the shell paints down to the bottom of the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--phone-short-page");
+    await expect(page.getByText("Nothing else on this page.")).toBeVisible();
+    const { bottom, viewport } = await page
+      .locator("header")
+      .first()
+      .evaluate((header) => ({
+        bottom: header.parentElement!.getBoundingClientRect().bottom,
+        viewport: window.innerHeight,
+      }));
+    expect(bottom).toBeGreaterThanOrEqual(viewport);
+  });
 
   test("sub-items: one aria-current page, keyboard order, and query sections", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -727,16 +770,7 @@ test.describe("icons", () => {
           .filter((icon) => icon.off > 1.5),
       );
       expect(offCentre).toEqual([]);
-      await page.addScriptTag({ path: axePath });
-      const violations = await page.evaluate(async () => {
-        const axe = (
-          window as unknown as {
-            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
-          }
-        ).axe;
-        const result = await axe.run(document.querySelector("#storybook-root"));
-        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
-      });
+      const violations = await runAxe(page, "#storybook-root");
       expect(violations).toEqual([]);
     });
   }
@@ -761,16 +795,7 @@ test.describe("icons", () => {
       await page.setViewportSize({ width: 390, height: 900 });
       await openStory(page, "components-feedback-statusicon--tones", "default", mode);
       await expect(page.locator("[data-variant='ring']")).toHaveCount(7);
-      await page.addScriptTag({ path: axePath });
-      const violations = await page.evaluate(async () => {
-        const axe = (
-          window as unknown as {
-            axe: { run: (...args: unknown[]) => Promise<{ violations: { id: string; nodes: unknown[] }[] }> };
-          }
-        ).axe;
-        const result = await axe.run(document.querySelector("#storybook-root"));
-        return result.violations.map((violation) => `${violation.id}: ${violation.nodes.length}`);
-      });
+      const violations = await runAxe(page, "#storybook-root");
       expect(violations).toEqual([]);
     });
   }
@@ -999,4 +1024,73 @@ test.describe("combobox result cap", () => {
     // Site 12 and Site 120: under the cap, so both show.
     await expect(page.getByRole("option")).toHaveCount(2);
   });
+});
+
+test.describe("skeleton blocks", () => {
+  const stories = [
+    "components-feedback-skeletontable--widths",
+    "components-feedback-skeletoncard--widths",
+    "components-feedback-skeletonpageheader--widths",
+  ];
+  for (const width of [320, 390, 1440]) {
+    test(`nothing overflows its container at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const id of stories) {
+        await openStory(page, id);
+        const hosts = page.locator("[data-skeleton-host]");
+        expect(await hosts.count(), id).toBeGreaterThan(0);
+        const overflow = await hosts.evaluateAll((nodes) =>
+          nodes.flatMap((host, index) => {
+            const box = host.getBoundingClientRect();
+            return Array.from(host.querySelectorAll("*"))
+              .map((node) => node.getBoundingClientRect())
+              .filter(
+                (rect) => rect.width > 0 && (rect.left < box.left - 0.5 || rect.right > box.right + 0.5),
+              )
+              .map(
+                (rect) =>
+                  `host ${index}: ${rect.left.toFixed(1)}-${rect.right.toFixed(1)} outside ${box.left}-${box.right}`,
+              );
+          }),
+        );
+        expect(overflow, id).toEqual([]);
+        const scroll = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+        expect(scroll, id).toBeLessThanOrEqual(0);
+      }
+    });
+  }
+
+  test("a table keeps its columns when wide and stacks them when narrow", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-feedback-skeletontable--widths");
+    const lefts = (host: number) =>
+      page
+        .locator("[data-skeleton-host]")
+        .nth(host)
+        .evaluate((node) =>
+          Array.from(node.querySelector("[data-columns] > *")!.children).map((cell) =>
+            Math.round(cell.getBoundingClientRect().left),
+          ),
+        );
+    // Host 1 is 20rem wide (stacked), host 3 is 60rem (four columns).
+    expect(new Set(await lefts(1)).size).toBe(1);
+    expect(new Set(await lefts(3)).size).toBe(4);
+  });
+
+  for (const mode of ["light", "dark"] as const) {
+    test(`skeleton blocks pass axe and use the skeleton tokens (${mode})`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 900 });
+      await openStory(page, "components-feedback-skeletoncard--widths", "default", mode);
+      expect(await runAxe(page, "#storybook-root")).toEqual([]);
+      const fill = await page
+        .locator("[data-variant='text']")
+        .first()
+        .evaluate((node) => ({
+          background: getComputedStyle(node).backgroundColor,
+          token: getComputedStyle(node).getPropertyValue("--lufia-skeleton-bg").trim(),
+        }));
+      expect(fill.token).not.toBe("");
+      expect(fill.background).not.toBe("rgba(0, 0, 0, 0)");
+    });
+  }
 });
