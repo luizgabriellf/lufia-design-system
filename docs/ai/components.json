@@ -3583,6 +3583,13 @@
               "description": "Label of the chosen option when it is not in `options` (a value set before the options loaded)."
             },
             {
+              "name": "freeText",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty) and `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button that waits on the value does not stay stuck. Enter, Tab, Escape and blur settle the text. Enter with nothing highlighted keeps the text, and the first match is not highlighted on its own. Choosing an option still sets that option's `value`. Text equal to an option's `value` resolves to that option."
+            },
+            {
               "name": "clearable",
               "type": "boolean",
               "required": false,
@@ -3690,6 +3697,10 @@
             "id": "components-forms-combobox--clearable"
           },
           {
+            "export": "FreeText",
+            "id": "components-forms-combobox--free-text"
+          },
+          {
             "export": "Empty",
             "id": "components-forms-combobox--empty"
           },
@@ -3712,6 +3723,10 @@
           {
             "export": "InsideDialog",
             "id": "components-forms-combobox--inside-dialog"
+          },
+          {
+            "export": "InsideClippingBox",
+            "id": "components-forms-combobox--inside-clipping-box"
           },
           {
             "export": "Phone320",
@@ -3740,7 +3755,7 @@
         ],
         "whenNotToUse": [
           "A short list: use `Select` (native, with the platform's picker on phones) or `RadioGroup`.",
-          "A free-text field with suggestions: the box here only accepts a listed option.",
+          "A plain text field: use `TextInput`. Without `freeText` the box only accepts a listed option.",
           "Several choices at once: this is a single select.",
           "A search that opens a results page: use `SearchInput`."
         ],
@@ -3760,7 +3775,8 @@
           "The highlighted option is shown with a fill and a bar on its start edge, and in forced-colors with the system highlight.",
           "A `required` combobox is invalid until an option is chosen, whatever text is typed: the browser refuses to submit, focuses the box and shows its own message (or `requiredMessage`). It also carries `aria-required`.",
           "A form `reset` returns it to `defaultValue`.",
-          "It opens upward when there is little room below the box. The list is placed inside the field and is not portaled, so a parent with `overflow: hidden` or `overflow: auto` (a scrollable dialog body, a table cell) clips it or makes the parent scroll. Give the field room, or place it where nothing clips. A portaled list that escapes clipping ancestors is planned as a follow-up."
+          "It opens upward when there is little room below the box. Room is measured against the viewport and the nearest ancestor that clips overflow (a scrollable dialog body, a table cell), and the list is shortened to the room that is left (never under about six rem). The measure is repeated, once per frame, while the page or that ancestor scrolls and when the window is resized; scrolling does not close the list. The list is placed inside the field and is not portaled, so a clipping parent still bounds it. A portaled list is planned as a follow-up.",
+          "Given an `id`, the input keeps it, the list is `<id>-listbox` and each option is `<id>-option-<value>`."
         ]
       },
       "motion": {

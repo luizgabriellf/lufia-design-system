@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type CSSProperties,
   type FocusEvent,
   type InputHTMLAttributes,
   type KeyboardEvent,
@@ -60,6 +61,14 @@ export type ComboboxProps = Omit<
   resultsLabel?: (count: number) => string;
   /** Label of the chosen option when it is not in `options` (a value set before the options loaded). */
   valueLabel?: string;
+  /**
+   * Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty) and
+   * `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button that waits on the value
+   * does not stay stuck. Enter, Tab, Escape and blur settle the text. Enter with nothing highlighted keeps the text, and the
+   * first match is not highlighted on its own. Choosing an option still sets that option's `value`. Text equal to an
+   * option's `value` resolves to that option.
+   */
+  freeText?: boolean;
   /** Shows a clear button while something is chosen. Escape clears too, when the list is closed. */
   clearable?: boolean;
   /** Accessible name of the clear button. Aria-only. */
@@ -94,6 +103,38 @@ const defaultFilter = (option: ComboboxOption, query: string) =>
 
 /** The room below the box under which the list opens upward instead, when there is more room above. */
 const FLIP_BELOW = 260;
+/** The list's own `max-block-size` (15rem), in px at the default font size. Rooms above this need no clamp. */
+const LIST_MAX = 240;
+/** Under this much room, flipping stops helping and the list is only clamped. */
+const LIST_MIN = 96;
+/** Room kept for the popup's border and the gap to the box. */
+const POPUP_CHROME = 12;
+
+type Placement = { side: "bottom" | "top"; maxHeight: number | undefined };
+
+const clips = (style: CSSStyleDeclaration) =>
+  /(auto|hidden|scroll|clip)/.test(`${style.overflowY} ${style.overflow}`);
+
+/** The nearest ancestor that clips overflow. The absolutely placed list cannot paint outside it, whatever its height. */
+function clippingAncestor(element: HTMLElement | null): HTMLElement | null {
+  for (let node = element?.parentElement ?? null; node && node !== document.body; node = node.parentElement) {
+    if (clips(getComputedStyle(node))) return node;
+  }
+  return null;
+}
+
+/** Which side the list opens on, and how tall it may be, measured against the clipping ancestor and the viewport. */
+function measure(element: HTMLElement): Placement {
+  const rect = element.getBoundingClientRect();
+  const clipper = clippingAncestor(element)?.getBoundingClientRect();
+  const top = Math.max(0, clipper?.top ?? 0);
+  const bottom = Math.min(window.innerHeight, clipper?.bottom ?? window.innerHeight);
+  const below = bottom - rect.bottom;
+  const above = rect.top - top;
+  const side = below < FLIP_BELOW && above > below ? "top" : "bottom";
+  const room = (side === "top" ? above : below) - POPUP_CHROME;
+  return { side, maxHeight: room < LIST_MAX ? Math.max(LIST_MIN, room) : undefined };
+}
 
 /**
  * A searchable single select: the WAI-ARIA APG editable combobox with list autocomplete. Typing narrows the list and
@@ -115,6 +156,7 @@ export function Combobox({
   emptyLabel,
   resultsLabel,
   valueLabel,
+  freeText = false,
   clearable = false,
   clearLabel = "Clear",
   toggleLabel = "Show options",
@@ -147,14 +189,14 @@ export function Combobox({
     value === null
       ? null
       : (options.find((option) => option.value === value) ?? (chosen?.value === value ? chosen : null));
-  const selectedLabel = selected?.label ?? (value === null ? "" : (valueLabel ?? ""));
+  const selectedLabel = selected?.label ?? (value === null ? "" : (valueLabel ?? (freeText ? value : "")));
 
   const [open, setOpen] = useState(false);
   // While the person edits the text, the box shows what they typed and the list is narrowed by it; otherwise the box shows
   // the chosen option and the list is whole.
   const [typed, setTyped] = useState<string | null>(null);
   const [highlighted, setHighlighted] = useState<string | null>(null);
-  const [placement, setPlacement] = useState<"bottom" | "top">("bottom");
+  const [placement, setPlacement] = useState<Placement>({ side: "bottom", maxHeight: undefined });
   const root = useRef<HTMLSpanElement>(null);
   const input = useRef<HTMLInputElement | null>(null);
   const list = useRef<HTMLUListElement>(null);
@@ -164,7 +206,7 @@ export function Combobox({
     filter === false || typed === null || query === "" ? true : (filter ?? defaultFilter)(option, query);
   const visible = options.filter(matches);
   const firstEnabled = visible.find((option) => !option.disabled);
-  const auto = typed !== null && query !== "";
+  const auto = !freeText && typed !== null && query !== "";
   const active =
     (highlighted !== null
       ? visible.find((option) => option.value === highlighted && !option.disabled)
@@ -187,7 +229,19 @@ export function Combobox({
     setTyped(null);
     setHighlighted(null);
   };
-  useDismiss(open, close, root, input);
+  // With free text, whatever stands in the box when the list closes is what is kept.
+  const settle = (text: string | null) => {
+    if (!freeText || text === null) return;
+    const trimmed = text.trim() === "" ? null : text.trim();
+    if (trimmed === value) return;
+    setValue(trimmed);
+    onValueChange?.(trimmed, options.find((option) => option.value === trimmed) ?? null);
+  };
+  const closeAndSettle = () => {
+    settle(typed);
+    close();
+  };
+  useDismiss(open, closeAndSettle, root, input);
   useFormReset(root, () => {
     setValue(defaultValue);
     setChosen(null);
@@ -195,12 +249,38 @@ export function Combobox({
     onValueChange?.(defaultValue, options.find((option) => option.value === defaultValue) ?? null);
   });
 
-  // Open upward when the room below is short and there is more above. Viewport-based: a clipping ancestor is not measured.
+  // Open upward when the room below is short and there is more above, measured against the nearest clipping ancestor as well
+  // as the viewport. It follows scrolling and resizing while open (one measure per frame); it never closes the list.
   useLayoutEffect(() => {
-    if (!open || !root.current) return;
-    const rect = root.current.getBoundingClientRect();
-    const below = window.innerHeight - rect.bottom;
-    setPlacement(below < FLIP_BELOW && rect.top > below ? "top" : "bottom");
+    const element = root.current;
+    if (!open || !element) return;
+    const update = () => {
+      const next = measure(element);
+      setPlacement((previous) =>
+        previous.side === next.side && previous.maxHeight === next.maxHeight ? previous : next,
+      );
+    };
+    update();
+    let frame = 0;
+    const schedule = () => {
+      if (frame === 0) {
+        // lufia-motion-allow reduced-motion: the frame only throttles layout reads; nothing animates.
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          update();
+        });
+      }
+    };
+    const scroller: EventTarget = clippingAncestor(element) ?? window;
+    scroller.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame !== 0) cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", schedule);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
   }, [open]);
 
   // Keep the highlighted option in view while arrowing through a long list.
@@ -240,6 +320,12 @@ export function Combobox({
     setHighlighted(null);
     setOpen(true);
     onQueryChange?.(event.target.value);
+    if (freeText) {
+      const text = event.target.value;
+      const next = text === "" ? null : text;
+      setValue(next);
+      onValueChange?.(next, options.find((option) => option.value === next) ?? null);
+    }
   };
 
   const keyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -259,6 +345,9 @@ export function Combobox({
         if (open && active) {
           event.preventDefault();
           choose(active);
+        } else if (open && freeText) {
+          event.preventDefault();
+          closeAndSettle();
         }
         break;
       }
@@ -271,7 +360,7 @@ export function Combobox({
         break;
       }
       case "Tab": {
-        if (open) close();
+        if (open) closeAndSettle();
         break;
       }
     }
@@ -279,7 +368,7 @@ export function Combobox({
 
   const blur = (event: FocusEvent<HTMLInputElement>) => {
     onBlur?.(event);
-    if (!root.current?.contains(event.relatedTarget as Node | null)) close();
+    if (!root.current?.contains(event.relatedTarget as Node | null)) closeAndSettle();
   };
 
   const showClear = clearable && value !== null && !control.disabled && !readOnly;
@@ -297,7 +386,12 @@ export function Combobox({
     <span
       ref={root}
       className={[styles.root, className].filter(Boolean).join(" ")}
-      data-placement={placement}
+      data-placement={placement.side}
+      style={
+        placement.maxHeight
+          ? ({ "--combobox-list-max": `${placement.maxHeight}px` } as CSSProperties)
+          : undefined
+      }
     >
       <span
         className={[fieldStyles.box, styles.box].join(" ")}
