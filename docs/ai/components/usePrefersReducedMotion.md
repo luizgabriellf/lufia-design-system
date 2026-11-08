@@ -16,11 +16,11 @@ setting when it changes.
 
 ## When to use
 
-- Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects,
+- Motion CSS cannot switch off by itself: `requestAnimationFrame` loops, the Web Animations API, scroll-driven effects, or waiting for an exit animation before unmounting.
 
 ## When not to use
 
-- Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a
+- Plain CSS transitions and keyframes. Give them `--lufia-motion-*` tokens, which collapse by themselves, or add a `@media (prefers-reduced-motion: reduce)` rule. See [Motion](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/foundations-motion--docs).
 
 ## API
 
@@ -44,7 +44,7 @@ if (reduced) showFinalState();
 ## Accessibility
 
 - Reduced motion means _less_ motion, not none of the information: render the final state, do not hide the change.
-- On the server the hook returns `false` (full motion), because the preference is unknown. React re-reads the real value
+- On the server the hook returns `false` (full motion), because the preference is unknown. React re-reads the real value on hydration, and CSS has already collapsed durations through the tokens.
 - Without `matchMedia` (old environments, some test runners) it returns `false`.
 
 ## Motion

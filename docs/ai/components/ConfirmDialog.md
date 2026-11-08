@@ -16,11 +16,11 @@ with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 
 ## When to use
 
-- An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard,
+- An action that is hard or impossible to undo, or whose consequence is not obvious from the button: delete, discard, publish, remove access.
 
 ## When not to use
 
-- Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-toast--docs): it is
+- Routine, reversible actions. Prefer doing it and offering **Undo** in a [Toast](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-toast--docs): it is faster and does not train people to click through confirmations.
 - Collecting input. Use a Modal with a form.
 
 ## Exports
@@ -98,7 +98,7 @@ Follows the WAI-ARIA Authoring Practices pattern: [Alert dialog](https://www.w3.
 - `role="alertdialog"`, named by the title and described by the message, so a screen reader reads both when it opens.
 - No close button: the two explicit choices are the way out. Escape still cancels.
 - Focus returns to the control that opened it.
-- Under `prefers-reduced-motion` the dialog appears at once and the busy spinner stops (the dimmed button and `aria-busy`
+- Under `prefers-reduced-motion` the dialog appears at once and the busy spinner stops (the dimmed button and `aria-busy` still carry the state).
 
 ## Motion
 

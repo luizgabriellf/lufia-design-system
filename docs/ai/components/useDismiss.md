@@ -49,9 +49,9 @@ useDismiss(open, () => setOpen(false), rootRef, toggleRef);
 
 ## Accessibility
 
-- Escape closes and returns focus to the control that opened the popup (WAI-ARIA APG menu button pattern). The key is
+- Escape closes and returns focus to the control that opened the popup (WAI-ARIA APG menu button pattern). The key is ignored when another handler already used it (`defaultPrevented`), so a nested control can claim it first.
 - Tab is not intercepted: leaving the popup by keyboard is allowed, and the consumer decides whether that closes it.
-- A hidden copy of the control (same component rendered for desktop and phone, one hidden by CSS) never listens, because
+- A hidden copy of the control (same component rendered for desktop and phone, one hidden by CSS) never listens, because it has no layout boxes.
 
 ## Motion
 

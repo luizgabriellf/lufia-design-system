@@ -53,7 +53,7 @@ import { EmptyState } from "@lufia/design-system/components/EmptyState";
 
 ## Accessibility
 
-- The root is `role="status"`, a polite live region. When the empty state replaces a list after a filter changes, the
+- The root is `role="status"`, a polite live region. When the empty state replaces a list after a filter changes, the new message is announced. If it is present on first render it is not announced, which is the right behaviour.
 - The icon is decorative (`aria-hidden`). Never put essential information only in the icon.
 - Title and body use the text and muted-text tokens, which pass AA on every surface.
 - The action slot keeps the keyboard behaviour of the control you pass in.

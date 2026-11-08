@@ -71,7 +71,7 @@ Keyboard:
 
 - `title` renders as a heading (`headingLevel`, default 3). Choose the level that keeps the page outline in order.
 - In the interactive variant, put nothing interactive in `headerAction` and `footer` that duplicates the link's destination.
-- Contrast of text on the surface is checked in every theme. The border and focus ring use semantic tokens; in
+- Contrast of text on the surface is checked in every theme. The border and focus ring use semantic tokens; in forced-colors mode the border is `CanvasText` and the ring `Highlight`.
 - Hover only adds an accent border and shadow; nothing is revealed on hover alone.
 
 ## Motion

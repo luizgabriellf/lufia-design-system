@@ -50,7 +50,7 @@ const money = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR"
 
 ## Accessibility
 
-- It is not a live region. If the change matters to someone using a screen reader, announce it yourself (for example
+- It is not a live region. If the change matters to someone using a screen reader, announce it yourself (for example "Total updated to 1,280 euros" in a polite live region), or pair it with [ChangeHighlight](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-motion-changehighlight--docs).
 - Under `prefers-reduced-motion` the new value appears at once; there are never intermediate numbers.
 - Formatting and locale are yours: pass a formatter built with the user's locale.
 

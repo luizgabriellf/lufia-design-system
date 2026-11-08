@@ -52,7 +52,7 @@ import { DetailList } from "@lufia/design-system/components/DetailList";
 ## Accessibility
 
 - Uses `<dl>`, `<dt>` and `<dd>`, which expose the label-value relationship to screen readers without extra ARIA.
-- The label column is capped at 40% and wraps. A long label never pushes values out of their container, so the layout
+- The label column is capped at 40% and wraps. A long label never pushes values out of their container, so the layout reflows at 320px.
 - Values may be any React node; links and buttons inside keep their own focus behaviour.
 
 ## Motion

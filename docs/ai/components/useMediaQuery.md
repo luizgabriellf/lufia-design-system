@@ -52,8 +52,8 @@ const finePointer = useMediaQuery("(pointer: fine)", { defaultValue: true });
 
 ## Accessibility
 
-- The server cannot know the query, so it renders `defaultValue` (default `false`). On the client React re-reads the real
-- Do not hide content from assistive technology based on a media query; hide it with CSS so the accessibility tree and
+- The server cannot know the query, so it renders `defaultValue` (default `false`). On the client React re-reads the real value during hydration, which can cause one extra render but never a hydration mismatch. Pick the default that is safest without JavaScript.
+- Do not hide content from assistive technology based on a media query; hide it with CSS so the accessibility tree and the visual result stay in step.
 
 ## Motion
 

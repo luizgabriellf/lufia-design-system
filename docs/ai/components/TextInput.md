@@ -57,7 +57,7 @@ import { TextInput } from "@lufia/design-system/components/TextInput";
 ## Accessibility
 
 - Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.
-- The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`
+- The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors` the ring uses `Highlight`, and an invalid control gets a thicker border.
 - Height is at least 44px; the text is 16px so iOS does not zoom on focus.
 
 ## Motion

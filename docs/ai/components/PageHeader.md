@@ -60,7 +60,7 @@ Keyboard:
 
 The header is not interactive. Its actions follow the keyboard behaviour of the controls you pass.
 
-- The title is a real heading. A page should have one level 1; use `headingLevel` for secondary headers so the outline stays in
+- The title is a real heading. A page should have one level 1; use `headingLevel` for secondary headers so the outline stays in order.
 - The eyebrow is a paragraph above the heading, not part of its name.
 - Text contrast is checked in every theme. At 320px the title wraps instead of overflowing.
 

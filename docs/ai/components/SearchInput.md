@@ -62,7 +62,7 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 
 - Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.
 - The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.
-- While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under
+- While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under `prefers-reduced-motion`.
 - Results are not announced by this component: the list you update should announce its own count (a live region).
 
 ## Motion

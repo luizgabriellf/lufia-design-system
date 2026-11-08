@@ -22,7 +22,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 
 ## When not to use
 
-- Anything that must be answered or read before moving on: use [ConfirmDialog](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-confirmdialog--docs)
+- Anything that must be answered or read before moving on: use [ConfirmDialog](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-confirmdialog--docs) or an inline message. A toast disappears, so a form's validation errors do not belong in one.
 - Information the person will need again (instructions, a long explanation). Put it on the page.
 - More than one at a time for the same outcome: identical string messages are de-duplicated, and `limit` caps the stack.
 
@@ -116,14 +116,14 @@ toast.info("Invoice moved to the trash.", { action: { label: "Undo", onAction: r
 
 Follows the WAI-ARIA Authoring Practices pattern: [Alert](https://www.w3.org/WAI/ARIA/apg/patterns/alert/).
 
-- Announcing is separate from showing. Visually hidden live regions (`role="alert"` for errors, `role="status"` for the
-- The announcer regions keep `role="alert"` and `role="status"` while empty, on purpose. A live region only announces
-- In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")`
-- Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a
-- The notification region stays live while a [Modal](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest
+- Announcing is separate from showing. Visually hidden live regions (`role="alert"` for errors, `role="status"` for the rest) hold a text copy of each message. One pair lives in `document.body`; another is created inside each open modal `<dialog>` for as long as it is open, because the browser makes the body inert behind it. A message goes to the announcer of the topmost open dialog, or the body's, and each one exists before anything is added to it. The visible stack is a labelled `region` that moves into the topmost dialog and back. Errors interrupt, the rest wait.
+- The announcer regions keep `role="alert"` and `role="status"` while empty, on purpose. A live region only announces content added after it exists, so both must be mounted first. `aria-live` alone is meant to be enough, but the explicit role is what the screen reader and browser pairs we know of announce most reliably (older VoiceOver and JAWS builds are the usual failures with a bare `aria-live`), and `role="alert"` is what marks the assertive region as errors. An empty live region is not read out, so the node costs nothing to users. We kept the roles rather than risk a silent toast.
+- In tests the copy means `getByText` can find the message twice. Assert what is announced with `getByRole("status")` (`"alert"` for errors) and query the visible toast inside the `Notifications` region.
+- Keyboard: toasts are reached in DOM order with Tab; each has its action (if any) and a dismiss button. Escape on a focused toast dismisses it. While a toast has focus its timer is paused.
+- The notification region stays live while a [Modal](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest of the page `inert`, except `data-lufia-inert-exempt`), though Tab cycles only inside the modal while it is open.
 - Targets: the dismiss button and action are at least 28 px tall (WCAG 2.5.8 asks for 24 px).
-- Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under
-- Colour is never the only signal: each tone has its own icon, and the message says what happened. Under `forced-colors`
+- Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under `prefers-reduced-motion` toasts appear and disappear at once. The success check (`SuccessCheck`) stops drawing.
+- Colour is never the only signal: each tone has its own icon, and the message says what happened. Under `forced-colors` the border uses system colours.
 - Not recorded yet: a manual VoiceOver and NVDA pass (required before `stable`).
 
 ## Motion

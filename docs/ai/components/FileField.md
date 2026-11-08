@@ -103,10 +103,10 @@ import { FileField } from "@lufia/design-system/components/FileField";
 
 ## Accessibility
 
-- The real input is the control: it has the field's accessible name and description, `aria-invalid`, and `required`.
+- The real input is the control: it has the field's accessible name and description, `aria-invalid`, and `required`. The visible button is its label and is hidden from assistive technology, so the name is not read twice.
 - Focus on the input draws the focus ring on the button.
 - Refusals use `role="alert"` and are part of the input's description. Several are shown as a list.
-- Each remove button is named after its file ("Remove report.pdf"; change it with `removeLabel`). After a removal focus returns
+- Each remove button is named after its file ("Remove report.pdf"; change it with `removeLabel`). After a removal focus returns to the input.
 - Pass `describeFiles` to have a polite status announce the new count ("2 files chosen") after a pick.
 - The drop area is a dashed border that fills with the accent when files are dragged over it, which is not colour alone.
 

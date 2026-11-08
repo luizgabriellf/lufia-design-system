@@ -66,8 +66,8 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
 ## Accessibility
 
 - Each track is a `<section>` with an `<h3>`; each node list is an ordered list, so order and count are announced.
-- **State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a
-- Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated
+- **State is named in words** through `stateLabel` in the pill; colour and icon are reinforcement only. Always pass a meaningful `stateLabel`.
+- Overdue uses a solid fill, never a tint, so it cannot be read as pending. The danger fill uses a dedicated `on-solid` text token that passes AA in light and dark.
 - Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.
 - Actions are slots; keep them keyboard operable and labelled.
 - In forced-colors mode the pill keeps a visible border.

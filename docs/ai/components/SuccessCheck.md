@@ -47,7 +47,7 @@ import { SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
 
 ## Accessibility
 
-- Decorative: `aria-hidden="true"` and `focusable="false"`. The adjacent text carries the meaning, so the check is never
+- Decorative: `aria-hidden="true"` and `focusable="false"`. The adjacent text carries the meaning, so the check is never the only cue.
 - The draw uses `--lufia-motion-duration-enter` and stops under `prefers-reduced-motion`, leaving the finished check.
 
 ## Motion

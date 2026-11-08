@@ -176,14 +176,14 @@ Keyboard:
 | Enter / Space | Row, buttons \| Activates the row (and closes the panel), "Mark all as read" or the footer |
 | Escape | Popover, sheet \| Closes the panel and returns focus to the bell |
 
-- The bell is a button named by `label` and the count, "Notifications, 4 unread", with `aria-haspopup="dialog"`,
-- The popover is a non-modal `role="dialog"` labelled by its heading. Focus moves to it on open; Escape returns focus to the
+- The bell is a button named by `label` and the count, "Notifications, 4 unread", with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`. The visible count repeats the name and is hidden from assistive technology.
+- The popover is a non-modal `role="dialog"` labelled by its heading. Focus moves to it on open; Escape returns focus to the bell. The sheet is `aria-modal`, traps focus and makes the page behind inert.
 - Tabs follow the WAI-ARIA tabs pattern with automatic activation and one shared `tabpanel` that lists the chosen tab's items. The arrow keys mirror in right-to-left text. A row of tabs that does not fit scrolls sideways, and the edge that hides more fades.
-- Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the
+- Each group is a heading and a list. Unread rows say so in text (`unreadLabel`, read before the title), not by the dot or the tint alone. Rows are links or buttons, so the whole row is the target and is at least 3.5rem tall.
 - A polite live region announces changes of `unreadCount` ("Notifications, 5 unread"). It says nothing on first paint.
-- "Mark all as read" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is
+- "Mark all as read" stays focusable and is `aria-disabled` when nothing is unread, so focus is not lost when the last one is read.
 - Loading is one polite status with skeleton rows; a failure is an alert.
-- In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the
+- In forced-colors mode the unread dot and the row's start edge use `Highlight`, the selected tab keeps its underline and the summary's progress segments draw with borders.
 
 ## Motion
 

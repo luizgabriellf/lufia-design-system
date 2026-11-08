@@ -441,13 +441,18 @@ function parseMdx(source) {
   return { overview: intro.lines.join("\n").trim(), body, headings: [...sections.keys()] };
 }
 
-const bullets = (text) =>
-  text
-    ? text
-        .split("\n")
-        .filter((line) => /^\s*[-*] /.test(line))
-        .map((line) => line.replace(/^\s*[-*] /, "").trim())
-    : [];
+/**
+ * The items of a Markdown bullet list. A hard-wrapped bullet (the next line is indented and is not a bullet) is joined
+ * into one item, so the generated specs are never cut at the first line.
+ */
+const bullets = (text) => {
+  const items = [];
+  for (const line of text ? text.split("\n") : []) {
+    if (/^\s*[-*] /.test(line)) items.push(line.replace(/^\s*[-*] /, "").trim());
+    else if (items.length && /^\s+\S/.test(line)) items[items.length - 1] += ` ${line.trim()}`;
+  }
+  return items;
+};
 
 function tableRows(text) {
   if (!text) return [];

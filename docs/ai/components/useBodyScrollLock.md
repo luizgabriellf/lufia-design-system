@@ -69,7 +69,7 @@ function Modal({ open }: { open: boolean }) {
 
 - Locking scroll does not move focus or trap it. Pair it with a focus trap and `aria-modal` on the dialog.
 - The previous scroll position is restored on release, so keyboard and screen-reader users return to where they were.
-- It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup,
+- It only touches inline styles (`overflow`, `position`, `top`, `width`, `padding-right`, `overscroll-behavior`) and removes them on cleanup, including on unmount.
 
 ## Motion
 

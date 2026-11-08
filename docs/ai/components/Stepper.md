@@ -50,9 +50,9 @@ import { Stepper } from "@lufia/design-system/components/Stepper";
 ## Accessibility
 
 - A visually hidden `role="status"` live region announces "2 / 4: Review" when `current` changes, at every viewport.
-- The active step's list item has `aria-current="step"`; every step exposes the name "2. Review" (visually hidden text, or
-- Only already-visited steps are rendered as buttons, and only when `onStepClick` is given. Upcoming and current steps are
-- Dots are 32px; focus shows a 2px ring. The connector fill is a transform transition and stops under
+- The active step's list item has `aria-current="step"`; every step exposes the name "2. Review" (visually hidden text, or the button's `aria-label`).
+- Only already-visited steps are rendered as buttons, and only when `onStepClick` is given. Upcoming and current steps are plain text, so there are no disabled controls to Tab past. Without a handler the component is purely informational.
+- Dots are 32px; focus shows a 2px ring. The connector fill is a transform transition and stops under `prefers-reduced-motion`. In forced-colors mode connectors use `CanvasText`.
 
 ## Motion
 

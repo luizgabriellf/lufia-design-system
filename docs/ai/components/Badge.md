@@ -74,7 +74,7 @@ Keyboard:
 
 A badge is not interactive and takes no focus. If it needs to act, use a `Button` or `Link`.
 
-- The text is always present and carries the meaning. The tone and the dot only reinforce it (WCAG 1.4.1), so never omit
+- The text is always present and carries the meaning. The tone and the dot only reinforce it (WCAG 1.4.1), so never omit the text and never reuse one word for two tones.
 - The dot is decorative and hidden from assistive technology.
 - Every tone's text meets 4.5:1 on its own background in light and dark; the contrast check enforces the status pairs.
 - In forced-colors mode the border and dot use system colours, so the shape remains.

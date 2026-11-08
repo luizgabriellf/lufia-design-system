@@ -13,6 +13,14 @@ describe("component manifest", () => {
       .exports.find((e) => e.name === name)
       .props.find((p) => p.name === propName);
 
+  it("joins a hard-wrapped bullet of an MDX section instead of cutting it at the first line", () => {
+    const notes = component("StackedBar").a11y.notes;
+    expect(notes[0]).toMatch(/^The root is a `role="group"`.*its share \("Active 48 \(62%\)"\)\.$/);
+    expect(
+      component("Badge").a11y.notes.some((note) => note.includes("never reuse one word for two tones")),
+    ).toBe(true);
+  });
+
   it("writes out the literals of a union alias", () => {
     expect(prop("Button", "variant").type).toBe('"primary" | "secondary" | "ghost" | "danger"');
     expect(component("Button").aliases.ButtonVariant).toBe('"primary" | "secondary" | "ghost" | "danger"');
