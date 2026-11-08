@@ -5,6 +5,7 @@ import { AnimatedNumber } from "../../motion";
 import { Button } from "../Button";
 import { Sparkline } from "../Sparkline";
 import { StatTile } from "./StatTile";
+import { computeStatDelta } from "./statDelta";
 
 const meta = {
   title: "Components/Data display/StatTile",
@@ -61,6 +62,72 @@ export const FallingIsGood: Story = {
     trend: "down",
     trendLabel: "Down",
     deltaTone: "success",
+  },
+};
+const deltaLabels = { up: "Up", down: "Down", flat: "No change", comparison: "vs previous 30 days" };
+
+/** A rise in a figure where more is good: `computeStatDelta` gives the text, direction word and tone. */
+export const ComputedPercent: Story = {
+  args: {
+    label: "Orders",
+    value: "1,120",
+    ...computeStatDelta({
+      current: 1120,
+      previous: 1000,
+      goodDirection: "up",
+      labels: deltaLabels,
+      locale: "en",
+    }),
+  },
+};
+/** On a base under `minBase` (5) the change is absolute: "+3", never "+300%". */
+export const ComputedSmallBase: Story = {
+  args: {
+    label: "Orders",
+    value: "4",
+    ...computeStatDelta({ current: 4, previous: 1, goodDirection: "up", labels: deltaLabels, locale: "en" }),
+  },
+};
+/** Within plus or minus 0.5% the change is flat: grey, with the flat arrow. */
+export const ComputedFlat: Story = {
+  args: {
+    label: "Orders",
+    value: "1,003",
+    ...computeStatDelta({
+      current: 1003,
+      previous: 1000,
+      goodDirection: "up",
+      labels: deltaLabels,
+      locale: "en",
+    }),
+  },
+};
+/** More incidents is bad, so a fall is `success` and a rise is `warning`. */
+export const ComputedFallingIsGood: Story = {
+  args: {
+    label: "Open tickets",
+    value: "7",
+    ...computeStatDelta({
+      current: 7,
+      previous: 10,
+      goodDirection: "down",
+      labels: deltaLabels,
+      locale: "en",
+    }),
+  },
+};
+/** `computeStatDelta` returns `null` without a previous value: spread nothing and the tile has no change line. */
+export const ComputedNoHistory: Story = {
+  args: {
+    label: "Orders",
+    value: "1,120",
+    ...computeStatDelta({
+      current: 1120,
+      previous: null,
+      goodDirection: "up",
+      labels: deltaLabels,
+      locale: "en",
+    }),
   },
 };
 export const Flat: Story = { args: { delta: "No change", trend: "flat", trendLabel: "Flat" } };

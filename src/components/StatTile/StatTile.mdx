@@ -63,11 +63,51 @@ A row of tiles can filter a list. Give each button tile `pressed` and keep the a
 
 The `value` is a node, so pass an `AnimatedNumber` to count to a new figure. The tile adds no motion of its own to the number.
 
+### Computing the change
+
+`computeStatDelta` turns two numbers into the change props, so every tile words and tones its change the same way. It is pure and has no language of its own: the direction words and the period come in through `labels`.
+
+```tsx
+import { StatTile, computeStatDelta } from "@lufia/design-system/components/StatTile";
+
+<StatTile
+  label="Open tickets"
+  value="7"
+  {...computeStatDelta({
+    current: 7,
+    previous: 10,
+    goodDirection: "down",
+    locale: "en",
+    labels: { up: "Up", down: "Down", flat: "No change", comparison: "vs previous 30 days" },
+  })}
+/>;
+```
+
+The result is `{ delta, trend, trendLabel, deltaTone }`, for example `"-30% vs previous 30 days"`, `"down"`, `"Down"` and `"success"`. A screen reader hears "Down -30% vs previous 30 days". Props written after the spread win, so `deltaTone="danger"` overrides the computed tone. `previous` of `null`, `undefined` or `NaN` returns `null`; spreading `null` adds nothing.
+
+<Canvas of={Stories.ComputedPercent} />
+<Canvas of={Stories.ComputedSmallBase} />
+<Canvas of={Stories.ComputedFlat} />
+<Canvas of={Stories.ComputedFallingIsGood} />
+<Canvas of={Stories.ComputedNoHistory} />
+
+| Option          | Default        | Effect                                                                                                      |
+| --------------- | -------------- | ----------------------------------------------------------------------------------------------------------- |
+| `mode`          | unset          | `"percent"` or `"absolute"` forces the format. A base of exactly `0` is always absolute.                    |
+| `minBase`       | `5`            | Below this `\|previous\|` the default mode shows the absolute change, so 1 to 4 reads "+3", not "+300%".    |
+| `formatValue`   | `Intl`         | Formats the size of an absolute change (no sign: the helper adds it): units, compact notation.              |
+| `flatThreshold` | `0.5`          | A percentage change within plus or minus this many percent is flat. In absolute mode only equality is flat. |
+| `badTone`       | `"warning"`    | Tone of a change in the wrong direction; set `"danger"` for a critical figure.                              |
+| `locale`        | runtime locale | Formats the number: `pt-PT` gives "+3,5%".                                                                  |
+
+The percentage has one decimal under 10 percent and none from 10 percent. It divides by the size of the previous value, so a rise from `-10` to `-5` is a positive change.
+
 ### States
 
 <Canvas of={Stories.ThemedByTokens} />
 <Canvas of={Stories.WithDelta} />
 <Canvas of={Stories.FallingIsGood} />
+<Canvas of={Stories.Flat} />
 <Canvas of={Stories.Warning} />
 <Canvas of={Stories.Danger} />
 <Canvas of={Stories.AsLink} />
@@ -121,6 +161,14 @@ A plain tile is not focusable. The focus ring is drawn around the whole tile.
 
 - A figure people scan first on a dashboard: a count, a rate, an amount.
 - A shortcut to the filtered list behind the figure.
+
+### Choosing the change
+
+- Set `goodDirection` by meaning, not by arithmetic: more open incidents is bad (`"down"`), more orders is good (`"up"`). Use `"neutral"` when neither is better; the tile then never turns green or amber.
+- Always state the period in `labels.comparison` ("vs previous 30 days"). A bare "+12%" does not say against what.
+- Hide the change until there is history: pass the previous value as `null` and spread the `null` result. Never show "0%" or a made-up baseline for a new figure.
+- Leave `minBase` at its default unless the figure is naturally large or tiny. A percentage on a base of 1 or 2 is noise, and a base of 0 has no percentage.
+- A flat change is neutral and carries its own direction word, so it does not read as good or bad.
 
 ### When not to use
 

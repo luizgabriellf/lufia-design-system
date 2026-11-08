@@ -10784,6 +10784,30 @@
       },
       "exports": [
         {
+          "name": "StatDelta",
+          "kind": "type",
+          "description": "",
+          "definition": "{ delta: string; trend: StatTileTrend; trendLabel: string; deltaTone: StatTileTone; }"
+        },
+        {
+          "name": "StatDeltaGoodDirection",
+          "kind": "type",
+          "description": "",
+          "definition": "\"up\" | \"down\" | \"neutral\""
+        },
+        {
+          "name": "StatDeltaInput",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "StatDeltaLabels",
+          "kind": "type",
+          "description": "",
+          "definition": "{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }"
+        },
+        {
           "name": "StatTile",
           "kind": "component",
           "description": "A key figure with its label: the tile of a dashboard. The interactive variant uses the stretched-link pattern, like `Card`: the label is the one link (or button) and its `::after` covers the tile, so the tile is one tab stop. The figure, change and hint are attached to it as its description, so a screen reader announces \"label, link, 12, up 3 since yesterday\" without reading the tile twice. Hover and press are small `transform` moves from motion tokens, removed under reduced motion. While `loading`, the skeletons take the line boxes of the figure, the change, the hint and the chart, so the tile does not change height when the data arrives. With `onClick` and `pressed` the tile is a toggle button (`aria-pressed`) for filtering.",
@@ -10906,9 +10930,18 @@
           "kind": "type",
           "description": "",
           "definition": "\"up\" | \"down\" | \"flat\""
+        },
+        {
+          "name": "computeStatDelta",
+          "kind": "function",
+          "description": "Computes the props of `StatTile` that describe a change against a previous period: `delta`, `trend`, `trendLabel` and `deltaTone`. Spread the result into the tile. Returns `null` when there is no previous value, so the tile shows no change until there is history. It is pure and locale-aware, so it is safe on the server. The default format is a percentage with one decimal under 10% and none above. On a zero or small base (`|previous|` below `minBase`) it switches to the absolute change, so a tile never says \"+Infinity%\" or \"+400%\" for going from 1 to 5.",
+          "signature": "(input: StatDeltaInput): StatDelta | null"
         }
       ],
       "aliases": {
+        "StatDelta": "{ delta: string; trend: StatTileTrend; trendLabel: string; deltaTone: StatTileTone; }",
+        "StatDeltaGoodDirection": "\"up\" | \"down\" | \"neutral\"",
+        "StatDeltaLabels": "{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }",
         "StatTileTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "StatTileTrend": "\"up\" | \"down\" | \"flat\""
       },
@@ -10930,6 +10963,26 @@
           {
             "export": "FallingIsGood",
             "id": "components-data-display-stattile--falling-is-good"
+          },
+          {
+            "export": "ComputedPercent",
+            "id": "components-data-display-stattile--computed-percent"
+          },
+          {
+            "export": "ComputedSmallBase",
+            "id": "components-data-display-stattile--computed-small-base"
+          },
+          {
+            "export": "ComputedFlat",
+            "id": "components-data-display-stattile--computed-flat"
+          },
+          {
+            "export": "ComputedFallingIsGood",
+            "id": "components-data-display-stattile--computed-falling-is-good"
+          },
+          {
+            "export": "ComputedNoHistory",
+            "id": "components-data-display-stattile--computed-no-history"
           },
           {
             "export": "Flat",
