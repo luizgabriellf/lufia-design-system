@@ -115,6 +115,16 @@ describe("Icon", () => {
       for (const child of Array.from(svg.querySelectorAll("*"))) {
         expect(child.getAttribute("stroke-width"), name).toBeNull();
         expect(child.getAttribute("fill"), name).toBeNull();
+        // Every shape carries its geometry: an attribute-less `<line />` draws nothing.
+        const required = {
+          path: ["d"],
+          line: ["x1", "y1", "x2", "y2"],
+          polyline: ["points"],
+          circle: ["r"],
+          rect: ["width", "height"],
+        }[child.tagName.toLowerCase()];
+        for (const attribute of required ?? [])
+          expect(child.hasAttribute(attribute), `${name} ${attribute}`).toBe(true);
       }
     }
   });

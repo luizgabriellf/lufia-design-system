@@ -191,9 +191,9 @@ export const MoreVerticalIcon = /* @__PURE__ */ createIcon(
 export const MenuIcon = /* @__PURE__ */ createIcon(
   "menu",
   <>
-    <line />
-    <line />
-    <line />
+    <path d="M4 6h16" />
+    <path d="M4 12h16" />
+    <path d="M4 18h16" />
   </>,
 );
 
@@ -231,8 +231,8 @@ export const TrashIcon = /* @__PURE__ */ createIcon(
     <path d="M3 6h18" />
     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-    <line />
-    <line />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
   </>,
 );
 
@@ -242,7 +242,7 @@ export const UploadIcon = /* @__PURE__ */ createIcon(
   <>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="17 8 12 3 7 8" />
-    <line />
+    <path d="M12 3v12" />
   </>,
 );
 
@@ -252,7 +252,7 @@ export const DownloadIcon = /* @__PURE__ */ createIcon(
   <>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
-    <line />
+    <path d="M12 15V3" />
   </>,
 );
 
@@ -280,7 +280,7 @@ export const SignOutIcon = /* @__PURE__ */ createIcon(
   <>
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
     <polyline points="16 17 21 12 16 7" />
-    <line />
+    <path d="M21 12H9" />
   </>,
 );
 

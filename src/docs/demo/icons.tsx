@@ -29,15 +29,15 @@ export {
 export const SlidersIcon = /* @__PURE__ */ createIcon(
   "sliders",
   <>
-    <line />
-    <line />
-    <line />
-    <line />
-    <line />
-    <line />
-    <line />
-    <line />
-    <line />
+    <path d="M4 21v-7" />
+    <path d="M4 10V3" />
+    <path d="M12 21v-9" />
+    <path d="M12 8V3" />
+    <path d="M20 21v-5" />
+    <path d="M20 12V3" />
+    <path d="M2 14h4" />
+    <path d="M10 8h4" />
+    <path d="M18 16h4" />
   </>,
 );
 
@@ -60,8 +60,8 @@ export const ServerIcon = /* @__PURE__ */ createIcon(
   <>
     <rect width="20" height="8" x="2" y="2" rx="2" />
     <rect width="20" height="8" x="2" y="14" rx="2" />
-    <line />
-    <line />
+    <path d="M6 6h.01" />
+    <path d="M6 18h.01" />
   </>,
 );
 
