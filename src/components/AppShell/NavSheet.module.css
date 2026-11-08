@@ -135,6 +135,24 @@
   touch-action: pan-y;
 }
 
+.body[data-more="start"] {
+  mask-image: linear-gradient(to bottom, transparent, CanvasText 1.25rem);
+}
+
+.body[data-more="end"] {
+  mask-image: linear-gradient(to bottom, CanvasText calc(100% - 1.25rem), transparent);
+}
+
+.body[data-more="both"] {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    CanvasText 1.25rem,
+    CanvasText calc(100% - 1.25rem),
+    transparent
+  );
+}
+
 .foot {
   flex: none;
   padding: var(--lufia-space-2) var(--lufia-space-3) calc(var(--lufia-space-3) + env(safe-area-inset-bottom));

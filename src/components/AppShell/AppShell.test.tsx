@@ -1,11 +1,12 @@
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
 import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
 import { mockReducedMotion } from "../../test/motion";
 import { AppShell, type AppShellProps } from "./AppShell";
 import { ShellPrimaryActionSlot, useShellPrimaryAction } from "./primaryAction";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { ShellNavGroup } from "./navigation";
 
 const groups: ShellNavGroup[] = [
@@ -114,6 +115,101 @@ describe("AppShell", () => {
     expect(screen.getAllByText("B").length).toBeGreaterThan(0);
   });
 
+  it("renders the saved rail and open groups on the server, so the first paint is already right", () => {
+    const render = (props: Partial<AppShellProps>) =>
+      renderToString(
+        <AppShell groups={groups} labels={labels} currentPath="/" {...props}>
+          <h1>Page</h1>
+        </AppShell>,
+      );
+    expect(render({ defaultCollapsed: true })).toMatch(/class="[^"]*shell[^"]*"[^>]*data-collapsed/);
+    expect(render({})).not.toContain("data-collapsed");
+    expect(render({ defaultOpenGroups: ["modules"] })).toContain('aria-expanded="true"');
+    expect(render({ defaultOpenGroups: [] })).toContain('aria-expanded="false"');
+  });
+
+  it("passes nav item counts, tone, class and data-* down to the links", () => {
+    setup({
+      groups: [
+        {
+          key: "g",
+          items: [
+            {
+              key: "alerts",
+              label: "Alerts",
+              href: "/alerts",
+              count: 150,
+              countTone: "danger",
+              badge: "New",
+              badgeTone: "neutral",
+              className: "app-hook",
+              data: { "data-tour": "alerts" },
+            },
+            { key: "quiet", label: "Quiet", href: "/quiet", count: 0 },
+          ],
+        },
+      ],
+    });
+    const [link] = screen.getAllByRole("link", { name: /^Alerts/ });
+    expect(link).toHaveClass("app-hook");
+    expect(link).toHaveAttribute("data-tour", "alerts");
+    expect(within(link!).getByText("99+")).toHaveAttribute("data-tone", "danger");
+    expect(within(link!).getByText("New")).toHaveAttribute("data-tone", "neutral");
+    expect(screen.getAllByRole("link", { name: "Quiet" })[0]).toHaveTextContent(/^Quiet$/);
+  });
+
+  it("takes attributes for the main landmark and follows its id with the skip link", () => {
+    setup({ mainProps: { id: "content", className: "page-area", "data-page": "x", tabIndex: -1 } });
+    const main = screen.getByRole("main");
+    expect(main).toHaveAttribute("id", "content");
+    expect(main).toHaveClass("page-area");
+    expect(main).toHaveAttribute("data-page", "x");
+    expect(main).toHaveAttribute("tabindex", "-1");
+    expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute("href", "#content");
+  });
+
+  it("remounts the main landmark and its page when mainKey changes, and only then", () => {
+    function Probe() {
+      const [stamp] = useState(() => Math.random());
+      return <p data-stamp={stamp}>probe</p>;
+    }
+    const render1 = (key: string) => (
+      <AppShell groups={groups} labels={labels} mainKey={key}>
+        <Probe />
+      </AppShell>
+    );
+    const { rerender } = render(render1("a"));
+    const first = screen.getByText("probe");
+    const main = screen.getByRole("main");
+    rerender(render1("a"));
+    expect(screen.getByText("probe")).toBe(first);
+    rerender(render1("b"));
+    expect(screen.getByText("probe")).not.toBe(first);
+    expect(screen.getByRole("main")).not.toBe(main);
+  });
+
+  it("puts mainStart inside main, before the page, and leaves statusRow outside it", () => {
+    setup({ mainStart: <div role="note">Trial ends soon</div>, statusRow: <p>Offline</p> });
+    const main = screen.getByRole("main");
+    const note = within(main).getByRole("note");
+    const page = within(main).getByRole("heading", { name: "Page" });
+    expect(note.compareDocumentPosition(page) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(main).queryByText("Offline")).not.toBeInTheDocument();
+    expect(screen.getByText("Offline")).toBeInTheDocument();
+  });
+
+  it("shows a tooltip, not a native title, on the rail's search entry", async () => {
+    const user = userEvent.setup();
+    setup({ defaultCollapsed: true });
+    const entry = screen.getAllByRole("button", { name: "Search…" })[0]!;
+    expect(entry).not.toHaveAttribute("title");
+    await user.tab();
+    await user.tab();
+    await user.tab();
+    entry.focus();
+    expect(screen.getByRole("tooltip", { hidden: true })).toHaveTextContent("Search…");
+  });
+
   it("hides the rail button when the sidebar is fixed", () => {
     setup({ fixedSidebar: true });
     expect(screen.queryByRole("button", { name: "Collapse sidebar" })).not.toBeInTheDocument();
@@ -130,6 +226,17 @@ describe("AppShell", () => {
     const link = within(dialog).getByRole("link", { name: "Home" });
     link.addEventListener("click", (event) => event.preventDefault());
     await user.click(link);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("closes the sheet when a footer link is followed", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    const dialog = screen.getByRole("dialog", { name: "Menu" });
+    const help = within(dialog).getByRole("link", { name: "Help" });
+    help.addEventListener("click", (event) => event.preventDefault());
+    await user.click(help);
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 
@@ -466,6 +573,351 @@ describe("AppShell slots", () => {
     it("renders nothing from the slot outside a shell", () => {
       const { container } = render(<ShellPrimaryActionSlot />);
       expect(container).toBeEmptyDOMElement();
+    });
+  });
+
+  describe("context slot, sheet control and primary action details", () => {
+    it("renders the context slot in the sidebar and in the sheet, telling each its surface", async () => {
+      const user = userEvent.setup();
+      const surfaces: string[] = [];
+      setup({
+        context: ({ surface, collapsed }) => {
+          surfaces.push(`${surface}:${collapsed}`);
+          return <div role="region" aria-label={`Context ${surface}`} />;
+        },
+      });
+      expect(screen.getByRole("region", { name: "Context sidebar" })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(within(screen.getByRole("dialog")).getByRole("region", { name: "Context sheet" })).toBeVisible();
+      expect(surfaces).toContain("sidebar:false");
+      expect(surfaces).toContain("sheet:false");
+    });
+
+    it("gives the rail state to the sidebar context only", () => {
+      const seen: string[] = [];
+      setup({
+        defaultCollapsed: true,
+        context: ({ surface, collapsed }) => {
+          seen.push(`${surface}:${collapsed}`);
+          return null;
+        },
+      });
+      expect(seen).toContain("sidebar:true");
+    });
+
+    it("lets a slot close the sheet through closeSheet", async () => {
+      const user = userEvent.setup();
+      setup({
+        context: ({ surface, closeSheet }) =>
+          surface === "sheet" ? (
+            <button type="button" onClick={closeSheet}>
+              Done
+            </button>
+          ) : null,
+      });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      await user.click(screen.getByRole("button", { name: "Done" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    });
+
+    it("lets a slot open the sheet through openSheet", async () => {
+      const user = userEvent.setup();
+      setup({
+        topBarEnd: undefined,
+        brand: ({ surface, openSheet }) =>
+          surface === "topBar" ? (
+            <button type="button" onClick={openSheet}>
+              Switch
+            </button>
+          ) : null,
+      });
+      await user.click(screen.getByRole("button", { name: "Switch" }));
+      expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
+    });
+
+    it("hides the navigation in the sheet but not in the sidebar with hideSheetNavigation", async () => {
+      const user = userEvent.setup();
+      setup({ hideSheetNavigation: true, context: <div role="note">Picker</div> });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      const dialog = screen.getByRole("dialog", { name: "Menu" });
+      expect(within(dialog).queryByRole("navigation")).toBeNull();
+      expect(within(dialog).getByRole("note")).toBeInTheDocument();
+      expect(screen.getByRole("navigation", { name: "Main navigation" })).toBeInTheDocument();
+    });
+
+    it("controls the sheet from outside and reports a close", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      const { rerender } = setup({ menuOpen: false, onMenuOpenChange });
+      expect(screen.queryByRole("dialog")).toBeNull();
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(true);
+      expect(screen.queryByRole("dialog")).toBeNull();
+      rerender(
+        <AppShell groups={groups} labels={labels} menuOpen onMenuOpenChange={onMenuOpenChange}>
+          <h1>Page</h1>
+        </AppShell>,
+      );
+      expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
+      await user.keyboard("{Escape}");
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it("reports a change of the sheet only when it changes: not on a desktop click, once per phone tap", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ onMenuOpenChange });
+      const sidebar = screen.getByRole("navigation", { name: "Main navigation" });
+      const home = within(sidebar).getByRole("link", { name: "Home" });
+      home.addEventListener("click", (event) => event.preventDefault());
+      await user.click(home);
+      expect(onMenuOpenChange).not.toHaveBeenCalled();
+
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(1);
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(true);
+
+      const link = within(screen.getByRole("dialog", { name: "Menu" })).getByRole("link", { name: "Home" });
+      link.addEventListener("click", (event) => event.preventDefault());
+      await user.click(link);
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(2);
+      expect(onMenuOpenChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it("reports one close for a followed footer link", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ onMenuOpenChange });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      onMenuOpenChange.mockClear();
+      const help = within(screen.getByRole("dialog", { name: "Menu" })).getByRole("link", { name: "Help" });
+      help.addEventListener("click", (event) => event.preventDefault());
+      await user.click(help);
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(1);
+    });
+
+    it("still reopens a controlled sheet the owner refused to open", async () => {
+      const user = userEvent.setup();
+      const onMenuOpenChange = vi.fn();
+      setup({ menuOpen: false, onMenuOpenChange });
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      await user.click(screen.getByRole("button", { name: "Menu" }));
+      expect(onMenuOpenChange).toHaveBeenCalledTimes(2);
+    });
+
+    it("calls onIntent on pointer entry and focus of the floating-bar action and of the slot", async () => {
+      const user = userEvent.setup();
+      const onIntent = vi.fn();
+      setup({ primaryAction: { label: "New item", onIntent } });
+      await user.hover(within(floatBar()).getByRole("button", { name: /New item/ }));
+      expect(onIntent).toHaveBeenCalledTimes(1);
+      onIntent.mockClear();
+      render(
+        <AppShell
+          groups={groups}
+          labels={labels}
+          primaryAction={{ label: "Slot item", href: "/n", onIntent }}
+        >
+          <ShellPrimaryActionSlot />
+        </AppShell>,
+      );
+      screen.getAllByRole("link", { name: /Slot item/ }).forEach((link) => link.focus());
+      expect(onIntent).toHaveBeenCalled();
+    });
+
+    it("calls onIntent on the floating bar when the action is a link", async () => {
+      const user = userEvent.setup();
+      const onIntent = vi.fn();
+      setup({ primaryAction: { label: "Go on", href: "/go", onIntent } });
+      await user.hover(within(floatBar()).getByRole("link", { name: /Go on/ }));
+      expect(onIntent).toHaveBeenCalledTimes(1);
+    });
+
+    it("passes a registered action's onIntent through, always the latest one", async () => {
+      const user = userEvent.setup();
+      const first = vi.fn();
+      const second = vi.fn();
+      function Page({ onIntent }: { onIntent: () => void }) {
+        useShellPrimaryAction({ label: "Page act", onIntent });
+        return <ShellPrimaryActionSlot />;
+      }
+      const tree = (onIntent: () => void) => (
+        <AppShell groups={groups} labels={labels}>
+          <Page onIntent={onIntent} />
+        </AppShell>
+      );
+      const { rerender } = render(tree(first));
+      rerender(tree(second));
+      await user.hover(screen.getAllByRole("button", { name: /Page act/ })[0]!);
+      expect(second).toHaveBeenCalled();
+      expect(first).not.toHaveBeenCalled();
+    });
+
+    it("keeps the default action out of the desktop slot until a page registers one, when asked", () => {
+      function Slot({ desktopPrimaryFallback }: { desktopPrimaryFallback?: boolean }) {
+        return (
+          <AppShell
+            groups={groups}
+            labels={labels}
+            primaryAction={{ label: "Default act" }}
+            desktopPrimaryFallback={desktopPrimaryFallback}
+          >
+            <div data-testid="slot">
+              <ShellPrimaryActionSlot />
+            </div>
+          </AppShell>
+        );
+      }
+      const { rerender } = render(<Slot />);
+      expect(within(screen.getByTestId("slot")).getByRole("button", { name: "Default act" })).toHaveAttribute(
+        "data-fallback",
+      );
+      rerender(<Slot desktopPrimaryFallback={false} />);
+      expect(within(screen.getByTestId("slot")).queryByRole("button")).toBeNull();
+      expect(within(floatBar()).getByRole("button", { name: /Default act/ })).toHaveAttribute(
+        "data-fallback",
+      );
+    });
+
+    it("shows a page's registered action in the slot even when the fallback is off, unmarked", () => {
+      function Page() {
+        useShellPrimaryAction({ label: "Page act" });
+        return <ShellPrimaryActionSlot />;
+      }
+      render(
+        <AppShell
+          groups={groups}
+          labels={labels}
+          primaryAction={{ label: "Default act" }}
+          desktopPrimaryFallback={false}
+        >
+          <div data-testid="slot">
+            <Page />
+          </div>
+        </AppShell>,
+      );
+      const button = within(screen.getByTestId("slot")).getByRole("button", { name: "Page act" });
+      expect(button).not.toHaveAttribute("data-fallback");
+    });
+  });
+
+  describe("route transition, progress and pending page", () => {
+    const withRoute = (routeKey: string, extra: Partial<AppShellProps> = {}) => (
+      <AppShell groups={groups} labels={labels} routeKey={routeKey} mainStart={<p>Banner</p>} {...extra}>
+        <h1>Page {routeKey}</h1>
+      </AppShell>
+    );
+
+    it("marks the arriving page when routeKey changes, not on the first render or a repeat", () => {
+      mockReducedMotion(false);
+      const { rerender } = render(withRoute("/a"));
+      const page = () => screen.getByRole("heading").parentElement!;
+      expect(page()).not.toHaveAttribute("data-route-enter");
+      rerender(withRoute("/a"));
+      expect(page()).not.toHaveAttribute("data-route-enter");
+      rerender(withRoute("/b"));
+      expect(screen.getByRole("heading")).toHaveAttribute("data-route-enter", "rise");
+      expect(screen.getByText("Banner").parentElement).not.toHaveAttribute("data-route-enter");
+    });
+
+    it("keeps the page mounted across a route change (nothing remounts)", () => {
+      mockReducedMotion(false);
+      const { rerender } = render(withRoute("/a"));
+      const main = screen.getByRole("main");
+      rerender(withRoute("/b"));
+      expect(screen.getByRole("main")).toBe(main);
+    });
+
+    it("draws the progress bar while routePending, and not without a routeKey or with routeProgress off", () => {
+      vi.useFakeTimers();
+      try {
+        const { rerender } = render(withRoute("/a", { routePending: true }));
+        act(() => void vi.advanceTimersByTime(200));
+        expect(document.querySelector("[data-route-progress]")).not.toBeNull();
+        rerender(withRoute("/a", { routePending: true, routeProgress: false }));
+        expect(document.querySelector("[data-route-progress]")).toBeNull();
+        rerender(
+          <AppShell groups={groups} labels={labels} routePending>
+            <h1>x</h1>
+          </AppShell>,
+        );
+        act(() => void vi.advanceTimersByTime(500));
+        expect(document.querySelector("[data-route-progress]")).toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("shows mainPending in place of the page, hides the page through its own wrapper and keeps the banner visible", () => {
+      const { rerender } = render(withRoute("/a"));
+      const heading = screen.getByRole("heading");
+      expect(screen.getByRole("main")).not.toHaveAttribute("aria-busy");
+      expect(heading).toBeVisible();
+      rerender(withRoute("/a", { mainPending: <p>Loading skeleton</p> }));
+      const main = screen.getByRole("main");
+      expect(main).toHaveAttribute("aria-busy", "true");
+      expect(main).toHaveAttribute("data-pending");
+      expect(screen.getByText("Loading skeleton")).toBeVisible();
+      const hiddenHeading = screen.getByRole("heading", { hidden: true });
+      expect(hiddenHeading).toBe(heading);
+      expect(hiddenHeading).not.toBeVisible();
+      expect(hiddenHeading.closest("[hidden]")).not.toBeNull();
+      expect(screen.getByText("Banner")).toBeVisible();
+      rerender(withRoute("/a"));
+      expect(screen.queryByText("Loading skeleton")).toBeNull();
+      expect(screen.getByRole("heading")).toBe(heading);
+      expect(heading).toBeVisible();
+    });
+
+    it("moves focus to main when the page that had it is hidden, and leaves focus elsewhere alone", () => {
+      const tree = (extra: Partial<AppShellProps> = {}) => (
+        <AppShell groups={groups} labels={labels} routeKey="/a" {...extra}>
+          <button type="button">In page</button>
+        </AppShell>
+      );
+      const { rerender } = render(tree());
+      screen.getByRole("button", { name: "In page" }).focus();
+      rerender(tree({ mainPending: <p>Skeleton</p> }));
+      expect(screen.getByRole("main")).toHaveFocus();
+      expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
+
+      rerender(tree());
+      const search = screen.getAllByRole("link", { name: "Home" })[0]!;
+      search.focus();
+      rerender(tree({ mainPending: <p>Skeleton</p> }));
+      expect(search).toHaveFocus();
+    });
+
+    it("keeps the consumer's busy state and data-pending on main, and adds the pending page to them", () => {
+      const { rerender } = render(
+        withRoute("/a", { mainProps: { "aria-busy": true, "data-pending": "mine" } }),
+      );
+      const main = screen.getByRole("main");
+      expect(main).toHaveAttribute("aria-busy", "true");
+      expect(main).toHaveAttribute("data-pending", "mine");
+      rerender(withRoute("/a", { mainProps: { "aria-busy": false }, mainPending: <p>Skeleton</p> }));
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+      expect(screen.getByRole("main")).toHaveAttribute("data-pending", "");
+      rerender(withRoute("/a", { mainProps: { "aria-busy": false } }));
+      expect(screen.getByRole("main")).not.toHaveAttribute("aria-busy", "true");
+    });
+
+    it("draws the fade behind the floating bar only when floatScrim is on", () => {
+      const scrim = () => document.querySelector('[class*="floatScrim"]');
+      const { rerender } = render(withRoute("/a"));
+      expect(scrim()).toBeNull();
+      rerender(withRoute("/a", { floatScrim: true }));
+      expect(scrim()).toHaveAttribute("aria-hidden", "true");
+    });
+
+    it("lets the arriving page only fade after a skeleton, and rise otherwise", () => {
+      mockReducedMotion(false);
+      const { rerender } = render(withRoute("/a"));
+      rerender(withRoute("/a", { mainPending: <p>Skeleton</p> }));
+      rerender(withRoute("/b"));
+      expect(screen.getByRole("heading")).toHaveAttribute("data-route-enter", "fade");
+      rerender(withRoute("/c"));
+      expect(screen.getByRole("heading")).toHaveAttribute("data-route-enter", "rise");
     });
   });
 

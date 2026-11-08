@@ -13,9 +13,14 @@
 
 /* Header and footer keep their size; only the navigation gives way. */
 .head,
+.context,
 .search,
 .foot {
   flex: none;
+}
+
+.context {
+  padding-block-start: var(--lufia-space-2);
 }
 
 .head {
@@ -93,6 +98,25 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+}
+
+/* Items hidden beyond an edge fade into it, so a list that scrolls says so (`data-more` from the scroll hints). */
+.nav[data-more="start"] {
+  mask-image: linear-gradient(to bottom, transparent, CanvasText 1.25rem);
+}
+
+.nav[data-more="end"] {
+  mask-image: linear-gradient(to bottom, CanvasText calc(100% - 1.25rem), transparent);
+}
+
+.nav[data-more="both"] {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    CanvasText 1.25rem,
+    CanvasText calc(100% - 1.25rem),
+    transparent
+  );
 }
 
 .foot {
@@ -203,7 +227,9 @@
   white-space: nowrap;
 }
 
-.badge {
+.badge,
+.count {
+  flex: none;
   min-inline-size: 1.25rem;
   padding: 0.1rem 0.4rem;
   border-radius: var(--lufia-radius-full);
@@ -212,7 +238,26 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-2xs);
   font-weight: var(--lufia-font-weight-semibold);
+  line-height: 1.25;
   text-align: center;
+}
+
+.badge[data-tone="neutral"],
+.count[data-tone="neutral"] {
+  background: var(--lufia-color-status-neutral-bg);
+  color: var(--lufia-color-status-neutral-fg);
+}
+
+.badge[data-tone="danger"],
+.count[data-tone="danger"] {
+  background: var(--lufia-color-status-danger-bg);
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.badge[data-tone="warning"],
+.count[data-tone="warning"] {
+  background: var(--lufia-color-status-warning-bg);
+  color: var(--lufia-color-status-warning-fg);
 }
 
 .disclosure {
@@ -264,13 +309,22 @@
   border: 0;
 }
 
-.sidebar[data-collapsed] .badge {
+.sidebar[data-collapsed] .badge,
+.sidebar[data-collapsed] .count {
   position: absolute;
   inset-block-start: 0.125rem;
   inset-inline-end: 0.125rem;
   min-inline-size: 1rem;
   padding: 0 0.25rem;
+
+  /* A ring in the sidebar's colour keeps the mark apart from the icon under it. */
+  box-shadow: 0 0 0 2px var(--lufia-color-bg-surface);
   line-height: 1rem;
+}
+
+/* A count takes the corner; the word badge steps aside in the rail. */
+.sidebar[data-collapsed] .badge[data-with-count] {
+  display: none;
 }
 
 .sidebar[data-collapsed] .group + .group {

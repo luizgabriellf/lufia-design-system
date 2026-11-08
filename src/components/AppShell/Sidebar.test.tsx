@@ -84,13 +84,66 @@ describe("Sidebar", () => {
     expect(onCollapsedChange).toHaveBeenCalledWith(false);
   });
 
-  it("keeps every name as a rail and shows the label as a tooltip", () => {
+  it("keeps every name as a rail and leaves the tooltip to the tooltip, not the native title", () => {
     render(<Example collapsed />);
     const home = screen.getByRole("link", { name: "Home" });
-    expect(home).toHaveAttribute("title", "Home");
+    expect(home).not.toHaveAttribute("title");
     // A rail shows collapsible groups' items too, since a closed group would hide icons.
     expect(screen.getByRole("link", { name: "Reports" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Modules" })).not.toBeInTheDocument();
+  });
+
+  it("passes className and data-* attributes through to the item", () => {
+    render(
+      <Sidebar label="Main">
+        <SidebarGroup>
+          <SidebarItem label="Home" href="/" className="hook" data={{ "data-tour": "home", "data-n": 2 }} />
+          <SidebarItem label="Act" className="hook-b" data={{ "data-tour": "act" }} onClick={() => {}} />
+        </SidebarGroup>
+      </Sidebar>,
+    );
+    const home = screen.getByRole("link", { name: "Home" });
+    expect(home).toHaveClass("hook");
+    expect(home).toHaveAttribute("data-tour", "home");
+    expect(home).toHaveAttribute("data-n", "2");
+    expect(screen.getByRole("button", { name: "Act" })).toHaveAttribute("data-tour", "act");
+  });
+
+  it("shows a count with its tone, caps it at 99+ and hides it at zero", () => {
+    render(
+      <Sidebar label="Main">
+        <SidebarGroup>
+          <SidebarItem label="Alerts" href="/a" count={4} countTone="danger" />
+          <SidebarItem label="Tasks" href="/e" count={250} />
+          <SidebarItem label="Capped" href="/c" count={12} maxCount={9} />
+          <SidebarItem label="Quiet" href="/q" count={0} />
+          <SidebarItem label="Tagged" href="/t" badge="New" badgeTone="neutral" />
+        </SidebarGroup>
+      </Sidebar>,
+    );
+    expect(screen.getByText("4")).toHaveAttribute("data-tone", "danger");
+    expect(screen.getByText("99+")).toHaveAttribute("data-tone", "neutral");
+    expect(screen.getByText("9+")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Quiet" })).toHaveTextContent(/^Quiet$/);
+    expect(screen.getByText("New")).toHaveAttribute("data-tone", "neutral");
+  });
+
+  it("defaults a word badge to the warning tone", () => {
+    render(<Example />);
+    expect(screen.getByText("3")).toHaveAttribute("data-tone", "warning");
+  });
+
+  it("hides the word badge of an item that has a count, in the rail", () => {
+    render(
+      <Sidebar label="Main" collapsed>
+        <SidebarGroup>
+          <SidebarItem label="Both" href="/b" badge="New" count={3} />
+          <SidebarItem label="Word" href="/w" badge="Fresh" />
+        </SidebarGroup>
+      </Sidebar>,
+    );
+    expect(screen.getByText("New")).toHaveAttribute("data-with-count");
+    expect(screen.getByText("Fresh")).not.toHaveAttribute("data-with-count");
   });
 
   it("has no axe violations expanded or as a rail", async () => {

@@ -1,10 +1,18 @@
 "use client";
 
-import { useId, useState, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { Collapse } from "../../motion";
 import { useLufia } from "../LufiaProvider";
 import { ChevronGlyph, SidebarGlyph } from "./icons";
-import { NavSurfaceContext, useNavSurface } from "./navigation";
+import {
+  NavSurfaceContext,
+  formatShellCount,
+  useNavSurface,
+  type ShellBadgeTone,
+  type ShellDataAttributes,
+} from "./navigation";
+import { useNavScrollHints } from "./useNavScrollHints";
+import { useShellTooltip } from "./ShellTooltip";
 import styles from "./Sidebar.module.css";
 
 export type SidebarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -22,6 +30,8 @@ export type SidebarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   busy?: boolean;
   /** Above the navigation: a brand, an account or workspace switcher. */
   header?: ReactNode;
+  /** Between the header and the search: the workspace or account the person is in, with its switcher. */
+  context?: ReactNode;
   /** Between the header and the navigation: a search entry. */
   search?: ReactNode;
   /** Below the navigation, pinned to the bottom: account and help links. */
@@ -42,6 +52,7 @@ export function Sidebar({
   collapseLabel,
   expandLabel,
   header,
+  context,
   search,
   footer,
   busy = false,
@@ -49,8 +60,12 @@ export function Sidebar({
   children,
   ...rest
 }: SidebarProps) {
+  const nav = useRef<HTMLElement>(null);
+  useNavScrollHints(nav);
+  const collapseName = collapsed ? expandLabel : collapseLabel;
+  const collapseTip = useShellTooltip(collapseName ?? "", Boolean(collapseName));
   return (
-    <NavSurfaceContext.Provider value={{ collapsed }}>
+    <NavSurfaceContext.Provider value={{ collapsed, surface: "sidebar" }}>
       <div
         {...rest}
         className={[styles.sidebar, className].filter(Boolean).join(" ")}
@@ -62,15 +77,18 @@ export function Sidebar({
             <button
               type="button"
               className={styles.collapseButton}
-              aria-label={collapsed ? expandLabel : collapseLabel}
+              aria-label={collapseName}
               onClick={() => onCollapsedChange(!collapsed)}
+              {...collapseTip.trigger}
             >
               <SidebarGlyph />
             </button>
           ) : null}
+          {collapseTip.tooltip}
         </div>
+        {context ? <div className={styles.context}>{context}</div> : null}
         {search ? <div className={styles.search}>{search}</div> : null}
-        <nav className={styles.nav} aria-label={label} aria-busy={busy || undefined}>
+        <nav ref={nav} className={styles.nav} aria-label={label} aria-busy={busy || undefined}>
           {children}
         </nav>
         {footer ? <div className={styles.foot}>{footer}</div> : null}
@@ -167,7 +185,18 @@ export type SidebarItemProps = {
   /** Makes the item a link, rendered through the configured `linkComponent`. */
   href?: string;
   icon?: ReactNode;
+  /** A short mark after the label, such as "New". For a number use `count`. */
   badge?: ReactNode;
+  /** Colour of `badge`. Default `warning`. */
+  badgeTone?: ShellBadgeTone;
+  /** A number after the label. Hidden at 0, and capped at `maxCount` ("99+"). In the rail it sits on the icon. */
+  count?: number;
+  /** Colour of `count`. Default `neutral`. */
+  countTone?: ShellBadgeTone;
+  /** Where `count` stops growing and shows a plus sign. Default 99. */
+  maxCount?: number;
+  /** `data-*` attributes on the link or button (analytics, guided tours, test ids). */
+  data?: ShellDataAttributes;
   /** This is the current page: `aria-current="page"` and the active style. */
   active?: boolean;
   /** Draw the active style without claiming the page: the item a click is heading to, before the page arrives. */
@@ -184,6 +213,11 @@ export function SidebarItem({
   href,
   icon,
   badge,
+  badgeTone = "warning",
+  count,
+  countTone = "neutral",
+  maxCount,
+  data,
   active = false,
   highlighted,
   disabled = false,
@@ -193,13 +227,16 @@ export function SidebarItem({
   const { linkComponent: Link } = useLufia();
   const { collapsed } = useNavSurface();
   const looksActive = highlighted ?? active;
+  const countText = formatShellCount(count, maxCount);
+  // The label stays in the DOM as a rail's accessible name; the tooltip tells sighted people what the icon is.
+  const tip = useShellTooltip(label, collapsed);
   const common = {
+    ...data,
+    ...tip.trigger,
     className: [styles.item, className].filter(Boolean).join(" "),
     "data-active": looksActive || undefined,
     "aria-current": active ? ("page" as const) : undefined,
     "aria-label": ariaLabel,
-    // The label stays in the DOM as a rail's accessible name; the native tooltip tells sighted people what the icon is.
-    title: collapsed ? label : undefined,
   };
   const content = (
     <>
@@ -211,7 +248,14 @@ export function SidebarItem({
       <span className={styles.label}>{label}</span>
       {/* The flex layout ignores this space; it keeps "Inbox 3" from reading as "Inbox3" where it matters. */}{" "}
       {badge !== undefined && badge !== null && badge !== false ? (
-        <span className={styles.badge}>{badge}</span>
+        <span className={styles.badge} data-tone={badgeTone} data-with-count={countText ? "" : undefined}>
+          {badge}
+        </span>
+      ) : null}
+      {countText ? (
+        <span className={styles.count} data-tone={countTone}>
+          {countText}
+        </span>
       ) : null}
     </>
   );
@@ -226,6 +270,7 @@ export function SidebarItem({
           {content}
         </button>
       )}
+      {tip.tooltip}
     </li>
   );
 }

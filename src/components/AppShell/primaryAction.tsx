@@ -19,6 +19,11 @@ export type AppShellPrimaryAction = {
   icon?: ReactNode;
   href?: string;
   onSelect?: () => void;
+  /**
+   * Called when the person shows intent: the pointer enters the control or it receives focus. Warm the destination here
+   * (a router prefetch, a code chunk); it can fire often, so keep it cheap and idempotent.
+   */
+  onIntent?: () => void;
   /** `data-*` attributes for the floating-bar button (analytics hooks, guided-tour anchors). */
   data?: FloatBarDataAttributes;
 };
@@ -28,6 +33,10 @@ type Registration = { id: symbol; action: AppShellPrimaryAction };
 export type ShellPrimaryActionRegistry = {
   /** The action to show: the latest registered one, else the shell's `primaryAction` prop. */
   action: AppShellPrimaryAction | undefined;
+  /** `action` is the shell's own default, because no page has registered one. */
+  isFallback: boolean;
+  /** Whether wide screens show the shell's default action while no page has registered one. */
+  desktopFallback: boolean;
   register: (id: symbol, action: AppShellPrimaryAction) => void;
   unregister: (id: symbol) => void;
 };
@@ -37,6 +46,7 @@ export const ShellPrimaryActionContext = createContext<ShellPrimaryActionRegistr
 /** The registry state of one shell: registrations come and go with the pages that make them. */
 export function useShellPrimaryActionRegistry(
   fallback: AppShellPrimaryAction | undefined,
+  desktopFallback = true,
 ): ShellPrimaryActionRegistry {
   const [registered, setRegistered] = useState<readonly Registration[]>([]);
   // A page that is already registered is updated where it stands; only a new registrant goes to the end (and wins).
@@ -54,7 +64,11 @@ export function useShellPrimaryActionRegistry(
     [],
   );
   const action = registered[registered.length - 1]?.action ?? fallback;
-  return useMemo(() => ({ action, register, unregister }), [action, register, unregister]);
+  const isFallback = registered.length === 0;
+  return useMemo(
+    () => ({ action, isFallback, desktopFallback, register, unregister }),
+    [action, isFallback, desktopFallback, register, unregister],
+  );
 }
 
 /**
@@ -81,8 +95,15 @@ export function useShellPrimaryAction(action: AppShellPrimaryAction | null): boo
   // no action), so a label change does not send the page to the back of the line.
   useEffect(() => {
     if (!register || label === undefined) return;
-    const { icon, data } = latest.current ?? {};
-    register(id, { label, href, icon, data, onSelect: () => latest.current?.onSelect?.() });
+    const { icon, data, onIntent } = latest.current ?? {};
+    register(id, {
+      label,
+      href,
+      icon,
+      data,
+      onSelect: () => latest.current?.onSelect?.(),
+      onIntent: onIntent ? () => latest.current?.onIntent?.() : undefined,
+    });
   }, [register, id, label, href]);
   const present = label !== undefined;
   useEffect(() => {
@@ -95,15 +116,23 @@ export function useShellPrimaryAction(action: AppShellPrimaryAction | null): boo
 
 /**
  * Where the shell's primary action shows on wide screens: put it in the page header. Renders nothing when no action is
- * registered, outside a shell, and on phones (the floating bar carries it there).
+ * registered, outside a shell, and on phones (the floating bar carries it there). With `desktopPrimaryFallback={false}` on
+ * the shell it also stays empty until a page registers its own, so the default never flashes in the wrong place on a hard load.
  */
 export function ShellPrimaryActionSlot({ className }: { className?: string }) {
-  const action = useContext(ShellPrimaryActionContext)?.action;
-  if (!action) return null;
+  const registry = useContext(ShellPrimaryActionContext);
+  const action = registry?.action;
+  if (!action || (registry.isFallback && !registry.desktopFallback)) return null;
   const classes = [styles.primarySlot, className].filter(Boolean).join(" ");
+  const intent = {
+    onPointerEnter: action.onIntent,
+    onFocus: action.onIntent,
+    "data-fallback": registry.isFallback || undefined,
+  };
   return action.href !== undefined ? (
     <Button
       {...action.data}
+      {...intent}
       variant="primary"
       href={action.href}
       iconStart={action.icon}
@@ -115,6 +144,7 @@ export function ShellPrimaryActionSlot({ className }: { className?: string }) {
   ) : (
     <Button
       {...action.data}
+      {...intent}
       variant="primary"
       iconStart={action.icon}
       className={classes}

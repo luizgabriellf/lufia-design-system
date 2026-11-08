@@ -78,7 +78,10 @@ The shell is built from parts that are exported, so an app with another arrangem
 | `Sidebar`, `SidebarGroup`, `SidebarItem`                            | The desktop sidebar and what goes in it                                        |
 | `ShellNavigation`                                                   | Renders `groups` data as groups and items, for the sidebar and the sheet alike |
 | `MobileFloatBar`, `MobileFloatBarButton`, `MobileFloatBarSeparator` | The floating bar and its controls                                              |
+| `RouteProgress`                                                     | The thin top progress bar for a loading navigation                             |
+| `ShellFooter`, `ShellFooterItem`                                    | The icon-and-label actions at the foot of the sidebar and of the sheet         |
 | `NavSheet`                                                          | The modal bottom sheet with swipe-to-dismiss                                   |
+| `serializeShellState`, `parseShellState`                            | The cookie value that remembers the rail and the open groups                   |
 | `findActiveNavKey`                                                  | The matcher behind `currentPath`                                               |
 
 <Canvas of={SidebarStories.Composition} />
@@ -96,14 +99,182 @@ A click on a link makes it look current at once and closes the sheet; `aria-curr
 
 - A group with `collapsible` and a `label` is a disclosure button over its items. Groups marked `defaultOpen`, and the one
   holding the current page, start open; arriving on a page inside a closed group opens it. Own the state with `openGroups`
-  and `onOpenGroupsChange` to persist it (a cookie, `localStorage`); the package stores nothing.
-- The rail (`collapsed`, `defaultCollapsed`, `onCollapsedChange`) shows icons only. Names stay in the DOM and a native
-  tooltip shows the label. A rail shows the items of collapsible groups too, because a closed group would hide icons.
-  `fixedSidebar` removes the rail button.
+  and `onOpenGroupsChange` to persist it; the package stores nothing (see "Remembering the rail and the groups").
+- The rail (`collapsed`, `defaultCollapsed`, `onCollapsedChange`) shows icons only. Names stay in the DOM and a tooltip
+  shows the label on mouse hover and on keyboard focus, never on touch (see "Rail tooltips"). A rail shows the items of
+  collapsible groups too, because a closed group would hide icons. `fixedSidebar` removes the rail button.
 - `brand` and `footer` take a node or a function that receives `{ collapsed }`, so a logo can shrink to its mark.
   `topBarEnd` fills the right of the phone top bar.
 
 <Canvas of={Stories.Rail} />
+
+#### Nav item extras
+
+A `ShellNavItem` takes more than a label and an `href`:
+
+- `count` is a number after the label: hidden at 0, shown as `99+` above 99, in the tone of `countTone` (`neutral`,
+  `warning` or `danger`). In the rail it sits on the corner of the icon. Pair it with `ariaLabel` ("Inbox, 7 unread")
+  so the tone's meaning is also in words. `badge` stays for a word such as "New", with `badgeTone` (default `warning`); in
+  the rail a word badge steps aside for a count on the same item.
+- `className` and `data` (an object of `data-*` attributes) go on the link or button itself: styling hooks, analytics,
+  guided-tour anchors, test ids.
+
+<Canvas of={Stories.CountsAndBadges} />
+
+#### Rail tooltips
+
+In the rail every control that lost its label (items, the search entry, the rail button, footer items) shows a tooltip.
+It appears after a short hover delay and at once on keyboard focus (`:focus-visible`), never on touch, where a tap would
+leave it stuck. Escape, leaving, blur and scrolling dismiss it, and it stays while the pointer is over it (WCAG 1.4.13). It
+fades with `--lufia-motion-duration-fast` and nothing else moves; reduced motion removes the fade. It is drawn in
+`document.body`, so a scrolling navigation never clips it, and it is `aria-hidden`: each control already carries the same
+text as its accessible name, so nothing is announced twice.
+
+#### Footer
+
+`ShellFooter` and `ShellFooterItem` build the foot of the sidebar and of the sheet: one column in the sidebar, icons only in
+the rail, two columns in the sheet. An item is a link through the configured `linkComponent` (`href`), a plain external
+anchor (`href` with `external`, and `target="_blank"` adds `rel="noopener noreferrer"`), or a button. `type="submit"` suits a
+sign-out form, `pressed` makes a toggle (a theme switch), `active` marks the current page, `count` adds a capped count and
+`tone="warning"` colours a caution. `pending` dims the item, sets `aria-busy`, ignores further clicks and keeps focus where it
+is, which is why it does not use `disabled`.
+
+```tsx
+<AppShell
+  footer={
+    <ShellFooter aria-label="Account and help">
+      <ShellFooterItem label="Settings" href="/settings" icon={<GearIcon />} active={path === "/settings"} />
+      <ShellFooterItem
+        label="Help"
+        href="/help"
+        icon={<HelpIcon />}
+        count={unreadReplies}
+        countTone="danger"
+      />
+      <form action={signOut}>
+        <ShellFooterItem label="Sign out" type="submit" icon={<ExitIcon />} pending={signingOut} />
+      </form>
+    </ShellFooter>
+  }
+/>
+```
+
+<Canvas of={Stories.Footer} />
+
+A link in the footer of the phone sheet closes the sheet like any other link.
+
+#### The page area and where banners sit
+
+The shell owns the one `<main>`. Three places sit around it, and the choice decides what stays put:
+
+| Slot                  | Where it is                                         | Use for                                                                                                  |
+| --------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `topBar`, `statusRow` | Beside the sidebar, above `<main>`, a sibling of it | Context that stays put at every width: a unit picker, a sync state. Never remounted with the page.       |
+| `mainStart`           | First child inside `<main>`, before `children`      | Banners that belong to the page area and scroll with it: a trial notice, an install hint, a page notice. |
+| `children`            | Inside `<main>`                                     | The page.                                                                                                |
+
+`mainProps` sets attributes on `<main>` (`id`, `className`, `data-*`, `tabIndex`, ARIA); the skip link follows its `id`.
+`mainKey` works like React's `key`: when it changes (a workspace or scope switch) the `<main>`, its banners and the page
+inside remount and drop their state. Leave it out for ordinary page changes.
+
+<Canvas of={Stories.MainSlots} />
+
+#### Context and the phone sheet
+
+`context` is the slot for where the person is working: a workspace, company or account card with its switcher. It sits
+between the brand and the search in the sidebar and above the navigation in the sheet. A function slot receives
+`AppShellSlotState`: `surface` (`"sidebar"`, `"sheet"` or `"topBar"`), `collapsed` (only ever true in the sidebar rail),
+`closeSheet()` and `openSheet()`. So one switcher can open as a dropdown in the sidebar, inline in the sheet, and close the
+sheet when it navigates. `brand`, `footer`, `context` and `searchTrigger` all get this state, and each is rendered once per
+surface: do not give its parts a fixed `id`.
+
+The phone sheet can be controlled: `menuOpen` and `onMenuOpenChange` let a control of your own open it (a workspace chip in
+the top bar), and `hideSheetNavigation` leaves only `context` and the footer in it while a switcher has taken over.
+A followed link inside the sheet, footer and slots included, closes it.
+
+<Canvas of={Stories.ContextSlot} />
+<Canvas of={Stories.ControlledSheetWithSwitcher} />
+
+#### Route motion, progress and the pending page
+
+Give the shell the current page's `routeKey` (the pathname, not the query) and it takes care of the motion around a
+navigation; every piece is optional and none remounts the page.
+
+| Prop            | What it does                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `routeKey`      | When it changes, the arriving page fades in and rises (`RouteTransition`). Not on first load, not for a search-param change. Banners in `mainStart` and fixed elements are left alone. Adds one element around `children`.                                                                                                                                                         |
+| `routePending`  | A navigation has started: a thin bar at the top of the window, shown only if the wait outlasts 150 ms. Without `routePending`, a plain click on a same-origin link to another path starts it by itself (a link that only changes the query or hash does not); `routeKey` changing, the address changing, or 10 seconds finish it, so a cancelled navigation never leaves it stuck. |
+| `mainPending`   | A skeleton in `<main>` in place of the page. The page stays mounted but `hidden` (a wrapper the shell always renders, so showing the skeleton never remounts it, and hidden content leaves the tab order); focus that was inside it moves to `<main>`; `mainStart` stays; `<main>` is `aria-busy` (your own `aria-busy` is kept). After a skeleton the page only fades.            |
+| `routeProgress` | `false` turns the bar off while keeping the rest.                                                                                                                                                                                                                                                                                                                                  |
+
+Timing is yours: when to show `mainPending` (most apps wait a few hundred milliseconds, so fast navigations never show a
+skeleton), when a wait is long enough to offer a retry, and what the skeleton looks like. `RouteProgress` is also exported
+for an app that draws the bar itself.
+
+<Canvas of={Stories.RouteMotionAndPending} />
+
+#### Floating bar fade
+
+`floatScrim` (default off) draws a gradient from the canvas colour behind the floating bar on phones, so content scrolling
+under the bar fades out instead of ending in a hard edge. Nothing is drawn unless you ask.
+
+#### Primary action details
+
+`primaryAction.onIntent` fires when the pointer enters the control or it takes focus, on the floating bar and in
+`ShellPrimaryActionSlot`: warm the destination there. `desktopPrimaryFallback={false}` keeps the shell's default action out
+of the wide-screen slot until a page registers its own (the phone bar still shows the default), so a hard load never
+flashes an action the page is about to replace. The default is marked `data-fallback` until a page takes over, for CSS.
+
+#### A long navigation scrolls itself
+
+When the list is taller than the window, both the sidebar and the sheet fade the edge that hides more items
+(`data-more` on the scroller) and bring the current page into view, once for each page and never on a group toggle.
+
+#### What stays in the app
+
+The shell frames the product; these remain the app's own, composed through slots:
+
+- the search or command palette itself (use `CommandPalette`), its data and any AI-assisted query;
+- the workspace and unit pickers, mounted in `context`, `topBar` or `mainStart`;
+- route prefetching (`onIntent` is the hook), skeleton shapes per page, and long-wait copy;
+- where the theme, the account and the session live (the footer's items call your functions).
+
+#### Remembering the rail and the groups
+
+The package stores nothing. Hold the choice in a cookie, not `localStorage`: a server can read a cookie before it renders, so
+the first paint is already the right one and nothing flashes open and then shuts. `serializeShellState` writes a cookie-safe
+value and `parseShellState` reads it back on the server or in the browser; hand the result to `defaultCollapsed` and
+`defaultOpenGroups`, and save on the two change hooks.
+
+```tsx
+// Server component (any framework that exposes the request cookie)
+const saved = parseShellState(cookieStore.get("shell")?.value);
+
+<AppShellClient initial={saved} />;
+
+// Client component: keep the latest choices and write them with one small function
+("use client");
+function AppShellClient({ initial }: { initial: ShellState }) {
+  const state = useRef(initial);
+  const save = (patch: Partial<ShellState>) => {
+    state.current = { ...state.current, ...patch };
+    document.cookie = `shell=${serializeShellState(state.current)}; path=/; max-age=31536000; samesite=lax`;
+  };
+  return (
+    <AppShell
+      defaultCollapsed={initial.collapsed}
+      defaultOpenGroups={initial.openGroups}
+      onCollapsedChange={(collapsed) => save({ collapsed })}
+      onOpenGroupsChange={(openGroups) => save({ openGroups })}
+      /* groups, labels, children... */
+    />
+  );
+}
+```
+
+`openGroups` stays `undefined` until the person opens or closes a group, so the defaults (`defaultOpen`, the group of the
+current page) apply until then. The cookie only supplies initial state: the shell stays uncontrolled, and arriving on a page
+inside a closed group still opens it. Pass `collapsed` and `openGroups` instead if your app owns the state.
 
 </Section>
 
@@ -130,7 +301,7 @@ its icon. All keep their accessible names.
 <Canvas of={SheetStories.Default} />
 
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
-made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
+made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabber, the header and the body alike.
 
 ### All states
 
@@ -146,6 +317,7 @@ made inert. Pass `swipeToDismiss={false}` to turn the gesture off.
 | `navigationPending`                             | A skeleton shown in place of the navigation (sidebar and sheet) while a route loads; `aria-busy` meanwhile.                                            |
 | `searchTrigger`                                 | Replaces the sidebar search entry. `search` still drives the floating bar entry and takes `shortcut` (a `kbd`), `keyShortcuts`, `opensDialog`.         |
 | `primaryAction`                                 | The default main action. A page replaces it with `useShellPrimaryAction`, and `ShellPrimaryActionSlot` shows it on wide screens.                       |
+| `mainProps`, `mainKey`, `mainStart`             | Attributes of `<main>`, a remount key, and banners inside it (see "The page area and where banners sit").                                              |
 | `menuData`, `search.data`, `primaryAction.data` | `data-*` attributes on the floating bar controls (analytics, guided tours).                                                                            |
 | `sheetAs="dialog"`                              | The phone navigation sheet as a native `<dialog>` in the top layer (see `Modal` `renderAs`).                                                           |
 
@@ -188,10 +360,14 @@ mounted page takes over from the older one.
   the breakpoint, so a phone never sees two.
 - **Current page.** `aria-current="page"` on exactly one link. While a group is closed, its button shows the active style
   to point at the page inside it.
-- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet; the body keeps native scrolling
-  because only the drag zone captures the gesture. Escape and the close button always work. A short drag springs back; a
-  past-threshold release or a quick flick dismisses. The offset follows the finger even under reduced motion, because it
-  is direct manipulation.
+- **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet. The body keeps native scrolling:
+  a drag that starts in the body counts only when the body is scrolled to the top and moves down, and then it follows the
+  finger (and cancels the browser's pull to refresh) as on a native bottom sheet. A list inside the body that scrolls on its
+  own is respected: the drag starts only when it and the body are both at the top. Any other move scrolls, nothing is cancelled
+  until the direction is known (so a row that scrolls sideways still does), and a sideways move is left alone. The click the
+  lifted finger would send to a link under it is swallowed for a moment, never longer than the next touch. Escape and the close button always
+  work. A short drag springs back; a past-threshold release or a quick flick dismisses. The offset follows the finger even
+  under reduced motion, because it is direct manipulation.
 - **Focus.** The sheet traps focus, lands it on the dialog itself (nothing is chosen for the person, and no keyboard
   pops up on touch), and gives it back to the opener. Body scroll is locked.
 - **The floating bar is a labelled group**, not an ARIA toolbar: a toolbar promises arrow-key movement and every control

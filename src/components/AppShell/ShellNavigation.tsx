@@ -52,6 +52,11 @@ export function ShellNavigation({
                 href={item.href}
                 icon={item.icon}
                 badge={item.badge}
+                badgeTone={item.badgeTone}
+                count={item.count}
+                countTone={item.countTone}
+                className={item.className}
+                data={item.data}
                 disabled={item.disabled}
                 active={item.key === activeKey}
                 highlighted={pendingKey ? item.key === pendingKey : item.key === activeKey}

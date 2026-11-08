@@ -2,7 +2,9 @@ import { useState, type ReactNode } from "react";
 import { LufiaProvider, type LinkComponent } from "../../components/LufiaProvider";
 import { AppShell, type AppShellLabels, type AppShellProps } from "../../components/AppShell/AppShell";
 import type { ShellNavGroup } from "../../components/AppShell/navigation";
+import { ShellFooter, ShellFooterItem } from "../../components/AppShell/ShellFooter";
 import {
+  ArrowRightIcon,
   ChartIcon,
   DocumentIcon,
   GridIcon,
@@ -81,25 +83,13 @@ export function DemoBrand({ collapsed = false }: { collapsed?: boolean }) {
   );
 }
 
-export function DemoFooter({ collapsed = false }: { collapsed?: boolean }) {
+export function DemoFooter({ pending = false }: { collapsed?: boolean; pending?: boolean }) {
   return (
-    <a
-      href="#help"
-      title={collapsed ? "Help" : undefined}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: collapsed ? "center" : "flex-start",
-        gap: "0.7rem",
-        minBlockSize: "2.75rem",
-        paddingInline: "0.75rem",
-        color: "var(--lufia-color-text-muted)",
-        textDecoration: "none",
-      }}
-    >
-      <HelpIcon size={18} />
-      {collapsed ? <span className="sb-sr-only">Help</span> : <span>Help and support</span>}
-    </a>
+    <ShellFooter aria-label="Account and help">
+      <ShellFooterItem label="Settings" href="/settings" icon={<SettingsIcon size={18} />} />
+      <ShellFooterItem label="Help and support" href="#help" icon={<HelpIcon size={18} />} count={2} />
+      <ShellFooterItem label="Sign out" icon={<ArrowRightIcon size={18} />} pending={pending} />
+    </ShellFooter>
   );
 }
 
@@ -163,15 +153,20 @@ export function DemoPage({ title }: { title: string }) {
   );
 }
 
-export type DemoShellProps = Partial<AppShellProps> & { initialPath?: string; children?: ReactNode };
+export type DemoShellProps = Partial<AppShellProps> & {
+  initialPath?: string;
+  /** Pass the current path as `routeKey`, so changing page plays the route motion. */
+  trackRoute?: boolean;
+  children?: ReactNode;
+};
 
 /** A complete shell wired to local state: navigation updates `currentPath`, like a router would. */
-export function DemoShell({ initialPath = "/", children, ...props }: DemoShellProps) {
+export function DemoShell({ initialPath = "/", trackRoute = false, children, ...props }: DemoShellProps) {
   const [path, setPath] = useState(initialPath);
   const title = demoGroups.flatMap((g) => g.items).find((item) => item.href === path)?.label ?? "Overview";
   return (
     <LufiaProvider linkComponent={demoLink(setPath)}>
-      <AppShellWithDefaults path={path} {...props}>
+      <AppShellWithDefaults path={path} routeKey={trackRoute ? path : undefined} {...props}>
         {children ?? <DemoPage title={title} />}
       </AppShellWithDefaults>
     </LufiaProvider>
