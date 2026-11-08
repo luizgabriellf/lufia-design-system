@@ -309,14 +309,15 @@
 }
 
 /* Phones, narrow: the footer stays a row, in DOM order, so the primary action sits at the inline end (and RTL mirrors it).
-   Text actions share the width evenly. `min-inline-size: max-content` makes a label that cannot fit wrap onto its own line
-   instead of overflowing; `max-inline-size: 100%` keeps one very long label inside the bar. Icon-only triggers (a "more
+   Text actions grow to fill the bar. The flex basis is the label's own width, so actions that cannot fit side by side
+   wrap onto their own line instead of overflowing; `max-inline-size: 100%` and normal white space let one very long
+   label wrap inside its button rather than leave the screen. Icon-only triggers (a "more
    actions" button, or the `MoreActions` wrapper, which is not a button) keep their natural size. */
 @media (width <= 30rem) {
   .footer[data-footer-layout="row"] > :where(button, a, [data-lufia-part]):not([data-icon-only]) {
-    flex: 1 1 0;
-    min-inline-size: max-content;
+    flex: 1 1 auto;
     max-inline-size: 100%;
+    white-space: normal;
     justify-content: center;
     text-align: center;
   }

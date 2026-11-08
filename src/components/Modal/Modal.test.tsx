@@ -792,9 +792,9 @@ describe("Modal footer layout", () => {
   it("keeps the footer a row on phones, with stacking only as an opt-in", () => {
     const narrow = /@media \(width <= 30rem\) \{([\s\S]*?)\n\}\n/.exec(css)?.[1] ?? "";
     expect(narrow).toMatch(
-      /\.footer\[data-footer-layout="row"\] > [^{]*:not\(\[data-icon-only\]\)\s*\{[^}]*flex: 1 1 0;/,
+      /\.footer\[data-footer-layout="row"\] > [^{]*:not\(\[data-icon-only\]\)\s*\{[^}]*flex: 1 1 auto;/,
     );
-    expect(narrow).toMatch(/min-inline-size: max-content/);
+    expect(narrow).toMatch(/max-inline-size: 100%;\s*white-space: normal;/);
     // column-reverse may only appear under the stack opt-in.
     for (const block of narrow.split("}")) {
       if (block.includes("column-reverse")) expect(block).toContain('[data-footer-layout="stack"]');

@@ -91,7 +91,7 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   footer?: ReactNode;
   /**
    * How the footer actions are laid out on a narrow phone (30rem and below). `row` (default) keeps them side by side in
-   * DOM order, so the primary action goes last, at the inline end; text actions share the width evenly and wrap if their
+   * DOM order, so the primary action goes last, at the inline end; text actions grow to fill the bar and wrap if their
    * labels cannot fit, while icon-only triggers keep their size. `stack` puts them in a full-width column, primary on top.
    */
   footerLayout?: "row" | "stack";
