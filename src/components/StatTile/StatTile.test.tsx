@@ -7,6 +7,7 @@ import { AnimatedNumber } from "../../motion";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { Sparkline } from "../Sparkline";
 import { StatTile } from "./StatTile";
+import { computeStatDelta } from "./statDelta";
 
 const css = readFileSync("src/components/StatTile/StatTile.module.css", "utf8");
 
@@ -279,5 +280,38 @@ describe("StatTile", () => {
     expect(css).toMatch(/\[data-interactive\]:active \{[^}]*scale\(/);
     const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
     expect(reduced?.[1]).toMatch(/:hover[\s\S]*:active[\s\S]*transform:\s*none/);
+  });
+
+  describe("with computeStatDelta", () => {
+    const labels = { up: "Up", down: "Down", flat: "No change", comparison: "vs previous 30 days" };
+    const stat = (previous: number | null) =>
+      computeStatDelta({ current: 112, previous, goodDirection: "down", labels, locale: "en" });
+
+    it("renders the computed change: direction word, text, arrow and tone", () => {
+      render(<StatTile label="Open tickets" value="112" {...stat(100)} />);
+      const delta = screen.getByText(/vs previous 30 days/);
+      expect(delta).toHaveTextContent("Up +12% vs previous 30 days");
+      expect(delta).toHaveAttribute("data-trend", "up");
+      expect(delta).toHaveAttribute("data-tone", "warning");
+    });
+
+    it("shows no change line until there is history", () => {
+      const { container } = render(<StatTile label="Open tickets" value="112" {...stat(null)} />);
+      expect(container.querySelector("[data-trend]")).toBeNull();
+    });
+
+    it("keeps explicit props that come after the spread", () => {
+      render(
+        <StatTile label="Open tickets" value="112" {...stat(100)} deltaTone="danger" trendLabel="Rose" />,
+      );
+      const delta = screen.getByText(/vs previous 30 days/);
+      expect(delta).toHaveAttribute("data-tone", "danger");
+      expect(delta).toHaveTextContent("Rose +12% vs previous 30 days");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(<StatTile label="Open tickets" value="112" {...stat(100)} />);
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

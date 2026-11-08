@@ -5654,7 +5654,7 @@ Reads these semantic tokens: `--lufia-motion-distance-rise`, `--lufia-motion-dur
 
 - Status: beta
 - Category: Data display
-- Import: `import { StatTile } from "@lufia/design-system/components/StatTile"`
+- Import: `import { StatTile, computeStatDelta } from "@lufia/design-system/components/StatTile"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/StatTile](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/StatTile)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-stattile--docs)
@@ -5673,6 +5673,13 @@ A key figure with its label, an optional change and hint, and a slot for a small
 - A figure inside a sentence or a table cell: format it as text.
 - Several figures in one tile: use one tile per figure.
 - A tile whose destination is unrelated to the figure: use a `Card`.
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `StatTile` | component |
+| `computeStatDelta` | function |
 
 ### API
 
@@ -5697,8 +5704,19 @@ A key figure with its label, an optional change and hint, and a slot for a small
 
 Other native element attributes pass through to the root element.
 
+#### `computeStatDelta`
+
+Computes the props of `StatTile` that describe a change against a previous period: `delta`, `trend`, `trendLabel` and `deltaTone`. Spread the result into the tile. Returns `null` when there is no previous value, so the tile shows no change until there is history. It is pure and locale-aware, so it is safe on the server. The default format is a percentage with one decimal under 10% and none above. On a zero or small base (`|previous|` below `minBase`) it switches to the absolute change, so a tile never says "+Infinity%" or "+400%" for going from 1 to 5. It also returns `null` when the change overflows.
+
+```ts
+computeStatDelta(input: StatDeltaInput): StatDelta | null
+```
+
 ### Types
 
+- `StatDelta`: `{ delta: string; trend: StatTileTrend; trendLabel: string; deltaTone: StatTileTone; }`
+- `StatDeltaGoodDirection`: `"up" | "down" | "neutral"`
+- `StatDeltaLabels`: `{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }`
 - `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
 - `StatTileTrend`: `"up" | "down" | "flat"`
 
@@ -5754,6 +5772,11 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--themed-by-tokens`
 - `components-data-display-stattile--with-delta`
 - `components-data-display-stattile--falling-is-good`
+- `components-data-display-stattile--computed-percent`
+- `components-data-display-stattile--computed-small-base`
+- `components-data-display-stattile--computed-flat`
+- `components-data-display-stattile--computed-falling-is-good`
+- `components-data-display-stattile--computed-no-history`
 - `components-data-display-stattile--flat`
 - `components-data-display-stattile--with-sparkline`
 - `components-data-display-stattile--warning`
