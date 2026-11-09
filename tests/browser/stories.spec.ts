@@ -1485,6 +1485,40 @@ test.describe("phone targets and overflow", () => {
     });
   });
 
+  for (const width of [390, 1280]) {
+    test(`nine long peer nav items keep one line each at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 700 });
+      await openStory(page, "components-navigation-peernav--nine-long-items-scroll");
+      await page.waitForFunction(() => document.getAnimations().length === 0);
+      const result = await page.evaluate(() => {
+        const items = [...document.querySelectorAll<HTMLElement>("[data-peer-key]")];
+        const strip = items[0]!.parentElement!;
+        const active = items.find((item) => item.dataset.active)!;
+        const indicator = strip.querySelector<HTMLElement>('[aria-hidden="true"]:not([data-peer-key] *)')!;
+        const a = active.getBoundingClientRect();
+        const m = indicator.getBoundingClientRect();
+        return {
+          heights: new Set(items.map((item) => Math.round(item.getBoundingClientRect().height))).size,
+          lines: items.flatMap((item) =>
+            [...item.querySelectorAll<HTMLElement>("[title]")].map(
+              (text) => text.getBoundingClientRect().height,
+            ),
+          ),
+          maxWidth: Math.max(...items.map((item) => item.getBoundingClientRect().width)),
+          scrolls: strip.scrollWidth > strip.clientWidth,
+          fade: strip.dataset.more,
+          indicatorOff: Math.abs(a.left - m.left) + Math.abs(a.width - m.width),
+        };
+      });
+      expect(result.heights).toBe(1);
+      expect(Math.max(...result.lines)).toBeLessThan(24);
+      expect(result.maxWidth).toBeLessThanOrEqual(320.5);
+      expect(result.scrolls).toBe(true);
+      expect(result.fade).toBeTruthy();
+      expect(result.indicatorOff).toBeLessThan(2);
+    });
+  }
+
   test("a long word stays inside its peer nav item", async ({ page }) => {
     await openStory(page, "components-navigation-peernav--long-word-fit");
     const overflowing = await page.evaluate(() =>

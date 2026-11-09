@@ -274,4 +274,24 @@ describe("PeerNav href values", () => {
     expect(screen.getByRole("navigation", { name: "Views" })).toHaveAttribute("data-mode", "links");
     expect(screen.getByRole("link", { name: "Work" })).toHaveAttribute("href", "/b");
   });
+
+  it("exposes the full text as a tooltip in the scroll layout", () => {
+    render(
+      <PeerNav
+        label="Views"
+        layout="scroll"
+        items={[
+          { key: "a", label: "A long label", description: "A long description", href: "/a" },
+          { key: "b", label: "Other", href: "/b" },
+        ]}
+      />,
+    );
+    expect(screen.getByText("A long label")).toHaveAttribute("title", "A long label");
+    expect(screen.getByText("A long description")).toHaveAttribute("title", "A long description");
+  });
+
+  it("leaves a fit label without a tooltip", () => {
+    render(<PeerNav label="Views" layout="fit" items={[{ key: "a", label: "Short", href: "/a" }]} />);
+    expect(screen.getByText("Short")).not.toHaveAttribute("title");
+  });
 });

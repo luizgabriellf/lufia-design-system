@@ -50,8 +50,9 @@ export type PeerNavProps<Href = string> = Omit<
    */
   onValueChange?: (key: string, event?: MouseEvent<HTMLElement>) => void;
   /**
-   * `"fit"` shares the width between the items; `"scroll"` sizes each one to its label and scrolls sideways with a fade on the
-   * edge that hides more. Use `"scroll"` when labels are long, so they stay on one line. `"auto"` (default) scrolls from
+   * `"fit"` shares the width between the items; `"scroll"` sizes each one to its text and scrolls sideways with a fade on the
+   * edge that hides more. In `"scroll"` the label and the description stay on one line each, ending in an ellipsis at the
+   * item's maximum width, with the full text as a tooltip. `"auto"` (default) scrolls from
    * five items.
    */
   layout?: "auto" | "fit" | "scroll";
@@ -148,8 +149,14 @@ export function PeerNav<Href = string>({
         </span>
       ) : null}
       <span className={styles.labelGroup}>
-        <span className={styles.label}>{item.label}</span>
-        {item.description ? <span className={styles.description}>{item.description}</span> : null}
+        <span className={styles.label} title={scrolls ? item.label : undefined}>
+          {item.label}
+        </span>
+        {item.description ? (
+          <span className={styles.description} title={item.description}>
+            {item.description}
+          </span>
+        ) : null}
       </span>
     </>
   );

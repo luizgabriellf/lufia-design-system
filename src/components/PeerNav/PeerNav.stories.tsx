@@ -123,6 +123,30 @@ export const LongLabelsScroll: Story = {
     items: linkItems.map((item) => ({ ...item, label: `${item.label} with a considerably longer label` })),
   },
 };
+/** Nine views with long text: one line each for label and description, equal heights, and a scrolling strip. */
+export const NineLongItemsScroll: Story = {
+  args: {
+    layout: "scroll",
+    value: "item-3",
+    items: [
+      ["Pending", "Without a delivery or signature"],
+      ["Upcoming replacements", "Planned for the next thirty days"],
+      ["By person", "One row each, with a spreadsheet"],
+      ["Stock movements", "Everything received and issued"],
+      ["Expiring certificates", "Sorted by the nearest expiry date of all"],
+      ["Returns", "Items handed back"],
+      ["Costs by team", "Spending for the current period"],
+      ["Exceptions", "Records that need a second look"],
+      ["An exceptionally long view name that reaches past the maximum width", "History of every change"],
+    ].map(([label, description], index) => ({
+      key: `item-${index}`,
+      label: label!,
+      description,
+      href: `#item-${index}`,
+      icon: <GridIcon size={18} />,
+    })),
+  },
+};
 /** A word too long for its share of the row breaks inside the item instead of running into the next one. */
 export const LongWordFit: Story = {
   args: {
