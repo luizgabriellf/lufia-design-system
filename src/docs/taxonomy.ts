@@ -178,6 +178,11 @@ export const ENTRIES: Entry[] = [
     "Data display",
     "A short list of items that need a decision, with a tone bar and an action.",
   ),
+  c(
+    "QueueSummary",
+    "Data display",
+    "Work queues by urgency: open ones as rows, empty ones folded into one line, an all-clear when none are open.",
+  ),
   c("ActivityList", "Data display", "A feed of what happened with its time, optionally on a timeline rail."),
   c("StatusTimeline", "Data display", "A vertical timeline of states with their dates."),
   c("TableToolbar", "Data display", "The search, filter and action row above a table."),

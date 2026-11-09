@@ -9,7 +9,7 @@
 
 .text {
   min-inline-size: 0;
-  flex: 1 1 12rem;
+  flex: 1 1 var(--lufia-section-header-title-basis, 12rem);
 }
 
 .title {

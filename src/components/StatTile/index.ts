@@ -1,4 +1,10 @@
-export { StatTile, type StatTileProps, type StatTileTone, type StatTileTrend } from "./StatTile";
+export {
+  StatTile,
+  type StatTileLayout,
+  type StatTileProps,
+  type StatTileTone,
+  type StatTileTrend,
+} from "./StatTile";
 export {
   computeStatDelta,
   type StatDelta,

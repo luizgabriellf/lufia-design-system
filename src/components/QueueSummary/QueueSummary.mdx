@@ -1,0 +1,91 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./QueueSummary.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="QueueSummary"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The overview of many work queues on one screen. Queues with something in them lead as `StatTile` rows, ordered by tone and then by the order you give. Queues at zero fold into one quiet line that still opens to every destination. When every count is zero, a short all-clear replaces the rows.
+
+<Canvas of={Stories.Mixed} />
+
+### Usage
+
+```tsx
+import { QueueSummary } from "@lufia/design-system/components/QueueSummary";
+
+<QueueSummary
+  items={[
+    { id: "overdue", label: "Overdue renewals", count: 7, tone: "danger", href: "/overdue" },
+    { id: "review", label: "Awaiting review", count: 0, href: "/review" },
+  ]}
+  clearLabel={(count) => `${count} queues clear`}
+  allClearTitle="All caught up"
+  allClearBody="Nothing is waiting for you."
+/>;
+```
+
+Strings arrive through props from your copy or i18n layer; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### All clear
+
+Shown only when every count is exactly `0`. Keep the words short: this state appears often.
+
+<Canvas of={Stories.AllClear} />
+
+### Many open queues
+
+Rows take one column on a phone and more as the width allows. Rows on one line of the grid share a height.
+
+<Canvas of={Stories.ManyOpen} />
+
+### Unknown counts
+
+`count: null` means the count could not be read. The queue stays in view after the open ones with `unknownValue`, and it blocks the all-clear: a queue you could not read is not a clear queue.
+
+<Canvas of={Stories.UnknownCount} />
+
+### On a phone
+
+<Canvas of={Stories.Phone} />
+
+### In every theme
+
+<Canvas of={Stories.Themes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Mixed} />
+
+</Section>
+
+<Section id="accessibility">
+
+- Open queues are a list; each row is one link whose description carries the figure and the hint.
+- The fold is a native `details` and `summary`, so it needs no script and is operable by keyboard. Each queue behind it stays a link.
+- Rows and the fold line are at least `--lufia-target-touch` tall.
+- The tone is reinforced by position and never carried by colour alone: rows are ordered by it, and the label says what the queue is.
+- The chevron rotation and the row entrance stop under reduced motion.
+
+</Section>
+
+<Section id="guidelines">
+
+- Use it for a fixed set of queues counted on one screen. For individual items that need a decision, use `AttentionList`.
+- For a few independent figures with no zero behaviour, use `StatTile` in a grid.
+- Reserve `danger` for what is late or blocking. If every row is `danger`, the order says nothing.
+
+</Section>

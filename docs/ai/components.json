@@ -11481,6 +11481,154 @@
       ]
     },
     {
+      "name": "QueueSummary",
+      "category": "Data display",
+      "summary": "Work queues by urgency: open ones as rows, empty ones folded into one line, an all-clear when none are open.",
+      "status": "beta",
+      "source": "src/components/QueueSummary",
+      "entry": {
+        "subpath": "@lufia/design-system/components/QueueSummary",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "QueueSummary",
+          "kind": "component",
+          "description": "A home-screen summary of many work queues, built on `StatTile` rows. Open queues lead, ordered by tone and then by the given order; queues at zero fold into one quiet line that still opens to every destination; and when every count is zero, an all-clear replaces the rows. A queue whose count is unknown stays in view, so it never passes for clear.",
+          "props": [
+            {
+              "name": "items",
+              "type": "readonly QueueSummaryItem[]",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "clearLabel",
+              "type": "(count: number) => ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The line that folds the empty queues (\"6 queues are clear\")."
+            },
+            {
+              "name": "allClearTitle",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Heading of the all-clear state, shown only when every count is exactly `0`."
+            },
+            {
+              "name": "allClearBody",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A short line under the all-clear heading."
+            },
+            {
+              "name": "unknownValue",
+              "type": "ReactNode",
+              "required": false,
+              "default": "\"—\"",
+              "description": "The figure of a queue whose count is unknown."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "QueueSummaryItem",
+          "kind": "type",
+          "description": "",
+          "definition": "{ [dataAttribute: `data-${string}`]: string | undefined; id: string; label: ReactNode; count: number | null; value?: ReactNode; tone?: QueueSummaryTone | undefined; hint?: ReactNode; sparkline?: ReactNode; href?: string | undefined; onClick?: MouseEventHandler<HTMLElement> | undefined; }"
+        },
+        {
+          "name": "QueueSummaryProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { items: readonly QueueSummaryItem[]; clearLabel: (count: number) => ReactNode; allClearTitle: ReactNode; allClearBody?: ReactNode; unknownValue?: ReactNode; }"
+        },
+        {
+          "name": "QueueSummaryTone",
+          "kind": "type",
+          "description": "",
+          "definition": "\"neutral\" | \"warning\" | \"danger\""
+        }
+      ],
+      "aliases": {
+        "QueueSummaryItem": "{ [dataAttribute: `data-${string}`]: string | undefined; id: string; label: ReactNode; count: number | null; value?: ReactNode; tone?: QueueSummaryTone | undefined; hint?: ReactNode; sparkline?: ReactNode; href?: string | undefined; onClick?: MouseEventHandler<HTMLElement> | undefined; }",
+        "QueueSummaryProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { items: readonly QueueSummaryItem[]; clearLabel: (count: number) => ReactNode; allClearTitle: ReactNode; allClearBody?: ReactNode; unknownValue?: ReactNode; }",
+        "QueueSummaryTone": "\"neutral\" | \"warning\" | \"danger\""
+      },
+      "story": {
+        "docsId": "components-data-display-queuesummary--docs",
+        "stories": [
+          {
+            "export": "Mixed",
+            "id": "components-data-display-queuesummary--mixed"
+          },
+          {
+            "export": "AllClear",
+            "id": "components-data-display-queuesummary--all-clear"
+          },
+          {
+            "export": "ManyOpen",
+            "id": "components-data-display-queuesummary--many-open"
+          },
+          {
+            "export": "UnknownCount",
+            "id": "components-data-display-queuesummary--unknown-count"
+          },
+          {
+            "export": "Phone",
+            "id": "components-data-display-queuesummary--phone"
+          },
+          {
+            "export": "Themes",
+            "id": "components-data-display-queuesummary--themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/QueueSummary/QueueSummary.mdx",
+        "overview": "The overview of many work queues on one screen. Queues with something in them lead as `StatTile` rows, ordered by tone and then by the order you give. Queues at zero fold into one quiet line that still opens to every destination. When every count is zero, a short all-clear replaces the rows.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { QueueSummary } from \"@lufia/design-system/components/QueueSummary\";\n\n<QueueSummary\n  items={[\n    { id: \"overdue\", label: \"Overdue renewals\", count: 7, tone: \"danger\", href: \"/overdue\" },\n    { id: \"review\", label: \"Awaiting review\", count: 0, href: \"/review\" },\n  ]}\n  clearLabel={(count) => `${count} queues clear`}\n  allClearTitle=\"All caught up\"\n  allClearBody=\"Nothing is waiting for you.\"\n/>;"
+        },
+        "whenToUse": [],
+        "whenNotToUse": [],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": []
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-subtle",
+        "--lufia-color-bg-surface",
+        "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-md",
+        "--lufia-radius-sm",
+        "--lufia-target-touch"
+      ]
+    },
+    {
       "name": "RadioGroup",
       "category": "Forms",
       "summary": "A set of radios where exactly one choice applies.",
@@ -12341,7 +12489,8 @@
         "--lufia-font-line-height-tight",
         "--lufia-font-size-lg",
         "--lufia-font-size-sm",
-        "--lufia-font-weight-semibold"
+        "--lufia-font-weight-semibold",
+        "--lufia-section-header-title-basis"
       ]
     },
     {
@@ -13925,7 +14074,14 @@
               "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
-              "description": "`warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why."
+              "description": "`warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. In the `row` layout only the start edge and the figure take the tone, so a column of rows does not turn into a block of colour."
+            },
+            {
+              "name": "layout",
+              "type": "\"tile\" | \"row\"",
+              "required": false,
+              "default": "\"tile\"",
+              "description": "`tile` (default) stacks label, figure and hint. `row` puts the label and hint at the start and the figure at the end, one line high, for a dense list of figures on a phone; a link or button row also shows a trailing chevron."
             },
             {
               "name": "delta",
@@ -14008,6 +14164,12 @@
           "nativeProps": true
         },
         {
+          "name": "StatTileLayout",
+          "kind": "type",
+          "description": "",
+          "definition": "\"tile\" | \"row\""
+        },
+        {
           "name": "StatTileProps",
           "kind": "type",
           "description": "",
@@ -14036,6 +14198,7 @@
         "StatDelta": "{ delta: string; trend: StatTileTrend; trendLabel: string; deltaTone: StatTileTone; }",
         "StatDeltaGoodDirection": "\"up\" | \"down\" | \"neutral\"",
         "StatDeltaLabels": "{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }",
+        "StatTileLayout": "\"tile\" | \"row\"",
         "StatTileTone": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
         "StatTileTrend": "\"up\" | \"down\" | \"flat\""
       },
@@ -14224,6 +14387,8 @@
         "--lufia-font-size-2xl",
         "--lufia-font-size-2xs",
         "--lufia-font-size-3xl",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xl",
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
         "--lufia-font-weight-semibold",
@@ -14237,8 +14402,10 @@
         "--lufia-stat-tile-label-font",
         "--lufia-stat-tile-label-size",
         "--lufia-stat-tile-label-tracking",
+        "--lufia-stat-tile-row-value-size",
         "--lufia-stat-tile-value-size",
-        "--lufia-stat-tile-value-size-narrow"
+        "--lufia-stat-tile-value-size-narrow",
+        "--lufia-target-touch"
       ]
     },
     {

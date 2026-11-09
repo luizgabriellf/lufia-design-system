@@ -39,7 +39,8 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | --- | --- | --- | --- | --- |
 | `label` | `ReactNode` | yes |  | What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. |
 | `value` | `ReactNode` | yes |  | The figure, already formatted. Pass an `AnimatedNumber` to count it up. |
-| `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. |
+| `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. In the `row` layout only the start edge and the figure take the tone, so a column of rows does not turn into a block of colour. |
+| `layout` | `"tile" \| "row"` | no | `"tile"` | `tile` (default) stacks label, figure and hint. `row` puts the label and hint at the start and the figure at the end, one line high, for a dense list of figures on a phone; a link or button row also shows a trailing chevron. |
 | `delta` | `ReactNode` | no |  | The change, already formatted ("+12% vs last week"). |
 | `trend` | `"up" \| "down" \| "flat"` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
 | `trendLabel` | `string` | no |  | Direction in words for screen readers ("Up"). Read before `delta`. |
@@ -67,6 +68,7 @@ computeStatDelta(input: StatDeltaInput): StatDelta | null
 - `StatDelta`: `{ delta: string; trend: StatTileTrend; trendLabel: string; deltaTone: StatTileTone; }`
 - `StatDeltaGoodDirection`: `"up" | "down" | "neutral"`
 - `StatDeltaLabels`: `{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }`
+- `StatTileLayout`: `"tile" | "row"`
 - `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
 - `StatTileTrend`: `"up" | "down" | "flat"`
 
@@ -114,7 +116,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-row-value-size`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`, `--lufia-target-touch`.
 
 ## Stories
 

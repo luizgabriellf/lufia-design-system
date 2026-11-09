@@ -314,4 +314,26 @@ describe("StatTile", () => {
       expect(await axe(container)).toHaveNoViolations();
     });
   });
+
+  describe("row layout", () => {
+    it("exposes the layout and adds a chevron to an interactive row only", () => {
+      const { container, rerender } = render(<StatTile layout="row" label="Queue" value="3" href="/q" />);
+      expect(container.firstElementChild).toHaveAttribute("data-layout", "row");
+      expect(container.querySelector("svg")).not.toBeNull();
+      rerender(<StatTile layout="row" label="Queue" value="3" />);
+      expect(container.querySelector("svg")).toBeNull();
+    });
+
+    it("leaves the default tile without the attribute", () => {
+      const { container } = render(<StatTile label="Queue" value="3" />);
+      expect(container.firstElementChild).not.toHaveAttribute("data-layout");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <StatTile layout="row" tone="warning" label="Queue" value="3" hint="Waiting" href="/q" />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
 });
