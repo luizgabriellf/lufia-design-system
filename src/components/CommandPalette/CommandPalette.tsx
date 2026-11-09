@@ -258,6 +258,25 @@ export function CommandPalette({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [shortcut, open, onOpenChange]);
 
+  // Keep the panel in the part of the page the on-screen keyboard leaves visible: `dvh` does not shrink for a keyboard.
+  const mounted = phase !== "unmounted" && client;
+  useEffect(() => {
+    const node = panel.current;
+    const viewport = window.visualViewport;
+    if (!mounted || !node || !viewport) return;
+    const measure = () => {
+      node.style.setProperty("--palette-visible-block-size", `${viewport.height}px`);
+      node.style.setProperty("--palette-visible-offset", `${viewport.offsetTop}px`);
+    };
+    measure();
+    viewport.addEventListener("resize", measure);
+    viewport.addEventListener("scroll", measure);
+    return () => {
+      viewport.removeEventListener("resize", measure);
+      viewport.removeEventListener("scroll", measure);
+    };
+  }, [mounted]);
+
   // Keep the highlighted option in sight.
   useEffect(() => {
     if (phase !== "open") return;

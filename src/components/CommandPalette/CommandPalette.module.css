@@ -19,12 +19,16 @@
 
 .panel {
   position: absolute;
-  inset-block-start: 12vh;
+
+  /* Set from `visualViewport` while open: 100dvh does not shrink for an on-screen keyboard. */
+  --palette-visible: var(--palette-visible-block-size, 100dvh);
+
+  inset-block-start: calc(var(--palette-visible-offset, 0px) + var(--palette-visible) * 0.12);
   inset-inline: 0;
   display: flex;
   flex-direction: column;
   inline-size: min(36rem, 94vw);
-  max-block-size: min(80dvh, 32rem);
+  max-block-size: min(calc(var(--palette-visible) * 0.8), 32rem);
   margin-inline: auto;
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
   border-radius: var(--lufia-radius-panel);
@@ -46,6 +50,7 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   flex: none;
   align-items: center;
@@ -72,9 +77,15 @@
   font-size: var(--lufia-font-size-lg);
 }
 
-/* The field has no box of its own: the whole header takes the focus ring, so the cue is never lost. */
-.header:has(.input:focus-visible) {
+/* The field has no box of its own, so the header takes the focus ring. It is inset and concentric with the panel's
+   corners: drawn on the header's edge, the panel's rounded clip would cut it off. */
+.header:has(.input:focus-visible)::after {
+  position: absolute;
+  inset: var(--lufia-space-1);
+  border-radius: calc(var(--lufia-radius-panel) - var(--lufia-space-1));
   box-shadow: inset 0 0 0 var(--lufia-border-width-thick) var(--lufia-color-focus-ring);
+  content: "";
+  pointer-events: none;
 }
 
 .input:focus {
@@ -264,12 +275,23 @@
 
 @media (width < 40rem) {
   .panel {
-    inset-block-start: var(--lufia-space-3);
-    max-block-size: 70dvh;
+    inset-block-start: calc(var(--palette-visible-offset, 0px) + var(--lufia-space-3));
+    max-block-size: min(calc(var(--palette-visible) - 2 * var(--lufia-space-3)), 70dvh);
   }
 
   .escape {
     display: none;
+  }
+}
+
+@media (pointer: coarse), (width < 40rem) {
+  .input {
+    min-block-size: var(--lufia-target-touch);
+  }
+
+  .close {
+    inline-size: var(--lufia-target-touch);
+    block-size: var(--lufia-target-touch);
   }
 }
 

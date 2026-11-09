@@ -120,6 +120,8 @@ tabs are skipped.
 - Icons are decorative. The description is part of the link's or tab's name.
 - A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until
   the route changes. Modified clicks (open in new tab) change nothing.
+- With long labels use `layout="scroll"`: each item takes the width of its label (up to 20rem) so labels stay on one line,
+  rather than stacking three or four lines in a narrow card.
 - Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that
   hides more. On narrow screens the description is hidden and the icon moves above the label.
 - Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under

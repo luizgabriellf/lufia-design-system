@@ -2496,6 +2496,13 @@
               "required": false,
               "default": "false",
               "description": "A small dot before the text, for statuses that read as a state rather than a label. Decorative."
+            },
+            {
+              "name": "truncate",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself."
             }
           ],
           "nativeProps": true
@@ -2504,7 +2511,7 @@
           "name": "BadgeProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }"
         },
         {
           "name": "BadgeTone",
@@ -2537,13 +2544,20 @@
               "required": false,
               "default": "true",
               "description": "A small dot before the text, for statuses that read as a state rather than a label. Decorative."
+            },
+            {
+              "name": "truncate",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself."
             }
           ],
           "nativeProps": true
         }
       ],
       "aliases": {
-        "BadgeProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }",
+        "BadgeProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }",
         "BadgeTone": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\""
       },
       "story": {
@@ -2564,6 +2578,10 @@
           {
             "export": "LongText",
             "id": "components-data-display-badge--long-text"
+          },
+          {
+            "export": "Truncated",
+            "id": "components-data-display-badge--truncated"
           },
           {
             "export": "InNarrowTableCell",
@@ -2625,6 +2643,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-badge-max-inline-size",
         "--lufia-badge-radius",
         "--lufia-border-width-thin",
         "--lufia-color-accent-border",
@@ -3370,6 +3389,8 @@
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
+        "--lufia-button-danger-bg",
+        "--lufia-button-danger-fg",
         "--lufia-color-accent-default",
         "--lufia-color-accent-hover",
         "--lufia-color-accent-subtle",
@@ -3394,7 +3415,8 @@
         "--lufia-opacity-disabled",
         "--lufia-radius-control",
         "--lufia-radius-full",
-        "--lufia-radius-sm"
+        "--lufia-radius-sm",
+        "--lufia-target-touch"
       ]
     },
     {
@@ -4699,6 +4721,7 @@
         "--lufia-space-2",
         "--lufia-space-3",
         "--lufia-space-4",
+        "--lufia-target-touch",
         "--lufia-z-dropdown"
       ]
     },
@@ -5043,6 +5066,7 @@
         "--lufia-space-3",
         "--lufia-space-4",
         "--lufia-space-5",
+        "--lufia-target-touch",
         "--lufia-z-modal"
       ]
     },
@@ -10835,7 +10859,7 @@
               "type": "\"auto\" | \"fit\" | \"scroll\"",
               "required": false,
               "default": "\"auto\"",
-              "description": "`\"fit\"` shares the width between the items; `\"scroll\"` keeps them readable and scrolls sideways with a fade on the edge that hides more. `\"auto\"` (default) scrolls from five items."
+              "description": "`\"fit\"` shares the width between the items; `\"scroll\"` sizes each one to its label and scrolls sideways with a fade on the edge that hides more. Use `\"scroll\"` when labels are long, so they stay on one line. `\"auto\"` (default) scrolls from five items."
             },
             {
               "name": "onItemClick",
@@ -10910,6 +10934,14 @@
             "id": "components-navigation-peernav--long-text"
           },
           {
+            "export": "LongLabelsScroll",
+            "id": "components-navigation-peernav--long-labels-scroll"
+          },
+          {
+            "export": "LongWordFit",
+            "id": "components-navigation-peernav--long-word-fit"
+          },
+          {
             "export": "Phone320",
             "id": "components-navigation-peernav--phone-320"
           },
@@ -10982,6 +11014,7 @@
           "Always give `label`: a page often has several navigations or tablists.",
           "Icons are decorative. The description is part of the link's or tab's name.",
           "A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until the route changes. Modified clicks (open in new tab) change nothing.",
+          "With long labels use `layout=\"scroll\"`: each item takes the width of its label (up to 20rem) so labels stay on one line, rather than stacking three or four lines in a narrow card.",
           "Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that hides more. On narrow screens the description is hidden and the icon moves above the label.",
           "Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border."
         ]
@@ -14052,6 +14085,10 @@
             "id": "components-data-display-stattile--grid"
           },
           {
+            "export": "LongFigurePhone320",
+            "id": "components-data-display-stattile--long-figure-phone-320"
+          },
+          {
             "export": "Phone320",
             "id": "components-data-display-stattile--phone-320"
           },
@@ -15148,7 +15185,8 @@
         "--lufia-radius-md",
         "--lufia-space-2",
         "--lufia-space-3",
-        "--lufia-space-4"
+        "--lufia-space-4",
+        "--lufia-target-touch"
       ]
     },
     {

@@ -54,6 +54,11 @@ The `ai` tone exists so generated content is always marked as such; pair it with
 <Canvas of={Stories.WithDot} />
 <Canvas of={Stories.Status} />
 <Canvas of={Stories.LongText} />
+<Canvas of={Stories.Truncated} />
+
+A badge wraps by default. Where a tall pill would not work (a table row, a card header), set `truncate`: one line and an
+ellipsis, the full text as the native tooltip and in the DOM. In an auto-layout table the column grows with its content, so
+cap the badge with `--lufia-badge-max-inline-size`. A badge never paints past its pill or its parent.
 
 ### Corner radius
 

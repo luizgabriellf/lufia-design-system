@@ -70,10 +70,11 @@
   background: var(--lufia-color-accent-subtle);
 }
 
+/* The fill has its own optional hooks, so a theme can tune destructive buttons apart from danger marks in charts. */
 .root[data-variant="danger"] {
-  background: var(--lufia-color-status-danger-solid);
-  border-color: var(--lufia-color-status-danger-solid);
-  color: var(--lufia-color-status-danger-on-solid);
+  background: var(--lufia-button-danger-bg, var(--lufia-color-status-danger-solid));
+  border-color: var(--lufia-button-danger-bg, var(--lufia-color-status-danger-solid));
+  color: var(--lufia-button-danger-fg, var(--lufia-color-status-danger-on-solid));
 }
 
 .root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
@@ -151,13 +152,16 @@
   }
 }
 
-@media (pointer: coarse) {
-  .root {
-    min-block-size: 2.75rem;
+/* Finger-sized on phones and touch screens, every size included; desktop keeps its density. */
+@media (pointer: coarse), (width < 40rem) {
+  .root,
+  .root[data-size="sm"] {
+    min-block-size: var(--lufia-target-touch);
   }
 
-  .root[data-icon-only] {
-    inline-size: 2.75rem;
+  .root[data-icon-only],
+  .root[data-icon-only][data-size="sm"] {
+    inline-size: var(--lufia-target-touch);
   }
 }
 

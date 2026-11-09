@@ -41,6 +41,7 @@ dot on by default.
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
+| `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 
 Other native element attributes pass through to the root element.
 
@@ -51,12 +52,13 @@ Other native element attributes pass through to the root element.
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
+| `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }`
+- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }`
 - `BadgeTone`: `"neutral" | "info" | "success" | "warning" | "danger" | "ai"`
 
 ## Example
@@ -85,7 +87,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-badge-max-inline-size`, `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
 
 ## Content guidelines
 
@@ -98,6 +100,7 @@ truncating.
 - `components-data-display-badge--with-dot`
 - `components-data-display-badge--status`
 - `components-data-display-badge--long-text`
+- `components-data-display-badge--truncated`
 - `components-data-display-badge--in-narrow-table-cell`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`

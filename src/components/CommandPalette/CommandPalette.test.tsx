@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
@@ -717,6 +717,32 @@ describe("CommandPalette extension points", () => {
         />,
       );
       expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("on-screen keyboard", () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("follows the visual viewport, so the list ends above the keyboard", () => {
+      const view = Object.assign(new EventTarget(), { height: 800, offsetTop: 0 });
+      vi.stubGlobal("visualViewport", view);
+      render(<Harness commands={[{ key: "a", label: "Ask", onSelect: () => {} }]} />);
+      const dialog = screen.getByRole("dialog");
+      expect(dialog.style.getPropertyValue("--palette-visible-block-size")).toBe("800px");
+
+      view.height = 420;
+      view.offsetTop = 12;
+      act(() => {
+        view.dispatchEvent(new Event("resize"));
+      });
+      expect(dialog.style.getPropertyValue("--palette-visible-block-size")).toBe("420px");
+      expect(dialog.style.getPropertyValue("--palette-visible-offset")).toBe("12px");
+    });
+
+    it("is a no-op without visualViewport", () => {
+      vi.stubGlobal("visualViewport", undefined);
+      render(<Harness commands={[{ key: "a", label: "Ask", onSelect: () => {} }]} />);
+      expect(screen.getByRole("dialog").style.getPropertyValue("--palette-visible-block-size")).toBe("");
     });
   });
 });

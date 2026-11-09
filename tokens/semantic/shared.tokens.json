@@ -129,6 +129,13 @@
     "toast": { "$value": 500 },
     "tooltip": { "$value": 600 }
   },
+  "target": {
+    "$type": "dimension",
+    "touch": {
+      "$value": "2.75rem",
+      "$description": "44px: the smallest size of a control where the pointer is a finger (phone widths and coarse pointers)"
+    }
+  },
   "breakpoint": {
     "$type": "dimension",
     "$description": "Mirrors the media queries components use. CSS custom properties cannot drive @media; use these in JS and docs.",
