@@ -141,6 +141,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--with-animated-number`
 - `components-data-display-stattile--in-flex-row`
 - `components-data-display-stattile--grid`
+- `components-data-display-stattile--long-figure-phone-320`
 - `components-data-display-stattile--phone-320`
 - `components-data-display-stattile--right-to-left`
 - `components-data-display-stattile--all-themes`

@@ -1249,6 +1249,7 @@ dot on by default.
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
+| `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 
 Other native element attributes pass through to the root element.
 
@@ -1259,12 +1260,13 @@ Other native element attributes pass through to the root element.
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
+| `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; }`
+- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }`
 - `BadgeTone`: `"neutral" | "info" | "success" | "warning" | "danger" | "ai"`
 
 ### Example
@@ -1293,7 +1295,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
+Reads these semantic tokens: `--lufia-badge-max-inline-size`, `--lufia-badge-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-subtle`, `--lufia-color-status-ai-bg`, `--lufia-color-status-ai-border`, `--lufia-color-status-ai-fg`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-radius-full`.
 
 ### Content guidelines
 
@@ -1306,6 +1308,7 @@ truncating.
 - `components-data-display-badge--with-dot`
 - `components-data-display-badge--status`
 - `components-data-display-badge--long-text`
+- `components-data-display-badge--truncated`
 - `components-data-display-badge--in-narrow-table-cell`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`
@@ -1606,7 +1609,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-fg`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -2253,7 +2256,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-z-dropdown`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`, `--lufia-z-dropdown`.
 
 ### Content guidelines
 
@@ -2406,7 +2409,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-font-size-2xs`, `--lufia-font-size-lg`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-radius-xs`, `--lufia-shadow-lg`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-z-modal`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-font-size-2xs`, `--lufia-font-size-lg`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-radius-xs`, `--lufia-shadow-lg`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-target-touch`, `--lufia-z-modal`.
 
 ### Content guidelines
 
@@ -4610,7 +4613,7 @@ a description and an icon. An indicator slides to the chosen one.
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
 | `onValueChange` | `(key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
-| `layout` | `"auto" \| "fit" \| "scroll"` | no | `"auto"` | `"fit"` shares the width between the items; `"scroll"` keeps them readable and scrolls sideways with a fade on the edge that hides more. `"auto"` (default) scrolls from five items. |
+| `layout` | `"auto" \| "fit" \| "scroll"` | no | `"auto"` | `"fit"` shares the width between the items; `"scroll"` sizes each one to its label and scrolls sideways with a fade on the edge that hides more. Use `"scroll"` when labels are long, so they stay on one line. `"auto"` (default) scrolls from five items. |
 | `onItemClick` | `(key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button) included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change. Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not followed and a tab is not selected. Links and tabs. |
 | `phoneGrid` | `"row" \| "2x2"` | no | `"row"` | What four items do on a phone (narrower than 35rem, `fit` layout). `"row"` (default) keeps them in one row with the icon above the label; `"2x2"` wraps them into two rows of two so each label keeps its width. |
 
@@ -4657,6 +4660,7 @@ Keyboard:
 - Always give `label`: a page often has several navigations or tablists.
 - Icons are decorative. The description is part of the link's or tab's name.
 - A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until the route changes. Modified clicks (open in new tab) change nothing.
+- With long labels use `layout="scroll"`: each item takes the width of its label (up to 20rem) so labels stay on one line, rather than stacking three or four lines in a narrow card.
 - Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that hides more. On narrow screens the description is hidden and the icon moves above the label.
 - Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border.
 
@@ -4683,6 +4687,8 @@ Labels are one or two words. Descriptions are a short phrase and may be omitted;
 - `components-navigation-peernav--disabled-item`
 - `components-navigation-peernav--many-items`
 - `components-navigation-peernav--long-text`
+- `components-navigation-peernav--long-labels-scroll`
+- `components-navigation-peernav--long-word-fit`
 - `components-navigation-peernav--phone-320`
 - `components-navigation-peernav--phone-two-by-two`
 - `components-navigation-peernav--themed-by-variables`
@@ -6321,6 +6327,7 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--with-animated-number`
 - `components-data-display-stattile--in-flex-row`
 - `components-data-display-stattile--grid`
+- `components-data-display-stattile--long-figure-phone-320`
 - `components-data-display-stattile--phone-320`
 - `components-data-display-stattile--right-to-left`
 - `components-data-display-stattile--all-themes`
@@ -6843,7 +6850,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-motion-duration-instant`, `--lufia-radius-md`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-family-mono`, `--lufia-motion-duration-instant`, `--lufia-radius-md`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ### Content guidelines
 

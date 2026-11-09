@@ -41,6 +41,22 @@ export const LongText: Story = {
   ],
 };
 
+/** `truncate` keeps one line and ends with an ellipsis; the full text is the native tooltip and stays in the DOM. */
+export const Truncated: Story = {
+  args: {
+    truncate: true,
+    dot: true,
+    children: "A status label that is far too long for the room it has been given",
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "12rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
 /** In a squeezed auto-layout table column the badge keeps its word whole instead of breaking it mid-word. */
 export const InNarrowTableCell: Story = {
   render: () => (

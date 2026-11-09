@@ -34,6 +34,30 @@ describe("Badge", () => {
     expect(screen.getByTestId("b")).toHaveAttribute("title", "Why");
   });
 
+  it("truncates on request, keeping the text in the DOM and as the tooltip", () => {
+    render(
+      <Badge truncate data-testid="b">
+        A long status
+      </Badge>,
+    );
+    const badge = screen.getByTestId("b");
+    expect(badge).toHaveAttribute("data-truncate", "true");
+    expect(badge).toHaveAttribute("title", "A long status");
+    expect(badge).toHaveTextContent("A long status");
+  });
+
+  it("does not add a tooltip unless truncating, and a given title wins", () => {
+    const { rerender } = render(<Badge data-testid="b">Text</Badge>);
+    expect(screen.getByTestId("b")).not.toHaveAttribute("title");
+    expect(screen.getByTestId("b")).not.toHaveAttribute("data-truncate");
+    rerender(
+      <Badge truncate title="Full" data-testid="b">
+        Text
+      </Badge>,
+    );
+    expect(screen.getByTestId("b")).toHaveAttribute("title", "Full");
+  });
+
   it("StatusBadge shows a dot by default and lets it be turned off", () => {
     const { container, rerender } = render(<StatusBadge tone="success">Paid</StatusBadge>);
     expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull();

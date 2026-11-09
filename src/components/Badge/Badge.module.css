@@ -1,7 +1,8 @@
 .root {
   display: inline-flex;
   box-sizing: border-box;
-  max-inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: var(--lufia-badge-max-inline-size, 100%);
   align-items: center;
   gap: 0.375rem;
   padding-block: 0.125rem;
@@ -19,6 +20,16 @@
      column cannot shrink a badge to one character per line. */
   overflow-wrap: break-word;
   vertical-align: middle;
+
+  /* Whatever `white-space` an app forces on it, the text never paints past the pill. */
+  overflow: hidden;
+}
+
+.text {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .root[data-tone="info"] {

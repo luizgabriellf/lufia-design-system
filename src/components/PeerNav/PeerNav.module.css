@@ -109,6 +109,7 @@
 
 .labelGroup {
   min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 .label {
@@ -116,6 +117,10 @@
   font-size: var(--lufia-peer-nav-label-size, var(--lufia-font-size-sm));
   font-weight: var(--lufia-font-weight-bold);
   line-height: var(--lufia-peer-nav-label-line-height, var(--lufia-font-line-height-tight));
+
+  /* A word longer than the item breaks instead of running into the next one. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .description {
@@ -133,14 +138,19 @@
   color: var(--lufia-color-text-muted);
 }
 
-/* Many views: keep them readable and scroll instead of compressing the labels. */
+/* Many views, or long labels: each item is as wide as its label (up to a cap) and the strip scrolls, so labels stay on
+   one line instead of stacking in a narrow card. Spare room is still shared out, so a short strip fills its row. */
 .root[data-layout="scroll"] {
+  display: flex;
   max-inline-size: none;
-  grid-template-columns: none;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(9.5rem, 1fr);
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+.root[data-layout="scroll"] .item {
+  flex: 1 0 auto;
+  min-inline-size: 9.5rem;
+  max-inline-size: 20rem;
 }
 
 .root[data-layout="scroll"]::-webkit-scrollbar {
@@ -225,6 +235,10 @@
 
 /* Phones: icon over label so three or four views still fit. */
 @media (width < 26rem) {
+  .root[data-layout="scroll"] .item {
+    min-inline-size: 6.75rem;
+  }
+
   .root[data-layout="fit"]:not([data-phone-grid]) .item {
     min-block-size: 4.25rem;
     flex-direction: column;
@@ -232,10 +246,6 @@
     gap: 0.25rem;
     padding: 0.4rem 0.25rem;
     text-align: center;
-  }
-
-  .root[data-layout="scroll"] {
-    grid-auto-columns: minmax(6.75rem, 1fr);
   }
 }
 

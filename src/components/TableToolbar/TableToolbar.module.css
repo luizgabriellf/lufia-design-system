@@ -116,6 +116,22 @@
   .chip {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    min-height: var(--lufia-target-touch);
+  }
+}
+
+/* The input fills the wrapper's height, so the whole field takes the tap. */
+@media (pointer: coarse), (width < 40rem) {
+  .search {
+    padding-block: 0;
+  }
+
+  .searchInput {
+    min-block-size: var(--lufia-target-touch);
+  }
+
+  .clear {
+    min-inline-size: var(--lufia-target-touch);
+    min-block-size: var(--lufia-target-touch);
   }
 }

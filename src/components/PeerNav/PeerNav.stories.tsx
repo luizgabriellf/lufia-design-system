@@ -116,6 +116,27 @@ export const LongText: Story = {
     })),
   },
 };
+/** `layout="scroll"` sizes each item to its label, so long labels stay on one line and the strip scrolls. */
+export const LongLabelsScroll: Story = {
+  args: {
+    layout: "scroll",
+    items: linkItems.map((item) => ({ ...item, label: `${item.label} with a considerably longer label` })),
+  },
+};
+/** A word too long for its share of the row breaks inside the item instead of running into the next one. */
+export const LongWordFit: Story = {
+  args: {
+    layout: "fit",
+    items: linkItems.map((item) => ({ ...item, label: "Incomprehensibilities" })),
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "26rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const Phone320: Story = {
   args: { items: manyItems.slice(0, 4) },
   globals: { viewport: { value: "w320", isRotated: false } },

@@ -525,14 +525,16 @@ test.describe("notification center", () => {
         const text = element
           .querySelector<HTMLElement>('span[class*="markAllText"]')!
           .getBoundingClientRect();
-        return { width: box.width, height: box.height, textWidth: text.width };
+        return { width: box.width, height: box.height, textWidth: text.width, textHeight: text.height };
       });
     };
     const wide = await measure(390);
-    expect(wide.height).toBeLessThan(40);
+    // The button is finger-sized here (44px); one line of text is what proves it did not wrap.
+    expect(wide.height).toBeLessThanOrEqual(44);
+    expect(wide.textHeight).toBeLessThan(24);
     expect(wide.textWidth).toBeGreaterThan(60);
     const narrow = await measure(320);
-    expect(narrow.height).toBeLessThan(40);
+    expect(narrow.height).toBeLessThanOrEqual(44);
     expect(narrow.textWidth).toBeLessThanOrEqual(1);
     expect(narrow.width).toBeLessThan(50);
   });
@@ -1432,4 +1434,74 @@ test.describe("floating bar scrim and the bar over the open menu", () => {
       expect(Math.abs(openerBox.y - closeBox.y)).toBeLessThan(1);
     });
   }
+});
+
+test.describe("phone targets and overflow", () => {
+  const minTarget = async (page: Page, selector: string) => {
+    // Polled: an overlay measures small while its entrance animation scales it.
+    await expect
+      .poll(async () => (await page.locator(selector).first().boundingBox())?.height, { message: selector })
+      .toBeGreaterThanOrEqual(44);
+  };
+
+  test.describe("at 390px", () => {
+    test.use({ viewport: { width: 390, height: 800 } });
+
+    test("controls are finger-sized", async ({ page }) => {
+      await openStory(page, "components-data-display-tabletoolbar--default");
+      await minTarget(page, "input[type=search]");
+      await openStory(page, "components-forms-combobox--default");
+      await minTarget(page, 'button[aria-haspopup="listbox"], button[aria-expanded]');
+      await openStory(page, "components-actions-button--all-variants-and-sizes");
+      for (const button of await page.getByRole("button").all()) {
+        expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      }
+      await openStory(page, "components-overlays-commandpalette--open-on-load");
+      await minTarget(page, 'input[role="combobox"]');
+      await minTarget(page, '[role="dialog"] button');
+    });
+
+    test("the palette ends above a short visible viewport and still scrolls", async ({ page }) => {
+      await openStory(page, "components-overlays-commandpalette--open-on-load");
+      const dialog = page.getByRole("dialog");
+      await dialog.evaluate((node) => node.style.setProperty("--palette-visible-block-size", "360px"));
+      const box = await dialog.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(360);
+    });
+  });
+
+  test.describe("at 1280px", () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("a small button keeps its desktop density", async ({ page }) => {
+      await openStory(page, "components-actions-button--all-variants-and-sizes");
+      const heights = await Promise.all(
+        (await page.locator('button[data-size="sm"]').all()).map(
+          async (b) => (await b.boundingBox())!.height,
+        ),
+      );
+      expect(heights.length).toBeGreaterThan(0);
+      expect(Math.max(...heights)).toBeLessThanOrEqual(33);
+    });
+  });
+
+  test("a long word stays inside its peer nav item", async ({ page }) => {
+    await openStory(page, "components-navigation-peernav--long-word-fit");
+    const overflowing = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("[data-peer-key]")].some((item) => {
+        const label = item.querySelector("span span") as HTMLElement;
+        return label.getBoundingClientRect().right > item.getBoundingClientRect().right + 0.5;
+      }),
+    );
+    expect(overflowing).toBe(false);
+  });
+
+  test("a truncated badge stays inside its parent", async ({ page }) => {
+    await openStory(page, "components-data-display-badge--truncated");
+    const fits = await page.evaluate(() => {
+      const badge = document.querySelector<HTMLElement>("[data-truncate]")!;
+      return badge.getBoundingClientRect().right <= badge.parentElement!.getBoundingClientRect().right + 0.5;
+    });
+    expect(fits).toBe(true);
+  });
 });

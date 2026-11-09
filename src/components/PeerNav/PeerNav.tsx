@@ -50,8 +50,9 @@ export type PeerNavProps<Href = string> = Omit<
    */
   onValueChange?: (key: string, event?: MouseEvent<HTMLElement>) => void;
   /**
-   * `"fit"` shares the width between the items; `"scroll"` keeps them readable and scrolls sideways with a fade on the
-   * edge that hides more. `"auto"` (default) scrolls from five items.
+   * `"fit"` shares the width between the items; `"scroll"` sizes each one to its label and scrolls sideways with a fade on the
+   * edge that hides more. Use `"scroll"` when labels are long, so they stay on one line. `"auto"` (default) scrolls from
+   * five items.
    */
   layout?: "auto" | "fit" | "scroll";
   /**

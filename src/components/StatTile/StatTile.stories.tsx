@@ -274,6 +274,11 @@ export const Grid: Story = {
     </div>
   ),
 };
+/** A long figure with no spaces breaks inside the tile instead of spilling out of it. */
+export const LongFigurePhone320: Story = {
+  args: { value: "1234567890123456789012", delta: "+1234567890123456", trend: "up", trendLabel: "Up" },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const Phone320: Story = {
   args: AsLink.args,
   globals: { viewport: { value: "w320", isRotated: false } },

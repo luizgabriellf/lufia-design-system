@@ -55,6 +55,13 @@
   transform: rotate(180deg);
 }
 
+@media (pointer: coarse), (width < 40rem) {
+  .button {
+    inline-size: var(--lufia-target-touch);
+    block-size: var(--lufia-target-touch);
+  }
+}
+
 /* The list is absolutely placed in the field, so it follows the field when the page scrolls. */
 .popup {
   position: absolute;

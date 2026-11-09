@@ -82,6 +82,9 @@
   font-weight: var(--lufia-font-weight-bold);
   letter-spacing: -0.035em;
   line-height: 1;
+
+  /* A figure with no spaces (a long amount) breaks rather than spilling out of a narrow tile. */
+  overflow-wrap: anywhere;
 }
 
 .spark {
@@ -93,6 +96,9 @@
 
 .delta {
   display: inline-flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   align-items: center;
   gap: 0.3125rem;
   color: var(--lufia-color-text-muted);
@@ -123,6 +129,7 @@
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
   line-height: var(--lufia-font-line-height-normal);
+  overflow-wrap: anywhere;
 }
 
 /* Loading: each placeholder takes the line box of what it replaces (1lh of the same font size and line height), so the

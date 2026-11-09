@@ -33,7 +33,7 @@ a description and an icon. An indicator slides to the chosen one.
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
 | `onValueChange` | `(key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
-| `layout` | `"auto" \| "fit" \| "scroll"` | no | `"auto"` | `"fit"` shares the width between the items; `"scroll"` keeps them readable and scrolls sideways with a fade on the edge that hides more. `"auto"` (default) scrolls from five items. |
+| `layout` | `"auto" \| "fit" \| "scroll"` | no | `"auto"` | `"fit"` shares the width between the items; `"scroll"` sizes each one to its label and scrolls sideways with a fade on the edge that hides more. Use `"scroll"` when labels are long, so they stay on one line. `"auto"` (default) scrolls from five items. |
 | `onItemClick` | `(key: string, event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called for every click on an enabled item: the current one and modified clicks (Ctrl, Cmd, Shift, Alt, middle button) included, before `onValueChange` and before the browser navigates. `onValueChange` only reports a real change. Call `event.preventDefault()` to take over: `onValueChange` is not called, the indicator stays where it is, a link is not followed and a tab is not selected. Links and tabs. |
 | `phoneGrid` | `"row" \| "2x2"` | no | `"row"` | What four items do on a phone (narrower than 35rem, `fit` layout). `"row"` (default) keeps them in one row with the icon above the label; `"2x2"` wraps them into two rows of two so each label keeps its width. |
 
@@ -80,6 +80,7 @@ Keyboard:
 - Always give `label`: a page often has several navigations or tablists.
 - Icons are decorative. The description is part of the link's or tab's name.
 - A click on a link moves the indicator and the chosen styling at once, but `aria-current` stays on the page shown until the route changes. Modified clicks (open in new tab) change nothing.
+- With long labels use `layout="scroll"`: each item takes the width of its label (up to 20rem) so labels stay on one line, rather than stacking three or four lines in a narrow card.
 - Five or more items scroll sideways instead of shrinking; the current one is brought into view and a fade marks the edge that hides more. On narrow screens the description is hidden and the icon moves above the label.
 - Target height is at least 3rem. Focus shows a 2px ring. The indicator slide uses `transform` only and is a no-op under `prefers-reduced-motion`. In forced-colors mode the active item keeps a `Highlight` border.
 
@@ -106,6 +107,8 @@ Labels are one or two words. Descriptions are a short phrase and may be omitted;
 - `components-navigation-peernav--disabled-item`
 - `components-navigation-peernav--many-items`
 - `components-navigation-peernav--long-text`
+- `components-navigation-peernav--long-labels-scroll`
+- `components-navigation-peernav--long-word-fit`
 - `components-navigation-peernav--phone-320`
 - `components-navigation-peernav--phone-two-by-two`
 - `components-navigation-peernav--themed-by-variables`
