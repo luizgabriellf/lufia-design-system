@@ -179,7 +179,7 @@
   color: var(--lufia-color-text-muted);
   font: inherit;
   font-size: var(--lufia-font-size-md);
-  font-weight: var(--lufia-font-weight-medium);
+  font-weight: var(--lufia-shell-label-weight, var(--lufia-font-weight-medium));
   text-align: start;
   text-decoration: none;
   cursor: pointer;
@@ -211,6 +211,7 @@
 }
 
 .item[data-active] {
+  font-weight: var(--lufia-font-weight-medium);
   border-color: var(--lufia-color-accent-border);
   background: var(--lufia-color-accent-subtle);
   color: var(--lufia-color-text-accent);
