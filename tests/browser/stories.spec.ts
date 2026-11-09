@@ -525,14 +525,16 @@ test.describe("notification center", () => {
         const text = element
           .querySelector<HTMLElement>('span[class*="markAllText"]')!
           .getBoundingClientRect();
-        return { width: box.width, height: box.height, textWidth: text.width };
+        return { width: box.width, height: box.height, textWidth: text.width, textHeight: text.height };
       });
     };
     const wide = await measure(390);
-    expect(wide.height).toBeLessThan(40);
+    // The button is finger-sized here (44px); one line of text is what proves it did not wrap.
+    expect(wide.height).toBeLessThanOrEqual(44);
+    expect(wide.textHeight).toBeLessThan(24);
     expect(wide.textWidth).toBeGreaterThan(60);
     const narrow = await measure(320);
-    expect(narrow.height).toBeLessThan(40);
+    expect(narrow.height).toBeLessThanOrEqual(44);
     expect(narrow.textWidth).toBeLessThanOrEqual(1);
     expect(narrow.width).toBeLessThan(50);
   });
