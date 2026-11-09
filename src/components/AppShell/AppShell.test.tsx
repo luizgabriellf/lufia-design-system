@@ -1311,7 +1311,7 @@ describe("AppShell slots", () => {
       expect(source).toMatch(
         /font-weight: var\(--lufia-shell-label-weight, var\(--lufia-font-weight-medium\)\)/,
       );
-      expect(source).toMatch(/\.item\[data-active\] \{\n  font-weight: var\(--lufia-font-weight-medium\);/);
+      expect(source).toMatch(/\.item\[data-active\] \{\n {2}font-weight: var\(--lufia-font-weight-medium\);/);
     }
   });
 });
