@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.31.0
+
+### Minor Changes
+
+- [#104](https://github.com/luizgabriellf/lufia-design-system/pull/104) [`987f7e2`](https://github.com/luizgabriellf/lufia-design-system/commit/987f7e20db768789d23af3f0368f9f4e20278d79) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - AttentionList gains `groups`: rows under urgency headers (status mark, label, count) on a neutral surface. Items gain `href`, `onSelect` and `count`, which make the whole row one link or button with a trailing chevron. `items`, `action` and `barStyle` are unchanged.
+
 ## 0.30.2
 
 ### Patch Changes
