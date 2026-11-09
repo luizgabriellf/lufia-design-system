@@ -10,18 +10,51 @@
   align-items: center;
   gap: var(--lufia-space-1);
   padding: 0.375rem 0.375rem 0.375rem var(--lufia-space-4);
-  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+
+  /* The pill's surface is drawn by ::before, so the scrim can sit under it inside the bar's own stacking context. The
+     border here only keeps the box the same size. */
+  border: var(--lufia-border-width-thin) solid transparent;
   border-radius: var(--lufia-radius-full);
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--lufia-color-bg-surface-solid) 72%, transparent);
-  backdrop-filter: blur(1.375rem) saturate(1.35);
-  box-shadow: var(--lufia-shadow-lg);
   white-space: nowrap;
   isolation: isolate;
 
   /* Lifted above the on-screen keyboard or a covering toolbar (`followViewport`). It follows the viewport frame by
-     frame, so it does not ease: easing would trail the keyboard. */
+     frame, so it does not ease: easing would trail the keyboard. The scrim is inside the bar, so it moves with it. */
   transform: translateY(calc(-1 * var(--lufia-float-bar-viewport-offset, 0px)));
+}
+
+.bar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--lufia-border-width-thin));
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--lufia-color-bg-surface-solid) 72%, transparent);
+  backdrop-filter: blur(1.375rem) saturate(1.35);
+  box-shadow: var(--lufia-shadow-lg);
+  pointer-events: none;
+}
+
+/* The page fades into the canvas behind the bar: full width, from a little above the bar down to the bottom edge of the
+   screen (through the safe area), so content scrolling under it does not end in a hard edge. It belongs to the bar, so
+   it is there exactly while the bar is, follows the keyboard lift, and never takes a tap. */
+.scrim {
+  position: absolute;
+  z-index: -2;
+  inset-block-end: calc(
+    -1 * (var(--lufia-space-3) + env(safe-area-inset-bottom) + var(--lufia-border-width-thin))
+  );
+  inset-inline-start: calc(50% - 50vw);
+  inline-size: 100vw;
+  block-size: calc(var(--lufia-float-bar-scrim-block-size, 6rem) + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--lufia-float-bar-scrim-color, var(--lufia-color-bg-canvas)) var(--lufia-float-bar-scrim-stop, 65%)
+  );
+  pointer-events: none;
 }
 
 .button {
@@ -136,22 +169,26 @@
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .bar {
+  .bar::before {
     background: var(--lufia-color-bg-surface-solid);
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .bar {
+  .bar::before {
     backdrop-filter: none;
     background: var(--lufia-color-bg-surface-solid);
   }
 }
 
 @media (forced-colors: active) {
-  .bar {
+  .bar::before {
     border-color: CanvasText;
     background: Canvas;
+  }
+
+  .scrim {
+    display: none;
   }
 
   .button[data-variant="primary"] {

@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderToString } from "react-dom/server";
 import { axe } from "../../test/axe";
@@ -312,6 +312,82 @@ describe("AppShell", () => {
     matches = true;
     act(() => listeners.forEach((fn) => fn()));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the floating bar over the open sheet, with the menu button turned into the close button", async () => {
+    const user = userEvent.setup();
+    setup({ labels: { ...labels, openMenu: "Open menu", closeMenu: "Close menu" } });
+    const opener = screen.getByRole("button", { name: "Open menu" });
+    expect(opener).toHaveAttribute("aria-expanded", "false");
+    await user.click(opener);
+    const dialog = screen.getByRole("dialog", { name: "Menu" });
+    const dock = within(dialog).getByRole("group", { name: "Quick navigation" });
+    const close = within(dock).getByRole("button", { name: "Close menu" });
+    expect(close).not.toHaveAttribute("aria-haspopup");
+    expect(close.querySelector("[data-open]")).not.toBeNull();
+    expect(within(dock).getByRole("button", { name: "Search…" })).toBeInTheDocument();
+    // The page's own bar stands back while its copy is on top; it says the menu is open.
+    expect(opener).toHaveAttribute("aria-expanded", "true");
+    expect(opener.closest('[role="group"]')).toHaveAttribute("data-menu-open");
+    expect(css).toMatch(/\.shell \.float\[data-menu-open\] \{\s*visibility: hidden;/);
+    expect(dock.querySelector('[data-lufia-part="float-bar-scrim"]')).toBeNull();
+    await user.click(close);
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(opener).toHaveFocus();
+    expect(opener).toHaveAttribute("aria-expanded", "false");
+    expect(opener.closest('[role="group"]')).not.toHaveAttribute("data-menu-open");
+  });
+
+  it("closes the sheet before a search or the main action from the bar over it", async () => {
+    const user = userEvent.setup();
+    const onSearch = vi.fn();
+    const onAction = vi.fn();
+    setup({
+      search: { label: "Search…", onSelect: onSearch },
+      primaryAction: { label: "New item", onSelect: onAction },
+    });
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Search…" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(onSearch).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "New item" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(onAction).toHaveBeenCalledOnce();
+  });
+
+  it("closes from a drag down too, and the bar is back in step", async () => {
+    const user = userEvent.setup();
+    setup();
+    const opener = screen.getByRole("button", { name: "Menu" });
+    await user.click(opener);
+    const grabber = document.querySelector<HTMLElement>("[data-swipe]")!;
+    fireEvent.pointerDown(grabber, { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+    fireEvent.pointerMove(grabber, { pointerId: 1, clientY: 200, pointerType: "touch" });
+    fireEvent.pointerMove(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    act(() => {
+      fireEvent.pointerUp(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(opener).toHaveAttribute("aria-expanded", "false");
+    expect(opener.closest('[role="group"]')).not.toHaveAttribute("data-menu-open");
+    await user.click(opener);
+    expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
+  });
+
+  it("turns the close icon back while the sheet leaves, whichever way it was closed", () => {
+    expect(css).toMatch(
+      /:global\(\[data-lufia-part="nav-sheet-layer"\]\[data-state="closed"\]\) \.menuGlyph\[data-open\] \.menuGlyphMenu \{\s*opacity: 1;/,
+    );
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: reduce\) \{\s*\.menuGlyph\[data-open\] \.menuGlyphMenu,/,
+    );
+  });
+
+  it("keeps the end of the page clear of the floating bar", () => {
+    expect(css).toMatch(
+      /calc\(var\(--lufia-app-shell-float-clearance, 6\.5rem\) \+ env\(safe-area-inset-bottom\)\)/,
+    );
   });
 
   it("has no axe violations, closed and with the sheet open", async () => {
@@ -1028,12 +1104,12 @@ describe("AppShell slots", () => {
       expect(screen.getByRole("main")).not.toHaveAttribute("aria-busy", "true");
     });
 
-    it("draws the fade behind the floating bar only when floatScrim is on", () => {
-      const scrim = () => document.querySelector('[class*="floatScrim"]');
+    it("draws the fade behind the floating bar by default, and not with floatScrim={false}", () => {
+      const scrim = () => floatBar().querySelector('[data-lufia-part="float-bar-scrim"]');
       const { rerender } = render(withRoute("/a"));
-      expect(scrim()).toBeNull();
-      rerender(withRoute("/a", { floatScrim: true }));
       expect(scrim()).toHaveAttribute("aria-hidden", "true");
+      rerender(withRoute("/a", { floatScrim: false }));
+      expect(scrim()).toBeNull();
     });
 
     it("lets the arriving page only fade after a skeleton, and rise otherwise", () => {

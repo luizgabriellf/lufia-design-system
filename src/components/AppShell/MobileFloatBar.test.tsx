@@ -74,6 +74,68 @@ describe("MobileFloatBar", () => {
   });
 });
 
+describe("MobileFloatBar scrim", () => {
+  const css = readFileSync("src/components/AppShell/MobileFloatBar.module.css", "utf8");
+  const scrim = () => screen.getByRole("group").querySelector('[data-lufia-part="float-bar-scrim"]');
+
+  it("draws the scrim by default, hidden from assistive technology, and none with scrim={false}", () => {
+    const { rerender } = render(
+      <MobileFloatBar label="Bar">
+        <MobileFloatBarButton label="Search" />
+      </MobileFloatBar>,
+    );
+    expect(scrim()).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("group")).toHaveAttribute("data-scrim");
+    rerender(
+      <MobileFloatBar label="Bar" scrim={false}>
+        <MobileFloatBarButton label="Search" />
+      </MobileFloatBar>,
+    );
+    expect(scrim()).toBeNull();
+    expect(screen.getByRole("group")).not.toHaveAttribute("data-scrim");
+  });
+
+  it("is a full-width fade to the canvas under the bar, through the safe area, that never takes a tap", () => {
+    const rule = css.match(/\.scrim \{[^}]*\}/)![0];
+    expect(rule).toContain("pointer-events: none;");
+    expect(rule).toContain("z-index: -2;");
+    expect(rule).toContain("inline-size: 100vw;");
+    expect(rule).toContain("var(--lufia-float-bar-scrim-block-size, 6rem) + env(safe-area-inset-bottom)");
+    expect(rule).toMatch(
+      /var\(--lufia-float-bar-scrim-color, var\(--lufia-color-bg-canvas\)\) var\(--lufia-float-bar-scrim-stop, 65%\)/,
+    );
+    // The pill's surface is drawn above the scrim, inside the bar's own stacking context; the bar itself paints nothing.
+    expect(css).toMatch(/\.bar::before \{[^}]*z-index: -1;[^}]*box-shadow: var\(--lufia-shadow-lg\);/);
+    expect(css).toMatch(/\.bar \{[^}]*isolation: isolate;/);
+  });
+
+  it("moves with the bar when it lifts above the keyboard: it is inside the transformed bar", () => {
+    render(
+      <MobileFloatBar label="Bar">
+        <MobileFloatBarButton label="Search" />
+      </MobileFloatBar>,
+    );
+    expect(screen.getByRole("group")).toContainElement(scrim() as HTMLElement);
+    expect(css).toMatch(
+      /\.bar \{[^}]*transform: translateY\(calc\(-1 \* var\(--lufia-float-bar-viewport-offset, 0px\)\)\);/,
+    );
+  });
+
+  it("drops the scrim under forced colours", () => {
+    expect(css).toMatch(/@media \(forced-colors: active\) \{[\s\S]*\.scrim \{\s*display: none;/);
+  });
+
+  it("has no axe violations with the scrim", async () => {
+    const { container } = render(
+      <MobileFloatBar label="Bar">
+        <MobileFloatBarButton label="Search" />
+        <MobileFloatBarButton variant="icon" label="Menu" />
+      </MobileFloatBar>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
 describe("MobileFloatBar visual viewport", () => {
   type Listener = () => void;
   function fakeViewport(initial: { height: number; offsetTop?: number; scale?: number }) {

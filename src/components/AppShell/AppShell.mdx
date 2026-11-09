@@ -301,8 +301,9 @@ async function save() {
 
 #### Floating bar fade
 
-`floatScrim` (default off) draws a gradient from the canvas colour behind the floating bar on phones, so content scrolling
-under the bar fades out instead of ending in a hard edge. Nothing is drawn unless you ask.
+`floatScrim` (default on) fades the page into the canvas colour behind the floating bar on phones, so content scrolling
+under the bar fades out instead of ending in a hard edge. `floatScrim={false}` leaves the hard edge. It is the
+`MobileFloatBar` `scrim`: see "Floating bar" below for its tokens.
 
 #### Primary action details
 
@@ -389,7 +390,10 @@ inside a closed group still opens it. Pass `collapsed` and `openGroups` instead 
 ### Phones
 
 Below `60rem` (the `--lufia-breakpoint-medium` token) the sidebar gives way to the top bar, the floating bar and the sheet.
-The page gets bottom padding and `scroll-padding` so nothing hides under the bar.
+The page gets bottom padding and `scroll-padding` so its end scrolls fully clear of the bar and its scrim:
+`--lufia-app-shell-float-clearance` (default `6.5rem`, plus the safe area). Raise it if your floating bar is taller; keep it
+at least as tall as the scrim, so the last line of the page is never faded. A page that scrolls inside its own container
+instead of the document needs the same padding at its end.
 
 <Canvas of={Stories.Phone} />
 
@@ -408,12 +412,39 @@ read from `window.visualViewport` once per frame and written as `--lufia-float-b
 `data-viewport-lifted` while lifted. It moves with `transform` and does not ease, so it never trails the keyboard. It does
 nothing while the page is pinch-zoomed and where `visualViewport` does not exist.
 
+**Scrim.** Behind the bar the page fades into the canvas (`scrim`, default on): a full-width gradient from a little above
+the bar down to the bottom edge of the screen, through the safe area. It is drawn inside the bar, so it is there exactly
+while the bar is (it goes with it on wide screens), it moves with the bar when the keyboard lifts it, and it never takes a
+tap. It works in light and dark because it fades to the canvas token, and it is dropped under `forced-colors`.
+`scrim={false}` turns it off.
+
+| Token                                | Default                   | What it changes                                            |
+| ------------------------------------ | ------------------------- | ---------------------------------------------------------- |
+| `--lufia-float-bar-scrim-block-size` | `6rem` (plus safe area)   | Height of the fade, from the bottom edge of the screen     |
+| `--lufia-float-bar-scrim-color`      | `--lufia-color-bg-canvas` | The colour the page fades into; match your page background |
+| `--lufia-float-bar-scrim-stop`       | `65%`                     | Where the gradient reaches the colour, from the top        |
+
+<Canvas of={FloatBarStories.ScrimOverContent} />
+
 #### Navigation sheet
 
 <Canvas of={SheetStories.Default} />
 
 `NavSheet` is a modal dialog, mounted in `document.body` (set `container` to change that) so the rest of the page can be
 made inert. Pass `swipeToDismiss={false}` to turn the gesture off, for the grabber, the header and the body alike.
+
+**The bar stays on top.** While the shell's sheet is open, the floating bar stays where it was, above the sheet, and its
+menu button turns into the close button (named by `labels.closeMenu`); the icon turns and cross-fades both ways, and just
+swaps under reduced motion. The sheet closes from that button, from a drag down, from a tap on the dimmed page and from
+Escape, and the icon turns back whichever way it closed. The search entry and the main action on that bar close the sheet
+first and then act, so a search never opens over the menu. The sheet has no close button of its own then, and the end of
+its list or footer keeps clear of the bar (`--lufia-nav-sheet-dock-clearance`, default `4.75rem` plus the safe area).
+
+This is `NavSheet` `dock`: any control bar passed there is kept in place at the bottom of the screen, inside the dialog
+(in its focus trap, after the sheet's own content) but out of the sheet's drag and slide. With a dock, the dialog role
+moves from the panel to the sheet's layer (`data-lufia-part="nav-sheet-layer"`), so the dock is part of it.
+
+<Canvas of={Stories.PhoneMenuOpen} />
 
 A release dismisses once the sheet has moved 18% of its height, kept between 64 and 112 pixels, or on a flick of 0.6 px/ms
 over at least 24 pixels. `dragThreshold` (`sheetDragThreshold` on the shell) changes any of these: `{ ratio, min, max,
@@ -479,7 +510,9 @@ mounted page takes over from the older one.
 `data-collapsed` on the shell and the sidebar, `data-active` on the item that looks current, `data-branch` on an item whose
 sub-item is current, `data-sub-items` on the folding list of sub-items, `data-open` on an open group,
 `data-viewport-lifted` on the floating bar while it is above the keyboard,
-`data-state="open|closed"` on the sheet and `data-dragging` while it is dragged. Use them to style slot content.
+`data-state="open|closed"` on the sheet and `data-dragging` while it is dragged, `data-scrim` on a floating bar that draws
+its scrim, `data-menu-open` on the shell's floating bar while the sheet (and the bar's copy on top of it) is open, and
+`data-docked` on a sheet with a `dock`. Use them to style slot content.
 
 </Section>
 
@@ -487,13 +520,13 @@ sub-item is current, `data-sub-items` on the folding list of sub-items, `data-op
 
 ### Keyboard and accessibility
 
-| Key             | Where              | Action                                                         |
-| --------------- | ------------------ | -------------------------------------------------------------- |
-| Tab / Shift+Tab | Everywhere         | Moves through the skip link, the sidebar and the page in order |
-| Enter           | Link               | Follows it                                                     |
-| Enter / Space   | Button, group head | Activates it; a group head toggles `aria-expanded`             |
-| Escape          | Sheet              | Closes it; focus returns to the menu button                    |
-| Tab / Shift+Tab | Sheet              | Cycle inside the sheet; the page behind is inert               |
+| Key             | Where              | Action                                                                      |
+| --------------- | ------------------ | --------------------------------------------------------------------------- |
+| Tab / Shift+Tab | Everywhere         | Moves through the skip link, the sidebar and the page in order              |
+| Enter           | Link               | Follows it                                                                  |
+| Enter / Space   | Button, group head | Activates it; a group head toggles `aria-expanded`                          |
+| Escape          | Sheet              | Closes it; focus returns to the menu button                                 |
+| Tab / Shift+Tab | Sheet              | Cycle inside the sheet, then the bar on top of it; the page behind is inert |
 
 - **Landmarks.** The page is wrapped in the only `<main>`; do not render another. A skip link to it is the first tab stop.
   The sidebar and the sheet each hold a `<nav>` named by `labels.navigation`. The sidebar is hidden (`display: none`) below
@@ -502,9 +535,10 @@ sub-item is current, `data-sub-items` on the folding list of sub-items, `data-op
   inside it: the active style and `aria-current="true"`. In the rail, an item whose hidden sub-item is current has
   `aria-current="true"` too.
 - **Names of the menu.** `labels.menu` names the sheet. `labels.openMenu` ("Open menu") names the floating bar's button, so
-  the button and the dialog it opens are told apart; it defaults to `labels.menu`. `labels.closeMenu` ("Close menu") names
-  the sheet's close button; it defaults to the `close` label of `LufiaProvider`, because a close button named after the
-  menu would not say that it closes.
+  the button and the dialog it opens are told apart; it defaults to `labels.menu`, and the button says `aria-expanded`.
+  `labels.closeMenu` ("Close menu") names the close button the menu button turns into on the bar over the open sheet; it
+  defaults to the `close` label of `LufiaProvider`, because a close button named after the menu would not say that it
+  closes.
 - **Swipe is an enhancement.** Dragging the grabber or the header down dismisses the sheet, also when the drag starts on a
   link in the header (a brand link): past a short slop it becomes a drag and the link's click is cancelled, while a plain
   tap still follows the link. The body keeps native scrolling:
@@ -512,7 +546,7 @@ sub-item is current, `data-sub-items` on the folding list of sub-items, `data-op
   finger (and cancels the browser's pull to refresh) as on a native bottom sheet. A list inside the body that scrolls on its
   own is respected: the drag starts only when it and the body are both at the top. Any other move scrolls, nothing is cancelled
   until the direction is known (so a row that scrolls sideways still does), and a sideways move is left alone. The click the
-  lifted finger would send to a link under it is swallowed for a moment, never longer than the next touch. Escape and the close button always
+  lifted finger would send to a link under it is swallowed for a moment, never longer than the next touch. Escape and the close button (on the bar) always
   work. A short drag springs back; a past-threshold release or a quick flick dismisses. The offset follows the finger even
   under reduced motion, because it is direct manipulation.
 - **Focus.** The sheet traps focus, lands it on the dialog itself (nothing is chosen for the person, and no keyboard

@@ -32,7 +32,7 @@
   {
     "name": "AppShell",
     "path": "dist/components/AppShell/**/*.{js,css}",
-    "limit": "31 kB",
+    "limit": "35 kB",
     "gzip": true
   },
   {

@@ -260,3 +260,33 @@ content reads it.
 />
 
 <Canvas of={ModalStories.StickyContentUnderHeader} />
+
+## AppShell floating bar and sheet
+
+<DocTable
+  label="Floating bar and sheet tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    [
+      "`--lufia-float-bar-scrim-block-size`",
+      "`6rem` (plus the safe area)",
+      "Height of the fade behind the phone floating bar (`MobileFloatBar` `scrim`)",
+    ],
+    [
+      "`--lufia-float-bar-scrim-color`",
+      "`--lufia-color-bg-canvas`",
+      "The colour the page fades into behind the bar",
+    ],
+    ["`--lufia-float-bar-scrim-stop`", "`65%`", "Where the fade reaches that colour, from its top"],
+    [
+      "`--lufia-app-shell-float-clearance`",
+      "`6.5rem` (plus the safe area)",
+      "Space at the end of the phone page, so it scrolls clear of the bar and its fade",
+    ],
+    [
+      "`--lufia-nav-sheet-dock-clearance`",
+      "`4.75rem` (plus the safe area)",
+      "Space at the end of the phone sheet, clear of the bar kept on top of it (`NavSheet` `dock`)",
+    ],
+  ]}
+/>

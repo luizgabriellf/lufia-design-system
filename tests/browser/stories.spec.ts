@@ -1353,3 +1353,83 @@ test.describe("nav sheet context", () => {
     await expect(zone.locator('[data-lufia-part="nav-sheet-context"]')).toHaveCount(0);
   });
 });
+
+test.describe("floating bar scrim and the bar over the open menu", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`the scrim fades the page to the canvas under the bar, full width, and never takes a tap (${mode})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await openStory(
+        page,
+        "components-navigation-appshell-mobilefloatbar--scrim-over-content",
+        "default",
+        mode,
+      );
+      const scrim = page.locator('[data-lufia-part="float-bar-scrim"]');
+      await expect(scrim).toBeAttached();
+      const box = (await scrim.boundingBox())!;
+      expect(Math.round(box.x)).toBe(0);
+      expect(Math.round(box.width)).toBe(390);
+      expect(Math.round(box.y + box.height)).toBe(844);
+      expect(box.height).toBeGreaterThanOrEqual(90);
+      // A point in the fade above the bar hits the page, not the scrim.
+      const hit = await page.evaluate(
+        ([x, y]) =>
+          document.elementFromPoint(x!, y!)?.closest('[data-lufia-part="float-bar-scrim"]') === null,
+        [20, box.y + 8],
+      );
+      expect(hit).toBe(true);
+      const colours = await scrim.evaluate((node) => ({
+        image: getComputedStyle(node).backgroundImage,
+        canvas: getComputedStyle(document.body).getPropertyValue("--lufia-color-bg-canvas"),
+      }));
+      expect(colours.image).toContain("linear-gradient");
+      expect(await runAxe(page, "#storybook-root")).toEqual([]);
+    });
+  }
+
+  test("the phone page scrolls its end clear of the bar", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-navigation-appshell--phone");
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const { contentBottom, barTop } = await page.evaluate(() => {
+      const main = document.querySelector("main")!;
+      const last = main.lastElementChild!.getBoundingClientRect();
+      const bar = document.querySelector('[role="group"][aria-label]')!.getBoundingClientRect();
+      return { contentBottom: last.bottom, barTop: bar.top };
+    });
+    expect(contentBottom).toBeLessThanOrEqual(barTop);
+  });
+
+  for (const mode of ["light", "dark"] as const) {
+    test(`the bar stays over the open sheet with a close button that closes it (${mode})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await openStory(page, "components-navigation-appshell--phone", "default", mode);
+      const opener = page.getByRole("button", { name: "Menu", exact: true });
+      await opener.click();
+      const dialog = page.getByRole("dialog");
+      const close = dialog.getByRole("button", { name: "Close", exact: true });
+      await expect(close).toBeVisible();
+      const closeBox = (await close.boundingBox())!;
+      const sheetBox = (await page.locator('[data-lufia-part="nav-sheet"]').boundingBox())!;
+      // The bar is over the sheet, near the bottom of the screen.
+      expect(closeBox.y).toBeGreaterThan(sheetBox.y);
+      expect(closeBox.y + closeBox.height).toBeLessThan(844);
+      const topmost = await close.evaluate((node) => {
+        const r = node.getBoundingClientRect();
+        return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+      });
+      expect(topmost).toBe(true);
+      expect(await runAxe(page, "body", { rules: { region: { enabled: false } } })).toEqual([]);
+      await close.click();
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+      const openerBox = (await opener.boundingBox())!;
+      expect(Math.abs(openerBox.x - closeBox.x)).toBeLessThan(1);
+      expect(Math.abs(openerBox.y - closeBox.y)).toBeLessThan(1);
+    });
+  }
+});

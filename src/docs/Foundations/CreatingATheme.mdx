@@ -64,6 +64,12 @@ placeholder and the band that sweeps across it. Without them a skeleton uses `bo
 `bg.surface-solid`. Keep the shine lighter than the fill in both modes. Skeletons are decorative, so no contrast minimum
 applies.
 
+Recommended for a dark mode: `shadow.sm`, `shadow.md` and `shadow.lg` (`--lufia-shadow-*`). The shared values are tuned
+for light canvases, where a soft black shadow is enough; on a dark canvas it disappears and floating surfaces (the phone
+floating bar and sheet, modals, menus, the command palette, toasts) lose their lift. The package's dark modes use a
+stronger shadow and, on `md` and `lg`, a 1px inset top highlight, the edge that catches the light. Copy them from
+`tokens/themes/default.dark.tokens.json` or set your own.
+
 ## Checklist
 
 - Text on every surface: 4.5:1 or better. Focus ring and accent against canvas: 3:1 or better.

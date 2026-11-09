@@ -557,3 +557,106 @@ describe("NavSheet dragThreshold", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });
+
+describe("NavSheet dock", () => {
+  function Docked({ renderAs, initial = false }: { renderAs?: "portal" | "dialog"; initial?: boolean }) {
+    const [open, setOpen] = useState(initial);
+    return (
+      <>
+        <button type="button" onClick={() => setOpen(true)}>
+          Open menu
+        </button>
+        <NavSheet
+          open={open}
+          onOpenChange={setOpen}
+          label="Menu"
+          renderAs={renderAs}
+          footer={<a href="/help">Help</a>}
+          dock={
+            <div role="group" aria-label="Bar">
+              <button type="button" onClick={() => setOpen(false)}>
+                Close menu
+              </button>
+            </div>
+          }
+        >
+          <a href="/one">One</a>
+        </NavSheet>
+      </>
+    );
+  }
+
+  let dialogMock: ReturnType<typeof mockDialog>;
+  beforeEach(() => {
+    mockReducedMotion(true);
+    dialogMock = mockDialog();
+  });
+  afterEach(() => {
+    cleanup();
+    dialogMock.restore();
+    vi.unstubAllGlobals();
+  });
+
+  for (const renderAs of ["portal", "dialog"] as const) {
+    describe(renderAs, () => {
+      it("puts the dock inside the dialog, outside the sheet, and drops the header's own close button", async () => {
+        const user = userEvent.setup();
+        render(<Docked renderAs={renderAs} />);
+        await user.click(screen.getByRole("button", { name: "Open menu" }));
+        const dialog = sheet()!;
+        const dock = dialog.querySelector('[data-lufia-part="nav-sheet-dock"]')!;
+        const panel = dialog.querySelector('[data-lufia-part="nav-sheet"]')!;
+        expect(dock).toContainElement(screen.getByRole("group", { name: "Bar" }));
+        expect(panel).not.toContainElement(dock as HTMLElement);
+        expect(panel).toHaveAttribute("data-docked");
+        expect(screen.getAllByRole("button", { name: /close/i })).toHaveLength(1);
+      });
+
+      it("lets Tab reach the dock after the sheet's content, and closes from it with focus back on the opener", async () => {
+        const user = userEvent.setup();
+        render(<Docked renderAs={renderAs} />);
+        const opener = screen.getByRole("button", { name: "Open menu" });
+        await user.click(opener);
+        await user.tab();
+        expect(screen.getByRole("link", { name: "One" })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole("link", { name: "Help" })).toHaveFocus();
+        await user.tab();
+        const close = screen.getByRole("button", { name: "Close menu" });
+        expect(close).toHaveFocus();
+        await user.click(close);
+        expect(sheet()).toBeNull();
+        expect(opener).toHaveFocus();
+      });
+
+      it("has no axe violations open", async () => {
+        render(<Docked renderAs={renderAs} initial />);
+        expect(await axe(document.body)).toHaveNoViolations();
+      });
+    });
+  }
+
+  it("keeps the dock, untouchable, while the sheet animates out after a drag", () => {
+    mockReducedMotion(false);
+    render(<Docked initial />);
+    const grabber = document.querySelector<HTMLElement>("[data-swipe]")!;
+    fireEvent.pointerDown(grabber, { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+    fireEvent.pointerMove(grabber, { pointerId: 1, clientY: 200, pointerType: "touch" });
+    fireEvent.pointerMove(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    act(() => {
+      fireEvent.pointerUp(grabber, { pointerId: 1, clientY: 300, pointerType: "touch" });
+    });
+    const layer = document.querySelector('[data-lufia-part="nav-sheet-layer"]');
+    expect(layer).toHaveAttribute("data-state", "closed");
+    expect(layer!.querySelector('[data-lufia-part="nav-sheet-dock"]')).not.toBeNull();
+    expect(dockCss).toMatch(/\.root\[data-state="closed"\] \.dock \{\s*pointer-events: none;/);
+  });
+
+  it("keeps the end of the sheet clear of the dock", () => {
+    expect(dockCss).toMatch(
+      /\.panel\[data-docked\] > \.foot \{\s*padding-block-end: calc\(var\(--lufia-nav-sheet-dock-clearance, 4\.75rem\) \+ env\(safe-area-inset-bottom\)\);/,
+    );
+  });
+});
+
+const dockCss = readFileSync("src/components/AppShell/NavSheet.module.css", "utf8");

@@ -798,8 +798,8 @@
               "name": "floatScrim",
               "type": "boolean",
               "required": false,
-              "default": "false",
-              "description": "Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge. Default `false`: nothing is drawn unless asked for."
+              "default": "true",
+              "description": "Fade the page out behind the floating bar on phones, so content scrolling under it does not end in a hard edge (`MobileFloatBar` `scrim`). Default `true`; `false` leaves the hard edge."
             },
             {
               "name": "mainProps",
@@ -889,7 +889,7 @@
         {
           "name": "MobileFloatBar",
           "kind": "component",
-          "description": "A pill of the few actions a phone needs within thumb reach, floating above the page: search, the page's main action, and the menu. Fixed to the bottom of the screen, clear of the safe area, translucent where the browser can blur. It only exists below the shell's breakpoint. It is a labelled group, not an ARIA toolbar: a toolbar promises arrow-key movement, and here every control is a plain tab stop.",
+          "description": "A pill of the few actions a phone needs within thumb reach, floating above the page: search, the page's main action, and the menu. Fixed to the bottom of the screen, clear of the safe area, translucent where the browser can blur, over a scrim that fades the page into the canvas behind it. It only exists below the shell's breakpoint. It is a labelled group, not an ARIA toolbar: a toolbar promises arrow-key movement, and here every control is a plain tab stop.",
           "props": [
             {
               "name": "label",
@@ -911,6 +911,13 @@
               "required": false,
               "default": "true",
               "description": "Follow the visual viewport: when the on-screen keyboard or a browser toolbar covers the bottom of the page (iOS Safari keeps `position: fixed` on the layout viewport, behind them), the bar moves up above it, once per frame. Does nothing where `window.visualViewport` does not exist, and while the page is pinch-zoomed. Default `true`."
+            },
+            {
+              "name": "scrim",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Fade the page into the canvas behind the bar: a full-width gradient from a little above the bar to the bottom edge of the screen, so content scrolling under it does not end in a hard edge. It is part of the bar (shown while the bar is, lifted with it, never catches a tap). Tune it with `--lufia-float-bar-scrim-block-size` (default `6rem`, plus the safe area), `--lufia-float-bar-scrim-color` (default `--lufia-color-bg-canvas`) and `--lufia-float-bar-scrim-stop` (where the gradient reaches the colour, default `65%`). Default `true`."
             }
           ],
           "nativeProps": true
@@ -1018,7 +1025,7 @@
           "name": "MobileFloatBarProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; scrim?: boolean | undefined; }"
         },
         {
           "name": "MobileFloatBarSeparator",
@@ -1030,7 +1037,7 @@
         {
           "name": "NavSheet",
           "kind": "component",
-          "description": "A modal bottom sheet that holds the app's navigation on a phone. It rises from the bottom edge, dims the page, traps focus, closes on Escape, on a tap on the dimmed page, and on a swipe down from the grabber or header. The page behind is inert and cannot scroll. Focus lands on the sheet itself when it opens and returns to the control that opened it. Under `prefers-reduced-motion` it appears and disappears at once; dragging still follows the finger.",
+          "description": "A modal bottom sheet that holds the app's navigation on a phone. It rises from the bottom edge, dims the page, traps focus, closes on Escape, on a tap on the dimmed page, and on a swipe down from the grabber or header. The page behind is inert and cannot scroll. Focus lands on the sheet itself when it opens and returns to the control that opened it. Under `prefers-reduced-motion` it appears and disappears at once; dragging still follows the finger. With a `dock` (the shell's floating bar, its menu button turned into a close button) the bar stays in place on top of the sheet, inside the dialog, and the sheet has no close button of its own.",
           "props": [
             {
               "name": "open",
@@ -1129,6 +1136,13 @@
               "required": false,
               "default": "\"portal\"",
               "description": "`portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both."
+            },
+            {
+              "name": "dock",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A control bar kept in place at the bottom of the screen, above the sheet, while it is shown: `AppShell` passes its floating bar, with the menu button turned into the close button. It is part of the dialog (inside the focus trap, after the sheet's own content), it does not move with a drag, and the end of the sheet keeps clear of it (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock."
             },
             {
               "name": "children",
@@ -2011,7 +2025,7 @@
         "AppShellSheetProps": "{ className?: string | undefined; container?: HTMLElement | null | undefined; } & ShellDataAttributes",
         "AppShellSlotState": "{ collapsed: boolean; surface: \"sidebar\" | \"sheet\" | \"topBar\"; closeSheet: () => void; openSheet: () => void; }",
         "FloatBarDataAttributes": "{ [name: `data-${string}`]: string | number | boolean | undefined; }",
-        "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; }",
+        "MobileFloatBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { label: string; children: ReactNode; followViewport?: boolean | undefined; scrim?: boolean | undefined; }",
         "NavSheetLayerProps": "{ className?: string | undefined; } & ShellDataAttributes",
         "RouteProgressEvents": "{ start: string; done: string; }",
         "RouteProgressProps": "{ routeKey: string; pending?: boolean | undefined; trackLinks?: boolean | \"query\" | undefined; timeout?: number | undefined; revealDelay?: number | undefined; events?: RouteProgressEvents | undefined; className?: string | undefined; }",
@@ -2044,6 +2058,10 @@
           {
             "export": "Phone",
             "id": "components-navigation-appshell--phone"
+          },
+          {
+            "export": "PhoneMenuOpen",
+            "id": "components-navigation-appshell--phone-menu-open"
           },
           {
             "export": "PhoneShortPage",
@@ -2227,17 +2245,18 @@
           },
           {
             "keys": "Tab / Shift+Tab",
-            "action": "Sheet | Cycle inside the sheet; the page behind is inert"
+            "action": "Sheet | Cycle inside the sheet, then the bar on top of it; the page behind is inert"
           }
         ],
         "keyboardNotes": null,
         "notes": []
       },
       "motion": {
-        "respectsReducedMotion": false,
+        "respectsReducedMotion": true,
         "notes": null
       },
       "tokens": [
+        "--lufia-app-shell-float-clearance",
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-canvas",
@@ -2252,6 +2271,10 @@
         "--lufia-font-family-mono",
         "--lufia-font-size-2xs",
         "--lufia-font-size-sm",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-easing-in",
+        "--lufia-motion-easing-out",
         "--lufia-radius-control",
         "--lufia-radius-xs",
         "--lufia-shadow-md",
