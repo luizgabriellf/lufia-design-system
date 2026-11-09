@@ -35,6 +35,7 @@ export * from "./components/PendingSubmit";
 export * from "./components/ProgressBar";
 export * from "./components/RadioGroup";
 export * from "./components/SearchInput";
+export * from "./components/QueueSummary";
 export * from "./components/SectionHeader";
 export * from "./components/SegmentedToggle";
 export * from "./components/Select";

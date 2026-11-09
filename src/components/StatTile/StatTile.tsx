@@ -3,19 +3,28 @@ import { Skeleton } from "../../motion/Skeleton";
 import { LufiaLink } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
 import type { IconComponent } from "../Icon/Icon";
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon, MinusIcon } from "../Icon/icons";
+import { CheckIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, MinusIcon } from "../Icon/icons";
 import styles from "./StatTile.module.css";
 
 export type StatTileTone = "neutral" | "success" | "warning" | "danger";
 export type StatTileTrend = "up" | "down" | "flat";
+export type StatTileLayout = "tile" | "row";
 
 export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
   /** What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. */
   label: ReactNode;
   /** The figure, already formatted. Pass an `AnimatedNumber` to count it up. */
   value: ReactNode;
-  /** `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. */
+  /**
+   * `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. In the `row`
+   * layout only the start edge and the figure take the tone, so a column of rows does not turn into a block of colour.
+   */
   tone?: StatTileTone;
+  /**
+   * `tile` (default) stacks label, figure and hint. `row` puts the label and hint at the start and the figure at the end,
+   * one line high, for a dense list of figures on a phone; a link or button row also shows a trailing chevron.
+   */
+  layout?: StatTileLayout;
   /** The change, already formatted ("+12% vs last week"). */
   delta?: ReactNode;
   /** Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. */
@@ -73,6 +82,7 @@ export function StatTile({
   label,
   value,
   tone = "neutral",
+  layout = "tile",
   delta,
   trend,
   trendLabel,
@@ -123,6 +133,7 @@ export function StatTile({
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-tone={tone}
+      data-layout={layout === "tile" ? undefined : layout}
       data-interactive={interactive || undefined}
       data-pressed={isPressed || undefined}
       data-loading={loading || undefined}
@@ -171,6 +182,9 @@ export function StatTile({
           </>
         )}
       </div>
+      {layout === "row" && interactive && isPressed === undefined ? (
+        <ChevronRightIcon className={styles.chevron} size="sm" />
+      ) : null}
     </div>
   );
 }

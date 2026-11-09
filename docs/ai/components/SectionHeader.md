@@ -69,7 +69,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-lg`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`.
+Reads these semantic tokens: `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-lg`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-section-header-title-basis`.
 
 ## Stories
 

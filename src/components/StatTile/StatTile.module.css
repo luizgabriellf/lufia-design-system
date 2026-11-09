@@ -168,6 +168,91 @@
   }
 }
 
+/* Row layout: label and hint at the start, the figure at the end, for a dense list on a phone. The tone stays on the
+   start edge and the figure: a column of tinted rows would give every row the same weight again. */
+.root[data-layout="row"] {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: var(--lufia-target-touch);
+  block-size: 100%;
+  padding-block: 0.6875rem;
+  padding-inline: 0.875rem 0.625rem;
+}
+
+.root[data-layout="row"][data-tone="warning"],
+.root[data-layout="row"][data-tone="danger"] {
+  border-inline-start-width: var(--lufia-border-width-thick);
+  padding-inline-start: calc(0.875rem - (var(--lufia-border-width-thick) - var(--lufia-border-width-thin)));
+  border-color: var(--lufia-color-border-subtle);
+  background: var(--lufia-color-bg-surface);
+}
+
+.root[data-layout="row"][data-tone="warning"] {
+  border-inline-start-color: var(--lufia-color-status-warning-fg);
+}
+
+.root[data-layout="row"][data-tone="danger"] {
+  border-inline-start-color: var(--lufia-color-status-danger-fg);
+}
+
+.root[data-layout="row"] .body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 0.75rem;
+}
+
+.root[data-layout="row"] .body::before {
+  display: none;
+}
+
+.root[data-layout="row"] .body > * {
+  grid-column: 1;
+}
+
+.root[data-layout="row"] .label {
+  color: var(--lufia-color-text-default);
+  font-family: inherit;
+  font-size: var(--lufia-font-size-sm);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.root[data-layout="row"] .delta,
+.root[data-layout="row"] .hint {
+  margin-block-start: 0.0625rem;
+}
+
+.root[data-layout="row"] .body > .valueRow {
+  grid-row: 1 / span 3;
+  grid-column: 2;
+  align-items: center;
+}
+
+.root[data-layout="row"] .value {
+  font-size: var(--lufia-stat-tile-row-value-size, var(--lufia-font-size-xl));
+}
+
+.root[data-layout="row"] .spark {
+  inline-size: 4.5rem;
+}
+
+@container (inline-size < 18rem) {
+  .root[data-layout="row"] .spark {
+    display: none;
+  }
+}
+
+.chevron {
+  position: relative;
+  flex: none;
+  color: var(--lufia-color-text-muted);
+  pointer-events: none;
+}
+
 /* The stretched link: its pseudo-element covers the tile, so the whole surface is the hit area. */
 .link {
   padding: 0;
@@ -284,6 +369,11 @@
 
   .body::before {
     background: CanvasText;
+  }
+
+  .root[data-layout="row"][data-tone="warning"],
+  .root[data-layout="row"][data-tone="danger"] {
+    border-inline-start-color: CanvasText;
   }
 
   /* Box shadows are dropped in forced colors: the border turns Highlight and the check mark carries the state. */
