@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.33.0
+
+### Minor Changes
+
+- [#108](https://github.com/luizgabriellf/lufia-design-system/pull/108) [`13ba808`](https://github.com/luizgabriellf/lufia-design-system/commit/13ba80853e0acb4b8352ff60a533e92643e9f6c7) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - StatTile: add `toneSurface`, `labelLines` and `quiet`; hover effects apply only on hover-capable pointers, and labels wrap between words, hyphenating long words in narrow tiles
+
 ## 0.32.0
 
 ### Minor Changes
