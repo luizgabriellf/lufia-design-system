@@ -45,7 +45,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### The interactive tile
 
-An interactive tile is not a clickable `div`. It uses the stretched-link pattern, like `Card`: the `label` renders as the one link (or button) and its `::after` pseudo-element covers the tile. The figure, the change and the hint are attached to it with `aria-describedby`, so a screen reader announces "Open items, link, 128, up 12% vs last week" once. Hover lifts the tile a little and press scales it down slightly, both from motion tokens and both removed under reduced motion. The hover effects (lift, accent border, label underline) apply only under `@media (hover: hover)`, so a tap on a touch screen leaves nothing behind; the press feedback stays.
+An interactive tile is not a clickable `div`. It uses the stretched-link pattern, like `Card`: the `label` renders as the one link (or button) and its `::after` pseudo-element covers the tile. The figure, the change and the hint are attached to it with `aria-describedby`, so a screen reader announces "Open items, link, 128, up 12% vs last week" once. Hover lifts the tile a little and press scales it down slightly, both from motion tokens and both removed under reduced motion. The hover effects (lift, accent border, label underline) apply only under `@media (hover: hover)`, so a tap on a touch screen leaves nothing behind; the press feedback stays. A grid where the lift and border already say "link" can drop the underline with `--lufia-stat-tile-link-hover-decoration: none`.
 
 The standard trade-off of the pattern: text in the tile cannot be selected with the mouse.
 

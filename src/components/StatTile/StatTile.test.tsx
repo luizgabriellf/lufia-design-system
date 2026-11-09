@@ -369,7 +369,9 @@ describe("StatTile", () => {
 
     it("hover effects only apply where the pointer can hover", () => {
       const hover = css.match(/@media \(hover: hover\) \{([\s\S]*?)\n\}/)![1]!;
-      expect(hover).toMatch(/:hover \.link \{\s*text-decoration: underline;/);
+      expect(hover).toMatch(
+        /:hover \.link \{\s*text-decoration: var\(--lufia-stat-tile-link-hover-decoration, underline\);/,
+      );
       const outside = css.replace(/@media \(hover: hover\) \{[\s\S]*?\n\}/g, "");
       expect(outside).not.toMatch(/:hover \.link/);
     });

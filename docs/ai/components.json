@@ -14440,6 +14440,7 @@
         "--lufia-stat-tile-label-lines",
         "--lufia-stat-tile-label-size",
         "--lufia-stat-tile-label-tracking",
+        "--lufia-stat-tile-link-hover-decoration",
         "--lufia-stat-tile-row-value-size",
         "--lufia-stat-tile-value-size",
         "--lufia-stat-tile-value-size-narrow",

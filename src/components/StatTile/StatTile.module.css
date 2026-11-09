@@ -334,7 +334,7 @@
   }
 
   .root[data-interactive]:hover .link {
-    text-decoration: underline;
+    text-decoration: var(--lufia-stat-tile-link-hover-decoration, underline);
   }
 }
 
