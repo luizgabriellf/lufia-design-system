@@ -2306,29 +2306,42 @@
           "definition": "\"edge\" | \"inset\""
         },
         {
+          "name": "AttentionGroup",
+          "kind": "type",
+          "description": "",
+          "definition": "{ id: string; tone?: AttentionTone | undefined; label: ReactNode; count?: ReactNode; items: readonly AttentionItem[]; }"
+        },
+        {
           "name": "AttentionItem",
           "kind": "type",
           "description": "",
-          "definition": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }"
+          "definition": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; href?: string | undefined; onSelect?: MouseEventHandler<HTMLElement> | undefined; count?: ReactNode; }"
         },
         {
           "name": "AttentionList",
           "kind": "component",
-          "description": "A short list of things that need a decision: each row has a tone bar, a title, a line of context and one action. Name the list with `aria-label` or `aria-labelledby` (for example the id of a `SectionHeader` title). Renders nothing when `items` is empty: show an `EmptyState` instead, or leave the section out.",
+          "description": "A short list of things that need a decision. With `groups`, rows are sorted under urgency headers on a neutral surface and each row can be one link with a chevron. With `items`, each row has a tone bar, a title, a line of context and one action. Name the list with `aria-label` or `aria-labelledby` (for example the id of a `SectionHeader` title). Renders nothing when there is nothing to show: use an `EmptyState` instead, or leave the section out.",
           "props": [
             {
               "name": "items",
               "type": "readonly AttentionItem[]",
-              "required": true,
+              "required": false,
+              "default": "[]",
+              "description": "The rows of a flat list, each with its own tone bar and tint. Ignored when `groups` is set."
+            },
+            {
+              "name": "groups",
+              "type": "readonly AttentionGroup[]",
+              "required": false,
               "default": null,
-              "description": ""
+              "description": "Rows grouped by urgency, on a neutral surface: each group has a mark, a label and a count. Empty groups are skipped."
             },
             {
               "name": "barStyle",
               "type": "\"edge\" | \"inset\"",
               "required": false,
               "default": "\"edge\"",
-              "description": "`edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`."
+              "description": "`edge` (default) draws the tone bar as the row's own start border, flush with the card edge. `inset` draws a rounded bar set in from the edge. The bar width is `--lufia-attention-list-bar-width`. Applies to flat `items` only."
             }
           ],
           "nativeProps": true
@@ -2337,7 +2350,7 @@
           "name": "AttentionListProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items?: readonly AttentionItem[] | undefined; groups?: readonly AttentionGroup[] | undefined; barStyle?: AttentionBarStyle | undefined; }"
         },
         {
           "name": "AttentionTone",
@@ -2348,8 +2361,9 @@
       ],
       "aliases": {
         "AttentionBarStyle": "\"edge\" | \"inset\"",
-        "AttentionItem": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; }",
-        "AttentionListProps": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items: readonly AttentionItem[]; barStyle?: AttentionBarStyle | undefined; }",
+        "AttentionGroup": "{ id: string; tone?: AttentionTone | undefined; label: ReactNode; count?: ReactNode; items: readonly AttentionItem[]; }",
+        "AttentionItem": "{ id: string; tone?: AttentionTone | undefined; toneLabel?: string | undefined; title: ReactNode; meta?: ReactNode; action?: ReactNode; href?: string | undefined; onSelect?: MouseEventHandler<HTMLElement> | undefined; count?: ReactNode; }",
+        "AttentionListProps": "Omit<HTMLAttributes<HTMLUListElement>, \"children\"> & { items?: readonly AttentionItem[] | undefined; groups?: readonly AttentionGroup[] | undefined; barStyle?: AttentionBarStyle | undefined; }",
         "AttentionTone": "\"danger\" | \"warning\" | \"info\" | \"neutral\""
       },
       "story": {
@@ -2384,6 +2398,26 @@
             "id": "components-data-display-attentionlist--thick-bar"
           },
           {
+            "export": "Groups",
+            "id": "components-data-display-attentionlist--groups"
+          },
+          {
+            "export": "GroupsPhone320",
+            "id": "components-data-display-attentionlist--groups-phone-320"
+          },
+          {
+            "export": "GroupsRightToLeft",
+            "id": "components-data-display-attentionlist--groups-right-to-left"
+          },
+          {
+            "export": "GroupsInsideCard",
+            "id": "components-data-display-attentionlist--groups-inside-card"
+          },
+          {
+            "export": "GroupsAllThemes",
+            "id": "components-data-display-attentionlist--groups-all-themes"
+          },
+          {
             "export": "Empty",
             "id": "components-data-display-attentionlist--empty"
           },
@@ -2407,14 +2441,15 @@
       },
       "docs": {
         "mdx": "src/components/AttentionList/AttentionList.mdx",
-        "overview": "A short list of things that need a decision: each row has a tone bar, a title, a line of context and one action.",
+        "overview": "A short list of things that need a decision. With `groups`, rows sit under urgency headers on a neutral surface and each row is one link. With flat `items`, each row has a tone bar, a title, a line of context and one action.",
         "usage": {
           "language": "tsx",
-          "code": "import { AttentionList } from \"@lufia/design-system/components/AttentionList\";\n\n<AttentionList\n  aria-label=\"Needs attention\"\n  items={[\n    {\n      id: \"contract\",\n      tone: \"danger\",\n      toneLabel: \"Overdue\",\n      title: \"Renew the supplier contract\",\n      meta: \"3 days overdue\",\n      action: (\n        <Button size=\"sm\" variant=\"ghost\">\n          Open\n        </Button>\n      ),\n    },\n  ]}\n/>;"
+          "code": "import { AttentionList } from \"@lufia/design-system/components/AttentionList\";\n\n<AttentionList\n  aria-label=\"Needs attention\"\n  groups={[\n    {\n      id: \"overdue\",\n      tone: \"danger\",\n      label: \"Overdue\",\n      items: [\n        {\n          id: \"contract\",\n          title: \"Renew the supplier contract\",\n          meta: \"Deadline · 12 days ago\",\n          href: \"/contracts/renew\",\n        },\n      ],\n    },\n  ]}\n/>;"
         },
         "whenToUse": [
           "The few items that need action first, at the top of a dashboard.",
-          "Rows where each item has one clear next step."
+          "Rows where each item has one clear next step.",
+          "Use `groups` when items fall into urgency levels; flat `items` when each row needs its own labelled action."
         ],
         "whenNotToUse": [
           "A log of what happened: use `ActivityList`.",
@@ -2429,13 +2464,15 @@
         "keyboardNotes": null,
         "notes": [
           "It is a `ul`. Name it with `aria-label` or `aria-labelledby`.",
+          "With `groups`, each group is a nested list named by its label and count, so the urgency is announced in words. The status mark is decorative next to that label.",
+          "A row with `href` or `onSelect` is one link or button holding the title, meta and count, at least 44px tall, with a visible focus ring. A per-row `action` is dropped on such a row, so targets never nest. The chevron's hover movement is removed under reduced motion.",
           "The tone bar and tint are reinforcement. Set `toneLabel` (\"Overdue\") and it is read before the title, so the urgency never rests on colour.",
           "The action is your own link or button, so it keeps its own name and focus ring. Name it so it makes sense out of context, or include the subject.",
           "In `forced-colors` mode the tone bar is a border and stays visible."
         ]
       },
       "motion": {
-        "respectsReducedMotion": false,
+        "respectsReducedMotion": true,
         "notes": null
       },
       "tokens": [
@@ -2443,11 +2480,14 @@
         "--lufia-attention-list-bar-inset-block",
         "--lufia-attention-list-bar-inset-inline",
         "--lufia-attention-list-bar-width",
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-accent-subtle",
+        "--lufia-color-bg-surface-raised",
         "--lufia-color-border-strong",
         "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
         "--lufia-color-status-danger-bg",
         "--lufia-color-status-danger-solid",
         "--lufia-color-status-warning-bg",
@@ -2457,7 +2497,13 @@
         "--lufia-font-line-height-normal",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
-        "--lufia-radius-full"
+        "--lufia-font-weight-semibold",
+        "--lufia-icon-size-sm",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-opacity-decorative",
+        "--lufia-radius-full",
+        "--lufia-target-touch"
       ]
     },
     {

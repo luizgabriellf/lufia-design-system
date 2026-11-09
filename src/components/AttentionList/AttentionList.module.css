@@ -1,5 +1,8 @@
 .root {
   --attention-bar-width: var(--lufia-attention-list-bar-width, 0.25rem);
+  --attention-row-padding-block: 0.625rem;
+  --attention-row-padding-start: 1rem;
+  --attention-mark-size: var(--lufia-icon-size-sm);
 
   margin: 0;
   padding: 0;
@@ -14,8 +17,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem 0.75rem;
-  padding-block: 0.625rem;
-  padding-inline: 1rem;
+  padding-block: var(--attention-row-padding-block);
+  padding-inline: var(--attention-row-padding-start) 1rem;
   border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
   border-inline-start: var(--attention-bar-width) solid var(--item-bar);
   color: var(--lufia-color-text-default);
@@ -27,11 +30,12 @@
 
 /* Inset: the bar is a rounded pill drawn inside the row, away from the card edge, instead of the row's own border. */
 .root[data-bar-style="inset"] .item {
-  position: relative;
-  padding-inline-start: calc(
+  --attention-row-padding-start: calc(
     var(--lufia-attention-list-bar-inset-inline, var(--lufia-attention-list-bar-inset, 0.5rem)) +
       var(--attention-bar-width) + 0.75rem
   );
+
+  position: relative;
   border-inline-start: 0;
 }
 
@@ -91,8 +95,172 @@
   align-items: center;
 }
 
+/* A row that is itself the target: the row gives its padding to the link, so the whole row is the hit area. */
+.item[data-target] {
+  padding: 0;
+}
+
+.target {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-inline-size: 0;
+  min-block-size: var(--lufia-target-touch);
+  padding-block: var(--attention-row-padding-block);
+  padding-inline: var(--attention-row-padding-start) 1rem;
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.target:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.count {
+  flex: none;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.chevron {
+  flex: none;
+  color: var(--lufia-color-text-muted);
+  transition:
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    translate var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.target:dir(rtl) .chevron {
+  transform: scaleX(-1);
+}
+
+.target:active {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+@media (hover: hover) {
+  .target:hover {
+    background: var(--lufia-color-bg-surface-raised);
+  }
+
+  .target:hover .chevron {
+    color: var(--lufia-color-text-default);
+    translate: 0.125rem 0;
+  }
+
+  .target:dir(rtl):hover .chevron {
+    translate: -0.125rem 0;
+  }
+}
+
+/* Groups: a neutral surface. The tone is the group's mark and a thin rail the rows hang from, never a row fill. */
+.root[data-layout="groups"] {
+  --attention-row-padding-start: calc(1rem + var(--attention-mark-size) + 0.5rem);
+}
+
+.group {
+  --group-accent: var(--lufia-color-border-strong);
+
+  padding-block: 0.75rem 0.375rem;
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.group:last-child {
+  border-block-end: 0;
+}
+
+.group[data-tone="danger"] {
+  --group-accent: var(--lufia-color-status-danger-solid);
+}
+
+.group[data-tone="warning"] {
+  --group-accent: var(--lufia-color-status-warning-fg);
+}
+
+.group[data-tone="info"] {
+  --group-accent: var(--lufia-color-accent-default);
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 1rem;
+  padding-block-end: 0.25rem;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.groupCount {
+  min-inline-size: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: var(--lufia-radius-full);
+  background: var(--lufia-color-bg-surface-raised);
+  box-sizing: border-box;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.groupItems {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupItems::before {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0.125rem 0.375rem;
+  inset-inline-start: calc(1rem + var(--attention-mark-size) / 2 - var(--lufia-border-width-thick) / 2);
+  inline-size: var(--lufia-border-width-thick);
+  border-radius: var(--lufia-radius-full);
+  background: var(--group-accent);
+  content: "";
+  opacity: var(--lufia-opacity-decorative);
+  pointer-events: none;
+}
+
+.groupRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding-block: var(--attention-row-padding-block);
+  padding-inline: var(--attention-row-padding-start) 1rem;
+  color: var(--lufia-color-text-default);
+}
+
+.groupRow[data-target] {
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .target:hover .chevron,
+  .target:dir(rtl):hover .chevron {
+    translate: none;
+  }
+}
+
 @media (forced-colors: active) {
-  .root[data-bar-style="inset"] .item::before {
+  .root[data-bar-style="inset"] .item::before,
+  .groupItems::before {
     background: CanvasText;
+    opacity: 1;
   }
 }

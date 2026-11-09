@@ -12,9 +12,9 @@ import * as Stories from "./AttentionList.stories";
 
 <Section id="overview">
 
-A short list of things that need a decision: each row has a tone bar, a title, a line of context and one action.
+A short list of things that need a decision. With `groups`, rows sit under urgency headers on a neutral surface and each row is one link. With flat `items`, each row has a tone bar, a title, a line of context and one action.
 
-<Canvas of={Stories.Default} />
+<Canvas of={Stories.Groups} />
 
 ### Usage
 
@@ -23,18 +23,19 @@ import { AttentionList } from "@lufia/design-system/components/AttentionList";
 
 <AttentionList
   aria-label="Needs attention"
-  items={[
+  groups={[
     {
-      id: "contract",
+      id: "overdue",
       tone: "danger",
-      toneLabel: "Overdue",
-      title: "Renew the supplier contract",
-      meta: "3 days overdue",
-      action: (
-        <Button size="sm" variant="ghost">
-          Open
-        </Button>
-      ),
+      label: "Overdue",
+      items: [
+        {
+          id: "contract",
+          title: "Renew the supplier contract",
+          meta: "Deadline · 12 days ago",
+          href: "/contracts/renew",
+        },
+      ],
     },
   ]}
 />;
@@ -45,6 +46,16 @@ Strings in the snippet are plain literals. In your app they arrive through props
 </Section>
 
 <Section id="examples">
+
+### Groups
+
+`groups` puts rows under urgency headers: a status mark, the label and a count that defaults to the number of rows. Colour is limited to the mark and a thin rail, so the block stays calm in every theme. Give a row `href` or `onSelect` and the whole row becomes a single target with a trailing chevron; `count` adds a short figure before it. Empty groups are skipped.
+
+<Canvas of={Stories.Groups} />
+<Canvas of={Stories.GroupsInsideCard} />
+<Canvas of={Stories.GroupsPhone320} />
+<Canvas of={Stories.GroupsRightToLeft} />
+<Canvas of={Stories.GroupsAllThemes} />
 
 ### Bar style
 
@@ -80,6 +91,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 ### Accessibility
 
 - It is a `ul`. Name it with `aria-label` or `aria-labelledby`.
+- With `groups`, each group is a nested list named by its label and count, so the urgency is announced in words. The status mark is decorative next to that label.
+- A row with `href` or `onSelect` is one link or button holding the title, meta and count, at least 44px tall, with a visible focus ring. A per-row `action` is dropped on such a row, so targets never nest. The chevron's hover movement is removed under reduced motion.
 - The tone bar and tint are reinforcement. Set `toneLabel` ("Overdue") and it is read before the title, so the urgency never rests on colour.
 - The action is your own link or button, so it keeps its own name and focus ring. Name it so it makes sense out of context, or include the subject.
 - In `forced-colors` mode the tone bar is a border and stays visible.
@@ -92,6 +105,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 - The few items that need action first, at the top of a dashboard.
 - Rows where each item has one clear next step.
+- Use `groups` when items fall into urgency levels; flat `items` when each row needs its own labelled action.
 
 ### When not to use
 
