@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.30.1
+
+### Patch Changes
+
+- [#100](https://github.com/luizgabriellf/lufia-design-system/pull/100) [`333d6ed`](https://github.com/luizgabriellf/lufia-design-system/commit/333d6ed15e5e616028b0a9af39eb6cbbef73854d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - PeerNav in the scroll layout keeps the label and the description on one line each, with an ellipsis at the item's maximum width and the full text as a tooltip, so every tab has the same height.
+
 ## 0.30.0
 
 ### Minor Changes
