@@ -1,4 +1,5 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import pkg from "../../package.json";
+import { Meta, Source } from "@storybook/addon-docs/blocks";
 import { DocTable } from "./blocks/DocTable";
 import { Hero } from "./blocks/Hero";
 import { PatternLinks } from "./patterns/PatternLinks";
@@ -22,9 +23,7 @@ Four commitments that every component is held to, and that a pull request cannot
 Until the package is on npm, install a tagged release straight from GitHub. The tag builds itself on install, and React 19
 and React DOM 19 are the peer dependencies.
 
-```bash
-npm install github:luizgabriellf/lufia-design-system#v0.1.0
-```
+<Source language="bash" code={`npm install github:luizgabriellf/lufia-design-system#v${pkg.version}`} />
 
 Import the tokens and **one** theme once, at the root of your app, then pick components from the package root or from a
 per-component entry point.
