@@ -1303,4 +1303,15 @@ describe("AppShell slots", () => {
       expect(await axe(rail.container)).toHaveNoViolations();
     });
   });
+
+  it("lets a theme set the shell label weight and keeps the current page at medium", () => {
+    const footer = readFileSync("src/components/AppShell/ShellFooter.module.css", "utf8");
+    const sidebar = readFileSync("src/components/AppShell/Sidebar.module.css", "utf8");
+    for (const source of [sidebar, footer]) {
+      expect(source).toMatch(
+        /font-weight: var\(--lufia-shell-label-weight, var\(--lufia-font-weight-medium\)\)/,
+      );
+      expect(source).toMatch(/\.item\[data-active\] \{\n {2}font-weight: var\(--lufia-font-weight-medium\);/);
+    }
+  });
 });
