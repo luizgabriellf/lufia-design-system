@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.30.2
+
+### Patch Changes
+
+- [#102](https://github.com/luizgabriellf/lufia-design-system/pull/102) [`7bef524`](https://github.com/luizgabriellf/lufia-design-system/commit/7bef5245aee060f3d04df43144e28302fb7937fb) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - New optional `--lufia-shell-label-weight` hook for the app shell navigation and footer labels. It defaults to medium, so nothing changes unless a theme sets it; the current page stays at medium.
+
 ## 0.30.1
 
 ### Patch Changes
