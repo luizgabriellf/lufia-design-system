@@ -336,4 +336,61 @@ describe("StatTile", () => {
       expect(await axe(container)).toHaveNoViolations();
     });
   });
+  describe("refinements", () => {
+    it("toneSurface none: keeps the tone attribute and marks the plain surface", () => {
+      const { container, rerender } = render(
+        <StatTile label="Late" value="4" tone="warning" toneSurface="none" />,
+      );
+      const root = container.firstElementChild!;
+      expect(root).toHaveAttribute("data-tone", "warning");
+      expect(root).toHaveAttribute("data-tone-surface", "none");
+      rerender(<StatTile label="Late" value="4" tone="warning" />);
+      expect(container.firstElementChild).not.toHaveAttribute("data-tone-surface");
+      const rule = css.match(/\.root\[data-tone-surface="none"\]\[data-tone="danger"\] \{([^}]*)\}/)![1]!;
+      expect(rule).toMatch(/background:\s*var\(--lufia-color-bg-surface\)/);
+      expect(rule).toMatch(/border-color:\s*var\(--lufia-color-border-subtle\)/);
+    });
+
+    it("labelLines: holds the label height through a custom property, and keeps other styles", () => {
+      const { container } = render(
+        <StatTile label="Open" value="4" labelLines={2} style={{ color: "red" }} />,
+      );
+      const root = container.firstElementChild as HTMLElement;
+      expect(root.style.getPropertyValue("--lufia-stat-tile-label-lines")).toBe("2");
+      expect(root.style.color).toBe("red");
+      expect(css).toMatch(/min-block-size: calc\(\s*var\(--lufia-stat-tile-label-lines, 0\)/);
+    });
+
+    it("quiet: marks the tile and mutes the figure", () => {
+      const { container } = render(<StatTile label="Open" value="0" quiet />);
+      expect(container.firstElementChild).toHaveAttribute("data-quiet");
+      expect(css).toMatch(/\.root\[data-quiet\] \{\s*--tile-value: var\(--lufia-color-text-muted\);/);
+    });
+
+    it("hover effects only apply where the pointer can hover", () => {
+      const hover = css.match(/@media \(hover: hover\) \{([\s\S]*?)\n\}/)![1]!;
+      expect(hover).toMatch(/:hover \.link \{\s*text-decoration: underline;/);
+      const outside = css.replace(/@media \(hover: hover\) \{[\s\S]*?\n\}/g, "");
+      expect(outside).not.toMatch(/:hover \.link/);
+    });
+
+    it("label wraps between words, hyphenating only long words in a narrow tile", () => {
+      const label = css.match(/\n\.label \{([^}]*)\}/)![1]!;
+      expect(label).toMatch(/overflow-wrap: break-word/);
+      expect(label).not.toMatch(/anywhere/);
+      expect(css).toMatch(
+        /@container \(inline-size < 12rem\) \{\s*(\/\*[\s\S]*?\*\/\s*)?\.label \{[^}]*hyphens: auto/,
+      );
+    });
+
+    it("has no axe violations with the new options", async () => {
+      const { container } = render(
+        <div>
+          <StatTile label="Late" value="4" tone="danger" toneSurface="none" href="/late" labelLines={2} />
+          <StatTile label="Clear" value="0" quiet href="/clear" labelLines={2} />
+        </div>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
 });

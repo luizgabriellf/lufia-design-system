@@ -54,6 +54,19 @@
   background: var(--lufia-color-status-danger-bg);
 }
 
+/* toneSurface="none": the tone stays on the dash and the figure, the card stays plain. Hover still takes the accent
+   border (the hover rule below comes later at the same specificity). */
+.root[data-tone-surface="none"][data-tone="warning"],
+.root[data-tone-surface="none"][data-tone="danger"] {
+  border-color: var(--lufia-color-border-subtle);
+  background: var(--lufia-color-bg-surface);
+}
+
+/* quiet: a figure with nothing to act on steps back. Muted text keeps 4.5:1 on the surface in every theme. */
+.root[data-quiet] {
+  --tile-value: var(--lufia-color-text-muted);
+}
+
 .label {
   color: var(--lufia-stat-tile-label-color, var(--lufia-color-text-muted));
   font-family: var(--lufia-stat-tile-label-font, var(--lufia-font-family-mono));
@@ -61,7 +74,14 @@
   font-weight: var(--lufia-font-weight-semibold);
   letter-spacing: var(--lufia-stat-tile-label-tracking, 0.09em);
   line-height: var(--lufia-font-line-height-normal);
-  overflow-wrap: anywhere;
+
+  /* Labels of a row of tiles can wrap to different line counts; holding the same number of lines (labelLines or the
+     custom property) keeps the figures on one line. */
+  min-block-size: calc(var(--lufia-stat-tile-label-lines, 0) * var(--lufia-font-line-height-normal) * 1em);
+
+  /* Wrap between words; a single word wider than the tile breaks rather than spilling out (hyphenated in a narrow tile,
+     see the container query below). */
+  overflow-wrap: break-word;
   text-transform: uppercase;
 }
 
@@ -159,6 +179,15 @@
 }
 
 @container (inline-size < 12rem) {
+  /* A narrow tile (two columns on a phone) may not fit one long word of an uppercase label: hyphenate it in the
+     document's language rather than cutting it at the last letter that fits. Only long words, with four letters on
+     each side, so short words still move to the next line whole. Without a `lang` the browser falls back to the
+     break above. */
+  .label {
+    hyphenate-limit-chars: 10 4 4;
+    hyphens: auto;
+  }
+
   .value {
     font-size: var(--lufia-stat-tile-value-size-narrow, var(--lufia-font-size-2xl));
   }
@@ -214,6 +243,7 @@
 }
 
 .root[data-layout="row"] .label {
+  min-block-size: 0;
   color: var(--lufia-color-text-default);
   font-family: inherit;
   font-size: var(--lufia-font-size-sm);
@@ -295,19 +325,22 @@
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.root[data-interactive]:hover {
-  border-color: var(--lufia-color-accent-border);
-  box-shadow: var(--lufia-shadow-md);
-  transform: translateY(calc(var(--lufia-motion-distance-nudge) * -0.5));
+/* Hover only where the pointer can hover: on touch, :hover sticks after a tap, and the whole tile is the link anyway. */
+@media (hover: hover) {
+  .root[data-interactive]:hover {
+    border-color: var(--lufia-color-accent-border);
+    box-shadow: var(--lufia-shadow-md);
+    transform: translateY(calc(var(--lufia-motion-distance-nudge) * -0.5));
+  }
+
+  .root[data-interactive]:hover .link {
+    text-decoration: underline;
+  }
 }
 
 .root[data-interactive]:active {
   box-shadow: var(--lufia-shadow-sm);
   transform: scale(0.985);
-}
-
-.root[data-interactive]:hover .link {
-  text-decoration: underline;
 }
 
 /* Pressed (a toggle button tile): accent border and background, plus two cues that are not colour: the border doubles
@@ -318,11 +351,13 @@
   box-shadow: inset 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-accent-default);
 }
 
-.root[data-pressed]:hover {
-  border-color: var(--lufia-color-accent-default);
-  box-shadow:
-    inset 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-accent-default),
-    var(--lufia-shadow-md);
+@media (hover: hover) {
+  .root[data-pressed]:hover {
+    border-color: var(--lufia-color-accent-default);
+    box-shadow:
+      inset 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-accent-default),
+      var(--lufia-shadow-md);
+  }
 }
 
 .root[data-pressed]:active {

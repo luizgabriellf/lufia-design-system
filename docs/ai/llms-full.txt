@@ -6318,7 +6318,10 @@ A key figure with its label, an optional change and hint, and a slot for a small
 | `label` | `ReactNode` | yes |  | What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. |
 | `value` | `ReactNode` | yes |  | The figure, already formatted. Pass an `AnimatedNumber` to count it up. |
 | `tone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | `warning` and `danger` tint the whole tile for a figure that needs attention. The label always says why. In the `row` layout only the start edge and the figure take the tone, so a column of rows does not turn into a block of colour. |
+| `toneSurface` | `"fill" \| "none"` | no | `"fill"` | Where a `warning` or `danger` tone shows. `fill` (default) tints the whole tile. `none` keeps the plain card and puts the tone only on the accent dash and the figure, for a calm grid where a filled card would shout. |
 | `layout` | `"tile" \| "row"` | no | `"tile"` | `tile` (default) stacks label, figure and hint. `row` puts the label and hint at the start and the figure at the end, one line high, for a dense list of figures on a phone; a link or button row also shows a trailing chevron. |
+| `labelLines` | `number` | no |  | Lines of label height to hold, so the figures of a row of tiles sit on one line when their labels wrap differently. Set it to the most lines a label takes in the row. The same can be set per breakpoint with the `--lufia-stat-tile-label-lines` custom property on the grid. Ignored by the `row` layout. |
+| `quiet` | `boolean` | no | `false` | Steps the figure back, for a value with nothing to act on (usually zero): it takes the muted text colour, which keeps at least 4.5:1 on the surface, and the tone no longer colours it. Pair it with the `neutral` tone. |
 | `delta` | `ReactNode` | no |  | The change, already formatted ("+12% vs last week"). |
 | `trend` | `"up" \| "down" \| "flat"` | no |  | Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. |
 | `trendLabel` | `string` | no |  | Direction in words for screen readers ("Up"). Read before `delta`. |
@@ -6348,6 +6351,7 @@ computeStatDelta(input: StatDeltaInput): StatDelta | null
 - `StatDeltaLabels`: `{ up: string; down: string; flat: string; comparison: string | ((change: string) => string); }`
 - `StatTileLayout`: `"tile" | "row"`
 - `StatTileTone`: `"neutral" | "success" | "warning" | "danger"`
+- `StatTileToneSurface`: `"fill" | "none"`
 - `StatTileTrend`: `"up" | "down" | "flat"`
 
 ### Example
@@ -6383,7 +6387,8 @@ Keyboard:
 
 - The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
 - `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
-- `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
+- `tone="warning"` and `"danger"` tint the tile (or, with `toneSurface="none"`, only the dash and the figure). The label and hint must say why it needs attention.
+- `quiet` uses the muted text colour (at least 4.5:1 on the surface). Keep a quiet tile `neutral`: muted text on a tinted surface is not checked.
 - While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.
 - With `pressed`, the button is a toggle: screen readers announce "Open items, toggle button, pressed". Name the filter in the `label`, not in the state.
 - In `forced-colors` mode the border is `CanvasText` (`Highlight` when pressed, with the check mark) and the focus ring `Highlight`.
@@ -6394,7 +6399,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-row-value-size`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-lines`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-row-value-size`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`, `--lufia-target-touch`.
 
 ### Stories
 
@@ -6421,6 +6426,8 @@ Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width
 - `components-data-display-stattile--with-animated-number`
 - `components-data-display-stattile--in-flex-row`
 - `components-data-display-stattile--grid`
+- `components-data-display-stattile--calm-grid`
+- `components-data-display-stattile--narrow-labels-phone-320`
 - `components-data-display-stattile--long-figure-phone-320`
 - `components-data-display-stattile--phone-320`
 - `components-data-display-stattile--right-to-left`

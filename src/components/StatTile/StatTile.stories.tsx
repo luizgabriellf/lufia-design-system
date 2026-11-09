@@ -14,6 +14,7 @@ const meta = {
   args: { label: "Open items", value: "128", hint: "Across all teams" },
   argTypes: {
     tone: { control: "inline-radio", options: ["neutral", "success", "warning", "danger"] },
+    toneSurface: { control: "inline-radio", options: ["fill", "none"] },
     trend: { control: "inline-radio", options: [undefined, "up", "down", "flat"] },
     deltaTone: { control: "inline-radio", options: ["neutral", "success", "warning", "danger"] },
   },
@@ -271,6 +272,58 @@ export const Grid: Story = {
         sparkline={<Sparkline values={[2, 4, 3, 6, 8]} label={null} />}
       />
       <StatTile label="Loading" value="0" loading loadingLabel="Loading" />
+    </div>
+  ),
+};
+/**
+ * `toneSurface="none"`: the tone marks only the dash and the figure, the card stays plain. `labelLines` holds two label
+ * lines so the figures sit on one line, and `quiet` steps a zero back.
+ */
+export const CalmGrid: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "grid",
+        inlineSize: "min(100vw - 4rem, 56rem)",
+        gap: "0.75rem",
+        gridTemplateColumns: "repeat(auto-fit, minmax(10rem, 1fr))",
+      }}
+    >
+      <StatTile label="Open items" value="128" href="#a" labelLines={2} toneSurface="none" />
+      <StatTile
+        label="Items waiting for a second review"
+        value="9"
+        tone="warning"
+        toneSurface="none"
+        href="#b"
+        labelLines={2}
+      />
+      <StatTile label="Overdue" value="4" tone="danger" toneSurface="none" href="#c" labelLines={2} />
+      <StatTile label="Escalated" value="0" quiet href="#d" labelLines={2} toneSurface="none" />
+    </div>
+  ),
+};
+/** Two narrow columns on a phone: long words in an uppercase label hyphenate (in the page's `lang`) instead of breaking at the last letter that fits. */
+export const NarrowLabelsPhone320: Story = {
+  decorators: [
+    (Story) => (
+      <div lang="pt">
+        <Story />
+      </div>
+    ),
+  ],
+  globals: { viewport: { value: "w320", isRotated: false } },
+  render: () => (
+    <div
+      style={{
+        display: "grid",
+        inlineSize: "calc(100vw - 4rem)",
+        gap: "0.75rem",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      }}
+    >
+      <StatTile label="Trabalhadores sem ficha" value="12" href="#a" labelLines={3} />
+      <StatTile label="Acidentes" value="0" quiet href="#b" labelLines={3} />
     </div>
   ),
 };

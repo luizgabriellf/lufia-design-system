@@ -3,6 +3,7 @@ export {
   type StatTileLayout,
   type StatTileProps,
   type StatTileTone,
+  type StatTileToneSurface,
   type StatTileTrend,
 } from "./StatTile";
 export {

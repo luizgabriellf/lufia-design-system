@@ -1,4 +1,10 @@
-import { useId, type HTMLAttributes, type MouseEventHandler, type ReactNode } from "react";
+import {
+  useId,
+  type CSSProperties,
+  type HTMLAttributes,
+  type MouseEventHandler,
+  type ReactNode,
+} from "react";
 import { Skeleton } from "../../motion/Skeleton";
 import { LufiaLink } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
@@ -9,6 +15,7 @@ import styles from "./StatTile.module.css";
 export type StatTileTone = "neutral" | "success" | "warning" | "danger";
 export type StatTileTrend = "up" | "down" | "flat";
 export type StatTileLayout = "tile" | "row";
+export type StatTileToneSurface = "fill" | "none";
 
 export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
   /** What the figure measures. With `href` or `onClick` it is also the text of the tile's single link or button. */
@@ -21,10 +28,26 @@ export type StatTileProps = Omit<HTMLAttributes<HTMLDivElement>, "onClick"> & {
    */
   tone?: StatTileTone;
   /**
+   * Where a `warning` or `danger` tone shows. `fill` (default) tints the whole tile. `none` keeps the plain card and puts
+   * the tone only on the accent dash and the figure, for a calm grid where a filled card would shout.
+   */
+  toneSurface?: StatTileToneSurface;
+  /**
    * `tile` (default) stacks label, figure and hint. `row` puts the label and hint at the start and the figure at the end,
    * one line high, for a dense list of figures on a phone; a link or button row also shows a trailing chevron.
    */
   layout?: StatTileLayout;
+  /**
+   * Lines of label height to hold, so the figures of a row of tiles sit on one line when their labels wrap differently.
+   * Set it to the most lines a label takes in the row. The same can be set per breakpoint with the
+   * `--lufia-stat-tile-label-lines` custom property on the grid. Ignored by the `row` layout.
+   */
+  labelLines?: number;
+  /**
+   * Steps the figure back, for a value with nothing to act on (usually zero): it takes the muted text colour, which keeps
+   * at least 4.5:1 on the surface, and the tone no longer colours it. Pair it with the `neutral` tone.
+   */
+  quiet?: boolean;
   /** The change, already formatted ("+12% vs last week"). */
   delta?: ReactNode;
   /** Direction arrow shown before `delta`. The arrow is decorative: say the direction in `trendLabel` or in `delta`. */
@@ -77,12 +100,16 @@ function TrendArrow({ trend }: { trend: StatTileTrend }) {
  * Hover and press are small `transform` moves from motion tokens, removed under reduced motion. While `loading`, the
  * skeletons take the line boxes of the figure, the change, the hint and the chart, so the tile does not change height
  * when the data arrives. With `onClick` and `pressed` the tile is a toggle button (`aria-pressed`) for filtering.
+ * Hover effects apply only where the primary pointer can hover, so a tap on a phone leaves no underline or lift behind.
  */
 export function StatTile({
   label,
   value,
   tone = "neutral",
+  toneSurface = "fill",
   layout = "tile",
+  labelLines,
+  quiet = false,
   delta,
   trend,
   trendLabel,
@@ -95,6 +122,7 @@ export function StatTile({
   loading = false,
   loadingLabel,
   className,
+  style,
   ...rest
 }: StatTileProps) {
   const id = useId();
@@ -106,6 +134,11 @@ export function StatTile({
   const interactive = !loading && (href !== undefined || onClick !== undefined);
   const isPressed = interactive && href === undefined && pressed !== undefined ? pressed : undefined;
   const describedBy = [valueId, hasDelta ? deltaId : null, hasHint ? hintId : null].filter(Boolean).join(" ");
+
+  const rootStyle =
+    labelLines !== undefined
+      ? ({ ...style, "--lufia-stat-tile-label-lines": String(labelLines) } as CSSProperties)
+      : style;
 
   let labelNode: ReactNode = label;
   if (interactive && href !== undefined) {
@@ -132,7 +165,10 @@ export function StatTile({
     <div
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
+      style={rootStyle}
       data-tone={tone}
+      data-tone-surface={toneSurface === "fill" ? undefined : toneSurface}
+      data-quiet={quiet || undefined}
       data-layout={layout === "tile" ? undefined : layout}
       data-interactive={interactive || undefined}
       data-pressed={isPressed || undefined}
