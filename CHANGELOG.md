@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.30.0
+
+### Minor Changes
+
+- [#98](https://github.com/luizgabriellf/lufia-design-system/pull/98) [`5a86e2a`](https://github.com/luizgabriellf/lufia-design-system/commit/5a86e2a7645db561883b2c8ab5d2fa67437685df) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Phone targets and overflow. New `--lufia-target-touch` token: Button (every size), TableToolbar search, Combobox trigger and CommandPalette field and close are 44px on phones and coarse pointers, desktop keeps its density. CommandPalette follows `visualViewport`, so it fits above an on-screen keyboard, and its focus ring is no longer clipped. Badge gains `truncate` and `--lufia-badge-max-inline-size` and never overflows its pill. PeerNav labels no longer run into the next item and `layout="scroll"` sizes items to their label. New optional `--lufia-button-danger-bg` and `--lufia-button-danger-fg` hooks. StatTile long figures and a read-only Textarea's resize handle are fixed.
+
 ## 0.29.0
 
 ### Minor Changes
