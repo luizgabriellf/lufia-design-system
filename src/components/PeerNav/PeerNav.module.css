@@ -138,7 +138,7 @@
   color: var(--lufia-color-text-muted);
 }
 
-/* Many views, or long labels: each item is as wide as its label (up to a cap) and the strip scrolls, so labels stay on
+/* Many views, or long labels: each item is as wide as its text (up to a cap) and the strip scrolls, so the text stays on
    one line instead of stacking in a narrow card. Spare room is still shared out, so a short strip fills its row. */
 .root[data-layout="scroll"] {
   display: flex;
@@ -184,9 +184,12 @@
   mask-image: linear-gradient(to right, var(--lufia-color-text-default) calc(100% - 2.5rem), transparent);
 }
 
+/* One line each, ending in an ellipsis at the item's cap, so every tab in the strip has the same height. */
+.root[data-layout="scroll"] .label,
 .root[data-layout="scroll"] .description {
-  white-space: normal;
-  text-overflow: clip;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (width < 35rem) {
