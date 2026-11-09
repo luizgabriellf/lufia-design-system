@@ -18,7 +18,7 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Motion that respects people",
-    body: "Duration, easing and distance tokens collapse under prefers-reduced-motion. Five primitives, plus a CLI that checks your own source against the rules.",
+    body: "Duration, easing and distance tokens collapse under prefers-reduced-motion. Motion primitives, plus a CLI that checks your own source against the rules.",
     Icon: WaveIcon,
   },
   {

@@ -40,11 +40,12 @@ For local coding agents, `npm run storybook` exposes the official Storybook MCP 
 
 ## Install
 
-npm publishing is on hold. Until then, install from git (the package builds itself on install). The `v0.1.0` tag exists after the
-first release; until then use `#main`:
+npm publishing is on hold. Install a tagged release from git using the versioned command in the
+[Storybook quick start](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/introduction--docs).
+The package builds itself on install. To try unreleased changes instead, install `main`:
 
 ```bash
-npm install github:luizgabriellf/lufia-design-system#main   # or #v0.1.0 once released
+npm install github:luizgabriellf/lufia-design-system#main
 ```
 
 Peer dependencies: React 19 and React DOM 19. Requires Node 22 or newer to build.
