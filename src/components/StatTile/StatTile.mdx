@@ -45,7 +45,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### The interactive tile
 
-An interactive tile is not a clickable `div`. It uses the stretched-link pattern, like `Card`: the `label` renders as the one link (or button) and its `::after` pseudo-element covers the tile. The figure, the change and the hint are attached to it with `aria-describedby`, so a screen reader announces "Open items, link, 128, up 12% vs last week" once. Hover lifts the tile a little and press scales it down slightly, both from motion tokens and both removed under reduced motion.
+An interactive tile is not a clickable `div`. It uses the stretched-link pattern, like `Card`: the `label` renders as the one link (or button) and its `::after` pseudo-element covers the tile. The figure, the change and the hint are attached to it with `aria-describedby`, so a screen reader announces "Open items, link, 128, up 12% vs last week" once. Hover lifts the tile a little and press scales it down slightly, both from motion tokens and both removed under reduced motion. The hover effects (lift, accent border, label underline) apply only under `@media (hover: hover)`, so a tap on a touch screen leaves nothing behind; the press feedback stays. A grid where the lift and border already say "link" can drop the underline with `--lufia-stat-tile-link-hover-decoration: none`.
 
 The standard trade-off of the pattern: text in the tile cannot be selected with the mouse.
 
@@ -58,6 +58,21 @@ A row of tiles can filter a list. Give each button tile `pressed` and keep the a
 ```
 
 <Canvas of={Stories.AsFilters} />
+
+### A calm grid
+
+For a dashboard grid where several figures need attention, a filled card per figure gets loud. `toneSurface="none"` keeps the plain card and puts the tone only on the accent dash and the figure. `labelLines` holds the same number of label lines in every tile, so the figures of a row sit on one line when the labels wrap differently; set it to the most lines a label takes. To change it per breakpoint, set the `--lufia-stat-tile-label-lines` custom property on the grid in a media query instead. `quiet` steps back a figure with nothing to act on (usually zero): it takes the muted text colour, which keeps at least 4.5:1 on the surface in every theme. The tile cannot tell that a node is zero, so the consumer sets `quiet`.
+
+```tsx
+<StatTile label="Overdue" value="4" tone="danger" toneSurface="none" labelLines={2} href="/overdue" />
+<StatTile label="Escalated" value="0" quiet labelLines={2} href="/escalated" />
+```
+
+<Canvas of={Stories.CalmGrid} />
+
+Labels wrap between words. In a narrow tile (under 12rem, two columns on a phone) a word too long for the line is hyphenated in the language of the page (`lang` on the document or an ancestor), and only words of ten letters or more, so short words still move to the next line whole. Without a `lang` the word breaks at the edge instead of overflowing.
+
+<Canvas of={Stories.NarrowLabelsPhone320} />
 
 ### Counting up
 
@@ -148,7 +163,8 @@ A plain tile is not focusable. The focus ring is drawn around the whole tile.
 
 - The accessible name of an interactive tile is its `label`. The figure, change and hint are its description.
 - `trend` draws a decorative arrow. Say the direction in words with `trendLabel` ("Up") or inside `delta`, so the direction never rests on the arrow or the colour.
-- `tone="warning"` and `"danger"` tint the tile. The label and hint must say why it needs attention.
+- `tone="warning"` and `"danger"` tint the tile (or, with `toneSurface="none"`, only the dash and the figure). The label and hint must say why it needs attention.
+- `quiet` uses the muted text colour (at least 4.5:1 on the surface). Keep a quiet tile `neutral`: muted text on a tinted surface is not checked.
 - While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.
 - With `pressed`, the button is a toggle: screen readers announce "Open items, toggle button, pressed". Name the filter in the `label`, not in the state.
 - In `forced-colors` mode the border is `CanvasText` (`Highlight` when pressed, with the check mark) and the focus ring `Highlight`.

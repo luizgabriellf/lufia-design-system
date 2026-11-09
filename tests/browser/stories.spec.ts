@@ -638,6 +638,42 @@ test.describe("stat tile as filters", () => {
   });
 });
 
+test.describe("stat tile calm grid", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`figures sit on one line, tones keep the plain card, and a zero stays readable (${mode})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1024, height: 700 });
+      await openStory(page, "components-data-display-stattile--calm-grid", "default", mode);
+      const tiles = page.locator("[data-tone]");
+      await expect(tiles).toHaveCount(4);
+      const facts = await tiles.evaluateAll((roots) =>
+        roots.map((root) => {
+          const value = root.querySelector('[id$="-value"]')!;
+          return {
+            top: Math.round(value.getBoundingClientRect().top),
+            background: getComputedStyle(root).backgroundColor,
+            valueColor: getComputedStyle(value).color,
+          };
+        }),
+      );
+      expect(new Set(facts.map((fact) => fact.top)).size).toBe(1);
+      expect(new Set(facts.map((fact) => fact.background)).size).toBe(1);
+      expect(facts[3]!.valueColor).not.toBe(facts[0]!.valueColor);
+      expect(await runAxe(page, "#storybook-root")).toEqual([]);
+    });
+  }
+
+  test("a long uppercase word in a narrow tile hyphenates inside the tile", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-data-display-stattile--narrow-labels-phone-320");
+    const overflow = await page
+      .locator('[class*="label"]')
+      .evaluateAll((labels) => labels.map((label) => label.scrollWidth - label.clientWidth));
+    expect(overflow.every((extra) => extra <= 0)).toBe(true);
+  });
+});
+
 test.describe("segmented toggle status picker", () => {
   for (const [theme, mode] of [
     ["default", "light"],
