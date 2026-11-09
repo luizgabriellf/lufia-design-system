@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.32.0
+
+### Minor Changes
+
+- [#106](https://github.com/luizgabriellf/lufia-design-system/pull/106) [`414a222`](https://github.com/luizgabriellf/lufia-design-system/commit/414a22201fd4950ac25abd435a6c2e466103050b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add QueueSummary and a row layout for StatTile, and a title basis token for SectionHeader
+
 ## 0.31.0
 
 ### Minor Changes
