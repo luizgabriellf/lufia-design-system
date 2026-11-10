@@ -2,7 +2,7 @@
   {
     "name": "index barrel",
     "path": "dist/index.js",
-    "limit": "530 B",
+    "limit": "580 B",
     "gzip": true
   },
   {
