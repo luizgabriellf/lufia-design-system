@@ -20,7 +20,9 @@ that happens.
 
 ## Review policy
 
-`main` requires a pull request, passing checks and a linear history, but **0 required approvals**. That is intentional: the
+The policy for `main` is a pull request, passing checks and a linear history, with **0 required approvals**. Branch
+protection is applied by the owner with `scripts/setup-repo-settings.sh`; until then the policy is followed by convention.
+Zero approvals is intentional: the
 project has a single maintainer, and a required approval nobody else can give would only block work. Review still happens
 (CI, the pull request checklist, and the maintainer's own read-through); more approvals will be required once there is a
 second maintainer.
