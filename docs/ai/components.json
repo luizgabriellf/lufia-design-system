@@ -2718,6 +2718,277 @@
       ]
     },
     {
+      "name": "Banner",
+      "category": "Feedback",
+      "summary": "An inline message for a page or section: info, success, warning, danger or neutral, with an optional action and dismiss.",
+      "status": "beta",
+      "source": "src/components/Banner",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Banner",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "BANNER_VARIANTS",
+          "kind": "constant",
+          "type": "readonly BannerVariant[]"
+        },
+        {
+          "name": "Banner",
+          "kind": "component",
+          "description": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the flow, never takes focus and is not dismissed by a timer. For a message that confirms an action and leaves by itself use `Toast`; for a short label use `Badge`; for an empty list use `EmptyState`.",
+          "props": [
+            {
+              "name": "variant",
+              "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\" | \"info\"",
+              "required": false,
+              "default": "\"info\"",
+              "description": "`info` (default), `success`, `warning`, `danger` or `neutral`. Sets the colour, the default icon and the default `live`."
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A short heading for the message. Optional: a one-line banner can be only `children`."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "The message. Keep it to a sentence or two; link or act through `action`."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "The leading icon. Left out, it is the status icon of the variant. Pass your own node to replace it, or `null` for none (then the title or text must say what kind of message it is). Always hidden from assistive technology."
+            },
+            {
+              "name": "action",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Buttons or links for the next step. They sit beside the text, and below it when the banner is narrow."
+            },
+            {
+              "name": "onDismiss",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Adds a dismiss button. The banner does not remove itself: unmount it, or collapse it, in this handler."
+            },
+            {
+              "name": "dismissLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The accessible name of the dismiss button, in your language. Required with `onDismiss`: the package has no copy, and an unnamed button fails axe."
+            },
+            {
+              "name": "size",
+              "type": "\"md\" | \"compact\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`md` (default) or `compact`: less padding and a smaller icon, for a banner inside a card or a dense form."
+            },
+            {
+              "name": "live",
+              "type": "\"polite\" | \"assertive\" | \"off\"",
+              "required": false,
+              "default": null,
+              "description": "Overrides how the banner is announced. Default: `assertive` (`role=\"alert\"`) for `warning` and `danger`, `polite` (`role=\"status\"`) for the others."
+            },
+            {
+              "name": "animateIn",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Plays the enter motion (a short fade and slide) when the banner mounts. Default `false`: a banner already on the page at load stays still."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "BannerLive",
+          "kind": "type",
+          "description": "How a screen reader hears the banner. `polite` is `role=\"status\"`, `assertive` is `role=\"alert\"`, `off` sets no role: for a message that is already on the page at load and must not interrupt.",
+          "definition": "\"polite\" | \"assertive\" | \"off\""
+        },
+        {
+          "name": "BannerProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "BannerVariant",
+          "kind": "type",
+          "description": "The meaning of a banner. Each one has its own icon shape and colour, so none relies on colour alone.",
+          "definition": "\"info\" | \"success\" | \"warning\" | \"danger\" | \"neutral\""
+        }
+      ],
+      "aliases": {
+        "BannerLive": "\"polite\" | \"assertive\" | \"off\"",
+        "BannerVariant": "\"info\" | \"success\" | \"warning\" | \"danger\" | \"neutral\""
+      },
+      "story": {
+        "docsId": "components-feedback-banner--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-banner--default"
+          },
+          {
+            "export": "Variants",
+            "id": "components-feedback-banner--variants"
+          },
+          {
+            "export": "WithoutTitle",
+            "id": "components-feedback-banner--without-title"
+          },
+          {
+            "export": "TitleOnly",
+            "id": "components-feedback-banner--title-only"
+          },
+          {
+            "export": "WithAction",
+            "id": "components-feedback-banner--with-action"
+          },
+          {
+            "export": "Dismissible",
+            "id": "components-feedback-banner--dismissible"
+          },
+          {
+            "export": "DismissibleWithAction",
+            "id": "components-feedback-banner--dismissible-with-action"
+          },
+          {
+            "export": "Compact",
+            "id": "components-feedback-banner--compact"
+          },
+          {
+            "export": "CustomIcon",
+            "id": "components-feedback-banner--custom-icon"
+          },
+          {
+            "export": "NoIcon",
+            "id": "components-feedback-banner--no-icon"
+          },
+          {
+            "export": "LongText",
+            "id": "components-feedback-banner--long-text"
+          },
+          {
+            "export": "Narrow",
+            "id": "components-feedback-banner--narrow"
+          },
+          {
+            "export": "AnimatedIn",
+            "id": "components-feedback-banner--animated-in"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-banner--all-themes"
+          },
+          {
+            "export": "ThemedByTokens",
+            "id": "components-feedback-banner--themed-by-tokens"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Banner/Banner.mdx",
+        "overview": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the\npage flow, never takes focus and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot\nand an optional dismiss button.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Banner } from \"@lufia/design-system/components/Banner\";\n\n<Banner\n  variant=\"warning\"\n  title=\"Access expires in 3 days\"\n  action={<a href=\"/renew\">Renew access</a>}\n  onDismiss={() => setDismissed(true)}\n  dismissLabel=\"Dismiss message\"\n>\n  Renew it to keep editing without interruption.\n</Banner>;"
+        },
+        "whenToUse": [
+          "A message about the whole page or one section that should stay visible: a note above a form, access or a trial about to expire, a failed sync, a record that is read-only.",
+          "A message that comes with a next step the person can take now or later (`action`)."
+        ],
+        "whenNotToUse": [
+          "Feedback for an action that just happened and can leave by itself: use `Toast`.",
+          "A short label for a record or a count: use `Badge`.",
+          "A list, table or panel with nothing to show: use `EmptyState`.",
+          "A field error: use the `error` of `FormField`.",
+          "A decision that must be made before going on: use `ConfirmDialog` or `Modal`.",
+          "More than one or two at a time: they stop being read. Combine them, or move the detail into the page."
+        ],
+        "contentGuidelines": "Title in a few words, sentence case, saying what happened (\"The last sync failed\"). Description in one or two sentences saying\nwhy it matters and what to do. One main action; a second only as a link. Use `danger` only for something that failed or is\nblocked, `warning` for something that will if nothing is done."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Alert",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/alert/"
+        },
+        "keyboard": [],
+        "keyboardNotes": "The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,\nand the dismiss button works with Enter and Space.",
+        "notes": [
+          "`info`, `success` and `neutral` are `role=\"status\"` (a polite live region); `warning` and `danger` are `role=\"alert\"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live=\"off\"` for one that is part of the page and must not interrupt.",
+          "Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If you hide the icon with `icon={null}`, say the kind of message in the title or text.",
+          "The icon is decorative and hidden from assistive technology. The dismiss button is named by `dismissLabel`.",
+          "The text is always the default text colour on the tinted background, and the contrast check covers it, and the focus ring, on every variant in every theme and mode.",
+          "Focus is visible on the dismiss button. In forced-colors mode the banner uses system colours (`Canvas`, `CanvasText`) and the icon shape keeps the variant readable.",
+          "Long words break and the text wraps, so nothing overflows at 320px or at 200% zoom. The layout uses logical properties, so it mirrors in right-to-left.",
+          "The enter motion animates `opacity` and `transform` only and is removed under `prefers-reduced-motion`."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-banner-body-gap",
+        "--lufia-banner-border-width",
+        "--lufia-banner-gap",
+        "--lufia-banner-icon-size",
+        "--lufia-banner-padding-block",
+        "--lufia-banner-padding-inline",
+        "--lufia-banner-padding-inline-end",
+        "--lufia-banner-padding-inline-start",
+        "--lufia-banner-radius",
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-border",
+        "--lufia-color-accent-subtle",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-border-strong",
+        "--lufia-color-focus-ring",
+        "--lufia-color-status-danger-bg",
+        "--lufia-color-status-danger-border",
+        "--lufia-color-status-danger-fg",
+        "--lufia-color-status-neutral-bg",
+        "--lufia-color-status-neutral-fg",
+        "--lufia-color-status-success-bg",
+        "--lufia-color-status-success-border",
+        "--lufia-color-status-success-fg",
+        "--lufia-color-status-warning-bg",
+        "--lufia-color-status-warning-border",
+        "--lufia-color-status-warning-fg",
+        "--lufia-color-text-accent",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-family-body",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-size-md",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-distance-rise",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-card",
+        "--lufia-radius-md",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4"
+      ]
+    },
+    {
       "name": "BarList",
       "category": "Data display",
       "summary": "Horizontal bars with the name and the value as text, on one shared scale.",
