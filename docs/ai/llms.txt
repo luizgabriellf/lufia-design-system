@@ -76,6 +76,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 
 ## Components: Feedback
 
+- [Banner](https://luizgabriellf.github.io/lufia-design-system/ai/components/Banner.md): An inline message for a page or section: info, success, warning, danger or neutral, with an optional action and dismiss. (beta)
 - [EmptyState](https://luizgabriellf.github.io/lufia-design-system/ai/components/EmptyState.md): What to show when a list or panel has nothing yet, with the one next step. (beta)
 - [SkeletonCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/SkeletonCard.md): A loading card: title bar, text lines and an optional block in the card's padding. (beta)
 - [SkeletonPageHeader](https://luizgabriellf.github.io/lufia-design-system/ai/components/SkeletonPageHeader.md): The top of a loading page, on PageHeader's own layout and breakpoints. (beta)

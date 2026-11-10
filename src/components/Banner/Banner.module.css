@@ -1,0 +1,182 @@
+/* Theming hooks, set in the consuming theme: --lufia-banner-radius, --lufia-banner-border-width,
+   --lufia-banner-padding-block, --lufia-banner-padding-inline (and -start / -end for one side), --lufia-banner-gap
+   (icon to text), --lufia-banner-body-gap (text to actions) and --lufia-banner-icon-size. Each variant sets
+   --banner-bg, --banner-border and --banner-fg (the icon); a host may set them too. The text is always the default text
+   colour: the colour never carries the meaning on its own. */
+.root {
+  --banner-bg: var(--lufia-color-status-neutral-bg);
+  --banner-border: var(--lufia-color-border-strong);
+  --banner-fg: var(--lufia-color-status-neutral-fg);
+
+  display: flex;
+  box-sizing: border-box;
+  align-items: flex-start;
+  gap: var(--lufia-banner-gap, var(--lufia-space-3));
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  padding-block: var(--lufia-banner-padding-block, var(--lufia-space-3));
+  padding-inline: var(
+      --lufia-banner-padding-inline-start,
+      var(--lufia-banner-padding-inline, var(--lufia-space-4))
+    )
+    var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-3)));
+  color: var(--lufia-color-text-default);
+  background: var(--banner-bg);
+  border: var(--lufia-banner-border-width, var(--lufia-border-width-thin)) solid var(--banner-border);
+  border-radius: var(--lufia-banner-radius, var(--lufia-radius-card));
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+.root[data-variant="info"] {
+  --banner-bg: var(--lufia-color-accent-subtle);
+  --banner-border: var(--lufia-color-accent-border);
+  --banner-fg: var(--lufia-color-text-accent);
+}
+
+.root[data-variant="success"] {
+  --banner-bg: var(--lufia-color-status-success-bg);
+  --banner-border: var(--lufia-color-status-success-border);
+  --banner-fg: var(--lufia-color-status-success-fg);
+}
+
+.root[data-variant="warning"] {
+  --banner-bg: var(--lufia-color-status-warning-bg);
+  --banner-border: var(--lufia-color-status-warning-border);
+  --banner-fg: var(--lufia-color-status-warning-fg);
+}
+
+.root[data-variant="danger"] {
+  --banner-bg: var(--lufia-color-status-danger-bg);
+  --banner-border: var(--lufia-color-status-danger-border);
+  --banner-fg: var(--lufia-color-status-danger-fg);
+}
+
+.root[data-size="compact"] {
+  padding-block: var(--lufia-banner-padding-block, var(--lufia-space-2));
+  padding-inline: var(
+      --lufia-banner-padding-inline-start,
+      var(--lufia-banner-padding-inline, var(--lufia-space-3))
+    )
+    var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-2)));
+  font-size: var(--lufia-font-size-sm);
+}
+
+/* Animates `from` only: the resting state is the end state, so a disabled animation leaves the banner visible. */
+.root[data-animate-in] {
+  animation: banner-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+
+  /* The icon box is one line tall, so the glyph centres on the first line of text. */
+  block-size: calc(1em * var(--lufia-font-line-height-normal));
+  color: var(--banner-fg);
+  font-size: var(--lufia-banner-icon-size, 1.25rem);
+  line-height: 0;
+}
+
+.root[data-size="compact"] .icon {
+  font-size: var(--lufia-banner-icon-size, 1rem);
+}
+
+/* The text takes the room it needs; the actions wrap below it before it gets narrower than the basis. */
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lufia-banner-body-gap, var(--lufia-space-2) var(--lufia-space-4));
+  min-inline-size: 0;
+}
+
+.text {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-direction: column;
+  gap: var(--lufia-space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.description {
+  min-inline-size: 0;
+}
+
+.action {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.dismiss {
+  display: grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: 1.75rem;
+  min-block-size: 1.75rem;
+  padding: 0;
+  font: inherit;
+  color: var(--lufia-color-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-md);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.dismiss:hover {
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.dismiss:focus-visible {
+  outline: 2px solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--lufia-motion-distance-rise)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-animate-in] {
+    animation: none;
+  }
+
+  .dismiss {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .dismiss {
+    color: ButtonText;
+  }
+
+  .dismiss:focus-visible {
+    outline-color: Highlight;
+  }
+}

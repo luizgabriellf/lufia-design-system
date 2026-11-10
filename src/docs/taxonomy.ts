@@ -194,6 +194,12 @@ export const ENTRIES: Entry[] = [
   ),
 
   c(
+    "Banner",
+    "Feedback",
+    "An inline message for a page or section: info, success, warning, danger or neutral, with an optional action and dismiss.",
+    apg("Alert", "alert"),
+  ),
+  c(
     "Toast",
     "Feedback",
     "A transient message that confirms an action without taking focus.",

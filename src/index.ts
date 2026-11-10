@@ -3,6 +3,7 @@ export * from "./components/ActivityList";
 export * from "./components/AppShell";
 export * from "./components/AttentionList";
 export * from "./components/Badge";
+export * from "./components/Banner";
 export * from "./components/BarList";
 export * from "./components/BulletBar";
 export * from "./components/Button";

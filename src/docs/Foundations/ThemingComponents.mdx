@@ -209,6 +209,37 @@ apply above a phone; on a phone the stack spans the screen. `ToastProvider` also
 
 <Canvas of={ToastStories.ThemedByTokens} />
 
+## Banner
+
+The banner is in the flow, so set these on the banner, a wrapper or your theme selector. Each variant reads its colours from the
+status tokens; to change one, set `--banner-bg`, `--banner-border` or `--banner-fg` on the banner.
+
+<DocTable
+  label="Banner tokens"
+  head={["Token", "Default", "What it changes"]}
+  rows={[
+    ["`--lufia-banner-radius`", "`--lufia-radius-card`", "Corner radius"],
+    ["`--lufia-banner-border-width`", "`--lufia-border-width-thin`", "Border width"],
+    [
+      "`--lufia-banner-padding-block`",
+      "`--lufia-space-3` (`--lufia-space-2` compact)",
+      "Padding, top and bottom",
+    ],
+    [
+      "`--lufia-banner-padding-inline`",
+      "`--lufia-space-4` at the start, `--lufia-space-3` at the end (one step less compact)",
+      "Padding on both sides. `--lufia-banner-padding-inline-start` and `-end` set one side and win over it",
+    ],
+    ["`--lufia-banner-gap`", "`--lufia-space-3`", "Space between the icon and the text"],
+    [
+      "`--lufia-banner-body-gap`",
+      "`--lufia-space-2 --lufia-space-4`",
+      "Space between the text and the actions",
+    ],
+    ["`--lufia-banner-icon-size`", "`1.25rem` (`1rem` compact)", "Size of the leading icon"],
+  ]}
+/>
+
 ## Badge
 
 <DocTable

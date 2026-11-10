@@ -2,7 +2,7 @@
   {
     "name": "index barrel",
     "path": "dist/index.js",
-    "limit": "530 B",
+    "limit": "580 B",
     "gzip": true
   },
   {
@@ -39,6 +39,12 @@
     "name": "NotificationCenter",
     "path": "dist/components/NotificationCenter/**/*.{js,css}",
     "limit": "14.5 kB",
+    "gzip": true
+  },
+  {
+    "name": "Banner",
+    "path": "dist/components/Banner/**/*.{js,css}",
+    "limit": "3 kB",
     "gzip": true
   },
   {

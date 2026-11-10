@@ -1,0 +1,171 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section, BannerDoDont } from "../../docs/blocks/page";
+import * as Stories from "./Banner.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Banner"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the
+page flow, never takes focus and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot
+and an optional dismiss button.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Banner } from "@lufia/design-system/components/Banner";
+
+<Banner
+  variant="warning"
+  title="Access expires in 3 days"
+  action={<a href="/renew">Renew access</a>}
+  onDismiss={() => setDismissed(true)}
+  dismissLabel="Dismiss message"
+>
+  Renew it to keep editing without interruption.
+</Banner>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer; the dismiss button's
+name (`dismissLabel`) is one of them, and it is required whenever `onDismiss` is set.
+
+### Variants
+
+| Variant   | Meaning                                         | Announced as               |
+| --------- | ----------------------------------------------- | -------------------------- |
+| `info`    | Something worth knowing; nothing is wrong       | `role="status"` (polite)   |
+| `success` | A completed process the person should still see | `role="status"` (polite)   |
+| `neutral` | A state with no judgement (archived, read-only) | `role="status"` (polite)   |
+| `warning` | Needs attention soon; something may go wrong    | `role="alert"` (assertive) |
+| `danger`  | Something failed or is blocked                  | `role="alert"` (assertive) |
+
+`live` overrides the announcement: `polite`, `assertive`, or `off` (no role).
+
+</Section>
+
+<Section id="examples">
+
+### Every variant
+
+<Canvas of={Stories.Variants} />
+
+### Without a title, and title only
+
+<Canvas of={Stories.WithoutTitle} />
+<Canvas of={Stories.TitleOnly} />
+
+### With actions
+
+Buttons or links go in `action`. They sit beside the text and drop below it when the banner is narrow.
+
+<Canvas of={Stories.WithAction} />
+
+### Dismissible
+
+`onDismiss` adds the dismiss button. The banner does not remove itself: your handler owns the state. To animate the exit,
+wrap the banner in `Collapse` as the story does; otherwise unmount it.
+
+<Canvas of={Stories.Dismissible} />
+
+### Compact
+
+<Canvas of={Stories.Compact} />
+
+### Icon
+
+The icon is the status icon of the variant, each variant a different shape. Replace it with `icon`, or pass `icon={null}` for
+none (then the title or the text must say what kind of message it is).
+
+<Canvas of={Stories.CustomIcon} />
+
+### Long text and narrow widths
+
+<Canvas of={Stories.LongText} />
+<Canvas of={Stories.Narrow} />
+
+### Enter motion
+
+`animateIn` plays a short fade and slide when the banner mounts, with the motion tokens. It is off by default, and off under
+`prefers-reduced-motion`.
+
+<Canvas of={Stories.AnimatedIn} />
+
+### Corner radius, borders and padding
+
+A theme can change them with the `--lufia-banner-*` component tokens. See [Theming components](?path=/docs/foundations-theming-components--docs).
+
+<Canvas of={Stories.ThemedByTokens} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
+and the dismiss button works with Enter and Space.
+
+### Accessibility
+
+- `info`, `success` and `neutral` are `role="status"` (a polite live region); `warning` and `danger` are `role="alert"`
+  (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out
+  unprompted; set `live="off"` for one that is part of the page and must not interrupt.
+- Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If
+  you hide the icon with `icon={null}`, say the kind of message in the title or text.
+- The icon is decorative and hidden from assistive technology. The dismiss button is named by `dismissLabel`.
+- The text is always the default text colour on the tinted background, and the contrast check covers it, and the focus
+  ring, on every variant in every theme and mode.
+- Focus is visible on the dismiss button. In forced-colors mode the banner uses system colours (`Canvas`, `CanvasText`)
+  and the icon shape keeps the variant readable.
+- Long words break and the text wraps, so nothing overflows at 320px or at 200% zoom. The layout uses logical
+  properties, so it mirrors in right-to-left.
+- The enter motion animates `opacity` and `transform` only and is removed under `prefers-reduced-motion`.
+
+</Section>
+
+<Section id="guidelines">
+
+### Do and don't
+
+<BannerDoDont />
+
+### When to use
+
+- A message about the whole page or one section that should stay visible: a note above a form, access or a trial about to
+  expire, a failed sync, a record that is read-only.
+- A message that comes with a next step the person can take now or later (`action`).
+
+### When not to use
+
+- Feedback for an action that just happened and can leave by itself: use `Toast`.
+- A short label for a record or a count: use `Badge`.
+- A list, table or panel with nothing to show: use `EmptyState`.
+- A field error: use the `error` of `FormField`.
+- A decision that must be made before going on: use `ConfirmDialog` or `Modal`.
+- More than one or two at a time: they stop being read. Combine them, or move the detail into the page.
+
+### Content guidelines
+
+Title in a few words, sentence case, saying what happened ("The last sync failed"). Description in one or two sentences saying
+why it matters and what to do. One main action; a second only as a link. Use `danger` only for something that failed or is
+blocked, `warning` for something that will if nothing is done.
+
+</Section>
