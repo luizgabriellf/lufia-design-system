@@ -1,4 +1,5 @@
 import { Badge } from "../../../components/Badge";
+import { Banner } from "../../../components/Banner";
 import { Button } from "../../../components/Button";
 import { Card } from "../../../components/Card";
 import { EmptyState } from "../../../components/EmptyState";
@@ -221,6 +222,23 @@ export function BadgeDoDont() {
       </Do>
       <Dont caption="Do not use a badge as a button, or write a sentence in it.">
         <Badge tone="info">Click here to review the latest changes to this record</Badge>
+      </Dont>
+    </DoDont>
+  );
+}
+
+export function BannerDoDont() {
+  return (
+    <DoDont>
+      <Do caption="Say what happened and offer the one next step, in a sentence or two.">
+        <Banner variant="warning" title="Access expires in 3 days" action={<Button size="sm">Renew</Button>}>
+          Renew it to keep editing.
+        </Banner>
+      </Do>
+      <Dont caption="Do not stack several banners, or use a danger banner for a note that needs no action.">
+        <Banner variant="danger" icon={null}>
+          Please be aware that this section has been updated recently.
+        </Banner>
       </Dont>
     </DoDont>
   );

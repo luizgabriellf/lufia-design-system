@@ -36,6 +36,20 @@ for (const tone of ["success", "warning", "danger", "ai"]) {
     min: 4.5,
   });
 }
+/* Banner: the body text (default and muted) and the focus ring sit on each variant's tint, over canvas and surface. */
+for (const [variant, tint] of [
+  ["info", "accent.subtle"],
+  ["success", "status.success.bg"],
+  ["warning", "status.warning.bg"],
+  ["danger", "status.danger.bg"],
+  ["neutral", "status.neutral.bg"],
+] as const) {
+  const layers = ["bg.canvas", "bg.surface", tint];
+  for (const fg of ["text.default", "text.muted"]) {
+    pairs.push({ id: `${fg} on banner ${variant}`, fg, bg: layers, min: 4.5 });
+  }
+  pairs.push({ id: `focus.ring on banner ${variant} (UI)`, fg: "focus.ring", bg: layers, min: 3 });
+}
 pairs.push(
   {
     id: "status.neutral.fg on status.neutral.bg",
