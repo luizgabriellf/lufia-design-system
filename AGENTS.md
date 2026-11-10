@@ -137,7 +137,7 @@ Docs-only and tooling-only changes need no changeset.
   `style`, `revert`), header at most 72 characters, English. `!` or a `BREAKING CHANGE:` footer for breaking changes.
 - The PR title also follows Conventional Commits (a CI check enforces it; it becomes the squash commit).
 - Use `.github/pull_request_template.md`, or the specialised ones in `.github/PULL_REQUEST_TEMPLATE/`.
-- Describe the change product-agnostically (hard rule 1). `main` is protected; squash merge only.
+- Describe the change product-agnostically (hard rule 1). The policy for `main` is no direct pushes and squash merge only (branch protection is applied by the owner; follow the policy regardless).
 
 ## Agent-first component discovery
 

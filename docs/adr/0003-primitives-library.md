@@ -34,6 +34,9 @@ Each complex widget is held to its APG pattern by tests, not by trust:
 - There is one overlay architecture: a portaled `div` with a trap. A native `<dialog>` variant was considered (it gives an
   inert background and the top layer for free) and dropped: it needs a second API, a second set of tests and a workaround so
   that toasts stay above it, and the inert background is reproduced here with `inert`.
+- _Update 2026-11-10:_ `Modal` later gained an opt-in `renderAs="dialog"` that renders a native `<dialog>` opened with
+  `showModal()`, for pages that need the browser's top layer. The portaled `div` stays the default and the one architecture
+  the other overlays build on; the decision above is otherwise unchanged.
 
 ## Consequences
 

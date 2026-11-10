@@ -25,7 +25,7 @@ a single design tool or a single output format.
 
 - Positive: one source of truth, typed consumption, themes without component forks, contrast regressions caught automatically,
   a path to design-tool sync (for example Tokens Studio) later.
-- Negative: a build step before Storybook, tests and typecheck; DTCG is still a draft specification, so we pin Style Dictionary
+- Negative: a build step before Storybook, tests and typecheck; DTCG is described here as a draft specification (see the update below), so we pin Style Dictionary
   and keep the token files simple (plain colour strings, no composite types beyond shadow).
 
 ## Alternatives considered
@@ -33,3 +33,8 @@ a single design tool or a single output format.
 - Hand-written CSS variables: no types, no docs generation, easy to drift between themes.
 - Tailwind theme config: couples tokens to one utility framework.
 - CSS-in-JS tokens: runtime or build coupling that conflicts with Server Components goals.
+
+## Update 2026-11-10
+
+The DTCG group published the first stable version of the format specification (2025.10) on 2025-10-28. The wording above that calls
+DTCG a draft was out of date already when this ADR was written. The decision is unchanged: the format is stable, and we still pin Style Dictionary and keep the token files simple.

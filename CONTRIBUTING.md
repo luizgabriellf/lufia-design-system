@@ -29,7 +29,8 @@ Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browse
    force-push over a review in progress.
 6. **Squash merge.** Merge commits and rebase merges are disabled; history stays linear.
 
-`main` is protected: no direct pushes, no force pushes, required status checks, linear history.
+The intended policy for `main` is: no direct pushes, no force pushes, required status checks, linear history. Branch
+protection is applied by the owner with `scripts/setup-repo-settings.sh`; until then the policy is followed by convention.
 
 ### Required checks
 
