@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.34.0
+
+### Minor Changes
+
+- [#111](https://github.com/luizgabriellf/lufia-design-system/pull/111) [`94e1461`](https://github.com/luizgabriellf/lufia-design-system/commit/94e1461997a3d855f811a98bda1da8a215a2615e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Banner`: an inline message for a page or section, with `info`, `success`, `warning`, `danger` and `neutral` variants, an optional title, icon, action slot and dismiss button, a `compact` size, `live` control over how it is announced, and `--lufia-banner-*` theming hooks.
+
 ## 0.33.0
 
 ### Minor Changes
