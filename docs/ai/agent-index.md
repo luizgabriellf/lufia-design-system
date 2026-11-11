@@ -73,7 +73,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 ### Feedback
 
-- Banner: variant title icon action onDismiss dismissLabel size live animateIn
+- Banner: variant title icon action onDismiss dismissLabel size lead live animateIn
 - EmptyState: title* icon body action
 - SkeletonCard: padding header lines block still
 - SkeletonPageHeader: eyebrow description actions still

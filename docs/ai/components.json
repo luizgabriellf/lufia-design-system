@@ -2789,10 +2789,17 @@
             },
             {
               "name": "size",
-              "type": "\"md\" | \"compact\"",
+              "type": "\"md\" | \"compact\" | \"inline\"",
               "required": false,
               "default": "\"md\"",
-              "description": "`md` (default) or `compact`: less padding and a smaller icon, for a banner inside a card or a dense form."
+              "description": "`md` (default), `compact` (less padding and a smaller icon, for a banner inside a card or a dense form) or `inline` (no card chrome: a tone-coloured start border on a subtle tone background, no minimum height, for guidance between form fields)."
+            },
+            {
+              "name": "lead",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A bold lead-in rendered inline before `children`, in the same paragraph (\"Note: ...\"). It does not add a title row. Say the kind of message in words; do not rely on the icon or the colour."
             },
             {
               "name": "live",
@@ -2814,7 +2821,7 @@
         {
           "name": "BannerLive",
           "kind": "type",
-          "description": "How a screen reader hears the banner. `polite` is `role=\"status\"`, `assertive` is `role=\"alert\"`, `off` sets no role: for a message that is already on the page at load and must not interrupt.",
+          "description": "How a screen reader hears the banner. `polite` is `role=\"status\"`, `assertive` is `role=\"alert\"`, `off` is `role=\"note\"`: static guidance that is already on the page at load and must not be announced as a live region.",
           "definition": "\"polite\" | \"assertive\" | \"off\""
         },
         {
@@ -2868,6 +2875,22 @@
           {
             "export": "Compact",
             "id": "components-feedback-banner--compact"
+          },
+          {
+            "export": "Inline",
+            "id": "components-feedback-banner--inline"
+          },
+          {
+            "export": "WithLead",
+            "id": "components-feedback-banner--with-lead"
+          },
+          {
+            "export": "StaticNote",
+            "id": "components-feedback-banner--static-note"
+          },
+          {
+            "export": "InlineNarrow",
+            "id": "components-feedback-banner--inline-narrow"
           },
           {
             "export": "CustomIcon",
@@ -2928,7 +2951,7 @@
         "keyboard": [],
         "keyboardNotes": "The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,\nand the dismiss button works with Enter and Space.",
         "notes": [
-          "`info`, `success` and `neutral` are `role=\"status\"` (a polite live region); `warning` and `danger` are `role=\"alert\"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live=\"off\"` for one that is part of the page and must not interrupt.",
+          "`info`, `success` and `neutral` are `role=\"status\"` (a polite live region); `warning` and `danger` are `role=\"alert\"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live=\"off\"` (`role=\"note\"`) for one that is part of the page and must not interrupt.",
           "Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If you hide the icon with `icon={null}`, say the kind of message in the title or text.",
           "The icon is decorative and hidden from assistive technology. The dismiss button is named by `dismissLabel`.",
           "The text is always the default text colour on the tinted background, and the contrast check covers it, and the focus ring, on every variant in every theme and mode.",
@@ -2946,6 +2969,8 @@
         "--lufia-banner-border-width",
         "--lufia-banner-gap",
         "--lufia-banner-icon-size",
+        "--lufia-banner-inline-border-width",
+        "--lufia-banner-inline-radius",
         "--lufia-banner-padding-block",
         "--lufia-banner-padding-inline",
         "--lufia-banner-padding-inline-end",
@@ -2982,6 +3007,7 @@
         "--lufia-motion-easing-out",
         "--lufia-radius-card",
         "--lufia-radius-md",
+        "--lufia-radius-sm",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",

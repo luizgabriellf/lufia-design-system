@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { axe } from "../../test/axe";
 import { BANNER_VARIANTS, Banner, type BannerVariant } from "./Banner";
 
@@ -53,6 +55,54 @@ describe("Banner", () => {
     );
     expect(screen.queryByRole("status")).toBeNull();
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it('renders `live="off"` as a static note, not a live region', () => {
+    render(
+      <Banner size="inline" variant="warning" live="off">
+        Message
+      </Banner>,
+    );
+    expect(screen.getByRole("note")).toHaveTextContent("Message");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("keeps the default announcement for the inline size", () => {
+    const { rerender } = render(<Banner size="inline">Message</Banner>);
+    expect(screen.getByRole("status")).toHaveAttribute("data-size", "inline");
+    rerender(
+      <Banner size="inline" variant="danger">
+        Message
+      </Banner>,
+    );
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("renders `lead` in bold in the same paragraph, before the text, without a title row", () => {
+    const { container } = render(<Banner lead="Note:">Check the dates.</Banner>);
+    const lead = screen.getByText("Note:");
+    expect(lead.tagName).toBe("STRONG");
+    expect(lead.parentElement).toHaveTextContent("Note: Check the dates.");
+    expect(lead.nextSibling?.textContent).toBe(" ");
+    expect(container.querySelectorAll("div > div > div > div")).toHaveLength(1);
+  });
+
+  it("renders `lead` alone, and nothing extra without it", () => {
+    const { container, rerender } = render(<Banner lead="Note">{null}</Banner>);
+    expect(container).toHaveTextContent("Note");
+    rerender(<Banner>Only text</Banner>);
+    expect(container.querySelector("strong")).toBeNull();
+  });
+
+  it("lets long unbroken text shrink and break inside the inline size", () => {
+    const css = readFileSync(resolve(__dirname, "Banner.module.css"), "utf8");
+    expect(css).toMatch(/\.text\s*\{[^}]*min-inline-size:\s*0[^}]*overflow-wrap:\s*anywhere/s);
+    expect(css).toMatch(/\.description\s*\{[^}]*overflow-wrap:\s*anywhere/s);
+    const inline = /\.root\[data-size="inline"\]\s*\{([^}]*)\}/s.exec(css)?.[1] ?? "";
+    expect(inline).toMatch(/border-inline-start:/);
+    expect(inline).not.toMatch(/min-block-size|block-size/);
+    expect(css).toMatch(/\.root\[data-size="inline"\] \.text\s*\{[^}]*flex-basis:\s*0/s);
   });
 
   it("draws a default icon per variant, each a distinct shape, hidden from assistive technology", () => {
@@ -132,6 +182,20 @@ describe("Banner", () => {
       );
       expect(await axe(container)).toHaveNoViolations();
       unmount();
+    }
+  });
+
+  it("has no axe violations in the inline size, with a lead, in every variant and as a note", async () => {
+    for (const variant of BANNER_VARIANTS) {
+      for (const live of [undefined, "off"] as const) {
+        const { container, unmount } = render(
+          <Banner variant={variant} size="inline" lead="Note:" live={live}>
+            Description
+          </Banner>,
+        );
+        expect(await axe(container)).toHaveNoViolations();
+        unmount();
+      }
     }
   });
 });

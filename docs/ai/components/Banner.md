@@ -49,7 +49,8 @@ and an optional dismiss button.
 | `action` | `ReactNode` | no |  | Buttons or links for the next step. They sit beside the text, and below it when the banner is narrow. |
 | `onDismiss` | `() => void` | no |  | Adds a dismiss button. The banner does not remove itself: unmount it, or collapse it, in this handler. |
 | `dismissLabel` | `string` | no |  | The accessible name of the dismiss button, in your language. Required with `onDismiss`: the package has no copy, and an unnamed button fails axe. |
-| `size` | `"md" \| "compact"` | no | `"md"` | `md` (default) or `compact`: less padding and a smaller icon, for a banner inside a card or a dense form. |
+| `size` | `"md" \| "compact" \| "inline"` | no | `"md"` | `md` (default), `compact` (less padding and a smaller icon, for a banner inside a card or a dense form) or `inline` (no card chrome: a tone-coloured start border on a subtle tone background, no minimum height, for guidance between form fields). |
+| `lead` | `ReactNode` | no |  | A bold lead-in rendered inline before `children`, in the same paragraph ("Note: ..."). It does not add a title row. Say the kind of message in words; do not rely on the icon or the colour. |
 | `live` | `"polite" \| "assertive" \| "off"` | no |  | Overrides how the banner is announced. Default: `assertive` (`role="alert"`) for `warning` and `danger`, `polite` (`role="status"`) for the others. |
 | `animateIn` | `boolean` | no | `false` | Plays the enter motion (a short fade and slide) when the banner mounts. Default `false`: a banner already on the page at load stays still. |
 
@@ -85,7 +86,7 @@ Keyboard:
 The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
 and the dismiss button works with Enter and Space.
 
-- `info`, `success` and `neutral` are `role="status"` (a polite live region); `warning` and `danger` are `role="alert"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live="off"` for one that is part of the page and must not interrupt.
+- `info`, `success` and `neutral` are `role="status"` (a polite live region); `warning` and `danger` are `role="alert"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live="off"` (`role="note"`) for one that is part of the page and must not interrupt.
 - Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If you hide the icon with `icon={null}`, say the kind of message in the title or text.
 - The icon is decorative and hidden from assistive technology. The dismiss button is named by `dismissLabel`.
 - The text is always the default text colour on the tinted background, and the contrast check covers it, and the focus ring, on every variant in every theme and mode.
@@ -99,7 +100,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-banner-body-gap`, `--lufia-banner-border-width`, `--lufia-banner-gap`, `--lufia-banner-icon-size`, `--lufia-banner-padding-block`, `--lufia-banner-padding-inline`, `--lufia-banner-padding-inline-end`, `--lufia-banner-padding-inline-start`, `--lufia-banner-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
+Reads these semantic tokens: `--lufia-banner-body-gap`, `--lufia-banner-border-width`, `--lufia-banner-gap`, `--lufia-banner-icon-size`, `--lufia-banner-inline-border-width`, `--lufia-banner-inline-radius`, `--lufia-banner-padding-block`, `--lufia-banner-padding-inline`, `--lufia-banner-padding-inline-end`, `--lufia-banner-padding-inline-start`, `--lufia-banner-radius`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-neutral-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-body`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-radius-md`, `--lufia-radius-sm`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
 
 ## Content guidelines
 
@@ -117,6 +118,10 @@ blocked, `warning` for something that will if nothing is done.
 - `components-feedback-banner--dismissible`
 - `components-feedback-banner--dismissible-with-action`
 - `components-feedback-banner--compact`
+- `components-feedback-banner--inline`
+- `components-feedback-banner--with-lead`
+- `components-feedback-banner--static-note`
+- `components-feedback-banner--inline-narrow`
 - `components-feedback-banner--custom-icon`
 - `components-feedback-banner--no-icon`
 - `components-feedback-banner--long-text`
