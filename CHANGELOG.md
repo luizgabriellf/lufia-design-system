@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.34.2
+
+### Patch Changes
+
+- [#117](https://github.com/luizgabriellf/lufia-design-system/pull/117) [`c249619`](https://github.com/luizgabriellf/lufia-design-system/commit/c2496197bb7d6ef5b29ac7e434fbf9e6730cd1f6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Select: keep the room reserved for the chevron, so a long or narrow selected label ellipsizes before the chevron instead of running under it.
+
 ## 0.34.1
 
 ### Patch Changes
