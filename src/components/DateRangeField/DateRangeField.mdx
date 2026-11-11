@@ -1,0 +1,115 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./DateRangeField.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="DateRangeField"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end cannot go
+below the start, through the native `max` and `min` of each, on top of any limits of the whole range. The ends sit side by side
+and stack when the room is narrow.
+
+<Canvas of={Stories.WithValues} />
+
+### Usage
+
+```tsx
+import { DateRangeField } from "@lufia/design-system/components/DateRangeField";
+
+<DateRangeField
+  legend="Stay"
+  startLabel="From"
+  endLabel="To"
+  startName="from"
+  endName="to"
+  value={range}
+  onValueChange={setRange}
+  error={errors.range}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
+
+`value` is `{ start, end }`, each a string as the native control emits it (see `DateField`); `""` is an end that is not set.
+`onValueChange` receives the whole range. The native limits stop the picker and the browser's validation, they do not stop
+typing an impossible pair: validate in your app and pass `error`.
+
+</Section>
+
+<Section id="examples">
+
+### Limits
+
+<Canvas of={Stories.WithMinAndMax} />
+
+### Other types
+
+<Canvas of={Stories.Months} />
+<Canvas of={Stories.DatesAndTimes} />
+
+### States
+
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.Clearable} />
+
+### Narrow widths
+
+<Canvas of={Stories.Narrow} />
+<Canvas of={Stories.Phone320} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+Each end is a native input with the platform's keyboard behaviour; Tab goes from the start to the end, in reading order.
+
+### Accessibility
+
+- A `<fieldset>` with a `<legend>` names the group; each end has its own visible label. The hint and the error are the
+  description of the group.
+- An error marks both ends `aria-invalid` and is announced when it appears.
+- `required` marks both labels with the mark and the text for assistive technology, and sets the native `required` unless
+  `nativeRequired={false}`.
+- A disabled group disables both ends and the fieldset.
+- The ends stack through the grid itself (no media query), so nothing overflows at 320px or at 200% zoom.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A start and an end that belong together: a stay, a reporting period, an event window.
+
+### When not to use
+
+- A single date: use `DateField`.
+- Presets ("last 30 days"), a calendar showing the range or ranges across more than two ends: not provided here.
+
+### Content guidelines
+
+A legend that names the range ("Stay", "Reporting period"), and short parallel labels ("From", "To"). Say a length limit in the
+hint, not only in the error.
+
+</Section>

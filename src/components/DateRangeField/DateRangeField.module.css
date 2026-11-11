@@ -1,0 +1,31 @@
+/* A fieldset has a minimum width of its content by default; reset it so the ends can shrink with their container. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-block-end: var(--lufia-space-2);
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.root[data-disabled] .legend {
+  color: var(--lufia-color-text-muted);
+}
+
+/* Side by side while each end keeps its minimum width; stacked below that, with no media query to keep in step. */
+.ends {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: var(--lufia-space-3) var(--lufia-space-4);
+  min-inline-size: 0;
+}

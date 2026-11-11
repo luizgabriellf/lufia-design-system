@@ -1,0 +1,104 @@
+/*
+ * Native date and time controls are the least uniform inputs: WebKit on iOS collapses an empty one to no height, centres
+ * its text and paints its own chrome. The shared field box sets the look; this file pins the parts the platform moves.
+ */
+.native {
+  display: block;
+  min-block-size: 2.5rem;
+  appearance: none;
+  text-align: start;
+  text-overflow: clip;
+}
+
+/* The editable text: start-aligned, and one line tall even when empty (iOS drops it to zero otherwise). */
+.native::-webkit-date-and-time-value {
+  min-block-size: 1.5em;
+  margin: 0;
+  text-align: start;
+}
+
+.native::-webkit-datetime-edit {
+  padding: 0;
+}
+
+.native::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+.native[data-empty]:not(:focus)::-webkit-datetime-edit {
+  color: var(--lufia-color-text-subtle);
+}
+
+/* The package icon replaces the native indicator only where the component confirmed it can open the picker itself. */
+.native[data-picker-icon]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.native::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.native:disabled::-webkit-calendar-picker-indicator {
+  cursor: not-allowed;
+}
+
+.icon {
+  padding-inline: 0 var(--lufia-space-3);
+  cursor: pointer;
+}
+
+.box[data-disabled] .icon,
+.box[data-readonly] .icon {
+  cursor: inherit;
+}
+
+/* Beside the icon, the clear button takes the end padding of the box edge. */
+.clear {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  color: var(--lufia-color-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--lufia-radius-full);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.clear:last-child {
+  margin-inline-end: var(--lufia-space-2);
+}
+
+.clear:hover {
+  color: var(--lufia-color-text-default);
+  background: var(--lufia-color-bg-surface-raised);
+}
+
+.clear:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clear {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .icon {
+    color: ButtonText;
+  }
+
+  .clear {
+    border: var(--lufia-border-width-thin) solid ButtonText;
+  }
+
+  .clear:focus-visible {
+    outline-color: Highlight;
+  }
+}

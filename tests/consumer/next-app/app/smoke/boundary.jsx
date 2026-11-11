@@ -9,6 +9,8 @@ import { ColumnChart as ColumnChart_ColumnChart } from "@lufia/design-system/com
 import { Combobox as Combobox_Combobox } from "@lufia/design-system/components/Combobox";
 import { CommandPalette as CommandPalette_CommandPalette } from "@lufia/design-system/components/CommandPalette";
 import { ConfirmDialog as ConfirmDialog_ConfirmDialog } from "@lufia/design-system/components/ConfirmDialog";
+import { DateField as DateField_DateField } from "@lufia/design-system/components/DateField";
+import { DateRangeField as DateRangeField_DateRangeField } from "@lufia/design-system/components/DateRangeField";
 import { FileField as FileField_FileField } from "@lufia/design-system/components/FileField";
 import { FormField as FormField_FormField } from "@lufia/design-system/components/FormField";
 import { IconButton as IconButton_IconButton } from "@lufia/design-system/components/IconButton";
@@ -64,6 +66,8 @@ export default function ClientSmoke() {
       resultCount: (count) => String(count),
     }} open={false} onOpenChange={() => {}} /></section>
       <section data-smoke="ConfirmDialog"><ConfirmDialog_ConfirmDialog open={false} title={"x"} message={"x"} confirmLabel={"x"} cancelLabel={"x"} onConfirm={() => {}} onCancel={() => {}} /></section>
+      <section data-smoke="DateField"><DateField_DateField /></section>
+      <section data-smoke="DateRangeField"><DateRangeField_DateRangeField legend={"x"} startLabel={"x"} endLabel={"x"} /></section>
       <section data-smoke="FileField"><FileField_FileField formatRejection={() => "Rejected"} chooseLabel={"x"} /></section>
       <section data-smoke="FormField"><FormField_FormField label={"x"}>{"x"}</FormField_FormField></section>
       <section data-smoke="IconButton"><IconButton_IconButton aria-label={"x"} icon={"x"} /></section>
