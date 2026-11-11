@@ -69,10 +69,15 @@
 .root[data-size="inline"] {
   gap: var(--lufia-banner-gap, var(--lufia-space-2));
   padding-block: var(--lufia-banner-padding-block, var(--lufia-space-2));
-  padding-inline: var(--lufia-banner-padding-inline, var(--lufia-space-3));
+  padding-inline: var(
+      --lufia-banner-padding-inline-start,
+      var(--lufia-banner-padding-inline, var(--lufia-space-3))
+    )
+    var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-3)));
   font-size: var(--lufia-font-size-sm);
   border-width: 0;
-  border-inline-start: var(--lufia-banner-inline-border-width, 3px) solid var(--banner-border);
+  border-inline-start: var(--lufia-banner-inline-border-width, var(--lufia-border-width-thick)) solid
+    var(--banner-border);
   border-radius: var(--lufia-banner-inline-radius, var(--lufia-radius-sm));
 }
 

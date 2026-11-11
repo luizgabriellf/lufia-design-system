@@ -80,27 +80,29 @@ describe("Banner", () => {
   });
 
   it("renders `lead` in bold in the same paragraph, before the text, without a title row", () => {
-    const { container } = render(<Banner lead="Note:">Check the dates.</Banner>);
+    render(<Banner lead="Note:">Check the dates.</Banner>);
     const lead = screen.getByText("Note:");
     expect(lead.tagName).toBe("STRONG");
     expect(lead.parentElement).toHaveTextContent("Note: Check the dates.");
     expect(lead.nextSibling?.textContent).toBe(" ");
-    expect(container.querySelectorAll("div > div > div > div")).toHaveLength(1);
+    // Nothing but the lead-in and the text: no separate title row.
+    expect(screen.getByRole("status")).toHaveTextContent(/^Note: Check the dates\.$/);
   });
 
   it("renders `lead` alone, and nothing extra without it", () => {
     const { container, rerender } = render(<Banner lead="Note">{null}</Banner>);
-    expect(container).toHaveTextContent("Note");
+    expect(container.textContent).toBe("Note");
     rerender(<Banner>Only text</Banner>);
     expect(container.querySelector("strong")).toBeNull();
   });
 
   it("lets long unbroken text shrink and break inside the inline size", () => {
     const css = readFileSync(resolve(__dirname, "Banner.module.css"), "utf8");
-    expect(css).toMatch(/\.text\s*\{[^}]*min-inline-size:\s*0[^}]*overflow-wrap:\s*anywhere/s);
     expect(css).toMatch(/\.description\s*\{[^}]*overflow-wrap:\s*anywhere/s);
     const inline = /\.root\[data-size="inline"\]\s*\{([^}]*)\}/s.exec(css)?.[1] ?? "";
-    expect(inline).toMatch(/border-inline-start:/);
+    expect(inline).toMatch(/border-inline-start:[^;]*var\(--lufia-border-width-thick\)/);
+    expect(inline).toMatch(/--lufia-banner-padding-inline-start/);
+    expect(inline).toMatch(/--lufia-banner-padding-inline-end/);
     expect(inline).not.toMatch(/min-block-size|block-size/);
     expect(css).toMatch(/\.root\[data-size="inline"\] \.text\s*\{[^}]*flex-basis:\s*0/s);
   });

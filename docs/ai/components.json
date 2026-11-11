@@ -2976,6 +2976,7 @@
         "--lufia-banner-padding-inline-end",
         "--lufia-banner-padding-inline-start",
         "--lufia-banner-radius",
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-border",
         "--lufia-color-accent-subtle",
