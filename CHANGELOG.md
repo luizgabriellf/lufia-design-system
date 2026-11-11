@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.34.1
+
+### Patch Changes
+
+- [#114](https://github.com/luizgabriellf/lufia-design-system/pull/114) [`234aa80`](https://github.com/luizgabriellf/lufia-design-system/commit/234aa807c93aec1ee6043970f6f4de224eca0b6b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Mirror the timeline connector, the stepper connector and the detail section action under right-to-left text by using logical properties, and fail Stylelint on new physical left/right declarations.
+
 ## 0.34.0
 
 ### Minor Changes
