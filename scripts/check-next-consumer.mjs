@@ -4,6 +4,7 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkSmoke, loadManifest, planSmoke, smokeIds } from "./consumer-smoke.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const fixture = join(root, "tests/consumer/next-app");
@@ -52,6 +53,10 @@ try {
     // CI downloads the dist/ the verify job built; locally run npm run build first.
     throw new Error("dist/ is missing: run npm run build (or download the build artifact) first");
   }
+
+  // The generated smoke page must match the manifest before it is installed (npm run build:consumer-smoke).
+  const smokeProblems = checkSmoke();
+  if (smokeProblems.length > 0) throw new Error(smokeProblems.join("\n"));
 
   cpSync(fixture, app, { recursive: true });
 
@@ -146,7 +151,18 @@ try {
   if (!css.includes(`.${switchClass}`))
     throw new Error(`The linked CSS has no Switch module class .${switchClass}`);
 
-  console.log("Next.js consumer smoke passed: packed package, production build and SSR HTTP response.");
+  // Every manifest component, rendered by the generated /smoke page: Server Components for the ones without
+  // "use client", the client boundary for the rest. Each section id is in the server HTML.
+  const smokeHtml = await getPage(server, `http://127.0.0.1:${port}/smoke`);
+  const ids = smokeIds(planSmoke(loadManifest()));
+  const missing = ids.filter((id) => !smokeHtml.includes(`data-smoke="${id}"`));
+  if (missing.length > 0) {
+    throw new Error(`The /smoke page did not server-render: ${missing.join(", ")}`);
+  }
+
+  console.log(
+    `Next.js consumer smoke passed: packed package, production build, SSR HTTP response and ${ids.length} manifest sections.`,
+  );
 } finally {
   if (server?.exitCode === null) server.kill("SIGTERM");
   rmSync(workspace, { recursive: true, force: true, maxRetries: 3, retryDelay: 250 });

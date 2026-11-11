@@ -12,7 +12,7 @@ npm run storybook  # http://127.0.0.1:6006
 npm run check      # typecheck, lint, stylelint, format, tests, contrast, motion rules
 ```
 
-Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browser` (Playwright against Storybook; see `docs/PLAYWRIGHT.md`), `test:consumer:next` (run `build` first; builds a Next.js app against the packed package), `check:static` (`check` without the unit tests), `verify:package` and `verify:size` (run `build` first), `verify:changeset`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
+Other scripts: `build`, `build-storybook`, `test`, `test:coverage`, `test:browser` (Playwright against Storybook; see `docs/PLAYWRIGHT.md`), `test:consumer:next` (run `build` first; builds a Next.js app against the packed package and server-renders every component), `build:consumer-smoke` and `verify:consumer-smoke` (regenerate and check that app's smoke page), `check:static` (`check` without the unit tests), `verify:package` and `verify:size` (run `build` first), `verify:changeset`, `lint`, `lint:css`, `format`, `typecheck`, `contrast`, `verify:motion`, `changeset`.
 
 ## Workflow
 
