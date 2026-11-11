@@ -132,6 +132,9 @@ export function RouteProgress({
     // Still waiting to be shown: the navigation was fast enough that the bar never needs to appear.
     if (reveal.current) {
       clearTimers();
+      // A run restarted while the previous one was finishing cancelled that fade; hide the bar it left behind.
+      setVisible(false);
+      setProgress(0);
       return;
     }
     if (!ticker.current) {
