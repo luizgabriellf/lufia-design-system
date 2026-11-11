@@ -39,7 +39,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | `min` | `string` | no |  | The earliest value, in the same format as `value`. |
 | `max` | `string` | no |  | The latest value, in the same format as `value`. |
 | `step` | `string \| number` | no |  | The step of the native control: days for `date`, seconds for `time` and `datetime-local`, months for `month`. |
-| `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Aria-only: the package has no copy. |
+| `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
@@ -81,7 +81,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
 
 ## Content guidelines
 

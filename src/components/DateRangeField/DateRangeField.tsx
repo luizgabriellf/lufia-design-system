@@ -32,7 +32,11 @@ export type DateRangeFieldProps = Omit<
   /** Controlled range. */
   value?: DateRange;
   defaultValue?: DateRange;
-  /** Called with the whole range whenever either end changes. */
+  /**
+   * Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start
+   * after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range
+   * reported here is already corrected.
+   */
   onValueChange?: (value: DateRange) => void;
   /** The earliest value of the range. The end also cannot go below the start. */
   min?: string;
@@ -68,9 +72,10 @@ const lower = (a: string, b: string) => (a && b ? (a < b ? a : b) : a || b);
 const upper = (a: string, b: string) => (a && b ? (a > b ? a : b) : a || b);
 
 /**
- * Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end
- * cannot go below the start (through the native `max` and `min`), on top of any `min` and `max` of the whole range. The ends
- * sit side by side and stack when the room is narrow.
+ * Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end: the native `max`
+ * and `min` steer the picker, and a typed or picked value that would break the order is corrected, the end just edited is
+ * kept and the other end moves to the same value, reported in one `onValueChange`. Any `min` and `max` of the whole range
+ * apply on top. The ends sit side by side and stack when the room is narrow.
  */
 export function DateRangeField({
   legend,
@@ -109,9 +114,15 @@ export function DateRangeField({
   useInsertionEffect(() => {
     latest.current = value;
   });
-  const update = (end: keyof DateRange, next: string) => {
-    latest.current = { ...latest.current, [end]: next };
-    setValue(latest.current);
+  // The end the person just edited wins: when it would put the start after the end, the other end moves to the same value.
+  const update = (edited: keyof DateRange, next: string) => {
+    const range = { ...latest.current, [edited]: next };
+    if (range.start && range.end && range.start > range.end) {
+      if (edited === "start") range.end = range.start;
+      else range.start = range.end;
+    }
+    latest.current = range;
+    setValue(range);
   };
   const changeStart = (next: string) => update("start", next);
   const changeEnd = (next: string) => update("end", next);
@@ -148,6 +159,7 @@ export function DateRangeField({
             max={lower(value.end, max) || undefined}
             step={step}
             invalid={Boolean(error)}
+            aria-describedby={errorId}
             clearLabel={clearLabel}
           />
         </FormField>
@@ -169,6 +181,7 @@ export function DateRangeField({
             max={max || undefined}
             step={step}
             invalid={Boolean(error)}
+            aria-describedby={errorId}
             clearLabel={clearLabel}
           />
         </FormField>

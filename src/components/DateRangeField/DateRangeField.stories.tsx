@@ -26,11 +26,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** Pick an end first: the other end's native `min` or `max` follows it. */
+/** Typing an out-of-order date keeps what was typed and moves the other end to the same value. */
 export const WithValues: Story = {
   args: {
     defaultValue: { start: "2030-01-10", end: "2030-01-20" },
-    hint: "The end cannot be before the start.",
+    hint: "The start is never after the end.",
   },
 };
 export const WithMinAndMax: Story = {

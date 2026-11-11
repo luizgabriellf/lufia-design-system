@@ -5724,7 +5724,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": "The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Aria-only: the package has no copy."
+              "description": "The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy."
             },
             {
               "name": "invalid",
@@ -5878,13 +5878,14 @@
         "--lufia-motion-easing-out",
         "--lufia-radius-full",
         "--lufia-space-2",
-        "--lufia-space-3"
+        "--lufia-space-3",
+        "--lufia-target-touch"
       ]
     },
     {
       "name": "DateRangeField",
       "category": "Forms",
-      "summary": "Two date fields that form one range, in a fieldset, with the start held at or before the end.",
+      "summary": "Two date fields that form one range, in a fieldset, where the start is never after the end.",
       "status": "beta",
       "source": "src/components/DateRangeField",
       "entry": {
@@ -5901,7 +5902,7 @@
         {
           "name": "DateRangeField",
           "kind": "component",
-          "description": "Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end cannot go below the start (through the native `max` and `min`), on top of any `min` and `max` of the whole range. The ends sit side by side and stack when the room is narrow.",
+          "description": "Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end: the native `max` and `min` steer the picker, and a typed or picked value that would break the order is corrected, the end just edited is kept and the other end moves to the same value, reported in one `onValueChange`. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the room is narrow.",
           "props": [
             {
               "name": "legend",
@@ -5950,7 +5951,7 @@
               "type": "(value: DateRange) => void",
               "required": false,
               "default": null,
-              "description": "Called with the whole range whenever either end changes."
+              "description": "Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range reported here is already corrected."
             },
             {
               "name": "min",
@@ -6119,7 +6120,7 @@
       },
       "docs": {
         "mdx": "src/components/DateRangeField/DateRangeField.mdx",
-        "overview": "Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end cannot go\nbelow the start, through the native `max` and `min` of each, on top of any limits of the whole range. The ends sit side by side\nand stack when the room is narrow.",
+        "overview": "Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end. The native `max` of\nthe start and `min` of the end steer the picker, and a typed or picked value that would break the order is corrected: the end\nthe person just edited is kept and the other end moves to the same value (both ends equal). `onValueChange` is called once,\nwith the corrected range. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the\nroom is narrow.",
         "usage": {
           "language": "tsx",
           "code": "import { DateRangeField } from \"@lufia/design-system/components/DateRangeField\";\n\n<DateRangeField\n  legend=\"Stay\"\n  startLabel=\"From\"\n  endLabel=\"To\"\n  startName=\"from\"\n  endName=\"to\"\n  value={range}\n  onValueChange={setRange}\n  error={errors.range}\n/>;"
@@ -6139,7 +6140,7 @@
         "keyboardNotes": "Each end is a native input with the platform's keyboard behaviour; Tab goes from the start to the end, in reading order.",
         "notes": [
           "A `<fieldset>` with a `<legend>` names the group; each end has its own visible label. The hint and the error are the description of the group.",
-          "An error marks both ends `aria-invalid` and is announced when it appears.",
+          "An error marks both ends `aria-invalid`, is announced when it appears, and is part of the description of the group and of each end.",
           "`required` marks both labels with the mark and the text for assistive technology, and sets the native `required` unless `nativeRequired={false}`.",
           "A disabled group disables both ends and the fieldset.",
           "The ends stack through the grid itself (no media query), so nothing overflows at 320px or at 200% zoom."

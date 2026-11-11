@@ -83,7 +83,7 @@ export const ENTRIES: Entry[] = [
   c(
     "DateRangeField",
     "Forms",
-    "Two date fields that form one range, in a fieldset, with the start held at or before the end.",
+    "Two date fields that form one range, in a fieldset, where the start is never after the end.",
   ),
   c(
     "Combobox",

@@ -34,6 +34,56 @@ describe("DateRangeField", () => {
     expect(screen.getByLabelText("To")).toHaveAttribute("min", "2030-01-15");
   });
 
+  it("keeps the end just edited and moves the other end when the order would break, in one call", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DateRangeField
+        {...base}
+        defaultValue={{ start: "2030-01-10", end: "2030-01-20" }}
+        onValueChange={onValueChange}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("From"), { target: { value: "2030-02-01" } });
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenLastCalledWith({ start: "2030-02-01", end: "2030-02-01" });
+    expect(screen.getByLabelText("From")).toHaveValue("2030-02-01");
+    expect(screen.getByLabelText("To")).toHaveValue("2030-02-01");
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2030-01-05" } });
+    expect(onValueChange).toHaveBeenCalledTimes(2);
+    expect(onValueChange).toHaveBeenLastCalledWith({ start: "2030-01-05", end: "2030-01-05" });
+    expect(screen.getByLabelText("From")).toHaveValue("2030-01-05");
+    expect(screen.getByLabelText("To")).toHaveValue("2030-01-05");
+  });
+
+  it("leaves an in-order edit, an equal pair and an empty end alone", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DateRangeField
+        {...base}
+        defaultValue={{ start: "2030-01-10", end: "" }}
+        onValueChange={onValueChange}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("From"), { target: { value: "2030-05-01" } });
+    expect(onValueChange).toHaveBeenLastCalledWith({ start: "2030-05-01", end: "" });
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2030-05-01" } });
+    expect(onValueChange).toHaveBeenLastCalledWith({ start: "2030-05-01", end: "2030-05-01" });
+  });
+
+  it("corrects the order in controlled mode through the reported range", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DateRangeField
+        {...base}
+        value={{ start: "2030-01-10", end: "2030-01-20" }}
+        onValueChange={onValueChange}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2030-01-01" } });
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenLastCalledWith({ start: "2030-01-01", end: "2030-01-01" });
+  });
+
   it("combines the cross-constraint with the range min and max, and sets none from an empty end", () => {
     const { rerender } = render(<DateRangeField {...base} min="2030-01-01" max="2030-12-31" />);
     expect(screen.getByLabelText("From")).toHaveAttribute("min", "2030-01-01");
@@ -102,6 +152,8 @@ describe("DateRangeField", () => {
     );
     expect(screen.getByLabelText("From")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("To")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText("From")).toHaveAccessibleDescription("Choose a shorter stay");
+    expect(screen.getByLabelText("To")).toHaveAccessibleDescription("Choose a shorter stay");
   });
 
   it("marks both ends required, with or without native required", () => {

@@ -129,6 +129,35 @@ describe("DateField", () => {
       expect(screen.queryByRole("button")).toBeNull();
     });
 
+    it("is an edit: native onChange, bubbling input and change events, and one onValueChange", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const onChange = vi.fn();
+      const events: string[] = [];
+      const { container } = render(
+        <form onInput={() => events.push("input")} onChangeCapture={() => events.push("react-change")}>
+          <DateField
+            aria-label="When"
+            name="when"
+            defaultValue="2030-01-31"
+            clearLabel="Clear date"
+            onValueChange={onValueChange}
+            onChange={onChange}
+          />
+        </form>,
+      );
+      const form = container.querySelector("form")!;
+      form.addEventListener("change", () => events.push("native-change"));
+      await user.click(screen.getByRole("button", { name: "Clear date" }));
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0]![0].target.value).toBe("");
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith("");
+      expect(events).toContain("native-change");
+      expect(events).toContain("input");
+      expect(new FormData(form).get("when")).toBe("");
+    });
+
     it("shows only with a value, and never when required, disabled or read-only", () => {
       const { rerender } = render(<DateField aria-label="When" clearLabel="Clear" />);
       expect(screen.queryByRole("button")).toBeNull();
@@ -170,6 +199,16 @@ describe("DateField", () => {
       const { container } = render(<DateField aria-label="When" />);
       expect(container.querySelector("[data-lufia-icon]")).toBeNull();
       expect(container.querySelector("input")).not.toHaveAttribute("data-picker-icon");
+    });
+
+    it("keeps the native indicator when the browser downgraded the control type", () => {
+      (HTMLInputElement.prototype as { showPicker?: unknown }).showPicker = vi.fn();
+      vi.stubGlobal("CSS", { supports: () => true });
+      vi.spyOn(HTMLInputElement.prototype, "type", "get").mockReturnValue("text");
+      const { container } = render(<DateField aria-label="When" type="month" />);
+      expect(container.querySelector("[data-lufia-icon]")).toBeNull();
+      expect(container.querySelector("input")).not.toHaveAttribute("data-picker-icon");
+      vi.restoreAllMocks();
     });
 
     it("needs both showPicker and the indicator pseudo-element before it takes over", () => {
@@ -216,7 +255,7 @@ describe("DateField", () => {
   it("pins the platform-dependent styles that keep an empty control tall and start-aligned", () => {
     const css = readFileSync(resolve(__dirname, "DateField.module.css"), "utf8");
     const native = /\.native\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(native).toMatch(/min-block-size:\s*2\.5rem/);
+    expect(native).toMatch(/min-block-size:\s*calc\(var\(--lufia-target-touch\)/);
     expect(native).toMatch(/appearance:\s*none/);
     expect(native).toMatch(/text-align:\s*start/);
     expect(css).toMatch(/::-webkit-date-and-time-value\s*\{[^}]*min-block-size/);

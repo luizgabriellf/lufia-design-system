@@ -30,7 +30,8 @@ export type DateFieldProps = Omit<
   step?: number | string;
   /**
    * The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field
-   * has a value and is neither required, disabled nor read-only. Aria-only: the package has no copy.
+   * has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events,
+   * as an edit would. Aria-only: the package has no copy.
    */
   clearLabel?: string;
   /** Marks the control invalid without a `FormField`. Inside a field the error does it. */
@@ -42,11 +43,12 @@ export type DateFieldProps = Omit<
 
 /**
  * Whether the package icon can stand in for the native picker indicator: the browser must open the picker from a script
- * (`showPicker`) and expose a pseudo-element that lets us hide its own indicator. Where either is missing the native
+ * (`showPicker`), keep the control type it was given, and expose a pseudo-element that lets us hide its own indicator. Where either is missing the native
  * indicator stays and no package icon is drawn, so the person always has exactly one way in.
  */
-function canReplacePickerIndicator(input: HTMLInputElement | null): boolean {
-  if (!input || typeof input.showPicker !== "function") return false;
+function canReplacePickerIndicator(input: HTMLInputElement | null, type: DateFieldType): boolean {
+  // A browser without this control type downgrades it to a text input: keep its (absent) native indicator logic alone.
+  if (!input || input.type !== type || typeof input.showPicker !== "function") return false;
   if (typeof CSS === "undefined" || typeof CSS.supports !== "function") return false;
   return CSS.supports("selector(::-webkit-calendar-picker-indicator)");
 }
@@ -80,16 +82,23 @@ export function DateField({
   });
   const input = useRef<HTMLInputElement | null>(null);
   const [pickerIcon, setPickerIcon] = useState(false);
-  useEffect(() => setPickerIcon(canReplacePickerIndicator(input.current)), []);
+  useEffect(() => setPickerIcon(canReplacePickerIndicator(input.current, type)), [type]);
   useFormReset(input, () => setValue(defaultValue));
 
   const required = Boolean(control.required || control["aria-required"]);
   const showClear = Boolean(clearLabel) && value !== "" && !required && !control.disabled && !readOnly;
   const Icon = type === "time" ? ClockIcon : CalendarIcon;
 
+  // A clear is an edit like any other: set the value through the native setter and let `input` and `change` bubble, so
+  // `onChange`, form-level listeners and libraries that watch the DOM see it, and `onValueChange("")` fires once, from the
+  // same handler as a typed change.
   const clear = () => {
-    setValue("");
-    input.current?.focus();
+    const node = input.current;
+    if (!node) return;
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(node, "");
+    node.dispatchEvent(new Event("input", { bubbles: true }));
+    node.dispatchEvent(new Event("change", { bubbles: true }));
+    node.focus();
   };
 
   const openPicker = () => {

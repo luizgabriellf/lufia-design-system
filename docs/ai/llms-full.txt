@@ -2751,7 +2751,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | `min` | `string` | no |  | The earliest value, in the same format as `value`. |
 | `max` | `string` | no |  | The latest value, in the same format as `value`. |
 | `step` | `string \| number` | no |  | The step of the native control: days for `date`, seconds for `time` and `datetime-local`, months for `month`. |
-| `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Aria-only: the package has no copy. |
+| `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
@@ -2793,7 +2793,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -2820,7 +2820,7 @@ the hint.
 
 ## DateRangeField
 
-> Two date fields that form one range, in a fieldset, with the start held at or before the end.
+> Two date fields that form one range, in a fieldset, where the start is never after the end.
 
 - Status: beta
 - Category: Forms
@@ -2831,9 +2831,11 @@ the hint.
 
 ### Purpose
 
-Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end cannot go
-below the start, through the native `max` and `min` of each, on top of any limits of the whole range. The ends sit side by side
-and stack when the room is narrow.
+Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end. The native `max` of
+the start and `min` of the end steer the picker, and a typed or picked value that would break the order is corrected: the end
+the person just edited is kept and the other end moves to the same value (both ends equal). `onValueChange` is called once,
+with the corrected range. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the
+room is narrow.
 
 ### When to use
 
@@ -2856,7 +2858,7 @@ and stack when the room is narrow.
 | `type` | `"date" \| "time" \| "datetime-local" \| "month"` | no | `"date"` | Which native control both ends use. `date` (default), `time`, `datetime-local` or `month`. |
 | `value` | `DateRange` | no |  | Controlled range. |
 | `defaultValue` | `DateRange` | no | `EMPTY` |  |
-| `onValueChange` | `(value: DateRange) => void` | no |  | Called with the whole range whenever either end changes. |
+| `onValueChange` | `(value: DateRange) => void` | no |  | Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range reported here is already corrected. |
 | `min` | `string` | no | `""` | The earliest value of the range. The end also cannot go below the start. |
 | `max` | `string` | no | `""` | The latest value of the range. The start also cannot go above the end. |
 | `step` | `string \| number` | no |  | The step of both native controls. |
@@ -2901,7 +2903,7 @@ Keyboard:
 Each end is a native input with the platform's keyboard behaviour; Tab goes from the start to the end, in reading order.
 
 - A `<fieldset>` with a `<legend>` names the group; each end has its own visible label. The hint and the error are the description of the group.
-- An error marks both ends `aria-invalid` and is announced when it appears.
+- An error marks both ends `aria-invalid`, is announced when it appears, and is part of the description of the group and of each end.
 - `required` marks both labels with the mark and the text for assistive technology, and sets the native `required` unless `nativeRequired={false}`.
 - A disabled group disables both ends and the fieldset.
 - The ends stack through the grid itself (no media query), so nothing overflows at 320px or at 200% zoom.

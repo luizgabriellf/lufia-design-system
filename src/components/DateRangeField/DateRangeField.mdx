@@ -12,9 +12,11 @@ import * as Stories from "./DateRangeField.stories";
 
 <Section id="overview">
 
-Two `DateField`s that form one range, in a fieldset named by a legend. The start cannot go above the end and the end cannot go
-below the start, through the native `max` and `min` of each, on top of any limits of the whole range. The ends sit side by side
-and stack when the room is narrow.
+Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end. The native `max` of
+the start and `min` of the end steer the picker, and a typed or picked value that would break the order is corrected: the end
+the person just edited is kept and the other end moves to the same value (both ends equal). `onValueChange` is called once,
+with the corrected range. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the
+room is narrow.
 
 <Canvas of={Stories.WithValues} />
 
@@ -38,8 +40,8 @@ import { DateRangeField } from "@lufia/design-system/components/DateRangeField";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 
 `value` is `{ start, end }`, each a string as the native control emits it (see `DateField`); `""` is an end that is not set.
-`onValueChange` receives the whole range. The native limits stop the picker and the browser's validation, they do not stop
-typing an impossible pair: validate in your app and pass `error`.
+`onValueChange` receives the whole, already corrected range. The order is enforced by the component; other rules (a longest
+stay, a date that is taken) are yours: validate in your app and pass `error`.
 
 </Section>
 
@@ -88,7 +90,7 @@ Each end is a native input with the platform's keyboard behaviour; Tab goes from
 
 - A `<fieldset>` with a `<legend>` names the group; each end has its own visible label. The hint and the error are the
   description of the group.
-- An error marks both ends `aria-invalid` and is announced when it appears.
+- An error marks both ends `aria-invalid`, is announced when it appears, and is part of the description of the group and of each end.
 - `required` marks both labels with the mark and the text for assistive technology, and sets the native `required` unless
   `nativeRequired={false}`.
 - A disabled group disables both ends and the fieldset.
