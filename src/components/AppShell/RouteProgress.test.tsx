@@ -342,6 +342,20 @@ describe("RouteProgress", () => {
       expect(bar(container)).toBeNull();
     });
 
+    it("goes away when a run restarted during the finish ends before its reveal delay", () => {
+      const { container } = render(<RouteProgress routeKey="/a" />);
+      act(() => startRouteProgress());
+      advance(ROUTE_PROGRESS_REVEAL_DELAY_MS + 1);
+      act(() => doneRouteProgress());
+      // A second step starts while the bar is still finishing, and is over almost at once.
+      advance(50);
+      act(() => startRouteProgress());
+      advance(20);
+      act(() => doneRouteProgress());
+      advance(1000);
+      expect(bar(container)).toBeNull();
+    });
+
     it("never shows when done arrives within the reveal delay", () => {
       const { container } = render(<RouteProgress routeKey="/a" />);
       act(() => startRouteProgress());
