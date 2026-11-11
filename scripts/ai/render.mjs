@@ -1,11 +1,13 @@
 /**
  * Renders the committed AI-layer outputs from the manifest: one Markdown spec per component, `llms.txt`,
- * `llms-full.txt` and `components.json`. Pure: it returns a map of repo-relative path to file content.
+ * `llms-full.txt`, `components.json` and the compressed agent index (`agent-index.mjs`). Pure: it returns a map of repo-relative path to file content.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { REPO_BLOB, REPO_URL } from "../../src/docs/blocks/links.ts";
+import { AGENT_INDEX_FILE, renderAgentIndex } from "./agent-index.mjs";
 import { PACKAGE_NAME, ROOT, buildManifest } from "./build-manifest.mjs";
+import { groupByCategory } from "./categories.mjs";
 
 export const SITE = "https://luizgabriellf.github.io/lufia-design-system/";
 export const OUT = "docs/ai";
@@ -251,24 +253,7 @@ function demote(markdown, levels = 1) {
     .join("\n");
 }
 
-const CATEGORY_ORDER = [
-  "Actions",
-  "Forms",
-  "Overlays",
-  "Navigation",
-  "Data display",
-  "Feedback",
-  "Motion",
-  "Utilities",
-  "Hooks",
-];
 const specUrl = (name) => `${SITE}ai/components/${name}.md`;
-
-function groupByCategory(components) {
-  const groups = new Map(CATEGORY_ORDER.map((name) => [name, []]));
-  for (const c of components) (groups.get(c.category) ?? groups.set(c.category, []).get(c.category)).push(c);
-  return [...groups].filter(([, list]) => list.length > 0);
-}
 
 const KEY_DOCS = [
   [
@@ -304,6 +289,7 @@ export function renderLlmsTxt(manifest) {
     `- [Consuming the package](${SITE}ai/CONSUMING.md): install, theme setup, provider, RSC rules, conventions.`,
     `- [llms-full.txt](${SITE}llms-full.txt): this index with the consuming guide, motion rules and every component spec inlined.`,
     `- [components.json](${SITE}components.json): machine-readable manifest generated from the TypeScript types (props, types, defaults, status, a11y, story ids).`,
+    `- [agent-index.md](${SITE}${AGENT_INDEX_FILE}): every component with its import path, status and key props in under 8 KB, to paste into a consuming app's AGENTS.md.`,
     '- Version-matched lookup: the installed package ships these docs; run `npx --no-install lufia-ai search "task"` or `npx --no-install lufia-ai mcp` (see the consuming guide).',
     `- [Storybook](${SITE}): live examples, theme and viewport controls.`,
     "",
@@ -360,5 +346,6 @@ export function generate() {
   files.set(`${OUT}/components.json`, `${JSON.stringify(manifest, null, 2)}\n`);
   files.set(`${OUT}/llms.txt`, renderLlmsTxt(manifest));
   files.set(`${OUT}/llms-full.txt`, renderLlmsFull(manifest, specs));
+  files.set(`${OUT}/${AGENT_INDEX_FILE}`, renderAgentIndex(manifest));
   return files;
 }

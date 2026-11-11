@@ -65,6 +65,7 @@
     "contrast": "tsx scripts/check-contrast.ts",
     "verify:motion": "tsx src/cli/verify-motion/cli.ts src",
     "build:ai-docs": "tsx scripts/ai/build.mjs",
+    "build:agent-index": "node scripts/ai/agent-index.mjs",
     "verify:ai-docs": "tsx scripts/ai/verify.mjs && node scripts/ai/verify-leaks.mjs",
     "storybook": "npm run tokens && storybook dev -p 6006 --host 127.0.0.1",
     "build-storybook": "npm run tokens && storybook build -o storybook-static && tsx scripts/ai/publish.mjs",
