@@ -10,15 +10,18 @@ import { ProseTable } from "./ProseTable";
 
 const THEMES = ["default", "example-brand"] as const;
 const MODES = ["light", "dark"] as const;
+const DIRECTIONS = ["ltr", "rtl"] as const;
 
 function ThemeBridge({
   theme,
   mode,
+  dir,
   docs,
   children,
 }: {
   theme: string;
   mode: string;
+  dir: string;
   docs: boolean;
   children: ReactNode;
 }) {
@@ -27,6 +30,10 @@ function ThemeBridge({
     root.dataset.lufiaTheme = theme;
     root.dataset.lufiaMode = mode;
   }, [theme, mode]);
+
+  useEffect(() => {
+    document.documentElement.dir = dir;
+  }, [dir]);
 
   return (
     <div className="sb-surface" data-lufia-theme={theme} data-lufia-mode={mode} data-docs={docs || undefined}>
@@ -39,6 +46,7 @@ const withTheme: Decorator = (Story, context) => (
   <ThemeBridge
     theme={(context.globals.theme as string) ?? "default"}
     mode={(context.globals.mode as string) ?? "light"}
+    dir={(context.globals.dir as string) ?? "ltr"}
     docs={context.viewMode === "docs"}
   >
     <Story />
@@ -47,7 +55,7 @@ const withTheme: Decorator = (Story, context) => (
 
 const preview: Preview = {
   decorators: [withTheme],
-  initialGlobals: { theme: "default", mode: "light" },
+  initialGlobals: { theme: "default", mode: "light", dir: "ltr" },
   globalTypes: {
     theme: {
       description: "Theme",
@@ -56,6 +64,10 @@ const preview: Preview = {
     mode: {
       description: "Colour mode",
       toolbar: { title: "Mode", icon: "circlehollow", items: [...MODES], dynamicTitle: true },
+    },
+    dir: {
+      description: "Text direction",
+      toolbar: { title: "Direction", icon: "transfer", items: [...DIRECTIONS], dynamicTitle: true },
     },
   },
   parameters: {

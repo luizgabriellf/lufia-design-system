@@ -34,6 +34,7 @@
 .indicator {
   position: absolute;
   top: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- the hook sets a measured, physical translateX */
   left: 0; /* the hook positions with measured, physical coordinates */
   transform-origin: 0 0;
   border-radius: var(--lufia-radius-md);
