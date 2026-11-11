@@ -5758,6 +5758,7 @@ ranges). The placeholder is an instruction, "Choose a country", never the label 
 - `components-forms-select--with-groups`
 - `components-forms-select--with-child-groups`
 - `components-forms-select--long-text`
+- `components-forms-select--narrow-long-label`
 - `components-forms-select--phone-320`
 - `components-forms-select--right-to-left`
 - `components-forms-select--all-themes`

@@ -111,6 +111,21 @@ export const LongText: Story = {
     defaultValue: "x",
   },
 };
+/** A long selected label in a 96px box: the text ellipsizes before the chevron instead of running under it. */
+export const NarrowLongLabel: Story = {
+  args: {
+    label: "Country",
+    options: [{ value: "x", label: "An option whose label is far too long to fit inside the box" }],
+    defaultValue: "x",
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "6rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const Phone320: Story = {
   args: {
     required: true,

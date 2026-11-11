@@ -1600,3 +1600,34 @@ test.describe("phone targets and overflow", () => {
     expect(fits).toBe(true);
   });
 });
+
+test.describe("select chevron room", () => {
+  for (const dir of ["ltr", "rtl"] as const) {
+    test(`a long label in a narrow select stops short of the chevron (${dir})`, async ({ page }) => {
+      await openStory(page, "components-forms-select--narrow-long-label", "default", "light", dir);
+      const result = await page.evaluate(() => {
+        const select = document.querySelector<HTMLSelectElement>("select")!;
+        const chevron = select.nextElementSibling as HTMLElement;
+        const box = select.getBoundingClientRect();
+        const glyph = chevron.getBoundingClientRect();
+        const style = getComputedStyle(select);
+        const rtl = style.direction === "rtl";
+        const padding = parseFloat(style.paddingInlineEnd);
+        // The edge of the text area on the chevron side, against the near edge of the chevron.
+        const textEdge = rtl ? box.left + padding : box.right - padding;
+        return {
+          width: box.width,
+          padding,
+          chevronWidth: glyph.width,
+          overlap: rtl ? glyph.right - textEdge : textEdge - glyph.left,
+          ellipsis: style.textOverflow,
+        };
+      });
+      expect(result.width).toBeLessThanOrEqual(96.5);
+      expect(result.padding).toBeGreaterThanOrEqual(result.chevronWidth);
+      // Positive means the text area reaches into the chevron.
+      expect(result.overlap).toBeLessThanOrEqual(0.5);
+      expect(result.ellipsis).toBe("ellipsis");
+    });
+  }
+});

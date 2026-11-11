@@ -1,10 +1,16 @@
 .native {
   appearance: none;
   cursor: pointer;
-
-  /* Room for the chevron, which sits over the end of the box. */
-  padding-inline-end: 2.5rem;
   text-overflow: ellipsis;
+}
+
+/*
+ * Room for the chevron, which sits over the end of the box. The shared field styles shrink the end padding of a control
+ * that precedes an affix (specificity 0,2,0), and the chevron is such an affix, so the doubled class (0,3,0) wins
+ * whatever the stylesheet order.
+ */
+.native.native:has(+ .chevron) {
+  padding-inline-end: 2.5rem;
 }
 
 .chevron {

@@ -26,6 +26,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Page actions container collapse: a 49rem host collapses the secondary actions into the menu and a 51rem host keeps them; a narrow-only item is listed in the sheet at 390 px even in a wide host.
 - Page actions sheet: at 390 px the `MoreActions` sheet's backdrop covers the viewport, the sheet is anchored to the bottom above a fixed high-z-index dock, a long list scrolls inside it, and Escape returns focus to the trigger.
 - Notification center: at 1440 px the bell opens a popover that takes focus, tabs switch the list and Escape returns focus to the bell; at 390 px the panel is a modal sheet above a fixed dock; a long list scrolls inside the panel with the footer in place; the open animation runs and is absent under reduced motion.
+- Select: a long selected label in a 96 px box keeps its computed end padding at least as wide as the chevron, so the text stops before it, in left-to-right and right-to-left.
 
 Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.
 

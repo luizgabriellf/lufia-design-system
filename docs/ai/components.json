@@ -13155,6 +13155,10 @@
             "id": "components-forms-select--long-text"
           },
           {
+            "export": "NarrowLongLabel",
+            "id": "components-forms-select--narrow-long-label"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-select--phone-320"
           },
