@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.34.3
+
+### Patch Changes
+
+- [#119](https://github.com/luizgabriellf/lufia-design-system/pull/119) [`a14e63a`](https://github.com/luizgabriellf/lufia-design-system/commit/a14e63ae1ccbc7ef09c284440d7854385b76c78e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - RouteProgress: hide the bar when a run restarted during the finish animation ends before its reveal delay, instead of leaving it on screen at full width.
+
 ## 0.34.2
 
 ### Patch Changes
