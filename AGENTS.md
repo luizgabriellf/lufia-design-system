@@ -14,27 +14,28 @@ motion primitives, consumed by several applications.
 2. **No AI or tool attribution** in commits, PR bodies or release notes (no `Co-Authored-By`, no session links).
 3. **Never bypass the hooks** (`--no-verify`). Fix what they report.
 4. **Do not hand-edit generated files**: `docs/ai/components/`, `docs/ai/components.json`, `docs/ai/llms.txt`,
-   `docs/ai/llms-full.txt`, `docs/ai/agent-index.md`, `src/tokens/generated/`, `dist/`. Change the source and regenerate.
+   `docs/ai/llms-full.txt`, `docs/ai/agent-index.md`, `tests/consumer/next-app/app/smoke/`, `src/tokens/generated/`, `dist/`. Change the source and regenerate.
 
 ## Repo map
 
-| Path                     | What is there                                                                                              |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `src/components/<Name>/` | A component: `<Name>.tsx`, CSS Module, stories, test, MDX page and an index barrel                         |
-| `src/motion/<Name>/`     | Motion primitives, same layout as a component                                                              |
-| `src/index.ts`           | Root export; one `export *` line per component directory                                                   |
-| `src/docs/taxonomy.ts`   | Category, one-line summary and WAI-ARIA pattern of every component (single source)                         |
-| `src/docs/blocks/`       | Storybook doc page template (`DocHeader`, `Section`, anatomy and Do/Don't figures)                         |
-| `src/cli/verify-motion/` | The `lufia-verify-motion` CLI                                                                              |
-| `src/cli/lufia-ai.js`    | The shipped `lufia-ai` bin; `src/cli/lufia-ai/` holds the lookup core and the stdio MCP server (plain ESM) |
-| `tokens/`                | DTCG token source; `npm run tokens` builds CSS, TS and JSON into `src/tokens/generated/`                   |
-| `docs/`                  | the standards, motion and roadmap docs, `docs/adr/`, and the AI layer in `docs/ai/`                        |
-| `scripts/`               | Token build, contrast check, postbuild; `scripts/ai/` builds the AI layer and holds the `ai:*` query CLI   |
-| `tests/browser/`         | Playwright specs that drive the Storybook stories in real browsers                                         |
-| `tests/consumer/`        | Fixture apps that consume the packed package; `scripts/check-next-consumer.mjs` runs the Next.js one       |
-| `.storybook/`            | Storybook config and docs theme                                                                            |
-| `.github/workflows/`     | CI, Storybook Pages deploy, release, PR title check, CodeQL                                                |
-| `.changeset/`            | Pending release notes                                                                                      |
+| Path                         | What is there                                                                                                                          |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/<Name>/`     | A component: `<Name>.tsx`, CSS Module, stories, test, MDX page and an index barrel                                                     |
+| `src/motion/<Name>/`         | Motion primitives, same layout as a component                                                                                          |
+| `src/index.ts`               | Root export; one `export *` line per component directory                                                                               |
+| `src/docs/taxonomy.ts`       | Category, one-line summary and WAI-ARIA pattern of every component (single source)                                                     |
+| `src/docs/blocks/`           | Storybook doc page template (`DocHeader`, `Section`, anatomy and Do/Don't figures)                                                     |
+| `src/cli/verify-motion/`     | The `lufia-verify-motion` CLI                                                                                                          |
+| `src/cli/lufia-ai.js`        | The shipped `lufia-ai` bin; `src/cli/lufia-ai/` holds the lookup core and the stdio MCP server (plain ESM)                             |
+| `tokens/`                    | DTCG token source; `npm run tokens` builds CSS, TS and JSON into `src/tokens/generated/`                                               |
+| `docs/`                      | the standards, motion and roadmap docs, `docs/adr/`, and the AI layer in `docs/ai/`                                                    |
+| `scripts/`                   | Token build, contrast check, postbuild; `scripts/ai/` builds the AI layer and holds the `ai:*` query CLI                               |
+| `tests/browser/`             | Playwright specs that drive the Storybook stories in real browsers                                                                     |
+| `tests/consumer/`            | Fixture apps that consume the packed package; `scripts/check-next-consumer.mjs` runs the Next.js one                                   |
+| `scripts/consumer-smoke.mjs` | Generates `tests/consumer/next-app/app/smoke/` from the manifest; props it cannot derive live in `scripts/consumer-smoke-fixtures.mjs` |
+| `.storybook/`                | Storybook config and docs theme                                                                                                        |
+| `.github/workflows/`         | CI, Storybook Pages deploy, release, PR title check, CodeQL                                                                            |
+| `.changeset/`                | Pending release notes                                                                                                                  |
 
 ## Commands
 
@@ -51,6 +52,8 @@ npm run verify:changeset     # published source changed without a new changeset?
 npm run test:consumer:next   # pack the build, install it in a Next.js app, assert SSR (needs npm run build first)
 npm run build:ai-docs        # regenerate docs/ai (manifest, specs, llms files, agent index)
 npm run build:agent-index    # rewrite only docs/ai/agent-index.md from the committed manifest
+npm run build:consumer-smoke # regenerate the consumer smoke page (tests/consumer/next-app/app/smoke) from the manifest
+npm run verify:consumer-smoke # fail when that page is stale or a component has no props for it
 npm run ai:search -- "task"  # find components for a UI task (read-only; ai:show -- Name, ai:list)
 node dist/cli/lufia-ai.js mcp # the shipped lookup MCP server (needs npm run build first; consumers run `npx --no-install lufia-ai`)
 ```
@@ -69,10 +72,10 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 6. `npm run contrast` (WCAG 2.2 AA for every text and UI pair, every theme and mode)
 7. `npm run verify:motion` (motion rules over `src`)
 8. `npm run build` (tsup plus type declarations)
-9. `npm run verify:ai-docs` (AI layer is not stale and leaks no denylisted identifier when a denylist is configured; see `docs/ai/README.md`)
+9. `npm run verify:ai-docs` (AI layer is not stale and leaks no denylisted identifier when a denylist is configured; see `docs/ai/README.md`), then `npm run verify:consumer-smoke` (the generated consumer smoke page matches the manifest)
 10. `npm run build-storybook` (also publishes the llms files and the agent index into `storybook-static`)
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
-12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app)
+12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app that renders every manifest component: those without `"use client"` in a Server Component, the rest through a client boundary)
 13. `npm run test:browser` (Playwright in Chromium and WebKit; CI only, see `docs/PLAYWRIGHT.md`)
 
 ## CI
@@ -102,7 +105,7 @@ still `Verify`.
 - **CSS Modules**, no runtime CSS-in-JS. Sizes in `rem`; layout in logical properties (`margin-inline`, `padding-block`,
   `inset-inline-start`), so right-to-left works.
 - **RSC safety.** Static components carry no `"use client"`. Add it only to components that use state, effects, refs to the
-  DOM or event handlers they own.
+  DOM or event handlers they own. The consumer smoke renders every component in a real Next.js app, so a missing directive fails CI.
 - **API conventions.** `className` and rest props go to the root element, `ref` is a prop (React 19), state is exposed as
   `data-*` attributes, no boolean-prop explosion. Props carry JSDoc: it feeds the manifest.
 - **Accessibility is a gate.** Every component has a vitest-axe test, keyboard behaviour that follows the WAI-ARIA pattern,
@@ -122,7 +125,7 @@ still `Verify`.
 2. Register it in `src/docs/taxonomy.ts` and add an `export *` line to `src/index.ts` (or `src/motion/index.ts`).
 3. Put JSDoc on every prop; write the MDX sections "Usage", "When to use", "When not to use", "Keyboard" (when interactive),
    "Accessibility".
-4. Run `npm run build:ai-docs` and commit the regenerated `docs/ai/` files in the same change.
+4. Run `npm run build:ai-docs` and `npm run build:consumer-smoke` and commit the regenerated `docs/ai/` and smoke files in the same change. If the smoke generator reports required props it cannot derive, add a fixture to `scripts/consumer-smoke-fixtures.mjs`.
 5. Add a changeset: `npm run changeset`.
 
 ## Release process
@@ -159,25 +162,26 @@ When Storybook is running locally, coding agents may also use its MCP endpoint (
 
 ## Where to look: task to doc
 
-| Task                                    | Read first                                                                                               |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Use a component in an app               | `docs/ai/CONSUMING.md`, then `docs/ai/components/<Name>.md`                                              |
-| Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                            |
-| Give a consuming app's agent the index  | `docs/ai/agent-index.md` (generated by `scripts/ai/agent-index.mjs`), `docs/ai/CONSUMING.md`             |
-| Change the `lufia-ai` CLI or MCP server | `src/cli/lufia-ai/core.js`, `scripts/ai/lufia-ai.test.mjs`, `scripts/postbuild.mjs`, `docs/ai/README.md` |
-| Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md`      |
-| Add or change an icon or a status glyph | `src/components/Icon/`, `src/components/StatusIcon/`, `src/docs/Foundations/Icons.mdx`                   |
-| Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`                 |
-| Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                                 |
-| Write or fix stories and docs pages     | `src/docs/blocks/`, `src/docs/taxonomy.ts`, an existing `.mdx` of the same shape                         |
-| Change distribution or exports          | `docs/adr/0002-distribution.md`, `package.json` `exports`, `tsup.config.ts`                              |
-| Why widgets are custom, not a library   | `docs/adr/0003-primitives-library.md`                                                                    |
-| Cut or understand a release             | "Release process" above, `.changeset/`, `.github/workflows/release.yml`                                  |
-| Write or fix browser (Playwright) tests | `docs/PLAYWRIGHT.md`, `tests/browser/`, `playwright.config.ts`                                           |
-| Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`, `gate`), `.github/workflows/pages.yml` |
-| Package exports, types or size budgets  | `package.json` `exports`, `npm run verify:package`, `.size-limit.json`, `npm run verify:size`            |
-| Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                       |
-| Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                     |
+| Task                                    | Read first                                                                                                                         |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Use a component in an app               | `docs/ai/CONSUMING.md`, then `docs/ai/components/<Name>.md`                                                                        |
+| Find a component or its typed props     | `docs/ai/components.json`, `docs/ai/llms.txt`                                                                                      |
+| Give a consuming app's agent the index  | `docs/ai/agent-index.md` (generated by `scripts/ai/agent-index.mjs`), `docs/ai/CONSUMING.md`                                       |
+| Change the `lufia-ai` CLI or MCP server | `src/cli/lufia-ai/core.js`, `scripts/ai/lufia-ai.test.mjs`, `scripts/postbuild.mjs`, `docs/ai/README.md`                           |
+| Add or change a component               | "Adding or changing a component" above, `CONTRIBUTING.md` (definition of done), `docs/STANDARDS.md`                                |
+| Add or change an icon or a status glyph | `src/components/Icon/`, `src/components/StatusIcon/`, `src/docs/Foundations/Icons.mdx`                                             |
+| Add or change a token or theme          | `tokens/`, `docs/adr/0001-token-format.md`, then `npm run tokens` and `npm run contrast`                                           |
+| Add or change motion                    | `docs/MOTION.md`, `src/motion/`, `npm run verify:motion`                                                                           |
+| Write or fix stories and docs pages     | `src/docs/blocks/`, `src/docs/taxonomy.ts`, an existing `.mdx` of the same shape                                                   |
+| Change distribution or exports          | `docs/adr/0002-distribution.md`, `package.json` `exports`, `tsup.config.ts`                                                        |
+| Why widgets are custom, not a library   | `docs/adr/0003-primitives-library.md`                                                                                              |
+| Cut or understand a release             | "Release process" above, `.changeset/`, `.github/workflows/release.yml`                                                            |
+| Change the Next.js consumer smoke       | `scripts/consumer-smoke.mjs`, `scripts/consumer-smoke-fixtures.mjs`, `scripts/check-next-consumer.mjs`, `tests/consumer/next-app/` |
+| Write or fix browser (Playwright) tests | `docs/PLAYWRIGHT.md`, `tests/browser/`, `playwright.config.ts`                                                                     |
+| Change CI or the Pages deploy           | `.github/workflows/ci.yml` (jobs `verify`, `consumer`, `browser`, `gate`), `.github/workflows/pages.yml`                           |
+| Package exports, types or size budgets  | `package.json` `exports`, `npm run verify:package`, `.size-limit.json`, `npm run verify:size`                                      |
+| Change the AI layer itself              | `docs/ai/README.md`, `scripts/ai/`                                                                                                 |
+| Security, conduct, governance           | `SECURITY.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`                                                                               |
 
 ## Leak gate
 
