@@ -53,7 +53,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
   - docs/autodocs: props tables generated from TS;
   - a11y;
   - interactions / Vitest addon, so stories run as tests;
-  - themes toolbar: theme × light/dark;
+  - themes toolbar: theme × light/dark, plus a `dir` (LTR/RTL) toolbar;
   - viewport presets 320/390/768/1440;
   - backgrounds;
   - measure/outline.

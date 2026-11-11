@@ -21,6 +21,7 @@
 .indicator {
   position: absolute;
   top: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- the hook sets a measured, physical translateX */
   left: 0; /* positioned with measured, physical coordinates */
   z-index: 0;
   box-sizing: border-box;

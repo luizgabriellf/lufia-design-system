@@ -49,11 +49,12 @@ async function openStory(
   id: string,
   theme: Theme = "default",
   mode: Mode = "light",
+  dir: "ltr" | "rtl" = "ltr",
 ): Promise<void> {
   const params = new URLSearchParams({
     id,
     viewMode: "story",
-    globals: `theme:${theme};mode:${mode}`,
+    globals: `theme:${theme};mode:${mode};dir:${dir}`,
   });
   await page.goto(`/iframe.html?${params.toString()}`);
   await expect(page.locator("html")).toHaveAttribute("data-lufia-theme", theme);
@@ -169,6 +170,30 @@ test.describe("theme and layout", () => {
         .toBe(true);
     });
   }
+});
+
+test.describe("right-to-left", () => {
+  // The connector line of a timeline node is placed with `inset-inline-start`, so it must sit on the opposite physical side.
+  const connectorOffsets = (page: Page) =>
+    page
+      .locator("li[data-state]")
+      .first()
+      .evaluate((node) => {
+        const style = getComputedStyle(node, "::after");
+        return { left: parseFloat(style.left), right: parseFloat(style.right) };
+      });
+
+  test("the status timeline connector mirrors under dir=rtl", async ({ page }) => {
+    await openStory(page, "components-data-display-statustimeline--default");
+    await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+    const ltr = await connectorOffsets(page);
+    expect(ltr.left).toBeLessThan(ltr.right);
+
+    await openStory(page, "components-data-display-statustimeline--default", "default", "light", "rtl");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    const rtl = await connectorOffsets(page);
+    expect(rtl.right).toBeLessThan(rtl.left);
+  });
 });
 
 test.describe("page actions sheet", () => {

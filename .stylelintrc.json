@@ -5,8 +5,21 @@
     "custom-property-pattern": null,
     "declaration-property-value-disallowed-list": {
       "outline": ["none", "0"],
-      "/^outline(-style)?$/": ["none"]
+      "/^outline(-style)?$/": ["none"],
+      "/^(text-align|float|clear)$/": ["left", "right"]
     },
+    "property-disallowed-list": [
+      [
+        "left",
+        "right",
+        "/^(margin|padding|scroll-margin|scroll-padding)-(left|right)$/",
+        "/^border-(left|right)(-.+)?$/",
+        "/^border-(top|bottom)-(left|right)-radius$/"
+      ],
+      {
+        "message": "Use the logical property (inset-inline-start, margin-inline-end, ...) so right-to-left works."
+      }
+    ],
     "color-named": "never",
     "declaration-no-important": true
   },
