@@ -10,6 +10,7 @@ Files that let coding agents use and change this repository without guessing. Ev
 | `docs/ai/components/<Name>.md` | Both                      | Generated, one spec per exported component                                                                     |
 | `docs/ai/llms.txt`             | Agents browsing the site  | Generated index, format from llmstxt.org                                                                       |
 | `docs/ai/llms-full.txt`        | Agents that want one file | Generated: consuming guide, motion rules and every spec                                                        |
+| `docs/ai/agent-index.md`       | Agents using the package  | Generated: every component, its import path, status and key props, in at most 8 KB                             |
 | `src/cli/lufia-ai/`            | Agents using the package  | Hand-written plain ESM: lookup core, MCP server; `src/cli/lufia-ai.js` is the `lufia-ai` bin                   |
 
 ## How the manifest is generated
@@ -49,10 +50,31 @@ synonyms, so a summary should use the plain word people search for. Stopwords an
 terms under two characters are dropped, a component matching more terms ranks higher, and an exact component name always
 comes first. It never infers anything: every prop, type and import comes from the manifest.
 
+## The agent index
+
+`docs/ai/agent-index.md` is a block for a consuming app to paste into its own `AGENTS.md`, where it is always in the
+agent's context (the lookup CLI and the MCP server only help when the agent decides to call them). `scripts/ai/agent-index.mjs`
+renders it from the manifest: a short legend and the rules, then one line per component, grouped by category
+(`scripts/ai/categories.mjs`, the order `llms.txt` uses):
+
+- the import path is `@lufia/design-system/components/<Name>` unless the line carries another subpath in brackets
+  (`[motion]`);
+- the status is written only when it is not `beta`;
+- the key props are the component's own props, required ones first and marked `*`, then in declaration order, with
+  `+N` for the ones left out; `className`, `ref`, `style`, `children` and native attributes are never listed. A hook
+  lists its arguments; other components and hooks exported from the same path follow `also`.
+
+The block is capped at 8 KB (`AGENT_INDEX_MAX_BYTES`). The renderer lists up to 12 props per component and lowers that
+number until the block fits, so the file keeps fitting as components are added; it throws when even the bare list does
+not fit. The output depends only on the manifest (no date, no version), and sits between two marker comments so an app
+can replace the whole block on upgrade. `scripts/ai/agent-index.test.mjs` covers the cap, the determinism and that every
+component is listed.
+
 ## Regenerate
 
 ```bash
-npm run build:ai-docs     # writes docs/ai/components/, components.json, llms.txt, llms-full.txt
+npm run build:ai-docs     # writes docs/ai/components/, components.json, llms.txt, llms-full.txt, agent-index.md
+npm run build:agent-index # rewrites only agent-index.md, from the committed components.json (no TypeScript pass)
 npm run verify:ai-docs    # the drift gate
 ```
 
@@ -60,7 +82,8 @@ npm run verify:ai-docs    # the drift gate
 
 `npm run verify:ai-docs` (part of `npm run check` and so of CI) fails when:
 
-- a generated file differs from a fresh regeneration, is missing, or is stale (a spec for a removed component);
+- a generated file (the agent index included) differs from a fresh regeneration, is missing, or is stale (a spec for a
+  removed component), or the agent index cannot be rendered within its 8 KB cap;
 - a component exported from `src/index.ts` is missing from `components.json` or has no spec;
 - `AGENTS.md`, this file, `CONSUMING.md` or the Copilot file reference a path or an `npm run` script that does not exist;
 - `CLAUDE.md` is not exactly `@AGENTS.md`, or the Cursor rule or Copilot file does not point to `AGENTS.md`;
@@ -71,7 +94,7 @@ npm run verify:ai-docs    # the drift gate
 ## Publishing
 
 `npm run build-storybook` ends with `scripts/ai/publish.mjs`, which copies the files into `storybook-static`, so the GitHub
-Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `components.json`, plus `/ai/CONSUMING.md` and
+Pages deploy serves them at the site root: `llms.txt`, `llms-full.txt`, `agent-index.md`, `components.json`, plus `/ai/CONSUMING.md` and
 `/ai/components/<Name>.md` (the targets of the links in `llms.txt`). The generated `docs/ai` files are not published in the npm package; they live in the repo and on Pages.
 
 Storybook's own native components manifest (`features.componentsManifest` in `.storybook/main.ts`) is also built into

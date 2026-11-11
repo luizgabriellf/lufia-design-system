@@ -96,6 +96,15 @@ The server must start in the project root, where `node_modules` lives. VS Code d
 
 The raw files are also importable, for example `@lufia/design-system/ai/components.json`.
 
+## Keep the component index in your agent's context
+
+An agent only calls a lookup tool when it thinks of it. Paste the generated
+[agent index](https://luizgabriellf.github.io/lufia-design-system/agent-index.md) (`docs/ai/agent-index.md` in the
+repository) into your application's own `AGENTS.md`: under 8 KB, it lists every component with its import path, status and
+key props, plus the rules below in one paragraph. Copy the whole block, markers included, and replace it when you upgrade
+the package. The published file describes the latest release; check a prop against `npx --no-install lufia-ai show <Name>`,
+which answers for the version you have installed.
+
 ## AI agent workflow
 
 For coding agents, use **progressive disclosure** rather than loading the entire manifest into every prompt:
@@ -131,6 +140,7 @@ The same lookup is available through `lufia-ai` above. Contributors with the rep
 | Need                         | Read                                                      |
 | ---------------------------- | --------------------------------------------------------- |
 | Index of everything          | `llms.txt` on the documentation site                      |
+| Index to paste in AGENTS.md  | `agent-index.md` on the documentation site                |
 | Everything in one file       | `llms-full.txt` on the documentation site                 |
 | Typed API of every component | `components.json` (props, types, defaults, status)        |
 | One component                | `docs/ai/components/<Name>.md`                            |
