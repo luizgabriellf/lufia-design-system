@@ -73,10 +73,19 @@
   color: var(--lufia-color-text-default);
   box-shadow: var(--lufia-shadow-md);
   transform: translateY(-200%);
+
+  /*
+   * Moved off the top edge is not hidden: a touch browser that lets the page be pulled down past its start shows what
+   * sits above it. Transparent and untouchable until focused keeps it out of sight there and still in the tab order.
+   */
+  opacity: 0;
+  pointer-events: none;
 }
 
 .skip:focus-visible {
   transform: none;
+  opacity: 1;
+  pointer-events: auto;
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: 2px;
 }
