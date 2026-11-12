@@ -166,6 +166,17 @@ describe("AppShell", () => {
     expect(screen.getAllByRole("link", { name: "Quiet" })[0]).toHaveTextContent(/^Quiet$/);
   });
 
+  it("keeps the unfocused skip link invisible, so pulling the page past its start cannot reveal it", () => {
+    const css = readFileSync("src/components/AppShell/AppShell.module.css", "utf8");
+    const rest = /\.skip\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
+    const focused = /\.skip:focus-visible\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(rest).toMatch(/opacity:\s*0;/);
+    expect(rest).toMatch(/pointer-events:\s*none/);
+    expect(focused).toMatch(/opacity:\s*1;/);
+    expect(focused).toMatch(/pointer-events:\s*auto/);
+    expect(focused).toMatch(/transform:\s*none/);
+  });
+
   it("takes attributes for the main landmark and follows its id with the skip link", () => {
     setup({ mainProps: { id: "content", className: "page-area", "data-page": "x", tabIndex: -1 } });
     const main = screen.getByRole("main");
