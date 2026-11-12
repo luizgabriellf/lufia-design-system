@@ -26,6 +26,8 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 
 - [Checkbox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Checkbox.md): A checkbox with a mixed state, for independent on/off choices. (beta)
 - [Combobox](https://luizgabriellf.github.io/lufia-design-system/ai/components/Combobox.md): A searchable single-select dropdown input with async options, following the APG combobox pattern. (beta)
+- [DateField](https://luizgabriellf.github.io/lufia-design-system/ai/components/DateField.md): A native date, time, date-and-time or month control in the shared field box, with icon and optional clear button. (beta)
+- [DateRangeField](https://luizgabriellf.github.io/lufia-design-system/ai/components/DateRangeField.md): Two date fields that form one range, in a fieldset, where the start is never after the end. (beta)
 - [FileField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FileField.md): A file picker with drag and drop, validation and a list of chosen files. (beta)
 - [FormField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FormField.md): Label, hint and error wired to any control, so the control stays accessible by default. (beta)
 - [PendingSubmit](https://luizgabriellf.github.io/lufia-design-system/ai/components/PendingSubmit.md): A submit button that reads the pending state of its form and prevents double submits. (beta)

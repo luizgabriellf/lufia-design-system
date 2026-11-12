@@ -76,6 +76,16 @@ export const ENTRIES: Entry[] = [
     "A native select (dropdown) styled with tokens, for choosing one option from a short list.",
   ),
   c(
+    "DateField",
+    "Forms",
+    "A native date, time, date-and-time or month control in the shared field box, with icon and optional clear button.",
+  ),
+  c(
+    "DateRangeField",
+    "Forms",
+    "Two date fields that form one range, in a fieldset, where the start is never after the end.",
+  ),
+  c(
     "Combobox",
     "Forms",
     "A searchable single-select dropdown input with async options, following the APG combobox pattern.",

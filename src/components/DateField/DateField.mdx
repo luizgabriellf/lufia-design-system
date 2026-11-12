@@ -1,0 +1,122 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./DateField.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="DateField"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A native date, time, date-and-time or month control in the shared field box: the same height, padding, focus ring and
+states as `TextInput`, a calendar or clock icon, and an optional clear button. It enhances the browser's own control, it does
+not replace it: editing, the keyboard and the mobile picker are the platform's.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { DateField } from "@lufia/design-system/components/DateField";
+import { FormField } from "@lufia/design-system/components/FormField";
+
+<FormField label="Start date" error={errors.start}>
+  <DateField name="start" min="2030-01-01" clearLabel="Clear date" onValueChange={setStart} />
+</FormField>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use;
+`clearLabel` is one of them.
+
+Values are strings, as the native control emits them: `2030-01-31` for `date`, `14:30` for `time`, `2030-01-31T14:30` for
+`datetime-local` and `2030-01` for `month`. `min`, `max` and `step` use the same formats. There is no `Date` conversion and
+no time zone: parse in your app.
+
+</Section>
+
+<Section id="examples">
+
+### Every type
+
+<Canvas of={Stories.AllTypes} />
+<Canvas of={Stories.AllTypesEmpty} />
+
+### Limits
+
+<Canvas of={Stories.WithMinAndMax} />
+
+### Clear button
+
+`clearLabel` adds a button that empties the field and returns focus to it. It shows only while there is a value, and never on
+a required, disabled or read-only field.
+
+<Canvas of={Stories.Clearable} />
+
+### States
+
+<Canvas of={Stories.Required} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.ReadOnly} />
+
+### Narrow widths
+
+<Canvas of={Stories.Narrow} />
+<Canvas of={Stories.Phone320} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+A native input, so the platform's behaviour applies: Tab moves in and out, the arrow keys change the focused segment and
+typing fills it. The clear button is in the tab order after the input and works with Enter and Space.
+
+### Accessibility
+
+- Always inside a `FormField`, or give `aria-label`.
+- The calendar or clock icon is decorative and hidden from assistive technology. It appears only where the browser lets a
+  script open its picker (`showPicker`) and the native indicator can be hidden; elsewhere the native indicator stays, so there
+  is always exactly one. Clicking the icon is a pointer convenience: keyboard and screen-reader users use the native control.
+- The icon is drawn after the first render, so server-rendered markup shows the native indicator until it hydrates.
+- Empty controls keep their height and start alignment, including on iOS Safari, where the native control otherwise collapses
+  or centres its text.
+- The clear button is named by `clearLabel`. Without it there is no button.
+- Under `forced-colors` the box, the icon and the focus ring use system colours.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A date, a time of day, a local date and time or a month, entered by typing or through the platform picker.
+- A mobile form: the native picker is usually the best one there is.
+
+### When not to use
+
+- A custom calendar popup, presets such as "last 7 days" or a range in one control: not provided here.
+- Two ends of one range: use `DateRangeField`.
+- A birth date or any date far in the past: three `Select`s or a text field with a format hint can be faster than scrolling.
+
+### Content guidelines
+
+Label the field with what the date is ("Start date"), not the control ("Date picker"). Put the expected range or time zone in
+the hint.
+
+</Section>

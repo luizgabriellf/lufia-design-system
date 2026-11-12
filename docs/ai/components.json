@@ -5682,6 +5682,513 @@
       ]
     },
     {
+      "name": "DateField",
+      "category": "Forms",
+      "summary": "A native date, time, date-and-time or month control in the shared field box, with icon and optional clear button.",
+      "status": "beta",
+      "source": "src/components/DateField",
+      "entry": {
+        "subpath": "@lufia/design-system/components/DateField",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "DateField",
+          "kind": "component",
+          "description": "A native date, time, date-and-time or month control in the shared field box: same height, padding, focus ring and states as `TextInput`, a calendar or clock icon, and an optional clear button. The browser keeps its own editing, keyboard and mobile picker. Inside a `FormField` the field's id, description and states apply. Values are strings, as the native control emits them; there is no `Date` conversion and no time zone.",
+          "props": [
+            {
+              "name": "type",
+              "type": "\"date\" | \"time\" | \"datetime-local\" | \"month\"",
+              "required": false,
+              "default": "\"date\"",
+              "description": "Which native control to render. `date` (default), `time`, `datetime-local` or `month`."
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Controlled value, as the native control emits it: `2030-01-31`, `14:30`, `2030-01-31T14:30` or `2030-01`. `\"\"` is empty."
+            },
+            {
+              "name": "defaultValue",
+              "type": "string",
+              "required": false,
+              "default": "\"\"",
+              "description": ""
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: string) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the value the native control emits, or `\"\"` when it is emptied or cleared."
+            },
+            {
+              "name": "min",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The earliest value, in the same format as `value`."
+            },
+            {
+              "name": "max",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The latest value, in the same format as `value`."
+            },
+            {
+              "name": "step",
+              "type": "string | number",
+              "required": false,
+              "default": null,
+              "description": "The step of the native control: days for `date`, seconds for `time` and `datetime-local`, months for `month`."
+            },
+            {
+              "name": "clearLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks the control invalid without a `FormField`. Inside a field the error does it."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Goes on the box that draws the border; the native input gets the rest props."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLInputElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "DateFieldProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "DateFieldType",
+          "kind": "type",
+          "description": "The native control a `DateField` wraps.",
+          "definition": "\"date\" | \"time\" | \"datetime-local\" | \"month\""
+        }
+      ],
+      "aliases": {
+        "DateFieldType": "\"date\" | \"time\" | \"datetime-local\" | \"month\""
+      },
+      "story": {
+        "docsId": "components-forms-datefield--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-forms-datefield--default"
+          },
+          {
+            "export": "AllTypes",
+            "id": "components-forms-datefield--all-types"
+          },
+          {
+            "export": "AllTypesEmpty",
+            "id": "components-forms-datefield--all-types-empty"
+          },
+          {
+            "export": "WithHint",
+            "id": "components-forms-datefield--with-hint"
+          },
+          {
+            "export": "WithMinAndMax",
+            "id": "components-forms-datefield--with-min-and-max"
+          },
+          {
+            "export": "Required",
+            "id": "components-forms-datefield--required"
+          },
+          {
+            "export": "Invalid",
+            "id": "components-forms-datefield--invalid"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-forms-datefield--disabled"
+          },
+          {
+            "export": "ReadOnly",
+            "id": "components-forms-datefield--read-only"
+          },
+          {
+            "export": "Clearable",
+            "id": "components-forms-datefield--clearable"
+          },
+          {
+            "export": "Controlled",
+            "id": "components-forms-datefield--controlled"
+          },
+          {
+            "export": "Narrow",
+            "id": "components-forms-datefield--narrow"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-forms-datefield--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-forms-datefield--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-forms-datefield--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/DateField/DateField.mdx",
+        "overview": "A native date, time, date-and-time or month control in the shared field box: the same height, padding, focus ring and\nstates as `TextInput`, a calendar or clock icon, and an optional clear button. It enhances the browser's own control, it does\nnot replace it: editing, the keyboard and the mobile picker are the platform's.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { DateField } from \"@lufia/design-system/components/DateField\";\nimport { FormField } from \"@lufia/design-system/components/FormField\";\n\n<FormField label=\"Start date\" error={errors.start}>\n  <DateField name=\"start\" min=\"2030-01-01\" clearLabel=\"Clear date\" onValueChange={setStart} />\n</FormField>;"
+        },
+        "whenToUse": [
+          "A date, a time of day, a local date and time or a month, entered by typing or through the platform picker.",
+          "A mobile form: the native picker is usually the best one there is."
+        ],
+        "whenNotToUse": [
+          "A custom calendar popup, presets such as \"last 7 days\" or a range in one control: not provided here.",
+          "Two ends of one range: use `DateRangeField`.",
+          "A birth date or any date far in the past: three `Select`s or a text field with a format hint can be faster than scrolling."
+        ],
+        "contentGuidelines": "Label the field with what the date is (\"Start date\"), not the control (\"Date picker\"). Put the expected range or time zone in\nthe hint."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": "A native input, so the platform's behaviour applies: Tab moves in and out, the arrow keys change the focused segment and\ntyping fills it. The clear button is in the tab order after the input and works with Enter and Space.",
+        "notes": [
+          "Always inside a `FormField`, or give `aria-label`.",
+          "The calendar or clock icon is decorative and hidden from assistive technology. It appears only where the browser lets a script open its picker (`showPicker`) and the native indicator can be hidden; elsewhere the native indicator stays, so there is always exactly one. Clicking the icon is a pointer convenience: keyboard and screen-reader users use the native control.",
+          "The icon is drawn after the first render, so server-rendered markup shows the native indicator until it hydrates.",
+          "Empty controls keep their height and start alignment, including on iOS Safari, where the native control otherwise collapses or centres its text.",
+          "The clear button is named by `clearLabel`. Without it there is no button.",
+          "Under `forced-colors` the box, the icon and the focus ring use system colours."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-color-text-subtle",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-full",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-target-touch"
+      ]
+    },
+    {
+      "name": "DateRangeField",
+      "category": "Forms",
+      "summary": "Two date fields that form one range, in a fieldset, where the start is never after the end.",
+      "status": "beta",
+      "source": "src/components/DateRangeField",
+      "entry": {
+        "subpath": "@lufia/design-system/components/DateRangeField",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "DateRange",
+          "kind": "type",
+          "description": "The two ends of a range, as the native controls emit them. `\"\"` is an end that is not set.",
+          "definition": "{ start: string; end: string; }"
+        },
+        {
+          "name": "DateRangeField",
+          "kind": "component",
+          "description": "Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end: the native `max` and `min` steer the picker, and a typed or picked value that would break the order is corrected, the end just edited is kept and the other end moves to the same value, reported in one `onValueChange`. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the room is narrow.",
+          "props": [
+            {
+              "name": "legend",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Names the group, as a `<legend>` (\"Stay\")."
+            },
+            {
+              "name": "startLabel",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The label of the first field (\"From\")."
+            },
+            {
+              "name": "endLabel",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The label of the second field (\"To\")."
+            },
+            {
+              "name": "type",
+              "type": "\"date\" | \"time\" | \"datetime-local\" | \"month\"",
+              "required": false,
+              "default": "\"date\"",
+              "description": "Which native control both ends use. `date` (default), `time`, `datetime-local` or `month`."
+            },
+            {
+              "name": "value",
+              "type": "DateRange",
+              "required": false,
+              "default": null,
+              "description": "Controlled range."
+            },
+            {
+              "name": "defaultValue",
+              "type": "DateRange",
+              "required": false,
+              "default": "EMPTY",
+              "description": ""
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: DateRange) => void",
+              "required": false,
+              "default": null,
+              "description": "Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range reported here is already corrected."
+            },
+            {
+              "name": "min",
+              "type": "string",
+              "required": false,
+              "default": "\"\"",
+              "description": "The earliest value of the range. The end also cannot go below the start."
+            },
+            {
+              "name": "max",
+              "type": "string",
+              "required": false,
+              "default": "\"\"",
+              "description": "The latest value of the range. The start also cannot go above the end."
+            },
+            {
+              "name": "step",
+              "type": "string | number",
+              "required": false,
+              "default": null,
+              "description": "The step of both native controls."
+            },
+            {
+              "name": "startName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the form entries of the two ends, so they submit as `startName=…&endName=…`."
+            },
+            {
+              "name": "endName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "hint",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Help shown under the group, linked to it with `aria-describedby`."
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Error text for the group. It marks both ends invalid and shows the message with an icon."
+            },
+            {
+              "name": "required",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks both ends required; each label shows the mark and the text for assistive technology."
+            },
+            {
+              "name": "nativeRequired",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "As on `FormField`: whether `required` also sets the native `required` attribute. Defaults to `true`."
+            },
+            {
+              "name": "requiredLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Text read after a label when `required`. Defaults to the `required` label of `LufiaProvider`."
+            },
+            {
+              "name": "clearLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The accessible name of the clear buttons, in your language. See `DateField`."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Goes on the fieldset."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLFieldSetElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "DateRangeFieldProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        }
+      ],
+      "aliases": {
+        "DateRange": "{ start: string; end: string; }"
+      },
+      "story": {
+        "docsId": "components-forms-daterangefield--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-forms-daterangefield--default"
+          },
+          {
+            "export": "WithValues",
+            "id": "components-forms-daterangefield--with-values"
+          },
+          {
+            "export": "WithMinAndMax",
+            "id": "components-forms-daterangefield--with-min-and-max"
+          },
+          {
+            "export": "Months",
+            "id": "components-forms-daterangefield--months"
+          },
+          {
+            "export": "DatesAndTimes",
+            "id": "components-forms-daterangefield--dates-and-times"
+          },
+          {
+            "export": "Required",
+            "id": "components-forms-daterangefield--required"
+          },
+          {
+            "export": "Invalid",
+            "id": "components-forms-daterangefield--invalid"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-forms-daterangefield--disabled"
+          },
+          {
+            "export": "Clearable",
+            "id": "components-forms-daterangefield--clearable"
+          },
+          {
+            "export": "Controlled",
+            "id": "components-forms-daterangefield--controlled"
+          },
+          {
+            "export": "Narrow",
+            "id": "components-forms-daterangefield--narrow"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-forms-daterangefield--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-forms-daterangefield--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-forms-daterangefield--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/DateRangeField/DateRangeField.mdx",
+        "overview": "Two `DateField`s that form one range, in a fieldset named by a legend. The start is never after the end. The native `max` of\nthe start and `min` of the end steer the picker, and a typed or picked value that would break the order is corrected: the end\nthe person just edited is kept and the other end moves to the same value (both ends equal). `onValueChange` is called once,\nwith the corrected range. Any `min` and `max` of the whole range apply on top. The ends sit side by side and stack when the\nroom is narrow.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { DateRangeField } from \"@lufia/design-system/components/DateRangeField\";\n\n<DateRangeField\n  legend=\"Stay\"\n  startLabel=\"From\"\n  endLabel=\"To\"\n  startName=\"from\"\n  endName=\"to\"\n  value={range}\n  onValueChange={setRange}\n  error={errors.range}\n/>;"
+        },
+        "whenToUse": [
+          "A start and an end that belong together: a stay, a reporting period, an event window."
+        ],
+        "whenNotToUse": [
+          "A single date: use `DateField`.",
+          "Presets (\"last 30 days\"), a calendar showing the range or ranges across more than two ends: not provided here."
+        ],
+        "contentGuidelines": "A legend that names the range (\"Stay\", \"Reporting period\"), and short parallel labels (\"From\", \"To\"). Say a length limit in the\nhint, not only in the error."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": "Each end is a native input with the platform's keyboard behaviour; Tab goes from the start to the end, in reading order.",
+        "notes": [
+          "A `<fieldset>` with a `<legend>` names the group; each end has its own visible label. The hint and the error are the description of the group.",
+          "An error marks both ends `aria-invalid`, is announced when it appears, and is part of the description of the group and of each end.",
+          "`required` marks both labels with the mark and the text for assistive technology, and sets the native `required` unless `nativeRequired={false}`.",
+          "A disabled group disables both ends and the fieldset.",
+          "The ends stack through the grid itself (no media query), so nothing overflows at 320px or at 200% zoom."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-semibold",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4"
+      ]
+    },
+    {
       "name": "DetailAttentionCard",
       "category": "Data display",
       "summary": "A high-signal card for deadlines and risk, with a tone mark and an optional action.",
