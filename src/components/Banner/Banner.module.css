@@ -9,6 +9,9 @@
   --banner-border: var(--lufia-color-border-strong);
   --banner-fg: var(--lufia-color-status-neutral-fg);
 
+  /* The size of the text, kept as a property so the icon box can be exactly one line of that text tall. */
+  --banner-font-size: var(--lufia-font-size-md);
+
   display: flex;
   box-sizing: border-box;
   align-items: flex-start;
@@ -26,7 +29,7 @@
   border: var(--lufia-banner-border-width, var(--lufia-border-width-thin)) solid var(--banner-border);
   border-radius: var(--lufia-banner-radius, var(--lufia-radius-card));
   font-family: var(--lufia-font-family-body);
-  font-size: var(--lufia-font-size-md);
+  font-size: var(--banner-font-size);
   line-height: var(--lufia-font-line-height-normal);
 }
 
@@ -55,18 +58,21 @@
 }
 
 .root[data-size="compact"] {
+  --banner-font-size: var(--lufia-font-size-sm);
+
   padding-block: var(--lufia-banner-padding-block, var(--lufia-space-2));
   padding-inline: var(
       --lufia-banner-padding-inline-start,
       var(--lufia-banner-padding-inline, var(--lufia-space-3))
     )
     var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-2)));
-  font-size: var(--lufia-font-size-sm);
 }
 
 /* Inline: guidance between form fields. No card chrome: a tone-coloured start border on a subtle tone background, and no
    minimum height, so it is as tall as its text. */
 .root[data-size="inline"] {
+  --banner-font-size: var(--lufia-font-size-sm);
+
   gap: var(--lufia-banner-gap, var(--lufia-space-2));
   padding-block: var(--lufia-banner-padding-block, var(--lufia-space-2));
   padding-inline: var(
@@ -74,7 +80,6 @@
       var(--lufia-banner-padding-inline, var(--lufia-space-3))
     )
     var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-3)));
-  font-size: var(--lufia-font-size-sm);
   border-width: 0;
   border-inline-start: var(--lufia-banner-inline-border-width, var(--lufia-border-width-thick)) solid
     var(--banner-border);
@@ -92,8 +97,9 @@
   align-items: center;
   justify-content: center;
 
-  /* The icon box is one line tall, so the glyph centres on the first line of text. */
-  block-size: calc(1em * var(--lufia-font-line-height-normal));
+  /* The icon box is one line of the text tall, so the glyph centres on the first line. It is measured from the text size,
+     not from the icon size set below: a box sized from a larger icon sits lower than the line it should centre on. */
+  block-size: calc(var(--banner-font-size) * var(--lufia-font-line-height-normal));
   color: var(--banner-fg);
   font-size: var(--lufia-banner-icon-size, 1.25rem);
   line-height: 0;
