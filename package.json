@@ -1,6 +1,6 @@
 {
   "name": "@lufia/design-system",
-  "version": "0.35.0",
+  "version": "0.35.1",
   "description": "Accessible, themeable React components and design tokens shared by several products.",
   "type": "module",
   "sideEffects": [
