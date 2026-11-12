@@ -109,9 +109,13 @@ describe("Banner", () => {
 
   it("sizes the icon box from the text line, not from the icon, so the glyph centres on the first line at every size", () => {
     const css = readFileSync(resolve(__dirname, "Banner.module.css"), "utf8");
-    const rule = (selector: string) =>
-      new RegExp(`(?:^|\\n)${selector.replace(/[.[\]"=]/g, "\\$&")}\\s*\\{([^}]*)\\}`, "s").exec(css)?.[1] ??
-      "";
+    // The body of the rule whose selector is exactly `selector`, found by position: no pattern is built from the selector.
+    const rule = (selector: string) => {
+      const start = `\n${css}`.indexOf(`\n${selector} {`);
+      if (start < 0) return "";
+      const open = start + selector.length + 1;
+      return css.slice(open, css.indexOf("}", open));
+    };
     expect(rule(".root")).toMatch(/--banner-font-size:\s*var\(--lufia-font-size-md\)/);
     expect(rule(".root")).toMatch(/font-size:\s*var\(--banner-font-size\)/);
     for (const size of ["compact", "inline"]) {
