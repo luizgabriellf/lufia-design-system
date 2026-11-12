@@ -107,6 +107,28 @@ describe("Banner", () => {
     expect(css).toMatch(/\.root\[data-size="inline"\] \.text\s*\{[^}]*flex-basis:\s*0/s);
   });
 
+  it("sizes the icon box from the text line, not from the icon, so the glyph centres on the first line at every size", () => {
+    const css = readFileSync(resolve(__dirname, "Banner.module.css"), "utf8");
+    // The body of the rule whose selector is exactly `selector`, found by position: no pattern is built from the selector.
+    const rule = (selector: string) => {
+      const start = `\n${css}`.indexOf(`\n${selector} {`);
+      if (start < 0) return "";
+      const open = start + selector.length + 1;
+      return css.slice(open, css.indexOf("}", open));
+    };
+    expect(rule(".root")).toMatch(/--banner-font-size:\s*var\(--lufia-font-size-md\)/);
+    expect(rule(".root")).toMatch(/font-size:\s*var\(--banner-font-size\)/);
+    for (const size of ["compact", "inline"]) {
+      const sized = rule(`.root[data-size="${size}"]`);
+      expect(sized).toMatch(/--banner-font-size:\s*var\(--lufia-font-size-sm\)/);
+      expect(sized).not.toMatch(/(^|[^-])font-size:/);
+    }
+    expect(rule(".icon")).toMatch(
+      /block-size:\s*calc\(var\(--banner-font-size\) \* var\(--lufia-font-line-height-normal\)\)/,
+    );
+    expect(rule(".icon")).not.toMatch(/block-size:\s*calc\(1em/);
+  });
+
   it("draws a default icon per variant, each a distinct shape, hidden from assistive technology", () => {
     const shapes = BANNER_VARIANTS.map((variant) => {
       const { container, unmount } = render(<Banner variant={variant}>Message</Banner>);
