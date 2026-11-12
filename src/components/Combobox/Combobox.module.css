@@ -57,8 +57,8 @@
 
 @media (pointer: coarse), (width < 40rem) {
   .button {
-    inline-size: var(--lufia-target-touch);
-    block-size: var(--lufia-target-touch);
+    inline-size: var(--lufia-target-touch, 2.75rem);
+    block-size: var(--lufia-target-touch, 2.75rem);
   }
 }
 

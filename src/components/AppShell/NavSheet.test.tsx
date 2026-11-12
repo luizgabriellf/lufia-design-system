@@ -659,4 +659,10 @@ describe("NavSheet dock", () => {
   });
 });
 
+it("scrolls a focused item to above the dock, not under it", () => {
+  expect(dockCss).toMatch(
+    /\.panel\[data-docked\] > \.body \{\s*scroll-padding-block-end: calc\(\s*var\(--lufia-nav-sheet-dock-clearance, 4\.75rem\) \+ env\(safe-area-inset-bottom\)\s*\);/,
+  );
+});
+
 const dockCss = readFileSync("src/components/AppShell/NavSheet.module.css", "utf8");

@@ -171,6 +171,14 @@
   cursor: not-allowed;
 }
 
+/* A finger needs the full touch target, not the compact 36px of a pointer. */
+@media (pointer: coarse), (width < 40rem) {
+  .remove {
+    min-inline-size: var(--lufia-target-touch, 2.75rem);
+    min-block-size: var(--lufia-target-touch, 2.75rem);
+  }
+}
+
 .empty {
   margin: 0;
   color: var(--lufia-color-text-muted);

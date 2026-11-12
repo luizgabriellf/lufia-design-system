@@ -218,6 +218,13 @@
   border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
 
+/* Docked: a focused or scrolled-to item stops above the bar, not under it. */
+.panel[data-docked] > .body {
+  scroll-padding-block-end: calc(
+    var(--lufia-nav-sheet-dock-clearance, 4.75rem) + env(safe-area-inset-bottom)
+  );
+}
+
 /* Docked: the end of the sheet (the footer, or the list when there is none) keeps clear of the bar floating over it. */
 .panel[data-docked] > .body:last-child,
 .panel[data-docked] > .foot {
