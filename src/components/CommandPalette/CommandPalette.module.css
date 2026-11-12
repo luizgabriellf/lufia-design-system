@@ -286,12 +286,12 @@
 
 @media (pointer: coarse), (width < 40rem) {
   .input {
-    min-block-size: var(--lufia-target-touch);
+    min-block-size: var(--lufia-target-touch, 2.75rem);
   }
 
   .close {
-    inline-size: var(--lufia-target-touch);
-    block-size: var(--lufia-target-touch);
+    inline-size: var(--lufia-target-touch, 2.75rem);
+    block-size: var(--lufia-target-touch, 2.75rem);
   }
 }
 

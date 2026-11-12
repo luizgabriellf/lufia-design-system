@@ -204,7 +204,7 @@
   box-sizing: border-box;
   align-items: center;
   gap: 0.5rem;
-  min-block-size: var(--lufia-target-touch);
+  min-block-size: var(--lufia-target-touch, 2.75rem);
   block-size: 100%;
   padding-block: 0.6875rem;
   padding-inline: 0.875rem 0.625rem;

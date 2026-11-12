@@ -156,12 +156,12 @@
 @media (pointer: coarse), (width < 40rem) {
   .root,
   .root[data-size="sm"] {
-    min-block-size: var(--lufia-target-touch);
+    min-block-size: var(--lufia-target-touch, 2.75rem);
   }
 
   .root[data-icon-only],
   .root[data-icon-only][data-size="sm"] {
-    inline-size: var(--lufia-target-touch);
+    inline-size: var(--lufia-target-touch, 2.75rem);
   }
 }
 

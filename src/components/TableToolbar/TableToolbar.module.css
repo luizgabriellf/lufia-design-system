@@ -116,7 +116,7 @@
   .chip {
     display: inline-flex;
     align-items: center;
-    min-height: var(--lufia-target-touch);
+    min-height: var(--lufia-target-touch, 2.75rem);
   }
 }
 
@@ -127,11 +127,11 @@
   }
 
   .searchInput {
-    min-block-size: var(--lufia-target-touch);
+    min-block-size: var(--lufia-target-touch, 2.75rem);
   }
 
   .clear {
-    min-inline-size: var(--lufia-target-touch);
-    min-block-size: var(--lufia-target-touch);
+    min-inline-size: var(--lufia-target-touch, 2.75rem);
+    min-block-size: var(--lufia-target-touch, 2.75rem);
   }
 }

@@ -6994,7 +6994,8 @@
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
-        "--lufia-space-4"
+        "--lufia-space-4",
+        "--lufia-target-touch"
       ]
     },
     {
