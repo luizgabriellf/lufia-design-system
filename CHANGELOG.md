@@ -1,5 +1,21 @@
 # @lufia/design-system
 
+## 0.35.0
+
+### Minor Changes
+
+- [#121](https://github.com/luizgabriellf/lufia-design-system/pull/121) [`0812c86`](https://github.com/luizgabriellf/lufia-design-system/commit/0812c86bfc963f7db5299116e02df9a2f92b4c43) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Banner: add `size="inline"` (no card chrome, tone-coloured start border, for guidance between form fields) and a `lead` prop for a bold lead-in in the same paragraph. `live="off"` now renders `role="note"` instead of no role.
+
+- [#122](https://github.com/luizgabriellf/lufia-design-system/pull/122) [`adfd5ca`](https://github.com/luizgabriellf/lufia-design-system/commit/adfd5ca4f84b418e2af21e5fcfc873941a040bca) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `DateField` (a native date, time, date-and-time or month control in the shared field box, with a calendar or clock icon and an optional clear button) and `DateRangeField` (two date fields in a fieldset, where an edit that would put the start after the end keeps the edited end and moves the other to the same value, reported in one `onValueChange`).
+
+### Patch Changes
+
+- [#124](https://github.com/luizgabriellf/lufia-design-system/pull/124) [`fa4ab6b`](https://github.com/luizgabriellf/lufia-design-system/commit/fa4ab6b1de22190ea5182df0cf63006e6e4c00dc) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - DateField: the native control reads `--lufia-target-touch` with the 2.75rem fallback, like every other component, so it keeps its minimum height on a page that has not loaded the tokens.
+
+- [#126](https://github.com/luizgabriellf/lufia-design-system/pull/126) [`4326a8b`](https://github.com/luizgabriellf/lufia-design-system/commit/4326a8bf49528598b9b813ec0130055b9870ae3e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - AppShell: the skip link is transparent and ignores touches until it is focused. It used to be only moved above the top edge, so a touch browser that lets the page be pulled down past its start showed it.
+
+- [#123](https://github.com/luizgabriellf/lufia-design-system/pull/123) [`dbf2766`](https://github.com/luizgabriellf/lufia-design-system/commit/dbf2766e6c2cf5ad3a0e5de06873ec9b972abf97) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Touch targets: every component now reads `--lufia-target-touch` with a 2.75rem fallback, so the table toolbar search input, the combobox toggle and the other narrow-width controls keep their minimum size on a page that has not loaded the tokens. The file field remove button takes the touch size at narrow widths and on coarse pointers. The navigation sheet scrolls a focused item clear of its docked bar (`scroll-padding-block-end`).
+
 ## 0.34.3
 
 ### Patch Changes
