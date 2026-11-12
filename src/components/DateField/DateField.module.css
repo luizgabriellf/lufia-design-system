@@ -4,7 +4,7 @@
  */
 .native {
   display: block;
-  min-block-size: calc(var(--lufia-target-touch) - 2 * var(--lufia-border-width-thin));
+  min-block-size: calc(var(--lufia-target-touch, 2.75rem) - 2 * var(--lufia-border-width-thin));
   appearance: none;
   text-align: start;
   text-overflow: clip;

@@ -255,7 +255,7 @@ describe("DateField", () => {
   it("pins the platform-dependent styles that keep an empty control tall and start-aligned", () => {
     const css = readFileSync(resolve(__dirname, "DateField.module.css"), "utf8");
     const native = /\.native\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(native).toMatch(/min-block-size:\s*calc\(var\(--lufia-target-touch\)/);
+    expect(native).toMatch(/min-block-size:\s*calc\(var\(--lufia-target-touch, 2\.75rem\)/);
     expect(native).toMatch(/appearance:\s*none/);
     expect(native).toMatch(/text-align:\s*start/);
     expect(css).toMatch(/::-webkit-date-and-time-value\s*\{[^}]*min-block-size/);
