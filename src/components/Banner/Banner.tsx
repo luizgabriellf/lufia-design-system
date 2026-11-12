@@ -10,8 +10,8 @@ export type BannerVariant = "info" | "success" | "warning" | "danger" | "neutral
 export const BANNER_VARIANTS: readonly BannerVariant[] = ["info", "success", "warning", "danger", "neutral"];
 
 /**
- * How a screen reader hears the banner. `polite` is `role="status"`, `assertive` is `role="alert"`, `off` sets no role: for
- * a message that is already on the page at load and must not interrupt.
+ * How a screen reader hears the banner. `polite` is `role="status"`, `assertive` is `role="alert"`, `off` is `role="note"`:
+ * static guidance that is already on the page at load and must not be announced as a live region.
  */
 export type BannerLive = "polite" | "assertive" | "off";
 
@@ -33,8 +33,17 @@ export type BannerProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" 
   onDismiss?: () => void;
   /** The accessible name of the dismiss button, in your language. Required with `onDismiss`: the package has no copy, and an unnamed button fails axe. */
   dismissLabel?: string;
-  /** `md` (default) or `compact`: less padding and a smaller icon, for a banner inside a card or a dense form. */
-  size?: "md" | "compact";
+  /**
+   * `md` (default), `compact` (less padding and a smaller icon, for a banner inside a card or a dense form) or `inline`
+   * (no card chrome: a tone-coloured start border on a subtle tone background, no minimum height, for guidance between
+   * form fields).
+   */
+  size?: "md" | "compact" | "inline";
+  /**
+   * A bold lead-in rendered inline before `children`, in the same paragraph ("Note: ..."). It does not add a title row.
+   * Say the kind of message in words; do not rely on the icon or the colour.
+   */
+  lead?: ReactNode;
   /**
    * Overrides how the banner is announced. Default: `assertive` (`role="alert"`) for `warning` and `danger`, `polite`
    * (`role="status"`) for the others.
@@ -52,10 +61,10 @@ const STATUS: Record<BannerVariant, StatusTone> = {
   neutral: "neutral",
 };
 
-const ROLE: Record<BannerLive, "status" | "alert" | undefined> = {
+const ROLE: Record<BannerLive, "status" | "alert" | "note"> = {
   polite: "status",
   assertive: "alert",
-  off: undefined,
+  off: "note",
 };
 
 /**
@@ -70,6 +79,7 @@ export function Banner({
   icon,
   action,
   size = "md",
+  lead,
   live,
   animateIn = false,
   onDismiss,
@@ -90,7 +100,7 @@ export function Banner({
       {icon === null ? null : (
         <span className={styles.icon} aria-hidden="true">
           {icon === undefined ? (
-            <StatusIcon tone={STATUS[variant]} size={size === "compact" ? "sm" : "md"} />
+            <StatusIcon tone={STATUS[variant]} size={size === "md" ? "md" : "sm"} />
           ) : (
             icon
           )}
@@ -99,7 +109,13 @@ export function Banner({
       <div className={styles.body}>
         <div className={styles.text}>
           {title ? <div className={styles.title}>{title}</div> : null}
-          {children ? <div className={styles.description}>{children}</div> : null}
+          {lead || children ? (
+            <div className={styles.description}>
+              {lead ? <strong className={styles.lead}>{lead}</strong> : null}
+              {lead && children ? " " : null}
+              {children}
+            </div>
+          ) : null}
         </div>
         {action ? <div className={styles.action}>{action}</div> : null}
       </div>

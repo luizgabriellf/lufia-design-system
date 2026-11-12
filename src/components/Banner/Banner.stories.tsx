@@ -28,7 +28,7 @@ const meta = {
   args: { variant: "info", title: TITLES.info, children: TEXT.info },
   argTypes: {
     variant: { control: "inline-radio", options: BANNER_VARIANTS },
-    size: { control: "inline-radio", options: ["md", "compact"] },
+    size: { control: "inline-radio", options: ["md", "compact", "inline"] },
     live: { control: "inline-radio", options: [undefined, "polite", "assertive", "off"] },
     icon: { control: false },
     action: { control: false },
@@ -123,6 +123,52 @@ export const Compact: Story = {
         dismissLabel="Dismiss message"
       >
         {TEXT.warning}
+      </Banner>
+    </div>
+  ),
+};
+
+/** `size="inline"`: no card chrome, a tone-coloured start border on a subtle background. For guidance between form fields. */
+export const Inline: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      {BANNER_VARIANTS.map((variant) => (
+        <Banner key={variant} variant={variant} size="inline">
+          {TEXT[variant]}
+        </Banner>
+      ))}
+    </div>
+  ),
+};
+
+/** `lead` is a bold lead-in in the same paragraph as the text, with no title row. */
+export const WithLead: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <Banner size="inline" lead="Note:">
+        Dates are shown in the time zone of the record.
+      </Banner>
+      <Banner lead="Heads up:" variant="warning">
+        {TEXT.warning}
+      </Banner>
+    </div>
+  ),
+};
+
+/** `live="off"` renders `role="note"`: static guidance that is not announced as a live region. */
+export const StaticNote: Story = {
+  args: { size: "inline", live: "off", lead: "Note:", children: "Fields marked with a star are required." },
+};
+
+/** Between form fields, at 320px: long unbroken text breaks and the box has no minimum height. */
+export const InlineNarrow: Story = {
+  render: () => (
+    <div style={{ inlineSize: "20rem", display: "grid", gap: "0.75rem" }}>
+      <Banner size="inline" lead="Note:" live="off">
+        https://example.com/a/very/long/path/that/has/no/break/opportunity/at/all/0123456789/abcdefghijklmnopqrstuvwxyz
+      </Banner>
+      <Banner size="inline" variant="warning" lead="Careful:" live="off">
+        A longer sentence that wraps over several lines at this width without clipping.
       </Banner>
     </div>
   ),

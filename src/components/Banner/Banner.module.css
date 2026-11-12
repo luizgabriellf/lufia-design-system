@@ -1,6 +1,7 @@
 /* Theming hooks, set in the consuming theme: --lufia-banner-radius, --lufia-banner-border-width,
    --lufia-banner-padding-block, --lufia-banner-padding-inline (and -start / -end for one side), --lufia-banner-gap
-   (icon to text), --lufia-banner-body-gap (text to actions) and --lufia-banner-icon-size. Each variant sets
+   (icon to text), --lufia-banner-body-gap (text to actions) and --lufia-banner-icon-size (the inline size also reads --lufia-banner-inline-border-width and
+   --lufia-banner-inline-radius). Each variant sets
    --banner-bg, --banner-border and --banner-fg (the icon); a host may set them too. The text is always the default text
    colour: the colour never carries the meaning on its own. */
 .root {
@@ -63,6 +64,23 @@
   font-size: var(--lufia-font-size-sm);
 }
 
+/* Inline: guidance between form fields. No card chrome: a tone-coloured start border on a subtle tone background, and no
+   minimum height, so it is as tall as its text. */
+.root[data-size="inline"] {
+  gap: var(--lufia-banner-gap, var(--lufia-space-2));
+  padding-block: var(--lufia-banner-padding-block, var(--lufia-space-2));
+  padding-inline: var(
+      --lufia-banner-padding-inline-start,
+      var(--lufia-banner-padding-inline, var(--lufia-space-3))
+    )
+    var(--lufia-banner-padding-inline-end, var(--lufia-banner-padding-inline, var(--lufia-space-3)));
+  font-size: var(--lufia-font-size-sm);
+  border-width: 0;
+  border-inline-start: var(--lufia-banner-inline-border-width, var(--lufia-border-width-thick)) solid
+    var(--banner-border);
+  border-radius: var(--lufia-banner-inline-radius, var(--lufia-radius-sm));
+}
+
 /* Animates `from` only: the resting state is the end state, so a disabled animation leaves the banner visible. */
 .root[data-animate-in] {
   animation: banner-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
@@ -111,6 +129,11 @@
 
 .description {
   min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.lead {
+  font-weight: var(--lufia-font-weight-semibold);
 }
 
 .action {
@@ -119,6 +142,15 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.root[data-size="inline"] .icon {
+  font-size: var(--lufia-banner-icon-size, 1rem);
+}
+
+.root[data-size="inline"] .text {
+  flex-basis: 0;
   min-inline-size: 0;
 }
 
@@ -170,6 +202,10 @@
   .root {
     background: Canvas;
     border-color: CanvasText;
+  }
+
+  .root[data-size="inline"] {
+    border-inline-start-color: CanvasText;
   }
 
   .dismiss {

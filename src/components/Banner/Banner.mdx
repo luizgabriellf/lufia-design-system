@@ -47,7 +47,7 @@ name (`dismissLabel`) is one of them, and it is required whenever `onDismiss` is
 | `warning` | Needs attention soon; something may go wrong    | `role="alert"` (assertive) |
 | `danger`  | Something failed or is blocked                  | `role="alert"` (assertive) |
 
-`live` overrides the announcement: `polite`, `assertive`, or `off` (no role).
+`live` overrides the announcement: `polite`, `assertive`, or `off` (`role="note"`, not a live region).
 
 </Section>
 
@@ -78,6 +78,17 @@ wrap the banner in `Collapse` as the story does; otherwise unmount it.
 ### Compact
 
 <Canvas of={Stories.Compact} />
+
+### Inline
+
+`size="inline"` drops the card chrome: a tone-coloured start border on a subtle tone background, no minimum height, text that
+wraps at 320px. Use it inside forms and between fields. `lead` adds a bold lead-in in the same paragraph ("Note: ...") without
+a title row, and `live="off"` makes the banner a static `role="note"` so guidance is not announced as a live region.
+
+<Canvas of={Stories.Inline} />
+<Canvas of={Stories.WithLead} />
+<Canvas of={Stories.StaticNote} />
+<Canvas of={Stories.InlineNarrow} />
 
 ### Icon
 
@@ -127,7 +138,7 @@ and the dismiss button works with Enter and Space.
 
 - `info`, `success` and `neutral` are `role="status"` (a polite live region); `warning` and `danger` are `role="alert"`
   (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out
-  unprompted; set `live="off"` for one that is part of the page and must not interrupt.
+  unprompted; set `live="off"` (`role="note"`) for one that is part of the page and must not interrupt.
 - Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If
   you hide the icon with `icon={null}`, say the kind of message in the title or text.
 - The icon is decorative and hidden from assistive technology. The dismiss button is named by `dismissLabel`.
