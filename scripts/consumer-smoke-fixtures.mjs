@@ -65,6 +65,9 @@ export const FIXTURES = {
     items: `[{ id: "a", label: "Open", count: 1 }]`,
     clearLabel: `(count) => String(count)`,
   },
+  ListField: {
+    labels: `{ add: "Add", remove: (index, text) => "Remove " + index + ": " + text, entry: (index) => "Entry " + index }`,
+  },
   RadioGroup: { options: `[{ value: "a", label: "A" }]` },
   SegmentedToggle: { options: `[{ value: "a", label: "A" }]` },
   Sparkline: { values: `[1, 3, 2]` },

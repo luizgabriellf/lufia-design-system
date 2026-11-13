@@ -106,6 +106,11 @@ export const ENTRIES: Entry[] = [
     apg("Radio group", "radio"),
   ),
   c("SearchInput", "Forms", "A search field with a clear button, optional debounce and a shortcut hint."),
+  c(
+    "ListField",
+    "Forms",
+    "A field holding a list of short text entries, each editable in place, with an add row and a remove button.",
+  ),
   c("FileField", "Forms", "A file picker with drag and drop, validation and a list of chosen files."),
   c(
     "PendingSubmit",

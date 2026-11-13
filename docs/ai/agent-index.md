@@ -26,6 +26,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName endName +6
 - FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale preview +4
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
+- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength maxTotalLength required +6
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth
 - RadioGroup: label* options* hint error required disabled value defaultValue onValueChange name orientation variant +2
 - SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid

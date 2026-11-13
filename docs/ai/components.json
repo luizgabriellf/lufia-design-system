@@ -9346,6 +9346,283 @@
       ]
     },
     {
+      "name": "ListField",
+      "category": "Forms",
+      "summary": "A field holding a list of short text entries, each editable in place, with an add row and a remove button.",
+      "status": "beta",
+      "source": "src/components/ListField",
+      "entry": {
+        "subpath": "@lufia/design-system/components/ListField",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "ListField",
+          "kind": "component",
+          "description": "A field that holds a list of short text entries: one text input per entry, editable in place, an add row (Enter adds and never submits the surrounding form) and a remove button on each entry. The entries are submitted as one hidden text value under `name`, serialized with `serialize`. It carries its own label, hint and error, like `RadioGroup`, so do not wrap it in a `FormField`. Pending text in the add input is not part of the value until it is added: call `commitDraft()` on the ref right before submitting.",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Names the group and the add input."
+            },
+            {
+              "name": "labels",
+              "type": "ListFieldLabels",
+              "required": true,
+              "default": null,
+              "description": "Every user-facing string of the field. The package has no built-in language."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Submitted with the form as ONE hidden text value under this name: `serialize(items)`."
+            },
+            {
+              "name": "items",
+              "type": "readonly string[]",
+              "required": false,
+              "default": null,
+              "description": "Controlled entries. A value that differs from what the field holds replaces its rows."
+            },
+            {
+              "name": "defaultItems",
+              "type": "readonly string[]",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "onChange",
+              "type": "(items: string[]) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the entries (sanitized, empty ones left out) after every add, edit and removal."
+            },
+            {
+              "name": "serialize",
+              "type": "(items: readonly string[]) => string",
+              "required": false,
+              "default": "joinLines",
+              "description": "Turns the entries into the submitted value. Defaults to joining them with a line feed."
+            },
+            {
+              "name": "sanitizeItem",
+              "type": "(text: string) => string",
+              "required": false,
+              "default": null,
+              "description": "Cleans one entry when it is added and whenever the entries are read (trimming, collapsing spaces). Must be idempotent."
+            },
+            {
+              "name": "maxItems",
+              "type": "number",
+              "required": false,
+              "default": "30",
+              "description": "The most entries. Adding is disabled when reached. Default 30."
+            },
+            {
+              "name": "itemMaxLength",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "The longest entry, in characters."
+            },
+            {
+              "name": "maxTotalLength",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "The longest serialized value, in characters. The add input stops accepting text at the room left, and adding is disabled when none is."
+            },
+            {
+              "name": "required",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity."
+            },
+            {
+              "name": "placeholder",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Placeholder of the add input."
+            },
+            {
+              "name": "hint",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "badge",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Content next to the label, such as a `Badge`."
+            },
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "requiredLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<ListFieldHandle>",
+              "required": false,
+              "default": null,
+              "description": "Imperative handle: `commitDraft()`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ListFieldHandle",
+          "kind": "type",
+          "description": "",
+          "definition": "{ commitDraft: () => boolean; }"
+        },
+        {
+          "name": "ListFieldLabels",
+          "kind": "type",
+          "description": "",
+          "definition": "{ add: string; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
+        },
+        {
+          "name": "ListFieldProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        }
+      ],
+      "aliases": {
+        "ListFieldHandle": "{ commitDraft: () => boolean; }",
+        "ListFieldLabels": "{ add: string; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
+      },
+      "story": {
+        "docsId": "components-forms-listfield--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-forms-listfield--default"
+          },
+          {
+            "export": "Empty",
+            "id": "components-forms-listfield--empty"
+          },
+          {
+            "export": "WithHintAndBadge",
+            "id": "components-forms-listfield--with-hint-and-badge"
+          },
+          {
+            "export": "Controlled",
+            "id": "components-forms-listfield--controlled"
+          },
+          {
+            "export": "Required",
+            "id": "components-forms-listfield--required"
+          },
+          {
+            "export": "Invalid",
+            "id": "components-forms-listfield--invalid"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-forms-listfield--disabled"
+          },
+          {
+            "export": "Full",
+            "id": "components-forms-listfield--full"
+          },
+          {
+            "export": "MaxItems",
+            "id": "components-forms-listfield--max-items"
+          },
+          {
+            "export": "LongEntries",
+            "id": "components-forms-listfield--long-entries"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-forms-listfield--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-forms-listfield--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-forms-listfield--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/ListField/ListField.mdx",
+        "overview": "A form field that holds a list of short text entries: one text input per entry, editable in place, an add row and a remove\nbutton on each entry. The entries are submitted as one hidden text value.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { ListField } from \"@lufia/design-system/components/ListField\";\n\n<ListField\n  name=\"responsibilities\"\n  label=\"Responsibilities\"\n  labels={{\n    add: \"Add\",\n    remove: (index, text) => `Remove entry ${index}: ${text}`,\n    entry: (index) => `Entry ${index}`,\n    requiredMessage: \"Add at least one entry.\",\n  }}\n  defaultItems={[\"Inspect the site\"]}\n/>;"
+        },
+        "whenToUse": [
+          "A list of short values the person writes themselves: tasks, tags, phone numbers, keywords.",
+          "Storing the list as one text column, with your own delimiter."
+        ],
+        "whenNotToUse": [
+          "Long or formatted entries: use `Textarea`.",
+          "Choosing from known options: use `Combobox` or a set of checkboxes.",
+          "Entries with several fields each: build a form for the row."
+        ],
+        "contentGuidelines": "Say what one entry is in the label and what the delimiter or limit is in the hint. Name the remove button after the entry\nit removes (\"Remove entry 2: Inspect the site\"), not just \"Remove\"."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.",
+          "The label points at the add input. The hint and error describe the group.",
+          "Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.",
+          "Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.",
+          "No live region: the list is the content, and focus stays on a control the person is using."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-color-status-danger-fg",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-semibold",
+        "--lufia-space-1",
+        "--lufia-space-2"
+      ]
+    },
+    {
       "name": "LufiaProvider",
       "category": "Utilities",
       "summary": "Sets the link adapter and the aria-only labels once, at the root of an app.",

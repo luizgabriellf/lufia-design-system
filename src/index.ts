@@ -25,6 +25,7 @@ export * from "./components/FormField";
 export * from "./components/Icon";
 export * from "./components/IconButton";
 export * from "./components/Link";
+export * from "./components/ListField";
 export * from "./components/LufiaProvider";
 export * from "./components/Modal";
 export * from "./components/MoreActions";

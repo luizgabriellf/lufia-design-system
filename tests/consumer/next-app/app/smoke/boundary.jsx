@@ -14,6 +14,7 @@ import { DateRangeField as DateRangeField_DateRangeField } from "@lufia/design-s
 import { FileField as FileField_FileField } from "@lufia/design-system/components/FileField";
 import { FormField as FormField_FormField } from "@lufia/design-system/components/FormField";
 import { IconButton as IconButton_IconButton } from "@lufia/design-system/components/IconButton";
+import { ListField as ListField_ListField } from "@lufia/design-system/components/ListField";
 import { LufiaProvider as LufiaProvider_LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
 import { Modal as Modal_Modal } from "@lufia/design-system/components/Modal";
 import { MoreActions as MoreActions_MoreActions } from "@lufia/design-system/components/MoreActions";
@@ -73,6 +74,7 @@ export default function ClientSmoke() {
       <section data-smoke="FileField"><FileField_FileField formatRejection={() => "Rejected"} chooseLabel={"x"} /></section>
       <section data-smoke="FormField"><FormField_FormField label={"x"}>{"x"}</FormField_FormField></section>
       <section data-smoke="IconButton"><IconButton_IconButton aria-label={"x"} icon={"x"} /></section>
+      <section data-smoke="ListField"><ListField_ListField labels={{ add: "Add", remove: (index, text) => "Remove " + index + ": " + text, entry: (index) => "Entry " + index }} label={"x"} /></section>
       <section data-smoke="LufiaProvider"><LufiaProvider_LufiaProvider>{"x"}</LufiaProvider_LufiaProvider></section>
       <section data-smoke="Modal"><Modal_Modal open={false} onClose={() => {}} title={"x"} /></section>
       <section data-smoke="MoreActions"><MoreActions_MoreActions items={[{ key: "a", label: "Action" }]} label={"x"} /></section>
