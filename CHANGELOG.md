@@ -1,5 +1,21 @@
 # @lufia/design-system
 
+## 0.37.0
+
+### Minor Changes
+
+- [#138](https://github.com/luizgabriellf/lufia-design-system/pull/138) [`c9ecd7e`](https://github.com/luizgabriellf/lufia-design-system/commit/c9ecd7e22488dc3db9a4b19a3e08306612a97883) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Popover`, a non-modal panel anchored to a trigger. It is a named `role="dialog"` that traps no focus and locks no scroll, with controlled and uncontrolled `open`, `placement` and `align` that flip and shift to stay in the viewport, Escape and outside-press dismissal, and focus returned to the trigger. The panel is portalled out of clipping ancestors and inherits the trigger's theme scope and direction.
+
+- [#139](https://github.com/luizgabriellf/lufia-design-system/pull/139) [`dccdbcc`](https://github.com/luizgabriellf/lufia-design-system/commit/dccdbcc1d8b870ba6629823f3906266d4725d43f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Tour`, a non-modal guided tour. A card walks through `steps` with a spotlight on each target (a CSS selector or a ref) that follows scroll and resize, scrolls the target into view, and becomes a centred card when the target is missing or hidden. The page stays operable. Controlled `open` and `stepIndex`, `onStepChange`, `onClose(reason)` and `onFinish`, all labels through props, arrow keys and Escape, focus on the step heading and returned on close, and a polite announcement of the step counter. Persistence stays in the app.
+
+### Patch Changes
+
+- [#136](https://github.com/luizgabriellf/lufia-design-system/pull/136) [`4eff53e`](https://github.com/luizgabriellf/lufia-design-system/commit/4eff53e882b0e9ee790d5b0efc3c2478cd412cd1) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `FormField` controls: an explicit `id` on a control inside a field is kept and the label follows it, and a second control in the same field no longer receives the field's id (it keeps its own or a generated one).
+
+- [#136](https://github.com/luizgabriellf/lufia-design-system/pull/136) [`4eff53e`](https://github.com/luizgabriellf/lufia-design-system/commit/4eff53e882b0e9ee790d5b0efc3c2478cd412cd1) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `SearchInput` collapsing to about 20px in a flex row on a phone: the box now has a usable minimum width and can grow.
+
+- [#136](https://github.com/luizgabriellf/lufia-design-system/pull/136) [`4eff53e`](https://github.com/luizgabriellf/lufia-design-system/commit/4eff53e882b0e9ee790d5b0efc3c2478cd412cd1) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `SearchInput` used with `value` and `onChange`: the native `onChange` handler was overwritten, so the value never updated. It is now called before `onValueChange` and is part of the props type.
+
 ## 0.36.0
 
 ### Minor Changes
