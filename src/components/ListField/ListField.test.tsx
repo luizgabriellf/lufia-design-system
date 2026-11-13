@@ -32,6 +32,13 @@ describe("ListField", () => {
     expect(screen.getByRole("button", { name: "Add" })).toBeInTheDocument();
   });
 
+  it("keeps the label text and the required mark in one wrapper", () => {
+    const { container } = render(<ListField label="Tasks" labels={labels} required />);
+    const label = container.querySelector("label")!;
+    expect(label.children).toHaveLength(1);
+    expect(label.firstElementChild).toContainElement(label.querySelector("[aria-hidden]"));
+  });
+
   it("has no axe violations with a named add input", async () => {
     const { container } = render(
       <ListField

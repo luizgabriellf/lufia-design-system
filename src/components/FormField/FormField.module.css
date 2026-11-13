@@ -16,6 +16,14 @@
   color: var(--lufia-color-text-muted);
 }
 
+/*
+ * The label text and the mark share one inline wrapper, so a stylesheet that makes the label a flex or grid container still
+ * sees a single item and the mark stays on the line of the last word.
+ */
+.text {
+  display: inline;
+}
+
 /* An asterisk is a shape, so the requirement never relies on colour. The accessible text sits next to it. */
 .mark {
   margin-inline-start: var(--lufia-space-1);

@@ -48,6 +48,17 @@ describe("FormField", () => {
     expect(input).toBeRequired();
   });
 
+  it("keeps the label text and the required mark in one wrapper, so a flex or grid label has one item", () => {
+    render(
+      <FormField label="Name" required>
+        {(control) => <input {...control} />}
+      </FormField>,
+    );
+    const label = screen.getByText("Name").closest("label")!;
+    expect(label.children).toHaveLength(1);
+    expect(label.firstElementChild).toContainElement(label.querySelector("[aria-hidden]"));
+  });
+
   it("passes disabled to the control", () => {
     render(
       <FormField label="Name" disabled>

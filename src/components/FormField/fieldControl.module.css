@@ -23,11 +23,15 @@
   border-color: var(--lufia-color-text-subtle);
 }
 
+/*
+ * One focus indicator: the focus-ring outline is drawn over the border (a negative offset of its own width, so it reaches
+ * from the box's outer edge inwards) and the border keeps its colour underneath. A border colour change plus an outline
+ * with a gap read as two rings; this reads as the border itself turning into the ring.
+ */
 .box:has(:focus-visible),
 .box[data-open] {
-  border-color: var(--lufia-color-accent-default);
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
-  outline-offset: 2px;
+  outline-offset: calc(-1 * var(--lufia-border-width-thick));
 }
 
 /* An error needs more than a colour: the message carries an icon, and the border gets a second line inside. */
@@ -43,6 +47,12 @@
   border-radius: inherit;
   box-shadow: inset 0 0 0 var(--lufia-border-width-thin) var(--lufia-color-status-danger-fg);
   pointer-events: none;
+}
+
+/* An invalid box keeps its danger border and inner line visible while focused: the ring sits just outside them, without a gap. */
+.box[data-invalid]:has(:focus-visible),
+.box[data-invalid][data-open] {
+  outline-offset: 0;
 }
 
 .box[data-readonly] {

@@ -9845,6 +9845,10 @@
             "id": "components-forms-listfield--default"
           },
           {
+            "export": "LongAddLabel",
+            "id": "components-forms-listfield--long-add-label"
+          },
+          {
             "export": "Empty",
             "id": "components-forms-listfield--empty"
           },
