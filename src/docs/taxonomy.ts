@@ -125,6 +125,11 @@ export const ENTRIES: Entry[] = [
     "A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog.",
   ),
   c(
+    "Tour",
+    "Overlays",
+    "A non-modal guided tour: a card that walks through steps with a spotlight on each target, while the page stays usable.",
+  ),
+  c(
     "ConfirmDialog",
     "Overlays",
     "A modal question that has to be answered, with a destructive variant.",

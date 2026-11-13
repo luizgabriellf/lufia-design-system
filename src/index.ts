@@ -59,6 +59,7 @@ export * from "./components/TableToolbar";
 export * from "./components/Textarea";
 export * from "./components/TextInput";
 export * from "./components/Toast";
+export * from "./components/Tour";
 export * from "./components/useBodyScrollLock";
 export * from "./components/useDismiss";
 export * from "./components/useFocusTrap";

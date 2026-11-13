@@ -30,6 +30,12 @@
     "gzip": true
   },
   {
+    "name": "Tour",
+    "path": "dist/components/Tour/**/*.{js,css}",
+    "limit": "5.9 kB",
+    "gzip": true
+  },
+  {
     "name": "CommandPalette",
     "path": "dist/components/CommandPalette/**/*.{js,css}",
     "limit": "6.2 kB",
