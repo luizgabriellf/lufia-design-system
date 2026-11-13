@@ -17,6 +17,7 @@ typeahead and mobile picker.
 ## When to use
 
 - Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).
+- A compact `size="sm"` select as one filter among several in a toolbar.
 
 ## When not to use
 
@@ -29,6 +30,8 @@ typeahead and mobile picker.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows: a shorter box that sizes to its content instead of filling the row, so it sits beside buttons. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |
+| `variant` | `"default" \| "pill"` | no | `"default"` | `pill` rounds the box fully, to match pill-shaped buttons and chips in the same row. Default `default`. |
 | `options` | `readonly SelectOption[]` | no |  | The choices. Use `groups` for `<optgroup>`s. |
 | `groups` | `readonly SelectOptionGroup[]` | no |  | Labelled groups of choices, rendered as `<optgroup>`s after `options`. |
 | `children` | `ReactNode` | no |  | `<option>` and `<optgroup>` elements, when `options` is not enough. |
@@ -66,7 +69,7 @@ import { Select } from "@lufia/design-system/components/Select";
 
 ## Accessibility
 
-- Always inside a `FormField`, or give `aria-label`.
+- Always inside a `FormField`, or give `aria-label`, or a `<label htmlFor>` (it may wrap `VisuallyHidden`). A compact select in a toolbar has no visible label, so it needs one of the last two.
 - The chevron is decorative and does not take clicks; the whole box opens the list.
 - Under `forced-colors` the box and focus ring use system colours.
 
@@ -76,7 +79,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-text-default`, `--lufia-opacity-disabled`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-text-default`, `--lufia-font-size-sm`, `--lufia-icon-size-sm`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -96,6 +99,10 @@ ranges). The placeholder is an instruction, "Choose a country", never the label 
 - `components-forms-select--with-child-groups`
 - `components-forms-select--long-text`
 - `components-forms-select--narrow-long-label`
+- `components-forms-select--compact`
+- `components-forms-select--compact-pill`
+- `components-forms-select--in-filter-row`
+- `components-forms-select--compact-narrow-long-label`
 - `components-forms-select--phone-320`
 - `components-forms-select--right-to-left`
 - `components-forms-select--all-themes`

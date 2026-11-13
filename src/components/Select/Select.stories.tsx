@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../Button";
+import { VisuallyHidden } from "../VisuallyHidden";
 import { FormField, type FormFieldProps } from "../FormField";
 import { Select, type SelectOption, type SelectProps } from "./Select";
 
@@ -125,6 +127,53 @@ export const NarrowLongLabel: Story = {
       </div>
     ),
   ],
+};
+/** `size="sm"`: the compact control for a toolbar. It sizes to its content and has no visible label; the name is an `aria-label`. */
+export const Compact: Story = {
+  render: (args) => <Select {...args} aria-label="Country" size="sm" />,
+};
+export const CompactPill: Story = {
+  render: (args) => <Select {...args} aria-label="Country" size="sm" variant="pill" />,
+};
+/** A filter row: compact selects beside pill buttons, one with a visually hidden `<label>` instead of `aria-label`. */
+export const InFilterRow: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "min(100%, 36rem)" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: (args) => (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+      <label htmlFor="filter-country">
+        <VisuallyHidden>Country</VisuallyHidden>
+      </label>
+      <Select {...args} id="filter-country" size="sm" variant="pill" />
+      <Select
+        {...args}
+        aria-label="Status"
+        size="sm"
+        variant="pill"
+        options={[{ value: "a", label: "Active" }]}
+      />
+      <Button size="sm" variant="secondary">
+        Clear
+      </Button>
+    </div>
+  ),
+};
+/** A long selected label in a 96px compact box: the text ellipsizes before the smaller chevron. */
+export const CompactNarrowLongLabel: Story = {
+  args: {
+    options: [{ value: "x", label: "An option whose label is far too long to fit inside the box" }],
+    defaultValue: "x",
+  },
+  render: (args) => (
+    <div style={{ inlineSize: "6rem", display: "flex" }}>
+      <Select {...args} aria-label="Country" size="sm" variant="pill" />
+    </div>
+  ),
 };
 export const Phone320: Story = {
   args: {

@@ -30,7 +30,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - RadioGroup: label* options* hint error required disabled value defaultValue onValueChange name orientation variant +2
 - SearchInput: value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid
 - SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width size
-- Select: options groups placeholder allowEmpty invalid
+- Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
 - TextInput: prefix suffix invalid
 - Textarea: invalid showCount formatCount formatCountAnnouncement

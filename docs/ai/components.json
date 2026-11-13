@@ -13562,8 +13562,22 @@
         {
           "name": "Select",
           "kind": "component",
-          "description": "A native `<select>` in the shared field box with a drawn chevron. The browser keeps its own list, keyboard handling, typeahead and mobile picker, which is the right call for a plain choice list. For search, async data or rich options, use `Combobox`. Inside a `FormField` the field's id, description and states apply.",
+          "description": "A native `<select>` in the shared field box with a drawn chevron. The browser keeps its own list, keyboard handling, typeahead and mobile picker, which is the right call for a plain choice list. For search, async data or rich options, use `Combobox`. Inside a `FormField` the field's id, description and states apply. `size=\"sm\"` (with `variant=\"pill\"` for a rounded box) is the compact form for a toolbar or filter row.",
           "props": [
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows: a shorter box that sizes to its content instead of filling the row, so it sits beside buttons. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
+              "name": "variant",
+              "type": "\"default\" | \"pill\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "`pill` rounds the box fully, to match pill-shaped buttons and chips in the same row. Default `default`."
+            },
             {
               "name": "options",
               "type": "readonly SelectOption[]",
@@ -13694,6 +13708,22 @@
             "id": "components-forms-select--narrow-long-label"
           },
           {
+            "export": "Compact",
+            "id": "components-forms-select--compact"
+          },
+          {
+            "export": "CompactPill",
+            "id": "components-forms-select--compact-pill"
+          },
+          {
+            "export": "InFilterRow",
+            "id": "components-forms-select--in-filter-row"
+          },
+          {
+            "export": "CompactNarrowLongLabel",
+            "id": "components-forms-select--compact-narrow-long-label"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-select--phone-320"
           },
@@ -13715,7 +13745,8 @@
           "code": "import { FormField } from \"@lufia/design-system/components/FormField\";\nimport { Select } from \"@lufia/design-system/components/Select\";\n\n<FormField label=\"Country\" error={errors.country}>\n  <Select\n    name=\"country\"\n    placeholder=\"Choose a country\"\n    defaultValue=\"\"\n    options={[\n      { value: \"pt\", label: \"Portugal\" },\n      { value: \"es\", label: \"Spain\" },\n    ]}\n  />\n</FormField>;"
         },
         "whenToUse": [
-          "Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones)."
+          "Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).",
+          "A compact `size=\"sm\"` select as one filter among several in a toolbar."
         ],
         "whenNotToUse": [
           "Fewer than four options that matter equally: a `RadioGroup` shows them all at once.",
@@ -13728,7 +13759,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Always inside a `FormField`, or give `aria-label`.",
+          "Always inside a `FormField`, or give `aria-label`, or a `<label htmlFor>` (it may wrap `VisuallyHidden`). A compact select in a toolbar has no visible label, so it needs one of the last two.",
           "The chevron is decorative and does not take clicks; the whole box opens the list.",
           "Under `forced-colors` the box and focus ring use system colours."
         ]
@@ -13740,8 +13771,15 @@
       "tokens": [
         "--lufia-color-bg-surface-solid",
         "--lufia-color-text-default",
+        "--lufia-font-size-sm",
+        "--lufia-icon-size-sm",
         "--lufia-opacity-disabled",
-        "--lufia-space-3"
+        "--lufia-radius-full",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4",
+        "--lufia-target-touch"
       ]
     },
     {

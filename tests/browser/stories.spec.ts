@@ -1629,5 +1629,30 @@ test.describe("select chevron room", () => {
       expect(result.overlap).toBeLessThanOrEqual(0.5);
       expect(result.ellipsis).toBe("ellipsis");
     });
+
+    test(`a long label in a narrow compact select stops short of its chevron (${dir})`, async ({ page }) => {
+      await openStory(page, "components-forms-select--compact-narrow-long-label", "default", "light", dir);
+      const result = await page.evaluate(() => {
+        const select = document.querySelector<HTMLSelectElement>("select")!;
+        const chevron = select.nextElementSibling as HTMLElement;
+        const box = select.getBoundingClientRect();
+        const glyph = chevron.getBoundingClientRect();
+        const style = getComputedStyle(select);
+        const rtl = style.direction === "rtl";
+        const padding = parseFloat(style.paddingInlineEnd);
+        const textEdge = rtl ? box.left + padding : box.right - padding;
+        return {
+          width: box.width,
+          padding,
+          chevronWidth: glyph.width,
+          overlap: rtl ? glyph.right - textEdge : textEdge - glyph.left,
+          ellipsis: style.textOverflow,
+        };
+      });
+      expect(result.width).toBeLessThanOrEqual(96.5);
+      expect(result.padding).toBeGreaterThanOrEqual(result.chevronWidth);
+      expect(result.overlap).toBeLessThanOrEqual(0.5);
+      expect(result.ellipsis).toBe("ellipsis");
+    });
   }
 });

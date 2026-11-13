@@ -25,6 +25,52 @@
   opacity: var(--lufia-opacity-disabled);
 }
 
+/*
+ * Compact (size="sm"): a toolbar control. The box sizes to its content instead of filling the row, and the native select
+ * keeps room for its smaller chevron (icon width plus its end gap plus a space-1 breathing gap), so text still stops
+ * short of it. The selectors out-weigh the shared field rules and the room rule above, whatever the stylesheet order.
+ */
+.box[data-size="sm"] {
+  display: inline-flex;
+  inline-size: auto;
+  min-block-size: 2rem;
+}
+
+.box[data-size="sm"] .native {
+  inline-size: auto;
+  padding-block: 0.25rem;
+  padding-inline-start: var(--lufia-space-2);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.box[data-size="sm"] .native.native:has(+ .chevron) {
+  padding-inline-end: calc(var(--lufia-icon-size-sm, 1rem) + var(--lufia-space-2) + var(--lufia-space-1));
+}
+
+.box[data-size="sm"] .chevron {
+  padding-inline-end: var(--lufia-space-2);
+}
+
+/* Pill: fully rounded, with the text pulled in from the curve. */
+.box[data-variant="pill"] {
+  border-radius: var(--lufia-radius-full);
+}
+
+.box[data-variant="pill"] .native {
+  padding-inline-start: var(--lufia-space-4);
+}
+
+.box[data-variant="pill"][data-size="sm"] .native {
+  padding-inline-start: var(--lufia-space-3);
+}
+
+/* Finger-sized on phones and touch screens, as Button does; desktop keeps its density. */
+@media (pointer: coarse), (width < 40rem) {
+  .box[data-size="sm"] {
+    min-block-size: var(--lufia-target-touch, 2.75rem);
+  }
+}
+
 /* The open list is drawn by the browser; give it the field colours where it lets us. */
 .native option {
   color: var(--lufia-color-text-default);

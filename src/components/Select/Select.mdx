@@ -57,6 +57,18 @@ field cannot be put back to empty. Set `allowEmpty` for an optional field where 
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
 
+### Compact, for toolbars and filter rows
+
+`size="sm"` is a shorter box that sizes to its content instead of filling the row, so it sits beside buttons.
+`variant="pill"` rounds it fully, to match pill-shaped buttons and chips. The two are independent. On phone widths and
+coarse pointers the box grows to the touch target, like `Button`. A compact select usually has no room for a visible
+label: give it an `aria-label`, or a `<label htmlFor>` that wraps `VisuallyHidden`. Either keeps it named for assistive
+technology. Text still ellipsizes before the chevron.
+
+<Canvas of={Stories.Compact} />
+<Canvas of={Stories.CompactPill} />
+<Canvas of={Stories.InFilterRow} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -83,7 +95,7 @@ A native `<select>`, so the platform's behaviour applies.
 | Typing               | Jumps to the next option that starts with the typed letters. |
 | Escape               | Closes the list.                                             |
 
-- Always inside a `FormField`, or give `aria-label`.
+- Always inside a `FormField`, or give `aria-label`, or a `<label htmlFor>` (it may wrap `VisuallyHidden`). A compact select in a toolbar has no visible label, so it needs one of the last two.
 - The chevron is decorative and does not take clicks; the whole box opens the list.
 - Under `forced-colors` the box and focus ring use system colours.
 
@@ -94,6 +106,8 @@ A native `<select>`, so the platform's behaviour applies.
 ### When to use
 
 - Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).
+
+- A compact `size="sm"` select as one filter among several in a toolbar.
 
 ### When not to use
 
