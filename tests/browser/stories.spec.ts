@@ -1949,6 +1949,25 @@ test.describe("list field", () => {
     });
   }
 
+  for (const width of [320, 390]) {
+    test(`the add label never breaks inside a word at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-forms-listfield--long-add-label");
+      const add = page.getByRole("button", { name: "Add responsibility" });
+      const lineCount = await add.evaluate((button) => {
+        const label = button.querySelector("span:not([aria-hidden])")!;
+        const style = getComputedStyle(label);
+        const line = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.5;
+        return Math.round(label.getBoundingClientRect().height / line);
+      });
+      expect(lineCount).toBe(1);
+      // The button keeps its content width and either shares the row or wraps under the input, inside the group.
+      const group = (await page.getByRole("group", { name: "Responsibilities" }).boundingBox())!;
+      const button = (await add.boundingBox())!;
+      expect(button.x + button.width).toBeLessThanOrEqual(group.x + group.width + 0.5);
+    });
+  }
+
   test("a removed row leaves the list and focus goes to the add input", async ({ page }) => {
     await openStory(page, "components-forms-listfield--default");
     await page.getByRole("button", { name: "Remove entry 1: Inspect the site" }).click();
@@ -1979,5 +1998,31 @@ test.describe("list field", () => {
     await expect(page.getByRole("group", { name: "Responsibilities" })).toHaveAccessibleDescription(
       "2 of 5 entries, 32 of 80 characters",
     );
+  });
+});
+
+test.describe("text control focus indicator", () => {
+  test("a focused text input draws one ring over its border, not a second one with a gap", async ({
+    page,
+  }) => {
+    await openStory(page, "components-forms-textinput--default");
+    const input = page.getByRole("textbox").first();
+    const box = input.locator("xpath=..");
+    const borderBefore = await box.evaluate((el) => getComputedStyle(el).borderTopColor);
+    await input.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(input).toBeFocused();
+    const style = await box.evaluate((el) => {
+      const computed = getComputedStyle(el);
+      return {
+        border: computed.borderTopColor,
+        outlineWidth: parseFloat(computed.outlineWidth),
+        outlineOffset: parseFloat(computed.outlineOffset),
+      };
+    });
+    expect(style.border).toBe(borderBefore);
+    expect(style.outlineWidth).toBeGreaterThanOrEqual(2);
+    expect(style.outlineOffset).toBeLessThanOrEqual(0);
   });
 });

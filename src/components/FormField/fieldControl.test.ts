@@ -69,4 +69,16 @@ describe("field control autofill CSS", () => {
     expect(rule(baseCss, "* + .native")).toContain("border-start-start-radius: 0");
     expect(rule(baseCss, ".native:not(:last-child)")).toContain("border-end-end-radius: 0");
   });
+
+  it("draws one focus ring over the border, with no border colour change and no gap", () => {
+    const body = rule(baseCss, ".box:has(:focus-visible)", ".box[data-open]");
+    expect(body).toContain("outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring)");
+    expect(body).toContain("outline-offset: calc(-1 * var(--lufia-border-width-thick))");
+    expect(body).not.toContain("border-color");
+  });
+
+  it("keeps an invalid box's danger border visible beside the focus ring", () => {
+    const body = rule(baseCss, ".box[data-invalid]:has(:focus-visible)", ".box[data-invalid][data-open]");
+    expect(body).toContain("outline-offset: 0");
+  });
 });

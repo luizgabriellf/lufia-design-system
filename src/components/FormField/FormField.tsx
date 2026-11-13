@@ -111,15 +111,17 @@ export function FormField({
         className={styles.label}
         data-lufia-part="label"
       >
-        {label}
-        {required ? (
-          <>
-            <span className={styles.mark} aria-hidden="true">
-              *
-            </span>
-            <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
-          </>
-        ) : null}
+        <span className={styles.text}>
+          {label}
+          {required ? (
+            <>
+              <span className={styles.mark} aria-hidden="true">
+                *
+              </span>
+              <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
+            </>
+          ) : null}
+        </span>
       </label>
       <div className={styles.control} data-lufia-part="control">
         <FormFieldContext.Provider value={control}>

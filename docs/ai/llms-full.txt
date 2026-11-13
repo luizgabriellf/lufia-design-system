@@ -4222,6 +4222,7 @@ it removes ("Remove entry 2: Inspect the site"), not just "Remove".
 ### Stories
 
 - `components-forms-listfield--default`
+- `components-forms-listfield--long-add-label`
 - `components-forms-listfield--empty`
 - `components-forms-listfield--with-hint-and-badge`
 - `components-forms-listfield--controlled`

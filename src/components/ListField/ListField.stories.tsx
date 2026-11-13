@@ -36,6 +36,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+/** A long add label stays on one line; at a very narrow width the button wraps under the input instead of breaking the word. */
+export const LongAddLabel: Story = {
+  args: { labels: { ...labels, add: "Add responsibility" } },
+};
 export const Empty: Story = { args: { defaultItems: [] } };
 export const WithHintAndBadge: Story = {
   args: { hint: "One line per entry. Enter adds it.", badge: <Badge tone="info">Optional</Badge> },

@@ -299,15 +299,17 @@ export function ListField({
     >
       <div className={styles.header}>
         <label id={labelId} htmlFor={`${baseId}-add`} className={styles.label}>
-          {label}
-          {required ? (
-            <>
-              <span className={styles.mark} aria-hidden="true">
-                *
-              </span>
-              <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
-            </>
-          ) : null}
+          <span className={styles.text}>
+            {label}
+            {required ? (
+              <>
+                <span className={styles.mark} aria-hidden="true">
+                  *
+                </span>
+                <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
+              </>
+            ) : null}
+          </span>
         </label>
         {badge}
       </div>
@@ -364,11 +366,11 @@ export function ListField({
             })}
           </ul>
         ) : null}
-        <div className={styles.row}>
+        <div className={styles.addRow}>
           <TextInput
             ref={addInput}
             id={`${baseId}-add`}
-            className={styles.entry}
+            className={styles.addEntry}
             aria-label={labels.addInput}
             placeholder={placeholder}
             maxLength={addMaxLength}
@@ -383,6 +385,7 @@ export function ListField({
           <Button
             type="button"
             variant="secondary"
+            className={styles.add}
             iconStart={<PlusIcon size="sm" />}
             disabled={disabled || full}
             onClick={() => {
