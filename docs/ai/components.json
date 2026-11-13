@@ -13355,6 +13355,30 @@
             "id": "components-forms-searchinput--in-grid-form"
           },
           {
+            "export": "InFilterFormGrid",
+            "id": "components-forms-searchinput--in-filter-form-grid"
+          },
+          {
+            "export": "InFilterFormSingleColumn",
+            "id": "components-forms-searchinput--in-filter-form-single-column"
+          },
+          {
+            "export": "InFilterFormFlexWrap",
+            "id": "components-forms-searchinput--in-filter-form-flex-wrap"
+          },
+          {
+            "export": "InFilterFormAlignEnd",
+            "id": "components-forms-searchinput--in-filter-form-align-end"
+          },
+          {
+            "export": "InFilterFormJustifyStart",
+            "id": "components-forms-searchinput--in-filter-form-justify-start"
+          },
+          {
+            "export": "InColumnFlex",
+            "id": "components-forms-searchinput--in-column-flex"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-searchinput--phone-320"
           },
@@ -16577,7 +16601,7 @@
               "type": "\"sm\" | \"md\"",
               "required": false,
               "default": "\"md\"",
-              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `Select size=\"sm\"`: a 2rem box with the small font size. It still fills its row. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `Select size=\"sm\"`: a 2rem box with the small font size. It still fills its row. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. This replaces the native numeric `size`: a props type that extends the native input attributes and is spread into `TextInput` must omit it (`Omit<InputHTMLAttributes<HTMLInputElement>, \"size\">`)."
             },
             {
               "name": "prefix",

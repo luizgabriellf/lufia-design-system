@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createRef } from "react";
+import { createRef, type InputHTMLAttributes } from "react";
 import { axe } from "../../test/axe";
 import { FormField } from "../FormField";
-import { TextInput } from "./TextInput";
+import { SearchInput, type SearchInputProps } from "../SearchInput";
+import { TextInput, type TextInputProps } from "./TextInput";
 
 describe("TextInput", () => {
   it("renders a native input of the given type and forwards rest props and ref", () => {
@@ -151,6 +152,26 @@ describe("TextInput", () => {
         </div>,
       );
       expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  describe("props typing", () => {
+    // These are compile-time checks (`npm run typecheck`); the runtime part only proves the spread reaches the input.
+    it("takes a props type that omits the native `size` and spreads it", () => {
+      type OwnProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & { extra?: string };
+      const own: OwnProps = { "aria-label": "Name", maxLength: 8 };
+      render(<TextInput {...own} size="sm" />);
+      expect(screen.getByRole("textbox", { name: "Name" })).toHaveAttribute("maxlength", "8");
+    });
+
+    it("rejects the native numeric `size`, so a consumer props type must omit it", () => {
+      type Native = InputHTMLAttributes<HTMLInputElement>;
+      const native: Native = { "aria-label": "Name", size: 20 };
+      // @ts-expect-error `size` is "sm" | "md" here; omit it from the consumer props type
+      const props: TextInputProps = native;
+      const search: SearchInputProps = { "aria-label": "Search" };
+      render(<SearchInput {...search} />);
+      expect(props).toBe(native);
     });
   });
 });
