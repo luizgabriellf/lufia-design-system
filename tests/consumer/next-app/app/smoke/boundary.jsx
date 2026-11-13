@@ -23,6 +23,7 @@ import { PageActions as PageActions_PageActions } from "@lufia/design-system/com
 import { Pagination as Pagination_Pagination } from "@lufia/design-system/components/Pagination";
 import { PeerNav as PeerNav_PeerNav } from "@lufia/design-system/components/PeerNav";
 import { PendingSubmit as PendingSubmit_PendingSubmit } from "@lufia/design-system/components/PendingSubmit";
+import { Popover as Popover_Popover } from "@lufia/design-system/components/Popover";
 import { QueueSummary as QueueSummary_QueueSummary } from "@lufia/design-system/components/QueueSummary";
 import { RadioGroup as RadioGroup_RadioGroup } from "@lufia/design-system/components/RadioGroup";
 import { SearchInput as SearchInput_SearchInput } from "@lufia/design-system/components/SearchInput";
@@ -86,6 +87,7 @@ export default function ClientSmoke() {
     }} page={1} totalPages={1} onPageChange={() => {}} /></section>
       <section data-smoke="PeerNav"><PeerNav_PeerNav items={[{ key: "a", label: "A", href: "/" }]} label={"x"} /></section>
       <section data-smoke="PendingSubmit"><PendingSubmit_PendingSubmit pendingLabel={"x"}>{"x"}</PendingSubmit_PendingSubmit></section>
+      <section data-smoke="Popover"><Popover_Popover trigger={(props) => <button type="button" {...props}>Open</button>} label={"x"}>{"x"}</Popover_Popover></section>
       <section data-smoke="QueueSummary"><QueueSummary_QueueSummary items={[{ id: "a", label: "Open", count: 1 }]} clearLabel={(count) => String(count)} allClearTitle={"x"} /></section>
       <section data-smoke="RadioGroup"><RadioGroup_RadioGroup options={[{ value: "a", label: "A" }]} label={"x"} /></section>
       <section data-smoke="Reveal"><Reveal_Reveal show={false} /></section>

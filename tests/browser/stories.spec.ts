@@ -297,6 +297,60 @@ test.describe("more actions popover", () => {
   }
 });
 
+test.describe("popover", () => {
+  test("near the bottom edge it flips above the trigger and stays inside the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-popover--flips-near-the-bottom");
+    const panel = page.getByRole("dialog", { name: "Filters" });
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveAttribute("data-side", "top");
+    await expect
+      .poll(async () =>
+        panel.evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth;
+        }),
+      )
+      .toBe(true);
+  });
+
+  test("inside an overflow-hidden card it is portalled out and not clipped; Escape returns focus", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-popover--in-clipping-card");
+    const panel = page.getByRole("dialog", { name: "Filters" });
+    await expect(panel).toBeVisible();
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+          const card = document.querySelector('[data-testid="clipping-card"]');
+          if (!dialog || !card) return "missing";
+          const box = dialog.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.bottom - 4);
+          return { escaped: !card.contains(dialog), hit: !!hit && dialog.contains(hit) };
+        }),
+      )
+      .toEqual({ escaped: true, hit: true });
+    const trigger = page.getByRole("button", { name: "Filters", exact: true });
+    await trigger.focus();
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
+  test("at 320px the panel fits the viewport width", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-overlays-popover--open");
+    const panel = page.getByRole("dialog", { name: "Filters" });
+    await expect(panel).toBeVisible();
+    const box = await panel.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(320);
+  });
+});
+
 test.describe("more actions container scope", () => {
   test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
     page,

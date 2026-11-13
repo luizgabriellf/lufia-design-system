@@ -39,6 +39,7 @@ export const FIXTURES = {
     unreadCountLabel: `(count) => String(count)`,
     items: `[{ id: "a", title: "Notification" }]`,
   },
+  Popover: { trigger: `(props) => <button type="button" {...props}>Open</button>` },
   Pagination: {
     labels: `{
       nav: "Pages",
