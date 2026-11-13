@@ -26,6 +26,11 @@ import styles from "./ListField.module.css";
 export type ListFieldLabels = {
   /** Text of the add button. */
   add: string;
+  /**
+   * Accessible name of the add input, such as "New hazard", so the group can be named "Hazards" and the button "Add" without
+   * two controls sharing a name. Without it the input is named by the group label, as before.
+   */
+  addInput?: string;
   /** Accessible name of the remove button of one entry. `index` counts from 1; `text` is the entry. */
   remove: (index: number, text: string) => string;
   /** Accessible name of the text input of one entry. `index` counts from 1. */
@@ -49,7 +54,7 @@ export type ListFieldProps = Omit<
   HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue" | "children" | "placeholder"
 > & {
-  /** Names the group and the add input. */
+  /** Names the group, and the add input unless `labels.addInput` is set. */
   label: ReactNode;
   /** Every user-facing string of the field. The package has no built-in language. */
   labels: ListFieldLabels;
@@ -343,6 +348,7 @@ export function ListField({
             ref={addInput}
             id={`${baseId}-add`}
             className={styles.entry}
+            aria-label={labels.addInput}
             placeholder={placeholder}
             maxLength={addMaxLength}
             required={needsEntry}

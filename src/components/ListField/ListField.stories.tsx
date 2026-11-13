@@ -113,6 +113,14 @@ export const IncludeDraft: Story = {
     );
   },
 };
+/** `labels.addInput` names the add input apart from the group and the button. */
+export const NamedAddInput: Story = {
+  args: {
+    label: "Hazards",
+    labels: { ...labels, add: "Add", addInput: "New hazard" },
+    defaultItems: ["Open trench"],
+  },
+};
 export const Invalid: Story = {
   args: { required: true, error: "Add at least one entry.", defaultItems: [] },
 };

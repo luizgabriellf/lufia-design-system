@@ -24,6 +24,26 @@ describe("ListField", () => {
     expect(screen.getByRole("button", { name: "Remove 2: Beta" })).toBeInTheDocument();
   });
 
+  it("names the add input with labels.addInput and keeps the group and the button named apart", () => {
+    render(<ListField label="Hazards" labels={{ ...labels, addInput: "New hazard" }} required />);
+    expect(screen.getByRole("group", { name: /^Hazards/ })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "New hazard" })).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /^Hazards/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add" })).toBeInTheDocument();
+  });
+
+  it("has no axe violations with a named add input", async () => {
+    const { container } = render(
+      <ListField
+        label="Hazards"
+        labels={{ ...labels, addInput: "New hazard" }}
+        required
+        defaultItems={["a"]}
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("submits the entries as one hidden value, joined with line feeds by default", async () => {
     const user = userEvent.setup();
     const { container } = render(

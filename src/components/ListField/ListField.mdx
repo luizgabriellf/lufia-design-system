@@ -27,6 +27,7 @@ import { ListField } from "@lufia/design-system/components/ListField";
   label="Responsibilities"
   labels={{
     add: "Add",
+    addInput: "New responsibility",
     remove: (index, text) => `Remove entry ${index}: ${text}`,
     entry: (index) => `Entry ${index}`,
     requiredMessage: "Add at least one entry.",
@@ -118,7 +119,7 @@ there is none.
 | Remove button          | Removes the entry and moves focus to the add input, so focus is never lost with the row. |
 
 - The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.
-- The label points at the add input. The hint and error describe the group.
+- The label points at the add input, which takes the label as its name unless `labels.addInput` is set. Set it (for example "New hazard" under a group "Hazards" with an "Add" button) so the input and the button never share a name. The hint and error describe the group.
 - Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.
 - Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.
 - No live region: the list is the content, and focus stays on a control the person is using.
