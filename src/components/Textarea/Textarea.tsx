@@ -3,8 +3,10 @@
 import {
   useCallback,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
   type Ref,
   type TextareaHTMLAttributes,
@@ -24,12 +26,33 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
   formatCount?: (length: number, max: number | undefined) => ReactNode;
   /** Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. */
   formatCountAnnouncement?: (length: number, max: number) => string;
+  /**
+   * Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional
+   * maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the
+   * content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled.
+   */
+  autoSize?: boolean;
+  /** With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. */
+  maxRows?: number;
   /** Goes on the box that draws the border; the native textarea gets the rest props. */
   className?: string;
   ref?: Ref<HTMLTextAreaElement>;
 };
 
 const NEAR_LIMIT = 0.9;
+
+const supportsFieldSizing = () =>
+  typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("field-sizing", "content");
+
+/**
+ * The script fallback of `autoSize`, for browsers without `field-sizing`: the height follows the content (`scrollHeight`
+ * of the box with its height released), and the CSS minimum and maximum rows clamp it. One forced layout per call: the
+ * height is released, read, then written back in the same task, so nothing is painted in between.
+ */
+function fitHeight(node: HTMLTextAreaElement) {
+  node.style.blockSize = "auto";
+  node.style.blockSize = `${node.scrollHeight}px`;
+}
 
 const defaultCount = (length: number, max: number | undefined) =>
   max === undefined ? `${length}` : `${length} / ${max}`;
@@ -48,6 +71,9 @@ export function Textarea({
   className,
   readOnly,
   rows = 4,
+  autoSize = false,
+  maxRows,
+  style,
   ref,
   onChange,
   ...rest
@@ -55,8 +81,17 @@ export function Textarea({
   const countId = useId();
   const [inner, setInner] = useState(() => String(rest.value ?? rest.defaultValue ?? "").length);
   const area = useRef<HTMLTextAreaElement | null>(null);
+  // Runs after every render and on input, reset and width changes; a no-op unless the script fallback is in play.
+  const fit = useCallback(() => {
+    const node = area.current;
+    if (autoSize && node && !supportsFieldSizing()) fitHeight(node);
+  }, [autoSize]);
   // The browser restores the text of an uncontrolled textarea on reset; the count has to follow it.
-  useFormReset(area, () => setInner(String(rest.defaultValue ?? "").length));
+  useFormReset(area, () => {
+    setInner(String(rest.defaultValue ?? "").length);
+    // The browser restores the text after the reset event, so measure once this task has finished.
+    setTimeout(fit, 0);
+  });
   // Stable, so a caller's callback ref is not called with null and the node again on every render.
   const setRefs = useCallback(
     (node: HTMLTextAreaElement | null) => {
@@ -66,6 +101,26 @@ export function Textarea({
     },
     [ref],
   );
+  useLayoutEffect(() => {
+    const node = area.current;
+    if (!node) return;
+    if (!autoSize || supportsFieldSizing()) {
+      node.style.removeProperty("block-size");
+      return;
+    }
+    fit();
+    // A change of width re-wraps the text. Only the width is compared: setting the height fires the observer too.
+    if (typeof ResizeObserver === "undefined") return;
+    let width = node.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (node.clientWidth === width) return;
+      width = node.clientWidth;
+      fit();
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [autoSize, fit]);
+  useLayoutEffect(fit, [fit, rest.value, rows, maxRows]);
   const length = rest.value !== undefined ? String(rest.value).length : inner;
   const max = rest.maxLength;
   const counterId = showCount ? `counter-${countId.replace(/:/g, "")}` : undefined;
@@ -76,6 +131,13 @@ export function Textarea({
     required: rest.required,
     disabled: rest.disabled,
   });
+  const autoSizeStyle = autoSize
+    ? ({
+        ...style,
+        "--textarea-rows": rows,
+        ...(maxRows !== undefined ? { "--textarea-max-rows": Math.max(maxRows, rows) } : null),
+      } as CSSProperties)
+    : style;
   const near = max !== undefined && length >= max * NEAR_LIMIT;
 
   return (
@@ -85,6 +147,8 @@ export function Textarea({
         data-invalid={control["aria-invalid"] ? "" : undefined}
         data-disabled={control.disabled ? "" : undefined}
         data-readonly={readOnly ? "" : undefined}
+        data-autosize={autoSize ? "" : undefined}
+        data-max-rows={autoSize && maxRows !== undefined ? "" : undefined}
       >
         <textarea
           {...rest}
@@ -92,9 +156,11 @@ export function Textarea({
           ref={setRefs}
           rows={rows}
           readOnly={readOnly}
+          style={autoSizeStyle}
           className={[fieldStyles.native, styles.native].join(" ")}
           onChange={(event) => {
             setInner(event.target.value.length);
+            fit();
             onChange?.(event);
           }}
         />

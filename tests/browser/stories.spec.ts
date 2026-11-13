@@ -1629,5 +1629,74 @@ test.describe("select chevron room", () => {
       expect(result.overlap).toBeLessThanOrEqual(0.5);
       expect(result.ellipsis).toBe("ellipsis");
     });
+
+    test(`a long label in a narrow compact select stops short of its chevron (${dir})`, async ({ page }) => {
+      await openStory(page, "components-forms-select--compact-narrow-long-label", "default", "light", dir);
+      const result = await page.evaluate(() => {
+        const select = document.querySelector<HTMLSelectElement>("select")!;
+        const chevron = select.nextElementSibling as HTMLElement;
+        const box = select.getBoundingClientRect();
+        const glyph = chevron.getBoundingClientRect();
+        const style = getComputedStyle(select);
+        const rtl = style.direction === "rtl";
+        const padding = parseFloat(style.paddingInlineEnd);
+        const textEdge = rtl ? box.left + padding : box.right - padding;
+        return {
+          width: box.width,
+          padding,
+          chevronWidth: glyph.width,
+          overlap: rtl ? glyph.right - textEdge : textEdge - glyph.left,
+          ellipsis: style.textOverflow,
+        };
+      });
+      expect(result.width).toBeLessThanOrEqual(96.5);
+      expect(result.padding).toBeGreaterThanOrEqual(result.chevronWidth);
+      expect(result.overlap).toBeLessThanOrEqual(0.5);
+      expect(result.ellipsis).toBe("ellipsis");
+    });
   }
+});
+
+test.describe("textarea autoSize", () => {
+  test("grows with the content from rows to maxRows, then scrolls", async ({ page }) => {
+    await openStory(page, "components-forms-textarea--auto-size");
+    const area = page.getByRole("textbox");
+    const height = () => area.evaluate((node) => node.getBoundingClientRect().height);
+    const rest = await height();
+    await area.fill("one\ntwo\nthree\nfour");
+    const grown = await height();
+    expect(grown).toBeGreaterThan(rest);
+    await area.fill(Array.from({ length: 30 }, (_, i) => `line ${i}`).join("\n"));
+    const capped = await height();
+    // maxRows is 8: the box stops growing there and scrolls inside.
+    expect(capped).toBeGreaterThan(grown);
+    await area.fill(Array.from({ length: 60 }, (_, i) => `line ${i}`).join("\n"));
+    expect(await height()).toBeCloseTo(capped, 0);
+    expect(await area.evaluate((node) => node.scrollHeight > node.clientHeight)).toBe(true);
+    await area.fill("");
+    expect(await height()).toBeCloseTo(rest, 0);
+  });
+});
+
+test.describe("stat tile button target", () => {
+  test("on a phone the button label is at least 24x24 and the tile is no taller than the plain one", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    const measure = async (id: string) => {
+      await openStory(page, id);
+      return page.evaluate(() => {
+        const root = document.querySelector<HTMLElement>("#storybook-root > *, #storybook-root")!;
+        const tile = (root.querySelector("[data-tone]") ?? root) as HTMLElement;
+        const button = tile.querySelector<HTMLElement>("button");
+        const rect = button?.getBoundingClientRect();
+        return { tile: tile.getBoundingClientRect().height, width: rect?.width, height: rect?.height };
+      });
+    };
+    const plain = await measure("components-data-display-stattile--default");
+    const pressable = await measure("components-data-display-stattile--as-button");
+    expect(pressable.width).toBeGreaterThanOrEqual(24);
+    expect(pressable.height).toBeGreaterThanOrEqual(24);
+    expect(Math.abs(pressable.tile - plain.tile)).toBeLessThanOrEqual(0.5);
+  });
 });

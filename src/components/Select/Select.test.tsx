@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { axe } from "../../test/axe";
 import { FormField } from "../FormField";
+import { VisuallyHidden } from "../VisuallyHidden";
 import { Select, type SelectOption } from "./Select";
 
 const options: SelectOption[] = [
@@ -145,5 +146,54 @@ describe("Select", () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("compact (size sm)", () => {
+    it("marks the box and shrinks the chevron, leaving the default unmarked", () => {
+      const { container, rerender } = render(<Select aria-label="Country" options={options} />);
+      const box = container.firstElementChild as HTMLElement;
+      expect(box).not.toHaveAttribute("data-size");
+      expect(box).not.toHaveAttribute("data-variant");
+      const defaultChevron = box.querySelector("svg")!.getAttribute("width");
+      rerender(<Select aria-label="Country" options={options} size="sm" variant="pill" />);
+      expect(box).toHaveAttribute("data-size", "sm");
+      expect(box).toHaveAttribute("data-variant", "pill");
+      expect(box.querySelector("svg")!.getAttribute("width")).not.toBe(defaultChevron);
+    });
+
+    it("does not pass size to the native select, which would turn it into a list box", () => {
+      render(<Select aria-label="Country" options={options} size="sm" />);
+      expect(screen.getByRole("combobox")).not.toHaveAttribute("size");
+    });
+
+    it("is named by a visually hidden label", () => {
+      render(
+        <>
+          <label htmlFor="c">
+            <VisuallyHidden>Country</VisuallyHidden>
+          </label>
+          <Select id="c" options={options} size="sm" variant="pill" />
+        </>,
+      );
+      expect(screen.getByRole("combobox", { name: "Country" })).toBeInTheDocument();
+    });
+
+    it("keeps its behaviour and a ref", async () => {
+      const user = userEvent.setup();
+      const ref = createRef<HTMLSelectElement>();
+      render(<Select aria-label="Country" options={options} size="sm" ref={ref} />);
+      await user.selectOptions(screen.getByRole("combobox"), "es");
+      expect(ref.current).toHaveValue("es");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <div>
+          <Select aria-label="Country" options={options} size="sm" variant="pill" />
+          <Select aria-label="Country" options={options} size="sm" invalid />
+        </div>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

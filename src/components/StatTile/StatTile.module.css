@@ -297,6 +297,25 @@
   text-transform: inherit;
 }
 
+/*
+ * The button's own box is only as big as its label, which can be about 40 by 16px, under the 24px minimum of WCAG 2.5.8
+ * (the stretched ::after covers the tile for the pointer, but the control itself is what is measured). On coarse pointers
+ * and phone widths the box grows to 24px high with block padding, and a negative block margin of the same size takes the
+ * growth back, so the label and everything around it stay where they were. The growth is what one line lacks of 24px, so
+ * a label of two or more lines, or in a larger font, gets none. The width is only given a 24px floor: a label shorter
+ * than that (one or two characters) is the only case where it changes anything.
+ */
+@media (pointer: coarse), (width < 40rem) {
+  button.link {
+    --stat-tile-target: 1.5rem;
+    --stat-tile-grow: max(0px, calc((var(--stat-tile-target) - 1lh) / 2));
+
+    min-inline-size: var(--stat-tile-target);
+    padding-block: var(--stat-tile-grow);
+    margin-block: calc(-1 * var(--stat-tile-grow));
+  }
+}
+
 /* The ring is drawn on the tile (below); the link keeps a transparent one so it shows in forced-colors mode. */
 .link:focus-visible {
   outline: var(--lufia-border-width-thick) solid transparent;

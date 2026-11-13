@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { FormField } from "../FormField";
+import { useState } from "react";
 import { Textarea } from "./Textarea";
 
 describe("Textarea", () => {
@@ -97,5 +98,124 @@ describe("Textarea", () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("autoSize", () => {
+    const scrollHeight = vi.spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get");
+    const stubSupport = (supported: boolean) =>
+      vi.stubGlobal("CSS", { supports: (property: string) => supported && property === "field-sizing" });
+
+    afterEach(() => {
+      scrollHeight.mockReset();
+      vi.unstubAllGlobals();
+    });
+
+    it("is off by default: no marker, no custom properties, no measured height", () => {
+      stubSupport(false);
+      scrollHeight.mockReturnValue(200);
+      const { container } = render(<Textarea aria-label="Notes" />);
+      const box = screen.getByRole("textbox");
+      expect(container.querySelector("[data-autosize]")).toBeNull();
+      expect(box.style.getPropertyValue("--textarea-rows")).toBe("");
+      expect(box.style.blockSize).toBe("");
+    });
+
+    it("hands rows and maxRows to the stylesheet, and never lets the maximum fall below the minimum", () => {
+      stubSupport(true);
+      const { container, rerender } = render(<Textarea aria-label="Notes" autoSize rows={2} maxRows={8} />);
+      const box = screen.getByRole("textbox");
+      expect(container.querySelector("[data-autosize][data-max-rows]")).not.toBeNull();
+      expect(box.style.getPropertyValue("--textarea-rows")).toBe("2");
+      expect(box.style.getPropertyValue("--textarea-max-rows")).toBe("8");
+      rerender(<Textarea aria-label="Notes" autoSize rows={6} maxRows={3} />);
+      expect(box.style.getPropertyValue("--textarea-max-rows")).toBe("6");
+      rerender(<Textarea aria-label="Notes" autoSize rows={2} />);
+      expect(container.querySelector("[data-max-rows]")).toBeNull();
+    });
+
+    it("keeps the caller's style next to its own", () => {
+      stubSupport(true);
+      render(<Textarea aria-label="Notes" autoSize style={{ color: "red" }} />);
+      expect(screen.getByRole("textbox").style.color).toBe("red");
+    });
+
+    it("leaves the height to the browser where field-sizing is supported", async () => {
+      const user = userEvent.setup();
+      stubSupport(true);
+      scrollHeight.mockReturnValue(200);
+      render(<Textarea aria-label="Notes" autoSize />);
+      await user.type(screen.getByRole("textbox"), "a");
+      expect(screen.getByRole("textbox").style.blockSize).toBe("");
+    });
+
+    it("measures the content where field-sizing is missing, uncontrolled", async () => {
+      const user = userEvent.setup();
+      stubSupport(false);
+      scrollHeight.mockReturnValue(90);
+      render(<Textarea aria-label="Notes" autoSize />);
+      const box = screen.getByRole("textbox");
+      expect(box.style.blockSize).toBe("90px");
+      scrollHeight.mockReturnValue(140);
+      await user.type(box, "a");
+      expect(box.style.blockSize).toBe("140px");
+    });
+
+    it("measures the content where field-sizing is missing, controlled, when the value changes from outside", () => {
+      stubSupport(false);
+      scrollHeight.mockReturnValue(90);
+      function Controlled() {
+        const [value, setValue] = useState("one");
+        return (
+          <>
+            <Textarea aria-label="Notes" autoSize value={value} onChange={(e) => setValue(e.target.value)} />
+            <button onClick={() => setValue("one\ntwo\nthree")}>Fill</button>
+          </>
+        );
+      }
+      render(<Controlled />);
+      const box = screen.getByRole("textbox");
+      expect(box.style.blockSize).toBe("90px");
+      scrollHeight.mockReturnValue(160);
+      act(() => screen.getByRole("button", { name: "Fill" }).click());
+      expect(box.style.blockSize).toBe("160px");
+    });
+
+    it("measures again after the form is reset", async () => {
+      const user = userEvent.setup();
+      stubSupport(false);
+      scrollHeight.mockReturnValue(90);
+      render(
+        <form>
+          <Textarea aria-label="Notes" autoSize defaultValue="one" />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      const box = screen.getByRole("textbox");
+      scrollHeight.mockReturnValue(200);
+      await user.type(box, "more");
+      expect(box.style.blockSize).toBe("200px");
+      scrollHeight.mockReturnValue(90);
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      await vi.waitFor(() => expect(box.style.blockSize).toBe("90px"));
+    });
+
+    it("drops a measured height when autoSize is turned off", () => {
+      stubSupport(false);
+      scrollHeight.mockReturnValue(90);
+      const { rerender } = render(<Textarea aria-label="Notes" autoSize />);
+      expect(screen.getByRole("textbox").style.blockSize).toBe("90px");
+      rerender(<Textarea aria-label="Notes" />);
+      expect(screen.getByRole("textbox").style.blockSize).toBe("");
+    });
+
+    it("has no axe violations", async () => {
+      stubSupport(false);
+      const { container } = render(
+        <FormField label="Notes" hint="Hint">
+          <Textarea autoSize rows={2} maxRows={6} showCount />
+        </FormField>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

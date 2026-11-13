@@ -13562,8 +13562,22 @@
         {
           "name": "Select",
           "kind": "component",
-          "description": "A native `<select>` in the shared field box with a drawn chevron. The browser keeps its own list, keyboard handling, typeahead and mobile picker, which is the right call for a plain choice list. For search, async data or rich options, use `Combobox`. Inside a `FormField` the field's id, description and states apply.",
+          "description": "A native `<select>` in the shared field box with a drawn chevron. The browser keeps its own list, keyboard handling, typeahead and mobile picker, which is the right call for a plain choice list. For search, async data or rich options, use `Combobox`. Inside a `FormField` the field's id, description and states apply. `size=\"sm\"` (with `variant=\"pill\"` for a rounded box) is the compact form for a toolbar or filter row.",
           "props": [
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows: a shorter box that sizes to its content instead of filling the row, so it sits beside buttons. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
+              "name": "variant",
+              "type": "\"default\" | \"pill\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "`pill` rounds the box fully, to match pill-shaped buttons and chips in the same row. Default `default`."
+            },
             {
               "name": "options",
               "type": "readonly SelectOption[]",
@@ -13694,6 +13708,22 @@
             "id": "components-forms-select--narrow-long-label"
           },
           {
+            "export": "Compact",
+            "id": "components-forms-select--compact"
+          },
+          {
+            "export": "CompactPill",
+            "id": "components-forms-select--compact-pill"
+          },
+          {
+            "export": "InFilterRow",
+            "id": "components-forms-select--in-filter-row"
+          },
+          {
+            "export": "CompactNarrowLongLabel",
+            "id": "components-forms-select--compact-narrow-long-label"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-select--phone-320"
           },
@@ -13715,7 +13745,8 @@
           "code": "import { FormField } from \"@lufia/design-system/components/FormField\";\nimport { Select } from \"@lufia/design-system/components/Select\";\n\n<FormField label=\"Country\" error={errors.country}>\n  <Select\n    name=\"country\"\n    placeholder=\"Choose a country\"\n    defaultValue=\"\"\n    options={[\n      { value: \"pt\", label: \"Portugal\" },\n      { value: \"es\", label: \"Spain\" },\n    ]}\n  />\n</FormField>;"
         },
         "whenToUse": [
-          "Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones)."
+          "Three to about fifteen options the person can recognise by name, where a native picker is a feature (phones).",
+          "A compact `size=\"sm\"` select as one filter among several in a toolbar."
         ],
         "whenNotToUse": [
           "Fewer than four options that matter equally: a `RadioGroup` shows them all at once.",
@@ -13728,7 +13759,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "Always inside a `FormField`, or give `aria-label`.",
+          "Always inside a `FormField`, or give `aria-label`, or a `<label htmlFor>` (it may wrap `VisuallyHidden`). A compact select in a toolbar has no visible label, so it needs one of the last two.",
           "The chevron is decorative and does not take clicks; the whole box opens the list.",
           "Under `forced-colors` the box and focus ring use system colours."
         ]
@@ -13740,8 +13771,15 @@
       "tokens": [
         "--lufia-color-bg-surface-solid",
         "--lufia-color-text-default",
+        "--lufia-font-size-sm",
+        "--lufia-icon-size-sm",
         "--lufia-opacity-disabled",
-        "--lufia-space-3"
+        "--lufia-radius-full",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4",
+        "--lufia-target-touch"
       ]
     },
     {
@@ -15202,6 +15240,7 @@
           "`tone=\"warning\"` and `\"danger\"` tint the tile (or, with `toneSurface=\"none\"`, only the dash and the figure). The label and hint must say why it needs attention.",
           "`quiet` uses the muted text colour (at least 4.5:1 on the surface). Keep a quiet tile `neutral`: muted text on a tinted surface is not checked.",
           "While `loading`, the tile is `aria-busy`, the link or button is removed and each skeleton takes the line box of what it replaces (the figure, the change, the hint, the chart), so the loaded tile has exactly the same height. Pass the same `delta`, `hint` and `sparkline` while loading as you will once loaded: they decide which lines are held. Set `loadingLabel` to announce it once.",
+          "On coarse pointers and phone widths the button label is given a 24 by 24 px box (WCAG 2.5.8) with padding and an equal negative margin, so the tile does not change size or move. On a desktop pointer it keeps its density.",
           "With `pressed`, the button is a toggle: screen readers announce \"Open items, toggle button, pressed\". Name the filter in the `label`, not in the state.",
           "In `forced-colors` mode the border is `CanvasText` (`Highlight` when pressed, with the check mark) and the focus ring `Highlight`."
         ]
@@ -16467,6 +16506,20 @@
               "description": "Text read out when the person is close to the limit (the last tenth) or over it. Aria-only."
             },
             {
+              "name": "autoSize",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled."
+            },
+            {
+              "name": "maxRows",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -16539,6 +16592,18 @@
             "id": "components-forms-textarea--controlled"
           },
           {
+            "export": "AutoSize",
+            "id": "components-forms-textarea--auto-size"
+          },
+          {
+            "export": "AutoSizeUnbounded",
+            "id": "components-forms-textarea--auto-size-unbounded"
+          },
+          {
+            "export": "AutoSizeControlled",
+            "id": "components-forms-textarea--auto-size-controlled"
+          },
+          {
             "export": "LongText",
             "id": "components-forms-textarea--long-text"
           },
@@ -16578,6 +16643,7 @@
         "keyboardNotes": null,
         "notes": [
           "The resize handle is vertical only, so the box cannot grow wider than its container at 320px.",
+          "With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.",
           "Focus ring, forced-colors and invalid styling match `TextInput`."
         ]
       },

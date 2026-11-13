@@ -174,6 +174,26 @@ describe("StatTile", () => {
     });
   });
 
+  it("button label: grows to the 24px target on coarse pointers and phone widths without moving the layout", () => {
+    const touch = css.match(/@media \(pointer: coarse\), \(width < 40rem\) \{([\s\S]*?)\n\}/)![1]!;
+    const rule = touch.match(/button\.link \{([^}]*)\}/)![1]!;
+    expect(rule).toMatch(/--stat-tile-target:\s*1\.5rem/);
+    expect(rule).toMatch(/min-inline-size:\s*var\(--stat-tile-target\)/);
+    // The growth is padding and the same amount comes back as a negative margin.
+    expect(rule).toMatch(/padding-block:\s*var\(--stat-tile-grow\)/);
+    expect(rule).toMatch(/margin-block:\s*calc\(-1 \* var\(--stat-tile-grow\)\)/);
+    // Nothing outside the media query resizes the button, so desktop keeps its density.
+    expect(css.replace(touch, "")).not.toMatch(/--stat-tile-target/);
+  });
+
+  it("button label: stays a plain button, one tab stop, with no axe violations", async () => {
+    const { container } = render(
+      <StatTile label="Open items" value="12" onClick={() => {}} pressed={false} />,
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("href together with onClick runs the callback on the link", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
