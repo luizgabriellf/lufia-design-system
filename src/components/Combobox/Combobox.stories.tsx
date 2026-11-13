@@ -194,6 +194,33 @@ export const InsideClippingBox: Story = {
   ),
   play: openList,
 };
+const longCity = {
+  value: "long",
+  label: "Centro de Saúde da Zona Industrial Norte, Unidade de Saúde Familiar",
+  description: "Long label",
+};
+/** A long chosen label wraps onto up to two lines instead of being cut. Open it and the box is one editable line. */
+export const WrappedValue: Story = {
+  args: {
+    options: [longCity, ...cities.slice(0, 3)],
+    defaultValue: "long",
+    wrapValue: true,
+    clearable: true,
+    clearLabel: "Clear city",
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "min(100%, 16rem)", minBlockSize: "22rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const WrappedValuePhone320: Story = {
+  ...WrappedValue,
+  args: { ...WrappedValue.args, maxValueLines: 3 },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const Phone320: Story = {
   args: { required: true, defaultValue: "sp" },
   globals: { viewport: { value: "w320", isRotated: false } },

@@ -5134,6 +5134,20 @@
               "description": "Lets the person submit text that is not an option. The value then is the typed text, trimmed (`null` when empty, also for whitespace only) and `onValueChange` reports it with `null` as the option; it follows every keystroke, so a button that waits on the value does not stay stuck. Enter, Tab, Escape, the toggle button and blur settle the text. Enter with nothing highlighted keeps the text, closes the list and does not submit the form, and the first match is not highlighted on its own. Typed text never resolves to an option, even when it equals an option's `value`, and it wins over `valueLabel`. Choosing an option sets that option's `value`; a `value` set by the parent resolves to its option."
             },
             {
+              "name": "wrapValue",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Lets the chosen label wrap onto up to `maxValueLines` lines while the list is closed, instead of being cut with an ellipsis, so a long label stays readable on a narrow screen. The box grows with it; the clear and toggle buttons stay level with the first line. Opening the list or typing returns the box to a single editable line. Default: off."
+            },
+            {
+              "name": "maxValueLines",
+              "type": "number",
+              "required": false,
+              "default": "2",
+              "description": "The most lines the wrapped label may take (`wrapValue`); a longer label is cut with an ellipsis. Default: 2."
+            },
+            {
               "name": "clearable",
               "type": "boolean",
               "required": false,
@@ -5277,6 +5291,14 @@
             "id": "components-forms-combobox--inside-clipping-box"
           },
           {
+            "export": "WrappedValue",
+            "id": "components-forms-combobox--wrapped-value"
+          },
+          {
+            "export": "WrappedValuePhone320",
+            "id": "components-forms-combobox--wrapped-value-phone-320"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-combobox--phone-320"
           },
@@ -5343,6 +5365,7 @@
         "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
@@ -14646,7 +14669,8 @@
         ],
         "whenNotToUse": [
           "Fewer than four options that matter equally: a `RadioGroup` shows them all at once.",
-          "Long lists, search, async data or options with more than text: use `Combobox`."
+          "Long lists, search, async data or options with more than text: use `Combobox`.",
+          "Option labels that may be longer than a phone-width field: the closed select shows one line, and how the browser draws it is not ours to control (iOS Safari is not guaranteed to wrap it). Use `Combobox` with `wrapValue`, which wraps the chosen label predictably."
         ],
         "contentGuidelines": "Options are sentence case, parallel and sorted in a way that fits the data (alphabetical for names, natural order for\nranges). The placeholder is an instruction, \"Choose a country\", never the label again."
       },

@@ -55,10 +55,68 @@
   transform: rotate(180deg);
 }
 
+/*
+ * Wrapped label (wrapValue). The span in the flow sets the box height; the real input is laid over it with transparent text,
+ * so it still takes the click, the focus and the keyboard. The buttons are positioned so they paint above the input, and sit
+ * level with the first line of text.
+ */
+.box[data-wrapped] {
+  align-items: flex-start;
+}
+
+.box[data-wrapped] .native {
+  position: absolute;
+  inset: 0;
+  inline-size: auto;
+  color: transparent;
+  caret-color: transparent;
+}
+
+.box[data-wrapped] .native::selection {
+  background: transparent;
+}
+
+.wrappedValue {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  box-sizing: border-box;
+  padding-block: 0.625rem;
+  padding-inline: var(--lufia-space-3) var(--lufia-space-2);
+  font-size: var(--lufia-font-size-md);
+  line-height: var(--lufia-font-line-height-normal);
+  pointer-events: none;
+}
+
+/* The clamp sits on its own element: padding on a clamped box would show part of the next line. */
+.wrappedText {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--combobox-value-lines, 2);
+  line-clamp: var(--combobox-value-lines, 2);
+}
+
+.box[data-wrapped] .button,
+.box[data-wrapped] .spinner {
+  position: relative;
+  margin-block-start: calc((2.75rem - 2 * var(--lufia-border-width-thin) - 2rem) / 2);
+}
+
+.box[data-wrapped] .spinner {
+  margin-block-start: 0.75rem;
+}
+
 @media (pointer: coarse), (width < 40rem) {
   .button {
     inline-size: var(--lufia-target-touch, 2.75rem);
     block-size: var(--lufia-target-touch, 2.75rem);
+  }
+
+  .box[data-wrapped] .button {
+    margin-block-start: calc(
+      (2.75rem - 2 * var(--lufia-border-width-thin) - var(--lufia-target-touch, 2.75rem)) / 2
+    );
   }
 }
 

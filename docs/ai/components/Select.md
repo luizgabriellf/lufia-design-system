@@ -23,6 +23,7 @@ typeahead and mobile picker.
 
 - Fewer than four options that matter equally: a `RadioGroup` shows them all at once.
 - Long lists, search, async data or options with more than text: use `Combobox`.
+- Option labels that may be longer than a phone-width field: the closed select shows one line, and how the browser draws it is not ours to control (iOS Safari is not guaranteed to wrap it). Use `Combobox` with `wrapValue`, which wraps the chosen label predictably.
 
 ## API
 

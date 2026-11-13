@@ -79,6 +79,15 @@ never matched to an option, even when it equals an option's `value` (an id such 
 
 <Canvas of={Stories.FreeText} />
 
+### Long chosen labels
+
+By default the chosen label stays on one line and is cut with an ellipsis. Set `wrapValue` and a long label wraps onto up to
+`maxValueLines` lines (default 2) while the list is closed, so it stays readable on a narrow screen; the box grows with it and
+the clear and toggle buttons stay level with the first line. Opening the list or typing returns the box to one editable line.
+The wrapped text is a visual layer over the real input, which keeps the accessible name, the value and the keyboard.
+
+<Canvas of={Stories.WrappedValue} />
+
 ### States
 
 <Canvas of={Stories.Empty} />
