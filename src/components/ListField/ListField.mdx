@@ -27,6 +27,7 @@ import { ListField } from "@lufia/design-system/components/ListField";
   label="Responsibilities"
   labels={{
     add: "Add",
+    addInput: "New responsibility",
     remove: (index, text) => `Remove entry ${index}: ${text}`,
     entry: (index) => `Entry ${index}`,
     requiredMessage: "Add at least one entry.",
@@ -66,11 +67,30 @@ hidden value is up to date when it returns.
 
 <Canvas of={Stories.Required} />
 
+### Including the draft
+
+Pass `includeDraft` and the text still in the add input is part of the submitted value, exactly as if the add button had
+been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and
+`maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it and the add input keeps its text, so
+the person can still press add. With `required`, a valid draft satisfies the rule, so the form submits with only a draft
+typed. It is off by default: without it a draft is ignored by both the value and `required`, and `commitDraft()` is the
+way to add it before submitting.
+
+<Canvas of={Stories.IncludeDraft} />
+
 ### Limits
 
 `maxItems` (default 30) caps the number of entries, `itemMaxLength` each entry and `maxTotalLength` the length of the
 serialized value. The add input stops accepting text at the room left, separators included, and adding is disabled when
 there is none.
+
+### Counter
+
+`renderCount` receives `{ count, maxItems, length, maxTotalLength }` and returns the text of a counter ("2 of 5 entries").
+It renders as secondary text under the hint and is part of the group's description, so a screen reader reads it after the
+hint. `count` leaves out a pending draft. Nothing is rendered without it, and the package adds no wording.
+
+<Canvas of={Stories.WithCounter} />
 
 <Canvas of={Stories.Full} />
 <Canvas of={Stories.MaxItems} />
@@ -107,7 +127,7 @@ there is none.
 | Remove button          | Removes the entry and moves focus to the add input, so focus is never lost with the row. |
 
 - The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.
-- The label points at the add input. The hint and error describe the group.
+- The label points at the add input, which takes the label as its name unless `labels.addInput` is set. Set it (for example "New hazard" under a group "Hazards" with an "Add" button) so the input and the button never share a name. The hint, the counter and the error describe the group.
 - Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.
 - Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.
 - No live region: the list is the content, and focus stays on a control the person is using.

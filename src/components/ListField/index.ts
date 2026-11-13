@@ -1,1 +1,7 @@
-export { ListField, type ListFieldHandle, type ListFieldLabels, type ListFieldProps } from "./ListField";
+export {
+  ListField,
+  type ListFieldCount,
+  type ListFieldHandle,
+  type ListFieldLabels,
+  type ListFieldProps,
+} from "./ListField";

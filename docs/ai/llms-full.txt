@@ -3968,7 +3968,7 @@ button on each entry. The entries are submitted as one hidden text value.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `label` | `ReactNode` | yes |  | Names the group and the add input. |
+| `label` | `ReactNode` | yes |  | Names the group, and the add input unless `labels.addInput` is set. |
 | `labels` | `ListFieldLabels` | yes |  | Every user-facing string of the field. The package has no built-in language. |
 | `name` | `string` | no |  | Submitted with the form as ONE hidden text value under this name: `serialize(items)`. |
 | `items` | `readonly string[]` | no |  | Controlled entries. A value that differs from what the field holds replaces its rows. |
@@ -3979,9 +3979,11 @@ button on each entry. The entries are submitted as one hidden text value.
 | `maxItems` | `number` | no | `30` | The most entries. Adding is disabled when reached. Default 30. |
 | `itemMaxLength` | `number` | no |  | The longest entry, in characters. |
 | `maxTotalLength` | `number` | no |  | The longest serialized value, in characters. The add input stops accepting text at the room left, and adding is disabled when none is. |
-| `required` | `boolean` | no |  | At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity. |
+| `required` | `boolean` | no |  | At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity until there is one. Text waiting in the add input does not count unless `includeDraft` is on. |
+| `includeDraft` | `boolean` | no |  | Puts the text waiting in the add input in the submitted value, as if the add button had been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and `maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it, and the add input keeps its text. With `required`, a valid draft also satisfies the rule. Off by default: the draft is then only added by the add button, Enter or `commitDraft()`. |
 | `placeholder` | `string` | no |  | Placeholder of the add input. |
 | `hint` | `ReactNode` | no |  |  |
+| `renderCount` | `(count: ListFieldCount) => ReactNode` | no |  | Renders a counter, such as "2 of 30 entries" or "34 of 200 characters", as secondary text under the hint and tied to the group with `aria-describedby`. The package has no built-in language: phrase it here. Nothing is rendered without it. Keep it phrasing content (text and inline elements). |
 | `error` | `ReactNode` | no |  |  |
 | `badge` | `ReactNode` | no |  | Content next to the label, such as a `Badge`. |
 | `disabled` | `boolean` | no |  |  |
@@ -3992,8 +3994,9 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
+- `ListFieldCount`: `{ count: number; maxItems: number; length: number; maxTotalLength: number | undefined; }`
 - `ListFieldHandle`: `{ commitDraft: () => boolean; }`
-- `ListFieldLabels`: `{ add: string; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }`
+- `ListFieldLabels`: `{ add: string; addInput?: string | undefined; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }`
 
 ### Example
 
@@ -4005,6 +4008,7 @@ import { ListField } from "@lufia/design-system/components/ListField";
   label="Responsibilities"
   labels={{
     add: "Add",
+    addInput: "New responsibility",
     remove: (index, text) => `Remove entry ${index}: ${text}`,
     entry: (index) => `Entry ${index}`,
     requiredMessage: "Add at least one entry.",
@@ -4016,7 +4020,7 @@ import { ListField } from "@lufia/design-system/components/ListField";
 ### Accessibility
 
 - The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.
-- The label points at the add input. The hint and error describe the group.
+- The label points at the add input, which takes the label as its name unless `labels.addInput` is set. Set it (for example "New hazard" under a group "Hazards" with an "Add" button) so the input and the button never share a name. The hint, the counter and the error describe the group.
 - Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.
 - Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.
 - No live region: the list is the content, and focus stays on a control the person is using.
@@ -4041,6 +4045,9 @@ it removes ("Remove entry 2: Inspect the site"), not just "Remove".
 - `components-forms-listfield--with-hint-and-badge`
 - `components-forms-listfield--controlled`
 - `components-forms-listfield--required`
+- `components-forms-listfield--include-draft`
+- `components-forms-listfield--named-add-input`
+- `components-forms-listfield--with-counter`
 - `components-forms-listfield--invalid`
 - `components-forms-listfield--disabled`
 - `components-forms-listfield--full`

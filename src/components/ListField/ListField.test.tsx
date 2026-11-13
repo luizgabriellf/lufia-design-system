@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { axe } from "../../test/axe";
-import { ListField, type ListFieldHandle, type ListFieldLabels } from "./ListField";
+import { ListField, type ListFieldHandle, type ListFieldLabels, type ListFieldProps } from "./ListField";
 
 const labels: ListFieldLabels = {
   add: "Add",
@@ -22,6 +22,26 @@ describe("ListField", () => {
     expect(screen.getByRole("textbox", { name: "Entry 2" })).toHaveValue("Beta");
     expect(screen.getByRole("textbox", { name: "Tasks" })).toHaveValue("");
     expect(screen.getByRole("button", { name: "Remove 2: Beta" })).toBeInTheDocument();
+  });
+
+  it("names the add input with labels.addInput and keeps the group and the button named apart", () => {
+    render(<ListField label="Hazards" labels={{ ...labels, addInput: "New hazard" }} required />);
+    expect(screen.getByRole("group", { name: /^Hazards/ })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "New hazard" })).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /^Hazards/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add" })).toBeInTheDocument();
+  });
+
+  it("has no axe violations with a named add input", async () => {
+    const { container } = render(
+      <ListField
+        label="Hazards"
+        labels={{ ...labels, addInput: "New hazard" }}
+        required
+        defaultItems={["a"]}
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("submits the entries as one hidden value, joined with line feeds by default", async () => {
@@ -253,6 +273,197 @@ describe("ListField", () => {
     const group = screen.getByRole("group", { name: "Tasks" });
     expect(group).toHaveAccessibleDescription("One each Too few");
     expect(screen.getByText("Optional")).toBeInTheDocument();
+  });
+
+  describe("includeDraft", () => {
+    const submitted = (form: HTMLFormElement) => new FormData(form).get("tasks");
+
+    it("leaves the pending draft out of the value by default", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <ListField label="Tasks" labels={labels} name="tasks" defaultItems={["a"]} />
+        </form>,
+      );
+      await user.type(screen.getByRole("textbox", { name: "Tasks" }), "pending");
+      expect(submitted(container.querySelector("form")!)).toBe("a");
+    });
+
+    it("submits the pending draft with the entries, sanitized, in a real form", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(
+        <form>
+          <ListField
+            label="Tasks"
+            labels={labels}
+            name="tasks"
+            includeDraft
+            defaultItems={["a"]}
+            sanitizeItem={(text) => text.trim().replace(/\s+/g, " ")}
+            onChange={onChange}
+          />
+        </form>,
+      );
+      const form = container.querySelector("form")!;
+      const add = screen.getByRole("textbox", { name: "Tasks" });
+      await user.type(add, "  b   c ");
+      expect(submitted(form)).toBe("a\nb c");
+      // Typed text is still a draft: not an entry, no onChange, still in the input.
+      expect(onChange).not.toHaveBeenCalled();
+      expect(add).toHaveValue("  b   c ");
+      expect(screen.queryByRole("textbox", { name: "Entry 2" })).not.toBeInTheDocument();
+      await user.clear(add);
+      expect(submitted(form)).toBe("a");
+      await user.type(add, "   ");
+      expect(submitted(form)).toBe("a");
+    });
+
+    it("does not count the draft twice once it is added", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <ListField label="Tasks" labels={labels} name="tasks" includeDraft />
+        </form>,
+      );
+      await user.type(screen.getByRole("textbox", { name: "Tasks" }), "b{Enter}");
+      expect(submitted(container.querySelector("form")!)).toBe("b");
+    });
+
+    it("leaves a draft out when maxItems or maxTotalLength leave no room for it", async () => {
+      const user = userEvent.setup();
+      const field = (props: { maxItems?: number; maxTotalLength?: number }) => (
+        <form>
+          <ListField
+            label="Tasks"
+            labels={labels}
+            name="tasks"
+            includeDraft
+            defaultItems={["ab"]}
+            {...props}
+          />
+        </form>
+      );
+      const { container, rerender } = render(field({ maxItems: 2 }));
+      const form = container.querySelector("form")!;
+      await user.type(screen.getByRole("textbox", { name: "Tasks" }), "cd");
+      expect(submitted(form)).toBe("ab\ncd");
+      rerender(field({ maxItems: 1 }));
+      expect(submitted(form)).toBe("ab");
+      rerender(field({ maxItems: 2, maxTotalLength: 5 }));
+      expect(submitted(form)).toBe("ab\ncd");
+      rerender(field({ maxItems: 2, maxTotalLength: 4 }));
+      expect(submitted(form)).toBe("ab");
+    });
+
+    it("follows a form reset", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <ListField label="Tasks" labels={labels} name="tasks" includeDraft defaultItems={["a"]} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      await user.type(screen.getByRole("textbox", { name: "Tasks" }), "b");
+      expect(submitted(container.querySelector("form")!)).toBe("a\nb");
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(submitted(container.querySelector("form")!)).toBe("a");
+    });
+
+    it("lets a required field submit with only a draft, and still blocks without one", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <ListField
+            label="Tasks"
+            labels={labels}
+            name="tasks"
+            required
+            includeDraft
+            sanitizeItem={(text) => text.trim()}
+          />
+        </form>,
+      );
+      const form = container.querySelector("form")!;
+      const add = screen.getByRole("textbox", { name: /^Tasks/ }) as HTMLInputElement;
+      expect(form.checkValidity()).toBe(false);
+      expect(add.validationMessage).toBe("Add one entry");
+      await user.type(add, "   ");
+      expect(form.checkValidity()).toBe(false);
+      await user.type(add, "x");
+      expect(form.checkValidity()).toBe(true);
+      expect(submitted(form)).toBe("x");
+      await user.clear(add);
+      expect(form.checkValidity()).toBe(false);
+    });
+
+    it("keeps the required rule blocking on a draft without includeDraft", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <form>
+          <ListField label="Tasks" labels={labels} name="tasks" required />
+        </form>,
+      );
+      await user.type(screen.getByRole("textbox", { name: /^Tasks/ }), "x");
+      expect(container.querySelector("form")!.checkValidity()).toBe(false);
+    });
+
+    it("has no axe violations with a draft", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <ListField label="Tasks" labels={labels} name="tasks" required includeDraft />,
+      );
+      await user.type(screen.getByRole("textbox", { name: /^Tasks/ }), "x");
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  it("renders nothing for the counter unless renderCount is given", () => {
+    const { container } = render(<ListField label="Tasks" labels={labels} defaultItems={["a"]} />);
+    expect(container.querySelector("[data-lufia-part='hint']")).toBeNull();
+    expect(screen.getByRole("group", { name: "Tasks" })).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("renders the counter with the counts, describes the group with it and keeps it current", async () => {
+    const user = userEvent.setup();
+    const renderCount = vi.fn(
+      ({
+        count,
+        maxItems,
+        length,
+        maxTotalLength,
+      }: Parameters<NonNullable<ListFieldProps["renderCount"]>>[0]) =>
+        `${count}/${maxItems} items, ${length}/${maxTotalLength} chars`,
+    );
+    render(
+      <ListField
+        label="Tasks"
+        labels={labels}
+        hint="One each"
+        error="Too few"
+        defaultItems={["ab"]}
+        maxItems={5}
+        maxTotalLength={20}
+        renderCount={renderCount}
+      />,
+    );
+    const group = screen.getByRole("group", { name: "Tasks" });
+    expect(group).toHaveAccessibleDescription("One each 1/5 items, 2/20 chars Too few");
+    await user.type(screen.getByRole("textbox", { name: "Tasks" }), "cd{Enter}");
+    expect(group).toHaveAccessibleDescription("One each 2/5 items, 5/20 chars Too few");
+  });
+
+  it("passes undefined for maxTotalLength when there is no limit, and has no axe violations", async () => {
+    const { container } = render(
+      <ListField
+        label="Tasks"
+        labels={labels}
+        defaultItems={["a"]}
+        renderCount={({ maxTotalLength, count }) => `${count} ${String(maxTotalLength)}`}
+      />,
+    );
+    expect(screen.getByText("1 undefined")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("has no axe violations", async () => {

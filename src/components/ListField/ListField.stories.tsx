@@ -89,6 +89,47 @@ export const Required: Story = {
     );
   },
 };
+/** With `includeDraft`, text still in the add input is submitted and satisfies `required`: no `commitDraft()` call. */
+export const IncludeDraft: Story = {
+  args: { required: true, includeDraft: true, defaultItems: [] },
+  render: (args) => {
+    const [sent, setSent] = useState("");
+    return (
+      <form
+        style={{ display: "grid", gap: "0.75rem" }}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSent(String(new FormData(event.currentTarget).get("responsibilities")));
+        }}
+      >
+        <ListField {...args} />
+        <div>
+          <Button type="submit">Save</Button>
+        </div>
+        <p style={{ margin: 0, fontSize: "0.875rem" }}>
+          Submitted: {sent ? JSON.stringify(sent) : "nothing yet"}
+        </p>
+      </form>
+    );
+  },
+};
+/** `labels.addInput` names the add input apart from the group and the button. */
+export const NamedAddInput: Story = {
+  args: {
+    label: "Hazards",
+    labels: { ...labels, add: "Add", addInput: "New hazard" },
+    defaultItems: ["Open trench"],
+  },
+};
+/** `renderCount` shows the entries held and the room left; the text is yours, the package has no language. */
+export const WithCounter: Story = {
+  args: {
+    maxItems: 5,
+    maxTotalLength: 80,
+    renderCount: ({ count, maxItems, length, maxTotalLength }) =>
+      `${count} of ${maxItems} entries, ${length} of ${maxTotalLength} characters`,
+  },
+};
 export const Invalid: Story = {
   args: { required: true, error: "Add at least one entry.", defaultItems: [] },
 };

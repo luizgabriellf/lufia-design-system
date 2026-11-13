@@ -1966,4 +1966,18 @@ test.describe("list field", () => {
     await page.getByRole("button", { name: "Save" }).click();
     await expect(page.getByText('Submitted: "Check valves"')).toBeVisible();
   });
+  test("includeDraft submits the typed text and satisfies required without adding it", async ({ page }) => {
+    await openStory(page, "components-forms-listfield--include-draft");
+    await page.getByRole("textbox", { name: /^Responsibilities/ }).fill("Check valves");
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText('Submitted: "Check valves"')).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Entry 1" })).toHaveCount(0);
+  });
+
+  test("the counter describes the group", async ({ page }) => {
+    await openStory(page, "components-forms-listfield--with-counter");
+    await expect(page.getByRole("group", { name: "Responsibilities" })).toHaveAccessibleDescription(
+      "2 of 5 entries, 32 of 80 characters",
+    );
+  });
 });

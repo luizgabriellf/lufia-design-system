@@ -9359,14 +9359,14 @@
         {
           "name": "ListField",
           "kind": "component",
-          "description": "A field that holds a list of short text entries: one text input per entry, editable in place, an add row (Enter adds and never submits the surrounding form) and a remove button on each entry. The entries are submitted as one hidden text value under `name`, serialized with `serialize`. It carries its own label, hint and error, like `RadioGroup`, so do not wrap it in a `FormField`. Pending text in the add input is not part of the value until it is added: call `commitDraft()` on the ref right before submitting.",
+          "description": "A field that holds a list of short text entries: one text input per entry, editable in place, an add row (Enter adds and never submits the surrounding form) and a remove button on each entry. The entries are submitted as one hidden text value under `name`, serialized with `serialize`. It carries its own label, hint and error, like `RadioGroup`, so do not wrap it in a `FormField`. Pending text in the add input is not part of the value until it is added, unless `includeDraft` is on: otherwise call `commitDraft()` on the ref right before submitting.",
           "props": [
             {
               "name": "label",
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": "Names the group and the add input."
+              "description": "Names the group, and the add input unless `labels.addInput` is set."
             },
             {
               "name": "labels",
@@ -9443,7 +9443,14 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": "At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity."
+              "description": "At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity until there is one. Text waiting in the add input does not count unless `includeDraft` is on."
+            },
+            {
+              "name": "includeDraft",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Puts the text waiting in the add input in the submitted value, as if the add button had been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and `maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it, and the add input keeps its text. With `required`, a valid draft also satisfies the rule. Off by default: the draft is then only added by the add button, Enter or `commitDraft()`."
             },
             {
               "name": "placeholder",
@@ -9458,6 +9465,13 @@
               "required": false,
               "default": null,
               "description": ""
+            },
+            {
+              "name": "renderCount",
+              "type": "(count: ListFieldCount) => ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Renders a counter, such as \"2 of 30 entries\" or \"34 of 200 characters\", as secondary text under the hint and tied to the group with `aria-describedby`. The package has no built-in language: phrase it here. Nothing is rendered without it. Keep it phrasing content (text and inline elements)."
             },
             {
               "name": "error",
@@ -9498,6 +9512,12 @@
           "nativeProps": true
         },
         {
+          "name": "ListFieldCount",
+          "kind": "type",
+          "description": "",
+          "definition": "{ count: number; maxItems: number; length: number; maxTotalLength: number | undefined; }"
+        },
+        {
           "name": "ListFieldHandle",
           "kind": "type",
           "description": "",
@@ -9507,7 +9527,7 @@
           "name": "ListFieldLabels",
           "kind": "type",
           "description": "",
-          "definition": "{ add: string; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
+          "definition": "{ add: string; addInput?: string | undefined; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
         },
         {
           "name": "ListFieldProps",
@@ -9517,8 +9537,9 @@
         }
       ],
       "aliases": {
+        "ListFieldCount": "{ count: number; maxItems: number; length: number; maxTotalLength: number | undefined; }",
         "ListFieldHandle": "{ commitDraft: () => boolean; }",
-        "ListFieldLabels": "{ add: string; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
+        "ListFieldLabels": "{ add: string; addInput?: string | undefined; remove: (index: number, text: string) => string; entry: (index: number) => string; requiredMessage?: string | undefined; }"
       },
       "story": {
         "docsId": "components-forms-listfield--docs",
@@ -9542,6 +9563,18 @@
           {
             "export": "Required",
             "id": "components-forms-listfield--required"
+          },
+          {
+            "export": "IncludeDraft",
+            "id": "components-forms-listfield--include-draft"
+          },
+          {
+            "export": "NamedAddInput",
+            "id": "components-forms-listfield--named-add-input"
+          },
+          {
+            "export": "WithCounter",
+            "id": "components-forms-listfield--with-counter"
           },
           {
             "export": "Invalid",
@@ -9582,7 +9615,7 @@
         "overview": "A form field that holds a list of short text entries: one text input per entry, editable in place, an add row and a remove\nbutton on each entry. The entries are submitted as one hidden text value.",
         "usage": {
           "language": "tsx",
-          "code": "import { ListField } from \"@lufia/design-system/components/ListField\";\n\n<ListField\n  name=\"responsibilities\"\n  label=\"Responsibilities\"\n  labels={{\n    add: \"Add\",\n    remove: (index, text) => `Remove entry ${index}: ${text}`,\n    entry: (index) => `Entry ${index}`,\n    requiredMessage: \"Add at least one entry.\",\n  }}\n  defaultItems={[\"Inspect the site\"]}\n/>;"
+          "code": "import { ListField } from \"@lufia/design-system/components/ListField\";\n\n<ListField\n  name=\"responsibilities\"\n  label=\"Responsibilities\"\n  labels={{\n    add: \"Add\",\n    addInput: \"New responsibility\",\n    remove: (index, text) => `Remove entry ${index}: ${text}`,\n    entry: (index) => `Entry ${index}`,\n    requiredMessage: \"Add at least one entry.\",\n  }}\n  defaultItems={[\"Inspect the site\"]}\n/>;"
         },
         "whenToUse": [
           "A list of short values the person writes themselves: tasks, tags, phone numbers, keywords.",
@@ -9601,7 +9634,7 @@
         "keyboardNotes": null,
         "notes": [
           "The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.",
-          "The label points at the add input. The hint and error describe the group.",
+          "The label points at the add input, which takes the label as its name unless `labels.addInput` is set. Set it (for example \"New hazard\" under a group \"Hazards\" with an \"Add\" button) so the input and the button never share a name. The hint, the counter and the error describe the group.",
           "Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.",
           "Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.",
           "No live region: the list is the content, and focus stays on a control the person is using."
