@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.38.0
+
+### Minor Changes
+
+- [#141](https://github.com/luizgabriellf/lufia-design-system/pull/141) [`b9d4198`](https://github.com/luizgabriellf/lufia-design-system/commit/b9d4198a404fa736c8797f6f0e512c544a1c6c91) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `sheetPlacement="none"` to `Modal`: on a phone the dialog stays a centred floating panel with a margin on every side and the scale entrance, instead of becoming an edge sheet. The default (`bottom`) is unchanged.
+
+- [#141](https://github.com/luizgabriellf/lufia-design-system/pull/141) [`b9d4198`](https://github.com/luizgabriellf/lufia-design-system/commit/b9d4198a404fa736c8797f6f0e512c544a1c6c91) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `size="sm"` to `TextInput`: a compact control with the height, font size and padding of `Select size="sm"`, for toolbars and filter rows. It grows to the touch target on touch screens and phone widths. The default size is unchanged.
+
 ## 0.37.0
 
 ### Minor Changes
