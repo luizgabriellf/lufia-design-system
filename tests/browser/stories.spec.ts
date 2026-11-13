@@ -1889,3 +1889,81 @@ test.describe("search input in a grid form", () => {
     expect(widths.second).toBeGreaterThanOrEqual(128);
   });
 });
+
+test.describe("search input inside a form field in a filter form", () => {
+  const hosts = [
+    ["grid-filter", "components-forms-searchinput--in-filter-form-grid"],
+    ["single column", "components-forms-searchinput--in-filter-form-single-column"],
+    ["flex wrap", "components-forms-searchinput--in-filter-form-flex-wrap"],
+    ["align-items end", "components-forms-searchinput--in-filter-form-align-end"],
+    ["justify-items start", "components-forms-searchinput--in-filter-form-justify-start"],
+  ] as const;
+  for (const width of [320, 390]) {
+    for (const [name, id] of hosts) {
+      test(`${name} keeps a usable search box at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await openStory(page, id);
+        const size = await page.getByRole("searchbox").evaluate((input) => {
+          const rect = input.parentElement!.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        });
+        expect(size.width).toBeGreaterThanOrEqual(128);
+        expect(size.height).toBeGreaterThanOrEqual(44);
+        expect(size.height).toBeLessThan(60);
+      });
+    }
+  }
+});
+
+test.describe("search input in a column flex container", () => {
+  test("is as tall as the control and fills the width", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-forms-searchinput--in-column-flex");
+    const sizes = await page.evaluate(() => {
+      const host = document.querySelector<HTMLElement>('[data-testid="column-flex"]')!;
+      const box = host.querySelector('input[type="search"]')!.parentElement!.getBoundingClientRect();
+      return { width: box.width, height: box.height, host: host.getBoundingClientRect().width };
+    });
+    expect(sizes.height).toBeGreaterThanOrEqual(44);
+    expect(sizes.height).toBeLessThan(48);
+    expect(Math.abs(sizes.width - sizes.host)).toBeLessThanOrEqual(1);
+  });
+});
+
+test.describe("list field", () => {
+  for (const width of [320, 390]) {
+    test(`fits the viewport and keeps usable targets at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-forms-listfield--long-entries");
+      const group = page.getByRole("group", { name: "Responsibilities" });
+      const box = (await group.boundingBox())!;
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      for (const button of await page.getByRole("button", { name: /^Remove entry/ }).all()) {
+        const rect = (await button.boundingBox())!;
+        expect(rect.width).toBeGreaterThanOrEqual(24);
+        expect(rect.height).toBeGreaterThanOrEqual(24);
+      }
+      const add = (await page.getByRole("button", { name: "Add" }).boundingBox())!;
+      expect(add.height).toBeGreaterThanOrEqual(44);
+    });
+  }
+
+  test("a removed row leaves the list and focus goes to the add input", async ({ page }) => {
+    await openStory(page, "components-forms-listfield--default");
+    await page.getByRole("button", { name: "Remove entry 1: Inspect the site" }).click();
+    await expect(page.getByRole("textbox", { name: "Responsibilities" })).toBeFocused();
+    await expect(page.getByRole("textbox", { name: "Entry 2" })).toHaveCount(0);
+    await expect(page.getByRole("textbox", { name: "Entry 1" })).toHaveValue("File the report");
+  });
+
+  test("Enter in the add input adds an entry and does not submit the form", async ({ page }) => {
+    await openStory(page, "components-forms-listfield--required");
+    await page.getByRole("textbox", { name: /^Responsibilities/ }).fill("Check valves");
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("textbox", { name: "Entry 1" })).toHaveValue("Check valves");
+    await expect(page.getByText("Submitted: nothing yet")).toBeVisible();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText('Submitted: "Check valves"')).toBeVisible();
+  });
+});

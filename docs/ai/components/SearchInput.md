@@ -93,6 +93,12 @@ search on a page. `clearLabel` and `loadingLabel` are read aloud: "Clear search"
 - `components-forms-searchinput--long-text`
 - `components-forms-searchinput--in-toolbar`
 - `components-forms-searchinput--in-grid-form`
+- `components-forms-searchinput--in-filter-form-grid`
+- `components-forms-searchinput--in-filter-form-single-column`
+- `components-forms-searchinput--in-filter-form-flex-wrap`
+- `components-forms-searchinput--in-filter-form-align-end`
+- `components-forms-searchinput--in-filter-form-justify-start`
+- `components-forms-searchinput--in-column-flex`
 - `components-forms-searchinput--phone-320`
 - `components-forms-searchinput--right-to-left`
 - `components-forms-searchinput--all-themes`

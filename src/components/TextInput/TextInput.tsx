@@ -11,7 +11,8 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "prefix
   /**
    * `sm` is the compact control for toolbars and filter rows, with the metrics of `Select size="sm"`: a 2rem box with the
    * small font size. It still fills its row. On touch screens and phone widths it grows to the touch target, like `Button`.
-   * Give it an `aria-label` or a visually hidden label. Default `md`.
+   * Give it an `aria-label` or a visually hidden label. Default `md`. This replaces the native numeric `size`: a props type
+   * that extends the native input attributes and is spread into `TextInput` must omit it (`Omit<InputHTMLAttributes<HTMLInputElement>, "size">`).
    */
   size?: TextInputSize;
   /** Content before the text: a unit, a currency sign, a decorative icon (give an icon `aria-hidden`). */

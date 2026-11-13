@@ -1,0 +1,135 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ListField.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ListField"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A form field that holds a list of short text entries: one text input per entry, editable in place, an add row and a remove
+button on each entry. The entries are submitted as one hidden text value.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { ListField } from "@lufia/design-system/components/ListField";
+
+<ListField
+  name="responsibilities"
+  label="Responsibilities"
+  labels={{
+    add: "Add",
+    remove: (index, text) => `Remove entry ${index}: ${text}`,
+    entry: (index) => `Entry ${index}`,
+    requiredMessage: "Add at least one entry.",
+  }}
+  defaultItems={["Inspect the site"]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use:
+the package has no built-in language, so every string is in `labels`.
+
+The field carries its own label, hint and error, like `RadioGroup`. Do not wrap it in a `FormField`.
+
+</Section>
+
+<Section id="examples">
+
+### The submitted value
+
+With `name`, a hidden input submits `serialize(items)`. The default joins the entries with a line feed; pass `serialize` to
+store them with your own delimiter. `sanitizeItem` cleans an entry when it is added and whenever the entries are read (trim,
+collapse spaces); an entry that is empty after it is left out.
+
+### Controlled and uncontrolled
+
+Pass `defaultItems` and read the value from the form, or pass `items` and `onChange`. A controlled value that differs from
+what the field holds replaces its rows, so a parent that refuses a change keeps its list.
+
+<Canvas of={Stories.Controlled} />
+
+### Required, and the pending draft
+
+`required` means at least one entry. The add input carries `labels.requiredMessage` as its custom validity until there is
+one, so the browser refuses the submission and shows it. Text typed in the add input is not part of the value until it is
+added: call `commitDraft()` on the ref right before the form is submitted. It returns whether an entry was added, and the
+hidden value is up to date when it returns.
+
+<Canvas of={Stories.Required} />
+
+### Limits
+
+`maxItems` (default 30) caps the number of entries, `itemMaxLength` each entry and `maxTotalLength` the length of the
+serialized value. The add input stops accepting text at the room left, separators included, and adding is disabled when
+there is none.
+
+<Canvas of={Stories.Full} />
+<Canvas of={Stories.MaxItems} />
+<Canvas of={Stories.LongEntries} />
+
+### States
+
+<Canvas of={Stories.WithHintAndBadge} />
+<Canvas of={Stories.Invalid} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+| Key / action           | Behaviour                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Tab                    | Moves through the entries, their remove buttons, the add input and the add button.       |
+| Enter in the add input | Adds the text as an entry. It never submits the surrounding form.                        |
+| Enter in an entry      | Keeps the edit and moves focus to the add input. It never submits the form.              |
+| Remove button          | Removes the entry and moves focus to the add input, so focus is never lost with the row. |
+
+- The field is a `group` named by its label. Each entry input is named by `labels.entry(index)`, each remove button by `labels.remove(index, text)`.
+- The label points at the add input. The hint and error describe the group.
+- Rows enter with a rise and fade and leave with a fade, using only `opacity` and `transform`; under `prefers-reduced-motion` they appear and disappear at once. A leaving row is `inert`.
+- Remove buttons are at least 32px tall and grow to the 44px touch target on touch screens and phone widths.
+- No live region: the list is the content, and focus stays on a control the person is using.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A list of short values the person writes themselves: tasks, tags, phone numbers, keywords.
+- Storing the list as one text column, with your own delimiter.
+
+### When not to use
+
+- Long or formatted entries: use `Textarea`.
+- Choosing from known options: use `Combobox` or a set of checkboxes.
+- Entries with several fields each: build a form for the row.
+
+### Content guidelines
+
+Say what one entry is in the label and what the delimiter or limit is in the hint. Name the remove button after the entry
+it removes ("Remove entry 2: Inspect the site"), not just "Remove".
+
+</Section>

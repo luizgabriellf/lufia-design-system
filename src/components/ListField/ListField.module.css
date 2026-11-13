@@ -1,0 +1,63 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-space-2);
+}
+
+.label {
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+}
+
+.root[data-disabled] .label {
+  color: var(--lufia-color-text-muted);
+}
+
+/* An asterisk is a shape, so the requirement never relies on colour. The accessible text sits next to it. */
+.mark {
+  margin-inline-start: var(--lufia-space-1);
+  color: var(--lufia-color-status-danger-fg);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  min-inline-size: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  min-inline-size: 0;
+}
+
+/* The text boxes take the room; the remove and add buttons keep their own size. */
+.entry {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}

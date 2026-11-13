@@ -65,6 +65,12 @@ small font size, tighter padding), so the two line up in one row, and it still f
 `aria-label` or a visually hidden label, as there is little room for a visible one. On touch screens and below 40 rem it grows
 to the 44 px touch target, as `Button` and the compact `Select` do; the default size is unchanged.
 
+#### Typing a wrapper
+
+`TextInputProps` omits the native numeric `size` attribute, because `size` is the `"sm" | "md"` scale here. A props type of
+your own that extends `InputHTMLAttributes<HTMLInputElement>` and is spread into `TextInput` has to omit it too:
+`Omit<InputHTMLAttributes<HTMLInputElement>, "size">`. `SearchInput`, `DateField` and `Select` follow the same convention.
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
