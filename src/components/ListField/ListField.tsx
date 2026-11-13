@@ -73,8 +73,19 @@ export type ListFieldProps = Omit<
    * disabled when none is.
    */
   maxTotalLength?: number;
-  /** At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity. */
+  /**
+   * At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity until there is
+   * one. Text waiting in the add input does not count unless `includeDraft` is on.
+   */
   required?: boolean;
+  /**
+   * Puts the text waiting in the add input in the submitted value, as if the add button had been pressed: the hidden value
+   * is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and `maxItems` and
+   * `maxTotalLength` leave room for it. `onChange` is not called for it, and the add input keeps its text. With `required`,
+   * a valid draft also satisfies the rule. Off by default: the draft is then only added by the add button, Enter or
+   * `commitDraft()`.
+   */
+  includeDraft?: boolean;
   /** Placeholder of the add input. */
   placeholder?: string;
   hint?: ReactNode;
@@ -105,7 +116,8 @@ function sameList(a: readonly string[], b: readonly string[]) {
  * under `name`, serialized with `serialize`.
  *
  * It carries its own label, hint and error, like `RadioGroup`, so do not wrap it in a `FormField`. Pending text in the add
- * input is not part of the value until it is added: call `commitDraft()` on the ref right before submitting.
+ * input is not part of the value until it is added, unless `includeDraft` is on: otherwise call `commitDraft()` on the ref
+ * right before submitting.
  */
 export function ListField({
   label,
@@ -120,6 +132,7 @@ export function ListField({
   itemMaxLength,
   maxTotalLength,
   required,
+  includeDraft,
   placeholder,
   hint,
   error,
@@ -152,6 +165,8 @@ export function ListField({
     (itemsProp ?? defaultItems ?? []).map((text) => newRow(text)),
   );
   const rowsRef = useRef(rows);
+  // The raw text of the add input, kept only for `includeDraft`: the input itself stays uncontrolled.
+  const [draft, setDraft] = useState("");
   const items = read(rows);
 
   // A controlled value that differs from what the rows hold replaces them, keeping the row of the same position so a
@@ -170,7 +185,10 @@ export function ListField({
     onChange?.(read(next));
   };
 
-  useFormReset(root, () => apply((defaultItems ?? []).map((text) => newRow(text))));
+  useFormReset(root, () => {
+    setDraft("");
+    apply((defaultItems ?? []).map((text) => newRow(text)));
+  });
 
   // Room left in the serialized value for one more entry, counting the separator it brings.
   const room = maxTotalLength === undefined ? Infinity : maxTotalLength - serialize([...items, ""]).length;
@@ -180,7 +198,13 @@ export function ListField({
     maxTotalLength === undefined
       ? itemMaxLength
       : Math.min(itemMaxLength ?? Infinity, row.text.length + Math.max(0, room));
-  const needsEntry = Boolean(required) && !disabled && items.length === 0;
+  // The draft as the add button would add it, or "" when it is empty or no room is left for it.
+  const draftText = includeDraft && !full ? clean(draft) : "";
+  const draftEntry =
+    draftText && (maxTotalLength === undefined || serialize([...items, draftText]).length <= maxTotalLength)
+      ? draftText
+      : "";
+  const needsEntry = Boolean(required) && !disabled && items.length === 0 && !draftEntry;
 
   const message = needsEntry ? (labels.requiredMessage ?? "") : "";
   useEffect(() => {
@@ -195,6 +219,7 @@ export function ListField({
     if (current.length >= maxItems) return false;
     if (maxTotalLength !== undefined && serialize([...current, text]).length > maxTotalLength) return false;
     input.value = "";
+    setDraft("");
     apply([...rowsRef.current, newRow(text, true)]);
     return true;
   };
@@ -325,6 +350,7 @@ export function ListField({
             invalid={Boolean(error)}
             autoComplete="off"
             enterKeyHint="enter"
+            onChange={includeDraft ? (event) => setDraft(event.target.value) : undefined}
             onKeyDown={addKey}
           />
           <Button
@@ -341,7 +367,14 @@ export function ListField({
           </Button>
         </div>
       </div>
-      {name ? <input type="hidden" name={name} value={serialize(items)} disabled={disabled} /> : null}
+      {name ? (
+        <input
+          type="hidden"
+          name={name}
+          value={serialize(draftEntry ? [...items, draftEntry] : items)}
+          disabled={disabled}
+        />
+      ) : null}
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
       {error ? <FieldError id={errorId}>{error}</FieldError> : null}
     </div>

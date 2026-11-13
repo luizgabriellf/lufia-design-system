@@ -66,6 +66,17 @@ hidden value is up to date when it returns.
 
 <Canvas of={Stories.Required} />
 
+### Including the draft
+
+Pass `includeDraft` and the text still in the add input is part of the submitted value, exactly as if the add button had
+been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and
+`maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it and the add input keeps its text, so
+the person can still press add. With `required`, a valid draft satisfies the rule, so the form submits with only a draft
+typed. It is off by default: without it a draft is ignored by both the value and `required`, and `commitDraft()` is the
+way to add it before submitting.
+
+<Canvas of={Stories.IncludeDraft} />
+
 ### Limits
 
 `maxItems` (default 30) caps the number of entries, `itemMaxLength` each entry and `maxTotalLength` the length of the

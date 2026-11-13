@@ -89,6 +89,30 @@ export const Required: Story = {
     );
   },
 };
+/** With `includeDraft`, text still in the add input is submitted and satisfies `required`: no `commitDraft()` call. */
+export const IncludeDraft: Story = {
+  args: { required: true, includeDraft: true, defaultItems: [] },
+  render: (args) => {
+    const [sent, setSent] = useState("");
+    return (
+      <form
+        style={{ display: "grid", gap: "0.75rem" }}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSent(String(new FormData(event.currentTarget).get("responsibilities")));
+        }}
+      >
+        <ListField {...args} />
+        <div>
+          <Button type="submit">Save</Button>
+        </div>
+        <p style={{ margin: 0, fontSize: "0.875rem" }}>
+          Submitted: {sent ? JSON.stringify(sent) : "nothing yet"}
+        </p>
+      </form>
+    );
+  },
+};
 export const Invalid: Story = {
   args: { required: true, error: "Add at least one entry.", defaultItems: [] },
 };
