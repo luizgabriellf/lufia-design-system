@@ -120,6 +120,11 @@ export const ENTRIES: Entry[] = [
     apg("Dialog (modal)", "dialog-modal"),
   ),
   c(
+    "Popover",
+    "Overlays",
+    "A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog.",
+  ),
+  c(
     "ConfirmDialog",
     "Overlays",
     "A modal question that has to be answered, with a destructive variant.",

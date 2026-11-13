@@ -12110,6 +12110,245 @@
       ]
     },
     {
+      "name": "Popover",
+      "category": "Overlays",
+      "summary": "A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog.",
+      "status": "beta",
+      "source": "src/components/Popover",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Popover",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Popover",
+          "kind": "component",
+          "description": "A non-modal panel anchored to a trigger. The panel is a `role=\"dialog\"` with an accessible name from `label`; it does not trap focus, lock scroll or make the page inert, so the page behind stays operable. Escape and a press outside close it, and focus returns to the trigger when it closes from inside the panel. For a list of actions use `MoreActions`; for a question that must be answered use `Modal`. The panel is portalled to `document.body` (or into the open modal the trigger sits in) and placed with `position: fixed` from the trigger's box, so an ancestor with `overflow: hidden` cannot clip it. It flips to the opposite side and shifts to stay in the viewport, scrolls inside when the room is shorter than its content, and follows the trigger on scroll and resize. Until the component has mounted (server render, hydration) the panel is not rendered.",
+          "props": [
+            {
+              "name": "trigger",
+              "type": "(props: PopoverTriggerProps) => ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Renders the element that opens the panel (usually a `Button`) and spreads the given props onto it. Called on every render, so keep it cheap: `trigger={(props) => <Button {...props}>Filters</Button>}`."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The panel's content. Rendered only while the panel is open (and while it animates out)."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "Accessible name of the panel (`role=\"dialog\"`), such as \"Filters\"."
+            },
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Whether the panel is open. Controlled; pair it with `onOpenChange`."
+            },
+            {
+              "name": "defaultOpen",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Whether the panel starts open when `open` is not given. For documentation and tests; focus is not moved on first paint."
+            },
+            {
+              "name": "onOpenChange",
+              "type": "(open: boolean) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the next state when the trigger, Escape or a press outside asks to change it."
+            },
+            {
+              "name": "placement",
+              "type": "\"end\" | \"top\" | \"bottom\" | \"start\"",
+              "required": false,
+              "default": "\"bottom\"",
+              "description": "Which side of the trigger the panel opens on. `start` and `end` follow the writing direction. It flips to the opposite side when it does not fit. Default `bottom`."
+            },
+            {
+              "name": "align",
+              "type": "\"end\" | \"start\" | \"center\"",
+              "required": false,
+              "default": "\"start\"",
+              "description": "How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`."
+            },
+            {
+              "name": "initialFocus",
+              "type": "\"first\" | \"panel\"",
+              "required": false,
+              "default": "\"first\"",
+              "description": "Where focus goes when the panel opens: the first focusable element inside (`\"first\"`, default; the panel itself when there is none) or the panel."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "PopoverProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "PopoverTriggerProps",
+          "kind": "type",
+          "description": "",
+          "definition": "{ ref: (element: HTMLElement | null) => void; onClick: () => void; \"aria-expanded\": boolean; \"aria-controls\": string | undefined; \"aria-haspopup\": \"dialog\"; }"
+        }
+      ],
+      "aliases": {
+        "PopoverTriggerProps": "{ ref: (element: HTMLElement | null) => void; onClick: () => void; \"aria-expanded\": boolean; \"aria-controls\": string | undefined; \"aria-haspopup\": \"dialog\"; }"
+      },
+      "story": {
+        "docsId": "components-overlays-popover--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-overlays-popover--default"
+          },
+          {
+            "export": "Open",
+            "id": "components-overlays-popover--open"
+          },
+          {
+            "export": "PlacedAbove",
+            "id": "components-overlays-popover--placed-above"
+          },
+          {
+            "export": "PlacedAtStart",
+            "id": "components-overlays-popover--placed-at-start"
+          },
+          {
+            "export": "PlacedAtEnd",
+            "id": "components-overlays-popover--placed-at-end"
+          },
+          {
+            "export": "AlignedToEnd",
+            "id": "components-overlays-popover--aligned-to-end"
+          },
+          {
+            "export": "Centered",
+            "id": "components-overlays-popover--centered"
+          },
+          {
+            "export": "LongContent",
+            "id": "components-overlays-popover--long-content"
+          },
+          {
+            "export": "ControlledByTheCaller",
+            "id": "components-overlays-popover--controlled-by-the-caller"
+          },
+          {
+            "export": "FlipsNearTheBottom",
+            "id": "components-overlays-popover--flips-near-the-bottom"
+          },
+          {
+            "export": "ShiftsNearTheEdge",
+            "id": "components-overlays-popover--shifts-near-the-edge"
+          },
+          {
+            "export": "InClippingCard",
+            "id": "components-overlays-popover--in-clipping-card"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-overlays-popover--phone-320"
+          },
+          {
+            "export": "Phone390",
+            "id": "components-overlays-popover--phone-390"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-overlays-popover--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-overlays-popover--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Popover/Popover.mdx",
+        "overview": "A non-modal panel anchored to a trigger. It holds content that needs more room than a menu, such as a small form, a filter\nset or an explanation, and it never blocks the page: no focus trap, no scroll lock, nothing made inert.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Popover } from \"@lufia/design-system/components/Popover\";\n\n<Popover label=\"Filters\" trigger={(props) => <Button {...props}>Filters</Button>}>\n  <FilterForm />\n</Popover>;"
+        },
+        "whenToUse": [
+          "Contextual content tied to one control: a few filters, a short form, a rich explanation.",
+          "Something the person may want to consult while still working on the page."
+        ],
+        "whenNotToUse": [
+          "A list of actions: use `MoreActions`.",
+          "A question that must be answered, or content that needs the whole page's attention: use `Modal` or `ConfirmDialog`.",
+          "A one-line hint: use a tooltip or help text.",
+          "Long flows or large forms: use a page or a `Modal`."
+        ],
+        "contentGuidelines": "Name the panel by what it holds (\"Filters\", \"Share settings\"). Keep it short; put the primary action last."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [
+          {
+            "keys": "Enter / Space",
+            "action": "Trigger | Opens or closes the panel; focus moves to the first control inside (or the panel)"
+          },
+          {
+            "keys": "Escape",
+            "action": "Anywhere | Closes the panel and returns focus to the trigger"
+          },
+          {
+            "keys": "Tab",
+            "action": "Last control in the panel | Focus goes to the trigger and on to the next element after it; the panel stays open"
+          },
+          {
+            "keys": "Shift+Tab",
+            "action": "First control in the panel | Focus goes back to the trigger; the panel stays open"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The trigger carries `aria-expanded` and `aria-haspopup=\"dialog\"`, and `aria-controls` while the panel is rendered.",
+          "The panel is `role=\"dialog\"` named by `label`. It is not `aria-modal`: the page behind stays in the accessibility tree and operable. Focus moves in on open (so a screen reader announces the dialog) and returns to the trigger on Escape, and when the panel is closed from inside while focus was in it.",
+          "The panel is portalled to the end of the body, so the browser's own Tab order would skip the rest of the page; leaving the panel at either end goes through the trigger instead.",
+          "The panel is `inert` while it animates out. Under reduced motion it appears and disappears without the scale and fade. In forced-colors mode its border is `CanvasText`.",
+          "The panel is not closed when the trigger scrolls out of view; it keeps following it and stays clamped inside the viewport. Close it from `onOpenChange` or your own scroll handling when that matters.",
+          "This is the non-modal variant of the WAI-ARIA dialog pattern; the APG documents only the modal one, so the focus rules above are the ones this component follows."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface-solid",
+        "--lufia-color-border-subtle",
+        "--lufia-color-text-default",
+        "--lufia-font-size-sm",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-easing-in",
+        "--lufia-motion-easing-out",
+        "--lufia-popover-max-inline-size",
+        "--lufia-popover-padding",
+        "--lufia-popover-radius",
+        "--lufia-radius-panel",
+        "--lufia-shadow-lg",
+        "--lufia-space-4",
+        "--lufia-z-dropdown"
+      ]
+    },
+    {
       "name": "ProgressBar",
       "category": "Data display",
       "summary": "A determinate progress bar with a native progressbar role.",

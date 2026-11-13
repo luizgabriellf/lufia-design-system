@@ -24,6 +24,12 @@
     "gzip": true
   },
   {
+    "name": "Popover",
+    "path": "dist/components/Popover/**/*.{js,css}",
+    "limit": "3 kB",
+    "gzip": true
+  },
+  {
     "name": "CommandPalette",
     "path": "dist/components/CommandPalette/**/*.{js,css}",
     "limit": "6.2 kB",

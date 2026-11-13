@@ -1,0 +1,144 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Popover.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Popover"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A non-modal panel anchored to a trigger. It holds content that needs more room than a menu, such as a small form, a filter
+set or an explanation, and it never blocks the page: no focus trap, no scroll lock, nothing made inert.
+
+<Canvas of={Stories.Open} />
+
+### Usage
+
+`trigger` is a function that receives the props the trigger needs (`ref`, `onClick`, `aria-expanded`, `aria-controls`,
+`aria-haspopup`) and returns the element, so any button component works and none is imposed.
+
+```tsx
+import { Popover } from "@lufia/design-system/components/Popover";
+
+<Popover label="Filters" trigger={(props) => <Button {...props}>Filters</Button>}>
+  <FilterForm />
+</Popover>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. The `ref` has to
+reach the trigger's DOM element: it is what the panel is placed against and where focus returns.
+
+</Section>
+
+<Section id="examples">
+
+### Placement
+
+`placement` is the side of the trigger (`top`, `bottom`, `start`, `end`; the last two follow the writing direction) and
+`align` lines the panel up along the other axis (`start`, `center`, `end`).
+
+<Canvas of={Stories.PlacedAbove} />
+<Canvas of={Stories.PlacedAtEnd} />
+<Canvas of={Stories.AlignedToEnd} />
+
+The panel stays in the viewport. It flips to the opposite side when it does not fit on the requested one and the opposite
+has more room, shifts along the other axis to stay inside the viewport margin, and scrolls inside when even the chosen side
+is shorter than its content. It follows the trigger on scroll (of any ancestor) and resize.
+
+<Canvas of={Stories.FlipsNearTheBottom} story={{ inline: false, height: "20rem" }} />
+<Canvas of={Stories.ShiftsNearTheEdge} story={{ inline: false, height: "20rem" }} />
+<Canvas of={Stories.LongContent} story={{ inline: false, height: "24rem" }} />
+
+### Portal and clipping
+
+The open panel is portalled to `document.body`, or into the open modal the trigger sits in (so the modal's focus trap and
+inert page do not lock it out), and placed with `position: fixed`. An ancestor with `overflow: hidden` cannot clip it. Find
+it by role (`getByRole("dialog", { name })`), not inside the trigger's parent. What the trigger's subtree sets that the body
+does not is copied onto the panel: a nested `data-lufia-theme` or `data-lufia-mode` scope, `dir` and `lang`, and any
+`--lufia-*` custom properties set inline. Until the component has mounted (server render, hydration) the panel is not
+rendered. It stacks at `--lufia-z-dropdown`.
+
+<Canvas of={Stories.InClippingCard} />
+
+### Controlled
+
+Pass `open` and `onOpenChange` to keep the state in the caller, for example to close it after an action or to open it from
+elsewhere. `defaultOpen` starts it open without moving focus.
+
+<Canvas of={Stories.ControlledByTheCaller} />
+
+### Not a sheet on phones
+
+`Popover` has no sheet presentation. `Modal` shows a bottom sheet on phones, but that is a modal surface with a focus trap
+and an inert page, which a non-modal panel must not have, and it is not reusable for this. On a narrow screen the panel keeps
+its anchor and is limited to the viewport width. For a list of actions that becomes a sheet, use `MoreActions`.
+
+<Canvas of={Stories.Phone320} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key           | Where                      | Action                                                                              |
+| ------------- | -------------------------- | ----------------------------------------------------------------------------------- |
+| Enter / Space | Trigger                    | Opens or closes the panel; focus moves to the first control inside (or the panel)   |
+| Escape        | Anywhere                   | Closes the panel and returns focus to the trigger                                   |
+| Tab           | Last control in the panel  | Focus goes to the trigger and on to the next element after it; the panel stays open |
+| Shift+Tab     | First control in the panel | Focus goes back to the trigger; the panel stays open                                |
+
+A press outside closes the panel and leaves focus where the press put it. Escape and outside presses go through `useDismiss`
+and the shared layer stack, so inside a `Modal` Escape closes the popover first and the modal on the next press.
+
+### Accessibility
+
+- The trigger carries `aria-expanded` and `aria-haspopup="dialog"`, and `aria-controls` while the panel is rendered.
+- The panel is `role="dialog"` named by `label`. It is not `aria-modal`: the page behind stays in the accessibility tree
+  and operable. Focus moves in on open (so a screen reader announces the dialog) and returns to the trigger on Escape, and when
+  the panel is closed from inside while focus was in it.
+- The panel is portalled to the end of the body, so the browser's own Tab order would skip the rest of the page; leaving the
+  panel at either end goes through the trigger instead.
+- The panel is `inert` while it animates out. Under reduced motion it appears and disappears without the scale and fade. In
+  forced-colors mode its border is `CanvasText`.
+- The panel is not closed when the trigger scrolls out of view; it keeps following it and stays clamped inside the viewport.
+  Close it from `onOpenChange` or your own scroll handling when that matters.
+- This is the non-modal variant of the WAI-ARIA dialog pattern; the APG documents only the modal one, so the focus rules above
+  are the ones this component follows.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Contextual content tied to one control: a few filters, a short form, a rich explanation.
+- Something the person may want to consult while still working on the page.
+
+### When not to use
+
+- A list of actions: use `MoreActions`.
+- A question that must be answered, or content that needs the whole page's attention: use `Modal` or `ConfirmDialog`.
+- A one-line hint: use a tooltip or help text.
+- Long flows or large forms: use a page or a `Modal`.
+
+### Content guidelines
+
+Name the panel by what it holds ("Filters", "Share settings"). Keep it short; put the primary action last.
+
+</Section>

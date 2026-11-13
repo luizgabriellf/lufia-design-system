@@ -1,0 +1,85 @@
+/* Theming hooks, all optional: --lufia-popover-radius, --lufia-popover-padding, --lufia-popover-max-inline-size. */
+.panel {
+  position: fixed;
+  inset: auto;
+  z-index: var(--lufia-z-dropdown);
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: min(var(--lufia-popover-max-inline-size, 24rem), calc(100vw - 1rem));
+  padding: var(--lufia-popover-padding, var(--lufia-space-4));
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-popover-radius, var(--lufia-radius-panel));
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  overflow-wrap: anywhere;
+  animation: popover-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+/* The panel takes focus programmatically so a screen reader announces it; it is not a control, so a drawn ring around the
+   whole panel only adds noise. A transparent outline still shows in forced colours, and the first Tab lands on a control. */
+.panel:focus {
+  outline: 2px solid transparent;
+}
+
+.panel[data-side="top"] {
+  transform-origin: bottom center;
+}
+
+.panel[data-side="bottom"] {
+  transform-origin: top center;
+}
+
+.panel[data-side="start"] {
+  transform-origin: center right;
+}
+
+.panel[data-side="end"] {
+  transform-origin: center left;
+}
+
+/* `transform-origin` has no logical form: the side the trigger is on flips in right-to-left text. */
+.panel[data-side="start"]:dir(rtl) {
+  transform-origin: center left;
+}
+
+.panel[data-side="end"]:dir(rtl) {
+  transform-origin: center right;
+}
+
+/* It leaves faster than it came, and on its way out it no longer takes the pointer. */
+.panel[data-state="closed"] {
+  pointer-events: none;
+  animation: popover-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+/* The enter keyframes animate `from` only, so the resting state is the open panel and a disabled animation leaves it visible. */
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes popover-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel[data-state="closed"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .panel {
+    border-color: CanvasText;
+  }
+}
