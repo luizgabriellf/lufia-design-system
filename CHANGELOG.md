@@ -1,5 +1,17 @@
 # @lufia/design-system
 
+## 0.39.0
+
+### Minor Changes
+
+- [#143](https://github.com/luizgabriellf/lufia-design-system/pull/143) [`7a04e3d`](https://github.com/luizgabriellf/lufia-design-system/commit/7a04e3dae871352315f8a3ed953353a176c04a54) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `ListField`: a form field that holds a list of short text entries. One text input per entry (editable in place), an add row where Enter adds and never submits the surrounding form, and a remove button on each entry. The entries are submitted as one hidden text value under `name`, joined with a line feed or by your `serialize`. It works controlled (`items`, `onChange`) and uncontrolled (`defaultItems`), supports `sanitizeItem`, `maxItems`, `itemMaxLength`, `maxTotalLength` and `required` (custom validity on the add input), and exposes `commitDraft()` on its ref for the pending text before a submit. Every string comes through the `labels` prop.
+
+### Patch Changes
+
+- [#143](https://github.com/luizgabriellf/lufia-design-system/pull/143) [`7a04e3d`](https://github.com/luizgabriellf/lufia-design-system/commit/7a04e3dae871352315f8a3ed953353a176c04a54) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `SearchInput` taking 12rem of height inside a column flex container, which includes a `FormField` (the field is a column flex container, so a labelled search box in a filter form was 192px tall). The box now holds its block size at the height of its content, so the flex-basis no longer reaches the block axis: it still grows and wraps in a toolbar row, fills a grid track and keeps its 8rem floor.
+
+- [#143](https://github.com/luizgabriellf/lufia-design-system/pull/143) [`7a04e3d`](https://github.com/luizgabriellf/lufia-design-system/commit/7a04e3dae871352315f8a3ed953353a176c04a54) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Document the `TextInput` `size` typing. Since `size="sm"` was added, `TextInputProps` omits the native numeric `size` attribute, so props types that extend the native input attributes and are spread into `TextInput` must omit `size`: `Omit<InputHTMLAttributes<HTMLInputElement>, "size">`. `SearchInput`, `DateField` and `Select` already follow this convention. No runtime change.
+
 ## 0.38.0
 
 ### Minor Changes
