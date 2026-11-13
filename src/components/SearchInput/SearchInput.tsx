@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   type ChangeEvent,
+  type ChangeEventHandler,
   type InputHTMLAttributes,
   type KeyboardEvent,
   type Ref,
@@ -20,11 +21,13 @@ import styles from "./SearchInput.module.css";
 
 export type SearchInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  "type" | "size" | "value" | "defaultValue" | "onChange" | "className"
+  "type" | "size" | "value" | "defaultValue" | "className"
 > & {
   /** Controlled text. */
   value?: string;
   defaultValue?: string;
+  /** The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input. */
+  onChange?: ChangeEventHandler<HTMLInputElement>;
   /** Called on every keystroke with the current text. */
   onValueChange?: (value: string) => void;
   /**
@@ -69,6 +72,7 @@ export function SearchInput({
   placeholder,
   readOnly,
   onKeyDown,
+  onChange,
   ref,
   ...rest
 }: SearchInputProps) {
@@ -103,6 +107,7 @@ export function SearchInput({
   }, []);
 
   const change = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange?.(event);
     const next = event.target.value;
     setValue(next);
     clearTimeout(timer.current);

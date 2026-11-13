@@ -12955,6 +12955,13 @@
           "description": "A search box with a magnifier, a clear button, an optional shortcut hint and a debounced `onSearch`. Escape clears the text first. Inside a `FormField` the field's id, description and states apply; on its own it is named by `aria-label`, or by its placeholder.",
           "props": [
             {
+              "name": "onChange",
+              "type": "ChangeEventHandler<HTMLInputElement, HTMLInputElement> & ChangeEventHandler<HTMLInputElement>",
+              "required": false,
+              "default": null,
+              "description": "The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input."
+            },
+            {
               "name": "value",
               "type": "string",
               "required": false,
@@ -13091,6 +13098,10 @@
           {
             "export": "LongText",
             "id": "components-forms-searchinput--long-text"
+          },
+          {
+            "export": "InToolbar",
+            "id": "components-forms-searchinput--in-toolbar"
           },
           {
             "export": "Phone320",

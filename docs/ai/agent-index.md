@@ -28,7 +28,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth
 - RadioGroup: label* options* hint error required disabled value defaultValue onValueChange name orientation variant +2
-- SearchInput: value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid
+- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid
 - SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width size
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
