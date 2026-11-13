@@ -108,6 +108,78 @@ describe("SearchInput", () => {
     expect(screen.getByRole("searchbox")).toHaveValue("one2");
   });
 
+  describe("controlled", () => {
+    function Controlled({ extra }: { extra?: Record<string, unknown> }) {
+      const [value, setValue] = useState("");
+      return (
+        <form>
+          <SearchInput aria-label="Search" value={value} onValueChange={setValue} {...extra} />
+          <output data-testid="state">{value}</output>
+        </form>
+      );
+    }
+
+    it("keeps what is typed when the parent keeps it in state", async () => {
+      const user = userEvent.setup();
+      render(<Controlled />);
+      await user.type(screen.getByRole("searchbox"), "pump");
+      expect(screen.getByRole("searchbox")).toHaveValue("pump");
+      expect(screen.getByTestId("state")).toHaveTextContent("pump");
+    });
+
+    it("also reports the native change event through onChange, so value + onChange sticks", async () => {
+      const user = userEvent.setup();
+      function WithOnChange() {
+        const [value, setValue] = useState("");
+        return (
+          <SearchInput aria-label="Search" value={value} onChange={(event) => setValue(event.target.value)} />
+        );
+      }
+      render(<WithOnChange />);
+      await user.type(screen.getByRole("searchbox"), "pump");
+      expect(screen.getByRole("searchbox")).toHaveValue("pump");
+    });
+
+    it("calls onChange and onValueChange together", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onValueChange = vi.fn();
+      render(<SearchInput aria-label="Search" onValueChange={onValueChange} onChange={onChange} />);
+      await user.type(screen.getByRole("searchbox"), "a");
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith("a");
+    });
+
+    it("clears through the clear button and reports it", async () => {
+      const user = userEvent.setup();
+      render(<Controlled extra={{ clearLabel: "Clear" }} />);
+      await user.type(screen.getByRole("searchbox"), "pump");
+      await user.click(screen.getByRole("button", { name: "Clear" }));
+      expect(screen.getByRole("searchbox")).toHaveValue("");
+      expect(screen.getByTestId("state")).toHaveTextContent("");
+    });
+
+    it("follows the parent when it sets the value", () => {
+      const { rerender } = render(<SearchInput aria-label="Search" value="a" onValueChange={() => {}} />);
+      rerender(<SearchInput aria-label="Search" value="b" onValueChange={() => {}} />);
+      expect(screen.getByRole("searchbox")).toHaveValue("b");
+    });
+
+    it("keeps a controlled value on a form reset, and tells the parent the default", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <form>
+          <SearchInput aria-label="Search" value="kept" onValueChange={onValueChange} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+      await user.click(screen.getByRole("button", { name: "Reset" }));
+      expect(screen.getByRole("searchbox")).toHaveValue("kept");
+      expect(onValueChange).toHaveBeenCalledWith("");
+    });
+  });
+
   it("shows the shortcut hint only while empty and idle", async () => {
     const user = userEvent.setup();
     render(<SearchInput aria-label="Search" shortcut="/" />);

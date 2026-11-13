@@ -4,6 +4,7 @@ import { LufiaProvider } from "../LufiaProvider";
 import { FormField } from "./FormField";
 import { TextInput } from "../TextInput";
 import { Combobox } from "../Combobox";
+import { SearchInput } from "../SearchInput";
 import { useFormFieldControl } from "./useFormFieldControl";
 
 function Probe(props: { "aria-describedby"?: string; required?: boolean }) {
@@ -215,5 +216,78 @@ describe("FormField", () => {
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("required");
     expect(input).not.toHaveAttribute("aria-required");
+  });
+  describe("ids", () => {
+    it("keeps an explicit id on the control and points the label at it", () => {
+      render(
+        <FormField label="Name" hint="Hint">
+          <TextInput id="own-id" />
+        </FormField>,
+      );
+      const input = screen.getByRole("textbox", { name: "Name" });
+      expect(input).toHaveAttribute("id", "own-id");
+      expect(screen.getByText("Name").closest("label")).toHaveAttribute("for", "own-id");
+      expect(input).toHaveAccessibleDescription("Hint");
+    });
+
+    it("never gives two controls in one field the same id", () => {
+      render(
+        <FormField label="Range">
+          <TextInput aria-label="From" />
+          <TextInput aria-label="To" />
+        </FormField>,
+      );
+      const [from, to] = screen.getAllByRole("textbox");
+      expect(from!.id).toBeTruthy();
+      expect(to!.id).toBeTruthy();
+      expect(from!.id).not.toBe(to!.id);
+      const ids = [...document.querySelectorAll("[id]")].map((node) => node.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it("names only the first control, and the second keeps its own id", () => {
+      render(
+        <FormField label="Range">
+          <TextInput />
+          <TextInput id="second" aria-label="To" />
+        </FormField>,
+      );
+      const [first, second] = screen.getAllByRole("textbox");
+      expect(second).toHaveAttribute("id", "second");
+      expect(screen.getByText("Range").closest("label")).toHaveAttribute("for", first!.id);
+      expect(first).toHaveAccessibleName("Range");
+      expect(second).toHaveAccessibleName("To");
+    });
+
+    it("lets a later control with an explicit id stay out of the label when an earlier one owns the field", () => {
+      render(
+        <FormField label="Name">
+          <TextInput />
+          <SearchInput id="q" aria-label="Find" />
+        </FormField>,
+      );
+      expect(screen.getByRole("searchbox")).toHaveAttribute("id", "q");
+      expect(screen.getByRole("textbox", { name: "Name" })).toBeInTheDocument();
+    });
+
+    it("keeps single-control behaviour: the field id is the control id", () => {
+      render(
+        <FormField label="Name" id="project">
+          <TextInput />
+        </FormField>,
+      );
+      expect(screen.getByRole("textbox")).toHaveAttribute("id", "project");
+      expect(screen.getByText("Name").closest("label")).toHaveAttribute("for", "project");
+    });
+
+    it("has no axe violations with an explicit id or two controls", async () => {
+      const { container } = render(
+        <FormField label="Range">
+          <TextInput id="from" />
+          <TextInput aria-label="To" />
+        </FormField>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

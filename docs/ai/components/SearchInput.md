@@ -29,6 +29,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `onChange` | `ChangeEventHandler<HTMLInputElement, HTMLInputElement> & ChangeEventHandler<HTMLInputElement>` | no |  | The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input. |
 | `value` | `string` | no |  | Controlled text. |
 | `defaultValue` | `string` | no | `""` |  |
 | `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
@@ -90,6 +91,7 @@ search on a page. `clearLabel` and `loadingLabel` are read aloud: "Clear search"
 - `components-forms-searchinput--read-only`
 - `components-forms-searchinput--debounced`
 - `components-forms-searchinput--long-text`
+- `components-forms-searchinput--in-toolbar`
 - `components-forms-searchinput--phone-320`
 - `components-forms-searchinput--right-to-left`
 - `components-forms-searchinput--all-themes`

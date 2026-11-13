@@ -18,3 +18,17 @@ export type FormFieldControlProps = {
 };
 
 export const FormFieldContext = createContext<FormFieldControlProps | null>(null);
+
+/**
+ * Internal: lets the controls inside one field agree on which of them the label belongs to. The first control to claim the
+ * field takes it  and reports the id it ended up with, so the label's `htmlFor` follows it.
+ */
+export type FormFieldClaim = {
+  /** Claims the field for `key` unless another control has it; true when `key` owns it. Idempotent for the owner. */
+  take: (key: string) => boolean;
+  /** Gives the field up, when `key` owns it. */
+  release: (key: string) => void;
+  setLabelTarget: (id: string | undefined) => void;
+};
+
+export const FormFieldClaimContext = createContext<FormFieldClaim | null>(null);

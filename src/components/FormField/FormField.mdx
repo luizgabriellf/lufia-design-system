@@ -47,6 +47,13 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <FormField label="Due date">{(control) => <input type="date" {...control} />}</FormField>
 ```
 
+### One field, one control id
+
+A field names one control. The first control of this package inside it takes the field's `id` and the label points at it. A
+control with its own `id` keeps it, and the label follows that control. A second control in the same field never receives the
+same id: it keeps its own `id` or gets a generated one, the label does not name it, and it needs its own `aria-label` or
+`aria-labelledby`. For a group of related controls (a date range, a pair of inputs) prefer a `fieldset` with a `legend`.
+
 Building your own control? `useFormFieldControl(props)` merges a control's own props with the field's.
 
 </Section>

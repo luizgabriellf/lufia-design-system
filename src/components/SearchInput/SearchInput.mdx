@@ -32,7 +32,7 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 ```
 
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
-Use `value` and `onValueChange` to control the text, or `defaultValue` to leave it to the component.
+Use `value` with `onValueChange` (the text) or `onChange` (the native event, as on any input) to control the text, or `defaultValue` to leave it to the component.
 
 ### Shortcut hint
 
