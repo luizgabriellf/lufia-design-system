@@ -84,6 +84,25 @@ export const InToolbar: Story = {
     </div>
   ),
 };
+/** A grid form: the box is a direct child of a grid and fills its track, also when the track is sized by content. */
+export const InGridForm: Story = {
+  render: (args) => (
+    <form
+      data-testid="grid-form"
+      style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}
+      onSubmit={(event) => event.preventDefault()}
+    >
+      <SearchInput {...args} aria-label="Search customers" />
+      <div
+        data-testid="grid-form-content"
+        style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "0.5rem", justifyContent: "start" }}
+      >
+        <SearchInput {...args} aria-label="Search orders" />
+        <Button variant="secondary">Filters</Button>
+      </div>
+    </form>
+  ),
+};
 export const Phone320: Story = {
   args: { defaultValue: "pressure pump", shortcut: "/" },
   globals: { viewport: { value: "w320", isRotated: false } },

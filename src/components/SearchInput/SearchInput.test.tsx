@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -242,5 +243,27 @@ describe("SearchInput", () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("as a direct child of a grid or flex form", () => {
+    it("has no axe violations in a grid host", async () => {
+      const { container } = render(
+        <form style={{ display: "grid", gridTemplateColumns: "1fr" }}>
+          <SearchInput aria-label="Search customers" />
+          <button type="submit">Search</button>
+        </form>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it("declares a width floor and leaves the shared full-width box alone, so a grid track is filled", () => {
+      const own = readFileSync("src/components/SearchInput/SearchInput.module.css", "utf8");
+      const shared = readFileSync("src/components/FormField/fieldControl.module.css", "utf8");
+      const box = /\.box\s*\{([^}]*)\}/.exec(own)?.[1] ?? "";
+      expect(box).toMatch(/min-inline-size:\s*8rem;/);
+      // The box must not set its own width: the shared box already fills its track with `inline-size: 100%`.
+      expect(box).not.toMatch(/(^|[\s;])(inline-size|width):/);
+      expect(/\.box\s*\{([^}]*)\}/.exec(shared)?.[1]).toMatch(/inline-size:\s*100%;/);
+    });
   });
 });

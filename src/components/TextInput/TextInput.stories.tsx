@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { SearchIcon } from "../../docs/demo";
 import { FormField, type FormFieldProps } from "../FormField";
+import { Select } from "../Select";
 import { TextInput, type TextInputProps } from "./TextInput";
 
 type DemoProps = TextInputProps & Pick<FormFieldProps, "label" | "hint" | "error" | "requiredLabel">;
@@ -85,6 +86,32 @@ export const LongText: Story = {
     defaultValue: "A value that is much too long to fit inside the box without being clipped by it",
     hint: "A hint can be long too, and it wraps inside the width of the field instead of overflowing.",
   },
+};
+/** `size="sm"`: the compact control for toolbars and filter rows, with the metrics of `Select size="sm"`. */
+export const Compact: Story = {
+  args: { size: "sm", label: "Filter", placeholder: "Filter by name" },
+};
+export const CompactWithAffixes: Story = {
+  args: { size: "sm", label: "Weight", prefix: "~", suffix: "kg", inputMode: "decimal", placeholder: "0.0" },
+};
+/** The compact input beside the compact select: same height, same font size. */
+export const CompactBesideSelect: Story = {
+  args: { size: "sm" },
+  render: (args) => (
+    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+      <div style={{ flex: "1 1 auto" }}>
+        <TextInput {...args} aria-label="Filter" placeholder="Filter by name" />
+      </div>
+      <Select
+        size="sm"
+        aria-label="Status"
+        options={[
+          { value: "all", label: "All" },
+          { value: "open", label: "Open" },
+        ]}
+      />
+    </div>
+  ),
 };
 export const Phone320: Story = {
   args: { required: true, error: "Enter a project name to continue.", defaultValue: "" },

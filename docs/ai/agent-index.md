@@ -32,7 +32,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width size
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
-- TextInput: prefix suffix invalid
+- TextInput: size prefix suffix invalid
 - Textarea: invalid showCount formatCount formatCountAnnouncement autoSize maxRows
 
 ### Overlays

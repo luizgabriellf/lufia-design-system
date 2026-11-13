@@ -52,7 +52,11 @@ The modal is controlled: it never closes itself, it calls `onClose`, and you dec
 ### Sizes
 
 `sm` (26 rem) for short questions, `md` (35 rem, default) for forms, `lg` (48 rem) and `xl` (60 rem) for dense content.
-Below 600 px every size becomes a sheet anchored to the bottom of the screen that rises into view.
+Below 600 px every size becomes a sheet anchored to the bottom of the screen that rises into view. Set
+`sheetPlacement="none"` to opt out: the dialog then stays a centred floating panel on phones too, with a margin on every
+side and the scale entrance, which suits an image viewer or any content that must not look like a sheet.
+
+<Canvas of={Stories.CenteredOnPhone} story={{ inline: false, height: "30rem" }} />
 
 <Canvas of={Stories.Large} story={{ inline: false, height: "30rem" }} />
 
@@ -96,7 +100,7 @@ the modal without forking it. All are optional and the defaults are unchanged.
 | `--lufia-modal-header-block-size`                                                            | Output: the height the header covers (see below)  |
 
 `size` also takes any CSS length (`size="62rem"`). `sheetPlacement="top"` hangs the phone sheet from the offset instead of
-rising from the bottom, `titleWrap="ellipsis"` keeps the title on one line, and `scrollShadow` scrolls the body between a
+rising from the bottom, `sheetPlacement="none"` keeps it a centred panel on phones, `titleWrap="ellipsis"` keeps the title on one line, and `scrollShadow` scrolls the body between a
 fixed header and footer with an edge shadow.
 
 <Canvas of={Stories.ThemedByVariables} />

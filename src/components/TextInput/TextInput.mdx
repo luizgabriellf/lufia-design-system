@@ -56,6 +56,15 @@ Slots hold short text or an icon. A prefix or suffix that carries meaning ("EUR"
 it is read with the control's description; mark a purely decorative icon `aria-hidden`. A suffix may contain a button, which
 is then its own tab stop.
 
+### Compact
+
+<Canvas of={Stories.CompactBesideSelect} />
+
+`size="sm"` is the compact control for toolbars and filter rows. It has the metrics of `Select size="sm"` (a 2 rem box, the
+small font size, tighter padding), so the two line up in one row, and it still fills the width it is given. Give it an
+`aria-label` or a visually hidden label, as there is little room for a visible one. On touch screens and below 40 rem it grows
+to the 44 px touch target, as `Button` and the compact `Select` do; the default size is unchanged.
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -80,7 +89,7 @@ is then its own tab stop.
 - Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.
 - The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors`
   the ring uses `Highlight`, and an invalid control gets a thicker border.
-- Height is at least 44px; the text is 16px so iOS does not zoom on focus.
+- Height is at least 44px; the text is 16px so iOS does not zoom on focus. The compact `size="sm"` is 32px with 14px text on a fine pointer and grows to 44px on touch screens and phone widths (never below the 24px minimum of WCAG 2.5.8).
 
 </Section>
 

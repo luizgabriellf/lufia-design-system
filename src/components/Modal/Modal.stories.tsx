@@ -108,7 +108,7 @@ const meta = {
     size: { control: "inline-radio", options: ["sm", "md", "lg", "xl"] },
     role: { control: "inline-radio", options: ["dialog", "alertdialog"] },
     initialFocus: { control: "inline-radio", options: ["container", "first"] },
-    sheetPlacement: { control: "inline-radio", options: ["bottom", "top"] },
+    sheetPlacement: { control: "inline-radio", options: ["bottom", "top", "none"] },
     titleWrap: { control: "inline-radio", options: ["wrap", "ellipsis"] },
     renderAs: { control: "inline-radio", options: ["portal", "dialog"] },
   },
@@ -225,6 +225,20 @@ export const TopSheetOnPhone: Story = {
     style: { "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties,
   },
   globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** `sheetPlacement="none"`: on a phone the dialog stays a centred floating panel with a margin on every side, for an image viewer. */
+export const CenteredOnPhone: Story = {
+  args: {
+    startOpen: true,
+    sheetPlacement: "none",
+    size: "sm",
+    paragraphs: 1,
+  },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+export const CenteredOnPhone320: Story = {
+  args: { startOpen: true, sheetPlacement: "none", size: "sm", paragraphs: 1 },
+  globals: { viewport: { value: "w320", isRotated: false } },
 };
 export const NativeTopLayer: Story = {
   args: {

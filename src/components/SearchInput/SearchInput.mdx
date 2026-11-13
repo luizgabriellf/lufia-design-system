@@ -60,6 +60,13 @@ the initial value, and not twice for the same text in a row. Pending timers are 
 <Canvas of={Stories.ReadOnly} />
 <Canvas of={Stories.Invalid} />
 
+### In a toolbar or a grid form
+
+<Canvas of={Stories.InGridForm} />
+
+As a direct child of a grid the box fills its track (`inline-size: 100%`); in a flex row it grows beside fixed-size
+actions. In either it never shrinks below 8 rem, so on a 320 px phone it overflows its row rather than collapsing.
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />

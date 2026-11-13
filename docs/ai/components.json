@@ -5453,10 +5453,10 @@
             },
             {
               "name": "sheetPlacement",
-              "type": "\"top\" | \"bottom\"",
+              "type": "\"none\" | \"top\" | \"bottom\"",
               "required": false,
               "default": null,
-              "description": "Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`."
+              "description": "How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such as an image viewer. Larger screens ignore this prop."
             },
             {
               "name": "classNames",
@@ -9569,14 +9569,14 @@
               "type": "ModalSize | (string & {})",
               "required": false,
               "default": "\"md\"",
-              "description": "Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`\"62rem\"`, `\"min(100%, 70ch)\"`). On a phone every size is a sheet. Default `md`."
+              "description": "Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`\"62rem\"`, `\"min(100%, 70ch)\"`). On a phone every size is a sheet unless `sheetPlacement=\"none\"`. Default `md`."
             },
             {
               "name": "sheetPlacement",
-              "type": "\"top\" | \"bottom\"",
+              "type": "\"none\" | \"top\" | \"bottom\"",
               "required": false,
               "default": "\"bottom\"",
-              "description": "Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`."
+              "description": "How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such as an image viewer. Larger screens ignore this prop."
             },
             {
               "name": "titleWrap",
@@ -9818,6 +9818,14 @@
           {
             "export": "TopSheetOnPhone",
             "id": "components-overlays-modal--top-sheet-on-phone"
+          },
+          {
+            "export": "CenteredOnPhone",
+            "id": "components-overlays-modal--centered-on-phone"
+          },
+          {
+            "export": "CenteredOnPhone320",
+            "id": "components-overlays-modal--centered-on-phone-320"
           },
           {
             "export": "NativeTopLayer",
@@ -13343,6 +13351,10 @@
             "id": "components-forms-searchinput--in-toolbar"
           },
           {
+            "export": "InGridForm",
+            "id": "components-forms-searchinput--in-grid-form"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-searchinput--phone-320"
           },
@@ -16561,6 +16573,13 @@
           "description": "A single-line text control with optional prefix and suffix slots. Inside a `FormField` it takes its id, description, invalid, required and disabled state from the field. Rest props, `ref` and `type` go to the native `<input>`.",
           "props": [
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `Select size=\"sm\"`: a 2rem box with the small font size. It still fills its row. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
               "name": "prefix",
               "type": "ReactNode",
               "required": false,
@@ -16602,11 +16621,11 @@
           "name": "TextInputProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { size?: TextInputSize | undefined; prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
         }
       ],
       "aliases": {
-        "TextInputProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+        "TextInputProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"prefix\" | \"size\"> & { size?: TextInputSize | undefined; prefix?: ReactNode; suffix?: ReactNode; invalid?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
       },
       "story": {
         "docsId": "components-forms-textinput--docs",
@@ -16664,6 +16683,18 @@
             "id": "components-forms-textinput--long-text"
           },
           {
+            "export": "Compact",
+            "id": "components-forms-textinput--compact"
+          },
+          {
+            "export": "CompactWithAffixes",
+            "id": "components-forms-textinput--compact-with-affixes"
+          },
+          {
+            "export": "CompactBesideSelect",
+            "id": "components-forms-textinput--compact-beside-select"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-textinput--phone-320"
           },
@@ -16702,14 +16733,18 @@
         "notes": [
           "Always inside a `FormField`, or give `aria-label`. A placeholder is not a label.",
           "The box draws a 2px focus ring around the whole control; the native outline is replaced, not removed. Under `forced-colors` the ring uses `Highlight`, and an invalid control gets a thicker border.",
-          "Height is at least 44px; the text is 16px so iOS does not zoom on focus."
+          "Height is at least 44px; the text is 16px so iOS does not zoom on focus. The compact `size=\"sm\"` is 32px with 14px text on a fine pointer and grows to 44px on touch screens and phone widths (never below the 24px minimum of WCAG 2.5.8)."
         ]
       },
       "motion": {
         "respectsReducedMotion": false,
         "notes": null
       },
-      "tokens": []
+      "tokens": [
+        "--lufia-font-size-sm",
+        "--lufia-space-2",
+        "--lufia-target-touch"
+      ]
     },
     {
       "name": "Textarea",

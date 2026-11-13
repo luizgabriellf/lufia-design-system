@@ -60,11 +60,16 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   description?: ReactNode;
   /**
    * Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size
-   * (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet. Default `md`.
+   * (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet unless `sheetPlacement="none"`. Default `md`.
    */
   size?: ModalSize | (string & {});
-  /** Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. */
-  sheetPlacement?: "bottom" | "top";
+  /**
+   * How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom
+   * edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a
+   * centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such
+   * as an image viewer. Larger screens ignore this prop.
+   */
+  sheetPlacement?: "bottom" | "top" | "none";
   /** `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. */
   titleWrap?: "wrap" | "ellipsis";
   /** Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. */
@@ -373,7 +378,7 @@ export function Modal({
       <Reveal
         show={open}
         appear
-        variant={phone ? "rise" : "scale"}
+        variant={phone && sheetPlacement !== "none" ? "rise" : "scale"}
         onExited={() => onPartExited("frame")}
         className={cx(styles.frame, classNames?.frame)}
         data-lufia-part="frame"
