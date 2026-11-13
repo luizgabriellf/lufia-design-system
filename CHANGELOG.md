@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.40.0
+
+### Minor Changes
+
+- [#145](https://github.com/luizgabriellf/lufia-design-system/pull/145) [`65cc5ed`](https://github.com/luizgabriellf/lufia-design-system/commit/65cc5ed6afe4e1ac4c0bf30093389868ca13f19f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `ListField` closes four gaps for adoption in forms. `includeDraft` (off by default) submits the text still in the add input as if it had been added, without calling `onChange`, and lets a valid draft satisfy `required`; without it the 0.39 behaviour is unchanged, and `required` still ignores a draft. `labels.addInput` names the add input apart from the group and the add button; without it the input keeps the group label. `renderCount({ count, maxItems, length, maxTotalLength })` renders a counter under the hint, linked to the group with `aria-describedby`; nothing is rendered without it. New exported type `ListFieldCount`.
+
 ## 0.39.0
 
 ### Minor Changes
