@@ -34,6 +34,7 @@ import { Switch as Switch_Switch } from "@lufia/design-system/components/Switch"
 import { TextInput as TextInput_TextInput } from "@lufia/design-system/components/TextInput";
 import { Textarea as Textarea_Textarea } from "@lufia/design-system/components/Textarea";
 import { ToastProvider as Toast_ToastProvider } from "@lufia/design-system/components/Toast";
+import { Tour as Tour_Tour } from "@lufia/design-system/components/Tour";
 import * as useBodyScrollLock from "@lufia/design-system/components/useBodyScrollLock";
 import * as useDismiss from "@lufia/design-system/components/useDismiss";
 import * as useFocusTrap from "@lufia/design-system/components/useFocusTrap";
@@ -101,6 +102,14 @@ export default function ClientSmoke() {
       <section data-smoke="TextInput"><TextInput_TextInput /></section>
       <section data-smoke="Textarea"><Textarea_Textarea /></section>
       <section data-smoke="Toast/ToastProvider"><Toast_ToastProvider>{"x"}</Toast_ToastProvider></section>
+      <section data-smoke="Tour"><Tour_Tour steps={[{ title: "Step", body: "Body" }]} labels={{
+      next: "Next",
+      back: "Back",
+      skip: "Skip",
+      close: "Close",
+      finish: "Done",
+      stepOf: (current, total) => current + " of " + total,
+    }} open={false} /></section>
       <section data-smoke="useBodyScrollLock" data-exports={Object.keys(useBodyScrollLock).length} />
       <section data-smoke="useDismiss" data-exports={Object.keys(useDismiss).length} />
       <section data-smoke="useFocusTrap" data-exports={Object.keys(useFocusTrap).length} />

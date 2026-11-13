@@ -40,6 +40,17 @@ export const FIXTURES = {
     items: `[{ id: "a", title: "Notification" }]`,
   },
   Popover: { trigger: `(props) => <button type="button" {...props}>Open</button>` },
+  Tour: {
+    steps: `[{ title: "Step", body: "Body" }]`,
+    labels: `{
+      next: "Next",
+      back: "Back",
+      skip: "Skip",
+      close: "Close",
+      finish: "Done",
+      stepOf: (current, total) => current + " of " + total,
+    }`,
+  },
   Pagination: {
     labels: `{
       nav: "Pages",

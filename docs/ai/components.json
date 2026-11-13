@@ -17263,6 +17263,249 @@
       ]
     },
     {
+      "name": "Tour",
+      "category": "Overlays",
+      "summary": "A non-modal guided tour: a card that walks through steps with a spotlight on each target, while the page stays usable.",
+      "status": "beta",
+      "source": "src/components/Tour",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Tour",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Tour",
+          "kind": "component",
+          "description": "A guided tour: a card that walks through `steps`, with a spotlight on each step's target. It is non-modal: the spotlight only dims the page, it does not block it, so the person can use the highlighted control (or any other) while the card stays. Nothing is made inert and scroll is not locked. The card follows its target on scroll, resize and layout changes, scrolls it into view when it is off screen, and becomes a centred card when the target is missing or hidden. Below 40rem it is a sheet docked to the bottom edge (the top edge when the target would be under it) and the target is scrolled clear of it. When the target is inside an open modal, the tour is portalled into that modal, so the modal's inert page does not lock it out. The component keeps no record of what was seen: the app decides when to open it and stores the outcome from `onFinish` and `onClose`.",
+          "props": [
+            {
+              "name": "steps",
+              "type": "readonly TourStep[]",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": true,
+              "default": null,
+              "description": "Whether the tour is showing. The app decides when it starts and remembers that it was seen."
+            },
+            {
+              "name": "stepIndex",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "The current step, zero-based. Controlled; pair it with `onStepChange`."
+            },
+            {
+              "name": "defaultStepIndex",
+              "type": "number",
+              "required": false,
+              "default": "0",
+              "description": "The step a tour that manages its own state starts on each time it opens. Default `0`."
+            },
+            {
+              "name": "onStepChange",
+              "type": "(index: number) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with the next step when the buttons or the arrow keys move."
+            },
+            {
+              "name": "onClose",
+              "type": "(reason: TourCloseReason) => void",
+              "required": false,
+              "default": null,
+              "description": "Called when the person leaves early. The tour does not close itself: set `open` to `false`."
+            },
+            {
+              "name": "onFinish",
+              "type": "() => void",
+              "required": false,
+              "default": null,
+              "description": "Called when the person finishes the last step. Set `open` to `false` here."
+            },
+            {
+              "name": "labels",
+              "type": "TourLabels",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "spotlightPadding",
+              "type": "number",
+              "required": false,
+              "default": "6",
+              "description": "Space between the target and the edge of the spotlight, in pixels. Default `6`."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TourCloseReason",
+          "kind": "type",
+          "description": "Why `onClose` was called: the skip button, the close button, or the Escape key.",
+          "definition": "\"skip\" | \"close\" | \"escape\""
+        },
+        {
+          "name": "TourLabels",
+          "kind": "type",
+          "description": "",
+          "definition": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; }"
+        },
+        {
+          "name": "TourProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "TourStep",
+          "kind": "type",
+          "description": "",
+          "definition": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; }"
+        }
+      ],
+      "aliases": {
+        "TourCloseReason": "\"skip\" | \"close\" | \"escape\"",
+        "TourLabels": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; }",
+        "TourStep": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; }"
+      },
+      "story": {
+        "docsId": "components-overlays-tour--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-overlays-tour--default"
+          },
+          {
+            "export": "SecondStep",
+            "id": "components-overlays-tour--second-step"
+          },
+          {
+            "export": "PlacedAtStart",
+            "id": "components-overlays-tour--placed-at-start"
+          },
+          {
+            "export": "CentredCard",
+            "id": "components-overlays-tour--centred-card"
+          },
+          {
+            "export": "MissingTarget",
+            "id": "components-overlays-tour--missing-target"
+          },
+          {
+            "export": "Closed",
+            "id": "components-overlays-tour--closed"
+          },
+          {
+            "export": "Phone390",
+            "id": "components-overlays-tour--phone-390"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-overlays-tour--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-overlays-tour--right-to-left"
+          },
+          {
+            "export": "InsideAModal",
+            "id": "components-overlays-tour--inside-a-modal"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Tour/Tour.mdx",
+        "overview": "A guided tour: a card that walks through a list of steps, with a spotlight on each step's target. It is non-modal. The\nspotlight only dims the page around the target; it does not block it, so the person can use the highlighted control, or any\nother, while the card stays on screen. Nothing is made inert and page scroll is not locked.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Tour } from \"@lufia/design-system/components/Tour\";\n\n<Tour\n  open={open}\n  steps={[\n    { target: '[data-tour=\"search\"]', title: \"Find anything\", body: \"Type a name or a number.\" },\n    { target: searchButtonRef, title: \"Narrow it down\", body: \"Filters stay in place.\", placement: \"bottom\" },\n    { title: \"That is all\", body: \"Open this tour again from the help menu.\" },\n  ]}\n  labels={{\n    next: \"Next\",\n    back: \"Back\",\n    skip: \"Skip tour\",\n    close: \"Close tour\",\n    finish: \"Done\",\n    stepOf: (current, total) => `Step ${current} of ${total}`,\n  }}\n  onFinish={() => {\n    markSeen();\n    setOpen(false);\n  }}\n  onClose={(reason) => {\n    markDismissed(reason);\n    setOpen(false);\n  }}\n/>;"
+        },
+        "whenToUse": [
+          "Introducing a screen's main controls once, the first time a person visits it.",
+          "A short, optional walkthrough that can be reopened from a help menu."
+        ],
+        "whenNotToUse": [
+          "Instructions the person needs to complete a task: put them next to the control, in help text.",
+          "A choice or a question: use `Modal` or `ConfirmDialog`.",
+          "Anchored content without steps: use `Popover`.",
+          "Anything long. Keep a tour to about five steps and let the person skip it."
+        ],
+        "contentGuidelines": "Titles say what the control is for (\"Find anything\"). Bodies are one or two short sentences. Always offer `skip` and `close`\nthrough `labels`, and never start a tour the person did not ask for more than once."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [
+          {
+            "keys": "Right / Left arrow",
+            "action": "Focus on the card | Next / previous step (reversed in right-to-left text); an arrow key never finishes the tour"
+          },
+          {
+            "keys": "Escape",
+            "action": "Card or no focus | Calls `onClose(\"escape\")`"
+          },
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Card | Moves between the card's buttons; focus is not trapped"
+          },
+          {
+            "keys": "Enter / Space",
+            "action": "A button | Activates it"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The card is `role=\"dialog\"` with `aria-modal=\"false\"`, named by the step title and described by its body. The page behind stays in the accessibility tree and operable.",
+          "Each step moves focus to the card's heading (without scrolling the page) so a screen reader reads the new step. A hidden polite status region announces the counter from `labels.stepOf` when the step changes.",
+          "Closing from the card hands focus back to the element that had it when the tour opened, when that element is still in the page.",
+          "The spotlight and the dimming are decoration (`aria-hidden`) and never the only signal: the card says what the step is about. In forced-colors mode the spotlight is a `Highlight` border and the card border is `CanvasText`.",
+          "The card is portalled to the end of the body, so the browser's Tab order leaves it at the end of the page; the arrow keys and the buttons are the way through the steps.",
+          "The card and its content fade in; the spotlight glides between targets. Under reduced motion both appear without motion and scrolling is not smooth."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-accent-subtle",
+        "--lufia-color-bg-canvas",
+        "--lufia-color-bg-surface-solid",
+        "--lufia-color-border-strong",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-md",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-motion-distance-rise",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-easing-in",
+        "--lufia-motion-easing-in-out",
+        "--lufia-motion-easing-out",
+        "--lufia-overlay-z",
+        "--lufia-radius-md",
+        "--lufia-radius-panel",
+        "--lufia-shadow-lg",
+        "--lufia-space-2",
+        "--lufia-space-4",
+        "--lufia-tour-card-inline-size",
+        "--lufia-tour-scrim",
+        "--lufia-z-modal"
+      ]
+    },
+    {
       "name": "VisuallyHidden",
       "category": "Utilities",
       "summary": "Hides text visually and keeps it for assistive technology.",

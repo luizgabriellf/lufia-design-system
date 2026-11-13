@@ -1,0 +1,170 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Tour.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Tour"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A guided tour: a card that walks through a list of steps, with a spotlight on each step's target. It is non-modal. The
+spotlight only dims the page around the target; it does not block it, so the person can use the highlighted control, or any
+other, while the card stays on screen. Nothing is made inert and page scroll is not locked.
+
+<Canvas of={Stories.Default} story={{ inline: false, height: "26rem" }} />
+
+### Usage
+
+The tour keeps no record of what was seen. The app decides when to open it and stores the outcome from the callbacks.
+
+```tsx
+import { Tour } from "@lufia/design-system/components/Tour";
+
+<Tour
+  open={open}
+  steps={[
+    { target: '[data-tour="search"]', title: "Find anything", body: "Type a name or a number." },
+    { target: searchButtonRef, title: "Narrow it down", body: "Filters stay in place.", placement: "bottom" },
+    { title: "That is all", body: "Open this tour again from the help menu." },
+  ]}
+  labels={{
+    next: "Next",
+    back: "Back",
+    skip: "Skip tour",
+    close: "Close tour",
+    finish: "Done",
+    stepOf: (current, total) => `Step ${current} of ${total}`,
+  }}
+  onFinish={() => {
+    markSeen();
+    setOpen(false);
+  }}
+  onClose={(reason) => {
+    markDismissed(reason);
+    setOpen(false);
+  }}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. `target` is a CSS selector
+(the first visible match is used) or a ref; a `data-*` attribute on the target keeps the step independent of class names.
+
+</Section>
+
+<Section id="examples">
+
+### Steps
+
+Each step has a `target`, a `title`, a `body` and an optional `placement` (`top`, `bottom`, `start`, `end`). The card flips to
+the opposite side when it does not fit on the requested one, shifts to stay inside the viewport, and scrolls inside when even
+that is too small. It shares its placement code with `Popover`.
+
+<Canvas of={Stories.SecondStep} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.PlacedAtStart} story={{ inline: false, height: "26rem" }} />
+
+### Missing or hidden targets
+
+A step without a target, a selector that matches nothing, or a target that is hidden (`display: none`, `visibility: hidden`, or
+inside something that is) is a centred card over a dimmed page. The target is looked up again on every frame, so a step whose
+target appears later moves to it, and a target that goes away turns the step into a centred card.
+
+<Canvas of={Stories.CentredCard} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.MissingTarget} story={{ inline: false, height: "26rem" }} />
+
+### Following the target
+
+The spotlight and the card follow the target on scroll (of any ancestor), resize and layout changes. A target that is off
+screen is scrolled into view when its step starts (smoothly, or at once under reduced motion) and again shortly after, once the
+page has settled. Nothing else scrolls the page.
+
+### Narrow screens
+
+Below 40rem the card is a sheet docked to the bottom edge, or to the top edge when the target would be under it, and the target
+is scrolled clear of the sheet.
+
+<Canvas of={Stories.Phone390} story={{ inline: false, height: "34rem" }} />
+
+### Inside a modal
+
+When the target is inside an open modal, the tour is portalled into that modal so the modal's focus trap and inert page do not
+lock it out, and the modal's backdrop does the dimming. Otherwise the tour is portalled to `document.body` and stays above the
+page and modals at `--lufia-overlay-z`. Find the card by role (`getByRole("dialog", { name })`), not inside the page.
+
+<Canvas of={Stories.InsideAModal} story={{ inline: false, height: "24rem" }} />
+
+### Controlled and uncontrolled steps
+
+Pass `stepIndex` and `onStepChange` to keep the step in the caller (for example to persist it). Without `stepIndex` the tour
+keeps its own step, starting at `defaultStepIndex` each time it opens. `open` is always controlled: the tour never closes
+itself, it calls `onFinish` or `onClose(reason)` and the app sets `open`.
+
+### What the tour does not do
+
+It has no routes or navigation between pages, no steps that wait for the person to act ("do this to continue"), and no
+persistence. An app that needs those drives the tour from its own state: change `stepIndex` when the person does the thing,
+and set `open` when the tour should show.
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key                | Where             | Action                                                                                      |
+| ------------------ | ----------------- | ------------------------------------------------------------------------------------------- |
+| Right / Left arrow | Focus on the card | Next / previous step (reversed in right-to-left text); an arrow key never finishes the tour |
+| Escape             | Card or no focus  | Calls `onClose("escape")`                                                                   |
+| Tab / Shift+Tab    | Card              | Moves between the card's buttons; focus is not trapped                                      |
+| Enter / Space      | A button          | Activates it                                                                                |
+
+Escape and the arrow keys act only while focus is on the card (Escape also when nothing in the page has focus), never while
+focus is in a field of the page, so they do not take keys from the app. The tour registers on the shared overlay stack, so a
+menu or dialog opened from the page above the tour closes first and the tour on the next Escape.
+
+### Accessibility
+
+- The card is `role="dialog"` with `aria-modal="false"`, named by the step title and described by its body. The page behind
+  stays in the accessibility tree and operable.
+- Each step moves focus to the card's heading (without scrolling the page) so a screen reader reads the new step. A hidden
+  polite status region announces the counter from `labels.stepOf` when the step changes.
+- Closing from the card hands focus back to the element that had it when the tour opened, when that element is still in the page.
+- The spotlight and the dimming are decoration (`aria-hidden`) and never the only signal: the card says what the step is about.
+  In forced-colors mode the spotlight is a `Highlight` border and the card border is `CanvasText`.
+- The card is portalled to the end of the body, so the browser's Tab order leaves it at the end of the page; the arrow keys and
+  the buttons are the way through the steps.
+- The card and its content fade in; the spotlight glides between targets. Under reduced motion both appear without motion and
+  scrolling is not smooth.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Introducing a screen's main controls once, the first time a person visits it.
+- A short, optional walkthrough that can be reopened from a help menu.
+
+### When not to use
+
+- Instructions the person needs to complete a task: put them next to the control, in help text.
+- A choice or a question: use `Modal` or `ConfirmDialog`.
+- Anchored content without steps: use `Popover`.
+- Anything long. Keep a tour to about five steps and let the person skip it.
+
+### Content guidelines
+
+Titles say what the control is for ("Find anything"). Bodies are one or two short sentences. Always offer `skip` and `close`
+through `labels`, and never start a tour the person did not ask for more than once.
+
+</Section>

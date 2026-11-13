@@ -351,6 +351,86 @@ test.describe("popover", () => {
   });
 });
 
+test.describe("tour", () => {
+  test("the spotlight surrounds the target, the card sits beside it inside the viewport, and the page stays operable", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-tour--default");
+    const card = page.getByRole("dialog", { name: "Find anything" });
+    await expect(card).toBeVisible();
+    await expect(card.getByRole("heading", { name: "Find anything" })).toBeFocused();
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const target = document.querySelector('[data-tour="search"]')!.getBoundingClientRect();
+          const spot = document.querySelector('[data-lufia-part="spotlight"]')!.getBoundingClientRect();
+          const dialog = document.querySelector('[role="dialog"]')!.getBoundingClientRect();
+          return {
+            around:
+              spot.left <= target.left &&
+              spot.top <= target.top &&
+              spot.right >= target.right &&
+              spot.bottom >= target.bottom,
+            beside: dialog.top >= target.bottom || dialog.bottom <= target.top,
+            inside:
+              dialog.left >= 0 &&
+              dialog.right <= innerWidth &&
+              dialog.top >= 0 &&
+              dialog.bottom <= innerHeight,
+          };
+        }),
+      )
+      .toEqual({ around: true, beside: true, inside: true });
+    // The page behind the dimming still takes input.
+    await page.getByRole("textbox", { name: "Search records" }).fill("abc");
+    await expect(page.getByRole("textbox", { name: "Search records" })).toHaveValue("abc");
+  });
+
+  test("arrow keys step, Escape closes and focus returns to the page", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-tour--default");
+    const card = page.getByRole("dialog");
+    await expect(card.getByRole("heading", { name: "Find anything" })).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(card.getByRole("heading", { name: "Narrow it down" })).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(card.getByRole("heading", { name: "Find anything" })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(card).toHaveCount(0);
+  });
+
+  test("a missing target gives a centred card", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-tour--missing-target");
+    const card = page.getByRole("dialog", { name: "Not here" });
+    await expect(card).toBeVisible();
+    await expect(card).toHaveAttribute("data-kind", "center");
+    const box = await card.boundingBox();
+    expect(Math.abs(box!.x + box!.width / 2 - 640)).toBeLessThan(2);
+    expect(Math.abs(box!.y + box!.height / 2 - 360)).toBeLessThan(2);
+  });
+
+  test("at 390px the card is a sheet docked to an edge and the target is clear of it", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 780 });
+    await openStory(page, "components-overlays-tour--default");
+    const card = page.getByRole("dialog", { name: "Find anything" });
+    await expect(card).toHaveAttribute("data-kind", "sheet");
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const target = document.querySelector('[data-tour="search"]')!.getBoundingClientRect();
+          const dialog = document.querySelector('[role="dialog"]')!.getBoundingClientRect();
+          return {
+            full: Math.round(dialog.width) === innerWidth,
+            clear: target.bottom <= dialog.top || target.top >= dialog.bottom,
+          };
+        }),
+      )
+      .toEqual({ full: true, clear: true });
+  });
+});
+
 test.describe("more actions container scope", () => {
   test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
     page,

@@ -1,0 +1,198 @@
+/* Theming hooks, all optional: --lufia-tour-scrim (the dimming around the spotlight), --lufia-tour-card-inline-size,
+   --lufia-overlay-z (the stacking order, shared with sheets). */
+
+/* Fixed layers only, so the page never shifts. The layer lets every press through to the page; only the card takes them. */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--lufia-overlay-z, calc(var(--lufia-z-modal) + 1));
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* With no target the whole page is dimmed; with one, the spotlight dims everything around itself. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--lufia-tour-scrim, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+}
+
+.layer[data-target="true"] .scrim,
+.layer[data-dim="false"] .scrim {
+  display: none;
+}
+
+/* The cut-out: its own shadow dims the page around it. It is placed with a transform from the target's box. */
+.spot {
+  position: absolute;
+  inset: 0 auto auto 0;
+  box-sizing: border-box;
+  display: none;
+  border: var(--lufia-border-width-thick) solid var(--lufia-color-accent-default);
+  border-radius: var(--lufia-radius-md);
+  box-shadow:
+    0 0 0 4px var(--lufia-color-accent-subtle),
+    0 0 0 200vmax var(--lufia-tour-scrim, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-in-out);
+}
+
+.layer[data-target="true"] .spot {
+  display: block;
+}
+
+.layer[data-dim="false"] .spot {
+  box-shadow: 0 0 0 4px var(--lufia-color-accent-subtle);
+}
+
+.card {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  inline-size: var(--lufia-tour-card-inline-size, min(20rem, calc(100vw - 1.5rem)));
+  max-block-size: calc(100dvh - 1.5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--lufia-space-4);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-radius: var(--lufia-radius-panel);
+  background: var(--lufia-color-bg-surface-solid);
+  box-shadow: var(--lufia-shadow-lg);
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+  pointer-events: auto;
+  animation: card-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+/* Centred: no target. `inset` with auto margins centres a fixed box without a transform, which the entrance animates. */
+.card[data-kind="center"] {
+  inset: 0;
+  margin: auto;
+  block-size: fit-content;
+}
+
+/* A sheet on narrow screens, on the edge the target is not near. */
+.card[data-kind="sheet"] {
+  inset-inline: 0;
+  inset-block: auto 0;
+  inline-size: 100%;
+  max-block-size: 60dvh;
+  border-inline: 0;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  padding-block-end: calc(var(--lufia-space-4) + env(safe-area-inset-bottom));
+}
+
+.card[data-kind="sheet"][data-edge="top"] {
+  inset-block: 0 auto;
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+  border-block-start: 0;
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  border-end-start-radius: var(--lufia-radius-panel);
+  border-end-end-radius: var(--lufia-radius-panel);
+  padding-block: calc(var(--lufia-space-4) + env(safe-area-inset-top)) var(--lufia-space-4);
+}
+
+.card[data-state="closed"] {
+  pointer-events: none;
+  animation: card-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lufia-space-2);
+}
+
+.count {
+  margin: 0;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+/* Each step's text fades in; the card itself stays where it is and moves with the target. */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lufia-space-2);
+  animation: content-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--lufia-font-size-md);
+  font-weight: var(--lufia-font-weight-semibold);
+  line-height: var(--lufia-font-line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+/* The card takes focus on its heading so a screen reader reads each step; the heading is not a control, so no drawn ring. */
+.title:focus {
+  outline: 2px solid transparent;
+}
+
+.body {
+  color: var(--lufia-color-text-muted);
+  line-height: var(--lufia-font-line-height-normal);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  margin-block-start: var(--lufia-space-2);
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* The enter keyframes animate `from` only, so the resting state is the open card and a disabled animation leaves it visible. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-rise));
+  }
+}
+
+@keyframes card-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card[data-state="closed"],
+  .content {
+    animation: none;
+  }
+
+  .spot {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .card {
+    border-color: CanvasText;
+  }
+
+  /* A shadow is not drawn in forced colours: the border carries the highlight. */
+  .spot {
+    border-color: Highlight;
+  }
+}

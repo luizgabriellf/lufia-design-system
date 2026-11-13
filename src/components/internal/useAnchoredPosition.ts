@@ -12,7 +12,11 @@ export type AnchoredPositionOptions = {
   margin?: number;
 };
 
-function placePanel(
+/**
+ * Measures `element` (a `position: fixed` panel) and puts it next to `anchorElement`, once. The hook below calls it on
+ * scroll and resize; a caller that already runs its own frame loop (`Tour`) calls it directly.
+ */
+export function placePanel(
   element: HTMLElement,
   anchorElement: Element,
   { side, align, gap = 0.5, margin = 0.5 }: AnchoredPositionOptions,
@@ -44,6 +48,15 @@ function placePanel(
   element.style.top = `${result.top}px`;
   element.scrollTop = scrolled;
   element.setAttribute("data-side", result.side);
+}
+
+/** Removes what `placePanel` wrote, for a panel that a stylesheet places (a centred card, a sheet). */
+export function clearPanelPlacement(element: HTMLElement) {
+  element.style.left = "";
+  element.style.top = "";
+  element.style.maxBlockSize = "";
+  element.style.maxInlineSize = "";
+  element.removeAttribute("data-side");
 }
 
 /**
