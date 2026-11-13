@@ -4315,6 +4315,302 @@
       ]
     },
     {
+      "name": "Checklist",
+      "category": "Data display",
+      "summary": "A read-only list of items with a status icon and text.",
+      "status": "beta",
+      "source": "src/components/Checklist",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Checklist",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Checklist",
+          "kind": "component",
+          "description": "A read-only list of items, each with a status icon and text. It is not a form control: nothing is checkable or focusable. Name the list with `title`, or with `aria-label` or `aria-labelledby`, which go to the list. Renders nothing when there are no items.",
+          "props": [
+            {
+              "name": "items",
+              "type": "readonly ChecklistItem[]",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A visible title above the list. It also names the list for screen readers."
+            },
+            {
+              "name": "statusLabels",
+              "type": "Partial<Record<ChecklistStatus, string>>",
+              "required": false,
+              "default": null,
+              "description": "The status in words, read before the item text (\"Done\", \"Needs attention\"). Strings come from the app. A status without a label is conveyed by its icon alone, so give one for every status the list uses."
+            },
+            {
+              "name": "density",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`md` (default) or `sm`, a tighter row for dense panels."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ChecklistItem",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; text: ReactNode; status?: ChecklistStatus | undefined; hint?: ReactNode; }"
+        },
+        {
+          "name": "ChecklistProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { items: readonly ChecklistItem[]; title?: ReactNode; statusLabels?: Partial<Record<ChecklistStatus, string>> | undefined; density?: \"sm\" | \"md\" | undefined; }"
+        },
+        {
+          "name": "ChecklistStatus",
+          "kind": "type",
+          "description": "",
+          "definition": "\"todo\" | \"done\" | \"attention\""
+        }
+      ],
+      "aliases": {
+        "ChecklistItem": "{ key: string; text: ReactNode; status?: ChecklistStatus | undefined; hint?: ReactNode; }",
+        "ChecklistProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { items: readonly ChecklistItem[]; title?: ReactNode; statusLabels?: Partial<Record<ChecklistStatus, string>> | undefined; density?: \"sm\" | \"md\" | undefined; }",
+        "ChecklistStatus": "\"todo\" | \"done\" | \"attention\""
+      },
+      "story": {
+        "docsId": "components-data-display-checklist--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-checklist--default"
+          },
+          {
+            "export": "WithoutTitle",
+            "id": "components-data-display-checklist--without-title"
+          },
+          {
+            "export": "Compact",
+            "id": "components-data-display-checklist--compact"
+          },
+          {
+            "export": "AllDone",
+            "id": "components-data-display-checklist--all-done"
+          },
+          {
+            "export": "LongText",
+            "id": "components-data-display-checklist--long-text"
+          },
+          {
+            "export": "InsideCard",
+            "id": "components-data-display-checklist--inside-card"
+          },
+          {
+            "export": "Empty",
+            "id": "components-data-display-checklist--empty"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-data-display-checklist--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-data-display-checklist--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-checklist--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Checklist/Checklist.mdx",
+        "overview": "A read-only list of items, each with a status icon and text. It reports where things stand; it is not a form control.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Checklist } from \"@lufia/design-system/components/Checklist\";\n\n<Checklist\n  title=\"Site inspection\"\n  statusLabels={{ todo: \"To do\", done: \"Done\", attention: \"Needs attention\" }}\n  items={[\n    { key: \"date\", text: \"Check the fire extinguisher inspection date\", status: \"done\" },\n    {\n      key: \"route\",\n      text: \"Clear the emergency exit route\",\n      status: \"attention\",\n      hint: \"Blocked on the last visit\",\n    },\n    { key: \"signs\", text: \"Replace the faded safety signs\" },\n  ]}\n/>;"
+        },
+        "whenToUse": [
+          "Showing progress through a fixed set of steps or requirements the user cannot tick here."
+        ],
+        "whenNotToUse": [
+          "Items the user ticks (use `Checkbox`), steps in a flow (use `Stepper`), or events over time (use `StatusTimeline`)."
+        ],
+        "contentGuidelines": "Write each item as a short sentence. Give `statusLabels` for every status the list uses and translate them in the app. Use\n`hint` for the reason or the date, not for a second action."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "A native `<ul>`. The title names it through `aria-labelledby`; without a title, `aria-label` or `aria-labelledby` on the component go to the list.",
+          "The status is never colour alone: each status has its own icon shape (`StatusIcon`), and `statusLabels` adds the status in words, visually hidden, before the item text.",
+          "Nothing is interactive: no checkbox, no tab stop. Screen readers read it as a plain list.",
+          "Long text wraps and never pushes the icon away, so the layout reflows at 320px."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3"
+      ]
+    },
+    {
+      "name": "CitationList",
+      "category": "Data display",
+      "summary": "A compact, wrapping list of references or sources, linked when they have a URL.",
+      "status": "beta",
+      "source": "src/components/CitationList",
+      "entry": {
+        "subpath": "@lufia/design-system/components/CitationList",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "CitationItem",
+          "kind": "type",
+          "description": "",
+          "definition": "{ key: string; reference: ReactNode; label?: ReactNode; href?: string | undefined; }"
+        },
+        {
+          "name": "CitationList",
+          "kind": "component",
+          "description": "A compact list of references or sources, drawn as chips that wrap. A reference with `href` is a link; the others are plain text. Name the list with `title`, or with `aria-label` or `aria-labelledby`, which go to the list. Renders nothing when there are no items.",
+          "props": [
+            {
+              "name": "items",
+              "type": "readonly CitationItem[]",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A visible title above the list (\"Sources\"). It also names the list for screen readers."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "CitationListProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { items: readonly CitationItem[]; title?: ReactNode; }"
+        }
+      ],
+      "aliases": {
+        "CitationItem": "{ key: string; reference: ReactNode; label?: ReactNode; href?: string | undefined; }",
+        "CitationListProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { items: readonly CitationItem[]; title?: ReactNode; }"
+      },
+      "story": {
+        "docsId": "components-data-display-citationlist--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-citationlist--default"
+          },
+          {
+            "export": "WithoutTitle",
+            "id": "components-data-display-citationlist--without-title"
+          },
+          {
+            "export": "SingleItem",
+            "id": "components-data-display-citationlist--single-item"
+          },
+          {
+            "export": "ManyItems",
+            "id": "components-data-display-citationlist--many-items"
+          },
+          {
+            "export": "LongReference",
+            "id": "components-data-display-citationlist--long-reference"
+          },
+          {
+            "export": "InsideCard",
+            "id": "components-data-display-citationlist--inside-card"
+          },
+          {
+            "export": "Empty",
+            "id": "components-data-display-citationlist--empty"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-data-display-citationlist--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-data-display-citationlist--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-citationlist--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/CitationList/CitationList.mdx",
+        "overview": "A compact list of references or sources, drawn as chips that wrap. A reference with `href` is a link.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { CitationList } from \"@lufia/design-system/components/CitationList\";\n\n<CitationList\n  title=\"Sources\"\n  items={[\n    { key: \"std\", label: \"Standard\", reference: \"Standard 123, clause 4\", href: \"/standards/123\" },\n    { key: \"reg\", reference: \"Regulation 45, article 7\" },\n  ]}\n/>;"
+        },
+        "whenToUse": [
+          "Pointing to the sources behind a statement, a result or a record."
+        ],
+        "whenNotToUse": [
+          "Navigation (use a menu or tabs), or a long bibliography with details per entry (use a table or a list with its own layout)."
+        ],
+        "contentGuidelines": "Keep each reference short enough to scan: the document and the part, not the title in full. Use `label` for the kind of\nsource, and localise both in the app."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "A native `<ul>`. The title names it through `aria-labelledby`; without a title, `aria-label` or `aria-labelledby` on the component go to the list.",
+          "A linked reference renders through `Link`, so it uses the `linkComponent` set on `LufiaProvider`, has a visible focus ring and keeps a target of at least 24px (WCAG 2.5.8).",
+          "Long references wrap inside their chip; chips wrap onto new lines, so nothing overflows at 320px."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface",
+        "--lufia-color-border-subtle",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-semibold",
+        "--lufia-radius-control",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3"
+      ]
+    },
+    {
       "name": "Collapse",
       "category": "Motion",
       "summary": "Animates the height of content that opens and closes.",

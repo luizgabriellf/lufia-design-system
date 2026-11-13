@@ -8,6 +8,8 @@ import { BarList as BarList_BarList } from "@lufia/design-system/components/BarL
 import { BulletBar as BulletBar_BulletBar } from "@lufia/design-system/components/BulletBar";
 import { Card as Card_Card } from "@lufia/design-system/components/Card";
 import * as ChartKit from "@lufia/design-system/components/ChartKit";
+import { Checklist as Checklist_Checklist } from "@lufia/design-system/components/Checklist";
+import { CitationList as CitationList_CitationList } from "@lufia/design-system/components/CitationList";
 import { Collapse as Collapse_Collapse, Skeleton as Skeleton_Skeleton } from "@lufia/design-system/motion";
 import { DetailAttentionCard as DetailAttentionCard_DetailAttentionCard } from "@lufia/design-system/components/DetailAttentionCard";
 import { DetailList as DetailList_DetailList } from "@lufia/design-system/components/DetailList";
@@ -54,6 +56,8 @@ export default function SmokePage() {
       <section data-smoke="BulletBar"><BulletBar_BulletBar value={1} target={1} label={"x"} /></section>
       <section data-smoke="Card"><Card_Card /></section>
       <section data-smoke="ChartKit" data-exports={Object.keys(ChartKit).length} />
+      <section data-smoke="Checklist"><Checklist_Checklist items={[{ key: "a", text: "Item" }]} /></section>
+      <section data-smoke="CitationList"><CitationList_CitationList items={[{ key: "a", reference: "Reference" }]} /></section>
       <section data-smoke="Collapse"><Collapse_Collapse open={false} /></section>
       <section data-smoke="DetailAttentionCard"><DetailAttentionCard_DetailAttentionCard tone={"ok"} title={"x"} /></section>
       <section data-smoke="DetailList"><DetailList_DetailList rows={[{ label: "Label", value: "Value" }]} /></section>

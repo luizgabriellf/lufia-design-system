@@ -1,0 +1,90 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Checklist.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Checklist"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A read-only list of items, each with a status icon and text. It reports where things stand; it is not a form control.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Checklist } from "@lufia/design-system/components/Checklist";
+
+<Checklist
+  title="Site inspection"
+  statusLabels={{ todo: "To do", done: "Done", attention: "Needs attention" }}
+  items={[
+    { key: "date", text: "Check the fire extinguisher inspection date", status: "done" },
+    {
+      key: "route",
+      text: "Clear the emergency exit route",
+      status: "attention",
+      hint: "Blocked on the last visit",
+    },
+    { key: "signs", text: "Replace the faded safety signs" },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### Compact
+
+<Canvas of={Stories.Compact} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- A native `<ul>`. The title names it through `aria-labelledby`; without a title, `aria-label` or `aria-labelledby` on the
+  component go to the list.
+- The status is never colour alone: each status has its own icon shape (`StatusIcon`), and `statusLabels` adds the status in
+  words, visually hidden, before the item text.
+- Nothing is interactive: no checkbox, no tab stop. Screen readers read it as a plain list.
+- Long text wraps and never pushes the icon away, so the layout reflows at 320px.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Showing progress through a fixed set of steps or requirements the user cannot tick here.
+
+### When not to use
+
+- Items the user ticks (use `Checkbox`), steps in a flow (use `Stepper`), or events over time (use `StatusTimeline`).
+
+### Content guidelines
+
+Write each item as a short sentence. Give `statusLabels` for every status the list uses and translate them in the app. Use
+`hint` for the reason or the date, not for a second action.
+
+</Section>

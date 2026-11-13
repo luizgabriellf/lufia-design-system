@@ -32,6 +32,8 @@ export const FIXTURES = {
       resultCount: (count) => String(count),
     }`,
   },
+  Checklist: { items: `[{ key: "a", text: "Item" }]` },
+  CitationList: { items: `[{ key: "a", reference: "Reference" }]` },
   DetailList: { rows: `[{ label: "Label", value: "Value" }]` },
   FileField: { formatRejection: `() => "Rejected"` },
   MoreActions: { items: `[{ key: "a", label: "Action" }]` },

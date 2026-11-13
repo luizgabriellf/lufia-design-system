@@ -1,0 +1,59 @@
+.root {
+  min-inline-size: 0;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.title {
+  margin: 0 0 var(--lufia-space-2);
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lufia-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A chip: a long reference wraps inside it, and the chip never grows past the row. */
+.item {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 var(--lufia-space-2);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  padding-block: var(--lufia-space-1);
+  padding-inline: var(--lufia-space-3);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-control);
+  background: var(--lufia-color-bg-surface);
+}
+
+.label {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.reference {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The link keeps a 24px target (WCAG 2.5.8), centred on its first line. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-inline-size: 0;
+  min-block-size: 1.5rem;
+  overflow-wrap: anywhere;
+}

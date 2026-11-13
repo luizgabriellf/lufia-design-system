@@ -172,6 +172,12 @@ export const ENTRIES: Entry[] = [
 
   c("Card", "Data display", "A bordered surface that groups related content, optionally interactive."),
   c("Badge", "Data display", "A short status or count label in a semantic tone."),
+  c("Checklist", "Data display", "A read-only list of items with a status icon and text."),
+  c(
+    "CitationList",
+    "Data display",
+    "A compact, wrapping list of references or sources, linked when they have a URL.",
+  ),
   c("DetailList", "Data display", "Label and value pairs for the details of one record."),
   c("DetailSectionCard", "Data display", "A titled card that holds one section of a detail page."),
   c(
