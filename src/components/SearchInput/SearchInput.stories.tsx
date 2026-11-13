@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Button } from "../Button";
 import { FormField } from "../FormField";
+import { Select } from "../Select";
 import { SearchInput } from "./SearchInput";
 
 const meta = {
@@ -101,6 +102,69 @@ export const InGridForm: Story = {
         <Button variant="secondary">Filters</Button>
       </div>
     </form>
+  ),
+};
+const filterHosts = {
+  autoFit: { display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))" },
+  singleColumn: { display: "grid", gap: "0.75rem", gridTemplateColumns: "1fr" },
+  flexWrap: { display: "flex", flexWrap: "wrap", gap: "0.75rem" },
+  alignEnd: {
+    display: "grid",
+    gap: "0.75rem",
+    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
+    alignItems: "end",
+  },
+  justifyStart: {
+    display: "grid",
+    gap: "0.75rem",
+    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
+    justifyItems: "start",
+  },
+} as const;
+
+/** A filter form: a labelled search field beside a select, a checkbox and a submit button. */
+function FilterForm({ host, testId }: { host: keyof typeof filterHosts; testId: string }) {
+  return (
+    <form data-testid={testId} style={filterHosts[host]} onSubmit={(event) => event.preventDefault()}>
+      <FormField label="Search">
+        <SearchInput placeholder="Customer or account" />
+      </FormField>
+      <FormField label="Status">
+        <Select defaultValue="all">
+          <option value="all">All</option>
+          <option value="open">Open</option>
+        </Select>
+      </FormField>
+      <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <input type="checkbox" /> Only mine
+      </label>
+      <Button type="submit">Apply</Button>
+    </form>
+  );
+}
+/** A `FormField` that holds the search is one item of an auto-fit grid form. */
+export const InFilterFormGrid: Story = {
+  render: () => <FilterForm host="autoFit" testId="filter-form" />,
+};
+export const InFilterFormSingleColumn: Story = {
+  render: () => <FilterForm host="singleColumn" testId="filter-form" />,
+};
+export const InFilterFormFlexWrap: Story = {
+  render: () => <FilterForm host="flexWrap" testId="filter-form" />,
+};
+export const InFilterFormAlignEnd: Story = {
+  render: () => <FilterForm host="alignEnd" testId="filter-form" />,
+};
+export const InFilterFormJustifyStart: Story = {
+  render: () => <FilterForm host="justifyStart" testId="filter-form" />,
+};
+/** A column flex container: the box takes its natural height, never its row basis. */
+export const InColumnFlex: Story = {
+  render: (args) => (
+    <div data-testid="column-flex" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <SearchInput {...args} aria-label="Search customers" />
+      <Button variant="secondary">Filters</Button>
+    </div>
   ),
 };
 export const Phone320: Story = {

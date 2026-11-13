@@ -1889,3 +1889,43 @@ test.describe("search input in a grid form", () => {
     expect(widths.second).toBeGreaterThanOrEqual(128);
   });
 });
+
+test.describe("search input inside a form field in a filter form", () => {
+  const hosts = [
+    ["grid-filter", "components-forms-searchinput--in-filter-form-grid"],
+    ["single column", "components-forms-searchinput--in-filter-form-single-column"],
+    ["flex wrap", "components-forms-searchinput--in-filter-form-flex-wrap"],
+    ["align-items end", "components-forms-searchinput--in-filter-form-align-end"],
+    ["justify-items start", "components-forms-searchinput--in-filter-form-justify-start"],
+  ] as const;
+  for (const width of [320, 390]) {
+    for (const [name, id] of hosts) {
+      test(`${name} keeps a usable search box at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await openStory(page, id);
+        const size = await page.getByRole("searchbox").evaluate((input) => {
+          const rect = input.parentElement!.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        });
+        expect(size.width).toBeGreaterThanOrEqual(128);
+        expect(size.height).toBeGreaterThanOrEqual(44);
+        expect(size.height).toBeLessThan(60);
+      });
+    }
+  }
+});
+
+test.describe("search input in a column flex container", () => {
+  test("is as tall as the control and fills the width", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-forms-searchinput--in-column-flex");
+    const sizes = await page.evaluate(() => {
+      const host = document.querySelector<HTMLElement>('[data-testid="column-flex"]')!;
+      const box = host.querySelector('input[type="search"]')!.parentElement!.getBoundingClientRect();
+      return { width: box.width, height: box.height, host: host.getBoundingClientRect().width };
+    });
+    expect(sizes.height).toBeGreaterThanOrEqual(44);
+    expect(sizes.height).toBeLessThan(48);
+    expect(Math.abs(sizes.width - sizes.host)).toBeLessThanOrEqual(1);
+  });
+});

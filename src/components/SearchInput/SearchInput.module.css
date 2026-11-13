@@ -1,7 +1,12 @@
 .box {
-  /* In a flex row the box may grow, but never squeeze below a usable width; outside one these two lines do nothing. */
+  /*
+   * In a flex row the box may grow and wrap, but never squeezes below a usable width; outside a flex container the basis
+   * does nothing. In a column container (a FormField is one) the basis would apply to the block axis and make the box 12rem
+   * tall, so the block size is held at the content's: the row keeps its basis, a column gets the natural height.
+   */
   flex: 1 1 12rem;
   min-inline-size: 8rem;
+  max-block-size: max-content;
   padding-inline-end: var(--lufia-space-2);
 }
 
