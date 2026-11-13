@@ -42,8 +42,8 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `onClose` | `() => void` | yes |  | Called when the person asks to close: the close button, Escape, or a click outside (see the policy props). |
 | `title` | `ReactNode` | yes |  | The dialog's accessible name and visible heading. |
 | `description` | `ReactNode` | no |  | Optional supporting text, wired to `aria-describedby`. |
-| `size` | `ModalSize \| (string & {})` | no | `"md"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet. Default `md`. |
-| `sheetPlacement` | `"top" \| "bottom"` | no | `"bottom"` | Which edge the phone sheet is anchored to. `bottom` (default) rises from the bottom; `top` hangs from `--lufia-modal-sheet-offset`. |
+| `size` | `ModalSize \| (string & {})` | no | `"md"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet unless `sheetPlacement="none"`. Default `md`. |
+| `sheetPlacement` | `"none" \| "top" \| "bottom"` | no | `"bottom"` | How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such as an image viewer. Larger screens ignore this prop. |
 | `titleWrap` | `"wrap" \| "ellipsis"` | no | `"wrap"` | `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. |
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation. |
@@ -146,6 +146,8 @@ primary action sits on top.
 - `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`
 - `components-overlays-modal--top-sheet-on-phone`
+- `components-overlays-modal--centered-on-phone`
+- `components-overlays-modal--centered-on-phone-320`
 - `components-overlays-modal--native-top-layer`
 - `components-overlays-modal--native-keep-mounted`
 - `components-overlays-modal--keep-mounted`

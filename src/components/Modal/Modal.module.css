@@ -239,9 +239,11 @@
   flex: none;
 }
 
-/* Phones: a sheet anchored to the bottom, rising from it, with 44px targets (WCAG 2.5.8 asks for 24px; 44px is kinder). */
+/* Phones: a sheet anchored to the bottom, rising from it, with 44px targets (WCAG 2.5.8 asks for 24px; 44px is kinder).
+   `sheetPlacement="none"` (data-sheet="none") keeps the centred panel and its frame padding, so the sheet rules skip it;
+   it still gets the 44px targets. */
 @media (width <= 37.5rem) {
-  .frame {
+  .frame:not([data-sheet="none"]) {
     align-items: flex-end;
     padding: 0;
   }
@@ -255,8 +257,8 @@
     padding-block-start: var(--lufia-modal-sheet-offset, 0);
   }
 
-  .panel,
-  .panel[data-size] {
+  .panel:not([data-sheet="none"]),
+  .panel[data-size]:not([data-sheet="none"]) {
     max-inline-size: none;
     max-block-size: calc(100dvh - var(--lufia-modal-sheet-offset, var(--lufia-space-12)));
     border-block-end: 0;
@@ -288,10 +290,16 @@
     );
   }
 
-  .native {
+  .native:not([data-sheet="none"]) {
     inline-size: 100%;
     margin-block: auto 0;
     margin-inline: 0;
+  }
+
+  /* A centred native dialog has no frame to pad it, so it keeps the same margin the portal frame gives. */
+  .native[data-sheet="none"] {
+    inline-size: calc(100% - 2 * var(--lufia-space-4));
+    max-block-size: calc(100dvh - 2 * var(--lufia-space-4));
   }
 
   .native[data-sheet="top"] {

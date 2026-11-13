@@ -332,6 +332,59 @@ describe("Modal", () => {
       expect(screen.getByRole("heading", { name: "Edit profile" })).toHaveAttribute("title", "Edit profile");
     });
 
+    it('marks sheetPlacement="none" so a phone keeps the centred panel', async () => {
+      render(<Harness sheetPlacement="none" />);
+      const { dialog } = await openModal();
+      expect(dialog).toHaveAttribute("data-sheet", "none");
+      expect(document.querySelector("[data-lufia-part='frame']")).toHaveAttribute("data-sheet", "none");
+    });
+
+    describe("on a phone", () => {
+      function stubPhone() {
+        vi.stubGlobal("matchMedia", (query: string) => ({
+          matches: query.includes("max-width"),
+          media: query,
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        }));
+      }
+      const frameVariant = () =>
+        document.querySelector("[data-lufia-part='frame']")?.getAttribute("data-variant");
+
+      it("rises as a sheet by default", async () => {
+        stubPhone();
+        render(<Harness />);
+        await openModal();
+        expect(frameVariant()).toBe("rise");
+      });
+
+      it('scales in like on a larger screen with sheetPlacement="none"', async () => {
+        stubPhone();
+        render(<Harness sheetPlacement="none" />);
+        await openModal();
+        expect(frameVariant()).toBe("scale");
+      });
+
+      it('still traps focus, locks scroll and closes on Escape with sheetPlacement="none"', async () => {
+        stubPhone();
+        const onClose = vi.fn();
+        render(<Harness sheetPlacement="none" onClose={onClose} />);
+        const { user, dialog } = await openModal();
+        expect(isBodyScrollLocked()).toBe(true);
+        await user.tab();
+        expect(dialog).toContainElement(document.activeElement as HTMLElement);
+        await user.keyboard("{Escape}");
+        expect(onClose).toHaveBeenCalledTimes(1);
+      });
+
+      it('has no axe violations with sheetPlacement="none"', async () => {
+        stubPhone();
+        render(<Harness sheetPlacement="none" />);
+        await openModal();
+        expect(await axe(document.body)).toHaveNoViolations();
+      });
+    });
+
     it("defaults to a bottom sheet with a wrapping title and no scroll shadow", async () => {
       render(<Harness />);
       const { dialog } = await openModal();
@@ -800,6 +853,16 @@ describe("Modal footer layout", () => {
       if (block.includes("column-reverse")) expect(block).toContain('[data-footer-layout="stack"]');
     }
     expect(narrow).toContain("column-reverse");
+  });
+
+  it('keeps the phone sheet rules off sheetPlacement="none" and still centres its native dialog', () => {
+    const sheet = /@media \(width <= 37\.5rem\) \{([\s\S]*?)\n\}\n/.exec(css)?.[1] ?? "";
+    expect(sheet).toContain('.frame:not([data-sheet="none"]) {');
+    expect(sheet).toContain('.panel:not([data-sheet="none"]),');
+    expect(sheet).toContain('.native:not([data-sheet="none"]) {');
+    expect(sheet).toMatch(
+      /\.native\[data-sheet="none"\]\s*\{[^}]*calc\(100% - 2 \* var\(--lufia-space-4\)\)/,
+    );
   });
 
   it('stacks from the sheet width with footerStackAt="sheet", and only with the stack layout', () => {
