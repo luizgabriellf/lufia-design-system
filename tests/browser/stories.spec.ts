@@ -1851,3 +1851,41 @@ test.describe("search input in a toolbar", () => {
     });
   }
 });
+
+test.describe("modal centred on a phone", () => {
+  for (const width of [320, 390]) {
+    test(`sheetPlacement="none" keeps a margin on every side at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 700 });
+      await openStory(page, `components-overlays-modal--centered-on-phone${width === 320 ? "-320" : ""}`);
+      const panel = page.getByRole("dialog");
+      await expect(panel).toBeVisible();
+      await page.waitForFunction(() => document.getAnimations().length === 0);
+      const box = (await panel.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(15.5);
+      expect(box.x + box.width).toBeLessThanOrEqual(width - 15.5);
+      expect(box.y).toBeGreaterThanOrEqual(15.5);
+      expect(box.y + box.height).toBeLessThanOrEqual(700 - 15.5);
+      // Vertically centred, unlike a bottom sheet.
+      expect(Math.abs(box.y - (700 - box.y - box.height))).toBeLessThanOrEqual(1);
+    });
+  }
+});
+
+test.describe("search input in a grid form", () => {
+  test("fills its track at 320px, and keeps a usable width in a content-sized track", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await openStory(page, "components-forms-searchinput--in-grid-form");
+    const widths = await page.evaluate(() => {
+      const form = document.querySelector<HTMLElement>('[data-testid="grid-form"]')!;
+      const boxes = [...form.querySelectorAll<HTMLElement>('input[type="search"]')].map((input) =>
+        input.parentElement!.getBoundingClientRect(),
+      );
+      return { form: form.getBoundingClientRect().width, first: boxes[0]!.width, second: boxes[1]!.width };
+    });
+    // A `1fr` track: the box is as wide as the form, which is itself as wide as the phone allows (not ~20px).
+    expect(widths.form).toBeGreaterThan(240);
+    expect(Math.abs(widths.first - widths.form)).toBeLessThanOrEqual(1);
+    // An `auto` track beside a button: never squeezed below the 8rem floor the box declares.
+    expect(widths.second).toBeGreaterThanOrEqual(128);
+  });
+});
