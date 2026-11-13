@@ -1,5 +1,15 @@
 # @lufia/design-system
 
+## 0.36.0
+
+### Minor Changes
+
+- [#134](https://github.com/luizgabriellf/lufia-design-system/pull/134) [`3ade775`](https://github.com/luizgabriellf/lufia-design-system/commit/3ade775de8127439a3fd7de649200ae71ef3060d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Select: add `size="sm"`, a compact box for toolbars and filter rows that sizes to its content, and `variant="pill"`, a fully rounded box. Both keep the room for the chevron, so text still ellipsizes before it, and the compact box grows to the touch target on phone widths and coarse pointers. A compact select needs an `aria-label` or a visually hidden label.
+
+- [#134](https://github.com/luizgabriellf/lufia-design-system/pull/134) [`3ade775`](https://github.com/luizgabriellf/lufia-design-system/commit/3ade775de8127439a3fd7de649200ae71ef3060d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - StatTile: the label of a button tile (`onClick`, with or without `pressed`) now has a box of at least 24 px high on phone widths and coarse pointers (WCAG 2.5.8), kept in place with an equal negative margin so the tile layout does not change.
+
+- [#134](https://github.com/luizgabriellf/lufia-design-system/pull/134) [`3ade775`](https://github.com/luizgabriellf/lufia-design-system/commit/3ade775de8127439a3fd7de649200ae71ef3060d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Textarea: add the opt-in `autoSize` prop, with `maxRows`, so the box grows with its content from `rows` (the minimum) up to the maximum. It uses CSS `field-sizing: content` where the browser supports it and a small measuring fallback elsewhere, and works controlled and uncontrolled.
+
 ## 0.35.1
 
 ### Patch Changes
