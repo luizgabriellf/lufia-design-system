@@ -121,6 +121,15 @@ export const NamedAddInput: Story = {
     defaultItems: ["Open trench"],
   },
 };
+/** `renderCount` shows the entries held and the room left; the text is yours, the package has no language. */
+export const WithCounter: Story = {
+  args: {
+    maxItems: 5,
+    maxTotalLength: 80,
+    renderCount: ({ count, maxItems, length, maxTotalLength }) =>
+      `${count} of ${maxItems} entries, ${length} of ${maxTotalLength} characters`,
+  },
+};
 export const Invalid: Story = {
   args: { required: true, error: "Add at least one entry.", defaultItems: [] },
 };

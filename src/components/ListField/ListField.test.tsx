@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { axe } from "../../test/axe";
-import { ListField, type ListFieldHandle, type ListFieldLabels } from "./ListField";
+import { ListField, type ListFieldHandle, type ListFieldLabels, type ListFieldProps } from "./ListField";
 
 const labels: ListFieldLabels = {
   add: "Add",
@@ -416,6 +416,54 @@ describe("ListField", () => {
       await user.type(screen.getByRole("textbox", { name: /^Tasks/ }), "x");
       expect(await axe(container)).toHaveNoViolations();
     });
+  });
+
+  it("renders nothing for the counter unless renderCount is given", () => {
+    const { container } = render(<ListField label="Tasks" labels={labels} defaultItems={["a"]} />);
+    expect(container.querySelector("[data-lufia-part='hint']")).toBeNull();
+    expect(screen.getByRole("group", { name: "Tasks" })).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("renders the counter with the counts, describes the group with it and keeps it current", async () => {
+    const user = userEvent.setup();
+    const renderCount = vi.fn(
+      ({
+        count,
+        maxItems,
+        length,
+        maxTotalLength,
+      }: Parameters<NonNullable<ListFieldProps["renderCount"]>>[0]) =>
+        `${count}/${maxItems} items, ${length}/${maxTotalLength} chars`,
+    );
+    render(
+      <ListField
+        label="Tasks"
+        labels={labels}
+        hint="One each"
+        error="Too few"
+        defaultItems={["ab"]}
+        maxItems={5}
+        maxTotalLength={20}
+        renderCount={renderCount}
+      />,
+    );
+    const group = screen.getByRole("group", { name: "Tasks" });
+    expect(group).toHaveAccessibleDescription("One each 1/5 items, 2/20 chars Too few");
+    await user.type(screen.getByRole("textbox", { name: "Tasks" }), "cd{Enter}");
+    expect(group).toHaveAccessibleDescription("One each 2/5 items, 5/20 chars Too few");
+  });
+
+  it("passes undefined for maxTotalLength when there is no limit, and has no axe violations", async () => {
+    const { container } = render(
+      <ListField
+        label="Tasks"
+        labels={labels}
+        defaultItems={["a"]}
+        renderCount={({ maxTotalLength, count }) => `${count} ${String(maxTotalLength)}`}
+      />,
+    );
+    expect(screen.getByText("1 undefined")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("has no axe violations", async () => {

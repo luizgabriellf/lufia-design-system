@@ -42,6 +42,17 @@ export type ListFieldLabels = {
   requiredMessage?: string;
 };
 
+export type ListFieldCount = {
+  /** The entries held, not counting a pending draft. */
+  count: number;
+  /** The `maxItems` limit (default 30). */
+  maxItems: number;
+  /** The length of the serialized entries, in characters. */
+  length: number;
+  /** The `maxTotalLength` limit, when there is one. */
+  maxTotalLength: number | undefined;
+};
+
 export type ListFieldHandle = {
   /**
    * Adds the text waiting in the add input as an entry, as the add button does, and returns whether an entry was added.
@@ -94,6 +105,12 @@ export type ListFieldProps = Omit<
   /** Placeholder of the add input. */
   placeholder?: string;
   hint?: ReactNode;
+  /**
+   * Renders a counter, such as "2 of 30 entries" or "34 of 200 characters", as secondary text under the hint and tied to
+   * the group with `aria-describedby`. The package has no built-in language: phrase it here. Nothing is rendered without it.
+   * Keep it phrasing content (text and inline elements).
+   */
+  renderCount?: (count: ListFieldCount) => ReactNode;
   error?: ReactNode;
   /** Content next to the label, such as a `Badge`. */
   badge?: ReactNode;
@@ -140,6 +157,7 @@ export function ListField({
   includeDraft,
   placeholder,
   hint,
+  renderCount,
   error,
   badge,
   disabled,
@@ -155,6 +173,7 @@ export function ListField({
   const baseId = id ?? `listfield-${generated.replace(/:/g, "")}`;
   const labelId = `${baseId}-label`;
   const hintId = hint ? `${baseId}-hint` : undefined;
+  const countId = renderCount ? `${baseId}-count` : undefined;
   const errorId = error ? `${baseId}-error` : undefined;
   const root = useRef<HTMLDivElement>(null);
   const addInput = useRef<HTMLInputElement>(null);
@@ -297,7 +316,9 @@ export function ListField({
         id={baseId}
         role="group"
         aria-labelledby={labelId}
-        aria-describedby={[rest["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined}
+        aria-describedby={
+          [rest["aria-describedby"], hintId, countId, errorId].filter(Boolean).join(" ") || undefined
+        }
         className={styles.group}
       >
         {rows.length ? (
@@ -382,6 +403,11 @@ export function ListField({
         />
       ) : null}
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}
+      {renderCount ? (
+        <FieldHint id={countId}>
+          {renderCount({ count: items.length, maxItems, length: serialize(items).length, maxTotalLength })}
+        </FieldHint>
+      ) : null}
       {error ? <FieldError id={errorId}>{error}</FieldError> : null}
     </div>
   );
