@@ -3,8 +3,17 @@
 import type { InputHTMLAttributes, ReactNode, Ref } from "react";
 import { useFormFieldControl } from "../FormField";
 import fieldStyles from "../FormField/fieldControl.module.css";
+import styles from "./TextInput.module.css";
+
+export type TextInputSize = "md" | "sm";
 
 export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "prefix" | "size" | "className"> & {
+  /**
+   * `sm` is the compact control for toolbars and filter rows, with the metrics of `Select size="sm"`: a 2rem box with the
+   * small font size. It still fills its row. On touch screens and phone widths it grows to the touch target, like `Button`.
+   * Give it an `aria-label` or a visually hidden label. Default `md`.
+   */
+  size?: TextInputSize;
   /** Content before the text: a unit, a currency sign, a decorative icon (give an icon `aria-hidden`). */
   prefix?: ReactNode;
   /** Content after the text: a unit, a button. */
@@ -21,6 +30,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "prefix
  * invalid, required and disabled state from the field. Rest props, `ref` and `type` go to the native `<input>`.
  */
 export function TextInput({
+  size = "md",
   prefix,
   suffix,
   invalid,
@@ -39,7 +49,8 @@ export function TextInput({
   });
   return (
     <span
-      className={[fieldStyles.box, className].filter(Boolean).join(" ")}
+      className={[fieldStyles.box, styles.box, className].filter(Boolean).join(" ")}
+      data-size={size === "md" ? undefined : size}
       data-invalid={control["aria-invalid"] ? "" : undefined}
       data-disabled={control.disabled ? "" : undefined}
       data-readonly={readOnly ? "" : undefined}

@@ -1,0 +1,29 @@
+/*
+ * Compact (size="sm"): a toolbar or filter-row control with the metrics of `Select size="sm"` (a 2rem box, 0.25rem block
+ * padding, space-2 inline padding, the small font size), so the two line up in one row. Unlike the compact select it keeps
+ * filling its row. The selectors out-weigh the shared field rules, whatever the stylesheet order.
+ */
+.box[data-size="sm"] {
+  min-block-size: 2rem;
+}
+
+.box[data-size="sm"] > input {
+  padding-block: 0.25rem;
+  padding-inline-start: var(--lufia-space-2);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.box[data-size="sm"] > span:first-child {
+  padding-inline-start: var(--lufia-space-2);
+}
+
+.box[data-size="sm"] > span:last-child {
+  padding-inline-end: var(--lufia-space-2);
+}
+
+/* Finger-sized on phones and touch screens, as Button and the compact Select; desktop keeps its density. */
+@media (pointer: coarse), (width < 40rem) {
+  .box[data-size="sm"] {
+    min-block-size: var(--lufia-target-touch, 2.75rem);
+  }
+}

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
@@ -89,5 +90,67 @@ describe("TextInput", () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("compact (size sm)", () => {
+    it("marks the box, leaving the default unmarked", () => {
+      const { container, rerender } = render(<TextInput aria-label="Name" />);
+      const box = container.firstElementChild as HTMLElement;
+      expect(box).not.toHaveAttribute("data-size");
+      rerender(<TextInput aria-label="Name" size="sm" />);
+      expect(box).toHaveAttribute("data-size", "sm");
+      rerender(<TextInput aria-label="Name" size="md" />);
+      expect(box).not.toHaveAttribute("data-size");
+    });
+
+    it("does not pass size to the native input, which would set its character width", () => {
+      render(<TextInput aria-label="Name" size="sm" />);
+      expect(screen.getByRole("textbox")).not.toHaveAttribute("size");
+    });
+
+    it("matches the metrics of the compact Select in the stylesheet", () => {
+      const select = readFileSync("src/components/Select/Select.module.css", "utf8");
+      const text = readFileSync("src/components/TextInput/TextInput.module.css", "utf8");
+      const value = (css: string, rule: RegExp, property: string) =>
+        new RegExp(`${property}:\\s*([^;]+);`).exec(rule.exec(css)?.[1] ?? "")?.[1];
+      const selectBox = /\.box\[data-size="sm"\]\s*\{([^}]*)\}/;
+      const selectNative = /\.box\[data-size="sm"\] \.native\s*\{([^}]*)\}/;
+      const textBox = /\.box\[data-size="sm"\]\s*\{([^}]*)\}/;
+      const textNative = /\.box\[data-size="sm"\] > input\s*\{([^}]*)\}/;
+      expect(value(text, textBox, "min-block-size")).toBe(value(select, selectBox, "min-block-size"));
+      for (const property of ["padding-block", "padding-inline-start", "font-size"]) {
+        expect(value(text, textNative, property)).toBe(value(select, selectNative, property));
+      }
+      // Touch screens and phones get the finger-sized target, as the compact Select does.
+      expect(text).toMatch(
+        /@media \(pointer: coarse\), \(width < 40rem\) \{\s*\.box\[data-size="sm"\] \{\s*min-block-size: var\(--lufia-target-touch, 2\.75rem\);/,
+      );
+    });
+
+    it("keeps its behaviour, affixes, field state and a ref", async () => {
+      const user = userEvent.setup();
+      const ref = createRef<HTMLInputElement>();
+      render(
+        <FormField label="Weight" error="Too heavy" required>
+          <TextInput size="sm" prefix="~" suffix="kg" ref={ref} />
+        </FormField>,
+      );
+      const input = screen.getByLabelText(/Weight/);
+      await user.type(input, "12");
+      expect(ref.current).toHaveValue("12");
+      expect(input).toBeInvalid();
+      expect(input.previousElementSibling).toHaveTextContent("~");
+      expect(input.nextElementSibling).toHaveTextContent("kg");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <div>
+          <TextInput aria-label="Name" size="sm" />
+          <TextInput aria-label="Amount" size="sm" prefix="EUR" suffix="kg" invalid />
+        </div>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });
