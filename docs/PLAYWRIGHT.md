@@ -28,6 +28,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Notification center: at 1440 px the bell opens a popover that takes focus, tabs switch the list and Escape returns focus to the bell; at 390 px the panel is a modal sheet above a fixed dock; a long list scrolls inside the panel with the footer in place; the open animation runs and is absent under reduced motion.
 - Select: a long selected label in a 96 px box keeps its computed end padding at least as wide as the chevron, so the text stops before it, in left-to-right and right-to-left.
 - Select, compact: the same room for the smaller chevron in the `size="sm"` box, in left-to-right and right-to-left.
+- Textarea, auto height: the box grows with its content from `rows`, stops at `maxRows` and scrolls, and shrinks back when emptied.
 
 Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.
 

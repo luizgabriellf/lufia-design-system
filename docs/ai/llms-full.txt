@@ -7475,6 +7475,8 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | `showCount` | `boolean` | no |  | Shows a character count under the box. With `maxLength` it reads "12 / 200". |
 | `formatCount` | `(length: number, max: number \| undefined) => ReactNode` | no | `defaultCount` | Text of the count. Defaults to `12 / 200` with a limit and `12` without. Pass it to localise or reword. |
 | `formatCountAnnouncement` | `(length: number, max: number) => string` | no | `defaultAnnouncement` | Text read out when the person is close to the limit (the last tenth) or over it. Aria-only. |
+| `autoSize` | `boolean` | no | `false` | Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled. |
+| `maxRows` | `number` | no |  | With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
 | `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
 
@@ -7494,6 +7496,7 @@ import { Textarea } from "@lufia/design-system/components/Textarea";
 ### Accessibility
 
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
+- With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 
 ### Motion
@@ -7522,6 +7525,9 @@ Phrase `formatCount` as what is left ("12 characters left") when the limit is ti
 - `components-forms-textarea--count-without-limit`
 - `components-forms-textarea--custom-count`
 - `components-forms-textarea--controlled`
+- `components-forms-textarea--auto-size`
+- `components-forms-textarea--auto-size-unbounded`
+- `components-forms-textarea--auto-size-controlled`
 - `components-forms-textarea--long-text`
 - `components-forms-textarea--phone-320`
 - `components-forms-textarea--right-to-left`

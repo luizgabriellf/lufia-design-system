@@ -46,6 +46,21 @@ yourself, showing the error in the `FormField`.
 <Canvas of={Stories.NearLimit} />
 <Canvas of={Stories.CustomCount} />
 
+### Auto height
+
+`autoSize` makes the box grow with its content instead of scrolling. `rows` is the minimum height (it still defaults to 4,
+so pass `rows={1}` or `rows={2}` for a compact start) and `maxRows` is the optional maximum, after which the box scrolls.
+`maxRows` is never read as less than `rows`. The manual resize handle is removed in this mode.
+
+Where the browser supports CSS `field-sizing: content`, the browser does the growing and the component runs no script for
+it. Elsewhere a small fallback measures the content on every change, on a form reset and when the width changes, and sets
+the height; the same minimum and maximum clamp it. It works controlled and uncontrolled. A value set on an uncontrolled
+textarea from script (`node.value = ...`) fires no event, so the fallback does not see it: use a controlled textarea for that.
+
+<Canvas of={Stories.AutoSize} />
+<Canvas of={Stories.AutoSizeUnbounded} />
+<Canvas of={Stories.AutoSizeControlled} />
+
 ### States
 
 <Canvas of={Stories.Required} />
@@ -76,6 +91,7 @@ yourself, showing the error in the `FormField`.
 | Typing       | Native. The count is updated but not announced until close to the limit. |
 
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
+- With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 
 </Section>

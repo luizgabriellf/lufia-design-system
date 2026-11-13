@@ -33,7 +33,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
 - TextInput: prefix suffix invalid
-- Textarea: invalid showCount formatCount formatCountAnnouncement
+- Textarea: invalid showCount formatCount formatCountAnnouncement autoSize maxRows
 
 ### Overlays
 

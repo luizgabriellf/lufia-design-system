@@ -1656,3 +1656,24 @@ test.describe("select chevron room", () => {
     });
   }
 });
+
+test.describe("textarea autoSize", () => {
+  test("grows with the content from rows to maxRows, then scrolls", async ({ page }) => {
+    await openStory(page, "components-forms-textarea--auto-size");
+    const area = page.getByRole("textbox");
+    const height = () => area.evaluate((node) => node.getBoundingClientRect().height);
+    const rest = await height();
+    await area.fill("one\ntwo\nthree\nfour");
+    const grown = await height();
+    expect(grown).toBeGreaterThan(rest);
+    await area.fill(Array.from({ length: 30 }, (_, i) => `line ${i}`).join("\n"));
+    const capped = await height();
+    // maxRows is 8: the box stops growing there and scrolls inside.
+    expect(capped).toBeGreaterThan(grown);
+    await area.fill(Array.from({ length: 60 }, (_, i) => `line ${i}`).join("\n"));
+    expect(await height()).toBeCloseTo(capped, 0);
+    expect(await area.evaluate((node) => node.scrollHeight > node.clientHeight)).toBe(true);
+    await area.fill("");
+    expect(await height()).toBeCloseTo(rest, 0);
+  });
+});

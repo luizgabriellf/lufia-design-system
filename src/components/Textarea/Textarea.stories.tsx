@@ -65,6 +65,21 @@ export const Controlled: Story = {
     );
   },
 };
+/** `autoSize`: grows with the content from `rows` (the minimum) up to `maxRows`, then scrolls. */
+export const AutoSize: Story = {
+  args: { autoSize: true, rows: 2, maxRows: 8, hint: "Grows as you type, up to eight rows." },
+};
+export const AutoSizeUnbounded: Story = {
+  args: { autoSize: true, rows: 1, hint: "One row to start, no limit." },
+};
+/** Controlled: the height follows a value set from outside as well as typing. */
+export const AutoSizeControlled: Story = {
+  args: { autoSize: true, rows: 2, maxRows: 6 },
+  render: (args) => {
+    const [value, setValue] = useState("A controlled value.");
+    return <Demo {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
+  },
+};
 export const LongText: Story = {
   args: {
     label: "A considerably longer label that has to wrap onto a second line on narrow screens",

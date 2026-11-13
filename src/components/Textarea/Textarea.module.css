@@ -19,6 +19,24 @@
   resize: none;
 }
 
+/*
+ * autoSize: the box grows with its content between `rows` and `maxRows` (set by the component as the custom properties `--textarea-rows` and `--textarea-max-rows`). The
+ * row height is the textarea's own line height (1lh) plus the block padding the shared field styles give it. With
+ * field-sizing the browser does the growing; without it the component writes a block-size and these bounds still clamp it.
+ */
+.box[data-autosize] .native {
+  --textarea-padding-block: 0.625rem;
+
+  min-block-size: calc(var(--textarea-rows, 4) * 1lh + 2 * var(--textarea-padding-block));
+  field-sizing: content;
+  overflow-y: auto;
+  resize: none;
+}
+
+.box[data-autosize][data-max-rows] .native {
+  max-block-size: calc(var(--textarea-max-rows) * 1lh + 2 * var(--textarea-padding-block));
+}
+
 .count {
   margin: 0;
   color: var(--lufia-color-text-muted);

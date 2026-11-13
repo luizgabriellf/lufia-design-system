@@ -16505,6 +16505,20 @@
               "description": "Text read out when the person is close to the limit (the last tenth) or over it. Aria-only."
             },
             {
+              "name": "autoSize",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled."
+            },
+            {
+              "name": "maxRows",
+              "type": "number",
+              "required": false,
+              "default": null,
+              "description": "With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -16577,6 +16591,18 @@
             "id": "components-forms-textarea--controlled"
           },
           {
+            "export": "AutoSize",
+            "id": "components-forms-textarea--auto-size"
+          },
+          {
+            "export": "AutoSizeUnbounded",
+            "id": "components-forms-textarea--auto-size-unbounded"
+          },
+          {
+            "export": "AutoSizeControlled",
+            "id": "components-forms-textarea--auto-size-controlled"
+          },
+          {
             "export": "LongText",
             "id": "components-forms-textarea--long-text"
           },
@@ -16616,6 +16642,7 @@
         "keyboardNotes": null,
         "notes": [
           "The resize handle is vertical only, so the box cannot grow wider than its container at 320px.",
+          "With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.",
           "Focus ring, forced-colors and invalid styling match `TextInput`."
         ]
       },
