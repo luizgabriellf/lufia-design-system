@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { Button } from "../Button";
 import { FormField } from "../FormField";
 import { SearchInput } from "./SearchInput";
 
@@ -67,6 +68,21 @@ export const LongText: Story = {
     defaultValue: "A search phrase that is much too long to fit inside the box without being clipped",
     shortcut: "Ctrl K",
   },
+};
+/** A toolbar row: the box keeps a usable width beside fixed-size actions and takes the room that is left. */
+export const InToolbar: Story = {
+  render: (args) => (
+    <div
+      data-testid="toolbar"
+      style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}
+    >
+      <SearchInput {...args} aria-label="Search customers" />
+      <Button variant="secondary">Filters</Button>
+      <Button variant="secondary">Export</Button>
+      <Button variant="secondary">Sort</Button>
+      <Button>Add customer</Button>
+    </div>
+  ),
 };
 export const Phone320: Story = {
   args: { defaultValue: "pressure pump", shortcut: "/" },

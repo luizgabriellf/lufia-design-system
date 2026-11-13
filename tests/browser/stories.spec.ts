@@ -1700,3 +1700,20 @@ test.describe("stat tile button target", () => {
     expect(Math.abs(pressable.tile - plain.tile)).toBeLessThanOrEqual(0.5);
   });
 });
+
+test.describe("search input in a toolbar", () => {
+  for (const width of [320, 390]) {
+    test(`keeps a usable width beside fixed actions at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-forms-searchinput--in-toolbar");
+      const box = page.getByRole("searchbox").locator("xpath=..");
+      const size = await box.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      });
+      // 8rem is the floor the box declares; the row may overflow rather than squeeze the input to nothing.
+      expect(size.width).toBeGreaterThanOrEqual(128);
+      expect(size.height).toBeGreaterThanOrEqual(44);
+    });
+  }
+});

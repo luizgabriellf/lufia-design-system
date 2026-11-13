@@ -1,4 +1,7 @@
 .box {
+  /* In a flex row the box may grow, but never squeeze below a usable width; outside one these two lines do nothing. */
+  flex: 1 1 12rem;
+  min-inline-size: 8rem;
   padding-inline-end: var(--lufia-space-2);
 }
 
