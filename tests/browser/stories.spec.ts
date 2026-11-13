@@ -1677,3 +1677,26 @@ test.describe("textarea autoSize", () => {
     expect(await height()).toBeCloseTo(rest, 0);
   });
 });
+
+test.describe("stat tile button target", () => {
+  test("on a phone the button label is at least 24x24 and the tile is no taller than the plain one", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    const measure = async (id: string) => {
+      await openStory(page, id);
+      return page.evaluate(() => {
+        const root = document.querySelector<HTMLElement>("#storybook-root > *, #storybook-root")!;
+        const tile = (root.querySelector("[data-tone]") ?? root) as HTMLElement;
+        const button = tile.querySelector<HTMLElement>("button");
+        const rect = button?.getBoundingClientRect();
+        return { tile: tile.getBoundingClientRect().height, width: rect?.width, height: rect?.height };
+      });
+    };
+    const plain = await measure("components-data-display-stattile--default");
+    const pressable = await measure("components-data-display-stattile--as-button");
+    expect(pressable.width).toBeGreaterThanOrEqual(24);
+    expect(pressable.height).toBeGreaterThanOrEqual(24);
+    expect(Math.abs(pressable.tile - plain.tile)).toBeLessThanOrEqual(0.5);
+  });
+});

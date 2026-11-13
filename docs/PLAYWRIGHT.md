@@ -29,6 +29,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Select: a long selected label in a 96 px box keeps its computed end padding at least as wide as the chevron, so the text stops before it, in left-to-right and right-to-left.
 - Select, compact: the same room for the smaller chevron in the `size="sm"` box, in left-to-right and right-to-left.
 - Textarea, auto height: the box grows with its content from `rows`, stops at `maxRows` and scrolls, and shrinks back when emptied.
+- Stat tile: at 390 px the button label is at least 24 by 24 px and the tile is no taller than a plain one.
 
 Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.
 
