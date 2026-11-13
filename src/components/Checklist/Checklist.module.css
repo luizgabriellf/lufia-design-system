@@ -1,0 +1,58 @@
+.root {
+  --checklist-gap: var(--lufia-space-3);
+  --checklist-row-gap: var(--lufia-space-3);
+
+  min-inline-size: 0;
+  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.root[data-density="sm"] {
+  --checklist-gap: var(--lufia-space-2);
+  --checklist-row-gap: var(--lufia-space-1);
+}
+
+.title {
+  margin: 0 0 var(--lufia-space-2);
+  color: var(--lufia-color-text-default);
+  font-weight: var(--lufia-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.list {
+  display: grid;
+  gap: var(--checklist-row-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--checklist-gap);
+  min-inline-size: 0;
+}
+
+.icon {
+  flex: none;
+
+  /* Centre the glyph on the first line of text. */
+  margin-block-start: 0.125rem;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.text {
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  overflow-wrap: anywhere;
+}

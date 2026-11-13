@@ -72,6 +72,18 @@
     "gzip": true
   },
   {
+    "name": "Checklist",
+    "path": "dist/components/Checklist/**/*.{js,css}",
+    "limit": "1.5 kB",
+    "gzip": true
+  },
+  {
+    "name": "CitationList",
+    "path": "dist/components/CitationList/**/*.{js,css}",
+    "limit": "1.5 kB",
+    "gzip": true
+  },
+  {
     "name": "StatusIcon",
     "path": "dist/components/StatusIcon/**/*.{js,css}",
     "limit": "2.45 kB",

@@ -1,0 +1,82 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./CitationList.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="CitationList"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A compact list of references or sources, drawn as chips that wrap. A reference with `href` is a link.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { CitationList } from "@lufia/design-system/components/CitationList";
+
+<CitationList
+  title="Sources"
+  items={[
+    { key: "std", label: "Standard", reference: "Standard 123, clause 4", href: "/standards/123" },
+    { key: "reg", reference: "Regulation 45, article 7" },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### Long references
+
+<Canvas of={Stories.LongReference} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- A native `<ul>`. The title names it through `aria-labelledby`; without a title, `aria-label` or `aria-labelledby` on the
+  component go to the list.
+- A linked reference renders through `Link`, so it uses the `linkComponent` set on `LufiaProvider`, has a visible focus
+  ring and keeps a target of at least 24px (WCAG 2.5.8).
+- Long references wrap inside their chip; chips wrap onto new lines, so nothing overflows at 320px.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Pointing to the sources behind a statement, a result or a record.
+
+### When not to use
+
+- Navigation (use a menu or tabs), or a long bibliography with details per entry (use a table or a list with its own layout).
+
+### Content guidelines
+
+Keep each reference short enough to scan: the document and the part, not the title in full. Use `label` for the kind of
+source, and localise both in the app.
+
+</Section>
