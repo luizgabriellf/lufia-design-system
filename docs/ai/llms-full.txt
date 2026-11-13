@@ -3472,7 +3472,7 @@ No props of its own. Native element attributes pass through.
 
 #### `useFormFieldControl`
 
-Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.
+Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.
 
 ```ts
 useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby": string | undefined; "aria-invalid": true | undefined; required: true | undefined; "aria-required": true | undefined; disabled: true | undefined; }

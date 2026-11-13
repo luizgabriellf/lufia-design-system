@@ -7012,7 +7012,7 @@
         {
           "name": "FormField",
           "kind": "component",
-          "description": "Wires a label, a hint and an error to one control: the label targets it, the hint and error describe it, an error sets `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up from context; anything else takes them from the render prop. The parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`) for app-level styling and tests. `control` is a layout-neutral wrapper (`display: contents`) around the children.",
+          "description": "Wires a label, a hint and an error to one control: the label targets it, the hint and error describe it, an error sets `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up from context; anything else takes them from the render prop. A field names one control. The first control of this package inside it takes the field's `id` and the label points at it; a control with its own `id` keeps it, and the label follows. A second control in the same field never gets the same id: it keeps its own `id` or a generated one, is not named by the label, and needs its own `aria-label` or `aria-labelledby`. The parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`) for app-level styling and tests. `control` is a layout-neutral wrapper (`display: contents`) around the children.",
           "props": [
             {
               "name": "id",
@@ -7102,7 +7102,7 @@
         {
           "name": "useFormFieldControl",
           "kind": "hook",
-          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.",
+          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.",
           "signature": "(own?: OwnProps): { id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; \"aria-required\": true | undefined; disabled: true | undefined; }",
           "parameters": [
             {

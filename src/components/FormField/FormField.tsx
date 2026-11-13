@@ -1,10 +1,15 @@
 "use client";
 
-import { useId, type HTMLAttributes, type ReactNode } from "react";
+import { useId, useMemo, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
 import { useLufia } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
 import { FieldError, FieldHint } from "./FieldMessages";
-import { FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
+import {
+  FormFieldClaimContext,
+  FormFieldContext,
+  type FormFieldClaim,
+  type FormFieldControlProps,
+} from "./FormFieldContext";
 import styles from "./FormField.module.css";
 
 export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
@@ -42,6 +47,10 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
  * `aria-invalid`, and a required field says so in text and not only with a mark. Controls of the package pick the ids up
  * from context; anything else takes them from the render prop.
  *
+ * A field names one control. The first control of this package inside it takes the field's `id` and the label points at it;
+ * a control with its own `id` keeps it, and the label follows. A second control in the same field never gets the same id:
+ * it keeps its own `id` or a generated one, is not named by the label, and needs its own `aria-label` or `aria-labelledby`.
+ *
  * The parts carry stable `data-lufia-part` hooks (`field`, `label`, `hint`, `error`, `control`) for app-level styling and
  * tests. `control` is a layout-neutral wrapper (`display: contents`) around the children.
  */
@@ -64,6 +73,21 @@ export function FormField({
   const baseId = id ?? `field-${generated.replace(/:/g, "")}`;
   const hintId = hint ? `${baseId}-hint` : undefined;
   const errorId = error ? `${baseId}-error` : undefined;
+  const owner = useRef<string | null>(null);
+  const [labelTarget, setLabelTarget] = useState<string | undefined>(undefined);
+  const claim = useMemo<FormFieldClaim>(
+    () => ({
+      take: (key) => {
+        owner.current ??= key;
+        return owner.current === key;
+      },
+      release: (key) => {
+        if (owner.current === key) owner.current = null;
+      },
+      setLabelTarget,
+    }),
+    [],
+  );
   const control: FormFieldControlProps = {
     id: baseId,
     "aria-describedby": [hintId, errorId].filter(Boolean).join(" ") || undefined,
@@ -81,7 +105,12 @@ export function FormField({
       data-disabled={disabled ? "" : undefined}
       data-lufia-part="field"
     >
-      <label id={`${baseId}-label`} htmlFor={baseId} className={styles.label} data-lufia-part="label">
+      <label
+        id={`${baseId}-label`}
+        htmlFor={labelTarget ?? baseId}
+        className={styles.label}
+        data-lufia-part="label"
+      >
         {label}
         {required ? (
           <>
@@ -94,7 +123,9 @@ export function FormField({
       </label>
       <div className={styles.control} data-lufia-part="control">
         <FormFieldContext.Provider value={control}>
-          {typeof children === "function" ? children(control) : children}
+          <FormFieldClaimContext.Provider value={claim}>
+            {typeof children === "function" ? children(control) : children}
+          </FormFieldClaimContext.Provider>
         </FormFieldContext.Provider>
       </div>
       {hint ? <FieldHint id={hintId}>{hint}</FieldHint> : null}

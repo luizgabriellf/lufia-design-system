@@ -1,7 +1,7 @@
 "use client";
 
-import { useContext } from "react";
-import { FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
+import { useContext, useEffect, useId } from "react";
+import { FormFieldClaimContext, FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
 
 type OwnProps = Partial<Omit<FormFieldControlProps, "aria-invalid">> & {
   "aria-invalid"?: boolean | "true" | "false" | "grammar" | "spelling";
@@ -17,18 +17,35 @@ function uniqueTokens(...lists: (string | undefined)[]): string | undefined {
  * Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it
  * returns the caller's props untouched, so every control works on its own.
  *
- * Inside a field the field's `id` wins (the label points at it), `aria-describedby` is the union of both lists without repeated ids, and a
+ * Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label
+ * follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so
+ * ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a
  * control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields
  * `aria-required` and no `required`. Use this when building a control that should join a
  * field; the controls of this package already do.
  */
 export function useFormFieldControl(own: OwnProps = {}) {
   const field = useContext(FormFieldContext);
+  const claim = useContext(FormFieldClaimContext);
+  const key = useId();
+  const fallbackId = useId();
+  // The first control to ask owns the field. The key is stable per control, so a re-render or a StrictMode double render
+  // gets the same answer; the effect below also covers a claim released by a control that unmounted.
+  const primary = !field || !claim || claim.take(key);
+  const id = primary ? (own.id ?? field?.id) : (own.id ?? fallbackId);
+  useEffect(() => {
+    if (!claim || !claim.take(key)) return;
+    claim.setLabelTarget(id);
+    return () => {
+      claim.release(key);
+      claim.setLabelTarget(undefined);
+    };
+  }, [claim, key, id]);
   const describedBy = uniqueTokens(field?.["aria-describedby"], own["aria-describedby"]);
   const ownInvalid =
     own["aria-invalid"] !== undefined && own["aria-invalid"] !== false && own["aria-invalid"] !== "false";
   return {
-    id: field?.id ?? own.id,
+    id,
     "aria-describedby": describedBy,
     "aria-invalid": field?.["aria-invalid"] || ownInvalid ? (true as const) : undefined,
     required: field?.required || own.required || undefined,
