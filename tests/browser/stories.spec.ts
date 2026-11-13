@@ -1223,6 +1223,36 @@ test.describe("combobox result cap", () => {
   });
 });
 
+test.describe("combobox wrapped value", () => {
+  test("a long chosen label wraps at 320px, grows the box and keeps the controls on the first line", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 700 });
+    await openStory(page, "components-forms-combobox--wrapped-value-phone-320");
+    const input = page.getByRole("combobox", { name: "City" });
+    const box = page.locator("[data-wrapped]");
+    const layer = box.locator("[aria-hidden='true']").first();
+    await expect(layer).toContainText("Centro de Saúde");
+    const lines = await layer.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return node.getBoundingClientRect().height / parseFloat(style.lineHeight);
+    });
+    expect(lines).toBeGreaterThan(1.5);
+    expect(await layer.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+    const boxRect = (await box.boundingBox())!;
+    expect(boxRect.height).toBeGreaterThan(44);
+    const clear = page.getByRole("button", { name: "Clear city" });
+    const clearRect = (await clear.boundingBox())!;
+    expect(clearRect.y).toBeLessThan(boxRect.y + 44);
+    expect(clearRect.width).toBeGreaterThanOrEqual(44);
+    await expect(input).toHaveValue(/Centro de Saúde/);
+    await input.click();
+    await expect(input).toHaveAttribute("aria-expanded", "true");
+    await expect(box).toHaveCount(0);
+    expect((await page.locator("[data-open]").boundingBox())!.height).toBeLessThan(50);
+  });
+});
+
 test.describe("skeleton blocks", () => {
   const stories = [
     "components-feedback-skeletontable--widths",

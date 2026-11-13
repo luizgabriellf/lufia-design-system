@@ -21,7 +21,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 ### Forms
 
 - Checkbox: label* hint error indeterminate
-- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel maxResults +7
+- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel maxResults +9
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName endName +6
 - FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale preview +4

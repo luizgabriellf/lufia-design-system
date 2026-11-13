@@ -935,7 +935,103 @@ describe("Combobox placement", () => {
   });
 });
 
+describe("Combobox wrapValue", () => {
+  const wrappedLayer = (container: HTMLElement) =>
+    container.querySelector('[data-wrapped] > [aria-hidden="true"]');
+
+  it("is off by default: no wrapped layer", () => {
+    const { container } = renderCombobox({ defaultValue: "lis" });
+    expect(wrappedLayer(container)).toBeNull();
+  });
+
+  it("shows the chosen label in a hidden layer while the input keeps the name and value", () => {
+    const { container } = renderCombobox({ defaultValue: "sp", wrapValue: true });
+    expect(wrappedLayer(container)).toHaveTextContent("São Paulo");
+    expect(box()).toHaveValue("São Paulo");
+    expect(box()).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("passes maxValueLines to the layer, at least one", () => {
+    const { container, rerender } = renderCombobox({ defaultValue: "sp", wrapValue: true, maxValueLines: 3 });
+    expect(
+      container
+        .querySelector<HTMLElement>("[data-wrapped]")!
+        .style.getPropertyValue("--combobox-value-lines"),
+    ).toBe("3");
+    rerender(
+      <Combobox
+        aria-label="City"
+        options={options}
+        {...texts}
+        defaultValue="sp"
+        wrapValue
+        maxValueLines={0}
+      />,
+    );
+    expect(
+      container
+        .querySelector<HTMLElement>("[data-wrapped]")!
+        .style.getPropertyValue("--combobox-value-lines"),
+    ).toBe("1");
+  });
+
+  it("is not wrapped with nothing chosen", () => {
+    const { container } = renderCombobox({ wrapValue: true });
+    expect(wrappedLayer(container)).toBeNull();
+  });
+
+  it("returns to the editable input while the list is open or text is typed, and wraps again after choosing", async () => {
+    const user = userEvent.setup();
+    const { container } = renderCombobox({ defaultValue: "sp", wrapValue: true });
+    await user.click(box());
+    expect(wrappedLayer(container)).toBeNull();
+    await user.keyboard("par");
+    expect(box()).toHaveValue("par");
+    await user.click(screen.getByRole("option", { name: "Paris" }));
+    expect(wrappedLayer(container)).toHaveTextContent("Paris");
+    expect(box()).toHaveValue("Paris");
+  });
+
+  it("keeps clear, keyboard and the submitted value", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <form data-testid="form">
+        <Combobox
+          aria-label="City"
+          options={options}
+          {...texts}
+          name="city"
+          wrapValue
+          clearable
+          defaultValue="lis"
+          onValueChange={onValueChange}
+        />
+      </form>,
+    );
+    expect(new FormData(screen.getByTestId("form")).get("city")).toBe("lis");
+    await user.tab();
+    expect(box()).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(box()).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(onValueChange).toHaveBeenLastCalledWith(null, null);
+    expect(wrappedLayer(container)).toBeNull();
+  });
+});
+
 describe("Combobox axe", () => {
+  it("has no violations with a wrapped value", async () => {
+    const { container } = render(
+      <FormField label="City">
+        <Combobox options={options} {...texts} clearable defaultValue="sp" wrapValue />
+      </FormField>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+    expect(screen.getByRole("combobox", { name: "City" })).toHaveValue("São Paulo");
+  });
+
   it("has no violations closed", async () => {
     const { container } = render(
       <FormField label="City" hint="Hint" error="Error" required>

@@ -80,6 +80,14 @@ export type ComboboxProps = Omit<
    * `valueLabel`. Choosing an option sets that option's `value`; a `value` set by the parent resolves to its option.
    */
   freeText?: boolean;
+  /**
+   * Lets the chosen label wrap onto up to `maxValueLines` lines while the list is closed, instead of being cut with an
+   * ellipsis, so a long label stays readable on a narrow screen. The box grows with it; the clear and toggle buttons stay
+   * level with the first line. Opening the list or typing returns the box to a single editable line. Default: off.
+   */
+  wrapValue?: boolean;
+  /** The most lines the wrapped label may take (`wrapValue`); a longer label is cut with an ellipsis. Default: 2. */
+  maxValueLines?: number;
   /** Shows a clear button while something is chosen. Escape clears too, when the list is closed. */
   clearable?: boolean;
   /** Accessible name of the clear button. Aria-only. */
@@ -174,6 +182,8 @@ export function Combobox({
   maxResults,
   valueLabel,
   freeText = false,
+  wrapValue = false,
+  maxValueLines = 2,
   clearable = false,
   clearLabel = "Clear",
   toggleLabel = "Show options",
@@ -397,6 +407,9 @@ export function Combobox({
     if (!root.current?.contains(event.relatedTarget as Node | null)) closeAndSettle();
   };
 
+  // The wrapped label is a visual layer over the real input, which keeps the name, the value, focus and the keyboard. It is
+  // shown only at rest: while the list is open or the text is being edited, the input is the single editable line.
+  const wrapped = wrapValue && !open && typed === null && selectedLabel !== "";
   const showClear = clearable && value !== null && !control.disabled && !readOnly;
   // Only a list that is on screen counts as expanded: an empty or loading popup holds a message, not options.
   const expanded = open && visible.length > 0;
@@ -425,6 +438,12 @@ export function Combobox({
         data-invalid={control["aria-invalid"] ? "" : undefined}
         data-disabled={control.disabled ? "" : undefined}
         data-readonly={readOnly ? "" : undefined}
+        data-wrapped={wrapped ? "" : undefined}
+        style={
+          wrapped
+            ? ({ "--combobox-value-lines": Math.max(1, Math.floor(maxValueLines)) } as CSSProperties)
+            : undefined
+        }
       >
         <input
           autoComplete="off"
@@ -465,6 +484,11 @@ export function Combobox({
             }
           }}
         />
+        {wrapped ? (
+          <span className={styles.wrappedValue} aria-hidden="true">
+            <span className={styles.wrappedText}>{selectedLabel}</span>
+          </span>
+        ) : null}
         {loading ? <FieldSpinner className={styles.spinner} /> : null}
         {showClear ? (
           <button
