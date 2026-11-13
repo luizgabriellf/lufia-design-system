@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.41.0
+
+### Minor Changes
+
+- [#147](https://github.com/luizgabriellf/lufia-design-system/pull/147) [`34edb32`](https://github.com/luizgabriellf/lufia-design-system/commit/34edb32266cf82c2cf374517a8a6f9637456aeda) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Checklist`, a read-only list of items with a status icon and text, and `CitationList`, a compact wrapping list of references that link when they have a URL.
+
 ## 0.40.0
 
 ### Minor Changes
