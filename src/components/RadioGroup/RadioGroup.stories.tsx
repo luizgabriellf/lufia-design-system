@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { RadioGroup, type RadioOption } from "./RadioGroup";
+import { RadioGroup, type RadioGroupProps, type RadioOption } from "./RadioGroup";
+
+/** The stories drive the visible-label shape; the `aria-label` stories render their own group. */
+type LabelledProps = Extract<RadioGroupProps, { label: unknown }>;
 
 const options: RadioOption[] = [
   { value: "card", label: "Card", description: "Charged today." },
@@ -11,7 +14,7 @@ const options: RadioOption[] = [
 
 const meta = {
   title: "Components/Forms/RadioGroup",
-  component: RadioGroup,
+  component: RadioGroup as (props: LabelledProps) => React.ReactNode,
   parameters: { layout: "padded" },
   args: { label: "Payment method", options, defaultValue: "card" },
   decorators: [
@@ -21,7 +24,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof RadioGroup>;
+} satisfies Meta<LabelledProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -30,6 +33,28 @@ export const Default: Story = {};
 export const NothingChosen: Story = { args: { defaultValue: undefined } };
 export const WithHint: Story = { args: { hint: "You can change this later in settings." } };
 export const Required: Story = { args: { required: true, defaultValue: undefined } };
+export const AriaLabel: Story = {
+  render: (args) => {
+    return (
+      <RadioGroup {...args} label={undefined} aria-label="Payment method" required defaultValue={undefined} />
+    );
+  },
+};
+export const AriaLabelledBy: Story = {
+  render: (args) => {
+    return (
+      <section>
+        <h3 id="radiogroup-story-heading">How would you like to pay?</h3>
+        <RadioGroup
+          {...args}
+          label={undefined}
+          aria-labelledby="radiogroup-story-heading"
+          defaultValue={undefined}
+        />
+      </section>
+    );
+  },
+};
 export const Invalid: Story = {
   args: { required: true, defaultValue: undefined, error: "Choose a payment method to continue." },
 };

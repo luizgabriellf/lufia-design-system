@@ -92,7 +92,7 @@ export default function ClientSmoke() {
       <section data-smoke="PendingSubmit"><PendingSubmit_PendingSubmit pendingLabel={"x"}>{"x"}</PendingSubmit_PendingSubmit></section>
       <section data-smoke="Popover"><Popover_Popover trigger={(props) => <button type="button" {...props}>Open</button>} label={"x"}>{"x"}</Popover_Popover></section>
       <section data-smoke="QueueSummary"><QueueSummary_QueueSummary items={[{ id: "a", label: "Open", count: 1 }]} clearLabel={(count) => String(count)} allClearTitle={"x"} /></section>
-      <section data-smoke="RadioGroup"><RadioGroup_RadioGroup options={[{ value: "a", label: "A" }]} label={"x"} /></section>
+      <section data-smoke="RadioGroup"><RadioGroup_RadioGroup options={[{ value: "a", label: "A" }]} aria-label={"x"} /></section>
       <section data-smoke="Reveal"><Reveal_Reveal show={false} /></section>
       <section data-smoke="RouteTransition"><RouteTransition_RouteTransition transitionKey={"x"} /></section>
       <section data-smoke="SearchInput"><SearchInput_SearchInput /></section>

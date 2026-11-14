@@ -70,7 +70,7 @@ export const FIXTURES = {
   ListField: {
     labels: `{ add: "Add", remove: (index, text) => "Remove " + index + ": " + text, entry: (index) => "Entry " + index }`,
   },
-  RadioGroup: { options: `[{ value: "a", label: "A" }]` },
+  RadioGroup: { options: `[{ value: "a", label: "A" }]`, "aria-label": `"x"` },
   SegmentedToggle: { options: `[{ value: "a", label: "A" }]` },
   Sparkline: { values: `[1, 3, 2]` },
   StackedBar: { segments: `[{ key: "a", label: "A", value: 1 }]` },

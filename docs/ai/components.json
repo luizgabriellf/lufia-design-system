@@ -13333,9 +13333,23 @@
             {
               "name": "label",
               "type": "ReactNode",
-              "required": true,
+              "required": false,
               "default": null,
               "description": "Names the group, like a `<legend>`."
+            },
+            {
+              "name": "aria-label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the group without a visible legend."
+            },
+            {
+              "name": "aria-labelledby",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the group by the id of an element the host already shows, without a visible legend."
             },
             {
               "name": "options",
@@ -13436,7 +13450,82 @@
               "description": ""
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "aria-label",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "aria-label: undefined",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "label",
+                    "type": "ReactNode",
+                    "required": true,
+                    "description": "Names the group, like a `<legend>`."
+                  }
+                ]
+              },
+              {
+                "name": "aria-label: string",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "string",
+                    "required": true,
+                    "description": "Names the group without a visible legend."
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  }
+                ]
+              },
+              {
+                "name": "aria-label: undefined",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "string",
+                    "required": true,
+                    "description": "Names the group by the id of an element the host already shows, without a visible legend."
+                  },
+                  {
+                    "name": "label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "RadioGroupProps",
@@ -13472,6 +13561,14 @@
           {
             "export": "Required",
             "id": "components-forms-radiogroup--required"
+          },
+          {
+            "export": "AriaLabel",
+            "id": "components-forms-radiogroup--aria-label"
+          },
+          {
+            "export": "AriaLabelledBy",
+            "id": "components-forms-radiogroup--aria-labelled-by"
           },
           {
             "export": "Invalid",
@@ -13549,7 +13646,8 @@
         "keyboardNotes": null,
         "notes": [
           "In right-to-left layouts Left and Right swap.",
-          "`role=\"radiogroup\"` named by the label; each option is `role=\"radio\"` with `aria-checked`, named by its label and described by its description.",
+          "`role=\"radiogroup\"` named by the label (plus the hidden required text when `required`), or by `aria-label` / `aria-labelledby`; each option is `role=\"radio\"` with `aria-checked`, named by its label and described by its description.",
+          "Querying (tests and tooling): `getByRole(\"radiogroup\", { name })` finds the group; with a visible label and `required` the name ends with the hidden suffix, so match with a regex such as `/^Payment/`. `getByRole(\"radio\", { name: \"Card\" })` finds an option and its state is `aria-checked`. An empty required group has `aria-required=\"true\"`; a refused submit focuses the first enabled radio (or the chosen one) and describes the group with the message.",
           "A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.",
           "The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.",
           "Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.",
