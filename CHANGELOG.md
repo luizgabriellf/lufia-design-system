@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.42.0
+
+### Minor Changes
+
+- [#151](https://github.com/luizgabriellf/lufia-design-system/pull/151) [`be4db18`](https://github.com/luizgabriellf/lufia-design-system/commit/be4db186a0f1beadd741c510e7f5531e38ba0979) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `wrapValue` and `maxValueLines` to `Combobox`: a long chosen label wraps onto up to `maxValueLines` lines (default 2) while the list is closed, instead of being cut with an ellipsis. Opt-in; the default is unchanged.
+
 ## 0.41.1
 
 ### Patch Changes
