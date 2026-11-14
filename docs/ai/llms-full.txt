@@ -1271,6 +1271,7 @@ dot on by default.
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
+| `wrap` | `boolean` | no | `false` | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
 
 Other native element attributes pass through to the root element.
 
@@ -1282,12 +1283,13 @@ Other native element attributes pass through to the root element.
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
+| `wrap` | `boolean` | no |  | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }`
+- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; wrap?: boolean | undefined; }`
 - `BadgeTone`: `"neutral" | "info" | "success" | "warning" | "danger" | "ai"`
 
 ### Example
@@ -1330,6 +1332,7 @@ truncating.
 - `components-data-display-badge--status`
 - `components-data-display-badge--long-text`
 - `components-data-display-badge--truncated`
+- `components-data-display-badge--in-narrow-flex-row`
 - `components-data-display-badge--in-narrow-table-cell`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`
@@ -2042,6 +2045,7 @@ A native checkbox with a drawn box, a label that is part of the click target, an
 | `hint` | `ReactNode` | no |  | Help under the label, linked with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error under the label. Marks the checkbox `aria-invalid`. |
 | `indeterminate` | `boolean` | no | `false` | The mixed state of a parent whose children are partly checked. It is a display state: the native `checked` stays what it was, and the person's click sets it to a plain checked or unchecked value, so the next render should clear this prop. |
+| `size` | `"sm" \| "md"` | no | `"md"` | `md` (default) is the 16px label in a 44px row. `sm` is for dense panels: a 14px label in a shorter row, so it sits next to 13px helper text. The drawn box and its 24px target are the same in both. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  |  |
 
@@ -2049,7 +2053,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `CheckboxProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type" | "size"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
+- `CheckboxProps`: `Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type" | "size"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; size?: "sm" | "md" | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }`
 
 ### Example
 
@@ -2063,7 +2067,7 @@ import { Checkbox } from "@lufia/design-system/components/Checkbox";
 
 Follows the WAI-ARIA Authoring Practices pattern: [Checkbox](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/).
 
-- The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall.
+- The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall (32px with `size="sm"`) and the box has a 24px target (WCAG 2.5.8).
 - A mixed box exposes `aria-checked="mixed"` through the native `indeterminate` property.
 - Hint and error are in the accessible description; the error has `role="alert"` and the input `aria-invalid`.
 - Under `forced-colors` the checked box uses `Highlight` and its mark `HighlightText`.
@@ -2074,7 +2078,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-field`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-xs`, `--lufia-space-1`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-field`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-xs`, `--lufia-space-1`, `--lufia-space-3`.
 
 ### Content guidelines
 
@@ -2093,6 +2097,7 @@ a negative ("Don't send..."). Put the long legal text in the hint or a link next
 - `components-forms-checkbox--disabled-checked`
 - `components-forms-checkbox--select-all`
 - `components-forms-checkbox--long-text`
+- `components-forms-checkbox--small`
 - `components-forms-checkbox--phone-320`
 - `components-forms-checkbox--right-to-left`
 - `components-forms-checkbox--all-themes`
@@ -3586,6 +3591,7 @@ what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than
 
 - `components-forms-filefield--default`
 - `components-forms-filefield--single-file`
+- `components-forms-filefield--narrow-slot`
 - `components-forms-filefield--with-files`
 - `components-forms-filefield--with-preview`
 - `components-forms-filefield--rejected`
@@ -3643,7 +3649,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `label` | `ReactNode` | yes |  | The visible label. Every control needs one. |
 | `hint` | `ReactNode` | no |  | Help shown under the control, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
-| `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. |
+| `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped. |
 | `nativeRequired` | `boolean` | no | `true` | Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the form validates on its own and shows its own messages: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text. |
 | `disabled` | `boolean` | no |  |  |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
@@ -3657,7 +3663,7 @@ No props of its own. Native element attributes pass through.
 
 #### `useFormFieldControl`
 
-Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.
+Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. A read-only control (`readOnly`) is never required from the person's point of view, so it gets neither, and the field hides its required mark. Use this when building a control that should join a field; the controls of this package already do.
 
 ```ts
 useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby": string | undefined; "aria-invalid": true | undefined; required: true | undefined; "aria-required": true | undefined; disabled: true | undefined; }
@@ -4395,6 +4401,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `description` | `ReactNode` | no |  | Optional supporting text, wired to `aria-describedby`. |
 | `size` | `ModalSize \| (string & {})` | no | `"md"` | Maximum width on screens wider than a phone: a step, or any CSS length for a custom maximum inline size (`"62rem"`, `"min(100%, 70ch)"`). On a phone every size is a sheet unless `sheetPlacement="none"`. Default `md`. |
 | `sheetPlacement` | `"none" \| "top" \| "bottom"` | no | `"bottom"` | How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such as an image viewer. Larger screens ignore this prop. |
+| `sheetHeight` | `"auto" \| "full"` | no | `"auto"` | The height of the phone sheet. `auto` (default) fits the content up to the screen minus `--lufia-modal-sheet-offset` (`--lufia-space-12` when unset). `full` fills the screen below `--lufia-modal-sheet-offset` (`0` when unset), for a full-screen dialog such as an editor. Larger screens and `sheetPlacement="none"` ignore it. |
 | `titleWrap` | `"wrap" \| "ellipsis"` | no | `"wrap"` | `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. |
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation. |
@@ -4497,6 +4504,8 @@ primary action sits on top.
 - `components-overlays-modal--part-class-names`
 - `components-overlays-modal--themed-by-variables`
 - `components-overlays-modal--top-sheet-on-phone`
+- `components-overlays-modal--full-height-sheet-on-phone`
+- `components-overlays-modal--full-height-sheet-below-bar`
 - `components-overlays-modal--centered-on-phone`
 - `components-overlays-modal--centered-on-phone-320`
 - `components-overlays-modal--native-top-layer`
@@ -4664,7 +4673,7 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 | --- | --- | --- | --- | --- |
 | `title` | `string` | yes |  |  |
 | `description` | `string` | no |  | Supporting line under the title. |
-| `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. |
+| `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own context ("3 items", "Due 12 Nov"), not a bare "3". |
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
@@ -4698,6 +4707,7 @@ import { NavRow } from "@lufia/design-system/components/NavRow";
 ### Accessibility
 
 - A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own `aria-label` only when it contains the visible text.
+- `meta` is read as part of the accessible name, after the title and description, so it must carry its own context: "3 items" or "Due 12 Nov", not a bare "3" or a date with no word saying what it is. The same goes for a numeric `badge`.
 - Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.
 - A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled. Disabled rows read at reduced contrast by design; keep the reason in the meta line.
 - Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum height is 3.5rem, well above the 24px target size.
@@ -7429,7 +7439,7 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
 - **State is named in words** through `stateLabel` in the `StatusBadge`; colour and marker are reinforcement only. Always pass a meaningful `stateLabel`.
 - Markers are one family (same ring, stroke and centring) and each state has its own glyph shape: a check (done), clock hands (pending), an exclamation mark (overdue), three dots (needs a timestamp) and a dash (not applicable), so states differ without colour.
 - Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.
-- Actions are slots; keep them keyboard operable and labelled.
+- Actions are slots; keep them keyboard operable and labelled. The content column and the action slot can shrink (`min-inline-size: 0`), so a wide action wraps or shrinks inside the card instead of widening it past its container.
 - In forced-colors mode the badge keeps a visible border (the `Badge` rule).
 
 ### Motion
@@ -7451,6 +7461,7 @@ All text arrives formatted and localised (dates in the user's locale: `5 Nov 202
 - `components-data-display-statustimeline--single-track`
 - `components-data-display-statustimeline--empty-track-omitted`
 - `components-data-display-statustimeline--long-content`
+- `components-data-display-statustimeline--wide-action`
 - `components-data-display-statustimeline--all-themes`
 
 ## Stepper
@@ -7945,6 +7956,7 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | `autoSize` | `boolean` | no | `false` | Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled. |
 | `maxRows` | `number` | no |  | With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
+| `rootClassName` | `string` | no |  | Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. |
 | `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
@@ -7963,6 +7975,7 @@ import { Textarea } from "@lufia/design-system/components/Textarea";
 ### Accessibility
 
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
+- A read-only textarea inside a required `FormField` is not required: it gets no `required`, no `aria-required` and no mark.
 - With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 
@@ -7995,6 +8008,8 @@ Phrase `formatCount` as what is left ("12 characters left") when the limit is ti
 - `components-forms-textarea--auto-size`
 - `components-forms-textarea--auto-size-unbounded`
 - `components-forms-textarea--auto-size-controlled`
+- `components-forms-textarea--in-flex-row`
+- `components-forms-textarea--read-only-required`
 - `components-forms-textarea--long-text`
 - `components-forms-textarea--phone-320`
 - `components-forms-textarea--right-to-left`

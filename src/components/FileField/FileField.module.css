@@ -53,11 +53,20 @@
 
 .trigger {
   display: inline-flex;
+
+  /* In a narrow slot the icon drops onto its own row above the text instead of squeezing the text into a column of
+     one or two words per line. The text keeps its natural width as its flex basis, so this happens only when the two
+     do not fit side by side. */
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--lufia-space-2);
+  justify-content: center;
+  gap: var(--lufia-space-1) var(--lufia-space-2);
   min-block-size: 2.75rem;
+  max-inline-size: 100%;
   box-sizing: border-box;
-  padding-inline: var(--lufia-space-4);
+  padding-block: var(--lufia-space-1);
+  padding-inline: var(--lufia-space-3);
+  text-align: center;
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-surface-raised);
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);

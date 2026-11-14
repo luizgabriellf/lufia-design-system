@@ -19,6 +19,13 @@ describe("Checkbox", () => {
     expect(box).not.toBeChecked();
   });
 
+  it("marks the dense size for the stylesheet and leaves the default unmarked", () => {
+    const { container, rerender } = render(<Checkbox label="Mine" />);
+    expect(container.firstElementChild).not.toHaveAttribute("data-size");
+    rerender(<Checkbox label="Mine" size="sm" />);
+    expect(container.firstElementChild).toHaveAttribute("data-size", "sm");
+  });
+
   it("supports the mixed state and clears it on the next render", () => {
     const { rerender } = render(<Checkbox label="All" indeterminate onChange={() => {}} />);
     const box = screen.getByRole("checkbox") as HTMLInputElement;

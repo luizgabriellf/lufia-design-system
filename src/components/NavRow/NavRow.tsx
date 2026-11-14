@@ -9,7 +9,10 @@ export type NavRowProps = Omit<HTMLAttributes<HTMLElement>, "title" | "onClick">
   title: string;
   /** Supporting line under the title. */
   description?: string;
-  /** Quiet last line: a date, a count, a status in words. */
+  /**
+   * Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own
+   * context ("3 items", "Due 12 Nov"), not a bare "3".
+   */
   meta?: string;
   /** Short trailing mark beside the title, such as a count. */
   badge?: ReactNode;

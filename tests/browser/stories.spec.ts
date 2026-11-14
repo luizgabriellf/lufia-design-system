@@ -766,6 +766,66 @@ test.describe("badge", () => {
   });
 });
 
+test.describe("layout gaps", () => {
+  test("a badge in a narrow flex row keeps one line and does not shrink", async ({ page }) => {
+    await openStory(page, "components-data-display-badge--in-narrow-flex-row");
+    const result = await page.getByTestId("flex-badge").evaluate((badge) => {
+      const range = badge.ownerDocument.createRange();
+      range.selectNodeContents([...badge.childNodes].find((node) => node.nodeType === Node.TEXT_NODE)!);
+      return {
+        lines: new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size,
+        clipped: badge.scrollWidth > badge.clientWidth,
+      };
+    });
+    expect(result).toEqual({ lines: 1, clipped: false });
+  });
+
+  test("a wide timeline action stays inside the card at 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await openStory(page, "components-data-display-statustimeline--wide-action");
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("an autosize textarea fills the space beside a sibling in a flex row", async ({ page }) => {
+    await openStory(page, "components-forms-textarea--in-flex-row");
+    const width = await page
+      .getByRole("textbox", { name: "Notes" })
+      .evaluate((box) => box.getBoundingClientRect().width);
+    expect(width).toBeGreaterThan(200);
+  });
+
+  test("the checkbox has a 24px target around its 22px box", async ({ page }) => {
+    await openStory(page, "components-forms-checkbox--default");
+    const size = await page.getByRole("checkbox").evaluate((input) => {
+      const after = getComputedStyle(input, "::before");
+      return { box: input.getBoundingClientRect().width, layer: Number.parseFloat(after.width) };
+    });
+    expect(size.box).toBe(22);
+    expect(size.layer).toBeGreaterThanOrEqual(24);
+  });
+
+  test("the choose label of a file field in a 150px slot takes at most three lines", async ({ page }) => {
+    await openStory(page, "components-forms-filefield--narrow-slot");
+    const lines = await page.getByText("Choose the files to attach", { exact: true }).evaluate((label) => {
+      const text = [...label.childNodes].find((node) => node.nodeType === Node.TEXT_NODE)!;
+      const range = label.ownerDocument.createRange();
+      range.selectNodeContents(text);
+      return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
+    });
+    expect(lines).toBeLessThanOrEqual(3);
+  });
+
+  test("a full-height sheet fills the phone screen", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-overlays-modal--full-height-sheet-on-phone");
+    const height = await page.getByRole("dialog").evaluate((dialog) => dialog.getBoundingClientRect().height);
+    expect(Math.round(height)).toBe(844);
+  });
+});
+
 test.describe("stat tile as filters", () => {
   test("clicking a tile moves aria-pressed and the selected look", async ({ page }) => {
     await openStory(page, "components-data-display-stattile--as-filters");

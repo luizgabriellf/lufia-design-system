@@ -13,6 +13,38 @@ function Probe(props: { "aria-describedby"?: string; required?: boolean }) {
 }
 
 describe("FormField", () => {
+  it("drops the required mark, the text and the requirement of a read-only control", () => {
+    render(
+      <FormField label="Name" required>
+        <TextInput readOnly defaultValue="Fixed" />
+      </FormField>,
+    );
+    const input = screen.getByLabelText("Name");
+    expect(input).not.toBeRequired();
+    expect(input).not.toHaveAttribute("aria-required");
+    expect(screen.queryByText("*")).toBeNull();
+    expect(screen.queryByText(/required/)).toBeNull();
+  });
+
+  it("drops aria-required of a read-only control in a field that opted out of native required", () => {
+    render(
+      <FormField label="Name" required nativeRequired={false}>
+        <TextInput readOnly defaultValue="Fixed" />
+      </FormField>,
+    );
+    expect(screen.getByLabelText("Name")).not.toHaveAttribute("aria-required");
+  });
+
+  it("keeps the mark and the requirement of an editable control", () => {
+    render(
+      <FormField label="Name" required>
+        <TextInput />
+      </FormField>,
+    );
+    expect(screen.getByLabelText(/Name/)).toBeRequired();
+    expect(screen.getByText("*")).toBeInTheDocument();
+  });
+
   it("names the control with the label", () => {
     render(<FormField label="Project name">{(control) => <input {...control} />}</FormField>);
     expect(screen.getByLabelText("Project name")).toBeInTheDocument();

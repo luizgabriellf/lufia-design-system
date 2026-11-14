@@ -129,6 +129,7 @@ what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than
 
 - `components-forms-filefield--default`
 - `components-forms-filefield--single-file`
+- `components-forms-filefield--narrow-slot`
 - `components-forms-filefield--with-files`
 - `components-forms-filefield--with-preview`
 - `components-forms-filefield--rejected`

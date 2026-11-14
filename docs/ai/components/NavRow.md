@@ -30,7 +30,7 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 | --- | --- | --- | --- | --- |
 | `title` | `string` | yes |  |  |
 | `description` | `string` | no |  | Supporting line under the title. |
-| `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. |
+| `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own context ("3 items", "Due 12 Nov"), not a bare "3". |
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
@@ -64,6 +64,7 @@ import { NavRow } from "@lufia/design-system/components/NavRow";
 ## Accessibility
 
 - A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own `aria-label` only when it contains the visible text.
+- `meta` is read as part of the accessible name, after the title and description, so it must carry its own context: "3 items" or "Due 12 Nov", not a bare "3" or a date with no word saying what it is. The same goes for a numeric `badge`.
 - Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.
 - A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled. Disabled rows read at reduced contrast by design; keep the reason in the meta line.
 - Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum height is 3.5rem, well above the 24px target size.

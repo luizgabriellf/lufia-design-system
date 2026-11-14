@@ -70,6 +70,10 @@ export const LongText: Story = {
     hint: "A hint stays aligned with the label when it wraps onto several lines on a narrow screen.",
   },
 };
+/** `size="sm"`: a smaller label in a shorter row for dense panels, beside 13px helper text. */
+export const Small: Story = {
+  args: { size: "sm", hint: "Sent on Mondays at 8:00." },
+};
 export const Phone320: Story = {
   args: { required: true, error: "Accept the terms to continue." },
   globals: { viewport: { value: "w320", isRotated: false } },

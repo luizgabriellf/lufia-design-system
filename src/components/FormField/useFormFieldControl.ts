@@ -4,6 +4,8 @@ import { useContext, useEffect, useId } from "react";
 import { FormFieldClaimContext, FormFieldContext, type FormFieldControlProps } from "./FormFieldContext";
 
 type OwnProps = Partial<Omit<FormFieldControlProps, "aria-invalid">> & {
+  /** A read-only control cannot be required: it gets neither `required` nor `aria-required`, and its field drops the mark. */
+  readOnly?: boolean;
   "aria-invalid"?: boolean | "true" | "false" | "grammar" | "spelling";
 };
 
@@ -21,7 +23,8 @@ function uniqueTokens(...lists: (string | undefined)[]): string | undefined {
  * follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so
  * ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a
  * control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields
- * `aria-required` and no `required`. Use this when building a control that should join a
+ * `aria-required` and no `required`. A read-only control (`readOnly`) is never required from the person's point of view,
+ * so it gets neither, and the field hides its required mark. Use this when building a control that should join a
  * field; the controls of this package already do.
  */
 export function useFormFieldControl(own: OwnProps = {}) {
@@ -41,6 +44,12 @@ export function useFormFieldControl(own: OwnProps = {}) {
       claim.setLabelTarget(undefined);
     };
   }, [claim, key, id]);
+  const readOnly = own.readOnly === true;
+  useEffect(() => {
+    if (!claim || !readOnly || !claim.take(key)) return;
+    claim.setReadOnly?.(true);
+    return () => claim.setReadOnly?.(false);
+  }, [claim, key, readOnly]);
   const describedBy = uniqueTokens(field?.["aria-describedby"], own["aria-describedby"]);
   const ownInvalid =
     own["aria-invalid"] !== undefined && own["aria-invalid"] !== false && own["aria-invalid"] !== "false";
@@ -48,8 +57,8 @@ export function useFormFieldControl(own: OwnProps = {}) {
     id,
     "aria-describedby": describedBy,
     "aria-invalid": field?.["aria-invalid"] || ownInvalid ? (true as const) : undefined,
-    required: field?.required || own.required || undefined,
-    "aria-required": field?.["aria-required"] && !own.required ? (true as const) : undefined,
+    required: readOnly ? undefined : field?.required || own.required || undefined,
+    "aria-required": !readOnly && field?.["aria-required"] && !own.required ? (true as const) : undefined,
     disabled: field?.disabled || own.disabled || undefined,
   };
 }

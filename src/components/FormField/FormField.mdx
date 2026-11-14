@@ -81,6 +81,8 @@ A required field also puts the native `required` attribute on its control. When 
 
 A control that repeats an id already in the field's `aria-describedby` (the error id, for example) does not list it twice.
 
+A read-only control cannot be required from the person's point of view: they cannot fill it in. A `TextInput`, `Textarea`, `SearchInput` or `Combobox` with `readOnly` inside a required field therefore gets no `required`, no `aria-required`, and the field drops the asterisk and the accessible text. The control reports this to the field after it mounts, so a server-rendered page shows the mark for one paint. Custom controls that call `useFormFieldControl` get the same by passing `readOnly`.
+
 ### Styling hooks
 
 The parts carry stable attributes for app-level styling and tests: `data-lufia-part="field"` (the root), `"label"`, `"hint"`, `"error"` and `"control"`. `control` wraps the children with `display: contents`, so it adds no box and the control stays a direct item of the field.

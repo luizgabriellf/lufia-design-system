@@ -109,6 +109,7 @@ const meta = {
     role: { control: "inline-radio", options: ["dialog", "alertdialog"] },
     initialFocus: { control: "inline-radio", options: ["container", "first"] },
     sheetPlacement: { control: "inline-radio", options: ["bottom", "top", "none"] },
+    sheetHeight: { control: "inline-radio", options: ["auto", "full"] },
     titleWrap: { control: "inline-radio", options: ["wrap", "ellipsis"] },
     renderAs: { control: "inline-radio", options: ["portal", "dialog"] },
   },
@@ -222,6 +223,22 @@ export const TopSheetOnPhone: Story = {
     startOpen: true,
     sheetPlacement: "top",
     paragraphs: 3,
+    style: { "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties,
+  },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** `sheetHeight="full"`: on a phone the sheet fills the screen, as a full-screen editor does, with no reset needed. */
+export const FullHeightSheetOnPhone: Story = {
+  args: { startOpen: true, sheetHeight: "full", size: "lg", paragraphs: 2 },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** `sheetHeight="full"` below an app bar: `--lufia-modal-sheet-offset` leaves the bar visible above the sheet. */
+export const FullHeightSheetBelowBar: Story = {
+  args: {
+    startOpen: true,
+    sheetHeight: "full",
+    sheetPlacement: "top",
+    paragraphs: 2,
     style: { "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties,
   },
   globals: { viewport: { value: "w390", isRotated: false } },

@@ -112,6 +112,9 @@ server error come from the surrounding `FormField`, as for every form control.
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
 
+In a narrow slot (about 150px) the icon of the choose button drops onto its own row above the label, so the label keeps
+its width and reads on one or two lines instead of one word per line. The button never grows past its container.
+
 Uploading and its progress belong to your app, which knows the request. Show progress next to the list or in the hint, and
 disable the field with `disabled` while files are in flight if removing them would be wrong.
 

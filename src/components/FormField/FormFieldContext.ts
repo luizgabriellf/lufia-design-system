@@ -29,6 +29,8 @@ export type FormFieldClaim = {
   /** Gives the field up, when `key` owns it. */
   release: (key: string) => void;
   setLabelTarget: (id: string | undefined) => void;
+  /** Tells the field that the control it labels is read-only, so the required mark is hidden. */
+  setReadOnly?: (readOnly: boolean) => void;
 };
 
 export const FormFieldClaimContext = createContext<FormFieldClaim | null>(null);

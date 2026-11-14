@@ -36,6 +36,8 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
   maxRows?: number;
   /** Goes on the box that draws the border; the native textarea gets the rest props. */
   className?: string;
+  /** Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. */
+  rootClassName?: string;
   ref?: Ref<HTMLTextAreaElement>;
 };
 
@@ -69,6 +71,7 @@ export function Textarea({
   formatCount = defaultCount,
   formatCountAnnouncement = defaultAnnouncement,
   className,
+  rootClassName,
   readOnly,
   rows = 4,
   autoSize = false,
@@ -129,6 +132,7 @@ export function Textarea({
     "aria-describedby": [rest["aria-describedby"], counterId].filter(Boolean).join(" ") || undefined,
     "aria-invalid": invalid ? true : rest["aria-invalid"],
     required: rest.required,
+    readOnly,
     disabled: rest.disabled,
   });
   const autoSizeStyle = autoSize
@@ -141,7 +145,7 @@ export function Textarea({
   const near = max !== undefined && length >= max * NEAR_LIMIT;
 
   return (
-    <div className={styles.root}>
+    <div className={[styles.root, rootClassName].filter(Boolean).join(" ")}>
       <span
         className={[fieldStyles.box, styles.box, className].filter(Boolean).join(" ")}
         data-invalid={control["aria-invalid"] ? "" : undefined}

@@ -44,7 +44,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `label` | `ReactNode` | yes |  | The visible label. Every control needs one. |
 | `hint` | `ReactNode` | no |  | Help shown under the control, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
-| `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. |
+| `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped. |
 | `nativeRequired` | `boolean` | no | `true` | Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the form validates on its own and shows its own messages: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text. |
 | `disabled` | `boolean` | no |  |  |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
@@ -58,7 +58,7 @@ No props of its own. Native element attributes pass through.
 
 ### `useFormFieldControl`
 
-Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.
+Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. A read-only control (`readOnly`) is never required from the person's point of view, so it gets neither, and the field hides its required mark. Use this when building a control that should join a field; the controls of this package already do.
 
 ```ts
 useFormFieldControl(own?: OwnProps): { id: string | undefined; "aria-describedby": string | undefined; "aria-invalid": true | undefined; required: true | undefined; "aria-required": true | undefined; disabled: true | undefined; }

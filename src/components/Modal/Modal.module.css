@@ -274,6 +274,13 @@
     );
   }
 
+  /* `sheetHeight="full"`: the sheet fills the screen below `--lufia-modal-sheet-offset` (0 by default). It sits after the
+     rule above and matches its specificity, so a consumer needs no reset of the max-block-size. */
+  .panel[data-sheet-height="full"]:not([data-sheet="none"]) {
+    block-size: calc(100dvh - var(--lufia-modal-sheet-offset, 0px));
+    max-block-size: calc(100dvh - var(--lufia-modal-sheet-offset, 0px));
+  }
+
   .panel[data-sheet="top"],
   .panel[data-sheet="top"][data-size] {
     border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);

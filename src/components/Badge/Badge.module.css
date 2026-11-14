@@ -25,6 +25,13 @@
   overflow: hidden;
 }
 
+/* By default a badge keeps its text on one line and does not shrink in a flex row or an auto-layout table cell, so it
+   never wraps or clips a letter. `wrap` and `truncate` opt out. */
+.root:not([data-wrap], [data-truncate]) {
+  flex: none;
+  white-space: nowrap;
+}
+
 .text {
   min-inline-size: 0;
   overflow: hidden;
