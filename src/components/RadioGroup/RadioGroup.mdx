@@ -47,6 +47,21 @@ With `name`, the chosen value is submitted with the form.
 <Canvas of={Stories.NothingChosen} />
 <Canvas of={Stories.Required} />
 <Canvas of={Stories.Invalid} />
+
+### Naming the group without a visible label
+
+Give exactly one of `label` (visible legend), `aria-label` (a string) or `aria-labelledby` (the id of an element the host
+already shows, such as a card heading). The types reject zero or several. With `aria-label` or `aria-labelledby` there is no
+legend, so no required asterisk and no hidden "required" text: a required group is announced through `aria-required` only,
+and the host's own heading should carry any visible mark.
+
+```tsx
+<h2 id="pay-heading">How would you like to pay?</h2>
+<RadioGroup aria-labelledby="pay-heading" name="payment" options={options} required />
+```
+
+<Canvas of={Stories.AriaLabel} />
+<Canvas of={Stories.AriaLabelledBy} />
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.Horizontal} />
 
@@ -114,8 +129,9 @@ Follows the WAI-ARIA APG [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/
 | Space              | Chooses the focused option (a click).                                             |
 
 - In right-to-left layouts Left and Right swap.
-- `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and
+- `role="radiogroup"` named by the label (plus the hidden required text when `required`), or by `aria-label` / `aria-labelledby`; each option is `role="radio"` with `aria-checked`, named by its label and
   described by its description.
+- Querying (tests and tooling): `getByRole("radiogroup", { name })` finds the group; with a visible label and `required` the name ends with the hidden suffix, so match with a regex such as `/^Payment/`. `getByRole("radio", { name: "Card" })` finds an option and its state is `aria-checked`. An empty required group has `aria-required="true"`; a refused submit focuses the first enabled radio (or the chosen one) and describes the group with the message.
 - A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
 - The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.
 - Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.

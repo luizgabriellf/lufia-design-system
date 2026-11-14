@@ -29,37 +29,61 @@ export type RadioOption = {
   disabled?: boolean;
 };
 
+/**
+ * How the group is named: exactly one of a visible `label`, an `aria-label` or an `aria-labelledby`. Use the last two when
+ * the host already shows the question (a card heading) and a second visible legend would repeat it. Without a visible
+ * label there is no place for the required glyph, so a required group is announced through `aria-required` only.
+ */
+type RadioGroupName =
+  | {
+      /** Names the group, like a `<legend>`. */
+      label: ReactNode;
+      "aria-label"?: never;
+      "aria-labelledby"?: never;
+    }
+  | {
+      label?: never;
+      /** Names the group without a visible legend. */
+      "aria-label": string;
+      "aria-labelledby"?: never;
+    }
+  | {
+      label?: never;
+      "aria-label"?: never;
+      /** Names the group by the id of an element the host already shows, without a visible legend. */
+      "aria-labelledby": string;
+    };
+
 export type RadioGroupProps = Omit<
   HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue" | "children"
-> & {
-  /** Names the group, like a `<legend>`. */
-  label: ReactNode;
-  options: readonly RadioOption[];
-  hint?: ReactNode;
-  error?: ReactNode;
-  required?: boolean;
-  disabled?: boolean;
-  /** Controlled value. `""` means nothing chosen. */
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  /** Submitted with the form as `name=value`. */
-  name?: string;
-  /** `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. */
-  orientation?: "vertical" | "horizontal";
-  /**
-   * `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries
-   * `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the
-   * same. Defaults to `"default"`.
-   */
-  variant?: "default" | "card";
-  /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. */
-  requiredLabel?: string;
-  /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
-  requiredMessage?: string;
-  ref?: Ref<HTMLDivElement>;
-};
+  "onChange" | "defaultValue" | "children" | "aria-label" | "aria-labelledby"
+> &
+  RadioGroupName & {
+    options: readonly RadioOption[];
+    hint?: ReactNode;
+    error?: ReactNode;
+    required?: boolean;
+    disabled?: boolean;
+    /** Controlled value. `""` means nothing chosen. */
+    value?: string;
+    defaultValue?: string;
+    onValueChange?: (value: string) => void;
+    /** Submitted with the form as `name=value`. */
+    name?: string;
+    /** `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. */
+    orientation?: "vertical" | "horizontal";
+    /**
+     * `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries
+     * `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the
+     * same. Defaults to `"default"`.
+     */
+    variant?: "default" | "card";
+    /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. */
+    requiredLabel?: string;
+    /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
+    requiredMessage?: string;
+    ref?: Ref<HTMLDivElement>;
+  };
 
 /**
  * One choice from a short list, as a WAI-ARIA radio group with roving focus: Tab enters the group at the chosen option, the
@@ -72,6 +96,8 @@ export type RadioGroupProps = Omit<
  */
 export function RadioGroup({
   label,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
   options,
   hint,
   error,
@@ -125,17 +151,19 @@ export function RadioGroup({
       data-invalid={shownError ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
     >
-      <span id={labelId} className={styles.legend}>
-        {label}
-        {required ? (
-          <>
-            <span className={styles.mark} aria-hidden="true">
-              *
-            </span>
-            <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
-          </>
-        ) : null}
-      </span>
+      {label != null ? (
+        <span id={labelId} className={styles.legend}>
+          {label}
+          {required ? (
+            <>
+              <span className={styles.mark} aria-hidden="true">
+                *
+              </span>
+              <VisuallyHidden> ({requiredLabel})</VisuallyHidden>
+            </>
+          ) : null}
+        </span>
+      ) : null}
       {/* The group is not focusable by design (APG): the chosen radio is, and key events bubble up from it. */}
       {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
       <div
@@ -143,7 +171,8 @@ export function RadioGroup({
         ref={ref}
         id={baseId}
         role="radiogroup"
-        aria-labelledby={labelId}
+        aria-label={label != null ? undefined : ariaLabel}
+        aria-labelledby={label != null ? labelId : ariaLabelledby}
         aria-describedby={[rest["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") || undefined}
         aria-required={required || undefined}
         aria-invalid={shownError ? true : undefined}

@@ -27,6 +27,46 @@ describe("RadioGroup", () => {
     expect(screen.getByRole("radio", { name: "Card" })).toHaveAccessibleDescription("Charged today");
   });
 
+  it("is found by role and name: the group by its label plus the hidden required suffix, each option by its own", () => {
+    render(<RadioGroup label="Payment" options={options} defaultValue="cash" required />);
+    expect(screen.getByRole("radiogroup", { name: /^Payment\s*\(required\)$/ })).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup", { name: /^Payment/ })).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("radio", { name: "Cash" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("is named by aria-label without a visible legend", () => {
+    const { container } = render(<RadioGroup aria-label="Payment" options={options} required />);
+    const group = screen.getByRole("radiogroup", { name: "Payment" });
+    expect(group).toHaveAttribute("aria-required", "true");
+    expect(container.querySelector('[id$="-label"]:not([id*="-option-"])')).toBeNull();
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(4);
+  });
+
+  it("is named by aria-labelledby pointing at the host's own heading", () => {
+    render(
+      <section>
+        <h2 id="question">How do you pay?</h2>
+        <RadioGroup aria-labelledby="question" options={options} />
+      </section>,
+    );
+    expect(screen.getByRole("radiogroup", { name: "How do you pay?" })).toBeInTheDocument();
+  });
+
+  it("keeps blocking and focusing the first radio on a refused submit when named without a legend", async () => {
+    const user = userEvent.setup();
+    render(
+      <form>
+        <RadioGroup aria-label="Payment" options={options} required requiredMessage="Choose one" />
+        <button type="submit">Send</button>
+      </form>,
+    );
+    await user.click(screen.getByRole("button", { name: "Send" }));
+    expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
+    expect(screen.getByRole("radiogroup", { name: "Payment" })).toHaveAccessibleDescription("Choose one");
+  });
+
   it("keeps exactly one radio in the tab order: the chosen one, else the first enabled", () => {
     const { rerender } = render(<RadioGroup label="Payment" options={options} defaultValue="cash" />);
     expect(screen.getAllByRole("radio").map((r) => r.tabIndex)).toEqual([-1, -1, -1, 0]);
@@ -395,6 +435,17 @@ describe("RadioGroup", () => {
     );
     await user.click(screen.getByRole("button", { name: "Send" }));
     expect(screen.getByRole("radio", { name: "Card" })).toHaveFocus();
+  });
+
+  it("has no axe violations when named by aria-label or aria-labelledby", async () => {
+    const { container } = render(
+      <>
+        <h2 id="q">Question</h2>
+        <RadioGroup aria-labelledby="q" options={options} required />
+        <RadioGroup aria-label="Other" options={options} />
+      </>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("has no axe violations", async () => {

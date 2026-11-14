@@ -5791,7 +5791,9 @@ and arrow-key navigation.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `label` | `ReactNode` | yes |  | Names the group, like a `<legend>`. |
+| `label` | `ReactNode` | no |  | Names the group, like a `<legend>`. |
+| `aria-label` | `string` | no |  | Names the group without a visible legend. |
+| `aria-labelledby` | `string` | no |  | Names the group by the id of an element the host already shows, without a visible legend. |
 | `options` | `readonly RadioOption[]` | yes |  |  |
 | `hint` | `ReactNode` | no |  |  |
 | `error` | `ReactNode` | no |  |  |
@@ -5808,6 +5810,34 @@ and arrow-key navigation.
 | `ref` | `Ref<HTMLDivElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `aria-label` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+###### `aria-label: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `undefined` | no |  |
+| `aria-labelledby` | `undefined` | no |  |
+| `label` | `ReactNode` | yes | Names the group, like a `<legend>`. |
+
+###### `aria-label: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | yes | Names the group without a visible legend. |
+| `aria-labelledby` | `undefined` | no |  |
+| `label` | `undefined` | no |  |
+
+###### `aria-label: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `undefined` | no |  |
+| `aria-labelledby` | `string` | yes | Names the group by the id of an element the host already shows, without a visible legend. |
+| `label` | `undefined` | no |  |
 
 ### Types
 
@@ -5836,7 +5866,8 @@ import { RadioGroup } from "@lufia/design-system/components/RadioGroup";
 Follows the WAI-ARIA Authoring Practices pattern: [Radio group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
 
 - In right-to-left layouts Left and Right swap.
-- `role="radiogroup"` named by the label; each option is `role="radio"` with `aria-checked`, named by its label and described by its description.
+- `role="radiogroup"` named by the label (plus the hidden required text when `required`), or by `aria-label` / `aria-labelledby`; each option is `role="radio"` with `aria-checked`, named by its label and described by its description.
+- Querying (tests and tooling): `getByRole("radiogroup", { name })` finds the group; with a visible label and `required` the name ends with the hidden suffix, so match with a regex such as `/^Payment/`. `getByRole("radio", { name: "Card" })` finds an option and its state is `aria-checked`. An empty required group has `aria-required="true"`; a refused submit focuses the first enabled radio (or the chosen one) and describes the group with the message.
 - A required group blocks form submission until an option is chosen, with the browser's own message: an invisible, unsubmitted input mirrors the value for that. A form `reset` returns the group to `defaultValue`.
 - The card variant changes the look only: the same roving focus, arrow keys and `radio` semantics. `meta` and `content` join the option's `aria-describedby`.
 - Required adds an asterisk, the text `required` for screen readers (the `required` label of `LufiaProvider`, or `requiredLabel`), and `aria-required`.
@@ -5862,6 +5893,8 @@ and require a choice.
 - `components-forms-radiogroup--nothing-chosen`
 - `components-forms-radiogroup--with-hint`
 - `components-forms-radiogroup--required`
+- `components-forms-radiogroup--aria-label`
+- `components-forms-radiogroup--aria-labelled-by`
 - `components-forms-radiogroup--invalid`
 - `components-forms-radiogroup--card-variant`
 - `components-forms-radiogroup--card-horizontal`
