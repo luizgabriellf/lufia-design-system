@@ -140,6 +140,16 @@ export const LongText: Story = {
   },
 };
 export const Phone320: Story = { globals: { viewport: { value: "w320", isRotated: false } } };
+/** A slot of 18rem, as in a modal on a phone: the button spans the zone with its icon and label on one row and the hint sits under it. */
+export const ModalWidth: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "18rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 export const RightToLeft: Story = {
   decorators: [
     (Story) => (

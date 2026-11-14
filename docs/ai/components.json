@@ -7277,6 +7277,10 @@
             "id": "components-forms-filefield--phone-320"
           },
           {
+            "export": "ModalWidth",
+            "id": "components-forms-filefield--modal-width"
+          },
+          {
             "export": "RightToLeft",
             "id": "components-forms-filefield--right-to-left"
           },
