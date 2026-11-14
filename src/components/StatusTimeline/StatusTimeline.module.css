@@ -70,6 +70,9 @@
   flex: 1;
   min-width: 0;
   display: grid;
+
+  /* An auto column would size to the widest child (a wide action) and push the card past its container. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--lufia-space-1);
 }
 
@@ -104,6 +107,7 @@
 }
 
 .actionSlot {
+  min-inline-size: 0;
   margin-top: 2px;
 }
 

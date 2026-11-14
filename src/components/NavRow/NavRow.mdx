@@ -70,6 +70,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading
   order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own
   `aria-label` only when it contains the visible text.
+- `meta` is read as part of the accessible name, after the title and description, so it must carry its own context:
+  "3 items" or "Due 12 Nov", not a bare "3" or a date with no word saying what it is. The same goes for a numeric `badge`.
 - Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.
 - A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled.
   Disabled rows read at reduced contrast by design; keep the reason in the meta line.

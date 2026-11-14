@@ -80,6 +80,22 @@ export const AutoSizeControlled: Story = {
     return <Demo {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
   },
 };
+/** In a flex row the root fills the space a sibling leaves, with `autoSize` too. `rootClassName` sizes it further. */
+export const InFlexRow: Story = {
+  args: { autoSize: true, rows: 2, maxRows: 6 },
+  render: ({ rows, maxRows, autoSize }) => (
+    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start", inlineSize: "100%" }}>
+      <Textarea aria-label="Notes" rows={rows} maxRows={maxRows} autoSize={autoSize} />
+      <button type="button" style={{ flex: "none" }}>
+        Send
+      </button>
+    </div>
+  ),
+};
+/** Read-only and required: the value is not something the person has to fill in, so there is no mark. */
+export const ReadOnlyRequired: Story = {
+  args: { readOnly: true, required: true, defaultValue: "Delivered to the loading dock before 8:00." },
+};
 export const LongText: Story = {
   args: {
     label: "A considerably longer label that has to wrap onto a second line on narrow screens",

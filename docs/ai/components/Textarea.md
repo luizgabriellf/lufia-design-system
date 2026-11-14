@@ -35,6 +35,7 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | `autoSize` | `boolean` | no | `false` | Grows the box with its content instead of scrolling. `rows` is the minimum height and `maxRows` the optional maximum, after which the box scrolls. Uses CSS `field-sizing: content` where the browser has it and measures the content in script where it does not. The manual resize handle is removed. Works controlled and uncontrolled. |
 | `maxRows` | `number` | no |  | With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
+| `rootClassName` | `string` | no |  | Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. |
 | `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
@@ -53,6 +54,7 @@ import { Textarea } from "@lufia/design-system/components/Textarea";
 ## Accessibility
 
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
+- A read-only textarea inside a required `FormField` is not required: it gets no `required`, no `aria-required` and no mark.
 - With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 
@@ -85,6 +87,8 @@ Phrase `formatCount` as what is left ("12 characters left") when the limit is ti
 - `components-forms-textarea--auto-size`
 - `components-forms-textarea--auto-size-unbounded`
 - `components-forms-textarea--auto-size-controlled`
+- `components-forms-textarea--in-flex-row`
+- `components-forms-textarea--read-only-required`
 - `components-forms-textarea--long-text`
 - `components-forms-textarea--phone-320`
 - `components-forms-textarea--right-to-left`

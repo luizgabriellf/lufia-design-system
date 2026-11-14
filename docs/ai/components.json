@@ -2549,6 +2549,13 @@
               "required": false,
               "default": "false",
               "description": "Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself."
+            },
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`."
             }
           ],
           "nativeProps": true
@@ -2557,7 +2564,7 @@
           "name": "BadgeProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; wrap?: boolean | undefined; }"
         },
         {
           "name": "BadgeTone",
@@ -2597,13 +2604,20 @@
               "required": false,
               "default": null,
               "description": "Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself."
+            },
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`."
             }
           ],
           "nativeProps": true
         }
       ],
       "aliases": {
-        "BadgeProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }",
+        "BadgeProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; wrap?: boolean | undefined; }",
         "BadgeTone": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\""
       },
       "story": {
@@ -2628,6 +2642,10 @@
           {
             "export": "Truncated",
             "id": "components-data-display-badge--truncated"
+          },
+          {
+            "export": "InNarrowFlexRow",
+            "id": "components-data-display-badge--in-narrow-flex-row"
           },
           {
             "export": "InNarrowTableCell",
@@ -4175,6 +4193,13 @@
               "description": "The mixed state of a parent whose children are partly checked. It is a display state: the native `checked` stays what it was, and the person's click sets it to a plain checked or unchecked value, so the next render should clear this prop."
             },
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`md` (default) is the 16px label in a 44px row. `sm` is for dense panels: a 14px label in a shorter row, so it sits next to 13px helper text. The drawn box and its 24px target are the same in both."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -4195,11 +4220,11 @@
           "name": "CheckboxProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+          "definition": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; size?: \"sm\" | \"md\" | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
         }
       ],
       "aliases": {
-        "CheckboxProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
+        "CheckboxProps": "Omit<InputHTMLAttributes<HTMLInputElement>, \"className\" | \"type\" | \"size\"> & { label: ReactNode; hint?: ReactNode; error?: ReactNode; indeterminate?: boolean | undefined; size?: \"sm\" | \"md\" | undefined; className?: string | undefined; ref?: Ref<HTMLInputElement> | undefined; }"
       },
       "story": {
         "docsId": "components-forms-checkbox--docs",
@@ -4245,6 +4270,10 @@
             "id": "components-forms-checkbox--long-text"
           },
           {
+            "export": "Small",
+            "id": "components-forms-checkbox--small"
+          },
+          {
             "export": "Phone320",
             "id": "components-forms-checkbox--phone-320"
           },
@@ -4284,7 +4313,7 @@
         "keyboard": [],
         "keyboardNotes": null,
         "notes": [
-          "The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall.",
+          "The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall (32px with `size=\"sm\"`) and the box has a 24px target (WCAG 2.5.8).",
           "A mixed box exposes `aria-checked=\"mixed\"` through the native `indeterminate` property.",
           "Hint and error are in the accessible description; the error has `role=\"alert\"` and the input `aria-invalid`.",
           "Under `forced-colors` the checked box uses `Highlight` and its mark `HighlightText`."
@@ -4306,6 +4335,7 @@
         "--lufia-color-text-on-accent",
         "--lufia-font-line-height-normal",
         "--lufia-font-size-md",
+        "--lufia-font-size-sm",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-opacity-disabled",
@@ -7211,6 +7241,10 @@
             "id": "components-forms-filefield--single-file"
           },
           {
+            "export": "NarrowSlot",
+            "id": "components-forms-filefield--narrow-slot"
+          },
+          {
             "export": "WithFiles",
             "id": "components-forms-filefield--with-files"
           },
@@ -7366,7 +7400,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": "Marks the control required and shows an asterisk plus text for assistive technology."
+              "description": "Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped."
             },
             {
               "name": "nativeRequired",
@@ -7421,7 +7455,7 @@
         {
           "name": "useFormFieldControl",
           "kind": "hook",
-          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. Use this when building a control that should join a field; the controls of this package already do.",
+          "description": "Merges the props a control got from its own caller with the ones of the surrounding `FormField`. Outside a field it returns the caller's props untouched, so every control works on its own. Inside a field, the first control to render takes the field's `id` unless it has its own `id`, which wins; the label follows that control. A second control in the same field keeps its own `id` or gets a generated one, never the field's, so ids stay unique and the label names only one control. `aria-describedby` is the union of both lists without repeated ids, and a control is invalid, required or disabled when either side says so. A field with `nativeRequired={false}` yields `aria-required` and no `required`. A read-only control (`readOnly`) is never required from the person's point of view, so it gets neither, and the field hides its required mark. Use this when building a control that should join a field; the controls of this package already do.",
           "signature": "(own?: OwnProps): { id: string | undefined; \"aria-describedby\": string | undefined; \"aria-invalid\": true | undefined; required: true | undefined; \"aria-required\": true | undefined; disabled: true | undefined; }",
           "parameters": [
             {
@@ -10212,6 +10246,13 @@
               "description": "How the dialog is presented on a phone (600px and below). `bottom` (default) is a sheet that rises from the bottom edge; `top` is a sheet that hangs from `--lufia-modal-sheet-offset`; `none` opts out of the sheet: the dialog stays a centred floating panel with a margin on every side and the same scale entrance as on larger screens, for content such as an image viewer. Larger screens ignore this prop."
             },
             {
+              "name": "sheetHeight",
+              "type": "\"auto\" | \"full\"",
+              "required": false,
+              "default": "\"auto\"",
+              "description": "The height of the phone sheet. `auto` (default) fits the content up to the screen minus `--lufia-modal-sheet-offset` (`--lufia-space-12` when unset). `full` fills the screen below `--lufia-modal-sheet-offset` (`0` when unset), for a full-screen dialog such as an editor. Larger screens and `sheetPlacement=\"none\"` ignore it."
+            },
+            {
               "name": "titleWrap",
               "type": "\"wrap\" | \"ellipsis\"",
               "required": false,
@@ -10451,6 +10492,14 @@
           {
             "export": "TopSheetOnPhone",
             "id": "components-overlays-modal--top-sheet-on-phone"
+          },
+          {
+            "export": "FullHeightSheetOnPhone",
+            "id": "components-overlays-modal--full-height-sheet-on-phone"
+          },
+          {
+            "export": "FullHeightSheetBelowBar",
+            "id": "components-overlays-modal--full-height-sheet-below-bar"
           },
           {
             "export": "CenteredOnPhone",
@@ -10906,7 +10955,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": "Quiet last line: a date, a count, a status in words."
+              "description": "Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own context (\"3 items\", \"Due 12 Nov\"), not a bare \"3\"."
             },
             {
               "name": "badge",
@@ -11020,6 +11069,7 @@
         "keyboardNotes": null,
         "notes": [
           "A link row is announced as a link and a button row as a button. The accessible name is the visible text, in reading order (title, badge, description, meta), so there is no `aria-label` to drift from what people see. Pass your own `aria-label` only when it contains the visible text.",
+          "`meta` is read as part of the accessible name, after the title and description, so it must carry its own context: \"3 items\" or \"Due 12 Nov\", not a bare \"3\" or a date with no word saying what it is. The same goes for a numeric `badge`.",
           "Icon and chevron are decorative. The chevron mirrors in right-to-left layouts.",
           "A disabled link has `aria-disabled`, leaves the tab order and ignores clicks; a disabled button is natively disabled. Disabled rows read at reduced contrast by design; keep the reason in the meta line.",
           "Keyboard: Tab to reach it, Enter follows a link, Enter or Space activates a button. Focus shows a 2px ring. Minimum height is 3.5rem, well above the 24px target size.",
@@ -16548,6 +16598,10 @@
             "id": "components-data-display-statustimeline--long-content"
           },
           {
+            "export": "WideAction",
+            "id": "components-data-display-statustimeline--wide-action"
+          },
+          {
             "export": "AllThemes",
             "id": "components-data-display-statustimeline--all-themes"
           }
@@ -16577,7 +16631,7 @@
           "**State is named in words** through `stateLabel` in the `StatusBadge`; colour and marker are reinforcement only. Always pass a meaningful `stateLabel`.",
           "Markers are one family (same ring, stroke and centring) and each state has its own glyph shape: a check (done), clock hands (pending), an exclamation mark (overdue), three dots (needs a timestamp) and a dash (not applicable), so states differ without colour.",
           "Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.",
-          "Actions are slots; keep them keyboard operable and labelled.",
+          "Actions are slots; keep them keyboard operable and labelled. The content column and the action slot can shrink (`min-inline-size: 0`), so a wide action wraps or shrinks inside the card instead of widening it past its container.",
           "In forced-colors mode the badge keeps a visible border (the `Badge` rule)."
         ]
       },
@@ -17568,6 +17622,13 @@
               "description": "Goes on the box that draws the border; the native textarea gets the rest props."
             },
             {
+              "name": "rootClassName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid."
+            },
+            {
               "name": "ref",
               "type": "Ref<HTMLTextAreaElement>",
               "required": false,
@@ -17645,6 +17706,14 @@
             "id": "components-forms-textarea--auto-size-controlled"
           },
           {
+            "export": "InFlexRow",
+            "id": "components-forms-textarea--in-flex-row"
+          },
+          {
+            "export": "ReadOnlyRequired",
+            "id": "components-forms-textarea--read-only-required"
+          },
+          {
             "export": "LongText",
             "id": "components-forms-textarea--long-text"
           },
@@ -17684,6 +17753,7 @@
         "keyboardNotes": null,
         "notes": [
           "The resize handle is vertical only, so the box cannot grow wider than its container at 320px.",
+          "A read-only textarea inside a required `FormField` is not required: it gets no `required`, no `aria-required` and no mark.",
           "With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.",
           "Focus ring, forced-colors and invalid styling match `TextInput`."
         ]

@@ -30,8 +30,9 @@ export const Status: Story = {
   render: (args) => <StatusBadge {...args} />,
   args: { tone: "warning", children: "Pending" },
 };
+/** `wrap` lets a long label wrap and shrink; by default a badge keeps one line. */
 export const LongText: Story = {
-  args: { children: "A status label that is far too long for the room it has been given" },
+  args: { wrap: true, children: "A status label that is far too long for the room it has been given" },
   decorators: [
     (Story) => (
       <div style={{ inlineSize: "12rem" }}>
@@ -55,6 +56,18 @@ export const Truncated: Story = {
       </div>
     ),
   ],
+};
+
+/** In a flex row that is too narrow, the badge keeps its word whole and the sibling gives way. */
+export const InNarrowFlexRow: Story = {
+  render: () => (
+    <div style={{ display: "flex", gap: "0.5rem", inlineSize: "10rem" }}>
+      <span data-testid="flex-sibling">A worker name that takes most of the row</span>
+      <StatusBadge tone="success" data-testid="flex-badge">
+        Ready
+      </StatusBadge>
+    </div>
+  ),
 };
 
 /** In a squeezed auto-layout table column the badge keeps its word whole instead of breaking it mid-word. */

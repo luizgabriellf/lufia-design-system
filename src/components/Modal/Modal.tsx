@@ -70,6 +70,12 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
    * as an image viewer. Larger screens ignore this prop.
    */
   sheetPlacement?: "bottom" | "top" | "none";
+  /**
+   * The height of the phone sheet. `auto` (default) fits the content up to the screen minus `--lufia-modal-sheet-offset`
+   * (`--lufia-space-12` when unset). `full` fills the screen below `--lufia-modal-sheet-offset` (`0` when unset), for a
+   * full-screen dialog such as an editor. Larger screens and `sheetPlacement="none"` ignore it.
+   */
+  sheetHeight?: "auto" | "full";
   /** `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. */
   titleWrap?: "wrap" | "ellipsis";
   /** Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. */
@@ -150,6 +156,7 @@ export function Modal({
   description,
   size = "md",
   sheetPlacement = "bottom",
+  sheetHeight = "auto",
   titleWrap = "wrap",
   scrollShadow = false,
   keepMounted = false,
@@ -248,6 +255,7 @@ export function Modal({
     "data-size": customSize ? "custom" : size,
     "data-state": open ? "open" : "closed",
     "data-sheet": sheetPlacement,
+    "data-sheet-height": sheetHeight === "full" ? "full" : undefined,
     "data-title-wrap": titleWrap,
     "data-scroll-shadow": scrollShadow ? "" : undefined,
     style: customSize ? ({ ...style, "--lufia-modal-size": customSize } as CSSProperties) : style,

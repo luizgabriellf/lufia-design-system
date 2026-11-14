@@ -69,7 +69,7 @@ import { StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
 - **State is named in words** through `stateLabel` in the `StatusBadge`; colour and marker are reinforcement only. Always pass a meaningful `stateLabel`.
 - Markers are one family (same ring, stroke and centring) and each state has its own glyph shape: a check (done), clock hands (pending), an exclamation mark (overdue), three dots (needs a timestamp) and a dash (not applicable), so states differ without colour.
 - Layout stays vertical at every width: no horizontal scrolling or truncated text at 320px.
-- Actions are slots; keep them keyboard operable and labelled.
+- Actions are slots; keep them keyboard operable and labelled. The content column and the action slot can shrink (`min-inline-size: 0`), so a wide action wraps or shrinks inside the card instead of widening it past its container.
 - In forced-colors mode the badge keeps a visible border (the `Badge` rule).
 
 ## Motion
@@ -91,4 +91,5 @@ All text arrives formatted and localised (dates in the user's locale: `5 Nov 202
 - `components-data-display-statustimeline--single-track`
 - `components-data-display-statustimeline--empty-track-omitted`
 - `components-data-display-statustimeline--long-content`
+- `components-data-display-statustimeline--wide-action`
 - `components-data-display-statustimeline--all-themes`

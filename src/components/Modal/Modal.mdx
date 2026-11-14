@@ -56,6 +56,12 @@ Below 600 px every size becomes a sheet anchored to the bottom of the screen tha
 `sheetPlacement="none"` to opt out: the dialog then stays a centred floating panel on phones too, with a margin on every
 side and the scale entrance, which suits an image viewer or any content that must not look like a sheet.
 
+Set `sheetHeight="full"` for a full-screen dialog on phones, such as an editor: the sheet then fills the screen below
+`--lufia-modal-sheet-offset` (0 by default, so edge to edge) and needs no reset of the size rule from your side. With
+`sheetPlacement="top"` and an offset it leaves your app bar visible above the sheet.
+
+<Canvas of={Stories.FullHeightSheetOnPhone} />
+
 <Canvas of={Stories.CenteredOnPhone} story={{ inline: false, height: "30rem" }} />
 
 <Canvas of={Stories.Large} story={{ inline: false, height: "30rem" }} />
@@ -99,7 +105,7 @@ the modal without forking it. All are optional and the defaults are unchanged.
 | `--lufia-modal-scroll-shadow`                                                                | Edge shadow colour of `scrollShadow`              |
 | `--lufia-modal-header-block-size`                                                            | Output: the height the header covers (see below)  |
 
-`size` also takes any CSS length (`size="62rem"`). `sheetPlacement="top"` hangs the phone sheet from the offset instead of
+`size` also takes any CSS length (`size="62rem"`). `sheetHeight="full"` fills the phone screen below the offset, `sheetPlacement="top"` hangs the phone sheet from the offset instead of
 rising from the bottom, `sheetPlacement="none"` keeps it a centred panel on phones, `titleWrap="ellipsis"` keeps the title on one line, and `scrollShadow` scrolls the body between a
 fixed header and footer with an edge shadow.
 

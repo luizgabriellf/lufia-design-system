@@ -203,6 +203,7 @@ export function Combobox({
     "aria-describedby": rest["aria-describedby"],
     "aria-invalid": invalid ? true : rest["aria-invalid"],
     required: rest.required,
+    readOnly,
     disabled: rest.disabled,
   });
   const labelId = useFormFieldLabelId();

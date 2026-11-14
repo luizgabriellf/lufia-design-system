@@ -15,6 +15,11 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
    * other children, pass `title` yourself.
    */
   truncate?: boolean;
+  /**
+   * Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its
+   * text on one line and does not shrink. Ignored with `truncate`.
+   */
+  wrap?: boolean;
 };
 
 /** A short, non-interactive label that classifies or states something: a category, a count, a record's status. */
@@ -22,6 +27,7 @@ export function Badge({
   tone = "neutral",
   dot = false,
   truncate = false,
+  wrap = false,
   className,
   children,
   title,
@@ -33,6 +39,7 @@ export function Badge({
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-tone={tone}
       data-truncate={truncate || undefined}
+      data-wrap={wrap && !truncate ? "" : undefined}
       title={title ?? (truncate && typeof children === "string" ? children : undefined)}
     >
       {dot ? <span className={styles.dot} aria-hidden="true" /> : null}

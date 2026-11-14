@@ -46,6 +46,14 @@ yourself, showing the error in the `FormField`.
 <Canvas of={Stories.NearLimit} />
 <Canvas of={Stories.CustomCount} />
 
+### Sizing the field
+
+`className` goes on the box that draws the border; `rootClassName` goes on the root element that wraps the box and the
+count. Size the field with the root: a width in a grid, or `flex: 0 0 12rem` in a row. The root already fills the space
+left in a flex row (`flex: 1 1 auto; min-inline-size: 0`), so an `autoSize` field does not collapse next to a button.
+
+<Canvas of={Stories.InFlexRow} />
+
 ### Auto height
 
 `autoSize` makes the box grow with its content instead of scrolling. `rows` is the minimum height (it still defaults to 4,
@@ -91,6 +99,7 @@ textarea from script (`node.value = ...`) fires no event, so the fallback does n
 | Typing       | Native. The count is updated but not announced until close to the limit. |
 
 - The resize handle is vertical only, so the box cannot grow wider than its container at 320px.
+- A read-only textarea inside a required `FormField` is not required: it gets no `required`, no `aria-required` and no mark.
 - With `autoSize`, a box that reached `maxRows` scrolls inside and stays keyboard-scrollable like any textarea; the growing never moves focus or announces anything.
 - Focus ring, forced-colors and invalid styling match `TextInput`.
 

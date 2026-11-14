@@ -42,6 +42,7 @@ dot on by default.
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
+| `wrap` | `boolean` | no | `false` | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
 
 Other native element attributes pass through to the root element.
 
@@ -53,12 +54,13 @@ Other native element attributes pass through to the root element.
 | `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
+| `wrap` | `boolean` | no |  | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; }`
+- `BadgeProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { children: ReactNode; tone?: BadgeTone | undefined; dot?: boolean | undefined; truncate?: boolean | undefined; wrap?: boolean | undefined; }`
 - `BadgeTone`: `"neutral" | "info" | "success" | "warning" | "danger" | "ai"`
 
 ## Example
@@ -101,6 +103,7 @@ truncating.
 - `components-data-display-badge--status`
 - `components-data-display-badge--long-text`
 - `components-data-display-badge--truncated`
+- `components-data-display-badge--in-narrow-flex-row`
 - `components-data-display-badge--in-narrow-table-cell`
 - `components-data-display-badge--all-tones`
 - `components-data-display-badge--all-tones-with-dot`

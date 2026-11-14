@@ -20,7 +20,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 ### Forms
 
-- Checkbox: label* hint error indeterminate
+- Checkbox: label* hint error indeterminate size
 - Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel maxResults +9
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName endName +6
@@ -34,13 +34,13 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
 - TextInput: size prefix suffix invalid
-- Textarea: invalid showCount formatCount formatCountAnnouncement autoSize maxRows
+- Textarea: invalid showCount formatCount formatCountAnnouncement autoSize maxRows rootClassName
 
 ### Overlays
 
 - CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading groupOrder bodyOverride +5
 - ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement classNames size +2 | also useConfirmDialog
-- Modal: open* onClose* title* description size sheetPlacement titleWrap scrollShadow keepMounted renderAs classNames headerAction +12
+- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted renderAs classNames +13
 - NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups summary onMarkAllRead +15 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
 - Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding
@@ -59,7 +59,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - ActivityList: items* timeline
 - AttentionList: items groups barStyle
-- Badge: tone dot truncate | also StatusBadge
+- Badge: tone dot truncate wrap | also StatusBadge
 - BarList: title* rows* summary total reference titleVisibility valueWrap
 - BulletBar: value* target* label* headroom tone
 - Card: title headingLevel description headerAction footer href padding flush divider

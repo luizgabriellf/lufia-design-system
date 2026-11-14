@@ -332,6 +332,14 @@ describe("Modal", () => {
       expect(screen.getByRole("heading", { name: "Edit profile" })).toHaveAttribute("title", "Edit profile");
     });
 
+    it("marks a full-height sheet for the stylesheet and leaves the default unmarked", async () => {
+      const first = render(<Harness />);
+      expect((await openModal()).dialog).not.toHaveAttribute("data-sheet-height");
+      first.unmount();
+      render(<Harness sheetHeight="full" />);
+      expect((await openModal()).dialog).toHaveAttribute("data-sheet-height", "full");
+    });
+
     it('marks sheetPlacement="none" so a phone keeps the centred panel', async () => {
       render(<Harness sheetPlacement="none" />);
       const { dialog } = await openModal();

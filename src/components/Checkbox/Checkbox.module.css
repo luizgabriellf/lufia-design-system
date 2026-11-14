@@ -18,6 +18,13 @@
   cursor: pointer;
 }
 
+/* Dense: a smaller label and a shorter row for panels whose helper text is 13px. The box and its 24px target stay. */
+.root[data-size="sm"] .row {
+  min-block-size: 2rem;
+  padding-block: 0.25rem;
+  font-size: var(--lufia-font-size-sm);
+}
+
 .root[data-disabled] .row {
   color: var(--lufia-color-text-muted);
   cursor: not-allowed;
@@ -30,6 +37,7 @@
   box-sizing: border-box;
   inline-size: 1.375rem;
   block-size: 1.375rem;
+  position: relative;
   margin: 0;
   margin-block-start: 0.0625rem;
   background: var(--lufia-color-bg-field);
@@ -40,6 +48,15 @@
   transition:
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
     border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+/* The drawn box is 22px, under the 24px minimum target (WCAG 2.5.8): an invisible layer one pixel larger on every side
+   brings the pointer target to 24px without changing the drawn box. The inset is measured from the padding box, so the
+   border width is added to it. */
+.input::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--lufia-border-width-thick) - 0.0625rem);
 }
 
 /* The mark is drawn with borders so it needs no image and follows the text colour token. */

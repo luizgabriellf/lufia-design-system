@@ -24,6 +24,11 @@ export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" |
    * it was, and the person's click sets it to a plain checked or unchecked value, so the next render should clear this prop.
    */
   indeterminate?: boolean;
+  /**
+   * `md` (default) is the 16px label in a 44px row. `sm` is for dense panels: a 14px label in a shorter row, so it sits
+   * next to 13px helper text. The drawn box and its 24px target are the same in both.
+   */
+  size?: "md" | "sm";
   /** Goes on the root element. */
   className?: string;
   ref?: Ref<HTMLInputElement>;
@@ -38,6 +43,7 @@ export function Checkbox({
   hint,
   error,
   indeterminate = false,
+  size = "md",
   className,
   id,
   required,
@@ -71,6 +77,7 @@ export function Checkbox({
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-disabled={disabled ? "" : undefined}
       data-invalid={error ? "" : undefined}
+      data-size={size === "sm" ? "sm" : undefined}
     >
       <label className={styles.row} htmlFor={baseId}>
         <input

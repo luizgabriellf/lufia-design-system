@@ -19,7 +19,10 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
   hint?: ReactNode;
   /** Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. */
   error?: ReactNode;
-  /** Marks the control required and shows an asterisk plus text for assistive technology. */
+  /**
+   * Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the
+   * field is not required from the person's point of view: the mark, the text and `aria-required` are dropped.
+   */
   required?: boolean;
   /**
    * Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the
@@ -75,6 +78,7 @@ export function FormField({
   const errorId = error ? `${baseId}-error` : undefined;
   const owner = useRef<string | null>(null);
   const [labelTarget, setLabelTarget] = useState<string | undefined>(undefined);
+  const [readOnly, setReadOnly] = useState(false);
   const claim = useMemo<FormFieldClaim>(
     () => ({
       take: (key) => {
@@ -85,6 +89,7 @@ export function FormField({
         if (owner.current === key) owner.current = null;
       },
       setLabelTarget,
+      setReadOnly,
     }),
     [],
   );
@@ -113,7 +118,7 @@ export function FormField({
       >
         <span className={styles.text}>
           {label}
-          {required ? (
+          {required && !readOnly ? (
             <>
               <span className={styles.mark} aria-hidden="true">
                 *

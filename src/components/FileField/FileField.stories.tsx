@@ -72,6 +72,17 @@ export const SingleFile: Story = {
     hint: "A square image works best.",
   },
 };
+/** In a slot of about 150px the icon drops above the label, so the label does not break into one word per line. */
+export const NarrowSlot: Story = {
+  args: { chooseLabel: "Choose the files to attach", hint: undefined, dropLabel: undefined },
+  decorators: [
+    (Story) => (
+      <div style={{ inlineSize: "9.5rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 /** Controlled with a few files, so the list, the sizes and the remove buttons show without a picker. */
 export const WithFiles: Story = {
   render: (args) => {

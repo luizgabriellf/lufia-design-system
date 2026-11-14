@@ -34,6 +34,23 @@ describe("Badge", () => {
     expect(screen.getByTestId("b")).toHaveAttribute("title", "Why");
   });
 
+  it("keeps one line by default and wraps only on request", () => {
+    const { rerender } = render(<Badge data-testid="b">Ready</Badge>);
+    expect(screen.getByTestId("b")).not.toHaveAttribute("data-wrap");
+    rerender(
+      <Badge wrap data-testid="b">
+        Ready
+      </Badge>,
+    );
+    expect(screen.getByTestId("b")).toHaveAttribute("data-wrap");
+    rerender(
+      <Badge wrap truncate data-testid="b">
+        Ready
+      </Badge>,
+    );
+    expect(screen.getByTestId("b")).not.toHaveAttribute("data-wrap");
+  });
+
   it("truncates on request, keeping the text in the DOM and as the tooltip", () => {
     render(
       <Badge truncate data-testid="b">

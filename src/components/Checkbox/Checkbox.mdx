@@ -47,6 +47,14 @@ the person clicks, so derive it from your data on every render, as in the story 
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
 
+### Dense size
+
+`size="sm"` sets a 14px label in a shorter row, for dense panels where the default 16px label is too large next to 13px
+helper text. The drawn box is the same. The hit area of the box itself is 24 by 24px in both sizes, and the label is part
+of the click target.
+
+<Canvas of={Stories.Small} />
+
 An invalid checkbox has a red border, and the message below has an icon and text, so the state never relies on colour alone.
 
 ### All themes
@@ -73,7 +81,7 @@ Follows the WAI-ARIA APG [Checkbox](https://www.w3.org/WAI/ARIA/apg/patterns/che
 | Space        | Toggles the checkbox. A mixed box becomes checked or unchecked. |
 | Click label  | Toggles the checkbox.                                           |
 
-- The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall.
+- The label is a real `<label for>`, so the accessible name is the label text. The row is at least 44px tall (32px with `size="sm"`) and the box has a 24px target (WCAG 2.5.8).
 - A mixed box exposes `aria-checked="mixed"` through the native `indeterminate` property.
 - Hint and error are in the accessible description; the error has `role="alert"` and the input `aria-invalid`.
 - Under `forced-colors` the checked box uses `Highlight` and its mark `HighlightText`.

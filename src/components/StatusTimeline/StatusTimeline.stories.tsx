@@ -89,6 +89,33 @@ export const LongContent: Story = {
     ],
   },
 };
+/** A wide action stays inside the card: the content column shrinks and the action wraps instead of widening the card. */
+export const WideAction: Story = {
+  args: {
+    tracks: [
+      {
+        id: "wide",
+        title: "Wide action",
+        nodes: [
+          {
+            id: "w1",
+            label: "Sign-off",
+            state: "needsTimestamp",
+            stateLabel: "Needs a date",
+            action: (
+              <input
+                aria-label="Date of the sign-off"
+                defaultValue="2026-11-12"
+                style={{ inlineSize: "28rem", maxInlineSize: "100%" }}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+  },
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
 export const AllThemes: Story = {
   render: (args) => (
     <ThemeMatrix>

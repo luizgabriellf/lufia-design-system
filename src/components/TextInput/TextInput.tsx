@@ -46,6 +46,7 @@ export function TextInput({
     "aria-describedby": rest["aria-describedby"],
     "aria-invalid": invalid ? true : rest["aria-invalid"],
     required: rest.required,
+    readOnly,
     disabled: rest.disabled,
   });
   return (

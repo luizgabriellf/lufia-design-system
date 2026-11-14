@@ -14,6 +14,27 @@ describe("Textarea", () => {
     expect(box).toHaveAttribute("name", "notes");
   });
 
+  it("puts rootClassName on the root and className on the box", () => {
+    render(<Textarea aria-label="Notes" className="box-extra" rootClassName="root-extra" />);
+    const box = screen.getByRole("textbox", { name: "Notes" });
+    expect(box.parentElement).toHaveClass("box-extra");
+    expect(box.parentElement?.parentElement).toHaveClass("root-extra");
+    expect(box.parentElement?.parentElement).not.toHaveClass("box-extra");
+  });
+
+  it("is not required and shows no mark when it is read-only", () => {
+    render(
+      <FormField label="Notes" required>
+        <Textarea readOnly defaultValue="Fixed" />
+      </FormField>,
+    );
+    const box = screen.getByRole("textbox");
+    expect(box).not.toBeRequired();
+    expect(box).not.toHaveAttribute("aria-required");
+    expect(screen.queryByText("*")).toBeNull();
+    expect(screen.queryByText(/\(required\)/)).toBeNull();
+  });
+
   it("takes its ids and states from a FormField", () => {
     render(
       <FormField label="Notes" hint="Hint" error="Error" required>
