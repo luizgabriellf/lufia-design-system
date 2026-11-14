@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.43.0
+
+### Minor Changes
+
+- [#153](https://github.com/luizgabriellf/lufia-design-system/pull/153) [`342cb8a`](https://github.com/luizgabriellf/lufia-design-system/commit/342cb8a4490d26a1380755179d35b991257de133) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - RadioGroup can be named without a visible legend: pass `aria-label` or `aria-labelledby` instead of `label` (exactly one of the three). A required group named this way is announced through `aria-required` only.
+
 ## 0.42.0
 
 ### Minor Changes
