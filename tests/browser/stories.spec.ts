@@ -2116,3 +2116,63 @@ test.describe("text control focus indicator", () => {
     expect(style.outlineOffset).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe("file field", () => {
+  for (const width of [320, 390]) {
+    test(`at ${width}px the trigger spans the zone and its icon and label share a row`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, "components-forms-filefield--default", "default", "dark");
+      const geometry = await page.evaluate(() => {
+        const label = Array.from(document.querySelectorAll("label")).find((l) =>
+          l.querySelector("svg"),
+        ) as HTMLElement;
+        const zone = label.parentElement as HTMLElement;
+        const icon = label.querySelector("svg") as SVGElement;
+        const range = document.createRange();
+        range.selectNodeContents(Array.from(label.childNodes).find((node) => node.nodeType === 3) as Node);
+        const text = range.getBoundingClientRect();
+        const box = label.getBoundingClientRect();
+        const iconBox = icon.getBoundingClientRect();
+        const zoneStyle = getComputedStyle(zone);
+        const inner =
+          zone.clientWidth -
+          parseFloat(zoneStyle.paddingInlineStart) -
+          parseFloat(zoneStyle.paddingInlineEnd);
+        const hint = zone.querySelector("span[aria-hidden]")?.getBoundingClientRect();
+        return {
+          iconTop: iconBox.top,
+          iconBottom: iconBox.bottom,
+          textTop: text.top,
+          textBottom: text.bottom,
+          triggerWidth: box.width,
+          inner,
+          hintTop: hint?.top ?? null,
+          triggerBottom: box.bottom,
+        };
+      });
+      // Same row: the vertical ranges of the icon and the text overlap.
+      expect(geometry.iconTop).toBeLessThan(geometry.textBottom);
+      expect(geometry.textTop).toBeLessThan(geometry.iconBottom);
+      expect(Math.abs(geometry.triggerWidth - geometry.inner)).toBeLessThanOrEqual(1);
+      expect(geometry.hintTop).toBeGreaterThanOrEqual(geometry.triggerBottom);
+    });
+  }
+
+  test("the drag hint shows for a mouse", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, "components-forms-filefield--default");
+    await expect(page.getByText("or drop files here")).toBeVisible();
+  });
+
+  test.describe("touch-first device", () => {
+    test.use({ hasTouch: true, isMobile: true });
+
+    test("the drag hint is removed from the page", async ({ page }) => {
+      await openStory(page, "components-forms-filefield--default");
+      await expect(page.locator("label", { hasText: "Choose files" })).toBeVisible();
+      const hint = page.locator("span", { hasText: "or drop files here" });
+      await expect(hint).toBeHidden();
+      await expect(hint).toHaveCSS("display", "none");
+    });
+  });
+});

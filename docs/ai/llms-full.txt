@@ -3600,6 +3600,7 @@ what to do: "report.docx is not supported. Use a PDF.", "huge.pdf is larger than
 - `components-forms-filefield--disabled`
 - `components-forms-filefield--long-text`
 - `components-forms-filefield--phone-320`
+- `components-forms-filefield--modal-width`
 - `components-forms-filefield--right-to-left`
 - `components-forms-filefield--all-themes`
 

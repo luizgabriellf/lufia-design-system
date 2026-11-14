@@ -3,6 +3,10 @@
   flex-direction: column;
   gap: var(--lufia-space-3);
   min-inline-size: 0;
+
+  /* The narrow layout follows the slot the field sits in (a modal, a side panel), not the viewport. It needs a slot with
+     a definite inline size: a block, flex or grid item that stretches, as a form field is. */
+  container-type: inline-size;
 }
 
 .zone {
@@ -178,6 +182,29 @@
 
 .remove:disabled {
   cursor: not-allowed;
+}
+
+/* A slot too narrow for the button and the hint side by side: the button takes the full inline size and the hint goes under
+   it. The icon and the label stay on one row; the icon only drops to its own row (the trigger's `flex-wrap`) when the label
+   alone cannot fit. */
+@container (inline-size < 28rem) {
+  .zone {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .trigger {
+    max-inline-size: none;
+  }
+}
+
+/* No drag on a touch-first device: the hint would point at something the person cannot do. `display: none` also keeps it
+   out of the accessibility tree (it is `aria-hidden` already). Drag and drop itself is unchanged. */
+@media (hover: none) and (pointer: coarse) {
+  .drop {
+    display: none;
+  }
 }
 
 /* A finger needs the full touch target, not the compact 36px of a pointer. */
