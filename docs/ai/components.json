@@ -18249,6 +18249,13 @@
               "description": "Whether the card has its close button. Default `true`."
             },
             {
+              "name": "skipOnLastStep",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Keep the skip button (`labels.skip`, calling `onClose(\"skip\")`) on the last step, next to the finish button, so a host that always offers an explicit leave action keeps it there. Default `false`. Independently of this prop, a last step in `do` mode shows the skip button when `showCloseButton` is `false`, because that step has no finish button and would otherwise have no action at all."
+            },
+            {
               "name": "closeOnEscape",
               "type": "boolean",
               "required": false,
@@ -18375,6 +18382,14 @@
           {
             "export": "CompactWhileTyping",
             "id": "components-overlays-tour--compact-while-typing"
+          },
+          {
+            "export": "SkipOnLastStep",
+            "id": "components-overlays-tour--skip-on-last-step"
+          },
+          {
+            "export": "LastDoStepNoClose",
+            "id": "components-overlays-tour--last-do-step-no-close"
           },
           {
             "export": "SwitchesOff",

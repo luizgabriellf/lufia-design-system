@@ -43,7 +43,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted renderAs classNames +13
 - NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups summary onMarkAllRead +15 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
-- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus resolveTarget isStandIn +5
+- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus resolveTarget isStandIn +6
 
 ### Navigation
 

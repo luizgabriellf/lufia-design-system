@@ -150,6 +150,16 @@ the dialog's scroll area ends.
 <Canvas of={Stories.BesideTheDialog} story={{ inline: false, height: "34rem" }} />
 <Canvas of={Stories.DockedDialog} story={{ inline: false, height: "34rem" }} />
 
+### Leaving from the last step
+
+The skip button is hidden on the last step, where the finish button ends the tour. A host that always offers an explicit leave
+action sets `skipOnLastStep`: skip stays beside finish and calls `onClose("skip")` exactly as on earlier steps. A last step in
+`do` mode has no finish button, so with `showCloseButton={false}` the skip button is shown even without the prop: the card
+never has no action.
+
+<Canvas of={Stories.SkipOnLastStep} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.LastDoStepNoClose} story={{ inline: false, height: "26rem" }} />
+
 ### Switches and hooks
 
 `showCloseButton`, `closeOnEscape` and `arrowKeyNavigation` turn the package's own close button, Escape handling and arrow
