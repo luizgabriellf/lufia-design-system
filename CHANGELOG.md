@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.46.0
+
+### Minor Changes
+
+- [#162](https://github.com/luizgabriellf/lufia-design-system/pull/162) [`0d4c20e`](https://github.com/luizgabriellf/lufia-design-system/commit/0d4c20eae91da96cd88e39e558f3e7604dbb8866) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tour: add `skipOnLastStep` to keep the skip button (`onClose("skip")`) on the last step. A last `do` step with `showCloseButton={false}` now shows the skip button even without it, so the card is never left with no action.
+
 ## 0.45.0
 
 ### Minor Changes
