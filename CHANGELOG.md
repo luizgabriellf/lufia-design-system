@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.47.0
+
+### Minor Changes
+
+- [#168](https://github.com/luizgabriellf/lufia-design-system/pull/168) [`5d2b390`](https://github.com/luizgabriellf/lufia-design-system/commit/5d2b39003f38664fc45ee8cd1ea956d294fdd7b7) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tour: a step with no resolved target is now hosted in the topmost open modal (a native `dialog` opened with `showModal()`, else an `aria-modal` region) instead of the body, so its card stays visible and clickable. `compactOnTyping` also accepts `{ hideBelowHeight }` to hide the card (`data-typing-hidden`) while typing on a short visual viewport; the compact card now also hides the note and the step counter. `step.placement` accepts `"auto"` (bottom, top, end, start). The heading is focused again when `targetStatus` turns `ready`, without taking focus from a field or control in use. `CHANGELOG.md` is now part of the published package files.
+
 ## 0.46.2
 
 ### Patch Changes
