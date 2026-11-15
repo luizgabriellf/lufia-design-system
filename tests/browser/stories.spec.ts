@@ -2593,6 +2593,110 @@ test.describe("table", () => {
     expect(after).toBeGreaterThan(20);
   });
 
+  for (const width of [1440, 390]) {
+    test(`flush frame drops the outer border, radius and background at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      const frameStyle = async (name: string) => {
+        await openStory(page, id(name));
+        return page.evaluate(() => {
+          const frame = document.querySelector("#storybook-root [role='region']")!.parentElement!;
+          const style = getComputedStyle(frame);
+          const head = document.querySelector("#storybook-root th")!;
+          return {
+            border: style.borderTopWidth,
+            radius: style.borderTopLeftRadius,
+            background: style.backgroundColor,
+            headRule: getComputedStyle(head).borderBottomWidth,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          };
+        });
+      };
+      const flush = await frameStyle("flush-in-panel");
+      expect(flush.border).toBe("0px");
+      expect(flush.radius).toBe("0px");
+      expect(flush.background).toBe("rgba(0, 0, 0, 0)");
+      expect(flush.headRule).not.toBe("0px");
+      expect(flush.overflow).toBeLessThanOrEqual(0);
+      if (width < 640) {
+        const card = await page.evaluate(
+          () => getComputedStyle(document.querySelector("#storybook-root tbody tr")!).borderTopWidth,
+        );
+        expect(card).not.toBe("0px");
+      }
+      if (width > 640) {
+        const framed = await frameStyle("framed");
+        expect(framed.border).not.toBe("0px");
+        expect(framed.radius).not.toBe("0px");
+      }
+    });
+
+    test(`a link beside the row control is hit by elementFromPoint, the row elsewhere hits the control at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("named-row-control"));
+      const hits = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const control = row.querySelector<HTMLAnchorElement>("a[aria-label^='Open details']")!;
+        const secondary = row.querySelector<HTMLAnchorElement>("a[href^='mailto:']")!;
+        const centre = (el: Element) => {
+          const box = el.getBoundingClientRect();
+          return document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        };
+        const owner = row.querySelector("td[data-label='Owner']")!.getBoundingClientRect();
+        const elsewhere = document.elementFromPoint(owner.left + 4, owner.top + 4);
+        return {
+          secondaryHit: centre(secondary) === secondary,
+          nested: !!secondary.closest("a[aria-label^='Open details']"),
+          sameCell: secondary.closest("td") === control.closest("td"),
+          elsewhereIsControl: elsewhere?.closest("a") === control,
+          controlHit: centre(control)?.closest("a") === control,
+          order: !!(control.compareDocumentPosition(secondary) & Node.DOCUMENT_POSITION_FOLLOWING),
+        };
+      });
+      expect(hits).toEqual({
+        secondaryHit: true,
+        nested: false,
+        sameCell: true,
+        elsewhereIsControl: true,
+        controlHit: true,
+        order: true,
+      });
+    });
+
+    test(`the scroll margin hook keeps a focused row control clear of the sticky bar at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 700 });
+      await openStory(page, id("scroll-margin"));
+      const result = await page.evaluate(async () => {
+        const links = [...document.querySelectorAll<HTMLElement>("#storybook-root tbody a")];
+        const target = links[2]!;
+        const lowest = links[links.length - 1]!;
+        lowest.focus();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        target.focus();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const bar = document.querySelector("[data-testid='sticky-bar']")!.getBoundingClientRect();
+        return {
+          margin: getComputedStyle(target).scrollMarginBlockStart,
+          top: target.getBoundingClientRect().top,
+          barBottom: bar.bottom,
+        };
+      });
+      expect(result.margin).toBe("64px");
+      expect(result.top).toBeGreaterThanOrEqual(result.barBottom);
+    });
+  }
+
+  test("the scroll margin defaults to zero", async ({ page }) => {
+    await openStory(page, id("clickable-rows-as-links"));
+    const margin = await page.evaluate(
+      () => getComputedStyle(document.querySelector("#storybook-root tbody a")!).scrollMarginBlockStart,
+    );
+    expect(margin).toBe("0px");
+  });
+
   test("the table has no axe violations in cards, scroll and empty states", async ({ page }) => {
     for (const [name, width] of [
       ["default", 1280],
@@ -2601,6 +2705,11 @@ test.describe("table", () => {
       ["clickable-rows-as-links", 1280],
       ["empty", 1280],
       ["footer-with-pagination", 1280],
+      ["flush-in-panel", 1280],
+      ["named-row-control", 1280],
+      ["named-row-control-on-phone", 390],
+      ["row-state", 1280],
+      ["plain-empty", 1280],
     ] as const) {
       await page.setViewportSize({ width, height: 800 });
       await openStory(page, id(name));

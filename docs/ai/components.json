@@ -17525,6 +17525,13 @@
               "description": "What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see."
             },
             {
+              "name": "frame",
+              "type": "\"flush\" | \"framed\"",
+              "required": false,
+              "default": "\"framed\"",
+              "description": "`framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card mode each card keeps its own border either way."
+            },
+            {
               "name": "density",
               "type": "\"compact\" | \"comfortable\"",
               "required": false,
@@ -17564,7 +17571,7 @@
         {
           "name": "TableEmpty",
           "kind": "component",
-          "description": "The body of a table with nothing to show: one full-width row that hosts an `EmptyState`. Put it alone in `TableBody`.",
+          "description": "The body of a table with nothing to show: one full-width row. With a `title` it hosts an `EmptyState`; with only `children` it is a single muted line. Put it alone in `TableBody`.",
           "props": [
             {
               "name": "icon",
@@ -17572,13 +17579,6 @@
               "required": false,
               "default": null,
               "description": "Decorative illustration or icon (hidden from assistive technology)."
-            },
-            {
-              "name": "title",
-              "type": "string",
-              "required": true,
-              "default": null,
-              "description": ""
             },
             {
               "name": "body",
@@ -17600,6 +17600,13 @@
               "required": true,
               "default": null,
               "description": "The number of columns, so the message spans the whole row."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Headline of the titled empty state. Leave it out to render `children` as one muted, centred line instead (`icon`, `body` and `action` are then ignored)."
             }
           ],
           "nativeProps": true
@@ -17608,7 +17615,7 @@
           "name": "TableEmptyProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }"
+          "definition": "Omit<EmptyStateProps, \"title\"> & { colSpan: number; title?: string | undefined; }"
         },
         {
           "name": "TableHead",
@@ -17627,20 +17634,35 @@
           "name": "TableProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: \"scroll\" | \"cards\" | undefined; density?: \"compact\" | \"comfortable\" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }"
+          "definition": null
         },
         {
           "name": "TableRow",
           "kind": "component",
-          "description": "A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its cells `href` or `onActivate` (see `Td`).",
-          "props": [],
+          "description": "A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox.",
+          "props": [
+            {
+              "name": "selected",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks the row as selected: sets `aria-selected` and a selected background. The app owns the selection."
+            },
+            {
+              "name": "current",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current=\"true\"` and an accent on its start edge."
+            }
+          ],
           "nativeProps": true
         },
         {
           "name": "TableRowProps",
           "kind": "type",
           "description": "",
-          "definition": null
+          "definition": "Omit<HTMLAttributes<HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; }"
         },
         {
           "name": "Td",
@@ -17688,6 +17710,34 @@
               "required": false,
               "default": null,
               "description": "Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function."
+            },
+            {
+              "name": "activateLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: \"Open details of Harbour redesign\". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included."
+            },
+            {
+              "name": "activateDescribedBy",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "`aria-describedby` of the generated link or button: ids of elements that describe the row control."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "A muted, regular-weight line under the cell's content: a description or an identifier under a `primary` name. In a cell with `href` or `onActivate` it is inside the control, so the whole block stays clickable and, without `activateLabel`, is part of the control's name. In card mode it stays under the value."
+            },
+            {
+              "name": "after",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Content rendered in the same cell but outside the generated control, lifted above the row's stretched click area: a second link or a mailto next to the name. Interactive content here is valid HTML (never nested in the row's link or button), reachable in DOM order after the control and clickable. It sits on its own line under the content."
             }
           ],
           "nativeProps": true
@@ -17696,7 +17746,7 @@
           "name": "TdProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<TdHTMLAttributes<HTMLTableCellElement>, \"role\"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }"
+          "definition": null
         },
         {
           "name": "Th",
@@ -17709,22 +17759,96 @@
               "required": false,
               "default": null,
               "description": "Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells."
+            },
+            {
+              "name": "actions",
+              "type": "false | true",
+              "required": false,
+              "default": null,
+              "description": "Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The column's name for assistive technology (\"Actions\"), visually hidden."
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "actions",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "actions: false",
+                "props": [
+                  {
+                    "name": "actions",
+                    "type": "false",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "aria-label",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "string",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "children",
+                    "type": "ReactNode",
+                    "required": false,
+                    "description": "",
+                    "native": true
+                  },
+                  {
+                    "name": "label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  }
+                ]
+              },
+              {
+                "name": "actions: true",
+                "props": [
+                  {
+                    "name": "actions",
+                    "type": "true",
+                    "required": true,
+                    "description": "Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required."
+                  },
+                  {
+                    "name": "label",
+                    "type": "string",
+                    "required": true,
+                    "description": "The column's name for assistive technology (\"Actions\"), visually hidden."
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "ThProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; }"
+          "definition": "(Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, \"children\" | \"aria-label\" | \"aria-labelledby\"> & { actions: true; label: string; })"
         }
       ],
       "aliases": {
-        "TableEmptyProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }",
-        "TableProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: \"scroll\" | \"cards\" | undefined; density?: \"compact\" | \"comfortable\" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }",
-        "TdProps": "Omit<TdHTMLAttributes<HTMLTableCellElement>, \"role\"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }",
-        "ThProps": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; }"
+        "TableEmptyProps": "Omit<EmptyStateProps, \"title\"> & { colSpan: number; title?: string | undefined; }",
+        "TableRowProps": "Omit<HTMLAttributes<HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; }",
+        "ThProps": "(Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, \"children\" | \"aria-label\" | \"aria-labelledby\"> & { actions: true; label: string; })"
       },
       "story": {
         "docsId": "components-data-display-table--docs",
@@ -17804,6 +17928,50 @@
           {
             "export": "AllThemes",
             "id": "components-data-display-table--all-themes"
+          },
+          {
+            "export": "FlushInPanel",
+            "id": "components-data-display-table--flush-in-panel"
+          },
+          {
+            "export": "FlushInPanelOnPhone",
+            "id": "components-data-display-table--flush-in-panel-on-phone"
+          },
+          {
+            "export": "Framed",
+            "id": "components-data-display-table--framed"
+          },
+          {
+            "export": "NamedRowControl",
+            "id": "components-data-display-table--named-row-control"
+          },
+          {
+            "export": "NamedRowControlOnPhone",
+            "id": "components-data-display-table--named-row-control-on-phone"
+          },
+          {
+            "export": "DescriptionLine",
+            "id": "components-data-display-table--description-line"
+          },
+          {
+            "export": "RowState",
+            "id": "components-data-display-table--row-state"
+          },
+          {
+            "export": "RowStateOnPhone",
+            "id": "components-data-display-table--row-state-on-phone"
+          },
+          {
+            "export": "PlainEmpty",
+            "id": "components-data-display-table--plain-empty"
+          },
+          {
+            "export": "ScrollMargin",
+            "id": "components-data-display-table--scroll-margin"
+          },
+          {
+            "export": "ScrollMarginOnPhone",
+            "id": "components-data-display-table--scroll-margin-on-phone"
           }
         ]
       },
@@ -17856,6 +18024,8 @@
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
+        "--lufia-color-accent-default",
+        "--lufia-color-accent-subtle",
         "--lufia-color-bg-surface",
         "--lufia-color-bg-surface-raised",
         "--lufia-color-border-strong",
@@ -17868,16 +18038,20 @@
         "--lufia-font-size-2xs",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
         "--lufia-font-weight-medium",
+        "--lufia-font-weight-regular",
         "--lufia-font-weight-semibold",
         "--lufia-radius-card",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
         "--lufia-space-4",
+        "--lufia-space-6",
         "--lufia-table-bg",
         "--lufia-table-border",
         "--lufia-table-row-hover",
+        "--lufia-table-row-scroll-margin",
         "--lufia-table-scroll-shadow"
       ]
     },

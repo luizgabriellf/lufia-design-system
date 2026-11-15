@@ -35,6 +35,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Select: a long selected label in a 96 px box keeps its computed end padding at least as wide as the chevron, so the text stops before it, in left-to-right and right-to-left.
 - Select, compact: the same room for the smaller chevron in the `size="sm"` box, in left-to-right and right-to-left.
 - Textarea, auto height: the box grows with its content from `rows`, stops at `maxRows` and scrolls, and shrinks back when emptied.
+- Table: `frame="flush"` has no outer border, radius or background at 390 and 1440 px (the header rule stays); a link in the `after` slot is hit by `elementFromPoint` and is not nested in the row control while the rest of the row still hits the control; `--lufia-table-row-scroll-margin` keeps a focused row control below a sticky bar after the browser scrolls it into view.
 - Stat tile: at 390 px the button label is at least 24 by 24 px and the tile is no taller than a plain one.
 
 Everything runs in Chromium and WebKit. Failing tests upload screenshots and traces, plus an HTML report, as CI artifacts.

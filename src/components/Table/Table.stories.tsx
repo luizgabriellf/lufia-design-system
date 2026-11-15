@@ -5,7 +5,6 @@ import { Badge, type BadgeTone } from "../Badge";
 import { Button } from "../Button";
 import { Pagination, type PaginationLabels } from "../Pagination";
 import { SortableTh, type SortDirection } from "../SortableTh";
-import { VisuallyHidden } from "../VisuallyHidden";
 import { Table, TableBody, TableEmpty, TableHead, TableRow, Td, Th } from "./Table";
 
 type Project = { id: number; name: string; owner: string; status: string; tone: BadgeTone; budget: number };
@@ -81,9 +80,7 @@ function Header() {
         <Th>Owner</Th>
         <Th>Status</Th>
         <Th numeric>Budget</Th>
-        <Th>
-          <VisuallyHidden>Actions</VisuallyHidden>
-        </Th>
+        <Th actions label="Actions" />
       </TableRow>
     </TableHead>
   );
@@ -97,6 +94,7 @@ const meta = {
   argTypes: {
     responsive: { control: "inline-radio", options: ["cards", "scroll"] },
     density: { control: "inline-radio", options: ["comfortable", "compact"] },
+    frame: { control: "inline-radio", options: ["framed", "flush"] },
   },
   render: (args) => (
     <Table {...args}>
@@ -318,4 +316,194 @@ export const AllThemes: Story = {
       </Table>
     </ThemeMatrix>
   ),
+};
+
+const panelStyle = {
+  border: "1px solid var(--lufia-color-border-default)",
+  borderRadius: "var(--lufia-radius-card)",
+  background: "var(--lufia-color-bg-surface)",
+  overflow: "hidden",
+} as const;
+
+/** `frame="flush"` drops the table's own border, radius and background so it sits edge to edge in a panel that already has a frame. */
+export const FlushInPanel: Story = {
+  render: (args) => (
+    <div style={panelStyle}>
+      <h3 style={{ margin: 0, padding: "var(--lufia-space-4)", fontSize: "var(--lufia-font-size-md)" }}>
+        Projects
+      </h3>
+      <Table {...args} frame="flush">
+        <Header />
+        <Rows />
+      </Table>
+    </div>
+  ),
+};
+
+/** In card mode each card keeps its own border; the panel supplies the rest. */
+export const FlushInPanelOnPhone: Story = {
+  ...FlushInPanel,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** The same table framed, for comparison. */
+export const Framed: Story = { args: { frame: "framed" } };
+
+/** `activateLabel` names the row control and `after` holds links outside it. */
+export const NamedRowControl: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 4).map((project) => (
+          <TableRow key={project.id}>
+            <Td
+              primary
+              label="Project"
+              href={`#project-${project.id}`}
+              activateLabel={`Open details of ${project.name}`}
+              after={<a href={`mailto:owner${project.id}@example.com`}>Email the owner</a>}
+            >
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">
+              <Badge tone={project.tone} dot wrap>
+                {project.status}
+              </Badge>
+            </Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const NamedRowControlOnPhone: Story = {
+  ...NamedRowControl,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** A description under a `primary` name keeps the regular weight and the muted colour. Inside a row control it is part of the control. */
+export const DescriptionLine: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 3).map((project) => (
+          <TableRow key={project.id}>
+            <Td
+              primary
+              label="Project"
+              href={`#project-${project.id}`}
+              description={`Reference PRJ-${project.id}00`}
+            >
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+/** `selected` and `current` only mark state: the app owns the selection and the detail pane. */
+export const RowState: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 4).map((project) => (
+          <TableRow key={project.id} selected={project.id === 2} current={project.id === 3}>
+            <Td primary label="Project" href={`#project-${project.id}`}>
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const RowStateOnPhone: Story = {
+  ...RowState,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** Without a `title`, `TableEmpty` is a single muted line. */
+export const PlainEmpty: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        <TableEmpty colSpan={5}>No projects match the filter.</TableEmpty>
+      </TableBody>
+    </Table>
+  ),
+};
+
+/**
+ * `--lufia-table-row-scroll-margin` keeps room above and below a focused row control, here the height of the sticky bar,
+ * so focus never lands under it. Focus a row and scroll: the control stops below the bar.
+ */
+export const ScrollMargin: Story = {
+  render: (args) => (
+    <div style={{ "--lufia-table-row-scroll-margin": "4rem" } as React.CSSProperties}>
+      <div
+        data-testid="sticky-bar"
+        style={{
+          position: "sticky",
+          insetBlockStart: 0,
+          zIndex: 2,
+          blockSize: "3.5rem",
+          background: "var(--lufia-color-bg-surface-raised)",
+          display: "flex",
+          alignItems: "center",
+          paddingInline: "var(--lufia-space-4)",
+        }}
+      >
+        Sticky bar
+      </div>
+      <Table {...args}>
+        <Header />
+        <Rows
+          rows={Array.from({ length: 24 }, (_, index) => ({ ...projects[index % 5]!, id: 100 + index }))}
+          href={(project) => `#project-${project.id}`}
+        />
+      </Table>
+    </div>
+  ),
+};
+
+export const ScrollMarginOnPhone: Story = {
+  ...ScrollMargin,
+  globals: { viewport: { value: "w390", isRotated: false } },
 };

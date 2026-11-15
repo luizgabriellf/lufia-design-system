@@ -341,3 +341,251 @@ describe("TableEmpty", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("Table frame", () => {
+  it("defaults to framed and reports flush on the wrapper", () => {
+    const { container, rerender } = render(<Sample />);
+    expect(container.firstElementChild).toHaveAttribute("data-frame", "framed");
+    rerender(
+      <Table caption="Projects" frame="flush">
+        <TableBody />
+      </Table>,
+    );
+    expect(container.firstElementChild).toHaveAttribute("data-frame", "flush");
+  });
+
+  it("has no axe violations when flush", async () => {
+    const { container } = render(
+      <Table caption="Projects" frame="flush">
+        <TableBody>
+          <TableRow>
+            <Td>One</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Td row control extras", () => {
+  it("names the link and the button with activateLabel and describes them with activateDescribedBy", () => {
+    const { rerender } = render(
+      <div>
+        <p id="hint">Opens the detail page</p>
+        <Sample
+          rowProps={{ href: "/p/1", activateLabel: "Open details of Harbour", activateDescribedBy: "hint" }}
+        />
+      </div>,
+    );
+    const link = screen.getByRole("link", { name: "Open details of Harbour" });
+    expect(link).toHaveAccessibleDescription("Opens the detail page");
+    rerender(
+      <div>
+        <p id="hint">Opens the detail page</p>
+        <Sample
+          rowProps={{
+            onActivate: () => {},
+            activateLabel: "Open details of Harbour",
+            activateDescribedBy: "hint",
+          }}
+        />
+      </div>,
+    );
+    const button = screen.getByRole("button", { name: "Open details of Harbour" });
+    expect(button).toHaveAccessibleDescription("Opens the detail page");
+  });
+
+  it("puts the after slot in the same cell but outside the control, in DOM order", async () => {
+    const user = userEvent.setup();
+    render(
+      <Sample
+        rowProps={{
+          href: "/p/1",
+          after: <a href="mailto:owner@example.com">Email the owner</a>,
+        }}
+      />,
+    );
+    const control = screen.getByRole("link", { name: "Harbour redesign" });
+    const secondary = screen.getByRole("link", { name: "Email the owner" });
+    expect(control).not.toContainElement(secondary);
+    expect(secondary.closest("td")).toBe(control.closest("td"));
+    expect(control.compareDocumentPosition(secondary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(secondary.closest("a:has(a), button:has(a)")).toBeNull();
+    await user.tab(); // the scroll region
+    await user.tab();
+    expect(control).toHaveFocus();
+    await user.tab();
+    expect(secondary).toHaveFocus();
+  });
+
+  it("renders the description inside the control, so it is part of the name without activateLabel", () => {
+    render(<Sample rowProps={{ href: "/p/1", description: "Branding and web" }} />);
+    const link = screen.getByRole("link", { name: /^Harbour redesign\s*Branding and web$/ });
+    expect(link).toContainElement(screen.getByText("Branding and web"));
+  });
+
+  it("keeps the description out of the name when activateLabel is set", () => {
+    render(
+      <Sample rowProps={{ href: "/p/1", description: "Branding and web", activateLabel: "Open Harbour" }} />,
+    );
+    expect(screen.getByRole("link", { name: "Open Harbour" })).toBeInTheDocument();
+  });
+
+  it("renders the description in a plain cell", () => {
+    render(<Sample rowProps={{ description: "Branding and web" }} />);
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Harbour redesignBranding and web");
+  });
+
+  it("has no axe violations with a label, a description and an after slot", async () => {
+    const { container } = render(
+      <div>
+        <Sample
+          rowProps={{
+            href: "/p/1",
+            activateLabel: "Open details of Harbour redesign",
+            after: <a href="mailto:owner@example.com">Email the owner</a>,
+          }}
+        />
+        <Sample
+          caption="Archived projects"
+          rowProps={{ onActivate: () => {}, description: "Branding", after: <a href="#x">More</a> }}
+        />
+      </div>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Th actions", () => {
+  it("renders a header named by its hidden label and marks it as the actions column", () => {
+    render(
+      <Table caption="Projects">
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th actions label="Actions" />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td>One</Td>
+            <Td actions>
+              <button type="button">Edit</button>
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    const header = screen.getByRole("columnheader", { name: "Actions" });
+    expect(header).toHaveAttribute("data-actions");
+    expect(header).not.toHaveAttribute("aria-label");
+    expect(header).toHaveTextContent("Actions");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(
+      <Table caption="Projects">
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th actions label="Actions" />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td>One</Td>
+            <Td actions>
+              <button type="button">Edit</button>
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("requires label when actions is set", () => {
+    // @ts-expect-error label is required with actions
+    const missing = <Th actions />;
+    expect(missing).toBeTruthy();
+  });
+});
+
+describe("TableRow state", () => {
+  function Rows() {
+    return (
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow selected current>
+            <Td>Selected and current</Td>
+          </TableRow>
+          <TableRow selected={false}>
+            <Td>Unselected</Td>
+          </TableRow>
+          <TableRow>
+            <Td>Plain</Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("sets aria-selected and aria-current and the matching data attributes", () => {
+    render(<Rows />);
+    const [first, second, third] = screen.getAllByRole("row");
+    expect(first).toHaveAttribute("aria-selected", "true");
+    expect(first).toHaveAttribute("aria-current", "true");
+    expect(first).toHaveAttribute("data-selected");
+    expect(first).toHaveAttribute("data-current");
+    expect(second).toHaveAttribute("aria-selected", "false");
+    expect(second).not.toHaveAttribute("data-selected");
+    expect(third).not.toHaveAttribute("aria-selected");
+    expect(third).not.toHaveAttribute("aria-current");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<Rows />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("TableEmpty without a title", () => {
+  function Bare() {
+    return (
+      <Table caption="Projects">
+        <TableBody>
+          <TableEmpty colSpan={3}>Nothing matches the filter.</TableEmpty>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("renders one full-width cell with a single message line and no EmptyState", () => {
+    render(<Bare />);
+    const message = screen.getByText("Nothing matches the filter.");
+    expect(message.tagName).toBe("P");
+    const cell = message.closest("td")!;
+    expect(cell).toHaveAttribute("colspan", "3");
+    expect(cell.closest("tr")!.children).toHaveLength(1);
+    expect(cell.querySelector("p")).toBe(message);
+    expect(cell.querySelectorAll("p")).toHaveLength(1);
+  });
+
+  it("keeps the titled form unchanged", () => {
+    render(
+      <Table caption="Projects">
+        <TableBody>
+          <TableEmpty colSpan={3} title="No projects" body="Create one." />
+        </TableBody>
+      </Table>,
+    );
+    expect(screen.getByText("No projects")).toBeInTheDocument();
+    expect(screen.getByText("Create one.")).toBeInTheDocument();
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<Bare />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

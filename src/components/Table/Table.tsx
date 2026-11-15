@@ -22,6 +22,12 @@ export type TableProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    * and scrolls it sideways, with a shadow on each edge that has more to see.
    */
   responsive?: "cards" | "scroll";
+  /**
+   * `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to
+   * edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card
+   * mode each card keeps its own border either way.
+   */
+  frame?: "framed" | "flush";
   /** Row padding. Default `comfortable`. */
   density?: "comfortable" | "compact";
   /** Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. */
@@ -42,6 +48,7 @@ export function Table({
   showCaption = false,
   responsive = "cards",
   density = "comfortable",
+  frame = "framed",
   footer,
   tableClassName,
   className,
@@ -54,6 +61,7 @@ export function Table({
       className={join(styles.root, className)}
       data-responsive={responsive}
       data-density={density}
+      data-frame={frame}
     >
       <div className={styles.frame}>
         {/* A scrolling region needs a tab stop and a name, or a keyboard user cannot reach what is off screen. */}
@@ -89,26 +97,50 @@ export function TableBody({ className, ...rest }: TableBodyProps) {
   return <tbody role="rowgroup" {...rest} className={join(styles.body, className)} />;
 }
 
-export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, "role">;
+export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, "role"> & {
+  /** Marks the row as selected: sets `aria-selected` and a selected background. The app owns the selection. */
+  selected?: boolean;
+  /** Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current="true"` and an accent on its start edge. */
+  current?: boolean;
+};
 
 /**
  * A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its
- * cells `href` or `onActivate` (see `Td`).
+ * cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox.
  */
-export function TableRow({ className, ...rest }: TableRowProps) {
-  return <tr role="row" {...rest} className={join(styles.row, className)} />;
+export function TableRow({ selected, current, className, ...rest }: TableRowProps) {
+  return (
+    <tr
+      role="row"
+      aria-selected={selected === undefined ? undefined : selected}
+      aria-current={current ? "true" : undefined}
+      {...rest}
+      className={join(styles.row, className)}
+      data-selected={selected ? "" : undefined}
+      data-current={current ? "" : undefined}
+    />
+  );
 }
 
-export type ThProps = Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & {
+type ThBaseProps = Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & {
   /** Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. */
   numeric?: boolean;
 };
+
+export type ThProps =
+  | (ThBaseProps & { actions?: false; label?: never })
+  | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby"> & {
+      /** Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. */
+      actions: true;
+      /** The column's name for assistive technology ("Actions"), visually hidden. */
+      label: string;
+    });
 
 /**
  * A plain column header (`scope="col"`). Pass `scope="row"` for a row header. For a column the user can sort, use
  * `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.
  */
-export function Th({ numeric, scope = "col", className, ...rest }: ThProps) {
+export function Th({ numeric, actions, label, scope = "col", className, ...rest }: ThProps) {
   return (
     <th
       role={scope === "row" ? "rowheader" : "columnheader"}
@@ -116,7 +148,10 @@ export function Th({ numeric, scope = "col", className, ...rest }: ThProps) {
       {...rest}
       className={className}
       data-numeric={numeric ? "" : undefined}
-    />
+      data-actions={actions ? "" : undefined}
+    >
+      {actions ? <span className={styles.hiddenLabel}>{label}</span> : (rest as ThBaseProps).children}
+    </th>
   );
 }
 
@@ -144,6 +179,25 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
    * Enter and Space both activate. One per row. Needs a Client Component, since it passes a function.
    */
   onActivate?: (event: MouseEvent<HTMLElement>) => void;
+  /**
+   * The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: "Open
+   * details of Harbour redesign". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included.
+   */
+  activateLabel?: string;
+  /** `aria-describedby` of the generated link or button: ids of elements that describe the row control. */
+  activateDescribedBy?: string;
+  /**
+   * A muted, regular-weight line under the cell's content: a description or an identifier under a `primary` name. In a
+   * cell with `href` or `onActivate` it is inside the control, so the whole block stays clickable and, without
+   * `activateLabel`, is part of the control's name. In card mode it stays under the value.
+   */
+  description?: ReactNode;
+  /**
+   * Content rendered in the same cell but outside the generated control, lifted above the row's stretched click area:
+   * a second link or a mailto next to the name. Interactive content here is valid HTML (never nested in the row's link or
+   * button), reachable in DOM order after the control and clickable. It sits on its own line under the content.
+   */
+  after?: ReactNode;
 };
 
 /**
@@ -158,21 +212,43 @@ export function Td({
   actions,
   href,
   onActivate,
+  activateLabel,
+  activateDescribedBy,
+  description,
+  after,
   className,
   children,
   ...rest
 }: TdProps) {
+  const content = (
+    <>
+      {children}
+      {description ? <span className={styles.description}>{description}</span> : null}
+    </>
+  );
   const target =
     href !== undefined ? (
-      <LufiaLink href={href} className={styles.rowLink} onClick={onActivate}>
-        {children}
+      <LufiaLink
+        href={href}
+        className={styles.rowLink}
+        onClick={onActivate}
+        aria-label={activateLabel}
+        aria-describedby={activateDescribedBy}
+      >
+        {content}
       </LufiaLink>
     ) : onActivate ? (
-      <button type="button" className={styles.rowLink} onClick={onActivate}>
-        {children}
+      <button
+        type="button"
+        className={styles.rowLink}
+        onClick={onActivate}
+        aria-label={activateLabel}
+        aria-describedby={activateDescribedBy}
+      >
+        {content}
       </button>
     ) : (
-      children
+      content
     );
   return (
     <td
@@ -186,22 +262,39 @@ export function Td({
       data-actions={actions ? "" : undefined}
     >
       {target}
+      {after ? <div className={styles.after}>{after}</div> : null}
     </td>
   );
 }
 
-export type TableEmptyProps = EmptyStateProps & {
+export type TableEmptyProps = Omit<EmptyStateProps, "title"> & {
   /** The number of columns, so the message spans the whole row. */
   colSpan: number;
+  /**
+   * Headline of the titled empty state. Leave it out to render `children` as one muted, centred line instead (`icon`,
+   * `body` and `action` are then ignored).
+   */
+  title?: string;
 };
 
-/** The body of a table with nothing to show: one full-width row that hosts an `EmptyState`. Put it alone in `TableBody`. */
-export function TableEmpty({ colSpan, ...empty }: TableEmptyProps) {
+/**
+ * The body of a table with nothing to show: one full-width row. With a `title` it hosts an `EmptyState`; with only
+ * `children` it is a single muted line. Put it alone in `TableBody`.
+ */
+export function TableEmpty({ colSpan, title, ...empty }: TableEmptyProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- the bare form drops the titled form's extras
+  const { icon, body, action, className, children, ...rest } = empty;
   return (
     <tr role="row" className={styles.emptyRow}>
       {/* eslint-disable-next-line jsx-a11y/no-interactive-element-to-noninteractive-role -- explicit so card mode keeps the semantics */}
       <td role="cell" colSpan={colSpan} className={styles.emptyCell}>
-        <EmptyState {...empty} />
+        {title !== undefined ? (
+          <EmptyState {...empty} title={title} />
+        ) : (
+          <p role="status" {...rest} className={join(styles.emptyMessage, className)}>
+            {children}
+          </p>
+        )}
       </td>
     </tr>
   );
