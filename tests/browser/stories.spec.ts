@@ -2697,6 +2697,162 @@ test.describe("table", () => {
     expect(margin).toBe("0px");
   });
 
+  for (const width of [320, 390, 1440]) {
+    test(`at ${width}px a card badge is never clipped and a card label never splits inside a word`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("card-long-labels-and-badges"));
+      const result = await page.evaluate(() => {
+        const root = document.querySelector("#storybook-root")!;
+        const badges = [...root.querySelectorAll<HTMLElement>("tbody td[data-label='Status'] > span")];
+        const cell = root.querySelector<HTMLElement>("tbody td[data-label='Contributions']")!;
+        // Measure the label's longest word against the width the label really has.
+        const probe = document.createElement("span");
+        const labelStyle = getComputedStyle(cell, "::before");
+        probe.textContent = "CONTRIBUTIONS";
+        probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font:${labelStyle.font};letter-spacing:${labelStyle.letterSpacing}`;
+        document.body.append(probe);
+        const wordWidth = probe.getBoundingClientRect().width;
+        probe.remove();
+        const columns = getComputedStyle(cell).gridTemplateColumns.split(" ");
+        return {
+          cards: getComputedStyle(cell.parentElement!).display === "block",
+          clipped: badges.map(
+            (badge) =>
+              badge.scrollWidth > badge.clientWidth + 1 || badge.scrollHeight > badge.clientHeight + 1,
+          ),
+          badgeInside: badges.every(
+            (badge) =>
+              badge.getBoundingClientRect().right <= badge.closest("td")!.getBoundingClientRect().right + 1,
+          ),
+          labelColumn: parseFloat(columns[0]!),
+          wordWidth,
+          overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(result.clipped).toEqual([false, false]);
+      expect(result.badgeInside).toBe(true);
+      expect(result.overflowX).toBeLessThanOrEqual(0);
+      if (width < 1000) {
+        expect(result.cards).toBe(true);
+        // The label column is at least as wide as its longest word, so the word is not broken.
+        expect(result.labelColumn).toBeGreaterThanOrEqual(result.wordWidth - 1);
+      } else {
+        expect(result.cards).toBe(false);
+      }
+    });
+  }
+
+  for (const width of [320, 390, 1440]) {
+    test(`at ${width}px the actions column fits its buttons at the end edge, in both text directions`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const dir of ["ltr", "rtl"] as const) {
+        await openStory(page, id("few-columns-actions"), "default", "light", dir);
+        const result = await page.evaluate(() => {
+          const root = document.querySelector("#storybook-root")!;
+          const cell = root.querySelector<HTMLElement>("tbody td[data-actions]")!;
+          const row = cell.parentElement!.getBoundingClientRect();
+          const cellBox = cell.getBoundingClientRect();
+          const button = cell.querySelector("button")!.getBoundingClientRect();
+          const rtl = getComputedStyle(cell).direction === "rtl";
+          const padding = parseFloat(getComputedStyle(cell).paddingInlineEnd);
+          return {
+            table: getComputedStyle(cell.parentElement!).display === "table-row",
+            cellWidth: cellBox.width,
+            buttonWidth: button.width,
+            // Distance from the button to the row's end edge.
+            gap: rtl ? button.left - row.left : row.right - button.right,
+            padding,
+          };
+        });
+        if (width === 1440) {
+          expect(result.table, dir).toBe(true);
+          expect(result.cellWidth, dir).toBeLessThan(result.buttonWidth + 80);
+          expect(Math.abs(result.gap - result.padding), dir).toBeLessThanOrEqual(2);
+        } else {
+          // Card mode is unchanged: the actions cell spans the card.
+          expect(result.table, dir).toBe(false);
+          expect(result.cellWidth, dir).toBeGreaterThan(result.buttonWidth + 80);
+        }
+      }
+    });
+  }
+
+  test("at 1440px a wrapping actions cell wraps instead of scrolling, end-aligned", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("numeric-and-wrapping-actions"));
+    const result = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root")!;
+      const scroller = root.querySelector<HTMLElement>("[role='region']")!;
+      const cell = root.querySelector<HTMLElement>("tbody td[data-actions]")!;
+      const buttons = [...cell.querySelectorAll("button")].map((b) => b.getBoundingClientRect());
+      return {
+        table: getComputedStyle(cell.parentElement!).display === "table-row",
+        scrolls: scroller.scrollWidth > scroller.clientWidth,
+        lines: new Set(buttons.map((rect) => Math.round(rect.top))).size,
+        buttonWordsIntact: buttons.every((rect) => rect.height < 48),
+        endGap: cell.getBoundingClientRect().right - Math.max(...buttons.map((rect) => rect.right)),
+      };
+    });
+    expect(result.table).toBe(true);
+    expect(result.scrolls).toBe(false);
+    expect(result.lines).toBeGreaterThan(1);
+    expect(result.buttonWordsIntact).toBe(true);
+    expect(result.endGap).toBeLessThanOrEqual(20);
+  });
+
+  test("at 1440px ISO dates and date-times in numeric cells stay on one line", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("tight-numeric-columns"));
+    const result = await page.evaluate(() => {
+      const oneLine = (cell: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size === 1;
+      };
+      const cells = [...document.querySelectorAll("#storybook-root tbody td[data-numeric]")];
+      return {
+        table: getComputedStyle(cells[0]!.parentElement!).display === "table-row",
+        oneLine: cells.map(oneLine),
+      };
+    });
+    expect(result.table).toBe(true);
+    expect(result.oneLine.every(Boolean)).toBe(true);
+  });
+
+  test("flush on a translucent surface paints the covers with their own token, not the surface", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("flush-translucent-surface"));
+    const result = await page.evaluate(() => {
+      const root = document.querySelector<HTMLElement>("#storybook-root")!;
+      const scroller = root.querySelector<HTMLElement>("[role='region']")!;
+      const resolve = (value: string) => {
+        const probe = document.createElement("span");
+        probe.style.backgroundColor = value;
+        scroller.append(probe);
+        const color = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return color;
+      };
+      const [firstLayer] = getComputedStyle(scroller).backgroundImage.split("radial-gradient");
+      return {
+        cover: resolve("var(--lufia-table-cover-bg)"),
+        surface: resolve("var(--lufia-table-bg)"),
+        covers: firstLayer ?? "",
+        overflows: scroller.scrollWidth > scroller.clientWidth,
+      };
+    });
+    expect(result.cover).not.toEqual(result.surface);
+    expect(result.covers).toContain(result.cover);
+    expect(result.covers).not.toContain(result.surface);
+    expect(result.overflows).toBe(false);
+  });
+
   test("the table has no axe violations in cards, scroll and empty states", async ({ page }) => {
     for (const [name, width] of [
       ["default", 1280],
@@ -2706,6 +2862,12 @@ test.describe("table", () => {
       ["empty", 1280],
       ["footer-with-pagination", 1280],
       ["flush-in-panel", 1280],
+      ["flush-translucent-surface", 1280],
+      ["card-long-labels-and-badges", 320],
+      ["card-long-labels-and-badges", 390],
+      ["few-columns-actions", 1280],
+      ["numeric-and-wrapping-actions", 1440],
+      ["tight-numeric-columns", 1440],
       ["named-row-control", 1280],
       ["named-row-control-on-phone", 390],
       ["row-state", 1280],

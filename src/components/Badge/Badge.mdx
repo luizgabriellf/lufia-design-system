@@ -60,7 +60,8 @@ A badge keeps its text on one line and does not shrink, so in a flex row or an a
 clips a letter. For a label that may be long, set `wrap` to let it wrap and shrink, or `truncate` for one line and an
 ellipsis, the full text as the native tooltip and in the DOM (`truncate` wins over `wrap`). In an auto-layout table the
 column grows with its content, so cap the badge with `--lufia-badge-max-inline-size`. A badge never paints past its pill or
-its parent.
+its parent. A container can make every badge inside it wrap without a prop by setting `--lufia-badge-white-space: normal`;
+a table card cell does.
 
 ### Corner radius
 

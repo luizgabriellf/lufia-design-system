@@ -507,3 +507,199 @@ export const ScrollMarginOnPhone: Story = {
   ...ScrollMargin,
   globals: { viewport: { value: "w390", isRotated: false } },
 };
+
+const longLabelRows = [
+  { id: 1, name: "Harbour redesign", status: "Awaiting manager approval", tone: "warning" as const },
+  { id: 2, name: "Billing migration", status: "Blocked by a supplier dependency", tone: "danger" as const },
+];
+
+/**
+ * Narrow cards stack the label above the value, so a long label word is not split inside a word and a badge with a long
+ * status wraps instead of being clipped. Open it at 320 and 390 px.
+ */
+export const CardLongLabelsAndBadges: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th>Contributions</Th>
+          <Th>Status</Th>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {longLabelRows.map((row) => (
+          <TableRow key={row.id}>
+            <Td primary label="Project">
+              {row.name}
+            </Td>
+            <Td label="Contributions">12 reviewers</Td>
+            <Td label="Status">
+              <Badge tone={row.tone} dot>
+                {row.status}
+              </Badge>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+/** A wide table with few columns: the actions column is as wide as its buttons and sits at the end edge. */
+export const FewColumnsActions: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th>Owner</Th>
+          <Th actions label="Actions" />
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {projects.slice(0, 3).map((project) => (
+          <TableRow key={project.id}>
+            <Td primary label="Project">
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+/**
+ * `frame="flush"` on a translucent surface. `--lufia-table-cover-bg` is opaque and equal to the colour behind the table, so
+ * the covers hide the scroll shadows when there is nothing to scroll while the surface itself stays translucent.
+ */
+export const FlushTranslucentSurface: Story = {
+  render: (args) => (
+    <div style={{ ...panelStyle, background: "var(--lufia-color-bg-surface)" }}>
+      <div
+        style={
+          {
+            "--lufia-table-bg": "color-mix(in srgb, var(--lufia-color-bg-surface) 40%, transparent)",
+            "--lufia-table-cover-bg": "var(--lufia-color-bg-surface)",
+          } as React.CSSProperties
+        }
+      >
+        <Table {...args} frame="flush" responsive="scroll">
+          <TableHead>
+            <TableRow>
+              <Th>Project</Th>
+              <Th>Owner</Th>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {projects.slice(0, 3).map((project) => (
+              <TableRow key={project.id}>
+                <Td primary>{project.name}</Td>
+                <Td>{project.owner}</Td>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  ),
+};
+
+const isoRows = [
+  { id: 1, name: "Harbour redesign programme", due: "2026-04-01", stamp: "2026-04-01 09:30" },
+  { id: 2, name: "Billing migration", due: "2026-11-15", stamp: "2026-11-15 17:45" },
+];
+
+/** A tight table: numeric cells keep an ISO date or date-time on one line, and the actions cell wraps on request. */
+export const NumericAndWrappingActions: Story = {
+  render: (args) => (
+    <div style={{ inlineSize: "41rem" }}>
+      <Table {...args}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Due</Th>
+            <Th numeric>Updated</Th>
+            <Th actions label="Actions" />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {isoRows.map((row) => (
+            <TableRow key={row.id}>
+              <Td primary label="Project">
+                {row.name}
+              </Td>
+              <Td numeric label="Due">
+                {row.due}
+              </Td>
+              <Td numeric label="Updated">
+                {row.stamp}
+              </Td>
+              <Td actions wrap>
+                <Button size="sm" variant="secondary">
+                  Edit
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Duplicate
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Archive
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Delete
+                </Button>
+              </Td>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+};
+
+/** A tight table with several date columns: an ISO date or date-time stays on one line (the table scrolls instead). */
+export const TightNumericColumns: Story = {
+  render: (args) => (
+    <div style={{ inlineSize: "41rem" }}>
+      <Table {...args}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Start</Th>
+            <Th numeric>Due</Th>
+            <Th numeric>Created</Th>
+            <Th numeric>Updated</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {isoRows.map((row) => (
+            <TableRow key={row.id}>
+              <Td primary label="Project">
+                {row.name}
+              </Td>
+              <Td numeric label="Start">
+                {row.due}
+              </Td>
+              <Td numeric label="Due">
+                {row.due}
+              </Td>
+              <Td numeric label="Created">
+                {row.stamp}
+              </Td>
+              <Td numeric label="Updated">
+                {row.stamp}
+              </Td>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+};
