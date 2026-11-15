@@ -612,11 +612,6 @@ export const FlushTranslucentSurface: Story = {
   ),
 };
 
-const isoRows = [
-  { id: 1, name: "Harbour redesign programme", due: "2026-04-01", stamp: "2026-04-01 09:30" },
-  { id: 2, name: "Billing migration", due: "2026-11-15", stamp: "2026-11-15 17:45" },
-];
-
 /** A tight table: numeric cells keep an ISO date or date-time on one line, and the actions cell wraps on request. */
 export const NumericAndWrappingActions: Story = {
   render: (args) => (
@@ -660,6 +655,64 @@ export const NumericAndWrappingActions: Story = {
           ))}
         </TableBody>
       </Table>
+    </div>
+  ),
+};
+
+const isoRows = [
+  { id: 1, name: "Harbour redesign programme", due: "2026-04-01", stamp: "2026-04-01 09:30" },
+  { id: 2, name: "Billing migration", due: "2026-11-15", stamp: "2026-11-15 17:45" },
+];
+
+const rowActions = ["Edit", "Duplicate", "Archive", "Delete"];
+
+/**
+ * `wrap` with room: the four controls share one line and the column is as wide as them. When the container is too narrow
+ * for that, they flow onto a second line, end-aligned. The plain table below is the reference without `wrap`.
+ */
+export const WrappingActionsWithRoom: Story = {
+  render: (args) => (
+    <div data-testid="room" style={{ inlineSize: "72rem" }}>
+      {[true, false].map((wrap) => (
+        <div
+          key={String(wrap)}
+          data-testid={wrap ? "wrapping" : "plain"}
+          style={{ marginBlockEnd: "1.5rem" }}
+        >
+          <Table {...args} caption={wrap ? "Projects with wrapping actions" : "Projects without wrapping"}>
+            <TableHead>
+              <TableRow>
+                <Th>Project</Th>
+                <Th numeric>Due</Th>
+                <Th numeric>Updated</Th>
+                <Th actions label="Actions" />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {isoRows.map((row) => (
+                <TableRow key={row.id}>
+                  <Td primary label="Project">
+                    {row.name}
+                  </Td>
+                  <Td numeric label="Due">
+                    {row.due}
+                  </Td>
+                  <Td numeric label="Updated">
+                    {row.stamp}
+                  </Td>
+                  <Td actions wrap={wrap} label="Actions">
+                    {rowActions.map((action) => (
+                      <Button key={action} size="sm" variant="secondary">
+                        {action}
+                      </Button>
+                    ))}
+                  </Td>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ))}
     </div>
   ),
 };

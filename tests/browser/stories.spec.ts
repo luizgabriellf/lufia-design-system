@@ -2804,6 +2804,60 @@ test.describe("table", () => {
     expect(result.endGap).toBeLessThanOrEqual(20);
   });
 
+  test("a wrapping actions column takes one line when there is room and wraps when there is not", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("wrapping-actions-with-room"));
+    const measure = (width: string) =>
+      page.evaluate((width) => {
+        document.querySelector<HTMLElement>("[data-testid='room']")!.style.inlineSize = width;
+        const read = (name: string) => {
+          const box = document.querySelector(`[data-testid='${name}']`)!;
+          const scroller = box.querySelector<HTMLElement>("[role='region']")!;
+          const rows = [...box.querySelectorAll("tbody tr")].map((row) => {
+            const tops = new Set(
+              [...row.querySelectorAll("td[data-actions] button")].map((button) =>
+                Math.round(button.getBoundingClientRect().top),
+              ),
+            );
+            return { lines: tops.size, height: row.getBoundingClientRect().height };
+          });
+          const cell = box.querySelector<HTMLElement>("td[data-actions]")!;
+          return {
+            table: getComputedStyle(cell.parentElement!).display === "table-row",
+            lines: rows.map((row) => row.lines),
+            rowHeight: rows[0]!.height,
+            overflow: scroller.scrollWidth - scroller.clientWidth,
+            cellWidth: cell.getBoundingClientRect().width,
+            endGap: Math.round(
+              cell.getBoundingClientRect().right -
+                [...cell.querySelectorAll("button")].reduce(
+                  (max, b) => Math.max(max, b.getBoundingClientRect().right),
+                  0,
+                ),
+            ),
+          };
+        };
+        return { wrapping: read("wrapping"), plain: read("plain") };
+      }, width);
+
+    const wide = await measure("72rem");
+    expect(wide.wrapping.table).toBe(true);
+    expect(wide.wrapping.lines).toEqual([1, 1]);
+    expect(wide.wrapping.overflow).toBe(0);
+    expect(wide.wrapping.cellWidth).toBeGreaterThanOrEqual(wide.plain.cellWidth - 1);
+    expect(wide.plain.lines).toEqual([1, 1]);
+
+    const narrow = await measure("42rem");
+    expect(narrow.wrapping.table).toBe(true);
+    expect(narrow.wrapping.lines.every((lines) => lines > 1)).toBe(true);
+    expect(narrow.wrapping.overflow).toBeLessThanOrEqual(narrow.plain.overflow);
+    expect(narrow.wrapping.endGap).toBeLessThanOrEqual(20);
+    expect(narrow.plain.lines).toEqual([1, 1]);
+    expect(narrow.plain.overflow).toBeGreaterThan(0);
+  });
+
   test("at 1440px ISO dates and date-times in numeric cells stay on one line", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openStory(page, id("tight-numeric-columns"));
@@ -2867,6 +2921,7 @@ test.describe("table", () => {
       ["card-long-labels-and-badges", 390],
       ["few-columns-actions", 1280],
       ["numeric-and-wrapping-actions", 1440],
+      ["wrapping-actions-with-room", 1440],
       ["tight-numeric-columns", 1440],
       ["named-row-control", 1280],
       ["named-row-control-on-phone", 390],

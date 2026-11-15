@@ -169,7 +169,8 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
   actions?: boolean;
   /**
    * With `actions`: in table layout, lets the controls wrap onto a second line (end-aligned, with a gap) instead of
-   * keeping one line that can force a sideways scroll at mid widths. Default off: the cell shrinks to its buttons. Use it
+   * keeping one line that can force a sideways scroll at mid widths. With room the controls still share one line; they wrap
+   * only when the table would overflow. Default off: the cell shrinks to its buttons. Use it
    * for up to two or three short actions; for more than two text actions prefer one overflow menu in the cell. Card mode
    * already wraps.
    */
