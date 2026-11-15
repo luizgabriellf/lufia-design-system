@@ -27,8 +27,8 @@
 }
 
 .spinner {
-  border-color: currentcolor;
-  border-block-start-color: transparent;
+  --lufia-spinner-track: currentcolor;
+  --lufia-spinner-arc: transparent;
 }
 
 .steps {

@@ -1,0 +1,90 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Spinner.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Spinner"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A small inline loading ring for work of unknown length. It takes the colour of the text around it, comes in three sizes
+and stands still under `prefers-reduced-motion`.
+
+<Canvas of={Stories.Sizes} />
+
+### Usage
+
+```tsx
+import { Spinner } from "@lufia/design-system/components/Spinner";
+
+<Spinner label="Loading results" />;
+
+<p>
+  <Spinner size="sm" /> Loading projects…
+</p>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+The package's own busy states (`SearchInput`, `Combobox`, `CommandPalette` and `PendingSubmit`) draw the same ring.
+
+</Section>
+
+<Section id="examples">
+
+### Decorative, beside its own text
+
+<Canvas of={Stories.Decorative} />
+
+### Inherits the text colour
+
+<Canvas of={Stories.InheritsColour} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- With a `label` the spinner is `role="status"` and its text is read by assistive technology. Mount it when the work starts,
+  or put the label on a region that already exists, so the announcement is reliable.
+- Without a `label` it is `aria-hidden`. Use that when something else already says the page or control is busy: a
+  button with `aria-busy` and its own text, or a line such as "Loading projects…" beside the ring.
+- Never rely on the ring alone to say that work is in progress: it carries no text of its own.
+- Under `prefers-reduced-motion` the ring stops turning and keeps its arc, so the state still reads. Under forced colours
+  the track and the arc use system colours.
+- The ring is a visual size of 16, 20 or 24px and is not interactive, so it has no target size.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A short, indeterminate wait inside a control, a row or a panel.
+
+### When not to use
+
+- A known amount of progress (use `ProgressBar`) or the shape of a page that is loading (use the skeletons).
+- A page that must not be used until the work is done: use a modal pattern or `aria-busy` on the region.
+
+### Content guidelines
+
+`label` is the localised state, in the present tense: "Loading results", not "Please wait".
+
+</Section>

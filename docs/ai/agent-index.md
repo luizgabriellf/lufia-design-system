@@ -69,6 +69,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DetailAttentionCard: tone* title* description meta action toneLabel
 - DetailList: rows*
 - DetailSectionCard: title* description icon action
+- Disclosure: summary* name defaultOpen variant panelClassName
 - ProgressBar: value* label* max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
 - SortableTh: dir* label* active* onSort*
@@ -76,6 +77,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
 - StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone hint +6
 - StatusTimeline: tracks*
+- Table: caption* showCaption responsive density footer tableClassName | also TableBody TableEmpty TableHead +3
 - TableToolbar: filters activeFilter onFilterChange search onSearchChange searchPlaceholder clearSearchLabel variant
 
 ### Feedback
@@ -85,6 +87,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - SkeletonCard: padding header lines block still
 - SkeletonPageHeader: eyebrow description actions still
 - SkeletonTable: rows columns stackBelow still
+- Spinner: size label
 - StatusIcon: tone* variant size label drawOn
 - SuccessCheck: title size
 - Toast: <ToastProvider> placement limit duration container toneAliases viewportClassName | also useOptionalToast useToast
