@@ -1,11 +1,11 @@
 /* Theming hooks, all optional: --lufia-tour-scrim (the dimming around the spotlight), --lufia-tour-card-inline-size,
-   --lufia-overlay-z (the stacking order, shared with sheets). */
+   --lufia-tour-z (the stacking order: above every modal, sheet, menu and popover layer, below toasts and tooltips). */
 
 /* Fixed layers only, so the page never shifts. The layer lets every press through to the page; only the card takes them. */
 .layer {
   position: fixed;
   inset: 0;
-  z-index: var(--lufia-overlay-z, calc(var(--lufia-z-modal) + 1));
+  z-index: var(--lufia-tour-z, var(--lufia-z-tour));
   overflow: hidden;
   pointer-events: none;
 }

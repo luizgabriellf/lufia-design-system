@@ -22,7 +22,9 @@ the difference.
 
 ## Layers
 
-Stacking order lives in tokens so overlays never fight with magic numbers.
+Stacking order lives in tokens so overlays never fight with magic numbers. `--lufia-z-tour` sits above the modal, sheet,
+menu and popover layers (a guided tour is the top-most guidance while it runs) and below toasts and tooltips. An app that
+has a fixed element above it raises the tour with `--lufia-tour-z` on `:root`.
 
 <LayerStack />
 

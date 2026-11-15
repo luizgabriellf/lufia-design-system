@@ -95,7 +95,9 @@ is scrolled clear of the sheet.
 
 When the target is inside an open modal, the tour is portalled into that modal so the modal's focus trap and inert page do not
 lock it out, and the modal's backdrop does the dimming. Otherwise the tour is portalled to `document.body` and stays above the
-page and modals at `--lufia-overlay-z`. Find the card by role (`getByRole("dialog", { name })`), not inside the page.
+page, modals, sheets and menus at `--lufia-tour-z` (default `--lufia-z-tour`, 450: above the modal layer and the sheets,
+below toasts and tooltips), including a sheet or modal that opens after the tour started. An app with a fixed element above
+that sets `--lufia-tour-z` on `:root`. Find the card by role (`getByRole("dialog", { name })`), not inside the page.
 
 <Canvas of={Stories.InsideAModal} story={{ inline: false, height: "24rem" }} />
 
@@ -243,6 +245,11 @@ menu or dialog opened from the page above the tour closes first and the tour on 
   In forced-colors mode the spotlight is a `Highlight` border and the card border is `CanvasText`.
 - The card is portalled to the end of the body, so the browser's Tab order leaves it at the end of the page; the arrow keys and
   the buttons are the way through the steps.
+- A sheet, menu or dialog opened after the tour started sits below the card (`--lufia-tour-z`). The package's inert page
+  skips the tour layer, so the card stays operable by pointer. The overlay's focus trap still owns Tab and Shift+Tab while
+  focus is inside the overlay, so the card is not in the keyboard path then; once focus is on the card (a press on one of its
+  buttons) Tab follows the browser's order instead of being pulled back. A step whose target is outside such an overlay stays on
+  `document.body`; a step with no target is hosted in the topmost open modal, as above.
 - The card and its content fade in; the spotlight glides between targets. Under reduced motion both appear without motion and
   scrolling is not smooth.
 

@@ -502,6 +502,76 @@ test.describe("tour with no target under a modal", () => {
   }
 });
 
+test.describe("tour above overlays opened after it started", () => {
+  /** Polls until the card's centre-most button is what `elementFromPoint` returns there: it is on top, not just painted. */
+  async function expectButtonOnTop(page: Page, name: string) {
+    await expect
+      .poll(() =>
+        page.evaluate((label) => {
+          const button = [...document.querySelectorAll<HTMLElement>('[data-lufia-part="card"] button')].find(
+            (candidate) => candidate.textContent?.trim() === label,
+          );
+          if (!button) return "missing";
+          const box = button.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return hit && button.contains(hit) ? "on top" : (hit?.className?.toString() ?? "nothing");
+        }, name),
+      )
+      .toBe("on top");
+  }
+
+  for (const [name, width, height, opener, overlay] of [
+    ["bottom sheet menu", 390, 800, "More actions", "menu"],
+    ["portal modal", 1280, 720, "Open dialog", "dialog"],
+  ] as const) {
+    test(`the card stays on top and clickable above a ${name} opened after it`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await openStory(page, "components-overlays-tour--overlay-opened-after-tour");
+      const card = page.getByRole("dialog", { name: "Find anything" });
+      await expect(card).toBeVisible();
+      await page.getByRole("button", { name: opener }).click();
+      await expect(
+        overlay === "menu" ? page.getByRole("menu") : page.getByRole("dialog", { name: "Page dialog" }),
+      ).toBeVisible();
+      await expectButtonOnTop(page, "Next");
+      await expectButtonOnTop(page, "Skip tour");
+      // A real pointer press: the overlay's backdrop must not intercept it.
+      await card.getByRole("button", { name: "Next" }).click();
+      const last = page.getByRole("dialog", { name: "Still here" });
+      await expect(last).toBeVisible();
+      await expectButtonOnTop(page, "Done");
+      await last.getByRole("button", { name: "Done" }).click();
+      await expect(last).toHaveCount(0);
+    });
+
+    test(`the card's skip button works above a ${name} opened after it`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await openStory(page, "components-overlays-tour--overlay-opened-after-tour");
+      const card = page.getByRole("dialog", { name: "Find anything" });
+      await expect(card).toBeVisible();
+      await page.getByRole("button", { name: opener }).click();
+      await expect(
+        overlay === "menu" ? page.getByRole("menu") : page.getByRole("dialog", { name: "Page dialog" }),
+      ).toBeVisible();
+      await card.getByRole("button", { name: "Skip tour" }).click();
+      await expect(card).toHaveCount(0);
+    });
+  }
+
+  test("Tab on the card is not pulled back into a sheet opened after the tour", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "components-overlays-tour--overlay-opened-after-tour");
+    await page.getByRole("button", { name: "More actions" }).click();
+    await expect(page.getByRole("menu")).toBeVisible();
+    // Focus on the card's first button (as after a press on it): Tab must go to the next button on the card. Without the
+    // guard the sheet's focus trap pulls focus back into the sheet.
+    const card = page.getByRole("dialog", { name: "Find anything" });
+    await card.getByRole("button", { name: "Close tour" }).focus();
+    await page.keyboard.press("Tab");
+    await expect(card.getByRole("button", { name: "Skip tour" })).toBeFocused();
+  });
+});
+
 test.describe("tour compact and auto placement", () => {
   test("typing on a short viewport hides the card, and it comes back when focus leaves", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 420 });

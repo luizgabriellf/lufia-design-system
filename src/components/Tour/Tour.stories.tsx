@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
+import { MoreActions } from "../MoreActions";
 import { Tour, type TourLabels, type TourProps, type TourStep } from "./Tour";
 
 const labels: TourLabels = {
@@ -465,3 +466,70 @@ function SeekingThenReady() {
 
 /** The target turns ready after a moment: the heading is read again, unless focus is in a field being typed in. */
 export const FocusAfterSeeking: StoryObj = { render: () => <SeekingThenReady /> };
+
+const openedLaterSteps: TourStep[] = [
+  {
+    target: '[data-tour="search"]',
+    title: "Find anything",
+    body: "This step points at the search field.",
+    placement: "bottom",
+  },
+  {
+    target: '[data-tour="search"]',
+    title: "Still here",
+    body: "Open a menu or a dialog: this card stays on top.",
+  },
+];
+
+function OpenedAfterTour() {
+  const [open, setOpen] = useState(true);
+  const [index, setIndex] = useState(0);
+  const [dialog, setDialog] = useState(false);
+  return (
+    <div style={{ display: "grid", gap: "1rem", padding: "1.5rem", minBlockSize: "24rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+        <MoreActions
+          label="More actions"
+          presentation="sheet"
+          items={[
+            { key: "dup", label: "Duplicate" },
+            { key: "exp", label: "Export" },
+          ]}
+        />
+        <Button variant="secondary" onClick={() => setDialog(true)}>
+          Open dialog
+        </Button>
+      </div>
+      <div style={{ marginBlockStart: "8rem" }}>
+        <input
+          data-tour="search"
+          aria-label="Search records"
+          placeholder="Search records"
+          style={{ font: "inherit", padding: "0.5rem 0.75rem", maxInlineSize: "20rem" }}
+        />
+      </div>
+      <Modal open={dialog} onClose={() => setDialog(false)} title="Page dialog" renderAs="portal">
+        A dialog opened after the tour started.
+      </Modal>
+      <Tour
+        steps={openedLaterSteps}
+        open={open}
+        stepIndex={index}
+        onStepChange={setIndex}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+      />
+    </div>
+  );
+}
+
+/**
+ * A sheet, menu or dialog that opens after the tour started (a step asks the person to open it) does not cover the card:
+ * the tour layer stacks at `--lufia-tour-z`, above the modal layer, so the card and its buttons stay clickable.
+ */
+export const OverlayOpenedAfterTour: StoryObj = { render: () => <OpenedAfterTour /> };
+export const OverlayOpenedAfterTourPhone390: StoryObj = {
+  render: () => <OpenedAfterTour />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};

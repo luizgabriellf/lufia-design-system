@@ -109,6 +109,7 @@ Keyboard:
 - Closing from the card hands focus back to the element that had it when the tour opened, when that element is still in the page.
 - The spotlight and the dimming are decoration (`aria-hidden`) and never the only signal: the card says what the step is about. In forced-colors mode the spotlight is a `Highlight` border and the card border is `CanvasText`.
 - The card is portalled to the end of the body, so the browser's Tab order leaves it at the end of the page; the arrow keys and the buttons are the way through the steps.
+- A sheet, menu or dialog opened after the tour started sits below the card (`--lufia-tour-z`). The package's inert page skips the tour layer, so the card stays operable by pointer. The overlay's focus trap still owns Tab and Shift+Tab while focus is inside the overlay, so the card is not in the keyboard path then; once focus is on the card (a press on one of its buttons) Tab follows the browser's order instead of being pulled back. A step whose target is outside such an overlay stays on `document.body`; a step with no target is hosted in the topmost open modal, as above.
 - The card and its content fade in; the spotlight glides between targets. Under reduced motion both appear without motion and scrolling is not smooth.
 
 ## Motion
@@ -117,7 +118,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-overlay-z`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-space-2`, `--lufia-space-4`, `--lufia-tour-card-inline-size`, `--lufia-tour-scrim`, `--lufia-z-modal`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-rise`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-space-2`, `--lufia-space-4`, `--lufia-tour-card-inline-size`, `--lufia-tour-scrim`, `--lufia-tour-z`, `--lufia-z-tour`.
 
 ## Content guidelines
 
@@ -155,3 +156,5 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--hidden-while-typing-on-short-viewport`
 - `components-overlays-tour--auto-placement`
 - `components-overlays-tour--focus-after-seeking`
+- `components-overlays-tour--overlay-opened-after-tour`
+- `components-overlays-tour--overlay-opened-after-tour-phone-390`
