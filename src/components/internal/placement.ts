@@ -93,3 +93,23 @@ export function computePlacement(input: PlacementInput): PlacementResult {
   }
   return result;
 }
+
+/**
+ * The first side of the anchor, in the order bottom, top, end, start, where a panel of `size` fits with its gap and the
+ * viewport margin. When none has room, the side with the most room. Pure: the caller measures and applies.
+ */
+export function pickSide(
+  input: Pick<PlacementInput, "anchor" | "size" | "viewport" | "gap" | "margin" | "rtl">,
+): Side {
+  const { anchor, size, viewport, gap, margin, rtl } = input;
+  const space = gap + margin;
+  const rooms: [Side, number, number][] = [
+    ["bottom", viewport.height - anchor.bottom - space, size.height],
+    ["top", anchor.top - space, size.height],
+    ["end", (rtl ? anchor.left : viewport.width - anchor.right) - space, size.width],
+    ["start", (rtl ? viewport.width - anchor.right : anchor.left) - space, size.width],
+  ];
+  const fits = rooms.find(([, room, need]) => room >= need);
+  if (fits) return fits[0];
+  return rooms.reduce((best, next) => (next[1] > best[1] ? next : best))[0];
+}

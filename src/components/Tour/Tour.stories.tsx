@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import { Tour, type TourLabels, type TourProps, type TourStep } from "./Tour";
@@ -378,3 +378,90 @@ export const DockedPortalModal: StoryObj = {
   render: () => <DockedInModal renderAs="portal" />,
   globals: { viewport: { value: "w390", isRotated: false } },
 };
+
+const lonelySteps: TourStep[] = [
+  { title: "Before you start", body: "This step points at nothing, so it is a card in the middle." },
+  { title: "Then this", body: "Its buttons stay reachable while a modal is open." },
+];
+
+function NoTargetInModal({ kind }: { kind: "dialog" | "portal" | "native" }) {
+  const [open, setOpen] = useState(true);
+  const [index, setIndex] = useState(0);
+  const native = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (kind === "native") native.current?.showModal();
+  }, [kind]);
+  return (
+    <>
+      {kind === "native" ? (
+        <dialog ref={native} aria-label="Native dialog" style={{ padding: "2rem" }}>
+          A native dialog opened with showModal().
+        </dialog>
+      ) : (
+        <Modal open onClose={() => {}} title="Open modal" renderAs={kind}>
+          The page behind is inert.
+        </Modal>
+      )}
+      <Tour
+        steps={lonelySteps}
+        open={open}
+        stepIndex={index}
+        onStepChange={setIndex}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+      />
+    </>
+  );
+}
+
+/** A step with no target while a native `dialog` is open with `showModal()`: the card is hosted in it, so it can be reached. */
+export const NoTargetInNativeDialog: StoryObj = { render: () => <NoTargetInModal kind="native" /> };
+/** The same in the package `Modal`, rendered as a native dialog. */
+export const NoTargetInDialogModal: StoryObj = { render: () => <NoTargetInModal kind="dialog" /> };
+/** The same in the portal `Modal`, which is not a native dialog. */
+export const NoTargetInPortalModal: StoryObj = { render: () => <NoTargetInModal kind="portal" /> };
+
+/**
+ * On a short viewport (a phone with the keyboard up) the card steps aside entirely while a field has focus, and comes back
+ * when typing stops or the viewport grows. Resize the viewport below 480 px of height and focus the field to see it.
+ */
+export const HiddenWhileTypingOnShortViewport: StoryObj = {
+  render: () => (
+    <Guided
+      steps={[
+        { target: '[data-tour="name"]', title: "Name it", body: "Type a name for the record.", mode: "do" },
+      ]}
+      compactOnTyping={{ hideBelowHeight: 480 }}
+    />
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** `placement: "auto"` takes the first side with room: bottom, top, end, then start. */
+export const AutoPlacement: StoryObj = {
+  render: () => (
+    <Guided
+      steps={[
+        {
+          target: '[data-tour="save"]',
+          title: "Save",
+          body: "The card opens where there is room.",
+          placement: "auto",
+        },
+      ]}
+    />
+  ),
+};
+
+function SeekingThenReady() {
+  const [status, setStatus] = useState<TourProps["targetStatus"]>("seeking");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setStatus("ready"), 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
+  return <Guided steps={doSteps} status={status} />;
+}
+
+/** The target turns ready after a moment: the heading is read again, unless focus is in a field being typed in. */
+export const FocusAfterSeeking: StoryObj = { render: () => <SeekingThenReady /> };

@@ -18236,10 +18236,10 @@
             },
             {
               "name": "compactOnTyping",
-              "type": "boolean",
+              "type": "boolean | { hideBelowHeight: number; }",
               "required": false,
               "default": "false",
-              "description": "Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`."
+              "description": "Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body, the hint, the note and the step counter, leaving the title, the close button and the actions) so the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`. Pass `{ hideBelowHeight }` to also hide the card entirely while the field has focus and the visual viewport is shorter than that many pixels (an on-screen keyboard on a short phone). The card then has `data-typing-hidden` and is `display: none`: it leaves the accessibility tree and the tab order until typing stops or the viewport grows back (the step counter is still announced through the live region). `true` only compacts."
             },
             {
               "name": "showCloseButton",
@@ -18300,7 +18300,7 @@
           "name": "TourStep",
           "kind": "type",
           "description": "",
-          "definition": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }"
+          "definition": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: \"auto\" | Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }"
         },
         {
           "name": "TourTargetStatus",
@@ -18313,7 +18313,7 @@
         "TourCloseReason": "\"skip\" | \"close\" | \"escape\"",
         "TourDialogLayout": "{ dock?: boolean | undefined; beside?: boolean | undefined; clipSpotlight?: boolean | undefined; }",
         "TourLabels": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; doHint?: string | undefined; skipStep?: string | undefined; seeking?: string | undefined; blocked?: string | undefined; }",
-        "TourStep": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }",
+        "TourStep": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: \"auto\" | Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }",
         "TourTargetStatus": "\"ready\" | \"seeking\" | \"missing\" | \"blocked\""
       },
       "story": {
@@ -18410,6 +18410,30 @@
           {
             "export": "DockedPortalModal",
             "id": "components-overlays-tour--docked-portal-modal"
+          },
+          {
+            "export": "NoTargetInNativeDialog",
+            "id": "components-overlays-tour--no-target-in-native-dialog"
+          },
+          {
+            "export": "NoTargetInDialogModal",
+            "id": "components-overlays-tour--no-target-in-dialog-modal"
+          },
+          {
+            "export": "NoTargetInPortalModal",
+            "id": "components-overlays-tour--no-target-in-portal-modal"
+          },
+          {
+            "export": "HiddenWhileTypingOnShortViewport",
+            "id": "components-overlays-tour--hidden-while-typing-on-short-viewport"
+          },
+          {
+            "export": "AutoPlacement",
+            "id": "components-overlays-tour--auto-placement"
+          },
+          {
+            "export": "FocusAfterSeeking",
+            "id": "components-overlays-tour--focus-after-seeking"
           }
         ]
       },

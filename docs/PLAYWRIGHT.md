@@ -28,6 +28,8 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Notification center: at 1440 px the bell opens a popover that takes focus, tabs switch the list and Escape returns focus to the bell; at 390 px the panel is a modal sheet above a fixed dock; a long list scrolls inside the panel with the footer in place; the open animation runs and is absent under reduced motion.
 - Popover: near the bottom edge the panel flips above the trigger and stays inside the viewport; inside an `overflow: hidden` card it is portalled out and not clipped, and Escape returns focus to the trigger; at 320 px it fits the viewport width.
 - Tour: the spotlight surrounds the target and the card sits beside it inside the viewport while the page behind still takes input; arrow keys step and Escape closes; a missing target gives a centred card; at 390 px the card is a docked sheet clear of the target.
+- Tour with no target under a modal: with a native `dialog` opened by `showModal()` and the package `Modal` in both `renderAs` variants, the centred card is visible above the modal and its buttons can be clicked.
+- Tour, typing: on a 420 px-high viewport, focusing a field with `compactOnTyping={{ hideBelowHeight }}` hides the card (`data-typing-hidden`) and blurring it brings it back; `placement: "auto"` keeps the card beside the target inside the viewport.
 - Select: a long selected label in a 96 px box keeps its computed end padding at least as wide as the chevron, so the text stops before it, in left-to-right and right-to-left.
 - Select, compact: the same room for the smaller chevron in the `size="sm"` box, in left-to-right and right-to-left.
 - Textarea, auto height: the box grows with its content from `rows`, stops at `maxRows` and scrolls, and shrinks back when emptied.

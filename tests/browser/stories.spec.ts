@@ -478,6 +478,56 @@ test.describe("tour inside a modal", () => {
   }
 });
 
+test.describe("tour with no target under a modal", () => {
+  for (const [name, id] of [
+    ["native dialog opened with showModal()", "components-overlays-tour--no-target-in-native-dialog"],
+    ["package Modal (native dialog)", "components-overlays-tour--no-target-in-dialog-modal"],
+    ["package Modal (portal)", "components-overlays-tour--no-target-in-portal-modal"],
+  ] as const) {
+    test(`the card is visible and its buttons are clickable over a ${name}`, async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await openStory(page, id);
+      const card = page.getByRole("dialog", { name: "Before you start" });
+      await expect(card).toBeVisible();
+      // Playwright refuses to click an element another element covers, so this proves the card is above the modal.
+      await card.getByRole("button", { name: "Next" }).click();
+      await expect(page.getByRole("dialog", { name: "Then this" })).toBeVisible();
+      await page.getByRole("dialog", { name: "Then this" }).getByRole("button", { name: "Done" }).click();
+      await expect(page.getByRole("dialog", { name: "Then this" })).toHaveCount(0);
+    });
+  }
+});
+
+test.describe("tour compact and auto placement", () => {
+  test("typing on a short viewport hides the card, and it comes back when focus leaves", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 420 });
+    await openStory(page, "components-overlays-tour--hidden-while-typing-on-short-viewport");
+    const card = page.locator('[data-lufia-part="card"]');
+    await expect(card).toBeVisible();
+    await page.getByRole("textbox", { name: "Record name" }).focus();
+    await expect(card).toHaveAttribute("data-typing-hidden", "");
+    await expect(card).toBeHidden();
+    await page.getByRole("textbox", { name: "Record name" }).blur();
+    await expect(card).toBeVisible();
+  });
+
+  test("auto placement keeps the card beside the target inside the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-tour--auto-placement");
+    const card = page.getByRole("dialog", { name: "Save" });
+    await expect(card).toBeVisible();
+    const sides = await page.evaluate(() => {
+      const target = document.querySelector('[data-tour="save"]')!.getBoundingClientRect();
+      const box = document.querySelector('[data-lufia-part="card"]')!.getBoundingClientRect();
+      return {
+        beside: box.top >= target.bottom || box.bottom <= target.top || box.left >= target.right,
+        inside: box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight,
+      };
+    });
+    expect(sides).toEqual({ beside: true, inside: true });
+  });
+});
+
 test.describe("more actions container scope", () => {
   test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
     page,

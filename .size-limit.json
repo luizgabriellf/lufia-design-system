@@ -32,7 +32,7 @@
   {
     "name": "Tour",
     "path": "dist/components/Tour/**/*.{js,css}",
-    "limit": "8 kB",
+    "limit": "9 kB",
     "gzip": true
   },
   {

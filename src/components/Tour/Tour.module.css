@@ -156,7 +156,20 @@
 /* Phones, while a text field of the page has focus: the title and the buttons stay, the text steps aside. */
 @media (width <= 40rem) {
   .card[data-compact] .body,
-  .card[data-compact] .hint {
+  .card[data-compact] .hint,
+  .card[data-compact] .note,
+  .card[data-compact] .count {
+    display: none;
+  }
+
+  /* The counter is gone: the close button keeps its place at the end of the header. */
+  .card[data-compact] .header {
+    justify-content: flex-end;
+  }
+
+  /* A very short viewport (the keyboard is up): the card steps aside entirely, out of the accessibility tree and the tab
+     order, until typing stops or the viewport grows back. */
+  .card[data-typing-hidden] {
     display: none;
   }
 }

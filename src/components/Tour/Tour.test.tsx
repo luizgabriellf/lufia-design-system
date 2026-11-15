@@ -384,6 +384,108 @@ describe("Tour", () => {
     expect(layer()).toHaveAttribute("data-dim", "false");
   });
 
+  describe("a step with no resolved target", () => {
+    let dialogMock: ReturnType<typeof mockDialog>;
+    beforeEach(() => {
+      dialogMock = mockDialog();
+    });
+    afterEach(() => dialogMock.restore());
+    const lonely: TourStep[] = [{ title: "No target", body: "A word about everything." }];
+
+    it("is hosted in the topmost native modal dialog, not on the body", async () => {
+      withLayout();
+      render(
+        <>
+          <dialog id="under">Under</dialog>
+          <dialog id="over">Over</dialog>
+          <Tour steps={lonely} open labels={labels} />
+        </>,
+      );
+      expect(card().closest("dialog")).toBeNull();
+      act(() => {
+        document.querySelector<HTMLDialogElement>("#under")!.showModal();
+        document.querySelector<HTMLDialogElement>("#over")!.showModal();
+      });
+      await waitFor(() => expect(card().closest("dialog")).toHaveAttribute("id", "over"));
+      act(() => document.querySelector<HTMLDialogElement>("#over")!.close());
+      await waitFor(() => expect(card().closest("dialog")).toHaveAttribute("id", "under"));
+    });
+
+    it("ignores a dialog that is open but not modal, and falls back to the body", () => {
+      withLayout();
+      render(
+        <>
+          <dialog open>Not modal</dialog>
+          <Tour steps={lonely} open labels={labels} />
+        </>,
+      );
+      expect(card().closest("dialog")).toBeNull();
+    });
+
+    it("uses an aria-modal region when no native modal is open", async () => {
+      withLayout();
+      render(
+        <>
+          <div role="dialog" aria-modal="true" id="region" aria-label="Region" />
+          <Tour steps={lonely} open labels={labels} />
+        </>,
+      );
+      await waitFor(() => expect(card().closest("#region")).not.toBeNull());
+    });
+
+    it("moves to the target's own modal once the target resolves", async () => {
+      withLayout();
+      const { rerender } = render(
+        <>
+          <dialog id="host">
+            <button id="first" type="button" data-hidden="">
+              Hidden at first
+            </button>
+          </dialog>
+          <Tour steps={[{ target: "#first", title: "T", body: "B" }]} open labels={labels} />
+        </>,
+      );
+      act(() => document.querySelector<HTMLDialogElement>("#host")!.showModal());
+      await waitFor(() => expect(card().closest("#host")).not.toBeNull());
+      rerender(
+        <>
+          <dialog id="host">
+            <button id="first" type="button">
+              Shown
+            </button>
+          </dialog>
+          <Tour steps={[{ target: "#first", title: "T", body: "B" }]} open labels={labels} />
+        </>,
+      );
+      expect(card().closest("#host")).not.toBeNull();
+    });
+  });
+
+  describe("auto placement", () => {
+    const auto = (target: string): TourStep[] => [{ target, title: "A", body: "B", placement: "auto" }];
+    const sideAt = (box: DOMRect, size?: { width: number; height: number }) => {
+      withLayout(size);
+      boxes.first = box;
+      render(
+        <Page>
+          <Tour steps={auto("#first")} open labels={labels} />
+        </Page>,
+      );
+      const side = card().getAttribute("data-side");
+      boxes.first = new DOMRect(100, 200, 80, 40);
+      return side;
+    };
+    it("takes the bottom when it has room, else the top", () => {
+      expect(sideAt(new DOMRect(100, 200, 80, 40))).toBe("bottom");
+    });
+    it("takes the top when only the top has room", () => {
+      expect(sideAt(new DOMRect(100, 700, 80, 40))).toBe("top");
+    });
+    it("takes the end when neither the bottom nor the top has room", () => {
+      expect(sideAt(new DOMRect(100, 100, 80, 40), { width: 1000, height: 300 })).toBe("end");
+    });
+  });
+
   describe("do steps and target status", () => {
     const doSteps: TourStep[] = [
       {
@@ -556,6 +658,28 @@ describe("Tour", () => {
       expect(field).toHaveFocus();
     });
 
+    it("moves focus to the heading when the target turns ready, but not out of a field being typed in", async () => {
+      const { user, view } = setup({ targetStatus: "seeking" });
+      const rerender = (status: TourProps["targetStatus"]) =>
+        view.rerender(
+          <Page>
+            <Tour steps={steps} open labels={labels} targetStatus={status} />
+          </Page>,
+        );
+      const field = screen.getByRole("textbox", { name: "Search" });
+      // Focus is on the heading from the step's start; the person moves to the field and types.
+      await user.click(field);
+      await user.keyboard("abc");
+      rerender("ready");
+      expect(field).toHaveFocus();
+      // With nothing focused, the heading is read again once the target is ready.
+      act(() => field.blur());
+      rerender("seeking");
+      expect(document.body).toHaveFocus();
+      rerender("ready");
+      expect(screen.getByRole("heading", { name: "First stop" })).toHaveFocus();
+    });
+
     it("still moves focus to the heading when the focused field is empty", async () => {
       const { user, view } = setup();
       const field = screen.getByRole("textbox", { name: "Search" });
@@ -583,6 +707,58 @@ describe("Tour", () => {
       // Not at once: the card holds its size through the settle delay.
       expect(card()).toHaveAttribute("data-compact");
       await waitFor(() => expect(card()).not.toHaveAttribute("data-compact"));
+    });
+
+    it("hides the card while typing on a short viewport, and brings it back when the viewport grows", async () => {
+      withLayout({ width: 360, height: 640 });
+      const viewport = Object.assign(new EventTarget(), { height: 640 });
+      Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
+      const user = userEvent.setup();
+      render(
+        <Page>
+          <Tour steps={steps} open labels={labels} compactOnTyping={{ hideBelowHeight: 480 }} />
+        </Page>,
+      );
+      await user.click(screen.getByRole("textbox", { name: "Search" }));
+      expect(card()).toHaveAttribute("data-compact");
+      expect(card()).not.toHaveAttribute("data-typing-hidden");
+      // The keyboard comes up after focus: the visual viewport shrinks.
+      act(() => {
+        viewport.height = 300;
+        viewport.dispatchEvent(new Event("resize"));
+      });
+      expect(card()).toHaveAttribute("data-typing-hidden");
+      act(() => {
+        viewport.height = 600;
+        viewport.dispatchEvent(new Event("resize"));
+      });
+      expect(card()).not.toHaveAttribute("data-typing-hidden");
+      act(() => {
+        viewport.height = 300;
+        viewport.dispatchEvent(new Event("resize"));
+      });
+      expect(card()).toHaveAttribute("data-typing-hidden");
+      // Typing stops: the card comes back.
+      await user.click(document.body);
+      await waitFor(() => expect(card()).not.toHaveAttribute("data-typing-hidden"));
+      Reflect.deleteProperty(window, "visualViewport");
+    });
+
+    it("only compacts with `true`, whatever the viewport height", async () => {
+      withLayout({ width: 360, height: 640 });
+      const viewport = Object.assign(new EventTarget(), { height: 200 });
+      Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
+      const user = userEvent.setup();
+      render(
+        <Page>
+          <Tour steps={steps} open labels={labels} compactOnTyping />
+        </Page>,
+      );
+      await user.click(screen.getByRole("textbox", { name: "Search" }));
+      act(() => viewport.dispatchEvent(new Event("resize")));
+      expect(card()).toHaveAttribute("data-compact");
+      expect(card()).not.toHaveAttribute("data-typing-hidden");
+      Reflect.deleteProperty(window, "visualViewport");
     });
 
     it("is never compact on a wide screen, or when the option is off", async () => {

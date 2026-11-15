@@ -60,12 +60,14 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### Steps
 
-Each step has a `target`, a `title`, a `body` and an optional `placement` (`top`, `bottom`, `start`, `end`). The card flips to
-the opposite side when it does not fit on the requested one, shifts to stay inside the viewport, and scrolls inside when even
-that is too small. It shares its placement code with `Popover`.
+Each step has a `target`, a `title`, a `body` and an optional `placement` (`top`, `bottom`, `start`, `end`, or `auto`). The card
+flips to the opposite side when it does not fit on the requested one, shifts to stay inside the viewport, and scrolls inside when even
+that is too small. `auto` tries bottom, then top, then end, then start and takes the first side with room (the one with the
+most room when none has enough). It shares its placement code with `Popover`.
 
 <Canvas of={Stories.SecondStep} story={{ inline: false, height: "26rem" }} />
 <Canvas of={Stories.PlacedAtStart} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.AutoPlacement} story={{ inline: false, height: "26rem" }} />
 
 ### Missing or hidden targets
 
@@ -134,10 +136,24 @@ step)` returns `true` and the step's `standInNote` is appended to the body.
 
 While a text field outside the card has focus and holds a value, a step change does not move focus to the card's heading:
 that would lose the person's place. With `compactOnTyping`, on screens below 40rem the card gets `data-compact` while such a
-field has focus, and its body and hint are hidden so the card does not cover the field. It grows back 300 ms after focus
-leaves and never while a press is in progress, so a button does not move under a finger.
+field has focus, and its body, hint, note and step counter are hidden so the card does not cover the field: the title, the
+close button and the actions stay. It grows back 300 ms after focus leaves and never while a press is in progress, so a
+button does not move under a finger.
+
+Pass `compactOnTyping={{ hideBelowHeight: 480 }}` to go further on a very short viewport: while the field has focus and the
+visual viewport is shorter than that many pixels (an on-screen keyboard on a short phone) the card gets `data-typing-hidden`
+and is `display: none`. A hidden card is out of the accessibility tree and the tab order (no invisible controls to tab to),
+and the step is still announced through the live region. It returns when typing stops, or at once when the viewport grows
+back. `true` keeps the compact behaviour only.
 
 <Canvas of={Stories.CompactWhileTyping} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.HiddenWhileTypingOnShortViewport} story={{ inline: false, height: "34rem" }} />
+
+When `targetStatus` turns `ready` for the current step, the heading is focused again so the card is read once its target is
+there. Focus is only moved from where it is idle (nowhere, or already on the card): a field being typed in, or a control the
+person is using, keeps it.
+
+<Canvas of={Stories.FocusAfterSeeking} story={{ inline: false, height: "26rem" }} />
 
 ### Inside a dialog
 
@@ -155,6 +171,18 @@ the modal's scroll area ends, and where its sticky header and footer cover it.
 <Canvas of={Stories.DockedDialog} story={{ inline: false, height: "34rem" }} />
 <Canvas of={Stories.DockedModal} story={{ inline: false, height: "34rem" }} />
 
+### A step with no target under a modal
+
+A step with no resolved target (none given, or `targetStatus` `seeking`, `missing` or `blocked`) is hosted in the topmost open
+modal: the last native `dialog` that matches `:modal`, else the last `[aria-modal="true"]` element, else the body. On the body
+the card would be inert and under the top layer of a `showModal()` dialog, so its buttons could not be seen or clicked. When
+the target resolves, the card moves to the modal that holds it, as before. The `dialogLayout` switches only apply to a
+resolved target.
+
+<Canvas of={Stories.NoTargetInNativeDialog} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.NoTargetInDialogModal} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.NoTargetInPortalModal} story={{ inline: false, height: "26rem" }} />
+
 ### Leaving from the last step
 
 The skip button is hidden on the last step, where the finish button ends the tour. A host that always offers an explicit leave
@@ -170,7 +198,7 @@ never has no action.
 `showCloseButton`, `closeOnEscape` and `arrowKeyNavigation` turn the package's own close button, Escape handling and arrow
 keys off, one by one, for a host that owns that behaviour. Stable attributes for host CSS and tests: the overlay root has
 `data-lufia-part="layer"`, the card has `data-lufia-part="card"`, `data-mode` (`read` or `do`), `data-status` (the
-`targetStatus`), `data-kind` (`float`, `sheet` or `center`) and `data-compact` while compact, and the spotlight has
+`targetStatus`), `data-kind` (`float`, `sheet` or `center`) `data-compact` while compact, `data-typing-hidden` while hidden for typing, and the spotlight has
 `data-lufia-part="spotlight"`.
 
 <Canvas of={Stories.SwitchesOff} story={{ inline: false, height: "26rem" }} />
