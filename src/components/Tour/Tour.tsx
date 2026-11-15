@@ -441,6 +441,8 @@ export function Tour({
   const resolverRef = useRef(resolver);
   const escapeRef = useRef(closeOnEscape);
   const standInRef = useRef(isStandIn);
+  /** Scrolls the current step's target into place; set while the tour is showing. */
+  const revealRef = useRef<(() => void) | null>(null);
   const [compact, setCompact] = useState(false);
   const [standIn, setStandIn] = useState(false);
   const ids = useId();
@@ -589,12 +591,18 @@ export function Tour({
   }, [host, target, current, lookup]);
 
   // Once per step, and again after the page has settled (a scroll that was still running, a dialog that was animating in).
+  // The frame loop also calls it when the dialog docks or its dock changes size: a dialog still animating in is docked only
+  // once its entrance ends, which a slow device can take past the second call.
   useEffect(() => {
     if (!showing || !host) return;
     const reveal = () => revealTarget(lookup(), cardRef.current, !reduced, dock);
+    revealRef.current = reveal;
     reveal();
     const again = window.setTimeout(reveal, 400);
-    return () => window.clearTimeout(again);
+    return () => {
+      window.clearTimeout(again);
+      if (revealRef.current === reveal) revealRef.current = null;
+    };
   }, [showing, host, target, current, reduced, dock, lookup]);
 
   // Follows the target: before paint, then every frame while the tour is on screen, so scroll, resize and animation all keep
@@ -602,6 +610,8 @@ export function Tour({
   useLayoutEffect(() => {
     if (!present || !host) return;
     let signature = "";
+    // The room the docked dialog leaves for the card (0 when it is not docked), as the last frame measured it.
+    let docking: number | undefined;
     const run = () => {
       const { current: layer } = layerRef;
       const { current: card } = cardRef;
@@ -615,10 +625,15 @@ export function Tour({
         standInRef.current?.(found, stepRef.current) === true;
       setStandIn((previous) => (previous === stand ? previous : stand));
       if (found && portalHost(found) !== hostRef.current) return rerender();
+      const dialog = hostRef.current && hostRef.current !== document.body ? hostRef.current : null;
       signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature, {
-        dialog: hostRef.current && hostRef.current !== document.body ? hostRef.current : null,
+        dialog,
         layout: { dock, beside, clipSpotlight },
       });
+      // The dialog has just docked, or its dock changed size: its footer moved, so the target may now be under it.
+      const room = dialog?.hasAttribute(DOCKED) ? card.offsetHeight : 0;
+      if (docking !== undefined && room !== docking) revealRef.current?.();
+      docking = room;
     };
     run();
     let frame = 0;

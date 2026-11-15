@@ -830,6 +830,47 @@ describe("Tour", () => {
       expect(Element.prototype.scrollBy).toHaveBeenCalledWith({ top: 82, behavior: "smooth" });
       Reflect.deleteProperty(Element.prototype, "scrollBy");
     });
+
+    it("scrolls the target clear of the footer again when the dialog docks only after its entrance", () => {
+      const frames: FrameRequestCallback[] = [];
+      vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => frames.push(callback));
+      const scrollBy = vi.fn();
+      Element.prototype.scrollBy = scrollBy;
+      withLayout({ width: 360, height: 640 });
+      // Still animating in: scaled down, so not full screen yet and not docked.
+      boxes.dlg = new DOMRect(8, 8, 344, 624);
+      boxes.hdr = new DOMRect(0, 0, 360, 60);
+      boxes.ftr = new DOMRect(0, 560, 360, 80);
+      boxes.first = new DOMRect(100, 400, 80, 40);
+      render(
+        <dialog id="dlg" open>
+          <header id="hdr">Header</header>
+          <button id="first" type="button">
+            In the dialog
+          </button>
+          <footer id="ftr">Footer</footer>
+          <Tour
+            steps={[{ target: "#first", title: "In it", body: "Here." }]}
+            open
+            labels={labels}
+            dialogLayout={{ dock: true }}
+          />
+        </dialog>,
+      );
+      const dialog = document.querySelector("dialog")!;
+      expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
+      // Clear of the floating card's room (640 - 180 - 12 = 448): nothing to scroll yet.
+      expect(scrollBy).not.toHaveBeenCalled();
+      // The entrance ends: the dialog fills the screen and docks, which moves its footer up to 380.
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      boxes.ftr = new DOMRect(0, 380, 360, 80);
+      act(() => frames.splice(0).forEach((frame) => frame(0)));
+      expect(dialog).toHaveAttribute("data-lufia-tour-docked");
+      // The room above the footer ends at 368: the target's bottom (440) goes up by 72.
+      expect(scrollBy).toHaveBeenCalledWith({ top: 72, behavior: "smooth" });
+      boxes.first = new DOMRect(100, 200, 80, 40);
+      Reflect.deleteProperty(Element.prototype, "scrollBy");
+    });
   });
 
   describe("inside the package Modal", () => {
