@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.46.2
+
+### Patch Changes
+
+- [#166](https://github.com/luizgabriellf/lufia-design-system/pull/166) [`707e156`](https://github.com/luizgabriellf/lufia-design-system/commit/707e156ca03e47925b50f6542ade949eb2d3e657) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tour: with `dialogLayout.dock`, the target is scrolled clear of the dialog's footer again whenever the dialog docks or its dock changes size. A modal still animating in docks only once its entrance ends; on a slow device that came after the tour's last reveal, which had measured the undocked dialog, so the target stayed hidden behind the footer.
+
 ## 0.46.1
 
 ### Patch Changes
