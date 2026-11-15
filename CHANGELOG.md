@@ -1,5 +1,21 @@
 # @lufia/design-system
 
+## 0.48.0
+
+### Minor Changes
+
+- [#175](https://github.com/luizgabriellf/lufia-design-system/pull/175) [`a5cdd8a`](https://github.com/luizgabriellf/lufia-design-system/commit/a5cdd8a1dd8fc8dcbac3e2cb4679289c73fda3d4) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Table`, `Spinner` and `Disclosure` (all `beta`).
+  
+  `Table` is a CSS-only data table for Server Components: a surface that scrolls sideways with edge shadows, monospace capital headers and, under 40rem of its own width, a list of cards (`responsive="cards"`, or `"scroll"` to keep the table). Parts: `TableHead`, `TableBody`, `TableRow`, `Th`, `Td` (`label`, `numeric`, `primary`, `actions`), `TableEmpty` (a full-width `EmptyState` row) and a `footer` slot for a `Pagination`. A row opens something through a real link (`href`) or button (`onActivate`) in one cell, stretched over the row, so it needs no handler or `role="button"` on the `<tr>`. `SortableTh` works in its header row. It holds no sorting, filtering or paging state.
+  
+  `Spinner` is a small inline loading ring in three sizes that takes the colour of its text, is a labelled status or decorative, and stands still under reduced motion. The ring of `SearchInput`, `Combobox`, `CommandPalette` and `PendingSubmit` is now this component, with the same look.
+  
+  `Disclosure` renders a native `<details>` and `<summary>` (so it works without script and in Server Components) with a turning chevron, `defaultOpen`, `name` for exclusive groups and a progressive height animation. `disclosureClasses` exposes its class names to style an existing `<details>`.
+
+### Patch Changes
+
+- [#176](https://github.com/luizgabriellf/lufia-design-system/pull/176) [`6ce4979`](https://github.com/luizgabriellf/lufia-design-system/commit/6ce4979630a6cc27d5851049a5f393685658081c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tour: with `dialogLayout.dock` on a phone, a sheet shorter than the viewport (a bottom sheet with a top offset, a native dialog sheet) now docks above the card too, whenever the card would cover it, so its footer stays reachable; it is capped and lifted, not stretched, and handed back when the step changes or the tour ends. With `dialogLayout.beside`, a wide dialog with no room beside, below or above it now gets the card inside it, where it covers the least (never the target or the dialog's header and footer, and as few controls as possible), instead of landing on the target's sibling fields. With `clipSpotlight`, and for a card docked on the bottom edge, the ring's own padding is kept inside the clipped edge, so the ring is no longer partly hidden under the card.
+
 ## 0.47.2
 
 ### Patch Changes
