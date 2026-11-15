@@ -480,6 +480,8 @@ export function Tour({
   const cardRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const hostRef = useRef<HTMLElement | null>(null);
+  // This tour's entry on the shared overlay stack while it shows.
+  const stackLayerRef = useRef<symbol | null>(null);
   const opener = useRef<HTMLElement | null>(null);
   const focusInside = useRef(false);
   const closeRef = useRef(onClose);
@@ -543,6 +545,7 @@ export function Tour({
   useEffect(() => {
     if (!showing) return;
     const layer = pushLayer();
+    stackLayerRef.current = layer;
     const onEscape = (event: KeyboardEvent | globalThis.KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented || !escapeRef.current || !isTopLayer(layer))
         return;
@@ -554,6 +557,7 @@ export function Tour({
     document.addEventListener("keydown", onEscape);
     return () => {
       removeLayer(layer);
+      stackLayerRef.current = null;
       document.removeEventListener("keydown", onEscape);
     };
   }, [showing]);
@@ -746,6 +750,16 @@ export function Tour({
 
   const onCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event);
+    // A sheet or modal opened after the tour is the top layer and its focus trap pulls Tab back into itself. Once focus is on
+    // the card (a press on one of its buttons), keep that trap from yanking it away: Tab then follows the browser's order,
+    // which leads from the card (end of the body, before the later overlay) into that overlay.
+    if (
+      event.key === "Tab" &&
+      host === document.body &&
+      stackLayerRef.current &&
+      !isTopLayer(stackLayerRef.current)
+    )
+      event.stopPropagation();
     if (
       !arrowKeyNavigation ||
       event.defaultPrevented ||

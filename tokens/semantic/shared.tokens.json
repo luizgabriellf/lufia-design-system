@@ -126,6 +126,7 @@
     "sticky": { "$value": 200 },
     "overlay": { "$value": 300 },
     "modal": { "$value": 400 },
+    "tour": { "$value": 450 },
     "toast": { "$value": 500 },
     "tooltip": { "$value": 600 }
   },
