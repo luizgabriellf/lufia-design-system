@@ -20,7 +20,7 @@ import { Button } from "../Button";
 import { CloseIcon } from "../Icon/icons";
 import { IconButton } from "../IconButton";
 import { clearPanelPlacement, placePanel } from "../internal/useAnchoredPosition";
-import { inheritContext, portalHost } from "../internal/portalContext";
+import { inheritContext, openAriaModals, portalHost } from "../internal/portalContext";
 import { pickSide, type Side } from "../internal/placement";
 import { usePresence } from "../internal/usePresence";
 import { isTopLayer, pushLayer, removeLayer } from "../useFocusTrap/layerStack";
@@ -193,8 +193,9 @@ function topModal(): HTMLElement | null {
   });
   const native = natives[natives.length - 1];
   if (native) return native;
-  const aria = document.querySelectorAll<HTMLElement>('[aria-modal="true"]');
-  return aria[aria.length - 1] ?? null;
+  // Only a modal that is open now: a kept-mounted closed one still carries its attributes but renders at no size.
+  const modals = openAriaModals();
+  return modals[modals.length - 1] ?? null;
 }
 
 /** Where the tour is portalled: the modal that holds the target, else (no target) the topmost open modal, else the body. */
@@ -337,6 +338,30 @@ function besideDialog(dialog: Element, card: HTMLElement): Side | null {
   return null;
 }
 
+const dialogBox = (dialog: Element) => {
+  const { left, top, width, height } = dialog.getBoundingClientRect();
+  return [left, top, width, height].join(" ");
+};
+
+/** Whether the target (or a control inside it) has its own listbox, menu or similar popup open right now. */
+function hasOpenPopup(target: Element): boolean {
+  const control = target.matches('[aria-expanded="true"]')
+    ? target
+    : target.querySelector('[aria-expanded="true"]');
+  if (!control) return false;
+  const popup = control.getAttribute("aria-haspopup");
+  return control.getAttribute("role") === "combobox" || (popup !== null && popup !== "false");
+}
+
+/** Which side of `dialog` (below, then above) has room for the card, or `null`: used when no side beside it fits. */
+function clearOfDialog(dialog: Element, card: HTMLElement): Side | null {
+  const rect = dialog.getBoundingClientRect();
+  const need = card.offsetHeight + 24;
+  if (document.documentElement.clientHeight - rect.bottom >= need) return "bottom";
+  if (rect.top >= need) return "top";
+  return null;
+}
+
 /**
  * Puts the spotlight on the target and the card next to it (or in the middle, or docked as a sheet on narrow screens),
  * writing straight to the DOM so a frame loop can run it without rendering. Returns a signature of what it measured: when
@@ -381,6 +406,17 @@ function layoutTour(
       if (bottom > top) visible = new DOMRect(rect.left, top, rect.width, bottom - top);
     }
   }
+  // A sheet covers the top or bottom of the screen: the ring stops where it starts instead of running under it.
+  if (visible && narrow && !docked) {
+    const covered = rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
+    const from = covered ? card.offsetHeight : 0;
+    const to = covered ? height : height - card.offsetHeight;
+    const top = Math.max(visible.top, from);
+    const bottom = Math.min(visible.bottom, to);
+    if (bottom > top && (top !== visible.top || bottom !== visible.bottom))
+      visible = new DOMRect(visible.left, top, visible.width, bottom - top);
+  }
+  const popup = target !== null && hasOpenPopup(target);
   const signature = [
     visible ? [visible.left, visible.top, visible.width, visible.height].join(" ") : "none",
     docked,
@@ -390,6 +426,9 @@ function layoutTour(
     card.offsetHeight,
     placement,
     padding,
+    // A card with no target follows the dialog.
+    !target && dialog ? dialogBox(dialog) : "",
+    popup,
   ].join(",");
   if (signature === previous) return previous;
   if (visible) {
@@ -398,18 +437,26 @@ function layoutTour(
     spot.style.blockSize = `${visible.height + 2 * padding}px`;
   }
   layer.setAttribute("data-target", rect ? "true" : "false");
+  if (popup) layer.setAttribute("data-popup", "");
+  else layer.removeAttribute("data-popup");
   if (narrow) {
     clearPanelPlacement(card);
     const covered = !docked && rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
     card.setAttribute("data-kind", "sheet");
     card.setAttribute("data-edge", covered ? "top" : "bottom");
-  } else if (target) {
-    card.setAttribute("data-kind", "float");
-    card.removeAttribute("data-edge");
+  } else {
     const beside = dialog && layout.beside ? besideDialog(dialog, card) : null;
-    // The gap clears the spotlight's padding as well.
-    if (dialog && beside) placePanel(card, dialog, { side: beside, align: "center", gap: 0.75 });
-    else {
+    // With `beside` and no room beside the dialog, the card goes below or above it rather than over its fields. With no target
+    // it is hosted in the modal only to be reachable, so it never covers the modal's footer either.
+    const clear = dialog && layout.beside && !beside ? clearOfDialog(dialog, card) : null;
+    if (dialog && (beside || clear)) {
+      card.setAttribute("data-kind", "float");
+      card.removeAttribute("data-edge");
+      // The gap clears the spotlight's padding as well.
+      placePanel(card, dialog, { side: (beside ?? clear)!, align: "center", gap: 0.75 });
+    } else if (target) {
+      card.setAttribute("data-kind", "float");
+      card.removeAttribute("data-edge");
       const gap = 0.5 + padding / rem;
       const side =
         placement === "auto" && rect
@@ -425,11 +472,11 @@ function layoutTour(
             ? "bottom"
             : placement;
       placePanel(card, target, { side, align: "center", gap });
+    } else {
+      clearPanelPlacement(card);
+      card.setAttribute("data-kind", "center");
+      card.removeAttribute("data-edge");
     }
-  } else {
-    clearPanelPlacement(card);
-    card.setAttribute("data-kind", "center");
-    card.removeAttribute("data-edge");
   }
   return signature;
 }
@@ -707,8 +754,8 @@ export function Tour({
         standInRef.current?.(found, stepRef.current) === true;
       setStandIn((previous) => (previous === stand ? previous : stand));
       if (hostFor(found) !== hostRef.current) return rerender();
-      // A card with no target sits in the modal only to be reachable: the dialog layout switches are about the target.
-      const dialog = found && hostRef.current && hostRef.current !== document.body ? hostRef.current : null;
+      // A card with no target is hosted in the modal too, and follows the same dock and beside switches.
+      const dialog = hostRef.current && hostRef.current !== document.body ? hostRef.current : null;
       signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature, {
         dialog,
         layout: { dock, beside, clipSpotlight },

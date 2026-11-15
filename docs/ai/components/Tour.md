@@ -153,6 +153,9 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--no-target-in-native-dialog`
 - `components-overlays-tour--no-target-in-dialog-modal`
 - `components-overlays-tour--no-target-in-portal-modal`
+- `components-overlays-tour--no-target-among-closed-kept-modals`
+- `components-overlays-tour--no-target-docked-phone`
+- `components-overlays-tour--no-target-beside-modal`
 - `components-overlays-tour--hidden-while-typing-on-short-viewport`
 - `components-overlays-tour--auto-placement`
 - `components-overlays-tour--focus-after-seeking`

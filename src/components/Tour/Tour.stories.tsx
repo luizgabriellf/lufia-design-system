@@ -385,7 +385,15 @@ const lonelySteps: TourStep[] = [
   { title: "Then this", body: "Its buttons stay reachable while a modal is open." },
 ];
 
-function NoTargetInModal({ kind }: { kind: "dialog" | "portal" | "native" }) {
+function NoTargetInModal({
+  kind,
+  layout,
+  closedKept = 0,
+}: {
+  kind: "dialog" | "portal" | "native";
+  layout?: TourProps["dialogLayout"];
+  closedKept?: number;
+}) {
   const [open, setOpen] = useState(true);
   const [index, setIndex] = useState(0);
   const native = useRef<HTMLDialogElement>(null);
@@ -403,6 +411,11 @@ function NoTargetInModal({ kind }: { kind: "dialog" | "portal" | "native" }) {
           The page behind is inert.
         </Modal>
       )}
+      {Array.from({ length: closedKept }, (_, index) => (
+        <Modal key={index} open={false} keepMounted renderAs="dialog" onClose={() => {}} title="Kept, closed">
+          Not shown.
+        </Modal>
+      ))}
       <Tour
         steps={lonelySteps}
         open={open}
@@ -411,6 +424,7 @@ function NoTargetInModal({ kind }: { kind: "dialog" | "portal" | "native" }) {
         onClose={() => setOpen(false)}
         onFinish={() => setOpen(false)}
         labels={labels}
+        dialogLayout={layout}
       />
     </>
   );
@@ -422,6 +436,20 @@ export const NoTargetInNativeDialog: StoryObj = { render: () => <NoTargetInModal
 export const NoTargetInDialogModal: StoryObj = { render: () => <NoTargetInModal kind="dialog" /> };
 /** The same in the portal `Modal`, which is not a native dialog. */
 export const NoTargetInPortalModal: StoryObj = { render: () => <NoTargetInModal kind="portal" /> };
+
+/** Closed, kept-mounted modals on the page never host the card: it is on the body (or in the open modal), and visible. */
+export const NoTargetAmongClosedKeptModals: StoryObj = {
+  render: () => <NoTargetInModal kind="portal" closedKept={3} />,
+};
+/** With `dialogLayout.dock` on a phone, a step with no target docks the modal above the card, so its footer stays reachable. */
+export const NoTargetDockedPhone: StoryObj = {
+  render: () => <NoTargetInModal kind="portal" layout={{ dock: true }} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** With `dialogLayout.beside`, a step with no target sits beside the modal, or below or above it, never over its fields. */
+export const NoTargetBesideModal: StoryObj = {
+  render: () => <NoTargetInModal kind="portal" layout={{ beside: true }} />,
+};
 
 /**
  * On a short viewport (a phone with the keyboard up) the card steps aside entirely while a field has focus, and comes back

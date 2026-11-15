@@ -18424,6 +18424,18 @@
             "id": "components-overlays-tour--no-target-in-portal-modal"
           },
           {
+            "export": "NoTargetAmongClosedKeptModals",
+            "id": "components-overlays-tour--no-target-among-closed-kept-modals"
+          },
+          {
+            "export": "NoTargetDockedPhone",
+            "id": "components-overlays-tour--no-target-docked-phone"
+          },
+          {
+            "export": "NoTargetBesideModal",
+            "id": "components-overlays-tour--no-target-beside-modal"
+          },
+          {
             "export": "HiddenWhileTypingOnShortViewport",
             "id": "components-overlays-tour--hidden-while-typing-on-short-viewport"
           },

@@ -21,6 +21,7 @@ import { useMediaQuery } from "../useMediaQuery";
 import { VisuallyHidden } from "../VisuallyHidden";
 import type { ButtonVariant } from "../Button";
 import { MoreIcon } from "../Icon/icons";
+import { portalHost } from "../internal/portalContext";
 import styles from "./MoreActions.module.css";
 
 export type MoreActionItem = {
@@ -83,12 +84,6 @@ const TYPEAHEAD_RESET_MS = 500;
 const SHEET_QUERY = "(width < 60rem)";
 /** The `@container` threshold of `narrowOnlyScope="container"`, in rem (a container condition cannot read a variable). */
 const CONTAINER_NARROW_REM = 50;
-/**
- * Where a popover is portalled: inside the open modal it belongs to (a native `dialog` or a portal `Modal` panel, whose focus
- * trap and inert page would otherwise lock a menu on the body out), else `document.body`.
- */
-const MODAL_HOST = 'dialog[open], [aria-modal="true"]';
-
 /**
  * Whether the content box of the nearest `container-type: inline-size` ancestor is below the narrow threshold. `undefined`
  * when there is no such ancestor: a container condition then matches nothing, which the portalled menu must mirror.
@@ -259,7 +254,7 @@ export function MoreActions({
   // The popover leaves the root for `document.body` (or the open modal it sits in), so no ancestor's `overflow` can clip it.
   useLayoutEffect(() => {
     if (!floating) return;
-    setHost(rootRef.current?.closest<HTMLElement>(MODAL_HOST) ?? document.body);
+    setHost(rootRef.current ? portalHost(rootRef.current) : document.body);
   }, [floating]);
 
   // Positions the menu from the trigger's box, before paint and again on scroll (of any ancestor) and resize, at most once a

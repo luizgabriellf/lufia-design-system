@@ -91,6 +91,12 @@ is scrolled clear of the sheet.
 
 <Canvas of={Stories.Phone390} story={{ inline: false, height: "34rem" }} />
 
+### The spotlight ring
+
+While the target (or a control inside it) has its own listbox or menu open (`aria-expanded="true"` on a combobox or a
+popup trigger), the spotlight's ring is not drawn, so it does not strike through the popup; the page stays dimmed around the
+target. On a phone, the ring stops where the sheet starts.
+
 ### Inside a modal
 
 When the target is inside an open modal, the tour is portalled into that modal so the modal's focus trap and inert page do not
@@ -166,7 +172,8 @@ closes), so the card sits below it, and scrolling the target into view leaves ro
 Only the modal itself is resized. A wrapper that fills a custom dialog and sets its own height opts in with a
 `data-lufia-tour-shell` attribute, as a direct child of the dialog; a header, body or footer is never resized. The header and
 footer are the modal's direct children (or the shell's); a `header` or `footer` inside the content is content.
-`beside`: on a wide screen the card goes beside the modal when there is room. `clipSpotlight`: the spotlight is cut off where
+`beside`: on a wide screen the card goes beside the modal when there is room, else below or above the modal (never over its
+fields), else by the target. `clipSpotlight`: the spotlight is cut off where
 the modal's scroll area ends, and where its sticky header and footer cover it.
 
 <Canvas of={Stories.BesideTheDialog} story={{ inline: false, height: "34rem" }} />
@@ -176,14 +183,17 @@ the modal's scroll area ends, and where its sticky header and footer cover it.
 ### A step with no target under a modal
 
 A step with no resolved target (none given, or `targetStatus` `seeking`, `missing` or `blocked`) is hosted in the topmost open
-modal: the last native `dialog` that matches `:modal`, else the last `[aria-modal="true"]` element, else the body. On the body
+modal: the last native `dialog` that matches `:modal`, else the last open `[aria-modal="true"]` element, else the body. A
+modal counts only while it is open: a closed `Modal` kept mounted (`keepMounted`) is hidden and never hosts the card. On the body
 the card would be inert and under the top layer of a `showModal()` dialog, so its buttons could not be seen or clicked. When
-the target resolves, the card moves to the modal that holds it, as before. The `dialogLayout` switches only apply to a
-resolved target.
+the target resolves, the card moves to the modal that holds it, as before. The `dock` and `beside` switches apply to it as well (on a phone the modal docks above the card, so its footer stays
+reachable; on a wide screen the card sits beside, below or above the modal); `clipSpotlight` has no target to cut.
 
 <Canvas of={Stories.NoTargetInNativeDialog} story={{ inline: false, height: "26rem" }} />
 <Canvas of={Stories.NoTargetInDialogModal} story={{ inline: false, height: "26rem" }} />
 <Canvas of={Stories.NoTargetInPortalModal} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.NoTargetDockedPhone} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.NoTargetBesideModal} story={{ inline: false, height: "26rem" }} />
 
 ### Leaving from the last step
 

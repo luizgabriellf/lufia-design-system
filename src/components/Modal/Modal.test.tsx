@@ -445,6 +445,20 @@ describe("Modal", () => {
       expect(screen.getByLabelText("Name")).toHaveValue("Ada");
     });
 
+    it.each(["portal", "dialog"] as const)(
+      "does not advertise a closed %s modal as modal, and does again when it opens",
+      async (renderAs) => {
+        const dialogMock = mockDialog();
+        const view = render(<Harness keepMounted renderAs={renderAs} />);
+        const closed = screen.getByLabelText("Name", { selector: "input" }).closest("[role=dialog]");
+        expect(closed).not.toHaveAttribute("aria-modal");
+        await openModal();
+        expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
+        view.unmount();
+        dialogMock.restore();
+      },
+    );
+
     it("still traps focus, restores it and closes from the backdrop", async () => {
       const onClose = vi.fn();
       render(<Harness keepMounted onClose={onClose} />);
