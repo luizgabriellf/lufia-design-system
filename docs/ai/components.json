@@ -2709,6 +2709,7 @@
       "tokens": [
         "--lufia-badge-max-inline-size",
         "--lufia-badge-radius",
+        "--lufia-badge-white-space",
         "--lufia-border-width-thin",
         "--lufia-color-accent-border",
         "--lufia-color-accent-subtle",
@@ -17972,6 +17973,18 @@
           {
             "export": "ScrollMarginOnPhone",
             "id": "components-data-display-table--scroll-margin-on-phone"
+          },
+          {
+            "export": "CardLongLabelsAndBadges",
+            "id": "components-data-display-table--card-long-labels-and-badges"
+          },
+          {
+            "export": "FewColumnsActions",
+            "id": "components-data-display-table--few-columns-actions"
+          },
+          {
+            "export": "FlushTranslucentSurface",
+            "id": "components-data-display-table--flush-translucent-surface"
           }
         ]
       },
@@ -18022,6 +18035,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-badge-white-space",
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
@@ -18050,6 +18064,7 @@
         "--lufia-space-6",
         "--lufia-table-bg",
         "--lufia-table-border",
+        "--lufia-table-cover-bg",
         "--lufia-table-row-hover",
         "--lufia-table-row-scroll-margin",
         "--lufia-table-scroll-shadow"

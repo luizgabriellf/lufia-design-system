@@ -178,7 +178,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
+Reads these semantic tokens: `--lufia-badge-white-space`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-cover-bg`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
 
 ## Content guidelines
 
@@ -218,3 +218,6 @@ buttons that wrap well.
 - `components-data-display-table--plain-empty`
 - `components-data-display-table--scroll-margin`
 - `components-data-display-table--scroll-margin-on-phone`
+- `components-data-display-table--card-long-labels-and-badges`
+- `components-data-display-table--few-columns-actions`
+- `components-data-display-table--flush-translucent-surface`

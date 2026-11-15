@@ -57,7 +57,14 @@ column is a list of cards on a wide page. Under 40rem the header row is hidden v
 each row is a card, the `primary` cell is its title, every other cell shows its `label` before the value and an `actions`
 cell wraps its buttons. There is no sideways scroll in that mode. Give every `Td` the same `label` as its column header.
 
+Under 30rem of the table's width the label sits above the value, so the value has the whole card and a long label word is
+not split inside the word; from 30rem the label sits beside the value. A `Badge` inside a card cell wraps its text instead
+of being clipped by the value column, without `wrap` on every badge (the table sets `--lufia-badge-white-space: normal`
+for its card cells).
+
 <Canvas of={Stories.PhoneCards} />
+
+<Canvas of={Stories.CardLongLabelsAndBadges} />
 
 `responsive="scroll"` keeps the table at every width and scrolls it instead.
 
@@ -79,6 +86,20 @@ stretched area and do their own thing.
 already has a frame. The header rule and the row separators stay; in card mode each card keeps its own border.
 
 <Canvas of={Stories.FlushInPanel} />
+
+The scroll shadows are hidden by two covers that scroll with the content, painted with `--lufia-table-cover-bg` (default
+`--lufia-table-bg`). Under `flush`, when the surface token is translucent or the table sits on a different colour, set
+`--lufia-table-cover-bg` to an **opaque** colour equal to what is behind the table; a translucent cover cannot hide the
+shadows and a band shows at both edges even when there is nothing to scroll.
+
+<Canvas of={Stories.FlushTranslucentSurface} />
+
+### Actions column
+
+In table layout the `Td actions` column is as wide as its buttons and its content sits at the end edge (the right edge in
+left-to-right text, the left in right-to-left), however few columns there are. Card mode is unchanged.
+
+<Canvas of={Stories.FewColumnsActions} />
 
 ### Naming the row control, descriptions and extra links
 
@@ -154,8 +175,8 @@ visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `nume
 `onActivate`, `activateLabel`, `activateDescribedBy`, `description` and `after`. `TableEmpty` takes the props of
 `EmptyState` plus `colSpan`, with `title` optional: without it `children` is the one-line message. `Table` adds `frame`.
 
-Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow`, `--lufia-table-row-hover` and
-`--lufia-table-row-scroll-margin`.
+Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow`, `--lufia-table-cover-bg` (opaque
+colour of the shadow covers; default `--lufia-table-bg`), `--lufia-table-row-hover` and `--lufia-table-row-scroll-margin`.
 
 </Section>
 

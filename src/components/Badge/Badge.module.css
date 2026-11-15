@@ -26,10 +26,11 @@
 }
 
 /* By default a badge keeps its text on one line and does not shrink in a flex row or an auto-layout table cell, so it
-   never wraps or clips a letter. `wrap` and `truncate` opt out. */
+   never wraps or clips a letter. `wrap` and `truncate` opt out. A container can opt every badge inside it in to wrapping
+   without a prop, by setting `--lufia-badge-white-space: normal` (a custom property inherits); a table card does. */
 .root:not([data-wrap], [data-truncate]) {
   flex: none;
-  white-space: nowrap;
+  white-space: var(--lufia-badge-white-space, nowrap);
 }
 
 .text {
