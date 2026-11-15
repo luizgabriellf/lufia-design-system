@@ -60,8 +60,10 @@ export type TourTargetStatus = "ready" | "seeking" | "missing" | "blocked";
 /** Opt-in layout for a target inside an open modal `dialog`. Every switch defaults to `false`. */
 export type TourDialogLayout = {
   /**
-   * On a narrow screen, resize the host dialog to the viewport minus the card's height, so the card sits below the dialog
-   * instead of covering it, and reserve room for the dialog's own header and footer when scrolling the target into view.
+   * On a narrow screen, resize the host modal (a `Modal` or a native dialog) to the viewport minus the card's height and
+   * lift it clear of the card, so the card sits below it instead of covering it, and reserve room for its own header and
+   * footer when scrolling the target into view. Only the modal is resized; a wrapper that fills a custom dialog opts in
+   * with a `data-lufia-tour-shell` attribute.
    */
   dock?: boolean;
   /** On a wide screen, put the card beside the dialog (when there is room) instead of over the dialog's content. */
@@ -196,15 +198,37 @@ const hasValue = (element: Element) =>
     ? (element.textContent ?? "") !== ""
     : ((element as HTMLInputElement | HTMLTextAreaElement).value ?? "") !== "";
 
-/** Marks a dialog the tour has resized to make room for a phone sheet. */
+/** Marks a modal the tour has resized to make room for a phone sheet. */
 const DOCKED = "data-lufia-tour-docked";
 
-function setDock(dialog: HTMLDialogElement, size: number) {
-  const shell = dialog.firstElementChild instanceof HTMLElement ? dialog.firstElementChild : null;
-  for (const element of [dialog, shell]) {
-    if (!element) continue;
+/**
+ * Opt-in marker for a wrapper that fills a modal and has to be resized with it (a dialog whose only child is a shell that
+ * sets its own height). Only a direct child carrying it is resized; a header, body or footer never is.
+ */
+const SHELL = "data-lufia-tour-shell";
+
+/** The modal the tour is portalled into, or `null` when it sits on the page (the body). */
+const modalOf = (element: Element): HTMLElement | null => {
+  const host = portalHost(element);
+  return host === document.body ? null : host;
+};
+
+/**
+ * The modal's own header and footer bars: direct children of the modal, or of a marked shell. A `header` or `footer` deeper
+ * in the content (a card, an article) is content, not a bar.
+ */
+function modalBars(modal: Element): { header: Element | null; footer: Element | null } {
+  const shell = modal.querySelector(`:scope > [${SHELL}]`);
+  const find = (tag: "header" | "footer") =>
+    modal.querySelector(`:scope > ${tag}`) ?? shell?.querySelector(`:scope > ${tag}`) ?? null;
+  return { header: find("header"), footer: find("footer") };
+}
+
+function setDock(modal: HTMLElement, size: number) {
+  const sized = [modal, ...Array.from(modal.querySelectorAll<HTMLElement>(`:scope > [${SHELL}]`))];
+  for (const element of sized) {
     if (size > 0) {
-      // Inline and important: a component stylesheet cannot reach another component's dialog.
+      // Inline and important: a component stylesheet cannot reach another component's modal.
       const height = `calc(100dvh - ${size}px)`;
       element.style.setProperty("height", height, "important");
       element.style.setProperty("max-height", height, "important");
@@ -213,8 +237,11 @@ function setDock(dialog: HTMLDialogElement, size: number) {
       element.style.removeProperty("max-height");
     }
   }
-  if (size > 0) dialog.setAttribute(DOCKED, "");
-  else dialog.removeAttribute(DOCKED);
+  // A sheet is anchored to the bottom edge (auto margin above it): the bottom margin lifts it clear of the card.
+  if (size > 0) modal.style.setProperty("margin-block-end", `${size}px`, "important");
+  else modal.style.removeProperty("margin-block-end");
+  if (size > 0) modal.setAttribute(DOCKED, "");
+  else modal.removeAttribute(DOCKED);
 }
 
 /** The element that scrolls `element`: a scrollable ancestor, else the page. */
@@ -237,12 +264,13 @@ function revealTarget(target: Element | null, card: HTMLElement | null, smooth: 
   if (width <= NARROW_REM * rem) {
     let reserve = card?.offsetHeight ?? 0;
     let top = SHEET_GAP;
-    const dialog = dock ? target.closest("dialog") : null;
+    const dialog = dock ? modalOf(target) : null;
     if (dialog) {
       // The target must also clear the dialog's own header and footer: the footer sits above the card once the dialog has
       // shrunk to make room for it.
-      const header = dialog.querySelector("header")?.getBoundingClientRect().bottom;
-      const footer = dialog.querySelector("footer")?.getBoundingClientRect();
+      const bars = modalBars(dialog);
+      const header = bars.header?.getBoundingClientRect().bottom;
+      const footer = bars.footer?.getBoundingClientRect();
       const fullScreen = dialog.getBoundingClientRect().height >= height - 2;
       if (header) top = header + SHEET_GAP;
       reserve =
@@ -265,7 +293,7 @@ function revealTarget(target: Element | null, card: HTMLElement | null, smooth: 
 }
 
 type LayoutParts = { layer: HTMLElement; card: HTMLElement; spot: HTMLElement };
-type LayoutOptions = { dialog: HTMLDialogElement | null; layout: TourDialogLayout };
+type LayoutOptions = { dialog: HTMLElement | null; layout: TourDialogLayout };
 
 /** Which side of `dialog` the card fits on (`end` first), or `null` when neither has room. */
 function besideDialog(dialog: Element, card: HTMLElement): Side | null {
@@ -311,8 +339,16 @@ function layoutTour(
     const parent = scrollParent(target);
     if (parent !== document.scrollingElement && parent !== document.documentElement) {
       const clip = parent.getBoundingClientRect();
-      const top = Math.max(rect.top, clip.top);
-      const bottom = Math.min(rect.bottom, clip.bottom);
+      let from = clip.top;
+      let to = clip.bottom;
+      // Sticky bars inside the scroller cover its ends: the scroll area is what is left between them.
+      const bars = modalBars(dialog);
+      if (bars.header && parent.contains(bars.header))
+        from = Math.max(from, bars.header.getBoundingClientRect().bottom);
+      if (bars.footer && parent.contains(bars.footer))
+        to = Math.min(to, bars.footer.getBoundingClientRect().top);
+      const top = Math.max(rect.top, from);
+      const bottom = Math.min(rect.bottom, to);
       if (bottom > top) visible = new DOMRect(rect.left, top, rect.width, bottom - top);
     }
   }
@@ -580,7 +616,7 @@ export function Tour({
       setStandIn((previous) => (previous === stand ? previous : stand));
       if (found && portalHost(found) !== hostRef.current) return rerender();
       signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature, {
-        dialog: hostRef.current instanceof HTMLDialogElement ? hostRef.current : null,
+        dialog: hostRef.current && hostRef.current !== document.body ? hostRef.current : null,
         layout: { dock, beside, clipSpotlight },
       });
     };
@@ -596,7 +632,7 @@ export function Tour({
     return () => {
       window.cancelAnimationFrame(frame);
       // Hands a resized dialog back.
-      if (host instanceof HTMLDialogElement && host.hasAttribute(DOCKED)) setDock(host, 0);
+      if (host?.hasAttribute(DOCKED)) setDock(host, 0);
     };
   }, [present, host, target, current, placement, spotlightPadding, dock, beside, clipSpotlight, lookup]);
 

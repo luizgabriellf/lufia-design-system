@@ -431,6 +431,53 @@ test.describe("tour", () => {
   });
 });
 
+test.describe("tour inside a modal", () => {
+  for (const [name, id] of [
+    ["native dialog", "components-overlays-tour--docked-modal"],
+    ["portal", "components-overlays-tour--docked-portal-modal"],
+  ] as const) {
+    test(`at 390px the ${name} Modal docks above the card, keeps its header and footer, and is handed back`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 780 });
+      await openStory(page, id);
+      const card = page.getByRole("dialog", { name: "Further down" });
+      await expect(card).toHaveAttribute("data-kind", "sheet");
+      const measure = () =>
+        page.evaluate(() => {
+          const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+          const panel = rect('[data-lufia-part="panel"]');
+          const header = rect('[data-lufia-part="header"]');
+          const footer = rect('[data-lufia-part="footer"]');
+          const target = rect('[data-tour="low-field"]');
+          const tour = document.querySelector('[data-lufia-part="card"]')?.getBoundingClientRect();
+          return {
+            headerHeight: Math.round(header.height),
+            panelBottom: Math.round(panel.bottom),
+            cardTop: tour ? Math.round(tour.top) : null,
+            footerAboveCard: tour ? footer.bottom <= tour.top + 1 : null,
+            targetBetweenBars: target.top >= header.bottom - 1 && target.bottom <= footer.top + 1,
+          };
+        });
+      await expect
+        .poll(async () => {
+          const m = await measure();
+          return (
+            m.headerHeight < 100 &&
+            Math.abs(m.panelBottom - (m.cardTop ?? Infinity)) <= 2 &&
+            m.footerAboveCard &&
+            m.targetBetweenBars
+          );
+        })
+        .toBe(true);
+      // Leaving the tour hands the modal back: it reaches the bottom of the viewport again.
+      await card.getByRole("button", { name: "Close tour" }).click();
+      await expect(card).toHaveCount(0);
+      await expect.poll(async () => (await measure()).panelBottom).toBe(780);
+    });
+  }
+});
+
 test.describe("more actions container scope", () => {
   test("in a narrow host on a wide page the narrow-only item is visible, focused and clickable on first open", async ({
     page,

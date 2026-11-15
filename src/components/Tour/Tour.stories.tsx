@@ -329,3 +329,52 @@ export const DockedDialog: StoryObj = {
   render: () => <InsideDialog dialogLayout={{ dock: true, clipSpotlight: true }} />,
   globals: { viewport: { value: "w390", isRotated: false } },
 };
+
+const modalSteps: TourStep[] = [
+  {
+    target: '[data-tour="low-field"]',
+    title: "Further down",
+    body: "The dialog keeps its header and footer in view and the card sits below it.",
+  },
+  { title: "That is all", body: "The card hands the dialog back when the tour ends." },
+];
+
+function DockedInModal({ renderAs }: { renderAs: "dialog" | "portal" }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <Modal
+      open
+      onClose={() => {}}
+      renderAs={renderAs}
+      sheetHeight="full"
+      title="Edit record"
+      footer={<Button variant="primary">Save</Button>}
+    >
+      <div style={{ blockSize: "40rem" }}>Earlier fields</div>
+      <Button variant="secondary" data-tour="low-field">
+        Add detail
+      </Button>
+      <div style={{ blockSize: "6rem" }} />
+      <Tour
+        steps={modalSteps}
+        open={open}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+        dialogLayout={{ dock: true, beside: true, clipSpotlight: true }}
+      />
+    </Modal>
+  );
+}
+
+/** Phones: a full-height `Modal` (native dialog) shrinks above the card; its header keeps its height and the footer stays reachable. */
+export const DockedModal: StoryObj = {
+  render: () => <DockedInModal renderAs="dialog" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** The same for the portal `Modal`, which is not a native dialog. */
+export const DockedPortalModal: StoryObj = {
+  render: () => <DockedInModal renderAs="portal" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
