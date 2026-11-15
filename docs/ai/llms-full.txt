@@ -8700,6 +8700,10 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--focus-after-seeking`
 - `components-overlays-tour--overlay-opened-after-tour`
 - `components-overlays-tour--overlay-opened-after-tour-phone-390`
+- `components-overlays-tour--short-sheet-no-target`
+- `components-overlays-tour--short-sheet-target`
+- `components-overlays-tour--wide-dialog-form`
+- `components-overlays-tour--target-fills-dialog-body`
 
 ## VisuallyHidden
 

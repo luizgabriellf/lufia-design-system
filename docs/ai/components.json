@@ -19155,6 +19155,22 @@
           {
             "export": "OverlayOpenedAfterTourPhone390",
             "id": "components-overlays-tour--overlay-opened-after-tour-phone-390"
+          },
+          {
+            "export": "ShortSheetNoTarget",
+            "id": "components-overlays-tour--short-sheet-no-target"
+          },
+          {
+            "export": "ShortSheetTarget",
+            "id": "components-overlays-tour--short-sheet-target"
+          },
+          {
+            "export": "WideDialogForm",
+            "id": "components-overlays-tour--wide-dialog-form"
+          },
+          {
+            "export": "TargetFillsDialogBody",
+            "id": "components-overlays-tour--target-fills-dialog-body"
           }
         ]
       },

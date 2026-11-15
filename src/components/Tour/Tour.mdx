@@ -166,19 +166,27 @@ person is using, keeps it.
 ### Inside a dialog
 
 `dialogLayout` has three opt-in switches for a target inside an open modal: the package's `Modal` (either `renderAs`) or any
-native `dialog`. `dock`: on a narrow screen a modal that fills the screen is resized to the viewport minus the card's height
+native `dialog`. `dock`: on a narrow screen a modal the card would cover (one that fills the screen, or a sheet shorter than
+the viewport) is resized to the viewport minus the card's height
 and lifted clear of the card with a bottom margin (inline, with `!important`, and handed back when the tour leaves it or
 closes), so the card sits below it, and scrolling the target into view leaves room for the modal's own `header` and `footer`.
 Only the modal itself is resized. A wrapper that fills a custom dialog and sets its own height opts in with a
 `data-lufia-tour-shell` attribute, as a direct child of the dialog; a header, body or footer is never resized. The header and
 footer are the modal's direct children (or the shell's); a `header` or `footer` inside the content is content.
-`beside`: on a wide screen the card goes beside the modal when there is room, else below or above the modal (never over its
-fields), else by the target. `clipSpotlight`: the spotlight is cut off where
-the modal's scroll area ends, and where its sticky header and footer cover it.
+A sheet that does not fill the screen keeps its own height (it is only capped and lifted), and a modal the card does not
+reach is left alone. `beside`: on a wide screen the card goes beside the modal when there is room, else below or above the
+modal (never over its fields), else inside the modal, where it covers the least: never the target or the modal's header and
+footer, and as few of the modal's controls as it can (the spot is scored by the controls it would cover, then by distance
+from the target, and kept while it stays as good). Only when nothing fits inside either, the card sits by the target.
+`clipSpotlight`: the spotlight is cut off where the modal's scroll area ends, and where its sticky header and footer cover
+it; the ring's own padding stays inside that edge, so the ring is drawn whole and never runs under the card.
 
 <Canvas of={Stories.BesideTheDialog} story={{ inline: false, height: "34rem" }} />
 <Canvas of={Stories.DockedDialog} story={{ inline: false, height: "34rem" }} />
 <Canvas of={Stories.DockedModal} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.ShortSheetTarget} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.WideDialogForm} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.TargetFillsDialogBody} story={{ inline: false, height: "34rem" }} />
 
 ### A step with no target under a modal
 
