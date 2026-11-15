@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.49.2
+
+### Patch Changes
+
+- [#182](https://github.com/luizgabriellf/lufia-design-system/pull/182) [`c88570a`](https://github.com/luizgabriellf/lufia-design-system/commit/c88570adea2c276d4d4e9bf6cd3726f6b13c496c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `Table`: with `Td actions wrap` the actions column no longer collapses to one button wide. With room the controls share one line; they wrap only when the table would overflow.
+
 ## 0.49.1
 
 ### Patch Changes
