@@ -142,6 +142,25 @@
   overflow-wrap: anywhere;
 }
 
+.note {
+  margin: var(--lufia-space-2) 0 0;
+}
+
+/* What the person has to do on a `do` step. */
+.hint {
+  margin: 0;
+  color: var(--lufia-color-text-default);
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+/* Phones, while a text field of the page has focus: the title and the buttons stay, the text steps aside. */
+@media (width <= 40rem) {
+  .card[data-compact] .body,
+  .card[data-compact] .hint {
+    display: none;
+  }
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

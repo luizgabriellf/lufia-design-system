@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -37,6 +38,36 @@ export type TourStep = {
   body: ReactNode;
   /** Which side of the target the card opens on. It flips to the opposite side when it does not fit. Default `bottom`. */
   placement?: Side;
+  /**
+   * `read` (default): the person reads the card and moves on with the next button. `do`: the person has to act on the target
+   * first, so the next (or finish) button is hidden, the arrow keys do not move forward, and `labels.doHint` is shown. The
+   * host moves on by changing `stepIndex` when the action is done, or the person skips from the card.
+   */
+  mode?: "read" | "do";
+  /** Shown in place of `body` when the host reports this step's target as `missing`. Falls back to `body`. */
+  missingBody?: ReactNode;
+  /** Appended to `body` when the resolved target is a stand-in for the real one (see `isStandIn`). */
+  standInNote?: ReactNode;
+};
+
+/**
+ * What the host knows about the current step's target. `ready`: it is there (the default). `seeking`: the host is still
+ * looking for it or opening the part of the screen that holds it. `missing`: it is not there. `blocked`: it is not there
+ * because something else (an open modal, say) is in the way. The tour does not find out by itself: it only shows the state.
+ */
+export type TourTargetStatus = "ready" | "seeking" | "missing" | "blocked";
+
+/** Opt-in layout for a target inside an open modal `dialog`. Every switch defaults to `false`. */
+export type TourDialogLayout = {
+  /**
+   * On a narrow screen, resize the host dialog to the viewport minus the card's height, so the card sits below the dialog
+   * instead of covering it, and reserve room for the dialog's own header and footer when scrolling the target into view.
+   */
+  dock?: boolean;
+  /** On a wide screen, put the card beside the dialog (when there is room) instead of over the dialog's content. */
+  beside?: boolean;
+  /** Cut the spotlight off where the dialog's own scroll area ends. */
+  clipSpotlight?: boolean;
 };
 
 export type TourLabels = {
@@ -50,6 +81,14 @@ export type TourLabels = {
   finish: string;
   /** The step counter, such as "Step 2 of 5". Shown on the card and announced politely when the step changes. */
   stepOf: (current: number, total: number) => string;
+  /** Shown on a `do` step while its target is ready, such as "Do this on the screen to continue". */
+  doHint?: string;
+  /** The button of a `do` step whose target is missing, in place of `next` (the last step still says `finish`). */
+  skipStep?: string;
+  /** Appended to the body while the target status is `seeking`, such as "Opening this part of the screen…". */
+  seeking?: string;
+  /** The body while the target status is `blocked`, such as "Close the open window to see this part". */
+  blocked?: string;
 };
 
 /** Why `onClose` was called: the skip button, the close button, or the Escape key. */
@@ -72,6 +111,29 @@ export type TourProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"
   labels: TourLabels;
   /** Space between the target and the edge of the spotlight, in pixels. Default `6`. */
   spotlightPadding?: number;
+  /** The status of the current step's target, supplied by the host. Default `ready`. */
+  targetStatus?: TourTargetStatus;
+  /**
+   * Finds a step's target in place of (and before) `target`. Return `null` to fall back to `target`. Called on every frame
+   * while the tour shows, so keep it cheap. It receives the current step.
+   */
+  resolveTarget?: (step: TourStep) => Element | null;
+  /** Tells the tour that the resolved element only stands in for the real target, so `standInNote` is appended. */
+  isStandIn?: (element: Element, step: TourStep) => boolean;
+  /** Layout switches for a target inside an open modal `dialog`. */
+  dialogLayout?: TourDialogLayout;
+  /**
+   * Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so
+   * the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press.
+   * Default `false`.
+   */
+  compactOnTyping?: boolean;
+  /** Whether the card has its close button. Default `true`. */
+  showCloseButton?: boolean;
+  /** Whether Escape calls `onClose("escape")`. Default `true`. */
+  closeOnEscape?: boolean;
+  /** Whether the arrow keys step while focus is on the card. Default `true`. */
+  arrowKeyNavigation?: boolean;
 };
 
 /** Below this width (in rem) the card is a sheet docked to the bottom or top edge instead of floating by the target. */
@@ -99,6 +161,52 @@ function resolveTarget(target: TourStep["target"]): Element | null {
   }
 }
 
+/** The element a step points at: the host's resolver first, then the step's own `target`. */
+function findTarget(
+  step: TourStep | undefined,
+  resolver?: (step: TourStep) => Element | null,
+): Element | null {
+  if (!step) return null;
+  const custom = resolver?.(step);
+  if (custom && custom.isConnected && isShown(custom)) return custom;
+  return resolveTarget(step.target);
+}
+
+/** A text field that holds what the person is typing: a text-like input, a textarea or an editable region. */
+function isTextEntry(element: Element | null): boolean {
+  if (!element) return false;
+  if (element instanceof HTMLElement && element.isContentEditable) return true;
+  return element.matches(
+    "input:not([type=checkbox],[type=radio],[type=button],[type=submit],[type=reset],[type=file],[type=range],[type=color],[type=image]),textarea",
+  );
+}
+
+const hasValue = (element: Element) =>
+  element instanceof HTMLElement && element.isContentEditable
+    ? (element.textContent ?? "") !== ""
+    : ((element as HTMLInputElement | HTMLTextAreaElement).value ?? "") !== "";
+
+/** Marks a dialog the tour has resized to make room for a phone sheet. */
+const DOCKED = "data-lufia-tour-docked";
+
+function setDock(dialog: HTMLDialogElement, size: number) {
+  const shell = dialog.firstElementChild instanceof HTMLElement ? dialog.firstElementChild : null;
+  for (const element of [dialog, shell]) {
+    if (!element) continue;
+    if (size > 0) {
+      // Inline and important: a component stylesheet cannot reach another component's dialog.
+      const height = `calc(100dvh - ${size}px)`;
+      element.style.setProperty("height", height, "important");
+      element.style.setProperty("max-height", height, "important");
+    } else {
+      element.style.removeProperty("height");
+      element.style.removeProperty("max-height");
+    }
+  }
+  if (size > 0) dialog.setAttribute(DOCKED, "");
+  else dialog.removeAttribute(DOCKED);
+}
+
 /** The element that scrolls `element`: a scrollable ancestor, else the page. */
 function scrollParent(element: Element): Element {
   for (let node = element.parentElement; node; node = node.parentElement) {
@@ -109,7 +217,7 @@ function scrollParent(element: Element): Element {
 }
 
 /** Brings the target into view, and clear of the card when the card is a sheet. Does nothing when it is already placed. */
-function revealTarget(target: Element | null, card: HTMLElement | null, smooth: boolean) {
+function revealTarget(target: Element | null, card: HTMLElement | null, smooth: boolean, dock = false) {
   if (!target || !target.isConnected) return;
   const behavior: ScrollBehavior = smooth ? "smooth" : "auto";
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
@@ -117,8 +225,22 @@ function revealTarget(target: Element | null, card: HTMLElement | null, smooth: 
   const height = document.documentElement.clientHeight;
   const rect = target.getBoundingClientRect();
   if (width <= NARROW_REM * rem) {
-    const limit = height - (card?.offsetHeight ?? 0) - SHEET_GAP;
-    const top = SHEET_GAP;
+    let reserve = card?.offsetHeight ?? 0;
+    let top = SHEET_GAP;
+    const dialog = dock ? target.closest("dialog") : null;
+    if (dialog) {
+      // The target must also clear the dialog's own header and footer: the footer sits above the card once the dialog has
+      // shrunk to make room for it.
+      const header = dialog.querySelector("header")?.getBoundingClientRect().bottom;
+      const footer = dialog.querySelector("footer")?.getBoundingClientRect();
+      const fullScreen = dialog.getBoundingClientRect().height >= height - 2;
+      if (header) top = header + SHEET_GAP;
+      reserve =
+        footer && dialog.hasAttribute(DOCKED)
+          ? height - footer.top
+          : reserve + (fullScreen ? (footer?.height ?? 0) : 0);
+    }
+    const limit = height - reserve - SHEET_GAP;
     const delta =
       rect.top < top
         ? rect.top - top
@@ -133,6 +255,20 @@ function revealTarget(target: Element | null, card: HTMLElement | null, smooth: 
 }
 
 type LayoutParts = { layer: HTMLElement; card: HTMLElement; spot: HTMLElement };
+type LayoutOptions = { dialog: HTMLDialogElement | null; layout: TourDialogLayout };
+
+/** Which side of `dialog` the card fits on (`end` first), or `null` when neither has room. */
+function besideDialog(dialog: Element, card: HTMLElement): Side | null {
+  const rect = dialog.getBoundingClientRect();
+  const width = document.documentElement.clientWidth;
+  const need = card.offsetWidth + 24;
+  const rtl = getComputedStyle(card).direction === "rtl";
+  const after = rtl ? rect.left : width - rect.right;
+  const before = rtl ? width - rect.right : rect.left;
+  if (after >= need) return "end";
+  if (before >= need) return "start";
+  return null;
+}
 
 /**
  * Puts the spotlight on the target and the card next to it (or in the middle, or docked as a sheet on narrow screens),
@@ -145,13 +281,34 @@ function layoutTour(
   placement: Side,
   padding: number,
   previous: string,
+  { dialog, layout }: LayoutOptions,
 ): string {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   const width = document.documentElement.clientWidth;
   const height = document.documentElement.clientHeight;
+  const narrow = width <= NARROW_REM * rem;
   const rect = target ? target.getBoundingClientRect() : null;
+  // On a phone, a dialog that fills the screen (or that the tour already shrank) gives way to the sheet.
+  const docked =
+    narrow &&
+    layout.dock === true &&
+    dialog !== null &&
+    (dialog.hasAttribute(DOCKED) || dialog.getBoundingClientRect().height >= height - 2);
+  if (dialog && layout.dock) setDock(dialog, docked ? card.offsetHeight : 0);
+  // The spotlight stops where the dialog's scroll area does.
+  let visible = rect;
+  if (rect && target && dialog && layout.clipSpotlight) {
+    const parent = scrollParent(target);
+    if (parent !== document.scrollingElement && parent !== document.documentElement) {
+      const clip = parent.getBoundingClientRect();
+      const top = Math.max(rect.top, clip.top);
+      const bottom = Math.min(rect.bottom, clip.bottom);
+      if (bottom > top) visible = new DOMRect(rect.left, top, rect.width, bottom - top);
+    }
+  }
   const signature = [
-    rect ? [rect.left, rect.top, rect.width, rect.height].join(" ") : "none",
+    visible ? [visible.left, visible.top, visible.width, visible.height].join(" ") : "none",
+    docked,
     width,
     height,
     card.offsetWidth,
@@ -160,22 +317,24 @@ function layoutTour(
     padding,
   ].join(",");
   if (signature === previous) return previous;
-  if (rect) {
-    spot.style.transform = `translate(${rect.left - padding}px, ${rect.top - padding}px)`;
-    spot.style.inlineSize = `${rect.width + 2 * padding}px`;
-    spot.style.blockSize = `${rect.height + 2 * padding}px`;
+  if (visible) {
+    spot.style.transform = `translate(${visible.left - padding}px, ${visible.top - padding}px)`;
+    spot.style.inlineSize = `${visible.width + 2 * padding}px`;
+    spot.style.blockSize = `${visible.height + 2 * padding}px`;
   }
   layer.setAttribute("data-target", rect ? "true" : "false");
-  if (width <= NARROW_REM * rem) {
+  if (narrow) {
     clearPanelPlacement(card);
-    const covered = rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
+    const covered = !docked && rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
     card.setAttribute("data-kind", "sheet");
     card.setAttribute("data-edge", covered ? "top" : "bottom");
   } else if (target) {
     card.setAttribute("data-kind", "float");
     card.removeAttribute("data-edge");
+    const beside = dialog && layout.beside ? besideDialog(dialog, card) : null;
     // The gap clears the spotlight's padding as well.
-    placePanel(card, target, { side: placement, align: "center", gap: 0.5 + padding / rem });
+    if (dialog && beside) placePanel(card, dialog, { side: beside, align: "center", gap: 0.75 });
+    else placePanel(card, target, { side: placement, align: "center", gap: 0.5 + padding / rem });
   } else {
     clearPanelPlacement(card);
     card.setAttribute("data-kind", "center");
@@ -207,6 +366,14 @@ export function Tour({
   onFinish,
   labels,
   spotlightPadding = 6,
+  targetStatus = "ready",
+  resolveTarget: resolver,
+  isStandIn,
+  dialogLayout,
+  compactOnTyping = false,
+  showCloseButton = true,
+  closeOnEscape = true,
+  arrowKeyNavigation = true,
   className,
   onKeyDown,
   onFocus,
@@ -224,6 +391,11 @@ export function Tour({
   const opener = useRef<HTMLElement | null>(null);
   const focusInside = useRef(false);
   const closeRef = useRef(onClose);
+  const resolverRef = useRef(resolver);
+  const escapeRef = useRef(closeOnEscape);
+  const standInRef = useRef(isStandIn);
+  const [compact, setCompact] = useState(false);
+  const [standIn, setStandIn] = useState(false);
   const ids = useId();
   const reduced = usePrefersReducedMotion();
 
@@ -243,14 +415,27 @@ export function Tour({
   const current = Math.min(Math.max(stepIndex ?? inner, 0), Math.max(last, 0));
   const step = steps[current];
   const target = step?.target;
+  const dock = dialogLayout?.dock === true;
+  const beside = dialogLayout?.beside === true;
+  const clipSpotlight = dialogLayout?.clipSpotlight === true;
   const placement = step?.placement ?? "bottom";
   const atLast = current >= last;
 
   // Where the tour is portalled: the open modal that holds the target, else the body. Looked up again when it changes.
-  const host = present && mounted ? portalHost(resolveTarget(target) ?? document.body) : null;
+  const host = present && mounted ? portalHost(findTarget(step, resolver) ?? document.body) : null;
+
+  // What the frame loop and the effects read, kept current before they run so they need not restart for a new function.
+  const stepRef = useRef(step);
+  useLayoutEffect(() => {
+    stepRef.current = step;
+    resolverRef.current = resolver;
+    standInRef.current = isStandIn;
+  });
+  const lookup = useCallback(() => findTarget(stepRef.current, resolverRef.current), []);
 
   useEffect(() => {
     closeRef.current = onClose;
+    escapeRef.current = closeOnEscape;
   });
 
   // Registers on the shared overlay stack, so Escape reaches the topmost layer only: a menu opened from the page closes
@@ -260,7 +445,8 @@ export function Tour({
     if (!showing) return;
     const layer = pushLayer();
     const onEscape = (event: KeyboardEvent | globalThis.KeyboardEvent) => {
-      if (event.key !== "Escape" || event.defaultPrevented || !isTopLayer(layer)) return;
+      if (event.key !== "Escape" || event.defaultPrevented || !escapeRef.current || !isTopLayer(layer))
+        return;
       const active = document.activeElement;
       if (active && active !== document.body && !cardRef.current?.contains(active)) return;
       event.preventDefault();
@@ -293,26 +479,76 @@ export function Tour({
     if (inside && back?.isConnected) back.focus({ preventScroll: true });
   }, [showing]);
 
-  // Each step starts on its heading, so a screen reader reads the new card. The page is not scrolled for it.
+  // Each step starts on its heading, so a screen reader reads the new card. The page is not scrolled for it. Not while the
+  // person is typing in a field of the page: moving focus away from a field that holds a value loses their place.
   useEffect(() => {
-    if (showing && host) headingRef.current?.focus({ preventScroll: true });
+    if (!showing || !host) return;
+    const active = document.activeElement;
+    const typing =
+      active !== null && !cardRef.current?.contains(active) && isTextEntry(active) && hasValue(active);
+    if (!typing) headingRef.current?.focus({ preventScroll: true });
   }, [showing, host, current]);
+
+  // A phone shows a compact card while a text field of the page has focus (the keyboard is up). Growing back is delayed and
+  // never happens mid-press, so the layout does not move under a finger between pressing a button and its click.
+  useEffect(() => {
+    if (!showing || !compactOnTyping) return;
+    let timer = 0;
+    let pressed = false;
+    const rem = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const narrow = () => document.documentElement.clientWidth <= NARROW_REM * rem();
+    const field = (element: Element | null) =>
+      element !== null && isTextEntry(element) && !cardRef.current?.contains(element);
+    const settle = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (!pressed) setCompact(field(document.activeElement) && narrow());
+      }, 300);
+    };
+    const onIn = (event: FocusEvent) => {
+      if (field(event.target as Element | null) && narrow()) {
+        window.clearTimeout(timer);
+        setCompact(true);
+      } else settle();
+    };
+    const onDown = () => {
+      pressed = true;
+    };
+    const onUp = () => {
+      pressed = false;
+      settle();
+    };
+    document.addEventListener("focusin", onIn);
+    document.addEventListener("focusout", settle);
+    document.addEventListener("pointerdown", onDown, true);
+    document.addEventListener("pointerup", onUp, true);
+    document.addEventListener("pointercancel", onUp, true);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("focusin", onIn);
+      document.removeEventListener("focusout", settle);
+      document.removeEventListener("pointerdown", onDown, true);
+      document.removeEventListener("pointerup", onUp, true);
+      document.removeEventListener("pointercancel", onUp, true);
+      setCompact(false);
+    };
+  }, [showing, compactOnTyping]);
 
   // The theme scope, direction and inline custom properties of the target's subtree, copied onto a card that left it.
   useLayoutEffect(() => {
-    const element = host ? resolveTarget(target) : null;
+    const element = host ? lookup() : null;
     if (host && element instanceof HTMLElement && layerRef.current)
       inheritContext(element, layerRef.current, host);
-  }, [host, target, current]);
+  }, [host, target, current, lookup]);
 
   // Once per step, and again after the page has settled (a scroll that was still running, a dialog that was animating in).
   useEffect(() => {
     if (!showing || !host) return;
-    const reveal = () => revealTarget(resolveTarget(target), cardRef.current, !reduced);
+    const reveal = () => revealTarget(lookup(), cardRef.current, !reduced, dock);
     reveal();
     const again = window.setTimeout(reveal, 400);
     return () => window.clearTimeout(again);
-  }, [showing, host, target, current, reduced]);
+  }, [showing, host, target, current, reduced, dock, lookup]);
 
   // Follows the target: before paint, then every frame while the tour is on screen, so scroll, resize and animation all keep
   // the spotlight and the card on it. A frame that measures what the last one did writes nothing.
@@ -324,9 +560,18 @@ export function Tour({
       const { current: card } = cardRef;
       const { current: spot } = spotRef;
       if (!layer || !card || !spot) return;
-      const found = resolveTarget(target);
+      const found = lookup();
+      // Read every frame, so a stand-in that turns into the real target (a menu that opens) drops its note.
+      const stand =
+        found !== null &&
+        stepRef.current !== undefined &&
+        standInRef.current?.(found, stepRef.current) === true;
+      setStandIn((previous) => (previous === stand ? previous : stand));
       if (found && portalHost(found) !== hostRef.current) return rerender();
-      signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature);
+      signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature, {
+        dialog: hostRef.current instanceof HTMLDialogElement ? hostRef.current : null,
+        layout: { dock, beside, clipSpotlight },
+      });
     };
     run();
     let frame = 0;
@@ -337,8 +582,12 @@ export function Tour({
     };
     // lufia-motion-allow reduced-motion: same loop.
     frame = window.requestAnimationFrame(loop);
-    return () => window.cancelAnimationFrame(frame);
-  }, [present, host, target, placement, spotlightPadding]);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      // Hands a resized dialog back.
+      if (host instanceof HTMLDialogElement && host.hasAttribute(DOCKED)) setDock(host, 0);
+    };
+  }, [present, host, target, current, placement, spotlightPadding, dock, beside, clipSpotlight, lookup]);
 
   const go = (next: number) => {
     if (next === current || next < 0 || next > last) return;
@@ -346,13 +595,25 @@ export function Tour({
     onStepChange?.(next);
   };
   const forward = () => (atLast ? onFinish?.() : go(current + 1));
+  const missing = targetStatus === "missing" || targetStatus === "blocked";
+  // A `do` step waits for the person to act on the target: nothing moves it forward until the host says so, unless the
+  // target is missing and the step can only be skipped.
+  const doing = step?.mode === "do" && !missing;
 
   const onCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event);
-    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (
+      !arrowKeyNavigation ||
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    )
+      return;
     // Arrow keys follow the reading direction.
     const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
-    if (event.key === (rtl ? "ArrowLeft" : "ArrowRight") && !atLast) {
+    if (event.key === (rtl ? "ArrowLeft" : "ArrowRight") && !atLast && !doing) {
       // The last step is finished with its button: an arrow key never ends the tour.
       event.preventDefault();
       go(current + 1);
@@ -367,6 +628,14 @@ export function Tour({
   const bodyId = `${ids}-body`;
   // Inside a modal the page is already dimmed by the modal's own backdrop.
   const dim = host === document.body;
+  const showStandIn = targetStatus === "ready" && step.standInNote != null && standIn;
+  const note = targetStatus === "seeking" ? labels.seeking : showStandIn ? step.standInNote : null;
+  const body =
+    targetStatus === "blocked"
+      ? (labels.blocked ?? step.missingBody ?? step.body)
+      : targetStatus === "missing"
+        ? (step.missingBody ?? step.body)
+        : step.body;
   return createPortal(
     <div
       ref={layerRef}
@@ -387,6 +656,10 @@ export function Tour({
         aria-labelledby={titleId}
         aria-describedby={bodyId}
         className={[styles.card, className].filter(Boolean).join(" ")}
+        data-lufia-part="card"
+        data-mode={step.mode ?? "read"}
+        data-status={targetStatus}
+        data-compact={compact ? "" : undefined}
         data-state={phase === "open" ? "open" : "closed"}
         inert={phase !== "open" || undefined}
         onKeyDown={onCardKeyDown}
@@ -408,21 +681,27 @@ export function Tour({
       >
         <div className={styles.header}>
           <p className={styles.count}>{labels.stepOf(current + 1, steps.length)}</p>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label={labels.close}
-            icon={<CloseIcon />}
-            onClick={() => onClose?.("close")}
-          />
+          {showCloseButton ? (
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label={labels.close}
+              icon={<CloseIcon />}
+              onClick={() => onClose?.("close")}
+            />
+          ) : null}
         </div>
         <div key={current} className={styles.content}>
           <h2 ref={headingRef} id={titleId} tabIndex={-1} className={styles.title}>
             {step.title}
           </h2>
-          <div id={bodyId} className={styles.body}>
-            {step.body}
+          <div id={bodyId} className={styles.body} aria-live="polite">
+            {body}
+            {note ? <p className={styles.note}>{note}</p> : null}
           </div>
+          {doing && targetStatus === "ready" && labels.doHint ? (
+            <p className={styles.hint}>{labels.doHint}</p>
+          ) : null}
         </div>
         <div className={styles.actions}>
           {atLast ? null : (
@@ -436,9 +715,11 @@ export function Tour({
               {labels.back}
             </Button>
           ) : null}
-          <Button variant="primary" size="sm" onClick={forward}>
-            {atLast ? labels.finish : labels.next}
-          </Button>
+          {doing ? null : (
+            <Button variant="primary" size="sm" onClick={forward}>
+              {atLast ? labels.finish : step.mode === "do" && labels.skipStep ? labels.skipStep : labels.next}
+            </Button>
+          )}
         </div>
       </div>
       <VisuallyHidden role="status" aria-live="polite" aria-atomic="true">

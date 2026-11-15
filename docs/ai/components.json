@@ -18205,6 +18205,62 @@
               "required": false,
               "default": "6",
               "description": "Space between the target and the edge of the spotlight, in pixels. Default `6`."
+            },
+            {
+              "name": "targetStatus",
+              "type": "\"ready\" | \"seeking\" | \"missing\" | \"blocked\"",
+              "required": false,
+              "default": "\"ready\"",
+              "description": "The status of the current step's target, supplied by the host. Default `ready`."
+            },
+            {
+              "name": "resolveTarget",
+              "type": "(step: TourStep) => Element | null",
+              "required": false,
+              "default": null,
+              "description": "Finds a step's target in place of (and before) `target`. Return `null` to fall back to `target`. Called on every frame while the tour shows, so keep it cheap. It receives the current step."
+            },
+            {
+              "name": "isStandIn",
+              "type": "(element: Element, step: TourStep) => boolean",
+              "required": false,
+              "default": null,
+              "description": "Tells the tour that the resolved element only stands in for the real target, so `standInNote` is appended."
+            },
+            {
+              "name": "dialogLayout",
+              "type": "TourDialogLayout",
+              "required": false,
+              "default": null,
+              "description": "Layout switches for a target inside an open modal `dialog`."
+            },
+            {
+              "name": "compactOnTyping",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`."
+            },
+            {
+              "name": "showCloseButton",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether the card has its close button. Default `true`."
+            },
+            {
+              "name": "closeOnEscape",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether Escape calls `onClose(\"escape\")`. Default `true`."
+            },
+            {
+              "name": "arrowKeyNavigation",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether the arrow keys step while focus is on the card. Default `true`."
             }
           ],
           "nativeProps": true
@@ -18216,10 +18272,16 @@
           "definition": "\"skip\" | \"close\" | \"escape\""
         },
         {
+          "name": "TourDialogLayout",
+          "kind": "type",
+          "description": "Opt-in layout for a target inside an open modal `dialog`. Every switch defaults to `false`.",
+          "definition": "{ dock?: boolean | undefined; beside?: boolean | undefined; clipSpotlight?: boolean | undefined; }"
+        },
+        {
           "name": "TourLabels",
           "kind": "type",
           "description": "",
-          "definition": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; }"
+          "definition": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; doHint?: string | undefined; skipStep?: string | undefined; seeking?: string | undefined; blocked?: string | undefined; }"
         },
         {
           "name": "TourProps",
@@ -18231,13 +18293,21 @@
           "name": "TourStep",
           "kind": "type",
           "description": "",
-          "definition": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; }"
+          "definition": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }"
+        },
+        {
+          "name": "TourTargetStatus",
+          "kind": "type",
+          "description": "What the host knows about the current step's target. `ready`: it is there (the default). `seeking`: the host is still looking for it or opening the part of the screen that holds it. `missing`: it is not there. `blocked`: it is not there because something else (an open modal, say) is in the way. The tour does not find out by itself: it only shows the state.",
+          "definition": "\"ready\" | \"seeking\" | \"missing\" | \"blocked\""
         }
       ],
       "aliases": {
         "TourCloseReason": "\"skip\" | \"close\" | \"escape\"",
-        "TourLabels": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; }",
-        "TourStep": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; }"
+        "TourDialogLayout": "{ dock?: boolean | undefined; beside?: boolean | undefined; clipSpotlight?: boolean | undefined; }",
+        "TourLabels": "{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; doHint?: string | undefined; skipStep?: string | undefined; seeking?: string | undefined; blocked?: string | undefined; }",
+        "TourStep": "{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; mode?: \"read\" | \"do\" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }",
+        "TourTargetStatus": "\"ready\" | \"seeking\" | \"missing\" | \"blocked\""
       },
       "story": {
         "docsId": "components-overlays-tour--docs",
@@ -18281,6 +18351,42 @@
           {
             "export": "InsideAModal",
             "id": "components-overlays-tour--inside-a-modal"
+          },
+          {
+            "export": "DoStep",
+            "id": "components-overlays-tour--do-step"
+          },
+          {
+            "export": "DoStepMissing",
+            "id": "components-overlays-tour--do-step-missing"
+          },
+          {
+            "export": "Seeking",
+            "id": "components-overlays-tour--seeking"
+          },
+          {
+            "export": "Blocked",
+            "id": "components-overlays-tour--blocked"
+          },
+          {
+            "export": "CustomTarget",
+            "id": "components-overlays-tour--custom-target"
+          },
+          {
+            "export": "CompactWhileTyping",
+            "id": "components-overlays-tour--compact-while-typing"
+          },
+          {
+            "export": "SwitchesOff",
+            "id": "components-overlays-tour--switches-off"
+          },
+          {
+            "export": "BesideTheDialog",
+            "id": "components-overlays-tour--beside-the-dialog"
+          },
+          {
+            "export": "DockedDialog",
+            "id": "components-overlays-tour--docked-dialog"
           }
         ]
       },
