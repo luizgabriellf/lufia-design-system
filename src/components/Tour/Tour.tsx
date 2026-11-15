@@ -21,7 +21,7 @@ import { CloseIcon } from "../Icon/icons";
 import { IconButton } from "../IconButton";
 import { clearPanelPlacement, placePanel } from "../internal/useAnchoredPosition";
 import { inheritContext, portalHost } from "../internal/portalContext";
-import type { Side } from "../internal/placement";
+import { pickSide, type Side } from "../internal/placement";
 import { usePresence } from "../internal/usePresence";
 import { isTopLayer, pushLayer, removeLayer } from "../useFocusTrap/layerStack";
 import { VisuallyHidden } from "../VisuallyHidden";
@@ -36,8 +36,12 @@ export type TourStep = {
   target?: string | RefObject<Element | null>;
   title: ReactNode;
   body: ReactNode;
-  /** Which side of the target the card opens on. It flips to the opposite side when it does not fit. Default `bottom`. */
-  placement?: Side;
+  /**
+   * Which side of the target the card opens on. It flips to the opposite side when it does not fit. `auto` tries bottom, then
+   * top, then end, then start, and takes the first side with room (the side with the most room when none has enough); the
+   * card is still kept inside the viewport. Default `bottom`.
+   */
+  placement?: Side | "auto";
   /**
    * `read` (default): the person reads the card and moves on with the next button. `do`: the person has to act on the target
    * first, so the next (or finish) button is hidden, the arrow keys do not move forward, and `labels.doHint` is shown. The
@@ -128,11 +132,16 @@ export type TourProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"
   /** Layout switches for a target inside an open modal `dialog`. */
   dialogLayout?: TourDialogLayout;
   /**
-   * Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so
-   * the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press.
-   * Default `false`.
+   * Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body, the
+   * hint, the note and the step counter, leaving the title, the close button and the actions) so the card does not cover the
+   * field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`.
+   *
+   * Pass `{ hideBelowHeight }` to also hide the card entirely while the field has focus and the visual viewport is shorter
+   * than that many pixels (an on-screen keyboard on a short phone). The card then has `data-typing-hidden` and is
+   * `display: none`: it leaves the accessibility tree and the tab order until typing stops or the viewport grows back (the
+   * step counter is still announced through the live region). `true` only compacts.
    */
-  compactOnTyping?: boolean;
+  compactOnTyping?: boolean | { hideBelowHeight: number };
   /** Whether the card has its close button. Default `true`. */
   showCloseButton?: boolean;
   /**
@@ -171,6 +180,26 @@ function resolveTarget(target: TourStep["target"]): Element | null {
     // An invalid selector is a missing target, not a crash in the middle of a render.
     return null;
   }
+}
+
+/** The modal the tour falls back to when a step has no resolved target: the topmost open one, else `null`. */
+function topModal(): HTMLElement | null {
+  const natives = Array.from(document.querySelectorAll<HTMLElement>("dialog[open]")).filter((dialog) => {
+    try {
+      return dialog.matches(":modal");
+    } catch {
+      return false;
+    }
+  });
+  const native = natives[natives.length - 1];
+  if (native) return native;
+  const aria = document.querySelectorAll<HTMLElement>('[aria-modal="true"]');
+  return aria[aria.length - 1] ?? null;
+}
+
+/** Where the tour is portalled: the modal that holds the target, else (no target) the topmost open modal, else the body. */
+function hostFor(target: Element | null): HTMLElement {
+  return target ? portalHost(target) : (topModal() ?? document.body);
 }
 
 /** The element a step points at: the host's resolver first, then the step's own `target`. */
@@ -316,7 +345,7 @@ function besideDialog(dialog: Element, card: HTMLElement): Side | null {
 function layoutTour(
   { layer, card, spot }: LayoutParts,
   target: Element | null,
-  placement: Side,
+  placement: Side | "auto",
   padding: number,
   previous: string,
   { dialog, layout }: LayoutOptions,
@@ -380,7 +409,23 @@ function layoutTour(
     const beside = dialog && layout.beside ? besideDialog(dialog, card) : null;
     // The gap clears the spotlight's padding as well.
     if (dialog && beside) placePanel(card, dialog, { side: beside, align: "center", gap: 0.75 });
-    else placePanel(card, target, { side: placement, align: "center", gap: 0.5 + padding / rem });
+    else {
+      const gap = 0.5 + padding / rem;
+      const side =
+        placement === "auto" && rect
+          ? pickSide({
+              anchor: rect,
+              size: { width: card.offsetWidth, height: card.offsetHeight },
+              viewport: { width, height },
+              gap: gap * rem,
+              margin: 0.5 * rem,
+              rtl: getComputedStyle(card).direction === "rtl",
+            })
+          : placement === "auto"
+            ? "bottom"
+            : placement;
+      placePanel(card, target, { side, align: "center", gap });
+    }
   } else {
     clearPanelPlacement(card);
     card.setAttribute("data-kind", "center");
@@ -444,6 +489,10 @@ export function Tour({
   /** Scrolls the current step's target into place; set while the tour is showing. */
   const revealRef = useRef<(() => void) | null>(null);
   const [compact, setCompact] = useState(false);
+  const [typingHidden, setTypingHidden] = useState(false);
+  const compactEnabled = compactOnTyping !== false;
+  const hideBelowHeight = typeof compactOnTyping === "object" ? compactOnTyping.hideBelowHeight : undefined;
+  const lastStatus = useRef(targetStatus);
   const [standIn, setStandIn] = useState(false);
   const ids = useId();
   const reduced = usePrefersReducedMotion();
@@ -470,8 +519,9 @@ export function Tour({
   const placement = step?.placement ?? "bottom";
   const atLast = current >= last;
 
-  // Where the tour is portalled: the open modal that holds the target, else the body. Looked up again when it changes.
-  const host = present && mounted ? portalHost(findTarget(step, resolver) ?? document.body) : null;
+  // Where the tour is portalled: the open modal that holds the target; with no resolved target, the topmost open modal (the
+  // body is inert and under the top layer while a native modal is open); else the body. Looked up again when it changes.
+  const host = present && mounted ? hostFor(findTarget(step, resolver)) : null;
 
   // What the frame loop and the effects read, kept current before they run so they need not restart for a new function.
   const stepRef = useRef(step);
@@ -538,27 +588,52 @@ export function Tour({
     if (!typing) headingRef.current?.focus({ preventScroll: true });
   }, [showing, host, current]);
 
+  // The target turning ready (the host found it, or finished opening it) is a new start for the step, so the heading is
+  // read again. Only from where focus is idle (nowhere, or on the card): a field the person is in, or a control they are
+  // using, keeps focus.
+  useEffect(() => {
+    const was = lastStatus.current;
+    lastStatus.current = targetStatus;
+    if (!showing || !host || targetStatus !== "ready" || was === "ready") return;
+    const active = document.activeElement;
+    const idle = !active || active === document.body || cardRef.current?.contains(active);
+    if (idle) headingRef.current?.focus({ preventScroll: true });
+  }, [showing, host, targetStatus]);
+
   // A phone shows a compact card while a text field of the page has focus (the keyboard is up). Growing back is delayed and
   // never happens mid-press, so the layout does not move under a finger between pressing a button and its click.
   useEffect(() => {
-    if (!showing || !compactOnTyping) return;
+    if (!showing || !compactEnabled) return;
     let timer = 0;
     let pressed = false;
+    let typing = false;
     const rem = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const narrow = () => document.documentElement.clientWidth <= NARROW_REM * rem();
     const field = (element: Element | null) =>
       element !== null && isTextEntry(element) && !cardRef.current?.contains(element);
+    const viewport = window.visualViewport;
+    const short = () =>
+      hideBelowHeight !== undefined && (viewport?.height ?? window.innerHeight) < hideBelowHeight;
+    const apply = (next: boolean) => {
+      typing = next;
+      setCompact(next);
+      setTypingHidden(next && short());
+    };
     const settle = () => {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
-        if (!pressed) setCompact(field(document.activeElement) && narrow());
+        if (!pressed) apply(field(document.activeElement) && narrow());
       }, 300);
     };
     const onIn = (event: FocusEvent) => {
       if (field(event.target as Element | null) && narrow()) {
         window.clearTimeout(timer);
-        setCompact(true);
+        apply(true);
       } else settle();
+    };
+    // The keyboard opening or closing resizes the visual viewport, usually after the field took focus.
+    const onResize = () => {
+      if (!pressed) setTypingHidden(typing && short());
     };
     const onDown = () => {
       pressed = true;
@@ -572,6 +647,7 @@ export function Tour({
     document.addEventListener("pointerdown", onDown, true);
     document.addEventListener("pointerup", onUp, true);
     document.addEventListener("pointercancel", onUp, true);
+    viewport?.addEventListener("resize", onResize);
     return () => {
       window.clearTimeout(timer);
       document.removeEventListener("focusin", onIn);
@@ -579,9 +655,11 @@ export function Tour({
       document.removeEventListener("pointerdown", onDown, true);
       document.removeEventListener("pointerup", onUp, true);
       document.removeEventListener("pointercancel", onUp, true);
+      viewport?.removeEventListener("resize", onResize);
       setCompact(false);
+      setTypingHidden(false);
     };
-  }, [showing, compactOnTyping]);
+  }, [showing, compactEnabled, hideBelowHeight]);
 
   // The theme scope, direction and inline custom properties of the target's subtree, copied onto a card that left it.
   useLayoutEffect(() => {
@@ -624,8 +702,9 @@ export function Tour({
         stepRef.current !== undefined &&
         standInRef.current?.(found, stepRef.current) === true;
       setStandIn((previous) => (previous === stand ? previous : stand));
-      if (found && portalHost(found) !== hostRef.current) return rerender();
-      const dialog = hostRef.current && hostRef.current !== document.body ? hostRef.current : null;
+      if (hostFor(found) !== hostRef.current) return rerender();
+      // A card with no target sits in the modal only to be reachable: the dialog layout switches are about the target.
+      const dialog = found && hostRef.current && hostRef.current !== document.body ? hostRef.current : null;
       signature = layoutTour({ layer, card, spot }, found, placement, spotlightPadding, signature, {
         dialog,
         layout: { dock, beside, clipSpotlight },
@@ -725,6 +804,7 @@ export function Tour({
         data-mode={step.mode ?? "read"}
         data-status={targetStatus}
         data-compact={compact ? "" : undefined}
+        data-typing-hidden={typingHidden ? "" : undefined}
         data-state={phase === "open" ? "open" : "closed"}
         inert={phase !== "open" || undefined}
         onKeyDown={onCardKeyDown}

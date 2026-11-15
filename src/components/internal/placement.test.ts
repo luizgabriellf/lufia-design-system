@@ -1,4 +1,4 @@
-import { computePlacement, type PlacementInput } from "./placement";
+import { computePlacement, pickSide, type PlacementInput } from "./placement";
 
 const viewport = { width: 1000, height: 800 };
 const base: PlacementInput = {
@@ -63,5 +63,39 @@ describe("computePlacement", () => {
   it("caps a panel taller than the viewport on a side axis", () => {
     const result = computePlacement({ ...base, side: "end", size: { width: 200, height: 2000 } });
     expect(result).toMatchObject({ top: 8, maxHeight: 784 });
+  });
+});
+
+describe("pickSide", () => {
+  const input = {
+    anchor: { left: 400, top: 300, right: 500, bottom: 340 },
+    size: { width: 200, height: 100 },
+    viewport,
+    gap: 8,
+    margin: 8,
+    rtl: false,
+  };
+
+  it("takes the bottom when it has room", () => {
+    expect(pickSide(input)).toBe("bottom");
+  });
+
+  it("then the top, then the end, then the start", () => {
+    expect(pickSide({ ...input, anchor: { left: 400, top: 700, right: 500, bottom: 790 } })).toBe("top");
+    const short = { ...input, viewport: { width: 1000, height: 150 } };
+    expect(pickSide({ ...short, anchor: { left: 100, top: 50, right: 200, bottom: 90 } })).toBe("end");
+    expect(pickSide({ ...short, anchor: { left: 700, top: 50, right: 800, bottom: 90 } })).toBe("start");
+  });
+
+  it("follows the writing direction for start and end", () => {
+    const short = { ...input, viewport: { width: 1000, height: 150 } };
+    expect(pickSide({ ...short, rtl: true, anchor: { left: 100, top: 50, right: 200, bottom: 90 } })).toBe(
+      "start",
+    );
+  });
+
+  it("falls back to the side with the most room when none fits", () => {
+    const tight = { ...input, size: { width: 900, height: 900 } };
+    expect(pickSide({ ...tight, anchor: { left: 100, top: 100, right: 200, bottom: 140 } })).toBe("end");
   });
 });
