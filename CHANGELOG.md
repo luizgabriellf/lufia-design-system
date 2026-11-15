@@ -1,5 +1,16 @@
 # @lufia/design-system
 
+## 0.45.0
+
+### Minor Changes
+
+- [#160](https://github.com/luizgabriellf/lufia-design-system/pull/160) [`4bd2467`](https://github.com/luizgabriellf/lufia-design-system/commit/4bd24675b01faf751a1cf54bc792ab1f3e6a4c31) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Tour`: add steps that wait for the person (`mode: "do"`), a host-supplied `targetStatus` (`ready`, `seeking`, `missing`,
+  `blocked`) with `missingBody` and the labels `doHint`, `skipStep`, `seeking` and `blocked`, a `resolveTarget` resolver with
+  `isStandIn` and `standInNote`, a typing guard that keeps focus in a filled text field, `compactOnTyping` for phones, a
+  `dialogLayout` option (`dock`, `beside`, `clipSpotlight`) for targets inside a dialog, and the switches `showCloseButton`,
+  `closeOnEscape` and `arrowKeyNavigation`. The card also exposes `data-lufia-part="card"`, `data-mode`, `data-status` and
+  `data-compact`. Everything is opt-in; existing behaviour is unchanged.
+
 ## 0.44.1
 
 ### Patch Changes
