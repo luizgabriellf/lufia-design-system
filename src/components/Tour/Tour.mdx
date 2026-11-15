@@ -103,9 +103,66 @@ Pass `stepIndex` and `onStepChange` to keep the step in the caller (for example 
 keeps its own step, starting at `defaultStepIndex` each time it opens. `open` is always controlled: the tour never closes
 itself, it calls `onFinish` or `onClose(reason)` and the app sets `open`.
 
+### Steps that wait for the person
+
+Set `mode: "do"` on a step when the person has to act on its target. The next (or finish) button is hidden, the right arrow
+key does not move forward, and `labels.doHint` is shown. The tour cannot tell that the action happened: the host changes
+`stepIndex` when it has. Back, skip and close stay available.
+
+<Canvas of={Stories.DoStep} story={{ inline: false, height: "26rem" }} />
+
+### Target status
+
+The host says what it knows about the current step's target with `targetStatus`: `ready` (default), `seeking` (still opening
+or looking, `labels.seeking` is appended to the body), `missing` (the step shows `missingBody` instead of `body`, and a `do`
+step offers `labels.skipStep` in place of next; the last step still says `finish`) or `blocked` (something else is in the way,
+and the body is `labels.blocked`). The tour does no detection of its own.
+
+<Canvas of={Stories.DoStepMissing} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.Seeking} story={{ inline: false, height: "26rem" }} />
+<Canvas of={Stories.Blocked} story={{ inline: false, height: "26rem" }} />
+
+### Custom targets
+
+`resolveTarget(step)` finds the target in place of the step's `target` (return `null` to fall back to it). When the element it
+returns only stands in for the real target, such as the button that opens a menu holding the hidden item, `isStandIn(element,
+step)` returns `true` and the step's `standInNote` is appended to the body.
+
+<Canvas of={Stories.CustomTarget} story={{ inline: false, height: "26rem" }} />
+
+### Typing
+
+While a text field outside the card has focus and holds a value, a step change does not move focus to the card's heading:
+that would lose the person's place. With `compactOnTyping`, on screens below 40rem the card gets `data-compact` while such a
+field has focus, and its body and hint are hidden so the card does not cover the field. It grows back 300 ms after focus
+leaves and never while a press is in progress, so a button does not move under a finger.
+
+<Canvas of={Stories.CompactWhileTyping} story={{ inline: false, height: "34rem" }} />
+
+### Inside a dialog
+
+`dialogLayout` has three opt-in switches for a target inside an open `dialog`. `dock`: on a narrow screen the dialog is
+resized to the viewport minus the card's height (inline, with `!important`, and handed back when the tour leaves it) so the
+card sits below the dialog, and scrolling the target into view leaves room for the dialog's own `header` and `footer`.
+`beside`: on a wide screen the card goes beside the dialog when there is room. `clipSpotlight`: the spotlight is cut off where
+the dialog's scroll area ends.
+
+<Canvas of={Stories.BesideTheDialog} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.DockedDialog} story={{ inline: false, height: "34rem" }} />
+
+### Switches and hooks
+
+`showCloseButton`, `closeOnEscape` and `arrowKeyNavigation` turn the package's own close button, Escape handling and arrow
+keys off, one by one, for a host that owns that behaviour. Stable attributes for host CSS and tests: the overlay root has
+`data-lufia-part="layer"`, the card has `data-lufia-part="card"`, `data-mode` (`read` or `do`), `data-status` (the
+`targetStatus`), `data-kind` (`float`, `sheet` or `center`) and `data-compact` while compact, and the spotlight has
+`data-lufia-part="spotlight"`.
+
+<Canvas of={Stories.SwitchesOff} story={{ inline: false, height: "26rem" }} />
+
 ### What the tour does not do
 
-It has no routes or navigation between pages, no steps that wait for the person to act ("do this to continue"), and no
+It has no routes or navigation between pages, no detection of whether the person did what a `do` step asks, and no
 persistence. An app that needs those drives the tour from its own state: change `stepIndex` when the person does the thing,
 and set `open` when the tour should show.
 
@@ -128,7 +185,7 @@ and set `open` when the tour should show.
 | Tab / Shift+Tab    | Card              | Moves between the card's buttons; focus is not trapped                                      |
 | Enter / Space      | A button          | Activates it                                                                                |
 
-Escape and the arrow keys act only while focus is on the card (Escape also when nothing in the page has focus), never while
+The right arrow does not move forward on a `do` step. Escape and the arrow keys act only while focus is on the card (Escape also when nothing in the page has focus), never while
 focus is in a field of the page, so they do not take keys from the app. The tour registers on the shared overlay stack, so a
 menu or dialog opened from the page above the tour closes first and the tour on the next Escape.
 

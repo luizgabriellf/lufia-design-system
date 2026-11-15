@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { axe } from "../../test/axe";
@@ -78,7 +78,7 @@ function setup(props: Partial<TourProps> = {}) {
   return { user, view };
 }
 
-const card = () => screen.getByRole("dialog");
+const card = () => document.querySelector<HTMLElement>('[data-lufia-part="card"]') as HTMLElement;
 const spot = () => document.querySelector<HTMLElement>('[data-lufia-part="spotlight"]')!;
 const layer = () => document.querySelector<HTMLElement>("[data-target]")!;
 
@@ -380,6 +380,361 @@ describe("Tour", () => {
     const dialog = screen.getByRole("dialog", { name: "In the modal" });
     expect(dialog.closest('[aria-modal="true"], dialog[open]')).not.toBeNull();
     expect(layer()).toHaveAttribute("data-dim", "false");
+  });
+
+  describe("do steps and target status", () => {
+    const doSteps: TourStep[] = [
+      {
+        target: "#first",
+        title: "Try it",
+        body: "Press the first control.",
+        mode: "do",
+        missingBody: "Not on screen.",
+      },
+      { target: "#second", title: "Read it", body: "Then read this." },
+      { target: "#first", title: "Last try", body: "Press it again.", mode: "do" },
+    ];
+    const doLabels = {
+      ...labels,
+      doHint: "Do this on the page",
+      skipStep: "Skip step",
+      seeking: "Opening…",
+      blocked: "Close the open window",
+    };
+
+    it("hides the next button and shows the hint on a do step, and does not step forward with the arrow key", async () => {
+      const onStepChange = vi.fn();
+      const { user } = setup({ steps: doSteps, labels: doLabels, onStepChange });
+      expect(card()).toHaveAttribute("data-mode", "do");
+      expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Skip step" })).not.toBeInTheDocument();
+      expect(screen.getByText("Do this on the page")).toBeInTheDocument();
+      await user.keyboard("{ArrowRight}");
+      expect(onStepChange).not.toHaveBeenCalled();
+    });
+
+    it("keeps next on a read step, and finish is hidden on a last do step", () => {
+      setup({ steps: doSteps, labels: doLabels, stepIndex: 1 });
+      expect(card()).toHaveAttribute("data-mode", "read");
+      expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+      expect(screen.queryByText("Do this on the page")).not.toBeInTheDocument();
+    });
+
+    it("hides finish on a last do step", () => {
+      setup({ steps: doSteps, labels: doLabels, stepIndex: 2 });
+      expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
+    });
+
+    it("offers to skip a do step whose target is missing, showing its missing body and no hint", async () => {
+      const onStepChange = vi.fn();
+      const onFinish = vi.fn();
+      const { user } = setup({
+        steps: doSteps,
+        labels: doLabels,
+        targetStatus: "missing",
+        onStepChange,
+        onFinish,
+      });
+      expect(card()).toHaveAttribute("data-status", "missing");
+      expect(screen.getByText("Not on screen.")).toBeInTheDocument();
+      expect(screen.queryByText("Press the first control.")).not.toBeInTheDocument();
+      expect(screen.queryByText("Do this on the page")).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Skip step" }));
+      expect(onStepChange).toHaveBeenCalledWith(1);
+    });
+
+    it("finishes from a missing last do step", async () => {
+      const onFinish = vi.fn();
+      const { user } = setup({
+        steps: doSteps,
+        labels: doLabels,
+        stepIndex: 2,
+        targetStatus: "missing",
+        onFinish,
+      });
+      await user.click(screen.getByRole("button", { name: "Done" }));
+      expect(onFinish).toHaveBeenCalled();
+    });
+
+    it("appends the seeking label to the body and keeps a do step waiting", () => {
+      setup({ steps: doSteps, labels: doLabels, targetStatus: "seeking" });
+      expect(screen.getByText("Opening…")).toBeInTheDocument();
+      expect(screen.getByText(/Press the first control/)).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+    });
+
+    it("shows the blocked body when something else is in the way", () => {
+      setup({ steps: doSteps, labels: doLabels, targetStatus: "blocked" });
+      expect(screen.getByText("Close the open window")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Skip step" })).toBeInTheDocument();
+    });
+
+    it("has no axe violations on a do step", async () => {
+      setup({ steps: doSteps, labels: doLabels });
+      expect(await axe(layer())).toHaveNoViolations();
+    });
+  });
+
+  describe("custom targets", () => {
+    it("finds the target with resolveTarget, before the step's own target, and falls back when it returns null", () => {
+      const resolve = vi.fn((step: TourStep) =>
+        step.title === "First stop" ? document.getElementById("second") : null,
+      );
+      setup({ resolveTarget: resolve });
+      // The first step points at "#first" but the resolver sends it to "#second".
+      expect(spot().style.transform).toBe("translate(294px, 394px)");
+      expect(resolve).toHaveBeenCalledWith(expect.objectContaining({ title: "First stop" }));
+    });
+
+    it("uses the step target when the resolver returns null", () => {
+      setup({ resolveTarget: () => null });
+      expect(spot().style.transform).toBe("translate(94px, 194px)");
+    });
+
+    it("appends the stand-in note only when the host says the element is a stand-in", async () => {
+      const noted: TourStep[] = [
+        { target: "#first", title: "Hidden item", body: "Body.", standInNote: "It is in the menu." },
+      ];
+      const { view } = setup({ steps: noted, isStandIn: () => true });
+      expect(screen.getByText("It is in the menu.")).toBeInTheDocument();
+      view.rerender(
+        <Page>
+          <Tour steps={noted} open labels={labels} isStandIn={() => false} />
+        </Page>,
+      );
+      await waitFor(() => expect(screen.queryByText("It is in the menu.")).not.toBeInTheDocument());
+    });
+  });
+
+  describe("focus and typing", () => {
+    it("does not move focus to the card while a field outside it holds a value", async () => {
+      const { user, view } = setup();
+      const field = screen.getByRole("textbox", { name: "Search" });
+      await user.click(field);
+      await user.keyboard("abc");
+      view.rerender(
+        <Page>
+          <Tour steps={steps} open labels={labels} stepIndex={1} />
+        </Page>,
+      );
+      expect(field).toHaveFocus();
+    });
+
+    it("still moves focus to the heading when the focused field is empty", async () => {
+      const { user, view } = setup();
+      const field = screen.getByRole("textbox", { name: "Search" });
+      await user.click(field);
+      view.rerender(
+        <Page>
+          <Tour steps={steps} open labels={labels} stepIndex={1} />
+        </Page>,
+      );
+      expect(screen.getByRole("heading", { name: "Second stop" })).toHaveFocus();
+    });
+
+    it("is compact while a field of the page has focus on a phone, and settles after it leaves", async () => {
+      withLayout({ width: 360, height: 640 });
+      const user = userEvent.setup();
+      render(
+        <Page>
+          <Tour steps={steps} open labels={labels} compactOnTyping />
+        </Page>,
+      );
+      expect(card()).not.toHaveAttribute("data-compact");
+      await user.click(screen.getByRole("textbox", { name: "Search" }));
+      expect(card()).toHaveAttribute("data-compact");
+      await user.click(document.body);
+      // Not at once: the card holds its size through the settle delay.
+      expect(card()).toHaveAttribute("data-compact");
+      await waitFor(() => expect(card()).not.toHaveAttribute("data-compact"));
+    });
+
+    it("is never compact on a wide screen, or when the option is off", async () => {
+      const { user } = setup({ compactOnTyping: true });
+      await user.click(screen.getByRole("textbox", { name: "Search" }));
+      expect(card()).not.toHaveAttribute("data-compact");
+    });
+
+    it("does not change while a press is in progress", async () => {
+      withLayout({ width: 360, height: 640 });
+      render(
+        <Page>
+          <Tour steps={steps} open labels={labels} compactOnTyping />
+        </Page>,
+      );
+      const field = screen.getByRole("textbox", { name: "Search" });
+      act(() => field.focus());
+      await waitFor(() => expect(card()).toHaveAttribute("data-compact"));
+      fireEvent.pointerDown(document.body);
+      act(() => field.blur());
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      expect(card()).toHaveAttribute("data-compact");
+      fireEvent.pointerUp(document.body);
+      await waitFor(() => expect(card()).not.toHaveAttribute("data-compact"));
+    });
+  });
+
+  describe("switches", () => {
+    it("removes the close button, Escape and the arrow keys when they are switched off", async () => {
+      const onClose = vi.fn();
+      const onStepChange = vi.fn();
+      const { user } = setup({
+        showCloseButton: false,
+        closeOnEscape: false,
+        arrowKeyNavigation: false,
+        onClose,
+        onStepChange,
+      });
+      expect(screen.queryByRole("button", { name: "Close tour" })).not.toBeInTheDocument();
+      await user.keyboard("{Escape}{ArrowRight}");
+      expect(onClose).not.toHaveBeenCalled();
+      expect(onStepChange).not.toHaveBeenCalled();
+      await user.click(screen.getByRole("button", { name: "Skip tour" }));
+      expect(onClose).toHaveBeenCalledWith("skip");
+    });
+
+    it("marks the layer and the card with stable data attributes", () => {
+      setup();
+      expect(layer()).toHaveAttribute("data-lufia-part", "layer");
+      expect(card()).toHaveAttribute("data-lufia-part", "card");
+      expect(card()).toHaveAttribute("data-status", "ready");
+    });
+  });
+
+  describe("inside a dialog", () => {
+    const dialogBoxes = () => {
+      boxes.dlg = new DOMRect(300, 100, 300, 500);
+    };
+    const withDialog = (props: Partial<TourProps>, pageWidth = 1000) => {
+      withLayout({ width: pageWidth, height: pageWidth < 600 ? 640 : 800 });
+      dialogBoxes();
+      return render(
+        <dialog id="dlg" open>
+          <header id="hdr">Header</header>
+          <div
+            id="scroller"
+            style={{ overflowY: "auto" }}
+            ref={(element) => {
+              if (!element) return;
+              Object.defineProperty(element, "scrollHeight", { configurable: true, value: 900 });
+              Object.defineProperty(element, "clientHeight", { configurable: true, value: 200 });
+            }}
+          >
+            <button id="first" type="button">
+              In the dialog
+            </button>
+          </div>
+          <footer id="ftr">Footer</footer>
+          <Tour
+            steps={[{ target: "#first", title: "In it", body: "Here." }]}
+            open
+            labels={labels}
+            {...props}
+          />
+        </dialog>,
+      );
+    };
+    afterEach(() => {
+      delete boxes.dlg;
+      delete boxes.scroller;
+      delete boxes.hdr;
+      delete boxes.ftr;
+      boxes.first = new DOMRect(100, 200, 80, 40);
+    });
+
+    it("places the card beside the dialog when there is room, only when asked", () => {
+      withDialog({ dialogLayout: { beside: true } });
+      // The dialog ends at 600: the card starts after the gap.
+      expect(card()).toHaveAttribute("data-kind", "float");
+      expect(parseFloat(card().style.left)).toBeGreaterThanOrEqual(600);
+    });
+
+    it("keeps the card by the target without the option", () => {
+      withDialog({});
+      expect(parseFloat(card().style.left)).toBeLessThan(600);
+    });
+
+    it("clips the spotlight to the dialog's scroll area", () => {
+      boxes.scroller = new DOMRect(0, 100, 300, 200);
+      boxes.first = new DOMRect(100, 280, 80, 40);
+      withDialog({ dialogLayout: { clipSpotlight: true } });
+      // 280 to 320 cut at 300: 20 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("32px");
+    });
+
+    it("does not clip the spotlight without the option", () => {
+      boxes.scroller = new DOMRect(0, 100, 300, 200);
+      boxes.first = new DOMRect(100, 280, 80, 40);
+      withDialog({});
+      expect(spot().style.blockSize).toBe("52px");
+    });
+
+    it("docks a full-screen phone dialog above the sheet, and hands it back on close", () => {
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      const view = render(
+        <dialog id="dlg" open>
+          <button id="first" type="button">
+            In the dialog
+          </button>
+          <Tour
+            steps={[{ target: "#first", title: "In it", body: "Here." }]}
+            open
+            labels={labels}
+            dialogLayout={{ dock: true }}
+          />
+        </dialog>,
+      );
+      const dialog = view.container.querySelector("dialog") as HTMLElement;
+      expect(dialog).toHaveAttribute("data-lufia-tour-docked");
+      expect(card()).toHaveAttribute("data-edge", "bottom");
+      expect(dialog.style.getPropertyValue("height")).toContain("180px");
+      view.rerender(<dialog id="dlg" open />);
+      expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
+      expect(dialog.style.getPropertyValue("height")).toBe("");
+    });
+
+    it("leaves the dialog alone without the dock option", () => {
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      const view = render(
+        <dialog id="dlg" open>
+          <button id="first" type="button">
+            In the dialog
+          </button>
+          <Tour steps={[{ target: "#first", title: "In it", body: "Here." }]} open labels={labels} />
+        </dialog>,
+      );
+      expect(view.container.querySelector("dialog")).not.toHaveAttribute("data-lufia-tour-docked");
+    });
+
+    it("reserves room for the dialog's own footer when scrolling the target clear of the sheet", () => {
+      Element.prototype.scrollBy = vi.fn();
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      boxes.hdr = new DOMRect(0, 0, 360, 60);
+      boxes.ftr = new DOMRect(0, 560, 360, 80);
+      boxes.first = new DOMRect(100, 590, 80, 40);
+      render(
+        <dialog id="dlg" open>
+          <header id="hdr">Header</header>
+          <button id="first" type="button">
+            In the dialog
+          </button>
+          <footer id="ftr">Footer</footer>
+          <Tour
+            steps={[{ target: "#first", title: "In it", body: "Here." }]}
+            open
+            labels={labels}
+            dialogLayout={{ dock: true }}
+          />
+        </dialog>,
+      );
+      // The footer starts at 560, so the room above it ends at 548: the target's bottom (630) goes up by 82.
+      expect(Element.prototype.scrollBy).toHaveBeenCalledWith({ top: 82, behavior: "smooth" });
+      Reflect.deleteProperty(Element.prototype, "scrollBy");
+    });
   });
 
   it("has no axe violations", async () => {

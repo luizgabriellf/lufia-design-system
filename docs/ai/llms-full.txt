@@ -8224,14 +8224,24 @@ other, while the card stays on screen. Nothing is made inert and page scroll is 
 | `onFinish` | `() => void` | no |  | Called when the person finishes the last step. Set `open` to `false` here. |
 | `labels` | `TourLabels` | yes |  |  |
 | `spotlightPadding` | `number` | no | `6` | Space between the target and the edge of the spotlight, in pixels. Default `6`. |
+| `targetStatus` | `"ready" \| "seeking" \| "missing" \| "blocked"` | no | `"ready"` | The status of the current step's target, supplied by the host. Default `ready`. |
+| `resolveTarget` | `(step: TourStep) => Element \| null` | no |  | Finds a step's target in place of (and before) `target`. Return `null` to fall back to `target`. Called on every frame while the tour shows, so keep it cheap. It receives the current step. |
+| `isStandIn` | `(element: Element, step: TourStep) => boolean` | no |  | Tells the tour that the resolved element only stands in for the real target, so `standInNote` is appended. |
+| `dialogLayout` | `TourDialogLayout` | no |  | Layout switches for a target inside an open modal `dialog`. |
+| `compactOnTyping` | `boolean` | no | `false` | Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`. |
+| `showCloseButton` | `boolean` | no | `true` | Whether the card has its close button. Default `true`. |
+| `closeOnEscape` | `boolean` | no | `true` | Whether Escape calls `onClose("escape")`. Default `true`. |
+| `arrowKeyNavigation` | `boolean` | no | `true` | Whether the arrow keys step while focus is on the card. Default `true`. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
 - `TourCloseReason`: `"skip" | "close" | "escape"`
-- `TourLabels`: `{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; }`
-- `TourStep`: `{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; }`
+- `TourDialogLayout`: `{ dock?: boolean | undefined; beside?: boolean | undefined; clipSpotlight?: boolean | undefined; }`
+- `TourLabels`: `{ next: string; back: string; skip: string; close: string; finish: string; stepOf: (current: number, total: number) => string; doHint?: string | undefined; skipStep?: string | undefined; seeking?: string | undefined; blocked?: string | undefined; }`
+- `TourStep`: `{ target?: string | RefObject<Element | null> | undefined; title: ReactNode; body: ReactNode; placement?: Side | undefined; mode?: "read" | "do" | undefined; missingBody?: ReactNode; standInNote?: ReactNode; }`
+- `TourTargetStatus`: `"ready" | "seeking" | "missing" | "blocked"`
 
 ### Example
 
@@ -8307,6 +8317,15 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--phone-320`
 - `components-overlays-tour--right-to-left`
 - `components-overlays-tour--inside-a-modal`
+- `components-overlays-tour--do-step`
+- `components-overlays-tour--do-step-missing`
+- `components-overlays-tour--seeking`
+- `components-overlays-tour--blocked`
+- `components-overlays-tour--custom-target`
+- `components-overlays-tour--compact-while-typing`
+- `components-overlays-tour--switches-off`
+- `components-overlays-tour--beside-the-dialog`
+- `components-overlays-tour--docked-dialog`
 
 ## VisuallyHidden
 

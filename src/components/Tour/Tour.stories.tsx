@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef, useState } from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
-import { Tour, type TourLabels, type TourStep } from "./Tour";
+import { Tour, type TourLabels, type TourProps, type TourStep } from "./Tour";
 
 const labels: TourLabels = {
   next: "Next",
@@ -168,3 +168,154 @@ function InsideModal() {
 
 /** A target inside an open modal: the tour is portalled into the modal, and the modal's backdrop does the dimming. */
 export const InsideAModal: Story = { render: () => <InsideModal /> };
+
+const guidedLabels: TourLabels = {
+  ...labels,
+  doHint: "Do this on the page to continue.",
+  skipStep: "Skip step",
+  seeking: "Opening this part of the screen…",
+  blocked: "Close the open window to see this part.",
+};
+
+function Guided({
+  steps: given,
+  status = "ready",
+  ...rest
+}: { steps: TourStep[]; status?: TourProps["targetStatus"] } & Partial<TourProps>) {
+  const [open, setOpen] = useState(true);
+  const [index, setIndex] = useState(0);
+  return (
+    <div style={{ display: "grid", gap: "1rem", padding: "1.5rem", minBlockSize: "24rem" }}>
+      <label style={{ display: "grid", gap: "0.25rem", maxInlineSize: "20rem" }}>
+        Record name
+        <input data-tour="name" style={{ font: "inherit", padding: "0.5rem 0.75rem" }} />
+      </label>
+      <div>
+        <Button
+          variant="primary"
+          data-tour="save"
+          onClick={() => setIndex((value) => Math.min(value + 1, given.length - 1))}
+        >
+          Save record
+        </Button>
+      </div>
+      <Tour
+        steps={given}
+        open={open}
+        stepIndex={index}
+        onStepChange={setIndex}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={guidedLabels}
+        targetStatus={status}
+        {...rest}
+      />
+    </div>
+  );
+}
+
+const doSteps: TourStep[] = [
+  {
+    target: '[data-tour="save"]',
+    mode: "do",
+    title: "Save the record",
+    body: "Press Save to continue.",
+    missingBody: "The save button is not on this screen.",
+  },
+  { title: "Saved", body: "The record is in your list." },
+];
+
+/** A `do` step: the next button is hidden and a hint says what to do. Pressing Save here moves the tour on, as a host would. */
+export const DoStep: StoryObj = { render: () => <Guided steps={doSteps} /> };
+/** The host reports the target as missing: the step shows its own body and can be skipped. */
+export const DoStepMissing: StoryObj = { render: () => <Guided steps={doSteps} status="missing" /> };
+/** The host is still opening the part of the screen that holds the target. */
+export const Seeking: StoryObj = { render: () => <Guided steps={doSteps} status="seeking" /> };
+/** Something else (an open window) is in the way. */
+export const Blocked: StoryObj = { render: () => <Guided steps={doSteps} status="blocked" /> };
+/** A host resolver finds the target, and a note says the element is only a stand-in for the real one. */
+export const CustomTarget: StoryObj = {
+  render: () => (
+    <Guided
+      steps={[
+        {
+          title: "Export",
+          body: "Export lives in the overflow menu.",
+          standInNote: "It is behind this button: open it to find Export.",
+        },
+      ]}
+      resolveTarget={() => document.querySelector('[data-tour="save"]')}
+      isStandIn={() => true}
+    />
+  ),
+};
+/** On a phone, while a text field has focus the card shrinks to its title and buttons. Focus the field to see it. */
+export const CompactWhileTyping: StoryObj = {
+  render: () => (
+    <Guided
+      steps={[
+        { target: '[data-tour="name"]', title: "Name it", body: "Type a name for the record.", mode: "do" },
+      ]}
+      compactOnTyping
+    />
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** The package's own close button, Escape and arrow keys are each switchable, for a host that owns that behaviour. */
+export const SwitchesOff: StoryObj = {
+  render: () => (
+    <Guided steps={doSteps} showCloseButton={false} closeOnEscape={false} arrowKeyNavigation={false} />
+  ),
+};
+
+function InsideDialog({ dialogLayout }: Pick<TourProps, "dialogLayout">) {
+  const [open, setOpen] = useState(true);
+  return (
+    <dialog
+      open
+      style={{
+        position: "fixed",
+        inset: 0,
+        margin: "auto",
+        inlineSize: "min(28rem, 100%)",
+        blockSize: "min(30rem, 100%)",
+        padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid var(--lufia-color-border-strong)",
+        background: "var(--lufia-color-bg-surface-solid)",
+        color: "var(--lufia-color-text-default)",
+      }}
+    >
+      <header style={{ padding: "1rem" }}>Edit record</header>
+      <div style={{ flex: 1, overflowY: "auto", padding: "1rem" }}>
+        <div style={{ blockSize: "14rem" }}>Earlier fields</div>
+        <Button variant="secondary" data-tour="more">
+          Add detail
+        </Button>
+        <div style={{ blockSize: "24rem" }} />
+      </div>
+      <footer style={{ padding: "1rem" }}>
+        <Button variant="primary">Save</Button>
+      </footer>
+      <Tour
+        steps={[{ target: '[data-tour="more"]', title: "Add detail", body: "Extra detail goes here." }]}
+        open={open}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+        dialogLayout={dialogLayout}
+      />
+    </dialog>
+  );
+}
+
+/** Wide screens: the card sits beside the dialog, and the spotlight stops where the dialog's scroll area does. */
+export const BesideTheDialog: StoryObj = {
+  render: () => <InsideDialog dialogLayout={{ beside: true, clipSpotlight: true }} />,
+};
+/** Phones: the dialog shrinks to the viewport minus the card, so the card sits below it instead of covering its footer. */
+export const DockedDialog: StoryObj = {
+  render: () => <InsideDialog dialogLayout={{ dock: true, clipSpotlight: true }} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};

@@ -1,1 +1,9 @@
-export { Tour, type TourCloseReason, type TourLabels, type TourProps, type TourStep } from "./Tour";
+export {
+  Tour,
+  type TourCloseReason,
+  type TourDialogLayout,
+  type TourLabels,
+  type TourProps,
+  type TourStep,
+  type TourTargetStatus,
+} from "./Tour";
