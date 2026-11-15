@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { axe } from "../../test/axe";
@@ -425,6 +425,40 @@ describe("Tour", () => {
       expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
     });
 
+    it("leaves a last do step with the close button as its only action, unless that is switched off", () => {
+      setup({ steps: doSteps, labels: doLabels, stepIndex: 2 });
+      expect(screen.getByRole("button", { name: "Close tour" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Skip tour" })).not.toBeInTheDocument();
+    });
+
+    it("never leaves a last do step without an action: skip shows when the close button is off", async () => {
+      const onClose = vi.fn();
+      const { user } = setup({
+        steps: doSteps,
+        labels: doLabels,
+        stepIndex: 2,
+        showCloseButton: false,
+        onClose,
+      });
+      expect(screen.queryByRole("button", { name: "Close tour" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Skip tour" }));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledWith("skip");
+    });
+
+    it("shows skip on a last do step with skipOnLastStep, beside close", () => {
+      setup({ steps: doSteps, labels: doLabels, stepIndex: 2, skipOnLastStep: true });
+      expect(screen.getByRole("button", { name: "Skip tour" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Close tour" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
+    });
+
+    it("has no axe violations on a last do step with no close button", async () => {
+      setup({ steps: doSteps, labels: doLabels, stepIndex: 2, showCloseButton: false });
+      expect(await axe(layer())).toHaveNoViolations();
+    });
+
     it("offers to skip a do step whose target is missing, showing its missing body and no hint", async () => {
       const onStepChange = vi.fn();
       const onFinish = vi.fn();
@@ -571,6 +605,36 @@ describe("Tour", () => {
       expect(card()).toHaveAttribute("data-compact");
       fireEvent.pointerUp(document.body);
       await waitFor(() => expect(card()).not.toHaveAttribute("data-compact"));
+    });
+  });
+
+  describe("skipOnLastStep", () => {
+    it("hides skip on the last step by default", () => {
+      setup({ stepIndex: 2 });
+      expect(screen.queryByRole("button", { name: "Skip tour" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
+    });
+
+    it("keeps skip before finish on the last read step, and reports the same outcome as earlier steps", async () => {
+      const onClose = vi.fn();
+      const onFinish = vi.fn();
+      const { user } = setup({ stepIndex: 2, skipOnLastStep: true, onClose, onFinish });
+      const buttons = within(card())
+        .getAllByRole("button")
+        .map((button) => button.textContent || button.getAttribute("aria-label"));
+      expect(buttons).toEqual(["Close tour", "Skip tour", "Back", "Done"]);
+      expect(screen.getByRole("heading", { name: "No target" })).toHaveFocus();
+      await user.click(screen.getByRole("button", { name: "Skip tour" }));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledWith("skip");
+      expect(onFinish).not.toHaveBeenCalled();
+      await user.click(screen.getByRole("button", { name: "Done" }));
+      expect(onFinish).toHaveBeenCalledTimes(1);
+    });
+
+    it("has no axe violations with both skip and finish on the last step", async () => {
+      setup({ stepIndex: 2, skipOnLastStep: true });
+      expect(await axe(layer())).toHaveNoViolations();
     });
   });
 

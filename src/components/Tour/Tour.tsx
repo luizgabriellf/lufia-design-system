@@ -73,7 +73,10 @@ export type TourDialogLayout = {
 export type TourLabels = {
   next: string;
   back: string;
-  /** Leaves the tour from any step but the last. */
+  /**
+   * Leaves the tour (`onClose("skip")`). Shown on every step but the last, and on the last one when `skipOnLastStep` is set
+   * or when a `do` step would otherwise have no way out (see `skipOnLastStep`).
+   */
   skip: string;
   /** Accessible name of the close button. */
   close: string;
@@ -130,6 +133,13 @@ export type TourProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"
   compactOnTyping?: boolean;
   /** Whether the card has its close button. Default `true`. */
   showCloseButton?: boolean;
+  /**
+   * Keep the skip button (`labels.skip`, calling `onClose("skip")`) on the last step, next to the finish button, so a host that
+   * always offers an explicit leave action keeps it there. Default `false`. Independently of this prop, a last step in `do`
+   * mode shows the skip button when `showCloseButton` is `false`, because that step has no finish button and would
+   * otherwise have no action at all.
+   */
+  skipOnLastStep?: boolean;
   /** Whether Escape calls `onClose("escape")`. Default `true`. */
   closeOnEscape?: boolean;
   /** Whether the arrow keys step while focus is on the card. Default `true`. */
@@ -373,6 +383,7 @@ export function Tour({
   compactOnTyping = false,
   showCloseButton = true,
   closeOnEscape = true,
+  skipOnLastStep = false,
   arrowKeyNavigation = true,
   className,
   onKeyDown,
@@ -599,6 +610,9 @@ export function Tour({
   // A `do` step waits for the person to act on the target: nothing moves it forward until the host says so, unless the
   // target is missing and the step can only be skipped.
   const doing = step?.mode === "do" && !missing;
+  // The skip button leaves on every step but the last, on the last when asked for, and always when nothing else on the card
+  // could end the tour (a last `do` step has no finish button; without the close button it would be a dead end).
+  const showSkip = !atLast || skipOnLastStep || (doing && !showCloseButton);
 
   const onCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event);
@@ -704,11 +718,11 @@ export function Tour({
           ) : null}
         </div>
         <div className={styles.actions}>
-          {atLast ? null : (
+          {showSkip ? (
             <Button variant="ghost" size="sm" onClick={() => onClose?.("skip")}>
               {labels.skip}
             </Button>
-          )}
+          ) : null}
           <span className={styles.spacer} />
           {current > 0 ? (
             <Button variant="secondary" size="sm" onClick={() => go(current - 1)}>

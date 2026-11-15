@@ -8230,6 +8230,7 @@ other, while the card stays on screen. Nothing is made inert and page scroll is 
 | `dialogLayout` | `TourDialogLayout` | no |  | Layout switches for a target inside an open modal `dialog`. |
 | `compactOnTyping` | `boolean` | no | `false` | Below 40rem, while a text field outside the card has focus, set `data-compact` on the card (CSS then hides the body) so the card does not cover the field being filled. It settles 300 ms after focus leaves and never changes mid-press. Default `false`. |
 | `showCloseButton` | `boolean` | no | `true` | Whether the card has its close button. Default `true`. |
+| `skipOnLastStep` | `boolean` | no | `false` | Keep the skip button (`labels.skip`, calling `onClose("skip")`) on the last step, next to the finish button, so a host that always offers an explicit leave action keeps it there. Default `false`. Independently of this prop, a last step in `do` mode shows the skip button when `showCloseButton` is `false`, because that step has no finish button and would otherwise have no action at all. |
 | `closeOnEscape` | `boolean` | no | `true` | Whether Escape calls `onClose("escape")`. Default `true`. |
 | `arrowKeyNavigation` | `boolean` | no | `true` | Whether the arrow keys step while focus is on the card. Default `true`. |
 
@@ -8323,6 +8324,8 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--blocked`
 - `components-overlays-tour--custom-target`
 - `components-overlays-tour--compact-while-typing`
+- `components-overlays-tour--skip-on-last-step`
+- `components-overlays-tour--last-do-step-no-close`
 - `components-overlays-tour--switches-off`
 - `components-overlays-tour--beside-the-dialog`
 - `components-overlays-tour--docked-dialog`

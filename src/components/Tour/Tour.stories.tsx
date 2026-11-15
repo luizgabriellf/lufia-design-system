@@ -261,6 +261,16 @@ export const CompactWhileTyping: StoryObj = {
   ),
   globals: { viewport: { value: "w390", isRotated: false } },
 };
+/** A host that always offers an explicit leave action keeps the skip button on the last step too. */
+export const SkipOnLastStep: StoryObj = {
+  render: () => <Guided steps={doSteps.slice(0, 1)} skipOnLastStep />,
+};
+
+/** A last `do` step with the close button off still shows skip: the card is never left with no action. */
+export const LastDoStepNoClose: StoryObj = {
+  render: () => <Guided steps={doSteps.slice(0, 1)} showCloseButton={false} />,
+};
+
 /** The package's own close button, Escape and arrow keys are each switchable, for a host that owns that behaviour. */
 export const SwitchesOff: StoryObj = {
   render: () => (
