@@ -147,3 +147,5 @@ through `labels`, and never start a tour the person did not ask for more than on
 - `components-overlays-tour--switches-off`
 - `components-overlays-tour--beside-the-dialog`
 - `components-overlays-tour--docked-dialog`
+- `components-overlays-tour--docked-modal`
+- `components-overlays-tour--docked-portal-modal`

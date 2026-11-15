@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, useState } from "react";
 import { axe } from "../../test/axe";
+import { mockDialog } from "../../test/dialog";
 import { Modal } from "../Modal";
 import { Tour, type TourProps, type TourStep } from "./Tour";
 
@@ -35,7 +36,8 @@ function withLayout({ width = 1000, height = 800 }: { width?: number; height?: n
   vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function (this: Element) {
     if (this.getAttribute("role") === "dialog" && this.getAttribute("aria-modal") === "false")
       return new DOMRect(0, 0, 320, 180);
-    return boxes[this.id] ?? new DOMRect(0, 0, 0, 0);
+    const part = this.getAttribute("data-lufia-part");
+    return boxes[this.id] ?? (part ? boxes[`part:${part}`] : undefined) ?? new DOMRect(0, 0, 0, 0);
   });
   Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: width });
   Object.defineProperty(document.documentElement, "clientHeight", { configurable: true, value: height });
@@ -759,6 +761,35 @@ describe("Tour", () => {
       expect(dialog.style.getPropertyValue("height")).toBe("");
     });
 
+    it("resizes a marked shell with the dialog, and never an unmarked first child", () => {
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      const tree = (tour: boolean) => (
+        <dialog id="dlg" open>
+          <header id="hdr">Header</header>
+          <div data-lufia-tour-shell id="shell">
+            <button id="first" type="button">
+              In the dialog
+            </button>
+          </div>
+          {tour && (
+            <Tour
+              steps={[{ target: "#first", title: "In it", body: "Here." }]}
+              open
+              labels={labels}
+              dialogLayout={{ dock: true }}
+            />
+          )}
+        </dialog>
+      );
+      const view = render(tree(true));
+      const shell = view.container.querySelector<HTMLElement>("#shell")!;
+      expect(shell.style.getPropertyValue("height")).toContain("180px");
+      expect(view.container.querySelector<HTMLElement>("#hdr")!.style.getPropertyValue("height")).toBe("");
+      view.rerender(tree(false));
+      expect(shell.style.getPropertyValue("height")).toBe("");
+    });
+
     it("leaves the dialog alone without the dock option", () => {
       withLayout({ width: 360, height: 640 });
       boxes.dlg = new DOMRect(0, 0, 360, 640);
@@ -798,6 +829,137 @@ describe("Tour", () => {
       // The footer starts at 560, so the room above it ends at 548: the target's bottom (630) goes up by 82.
       expect(Element.prototype.scrollBy).toHaveBeenCalledWith({ top: 82, behavior: "smooth" });
       Reflect.deleteProperty(Element.prototype, "scrollBy");
+    });
+  });
+
+  describe("inside the package Modal", () => {
+    const phoneBoxes = () => {
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      boxes["part:header"] = new DOMRect(0, 0, 360, 56);
+      boxes["part:footer"] = new DOMRect(0, 560, 360, 80);
+    };
+    let dialogMock: ReturnType<typeof mockDialog>;
+    beforeEach(() => {
+      dialogMock = mockDialog();
+    });
+    const tourModal = (renderAs: "dialog" | "portal", props: Partial<TourProps> | null = {}) => (
+      <Modal id="dlg" open onClose={() => {}} title="Edit" footer="Save" renderAs={renderAs}>
+        <article>
+          <header id="inner-header">Inside the content</header>
+          <button id="first" type="button">
+            Low in the body
+          </button>
+          <footer id="inner-footer">Content footer</footer>
+        </article>
+        {props && (
+          <Tour
+            steps={[{ target: "#first", title: "In it", body: "Here." }]}
+            open
+            labels={labels}
+            dialogLayout={{ dock: true }}
+            {...props}
+          />
+        )}
+      </Modal>
+    );
+    afterEach(() => {
+      cleanup();
+      dialogMock.restore();
+      delete boxes.dlg;
+      delete boxes["part:header"];
+      delete boxes["part:footer"];
+      delete boxes["inner-header"];
+      delete boxes["inner-footer"];
+      boxes.first = new DOMRect(100, 200, 80, 40);
+      Reflect.deleteProperty(Element.prototype, "scrollBy");
+    });
+
+    it.each(["dialog", "portal"] as const)(
+      "docks a full-screen %s Modal without resizing its header, and hands it back",
+      (renderAs) => {
+        phoneBoxes();
+        const view = render(tourModal(renderAs));
+        const panel = document.querySelector<HTMLElement>('[data-lufia-part="panel"]')!;
+        const header = document.querySelector<HTMLElement>('[data-lufia-part="header"]')!;
+        expect(panel).toHaveAttribute("data-lufia-tour-docked");
+        expect(panel.style.getPropertyValue("height")).toBe("calc(100dvh - 180px)");
+        expect(panel.style.getPropertyValue("margin-block-end")).toBe("180px");
+        for (const part of ["header", "body", "footer"]) {
+          const element = document.querySelector<HTMLElement>(`[data-lufia-part="${part}"]`)!;
+          expect(element.style.getPropertyValue("height")).toBe("");
+          expect(element.style.getPropertyValue("max-height")).toBe("");
+        }
+        expect(header.style.cssText).toBe("");
+        view.rerender(tourModal(renderAs, null));
+        expect(panel).not.toHaveAttribute("data-lufia-tour-docked");
+        expect(panel.style.getPropertyValue("height")).toBe("");
+        expect(panel.style.getPropertyValue("max-height")).toBe("");
+        expect(panel.style.getPropertyValue("margin-block-end")).toBe("");
+      },
+    );
+
+    it("hands the Modal back when the tour moves to a step outside it", () => {
+      phoneBoxes();
+      boxes.second = new DOMRect(300, 400, 120, 40);
+      const outside = (index: number) => (
+        <>
+          <button id="second" type="button">
+            Outside
+          </button>
+          {tourModal("dialog", {
+            steps: [
+              { target: "#first", title: "In it", body: "Here." },
+              { target: "#second", title: "Out", body: "There." },
+            ],
+            stepIndex: index,
+          })}
+        </>
+      );
+      const view = render(outside(0));
+      const panel = document.querySelector<HTMLElement>('[data-lufia-part="panel"]')!;
+      expect(panel).toHaveAttribute("data-lufia-tour-docked");
+      view.rerender(outside(1));
+      expect(panel).not.toHaveAttribute("data-lufia-tour-docked");
+      expect(panel.style.getPropertyValue("height")).toBe("");
+      expect(panel.style.getPropertyValue("margin-block-end")).toBe("");
+    });
+
+    it("clears the Modal's own bars, not a header or footer inside the content, when revealing", () => {
+      Element.prototype.scrollBy = vi.fn();
+      phoneBoxes();
+      // Content bars with boxes that would change the answer if they were mistaken for the Modal's.
+      boxes["inner-header"] = new DOMRect(0, 300, 360, 20);
+      boxes["inner-footer"] = new DOMRect(0, 400, 360, 20);
+      boxes.first = new DOMRect(100, 590, 80, 40);
+      render(tourModal("dialog"));
+      // The Modal footer starts at 560: the room above it ends at 548, so the target's bottom (630) goes up by 82.
+      expect(Element.prototype.scrollBy).toHaveBeenCalledWith({ top: 82, behavior: "smooth" });
+    });
+
+    it("cuts the spotlight where the sticky header and footer cover the scroller", () => {
+      withLayout({ width: 360, height: 640 });
+      boxes.dlg = new DOMRect(0, 0, 360, 640);
+      boxes["part:header"] = new DOMRect(0, 0, 360, 56);
+      boxes["part:footer"] = new DOMRect(0, 460, 360, 80);
+      boxes.first = new DOMRect(100, 20, 80, 100);
+      Object.defineProperty(HTMLElement.prototype, "scrollHeight", { configurable: true, value: 900 });
+      Object.defineProperty(HTMLElement.prototype, "clientHeight", { configurable: true, value: 300 });
+      const style = vi.spyOn(window, "getComputedStyle").mockImplementation(
+        (element) =>
+          ({
+            overflowY: element.getAttribute("data-lufia-part") === "panel" ? "auto" : "visible",
+            fontSize: "16px",
+            direction: "ltr",
+          }) as CSSStyleDeclaration,
+      );
+      render(tourModal("dialog", { dialogLayout: { clipSpotlight: true } }));
+      // 20 to 120 cut at the header's bottom (56): 64 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("76px");
+      style.mockRestore();
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
+      Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+      delete boxes["part:footer"];
     });
   });
 

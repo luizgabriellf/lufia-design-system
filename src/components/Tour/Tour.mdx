@@ -141,14 +141,19 @@ leaves and never while a press is in progress, so a button does not move under a
 
 ### Inside a dialog
 
-`dialogLayout` has three opt-in switches for a target inside an open `dialog`. `dock`: on a narrow screen the dialog is
-resized to the viewport minus the card's height (inline, with `!important`, and handed back when the tour leaves it) so the
-card sits below the dialog, and scrolling the target into view leaves room for the dialog's own `header` and `footer`.
-`beside`: on a wide screen the card goes beside the dialog when there is room. `clipSpotlight`: the spotlight is cut off where
-the dialog's scroll area ends.
+`dialogLayout` has three opt-in switches for a target inside an open modal: the package's `Modal` (either `renderAs`) or any
+native `dialog`. `dock`: on a narrow screen a modal that fills the screen is resized to the viewport minus the card's height
+and lifted clear of the card with a bottom margin (inline, with `!important`, and handed back when the tour leaves it or
+closes), so the card sits below it, and scrolling the target into view leaves room for the modal's own `header` and `footer`.
+Only the modal itself is resized. A wrapper that fills a custom dialog and sets its own height opts in with a
+`data-lufia-tour-shell` attribute, as a direct child of the dialog; a header, body or footer is never resized. The header and
+footer are the modal's direct children (or the shell's); a `header` or `footer` inside the content is content.
+`beside`: on a wide screen the card goes beside the modal when there is room. `clipSpotlight`: the spotlight is cut off where
+the modal's scroll area ends, and where its sticky header and footer cover it.
 
 <Canvas of={Stories.BesideTheDialog} story={{ inline: false, height: "34rem" }} />
 <Canvas of={Stories.DockedDialog} story={{ inline: false, height: "34rem" }} />
+<Canvas of={Stories.DockedModal} story={{ inline: false, height: "34rem" }} />
 
 ### Leaving from the last step
 
