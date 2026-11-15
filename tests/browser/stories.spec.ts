@@ -406,9 +406,13 @@ test.describe("tour", () => {
     const card = page.getByRole("dialog", { name: "Not here" });
     await expect(card).toBeVisible();
     await expect(card).toHaveAttribute("data-kind", "center");
-    const box = await card.boundingBox();
-    expect(Math.abs(box!.x + box!.width / 2 - 640)).toBeLessThan(2);
-    expect(Math.abs(box!.y + box!.height / 2 - 360)).toBeLessThan(2);
+    // The entrance animation moves the card a few pixels: wait for it to settle.
+    await expect
+      .poll(async () => {
+        const box = await card.boundingBox();
+        return Math.max(Math.abs(box!.x + box!.width / 2 - 640), Math.abs(box!.y + box!.height / 2 - 360));
+      })
+      .toBeLessThan(2);
   });
 
   test("at 390px the card is a sheet docked to an edge and the target is clear of it", async ({ page }) => {
