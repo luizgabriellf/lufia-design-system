@@ -584,6 +584,34 @@ describe("TableEmpty without a title", () => {
     expect(screen.getByText("Create one.")).toBeInTheDocument();
   });
 
+  it("marks a wrapping actions cell and lays its controls in a wrapping row, only with actions", () => {
+    render(
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow>
+            <Td actions wrap data-testid="wrapping">
+              <button type="button">Edit</button>
+              <button type="button">Archive</button>
+            </Td>
+            <Td actions data-testid="plain">
+              <button type="button">Edit</button>
+            </Td>
+            <Td wrap data-testid="not-actions">
+              Text
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    const wrapping = screen.getByTestId("wrapping");
+    expect(wrapping).toHaveAttribute("data-wrap");
+    expect(wrapping.firstElementChild?.tagName).toBe("DIV");
+    expect(within(wrapping).getAllByRole("button")).toHaveLength(2);
+    expect(screen.getByTestId("plain")).not.toHaveAttribute("data-wrap");
+    expect(screen.getByTestId("plain").firstElementChild?.tagName).toBe("BUTTON");
+    expect(screen.getByTestId("not-actions")).not.toHaveAttribute("data-wrap");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<Bare />);
     expect(await axe(container)).toHaveNoViolations();

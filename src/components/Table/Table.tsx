@@ -168,6 +168,13 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
   /** The row's buttons and links, laid out in a wrapping row. Never activates the row. */
   actions?: boolean;
   /**
+   * With `actions`: in table layout, lets the controls wrap onto a second line (end-aligned, with a gap) instead of
+   * keeping one line that can force a sideways scroll at mid widths. Default off: the cell shrinks to its buttons. Use it
+   * for up to two or three short actions; for more than two text actions prefer one overflow menu in the cell. Card mode
+   * already wraps.
+   */
+  wrap?: boolean;
+  /**
    * Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose
    * click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive
    * children of other cells (buttons, links) stay on top and do their own thing. One per row.
@@ -210,6 +217,7 @@ export function Td({
   numeric,
   primary,
   actions,
+  wrap,
   href,
   onActivate,
   activateLabel,
@@ -260,8 +268,9 @@ export function Td({
       data-numeric={numeric ? "" : undefined}
       data-primary={primary ? "" : undefined}
       data-actions={actions ? "" : undefined}
+      data-wrap={actions && wrap ? "" : undefined}
     >
-      {target}
+      {actions && wrap ? <div className={styles.actionsRow}>{target}</div> : target}
       {after ? <div className={styles.after}>{after}</div> : null}
     </td>
   );

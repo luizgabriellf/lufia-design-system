@@ -126,6 +126,7 @@
 }
 
 .table :is(th, td)[data-numeric] {
+  white-space: nowrap;
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
@@ -134,12 +135,23 @@
   font-weight: var(--lufia-font-weight-semibold);
 }
 
-/* The actions column shrinks to its buttons and keeps them at the end edge, instead of taking the spare width of a wide
-   table with the buttons floating at the start. Card mode resets this below. */
+/* Shrink to the buttons, end-aligned; card mode resets it. */
 .table :is(th, td)[data-actions] {
   inline-size: 1%;
   text-align: end;
   white-space: nowrap;
+}
+
+/* `wrap`: natural width, controls in a wrapping end-aligned row. */
+.table td[data-actions][data-wrap] {
+  inline-size: auto;
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--lufia-space-2);
 }
 
 /* The visible-hidden text of an actions header. */
@@ -359,7 +371,6 @@
     text-align: start;
     overflow-wrap: anywhere;
 
-    /* A badge in a card wraps its text rather than being clipped by the value column. */
     --lufia-badge-white-space: normal;
   }
 
@@ -380,8 +391,6 @@
     font-size: var(--lufia-font-size-2xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-
-    /* A word breaks only when it cannot fit a line of its own, and then at a hyphenation point when the language has them. */
     overflow-wrap: break-word;
     hyphens: auto;
   }
@@ -393,7 +402,7 @@
   }
 
   .root[data-responsive="cards"] .table td[data-label] > .after {
-    grid-column: 2;
+    grid-column: -2 / -1;
   }
 
   .root[data-responsive="cards"] .table > tbody > tr[data-selected] {
@@ -427,25 +436,25 @@
     white-space: normal;
   }
 
+  .root[data-responsive="cards"] .table td[data-actions] > .actionsRow {
+    justify-content: flex-start;
+  }
+
   .root[data-responsive="cards"] .table td[data-actions] > * + * {
     margin-inline-start: 0;
   }
 
   .root[data-responsive="cards"] .table :is(th, td)[data-numeric] {
     text-align: start;
+    white-space: normal;
   }
 }
 
-/* Narrow cards stack the label above the value, so the value gets the whole card width and the label is never squeezed into
-   a column of a few letters. Wider cards keep the label beside the value. */
+/* Narrow cards stack the label above the value. */
 @container lufia-table (width < 30rem) {
   .root[data-responsive="cards"] .table td[data-label] {
     grid-template-columns: minmax(0, 1fr);
     row-gap: var(--lufia-space-1);
-  }
-
-  .root[data-responsive="cards"] .table td[data-label] > .after {
-    grid-column: 1;
   }
 }
 

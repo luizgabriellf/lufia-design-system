@@ -7997,6 +7997,7 @@ Other native element attributes pass through to the root element.
 | `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures. |
 | `primary` | `boolean` | no |  | The row's identity: bolder, and the title of the card. Usually the first cell. |
 | `actions` | `boolean` | no |  | The row's buttons and links, laid out in a wrapping row. Never activates the row. |
+| `wrap` | `boolean` | no |  | With `actions`: in table layout, lets the controls wrap onto a second line (end-aligned, with a gap) instead of keeping one line that can force a sideways scroll at mid widths. Default off: the cell shrinks to its buttons. Use it for up to two or three short actions; for more than two text actions prefer one overflow menu in the cell. Card mode already wraps. |
 | `href` | `string` | no |  | Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row. |
 | `onActivate` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function. |
 | `activateLabel` | `string` | no |  | The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: "Open details of Harbour redesign". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included. |
@@ -8132,6 +8133,8 @@ buttons that wrap well.
 - `components-data-display-table--card-long-labels-and-badges`
 - `components-data-display-table--few-columns-actions`
 - `components-data-display-table--flush-translucent-surface`
+- `components-data-display-table--numeric-and-wrapping-actions`
+- `components-data-display-table--tight-numeric-columns`
 
 ## TableToolbar
 

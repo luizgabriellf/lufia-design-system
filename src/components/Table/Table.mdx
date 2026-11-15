@@ -97,9 +97,23 @@ shadows and a band shows at both edges even when there is nothing to scroll.
 ### Actions column
 
 In table layout the `Td actions` column is as wide as its buttons and its content sits at the end edge (the right edge in
-left-to-right text, the left in right-to-left), however few columns there are. Card mode is unchanged.
+left-to-right text, the left in right-to-left), however few columns there are, and it never wraps, so three or four text
+buttons can force a sideways scroll at mid widths. Card mode is unchanged.
 
 <Canvas of={Stories.FewColumnsActions} />
+
+Set `wrap` on `Td actions` to let the controls flow onto a second line instead (end-aligned, with a gap, each button
+keeping its label on one line). Prefer that for two or three short actions; with more than two text actions prefer one
+overflow menu in the cell, which keeps every row one line tall.
+
+<Canvas of={Stories.NumericAndWrappingActions} />
+
+### Numeric cells
+
+In table layout a `numeric` cell never wraps, so an ISO date or date-time is not broken at its hyphens when the table is
+tight; the table scrolls (or turns into cards) instead. In card mode the value wraps as usual.
+
+<Canvas of={Stories.TightNumericColumns} />
 
 ### Naming the row control, descriptions and extra links
 
@@ -171,7 +185,7 @@ line. `footer` takes a `Pagination`, outside the scrolling area.
 
 Parts: `TableHead` and `TableBody` take their native element's props. `TableRow` adds `selected` and `current`. `Th` adds
 `numeric` (default `scope="col"`) and `actions` with a required `label`, for the header of the actions column: its text is
-visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `numeric`, `primary`, `actions`, `href`,
+visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `numeric`, `primary`, `actions`, `wrap` (with `actions`), `href`,
 `onActivate`, `activateLabel`, `activateDescribedBy`, `description` and `after`. `TableEmpty` takes the props of
 `EmptyState` plus `colSpan`, with `title` optional: without it `children` is the one-line message. `Table` adds `frame`.
 

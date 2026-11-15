@@ -2781,6 +2781,48 @@ test.describe("table", () => {
     });
   }
 
+  test("at 1440px a wrapping actions cell wraps instead of scrolling, end-aligned", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("numeric-and-wrapping-actions"));
+    const result = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root")!;
+      const scroller = root.querySelector<HTMLElement>("[role='region']")!;
+      const cell = root.querySelector<HTMLElement>("tbody td[data-actions]")!;
+      const buttons = [...cell.querySelectorAll("button")].map((b) => b.getBoundingClientRect());
+      return {
+        table: getComputedStyle(cell.parentElement!).display === "table-row",
+        scrolls: scroller.scrollWidth > scroller.clientWidth,
+        lines: new Set(buttons.map((rect) => Math.round(rect.top))).size,
+        buttonWordsIntact: buttons.every((rect) => rect.height < 48),
+        endGap: cell.getBoundingClientRect().right - Math.max(...buttons.map((rect) => rect.right)),
+      };
+    });
+    expect(result.table).toBe(true);
+    expect(result.scrolls).toBe(false);
+    expect(result.lines).toBeGreaterThan(1);
+    expect(result.buttonWordsIntact).toBe(true);
+    expect(result.endGap).toBeLessThanOrEqual(20);
+  });
+
+  test("at 1440px ISO dates and date-times in numeric cells stay on one line", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("tight-numeric-columns"));
+    const result = await page.evaluate(() => {
+      const oneLine = (cell: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size === 1;
+      };
+      const cells = [...document.querySelectorAll("#storybook-root tbody td[data-numeric]")];
+      return {
+        table: getComputedStyle(cells[0]!.parentElement!).display === "table-row",
+        oneLine: cells.map(oneLine),
+      };
+    });
+    expect(result.table).toBe(true);
+    expect(result.oneLine.every(Boolean)).toBe(true);
+  });
+
   test("flush on a translucent surface paints the covers with their own token, not the surface", async ({
     page,
   }) => {
@@ -2824,6 +2866,8 @@ test.describe("table", () => {
       ["card-long-labels-and-badges", 320],
       ["card-long-labels-and-badges", 390],
       ["few-columns-actions", 1280],
+      ["numeric-and-wrapping-actions", 1440],
+      ["tight-numeric-columns", 1440],
       ["named-row-control", 1280],
       ["named-row-control-on-phone", 390],
       ["row-state", 1280],

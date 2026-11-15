@@ -611,3 +611,95 @@ export const FlushTranslucentSurface: Story = {
     </div>
   ),
 };
+
+const isoRows = [
+  { id: 1, name: "Harbour redesign programme", due: "2026-04-01", stamp: "2026-04-01 09:30" },
+  { id: 2, name: "Billing migration", due: "2026-11-15", stamp: "2026-11-15 17:45" },
+];
+
+/** A tight table: numeric cells keep an ISO date or date-time on one line, and the actions cell wraps on request. */
+export const NumericAndWrappingActions: Story = {
+  render: (args) => (
+    <div style={{ inlineSize: "41rem" }}>
+      <Table {...args}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Due</Th>
+            <Th numeric>Updated</Th>
+            <Th actions label="Actions" />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {isoRows.map((row) => (
+            <TableRow key={row.id}>
+              <Td primary label="Project">
+                {row.name}
+              </Td>
+              <Td numeric label="Due">
+                {row.due}
+              </Td>
+              <Td numeric label="Updated">
+                {row.stamp}
+              </Td>
+              <Td actions wrap>
+                <Button size="sm" variant="secondary">
+                  Edit
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Duplicate
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Archive
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Delete
+                </Button>
+              </Td>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+};
+
+/** A tight table with several date columns: an ISO date or date-time stays on one line (the table scrolls instead). */
+export const TightNumericColumns: Story = {
+  render: (args) => (
+    <div style={{ inlineSize: "41rem" }}>
+      <Table {...args}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Start</Th>
+            <Th numeric>Due</Th>
+            <Th numeric>Created</Th>
+            <Th numeric>Updated</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {isoRows.map((row) => (
+            <TableRow key={row.id}>
+              <Td primary label="Project">
+                {row.name}
+              </Td>
+              <Td numeric label="Start">
+                {row.due}
+              </Td>
+              <Td numeric label="Due">
+                {row.due}
+              </Td>
+              <Td numeric label="Created">
+                {row.stamp}
+              </Td>
+              <Td numeric label="Updated">
+                {row.stamp}
+              </Td>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+};
