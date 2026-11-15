@@ -137,7 +137,7 @@ export default function SmokePage() {
       <section data-smoke="SuccessCheck"><SuccessCheck_SuccessCheck /></section>
       <section data-smoke="Table"><Table_Table caption={"x"}>{<tbody><tr><td>Cell</td></tr></tbody>}</Table_Table></section>
       <section data-smoke="Table/TableBody"><Table_TableBody /></section>
-      <section data-smoke="Table/TableEmpty"><Table_TableEmpty title={"x"} colSpan={1} /></section>
+      <section data-smoke="Table/TableEmpty"><Table_TableEmpty colSpan={1} /></section>
       <section data-smoke="Table/TableHead"><Table_TableHead /></section>
       <section data-smoke="Table/TableRow"><Table_TableRow /></section>
       <section data-smoke="Table/Td"><Table_Td /></section>

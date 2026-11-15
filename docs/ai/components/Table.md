@@ -46,13 +46,14 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 | `caption` | `string` | yes |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
 | `showCaption` | `boolean` | no | `false` | Show the caption above the table instead of hiding it visually. |
 | `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
+| `frame` | `"flush" \| "framed"` | no | `"framed"` | `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card mode each card keeps its own border either way. |
 | `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | Row padding. Default `comfortable`. |
 | `footer` | `ReactNode` | no |  | Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. |
 | `tableClassName` | `string` | no |  | Class for the `<table>` element; `className` goes to the outer wrapper. |
 
 Other native element attributes pass through to the root element.
 
-### `TableBody`, `TableHead`, `TableRow`
+### `TableBody`, `TableHead`
 
 No props of its own. Native element attributes pass through.
 
@@ -61,10 +62,19 @@ No props of its own. Native element attributes pass through.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
-| `title` | `string` | yes |  |  |
 | `body` | `string` | no |  |  |
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 | `colSpan` | `number` | yes |  | The number of columns, so the message spans the whole row. |
+| `title` | `string` | no |  | Headline of the titled empty state. Leave it out to render `children` as one muted, centred line instead (`icon`, `body` and `action` are then ignored). |
+
+Other native element attributes pass through to the root element.
+
+### `TableRow`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `selected` | `boolean` | no |  | Marks the row as selected: sets `aria-selected` and a selected background. The app owns the selection. |
+| `current` | `boolean` | no |  | Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current="true"` and an accent on its start edge. |
 
 Other native element attributes pass through to the root element.
 
@@ -78,6 +88,10 @@ Other native element attributes pass through to the root element.
 | `actions` | `boolean` | no |  | The row's buttons and links, laid out in a wrapping row. Never activates the row. |
 | `href` | `string` | no |  | Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row. |
 | `onActivate` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function. |
+| `activateLabel` | `string` | no |  | The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: "Open details of Harbour redesign". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included. |
+| `activateDescribedBy` | `string` | no |  | `aria-describedby` of the generated link or button: ids of elements that describe the row control. |
+| `description` | `ReactNode` | no |  | A muted, regular-weight line under the cell's content: a description or an identifier under a `primary` name. In a cell with `href` or `onActivate` it is inside the control, so the whole block stays clickable and, without `activateLabel`, is part of the control's name. In card mode it stays under the value. |
+| `after` | `ReactNode` | no |  | Content rendered in the same cell but outside the generated control, lifted above the row's stretched click area: a second link or a mailto next to the name. Interactive content here is valid HTML (never nested in the row's link or button), reachable in DOM order after the control and clickable. It sits on its own line under the content. |
 
 Other native element attributes pass through to the root element.
 
@@ -86,15 +100,37 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. |
+| `actions` | `false \| true` | no |  | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
+| `label` | `string` | no |  | The column's name for assistive technology ("Actions"), visually hidden. |
 
 Other native element attributes pass through to the root element.
 
+#### Variants
+
+The props are a union of forms; `actions` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+##### `actions: false`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `actions` | `false` | no |  |
+| `aria-label` | `string` | no | Native attribute in this form. |
+| `aria-labelledby` | `string` | no | Native attribute in this form. |
+| `children` | `ReactNode` | no | Native attribute in this form. |
+| `label` | `undefined` | no |  |
+
+##### `actions: true`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `actions` | `true` | yes | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
+| `label` | `string` | yes | The column's name for assistive technology ("Actions"), visually hidden. |
+
 ## Types
 
-- `TableEmptyProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }`
-- `TableProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: "scroll" | "cards" | undefined; density?: "compact" | "comfortable" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }`
-- `TdProps`: `Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }`
-- `ThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & { numeric?: boolean | undefined; }`
+- `TableEmptyProps`: `Omit<EmptyStateProps, "title"> & { colSpan: number; title?: string | undefined; }`
+- `TableRowProps`: `Omit<HTMLAttributes<HTMLTableRowElement>, "role"> & { selected?: boolean | undefined; current?: boolean | undefined; }`
+- `ThProps`: `(Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby"> & { actions: true; label: string; })`
 
 ## Example
 
@@ -142,7 +178,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-medium`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-row-hover`, `--lufia-table-scroll-shadow`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
 
 ## Content guidelines
 
@@ -171,3 +207,14 @@ buttons that wrap well.
 - `components-data-display-table--long-content-on-phone`
 - `components-data-display-table--narrow-container`
 - `components-data-display-table--all-themes`
+- `components-data-display-table--flush-in-panel`
+- `components-data-display-table--flush-in-panel-on-phone`
+- `components-data-display-table--framed`
+- `components-data-display-table--named-row-control`
+- `components-data-display-table--named-row-control-on-phone`
+- `components-data-display-table--description-line`
+- `components-data-display-table--row-state`
+- `components-data-display-table--row-state-on-phone`
+- `components-data-display-table--plain-empty`
+- `components-data-display-table--scroll-margin`
+- `components-data-display-table--scroll-margin-on-phone`

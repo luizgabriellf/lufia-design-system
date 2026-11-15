@@ -1,5 +1,7 @@
 /* Theming hooks: --lufia-table-bg (the surface, also the cover of the scroll shadows), --lufia-table-border,
-   --lufia-table-scroll-shadow (the colour at the edge of a scrollable table), --lufia-table-row-hover.
+   --lufia-table-scroll-shadow (the colour at the edge of a scrollable table), --lufia-table-row-hover,
+   --lufia-table-row-scroll-margin (the room kept around a focused row control or action control when the browser scrolls it
+   into view, default 0: set it to the height of a sticky header or fixed bar).
    Cells and headers are styled from here, through the `.table` selectors, so a plain `<th>` or `SortableTh` looks the same. */
 .root {
   --table-bg: var(--lufia-table-bg, var(--lufia-color-bg-surface));
@@ -9,6 +11,7 @@
     --lufia-table-scroll-shadow,
     color-mix(in srgb, var(--lufia-color-border-strong) 85%, transparent)
   );
+  --table-scroll-margin: var(--lufia-table-row-scroll-margin, 0px);
   --table-pad-y: var(--lufia-space-3);
   --table-pad-x: var(--lufia-space-4);
 
@@ -29,6 +32,13 @@
   border-radius: var(--lufia-radius-card);
   background: var(--table-bg);
   color: var(--lufia-color-text-default);
+}
+
+/* A table inside a container that already has a frame: no border, radius or background of its own. */
+.root[data-frame="flush"] .frame {
+  border: 0;
+  border-radius: 0;
+  background: none;
 }
 
 /* Edge shadows without script: the covers scroll with the content and hide the shadows at the ends, so a shadow shows
@@ -121,8 +131,56 @@
   font-weight: var(--lufia-font-weight-semibold);
 }
 
-.table td[data-actions] {
+.table :is(th, td)[data-actions] {
   white-space: nowrap;
+}
+
+/* The visible-hidden text of an actions header. */
+.hiddenLabel {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A line under a cell's content: muted and regular, even in a primary cell. */
+.description {
+  display: block;
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-xs);
+  font-weight: var(--lufia-font-weight-regular);
+}
+
+/* Content beside the row control, outside it: its own positioned layer above the stretched click area. Shrink-wrapped so
+   the empty part of the cell still activates the row. */
+.after {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lufia-space-1) var(--lufia-space-3);
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  font-weight: var(--lufia-font-weight-regular);
+}
+
+/* Selected and current rows. */
+.table tr[data-selected] {
+  background: var(--lufia-color-accent-subtle);
+}
+
+/* The accent sits on the start edge: on the first cell of a table row, on the card itself in card mode. The inset shadow
+   is physical, so it flips by hand for right-to-left. */
+.table tr[data-current] > :first-child {
+  box-shadow: inset var(--lufia-space-1) 0 0 var(--lufia-color-accent-default);
+}
+
+.table tr[data-current] > :first-child:dir(rtl) {
+  box-shadow: inset calc(-1 * var(--lufia-space-1)) 0 0 var(--lufia-color-accent-default);
 }
 
 .table td[data-actions] > * + * {
@@ -141,6 +199,7 @@
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;
+  scroll-margin-block: var(--table-scroll-margin);
 }
 
 .table tr:has(.rowLink) {
@@ -168,8 +227,16 @@
   z-index: 1;
 }
 
+.table td[data-actions] :is(a, button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-block: var(--table-scroll-margin);
+}
+
 .table tr:has(.rowLink):hover {
   background: var(--table-row-hover);
+}
+
+.table tr[data-selected]:has(.rowLink):hover {
+  background: var(--lufia-color-accent-subtle);
 }
 
 .emptyRow:hover {
@@ -178,6 +245,13 @@
 
 .emptyCell {
   padding: 0;
+}
+
+.emptyMessage {
+  margin: 0;
+  padding: var(--lufia-space-6) var(--table-pad-x);
+  color: var(--lufia-color-text-muted);
+  text-align: center;
 }
 
 .footer {
@@ -303,6 +377,26 @@
     display: block;
     padding-block: var(--lufia-space-2);
     font-size: var(--lufia-font-size-md);
+  }
+
+  .root[data-responsive="cards"] .table td[data-label] > .after {
+    grid-column: 2;
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr[data-selected] {
+    background: var(--lufia-color-accent-subtle);
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr[data-current] {
+    box-shadow: inset var(--lufia-space-1) 0 0 var(--lufia-color-accent-default);
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr[data-current]:dir(rtl) {
+    box-shadow: inset calc(-1 * var(--lufia-space-1)) 0 0 var(--lufia-color-accent-default);
+  }
+
+  .root[data-responsive="cards"] .table tr[data-current] > :first-child {
+    box-shadow: none;
   }
 
   .root[data-responsive="cards"] .table td[data-primary]::before,

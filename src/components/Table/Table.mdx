@@ -73,11 +73,50 @@ stretched area and do their own thing.
 
 <Canvas of={Stories.ClickableRowsAsLinks} />
 
+### Inside a panel
+
+`frame="flush"` drops the table's own border, radius and background, so the table sits edge to edge in a container that
+already has a frame. The header rule and the row separators stay; in card mode each card keeps its own border.
+
+<Canvas of={Stories.FlushInPanel} />
+
+### Naming the row control, descriptions and extra links
+
+`activateLabel` is the `aria-label` of the generated link or button ("Open details of Harbour redesign") and
+`activateDescribedBy` its `aria-describedby`. `description` adds a muted, regular-weight line under the cell's content; it
+is inside the control, so without `activateLabel` it is part of the control's name. `after` renders content in the same
+cell but outside the control, above the stretched click area: a second link or a mailto next to the name stays a
+separate, focusable control, never nested in the row's link. It sits on its own line under the content. Keep the visible
+text inside `activateLabel` (WCAG 2.5.3, label in name): "Open details of Harbour redesign" contains the visible "Harbour
+redesign"; a label that drops a visible `description` does not.
+
+<Canvas of={Stories.NamedRowControl} />
+
+### Row state
+
+`TableRow` takes `selected` (`aria-selected` and a selected background) and `current` (`aria-current="true"` and an accent on
+the start edge). The app owns the state; there are no checkboxes.
+
+<Canvas of={Stories.RowState} />
+
+### Focus room under sticky bars
+
+`--lufia-table-row-scroll-margin` (default `0`) is applied as `scroll-margin-block` on the row control and on focusable
+controls in actions cells. Set it to the height of a sticky header or fixed bottom bar and the browser keeps that much
+room around the control it scrolls into view. In card mode the browser still scrolls only the control, not the whole
+card: a scroll margin in CSS cannot know the card's height, and the package ships no script for it. Size the hook for
+the card if you need more room.
+
+<Canvas of={Stories.ScrollMargin} />
+
 ### Empty and footer
 
-`TableEmpty` is a one-row body that hosts an `EmptyState`. `footer` takes a `Pagination`, outside the scrolling area.
+`TableEmpty` is a one-row body. With a `title` it hosts an `EmptyState`; with only `children` it is one muted, centred
+line. `footer` takes a `Pagination`, outside the scrolling area.
 
 <Canvas of={Stories.Empty} />
+
+<Canvas of={Stories.PlainEmpty} />
 
 <Canvas of={Stories.FooterWithPagination} />
 
@@ -109,11 +148,14 @@ stretched area and do their own thing.
 
 <Controls of={Stories.Default} />
 
-Parts: `TableHead`, `TableBody` and `TableRow` take their native element's props. `Th` adds `numeric` (default
-`scope="col"`). `Td` adds `label`, `numeric`, `primary`, `actions`, `href` and `onActivate`. `TableEmpty` takes the props of
-`EmptyState` plus `colSpan`.
+Parts: `TableHead` and `TableBody` take their native element's props. `TableRow` adds `selected` and `current`. `Th` adds
+`numeric` (default `scope="col"`) and `actions` with a required `label`, for the header of the actions column: its text is
+visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `numeric`, `primary`, `actions`, `href`,
+`onActivate`, `activateLabel`, `activateDescribedBy`, `description` and `after`. `TableEmpty` takes the props of
+`EmptyState` plus `colSpan`, with `title` optional: without it `children` is the one-line message. `Table` adds `frame`.
 
-Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow` and `--lufia-table-row-hover`.
+Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow`, `--lufia-table-row-hover` and
+`--lufia-table-row-scroll-margin`.
 
 </Section>
 
@@ -140,6 +182,10 @@ Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll
   That keeps one tab stop and one announcement per row, lets controls inside the row be reached on their own (a button
   inside a `role="button"` row is a nested control), and keeps link behaviour. A consequence: text in a clickable row
   cannot be selected with the mouse.
+- A row control can be named with `activateLabel` ("Open details of ..."), so a screen reader hears the action and the
+  subject, not the cell's text. Content in `after` is a separate control after it in the tab order.
+- `selected` is `aria-selected` on the row and `current` is `aria-current="true"`; neither adds a control or a keyboard
+  behaviour, and a colour or accent alone is not the only cue for the app to rely on: pair state with text where it matters.
 - The focus ring surrounds the whole row. Reduced motion needs nothing: the table has no animation. In forced colours the row
   hover gets an outline, and the scroll shadows, which are backgrounds, are not drawn.
 - Interactive controls in a row reach at least 24 by 24 CSS pixels through their own components; the stretched control
