@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.49.0
+
+### Minor Changes
+
+- [#178](https://github.com/luizgabriellf/lufia-design-system/pull/178) [`0cb832f`](https://github.com/luizgabriellf/lufia-design-system/commit/0cb832f8b14d85b9b28c587e0286782d8817dfa3) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Table: add `frame="flush"` for a table inside an already framed container; `Td` props `activateLabel`, `activateDescribedBy`, `description` and `after` (a slot for extra links outside the row control); `Th actions` with a required `label` for the hidden header of an actions column; a title-less `TableEmpty` that renders one muted line; `TableRow` `selected` and `current` state; and the `--lufia-table-row-scroll-margin` theming hook for focus under sticky bars.
+
 ## 0.48.0
 
 ### Minor Changes
