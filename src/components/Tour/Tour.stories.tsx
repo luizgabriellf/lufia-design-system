@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import { MoreActions } from "../MoreActions";
@@ -559,5 +559,173 @@ function OpenedAfterTour() {
 export const OverlayOpenedAfterTour: StoryObj = { render: () => <OpenedAfterTour /> };
 export const OverlayOpenedAfterTourPhone390: StoryObj = {
   render: () => <OpenedAfterTour />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+const sheetSteps: TourStep[] = [
+  {
+    title: "Before you start",
+    body: "This step points at nothing, so the card sits at the foot of the sheet.",
+  },
+  {
+    target: '[data-tour="sheet-field"]',
+    title: "Further down",
+    body: "The sheet ends where the card starts, so its buttons stay reachable.",
+  },
+];
+
+/** A bottom sheet with a top offset, so it is shorter than the viewport, with content that scrolls and a footer. */
+function ShortSheet({ startIndex = 0 }: { startIndex?: number }) {
+  const [open, setOpen] = useState(true);
+  const [index, setIndex] = useState(startIndex);
+  return (
+    <Modal
+      open
+      onClose={() => {}}
+      title="Edit details"
+      style={{ "--lufia-modal-sheet-offset": "3.375rem" } as CSSProperties}
+      footer={
+        <>
+          <Button variant="secondary">Cancel</Button>
+          <Button variant="primary">Save</Button>
+        </>
+      }
+    >
+      <div style={{ blockSize: "30rem" }}>Earlier fields</div>
+      <Button variant="secondary" data-tour="sheet-field">
+        Add detail
+      </Button>
+      <div style={{ blockSize: "6rem" }} />
+      <Tour
+        steps={sheetSteps}
+        open={open}
+        stepIndex={index}
+        onStepChange={setIndex}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+        dialogLayout={{ dock: true, beside: true, clipSpotlight: true }}
+      />
+    </Modal>
+  );
+}
+
+/** Phones: a sheet shorter than the viewport docks above the card too, on a step with no target. */
+export const ShortSheetNoTarget: StoryObj = {
+  render: () => <ShortSheet />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+/** The same with a target inside the sheet: the sheet ends where the card starts and the target is scrolled clear. */
+export const ShortSheetTarget: StoryObj = {
+  render: () => <ShortSheet startIndex={1} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+const formFields = [
+  "First name",
+  "Last name",
+  "Role",
+  "Department",
+  "Location",
+  "Manager",
+  "Start date",
+  "Team",
+  "Office",
+];
+
+/** A wide dialog with a multi-column form: there is no room beside, below or above it for the card. */
+function WideForm() {
+  const [open, setOpen] = useState(true);
+  return (
+    <Modal
+      open
+      onClose={() => {}}
+      title="Edit profile"
+      size="67.5rem"
+      footer={
+        <>
+          <Button variant="secondary">Cancel</Button>
+          <Button variant="primary">Save</Button>
+        </>
+      }
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(18rem, 1fr))",
+          gap: "1.25rem",
+        }}
+      >
+        {formFields.map((label, index) => (
+          <label key={label} style={{ display: "grid", gap: "0.375rem", font: "inherit" }}>
+            {label}
+            <input
+              data-tour={index === 4 ? "wide-field" : undefined}
+              data-field=""
+              style={{
+                font: "inherit",
+                padding: "0.5rem 0.75rem",
+                color: "var(--lufia-color-text-default)",
+                background: "var(--lufia-color-bg-field)",
+                border: "1px solid var(--lufia-color-border-strong)",
+                borderRadius: "var(--lufia-radius-control)",
+              }}
+            />
+          </label>
+        ))}
+      </div>
+      <p style={{ blockSize: "13rem", margin: "1.5rem 0 0", color: "var(--lufia-color-text-muted)" }}>
+        Changes are saved to the profile and shown to everyone who can see it. Nothing here is a control.
+      </p>
+      <Tour
+        steps={[
+          { target: '[data-tour="wide-field"]', title: "Location", body: "Pick where this person works." },
+        ]}
+        open={open}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+        dialogLayout={{ beside: true, dock: true, clipSpotlight: true }}
+      />
+    </Modal>
+  );
+}
+
+/** Wide screens: with no room outside the dialog the card goes inside it, off the target and its sibling fields. */
+export const WideDialogForm: StoryObj = {
+  render: () => <WideForm />,
+};
+
+function FillingTarget() {
+  const [open, setOpen] = useState(true);
+  return (
+    <Modal open onClose={() => {}} title="Review" sheetHeight="full">
+      <div
+        data-tour="fills-body"
+        style={{
+          minBlockSize: "60rem",
+          border: "1px dashed var(--lufia-color-border-strong)",
+          padding: "1rem",
+        }}
+      >
+        A region as tall as the dialog body.
+      </div>
+      <Tour
+        steps={[
+          { target: '[data-tour="fills-body"]', title: "The whole body", body: "This area is the target." },
+        ]}
+        open={open}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+        labels={labels}
+        dialogLayout={{ dock: true, beside: true, clipSpotlight: true }}
+      />
+    </Modal>
+  );
+}
+
+/** Phones: a target that fills the dialog body; the ring stops above the docked card, with its own padding. */
+export const TargetFillsDialogBody: StoryObj = {
+  render: () => <FillingTarget />,
   globals: { viewport: { value: "w390", isRotated: false } },
 };

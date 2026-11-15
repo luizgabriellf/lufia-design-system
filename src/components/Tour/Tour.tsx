@@ -64,15 +64,20 @@ export type TourTargetStatus = "ready" | "seeking" | "missing" | "blocked";
 /** Opt-in layout for a target inside an open modal `dialog`. Every switch defaults to `false`. */
 export type TourDialogLayout = {
   /**
-   * On a narrow screen, resize the host modal (a `Modal` or a native dialog) to the viewport minus the card's height and
-   * lift it clear of the card, so the card sits below it instead of covering it, and reserve room for its own header and
+   * On a narrow screen, resize the host modal (a `Modal` or a native dialog) when the card would cover it (it fills the
+   * screen, or it is a sheet shorter than the viewport): it ends where the card starts, so the card sits below it instead of
+   * covering its footer. A sheet shorter than the viewport is capped and lifted, not stretched. Reserve room for its own header and
    * footer when scrolling the target into view. Only the modal is resized; a wrapper that fills a custom dialog opts in
    * with a `data-lufia-tour-shell` attribute.
    */
   dock?: boolean;
-  /** On a wide screen, put the card beside the dialog (when there is room) instead of over the dialog's content. */
+  /**
+   * On a wide screen, put the card beside the dialog (when there is room), else below or above it, else inside it where it
+   * covers the least: never the target, the dialog's header or footer, and as few controls as possible. Instead of over the
+   * dialog's content.
+   */
   beside?: boolean;
-  /** Cut the spotlight off where the dialog's own scroll area ends. */
+  /** Cut the spotlight off where the dialog's own scroll area ends (the ring's padding stays inside that edge). */
   clipSpotlight?: boolean;
 };
 
@@ -254,13 +259,19 @@ function modalBars(modal: Element): { header: Element | null; footer: Element | 
   return { header: find("header"), footer: find("footer") };
 }
 
-function setDock(modal: HTMLElement, size: number) {
+/**
+ * Docks `modal` above a card of `size` pixels, or hands it back with `0`. A `fill` dialog (one that filled the screen) is
+ * given the room as its height; any other (a sheet with a top offset, shorter than the viewport) only has its height capped
+ * and lifted, so a short one stays short.
+ */
+function setDock(modal: HTMLElement, size: number, fill = true) {
   const sized = [modal, ...Array.from(modal.querySelectorAll<HTMLElement>(`:scope > [${SHELL}]`))];
   for (const element of sized) {
     if (size > 0) {
       // Inline and important: a component stylesheet cannot reach another component's modal.
       const height = `calc(100dvh - ${size}px)`;
-      element.style.setProperty("height", height, "important");
+      if (fill) element.style.setProperty("height", height, "important");
+      else element.style.removeProperty("height");
       element.style.setProperty("max-height", height, "important");
     } else {
       element.style.removeProperty("height");
@@ -270,7 +281,7 @@ function setDock(modal: HTMLElement, size: number) {
   // A sheet is anchored to the bottom edge (auto margin above it): the bottom margin lifts it clear of the card.
   if (size > 0) modal.style.setProperty("margin-block-end", `${size}px`, "important");
   else modal.style.removeProperty("margin-block-end");
-  if (size > 0) modal.setAttribute(DOCKED, "");
+  if (size > 0) modal.setAttribute(DOCKED, fill ? "fill" : "fit");
   else modal.removeAttribute(DOCKED);
 }
 
@@ -362,6 +373,90 @@ function clearOfDialog(dialog: Element, card: HTMLElement): Side | null {
   return null;
 }
 
+/** What a person can press or type in; a card over one of these makes it harder to use. */
+const CONTROLS =
+  'a[href],button,input:not([type="hidden"]),select,textarea,summary,[tabindex]:not([tabindex="-1"]),[role="button"],[role="combobox"],[role="checkbox"],[role="radio"],[role="switch"],[role="tab"],[role="menuitem"]';
+
+const overlap = (a: DOMRectReadOnly, b: Box) =>
+  Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+  Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+type Box = { left: number; top: number; right: number; bottom: number };
+
+/**
+ * Where inside `dialog` the card covers the least, for a wide dialog with no room beside, below or above it. Candidates are
+ * the corners and edge middles of the dialog's content area (between its own header and footer, which are never covered)
+ * and the spots below, above, after and before the target. A candidate over the target's ring is out; the rest are scored by
+ * the area of controls they would cover, then by how far they are from the target. The spot used last time stays while it is
+ * still as good as the best, so the card does not jump between layouts. Returns `null` when nothing fits.
+ */
+function insideDialog(
+  dialog: Element,
+  card: HTMLElement,
+  target: Element,
+  padding: number,
+): { left: number; top: number; spot: string } | null {
+  const edge = 8;
+  const d = dialog.getBoundingClientRect();
+  const t = target.getBoundingClientRect();
+  const bars = modalBars(dialog);
+  const header = bars.header?.getBoundingClientRect();
+  const footer = bars.footer?.getBoundingClientRect();
+  const w = card.offsetWidth;
+  const h = card.offsetHeight;
+  const area = {
+    left: Math.max(d.left, 0) + edge,
+    right: Math.min(d.right, document.documentElement.clientWidth) - edge,
+    top: Math.max(d.top, header?.bottom ?? 0, 0) + edge,
+    bottom: Math.min(d.bottom, footer?.top ?? Infinity, document.documentElement.clientHeight) - edge,
+  };
+  if (area.right - area.left < w || area.bottom - area.top < h) return null;
+  // The ring and its halo: the card stays clear of both.
+  const reach = padding + 4;
+  const ring = { left: t.left - reach, top: t.top - reach, right: t.right + reach, bottom: t.bottom + reach };
+  const gap = reach + 8;
+  const x = Math.min(Math.max((t.left + t.right - w) / 2, area.left), area.right - w);
+  const controls = Array.from(dialog.querySelectorAll(CONTROLS))
+    .filter((el) => !card.contains(el) && !target.contains(el) && !el.contains(target))
+    .map((el) => el.getBoundingClientRect())
+    .filter((r) => r.width > 0 && r.height > 0 && overlap(r, area) > 0);
+  const spots: [string, number, number][] = [
+    ["below", x, t.bottom + gap],
+    ["above", x, t.top - gap - h],
+    ["end", t.right + gap, t.top],
+    ["start", t.left - gap - w, t.top],
+    ["bottom-start", area.left, area.bottom - h],
+    ["bottom-end", area.right - w, area.bottom - h],
+    ["bottom", x, area.bottom - h],
+    ["top-start", area.left, area.top],
+    ["top-end", area.right - w, area.top],
+    ["top", x, area.top],
+  ];
+  const scored = spots
+    .map(([spot, sx, sy]) => {
+      const left = Math.min(Math.max(sx, area.left), area.right - w);
+      const top = Math.min(Math.max(sy, area.top), area.bottom - h);
+      const box = { left, top, right: left + w, bottom: top + h };
+      const covered = controls.reduce((sum, r) => sum + overlap(r, box), 0);
+      const away = Math.hypot(left + w / 2 - (t.left + t.right) / 2, top + h / 2 - (t.top + t.bottom) / 2);
+      return {
+        spot,
+        left,
+        top,
+        covered,
+        away,
+        clear:
+          overlap(new DOMRect(ring.left, ring.top, ring.right - ring.left, ring.bottom - ring.top), box) ===
+          0,
+      };
+    })
+    .filter((candidate) => candidate.clear)
+    .sort((a, b) => a.covered - b.covered || a.away - b.away);
+  const best = scored[0];
+  const kept = scored.find((candidate) => candidate.spot === card.getAttribute("data-spot"));
+  return (kept && kept.covered <= best!.covered ? kept : best) ?? null;
+}
+
 /**
  * Puts the spotlight on the target and the card next to it (or in the middle, or docked as a sheet on narrow screens),
  * writing straight to the DOM so a frame loop can run it without rendering. Returns a signature of what it measured: when
@@ -380,13 +475,19 @@ function layoutTour(
   const height = document.documentElement.clientHeight;
   const narrow = width <= NARROW_REM * rem;
   const rect = target ? target.getBoundingClientRect() : null;
-  // On a phone, a dialog that fills the screen (or that the tour already shrank) gives way to the sheet.
+  // On a phone, a dialog the sheet would cover (one that fills the screen, a bottom sheet with a top offset, or one the tour
+  // already shrank) gives way to it: it ends where the card starts. A dialog the card does not reach is left alone.
+  const box = dialog?.getBoundingClientRect();
+  const filled = box !== undefined && box.height >= height - 2;
   const docked =
     narrow &&
     layout.dock === true &&
     dialog !== null &&
-    (dialog.hasAttribute(DOCKED) || dialog.getBoundingClientRect().height >= height - 2);
-  if (dialog && layout.dock) setDock(dialog, docked ? card.offsetHeight : 0);
+    box !== undefined &&
+    (dialog.hasAttribute(DOCKED) || filled || (box.bottom > height - card.offsetHeight && box.top < height));
+  // Once docked a dialog keeps the mode it was docked in: its own height is the tour's by then.
+  const mode = dialog?.getAttribute(DOCKED);
+  if (dialog && layout.dock) setDock(dialog, docked ? card.offsetHeight : 0, mode ? mode === "fill" : filled);
   // The spotlight stops where the dialog's scroll area does.
   let visible = rect;
   if (rect && target && dialog && layout.clipSpotlight) {
@@ -401,16 +502,18 @@ function layoutTour(
         from = Math.max(from, bars.header.getBoundingClientRect().bottom);
       if (bars.footer && parent.contains(bars.footer))
         to = Math.min(to, bars.footer.getBoundingClientRect().top);
-      const top = Math.max(rect.top, from);
-      const bottom = Math.min(rect.bottom, to);
+      // The ring is drawn `padding` outside `visible`: its own edge, not the target's, has to stay inside the scroll area.
+      const top = Math.max(rect.top, from + padding);
+      const bottom = Math.min(rect.bottom, to - padding);
       if (bottom > top) visible = new DOMRect(rect.left, top, rect.width, bottom - top);
     }
   }
-  // A sheet covers the top or bottom of the screen: the ring stops where it starts instead of running under it.
-  if (visible && narrow && !docked) {
-    const covered = rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
-    const from = covered ? card.offsetHeight : 0;
-    const to = covered ? height : height - card.offsetHeight;
+  // A sheet covers the top or bottom of the screen: the ring stops where it starts instead of running under it, with its own
+  // padding kept clear of the card too. The viewport edge needs no such room. A docked card is always at the bottom.
+  if (visible && narrow) {
+    const covered = !docked && rect !== null && rect.bottom > height - card.offsetHeight - SHEET_GAP;
+    const from = covered ? card.offsetHeight + padding : 0;
+    const to = covered ? height : height - card.offsetHeight - padding;
     const top = Math.max(visible.top, from);
     const bottom = Math.min(visible.bottom, to);
     if (bottom > top && (top !== visible.top || bottom !== visible.bottom))
@@ -426,8 +529,8 @@ function layoutTour(
     card.offsetHeight,
     placement,
     padding,
-    // A card with no target follows the dialog.
-    !target && dialog ? dialogBox(dialog) : "",
+    // A card with no target follows the dialog, and so does one that may sit inside it.
+    (!target || layout.beside) && dialog ? dialogBox(dialog) : "",
     popup,
   ].join(",");
   if (signature === previous) return previous;
@@ -449,7 +552,20 @@ function layoutTour(
     // With `beside` and no room beside the dialog, the card goes below or above it rather than over its fields. With no target
     // it is hosted in the modal only to be reachable, so it never covers the modal's footer either.
     const clear = dialog && layout.beside && !beside ? clearOfDialog(dialog, card) : null;
-    if (dialog && (beside || clear)) {
+    // With a target and no room outside the dialog either, the card goes inside it, where it covers the least.
+    const inside =
+      target && dialog && layout.beside && !beside && !clear
+        ? insideDialog(dialog, card, target, padding)
+        : null;
+    card.removeAttribute("data-spot");
+    if (inside) {
+      clearPanelPlacement(card);
+      card.setAttribute("data-kind", "float");
+      card.removeAttribute("data-edge");
+      card.setAttribute("data-spot", inside.spot);
+      card.style.left = `${inside.left}px`;
+      card.style.top = `${inside.top}px`;
+    } else if (dialog && (beside || clear)) {
       card.setAttribute("data-kind", "float");
       card.removeAttribute("data-edge");
       // The gap clears the spotlight's padding as well.

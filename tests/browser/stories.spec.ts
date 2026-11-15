@@ -482,6 +482,113 @@ test.describe("tour inside a modal", () => {
   }
 });
 
+test.describe("tour dock and in-dialog fallback", () => {
+  for (const [name, id, card] of [
+    ["no target", "components-overlays-tour--short-sheet-no-target", "Before you start"],
+    ["a target inside it", "components-overlays-tour--short-sheet-target", "Further down"],
+  ] as const) {
+    test(`at 390x844 a sheet shorter than the viewport ends where the card starts (${name}), and its footer takes a real click`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await openStory(page, id);
+      const tour = page.getByRole("dialog", { name: card });
+      await expect(tour).toHaveAttribute("data-kind", "sheet");
+      const measure = () =>
+        page.evaluate(() => {
+          const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+          const panel = rect('[data-lufia-part="panel"]');
+          const footer = rect('[data-lufia-part="footer"]');
+          const cardBox = rect('[data-lufia-part="card"]');
+          return {
+            panelBottom: Math.round(panel.bottom),
+            cardTop: Math.round(cardBox.top),
+            footerAboveCard: footer.bottom <= cardBox.top + 1,
+          };
+        });
+      await expect
+        .poll(async () => {
+          const m = await measure();
+          return Math.abs(m.panelBottom - m.cardTop) <= 2 && m.footerAboveCard;
+        })
+        .toBe(true);
+      // Playwright refuses to click an element another element covers: the footer button is reachable.
+      await page.getByRole("button", { name: "Save" }).click({ timeout: 3000 });
+      await page.getByRole("button", { name: "Cancel" }).click({ timeout: 3000 });
+      // Leaving the tour hands the sheet back: it reaches the bottom of the viewport again.
+      await tour.getByRole("button", { name: "Close tour" }).click();
+      await expect(tour).toHaveCount(0);
+      await expect
+        .poll(async () =>
+          page.evaluate(() =>
+            Math.round(document.querySelector('[data-lufia-part="panel"]')!.getBoundingClientRect().bottom),
+          ),
+        )
+        .toBe(844);
+    });
+  }
+
+  test("at 1440x900 the card goes inside a wide dialog, off the target, its sibling fields and the footer", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-overlays-tour--wide-dialog-form");
+    const tour = page.getByRole("dialog", { name: "Location" });
+    await expect(tour).toHaveAttribute("data-kind", "float");
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const box = (element: Element) => element.getBoundingClientRect();
+          const cardBox = box(document.querySelector('[data-lufia-part="card"]')!);
+          const panel = box(document.querySelector('[data-lufia-part="panel"]')!);
+          const touches = (r: DOMRect) =>
+            cardBox.left < r.right &&
+            cardBox.right > r.left &&
+            cardBox.top < r.bottom &&
+            cardBox.bottom > r.top;
+          const fields = Array.from(document.querySelectorAll("[data-field]"));
+          const controls = [
+            ...fields,
+            ...document.querySelectorAll('[data-lufia-part="footer"], [data-lufia-part="footer"] button'),
+          ];
+          return {
+            overlapping: controls.filter((element) => touches(box(element))).length,
+            insideDialog:
+              cardBox.left >= panel.left &&
+              cardBox.right <= panel.right &&
+              cardBox.top >= panel.top &&
+              cardBox.bottom <= panel.bottom,
+            fields: fields.length,
+          };
+        }),
+      )
+      .toEqual({ overlapping: 0, insideDialog: true, fields: 9 });
+  });
+
+  test("at 390px the spotlight ring of a target filling the dialog body stays above the docked card", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openStory(page, "components-overlays-tour--target-fills-dialog-body");
+    await expect(page.getByRole("dialog", { name: "The whole body" })).toHaveAttribute("data-kind", "sheet");
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const ring = document.querySelector('[data-lufia-part="spotlight"]')!.getBoundingClientRect();
+          const cardBox = document.querySelector('[data-lufia-part="card"]')!.getBoundingClientRect();
+          const panel = document.querySelector('[data-lufia-part="panel"]')!.getBoundingClientRect();
+          return {
+            ringAboveCard: ring.bottom <= cardBox.top + 0.5,
+            docked: Math.abs(panel.bottom - cardBox.top) <= 2,
+            // The ring is not cut away: it still spans most of the room above the card.
+            visible: ring.height > 200,
+          };
+        }),
+      )
+      .toEqual({ ringAboveCard: true, docked: true, visible: true });
+  });
+});
+
 test.describe("tour with no target under a modal", () => {
   for (const [name, id] of [
     ["native dialog opened with showModal()", "components-overlays-tour--no-target-in-native-dialog"],

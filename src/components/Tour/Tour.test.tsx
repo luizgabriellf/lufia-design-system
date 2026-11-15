@@ -944,8 +944,8 @@ describe("Tour", () => {
       boxes.scroller = new DOMRect(0, 100, 300, 200);
       boxes.first = new DOMRect(100, 280, 80, 40);
       withDialog({ dialogLayout: { clipSpotlight: true } });
-      // 280 to 320 cut at 300: 20 tall, plus the padding on both sides.
-      expect(spot().style.blockSize).toBe("32px");
+      // 280 to 320 cut at 300, the ring's own padding kept inside the scroll area too: 14 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("26px");
     });
 
     it("does not clip the spotlight without the option", () => {
@@ -1138,11 +1138,11 @@ describe("Tour", () => {
       const scrollBy = vi.fn();
       Element.prototype.scrollBy = scrollBy;
       withLayout({ width: 360, height: 640 });
-      // Still animating in: scaled down, so not full screen yet and not docked.
-      boxes.dlg = new DOMRect(8, 8, 344, 624);
+      // Still rising into place: it ends above the card's top (640 - 180 = 460), so the card does not reach it yet.
+      boxes.dlg = new DOMRect(8, 8, 344, 440);
       boxes.hdr = new DOMRect(0, 0, 360, 60);
-      boxes.ftr = new DOMRect(0, 560, 360, 80);
-      boxes.first = new DOMRect(100, 400, 80, 40);
+      boxes.ftr = new DOMRect(0, 360, 360, 80);
+      boxes.first = new DOMRect(100, 300, 80, 40);
       render(
         <dialog id="dlg" open>
           <header id="hdr">Header</header>
@@ -1162,15 +1162,237 @@ describe("Tour", () => {
       expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
       // Clear of the floating card's room (640 - 180 - 12 = 448): nothing to scroll yet.
       expect(scrollBy).not.toHaveBeenCalled();
-      // The entrance ends: the dialog fills the screen and docks, which moves its footer up to 380.
+      // The entrance ends: the dialog reaches the bottom and docks, which moves its footer up to 380.
       boxes.dlg = new DOMRect(0, 0, 360, 640);
       boxes.ftr = new DOMRect(0, 380, 360, 80);
+      boxes.first = new DOMRect(100, 400, 80, 40);
       act(() => frames.splice(0).forEach((frame) => frame(0)));
       expect(dialog).toHaveAttribute("data-lufia-tour-docked");
       // The room above the footer ends at 368: the target's bottom (440) goes up by 72.
       expect(scrollBy).toHaveBeenCalledWith({ top: 72, behavior: "smooth" });
       boxes.first = new DOMRect(100, 200, 80, 40);
       Reflect.deleteProperty(Element.prototype, "scrollBy");
+    });
+
+    describe("a phone sheet shorter than the viewport", () => {
+      // Bottom-anchored with a top offset: 54 to 640 on a 640 high viewport, so the 180 high card (top 460) covers its foot.
+      const tree = (props: Partial<TourProps>, index: number, target = true) => (
+        <>
+          <button id="second" type="button">
+            Outside
+          </button>
+          <div role="dialog" aria-modal="true" aria-label="Sheet" id="dlg">
+            <button id="first" type="button">
+              In the sheet
+            </button>
+            <footer id="ftr">Footer</footer>
+            <Tour
+              steps={[
+                target
+                  ? { target: "#first", title: "In it", body: "Here." }
+                  : { title: "None", body: "Here." },
+                { target: "#second", title: "Out", body: "There." },
+              ]}
+              stepIndex={index}
+              open
+              labels={labels}
+              dialogLayout={{ dock: true }}
+              {...props}
+            />
+          </div>
+        </>
+      );
+      const sheet = (props: Partial<TourProps>, index = 0, target = true) => {
+        Element.prototype.scrollBy = vi.fn();
+        withLayout({ width: 360, height: 640 });
+        boxes.dlg = new DOMRect(0, 54, 360, 586);
+        boxes.second = new DOMRect(100, 300, 80, 40);
+        const view = render(tree(props, index, target));
+        return { view, dialog: view.container.querySelector<HTMLElement>("#dlg")! };
+      };
+      afterEach(() => {
+        delete boxes.second;
+        boxes.first = new DOMRect(100, 200, 80, 40);
+        Reflect.deleteProperty(Element.prototype, "scrollBy");
+      });
+
+      it.each([true, false])(
+        "ends where the card starts, and keeps a fixed height out of it (target: %s)",
+        (target) => {
+          const { dialog } = sheet({}, 0, target);
+          expect(dialog).toHaveAttribute("data-lufia-tour-docked", "fit");
+          // Capped and lifted by the card's height; its own height is not stretched to fill the room.
+          expect(dialog.style.getPropertyValue("max-height")).toBe("calc(100dvh - 180px)");
+          expect(dialog.style.getPropertyValue("margin-block-end")).toBe("180px");
+          expect(dialog.style.getPropertyValue("height")).toBe("");
+          expect(card()).toHaveAttribute("data-edge", "bottom");
+        },
+      );
+
+      it("is handed back exactly when the step moves outside it", () => {
+        const { view, dialog } = sheet({}, 0);
+        expect(dialog).toHaveAttribute("data-lufia-tour-docked");
+        view.rerender(tree({}, 1));
+        expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
+        expect(dialog.style.getPropertyValue("max-height")).toBe("");
+        expect(dialog.style.getPropertyValue("margin-block-end")).toBe("");
+      });
+
+      it("is handed back when the tour ends", () => {
+        const { view, dialog } = sheet({});
+        expect(dialog).toHaveAttribute("data-lufia-tour-docked");
+        view.rerender(<div role="dialog" aria-modal="true" aria-label="Sheet" id="dlg" />);
+        expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
+        expect(dialog.style.getPropertyValue("max-height")).toBe("");
+        expect(dialog.style.getPropertyValue("margin-block-end")).toBe("");
+      });
+
+      it("leaves a dialog the card does not reach alone", () => {
+        withLayout({ width: 360, height: 640 });
+        boxes.dlg = new DOMRect(0, 100, 360, 300);
+        const view = render(
+          <dialog id="dlg" open>
+            <button id="first" type="button">
+              In the sheet
+            </button>
+            <Tour
+              steps={[{ target: "#first", title: "In it", body: "Here." }]}
+              open
+              labels={labels}
+              dialogLayout={{ dock: true }}
+            />
+          </dialog>,
+        );
+        expect(view.container.querySelector("dialog")).not.toHaveAttribute("data-lufia-tour-docked");
+      });
+
+      it("keeps the ring above the docked card, with its own padding", () => {
+        const padding = 10;
+        Element.prototype.scrollBy = vi.fn();
+        withLayout({ width: 360, height: 640 });
+        // Docked: the dialog and its scroller end at the card's top (640 - 180 = 460); the target runs past it.
+        boxes.dlg = new DOMRect(0, 54, 360, 406);
+        boxes.scroller = new DOMRect(0, 54, 360, 406);
+        boxes.first = new DOMRect(20, 100, 320, 500);
+        render(
+          <div role="dialog" aria-modal="true" aria-label="Sheet" id="dlg">
+            <div
+              id="scroller"
+              style={{ overflowY: "auto" }}
+              ref={(element) => {
+                if (!element) return;
+                Object.defineProperty(element, "scrollHeight", { configurable: true, value: 900 });
+                Object.defineProperty(element, "clientHeight", { configurable: true, value: 406 });
+              }}
+            >
+              <button id="first" type="button">
+                Fills the body
+              </button>
+            </div>
+            <Tour
+              steps={[{ target: "#first", title: "In it", body: "Here." }]}
+              open
+              labels={labels}
+              dialogLayout={{ dock: true, clipSpotlight: true }}
+              spotlightPadding={padding}
+            />
+          </div>,
+        );
+        const [, top] = /translate\(([-\d.]+)px, ([-\d.]+)px\)/
+          .exec(spot().style.transform)!
+          .slice(1)
+          .map(Number);
+        const bottom = top! + parseFloat(spot().style.blockSize);
+        // The ring's outer edge ends where the card starts, not `padding` below it.
+        expect(bottom).toBeLessThanOrEqual(460);
+        expect(bottom).toBeGreaterThan(450);
+        delete boxes.scroller;
+      });
+    });
+
+    describe("a wide dialog with no room outside it", () => {
+      const keys = ["dlg", "hdr", "ftr", "save"];
+      afterEach(() => keys.forEach((key) => delete boxes[key]));
+      // 1080 wide in a 1440 viewport: 180 free each side, the card needs 344; 700 tall in 900: no room above or below.
+      const form = (props: Partial<TourProps> = {}, count = 6) => {
+        withLayout({ width: 1440, height: 900 });
+        boxes.dlg = new DOMRect(180, 100, 1080, 700);
+        boxes.hdr = new DOMRect(180, 100, 1080, 60);
+        boxes.ftr = new DOMRect(180, 740, 1080, 60);
+        boxes.save = new DOMRect(1100, 750, 100, 40);
+        const columns = [210, 570, 930];
+        const ids = Array.from({ length: count }, (_, index) => `f${index + 1}`);
+        keys.push(...ids);
+        ids.forEach((id, index) => {
+          boxes[id] = new DOMRect(
+            columns[index % 3]!,
+            200 + (count > 6 ? 130 : 100) * Math.floor(index / 3),
+            300,
+            60,
+          );
+        });
+        return render(
+          <dialog id="dlg" open>
+            <header id="hdr">Header</header>
+            {ids.map((id) => (
+              <input key={id} id={id} aria-label={id} />
+            ))}
+            <footer id="ftr">
+              <button id="save" type="button">
+                Save
+              </button>
+            </footer>
+            <Tour
+              steps={[{ target: "#f2", title: "Here", body: "This one." }]}
+              open
+              labels={labels}
+              dialogLayout={{ beside: true }}
+              {...props}
+            />
+          </dialog>,
+        );
+      };
+      const cardBox = () => {
+        const left = parseFloat(card().style.left);
+        const top = parseFloat(card().style.top);
+        return new DOMRect(left, top, 320, 180);
+      };
+      const touches = (a: DOMRect, b: DOMRect) =>
+        a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+      it("puts the card inside the dialog, off the target, its siblings and the footer", () => {
+        form();
+        expect(card()).toHaveAttribute("data-kind", "float");
+        const placed = cardBox();
+        for (const key of ["f1", "f2", "f3", "f4", "f5", "f6", "ftr", "save"])
+          expect(touches(placed, boxes[key]!), key).toBe(false);
+        // Inside the dialog.
+        expect(placed.left).toBeGreaterThanOrEqual(180);
+        expect(placed.right).toBeLessThanOrEqual(1260);
+        expect(placed.top).toBeGreaterThanOrEqual(160);
+      });
+
+      it("keeps the same spot when laid out again with nothing moved", () => {
+        const view = form();
+        const first = [card().style.left, card().style.top, card().getAttribute("data-spot")];
+        view.rerender(<></>);
+        form();
+        expect([card().style.left, card().style.top, card().getAttribute("data-spot")]).toEqual(first);
+      });
+
+      it("never covers the target, nor the footer, when every spot would cover a control", () => {
+        form({}, 12);
+        expect(card()).toHaveAttribute("data-kind", "float");
+        const placed = cardBox();
+        expect(touches(placed, boxes.f2!)).toBe(false);
+        expect(touches(placed, boxes.ftr!)).toBe(false);
+        expect(touches(placed, boxes.save!)).toBe(false);
+      });
+
+      it("keeps the card by the target without the beside option", () => {
+        form({ dialogLayout: {} });
+        expect(card().hasAttribute("data-spot")).toBe(false);
+      });
     });
   });
 
@@ -1296,8 +1518,8 @@ describe("Tour", () => {
           }) as CSSStyleDeclaration,
       );
       render(tourModal("dialog", { dialogLayout: { clipSpotlight: true } }));
-      // 20 to 120 cut at the header's bottom (56): 64 tall, plus the padding on both sides.
-      expect(spot().style.blockSize).toBe("76px");
+      // 20 to 120 cut at the header's bottom (56) plus the padding: 58 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("70px");
       style.mockRestore();
       Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
       Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
@@ -1350,8 +1572,8 @@ describe("Tour", () => {
         </Page>,
       );
       expect(card()).toHaveAttribute("data-edge", "top");
-      // 180 to 640 is 460 tall, plus the padding on both sides.
-      expect(spot().style.blockSize).toBe("472px");
+      // 180 plus the padding to 640 is 454 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("466px");
       boxes.first = new DOMRect(100, 200, 80, 40);
       Reflect.deleteProperty(Element.prototype, "scrollBy");
     });
