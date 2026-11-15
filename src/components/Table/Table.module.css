@@ -142,8 +142,10 @@
   white-space: nowrap;
 }
 
-/* `wrap`: natural width, controls in a wrapping end-aligned row. */
-.table td[data-actions][data-wrap] {
+/* `wrap`: natural width, controls in a wrapping end-aligned row. The header cell shares the column, so a table with a
+   wrapping actions cell drops the 1% from it too; otherwise the column stays at its min-content, one button wide. */
+.table td[data-actions][data-wrap],
+.table:has(td[data-actions][data-wrap]) th[data-actions] {
   inline-size: auto;
 }
 

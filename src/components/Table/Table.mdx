@@ -103,10 +103,13 @@ buttons can force a sideways scroll at mid widths. Card mode is unchanged.
 <Canvas of={Stories.FewColumnsActions} />
 
 Set `wrap` on `Td actions` to let the controls flow onto a second line instead (end-aligned, with a gap, each button
-keeping its label on one line). Prefer that for two or three short actions; with more than two text actions prefer one
+keeping its label on one line). With room, all the controls sit on one line; only when the table would otherwise
+overflow do they wrap. The `Th actions` header needs no prop: the column follows its cells. Prefer that for two or three short actions; with more than two text actions prefer one
 overflow menu in the cell, which keeps every row one line tall.
 
 <Canvas of={Stories.NumericAndWrappingActions} />
+
+<Canvas of={Stories.WrappingActionsWithRoom} />
 
 ### Numeric cells
 
