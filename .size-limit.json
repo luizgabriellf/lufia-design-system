@@ -90,6 +90,24 @@
     "gzip": true
   },
   {
+    "name": "Table",
+    "path": "dist/components/Table/**/*.{js,css}",
+    "limit": "3.9 kB",
+    "gzip": true
+  },
+  {
+    "name": "Spinner",
+    "path": "dist/components/Spinner/**/*.{js,css}",
+    "limit": "1.15 kB",
+    "gzip": true
+  },
+  {
+    "name": "Disclosure",
+    "path": "dist/components/Disclosure/**/*.{js,css}",
+    "limit": "1.9 kB",
+    "gzip": true
+  },
+  {
     "name": "tokens.css",
     "path": "dist/tokens.css",
     "limit": "1.1 kB",

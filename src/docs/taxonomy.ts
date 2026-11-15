@@ -223,6 +223,18 @@ export const ENTRIES: Entry[] = [
     "A table header cell that sorts a column and announces the order.",
     apg("Sortable table", "table"),
   ),
+  c(
+    "Table",
+    "Data display",
+    "A data table that scrolls sideways with edge shadows and turns into cards on narrow widths, with clickable rows and an empty state.",
+    apg("Table", "table"),
+  ),
+  c(
+    "Disclosure",
+    "Data display",
+    "A native details and summary with a turning chevron, for content that opens and closes without script.",
+    apg("Disclosure", "disclosure"),
+  ),
 
   c(
     "Banner",
@@ -241,6 +253,11 @@ export const ENTRIES: Entry[] = [
     "StatusIcon",
     "Feedback",
     "One family of status markers, each tone with its own shape so it reads without colour.",
+  ),
+  c(
+    "Spinner",
+    "Feedback",
+    "A small inline loading ring that takes the colour of its text and can carry an accessible label.",
   ),
   c("EmptyState", "Feedback", "What to show when a list or panel has nothing yet, with the one next step."),
   c(

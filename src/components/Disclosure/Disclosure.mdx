@@ -1,0 +1,123 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Disclosure.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Disclosure"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A section that opens and closes, built on the native `<details>` and `<summary>`. It is a real `<details>` element, so it
+works without JavaScript, in a Server Component and in server-rendered pages; the package adds the look, a chevron that
+turns and, where the browser supports it, a slide.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Disclosure } from "@lufia/design-system/components/Disclosure";
+
+<Disclosure summary="What is included in the plan?">Unlimited projects and email support.</Disclosure>;
+
+{/* Opens one at a time: the same `name` makes a native group. */}
+<Disclosure summary="Question one" name="help" defaultOpen>Answer one.</Disclosure>
+<Disclosure summary="Question two" name="help">Answer two.</Disclosure>
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+### Styling an existing `<details>`
+
+An app with many native `<details>` does not have to rewrite them. `disclosureClasses` holds the class names of the
+component: put `root` on the `<details>`, `summary` on its `<summary>` and, to pad the content, `panel` on a wrapper around it.
+
+```tsx
+import { disclosureClasses } from "@lufia/design-system/components/Disclosure";
+
+<details className={disclosureClasses.root}>
+  <summary className={disclosureClasses.summary}>More</summary>
+  <div className={disclosureClasses.panel}>Content</div>
+</details>;
+```
+
+The chevron is drawn by the `summary` class itself, so no extra element is needed. The classes are CSS Module names, so
+the element must be rendered by code that imports them.
+
+</Section>
+
+<Section id="examples">
+
+### Exclusive group
+
+<Canvas of={Stories.ExclusiveGroup} />
+
+### Plain variant
+
+<Canvas of={Stories.Plain} />
+
+### Existing details with the classes
+
+<Canvas of={Stories.ClassesOnNativeDetails} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+`open` and `onToggle` (native `<details>` props) control the state from a Client Component. `defaultOpen` only sets the
+starting state and needs no script.
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard and accessibility
+
+| Key             | Action                      |
+| --------------- | --------------------------- |
+| Tab / Shift+Tab | Moves to the summary        |
+| Enter or Space  | Opens or closes the section |
+
+- It follows the WAI-ARIA **disclosure** pattern through the browser's own implementation: the `<summary>` is the
+  button, and its expanded state is exposed natively. Nothing is re-implemented, so nothing can drift from it.
+- Find in page opens a closed section that contains the match, which a script-driven disclosure would have to be built
+  to do.
+- The chevron is decorative (a CSS shape), always at the end of the row and not mirrored in right-to-left, since it points
+  down and up rather than along the text.
+- A visible focus ring is always present, and the summary is at least 40px tall (44px on phones and touch screens).
+- The slide uses `::details-content` and `interpolate-size`, in browsers that have them, and only when the person has not
+  asked for reduced motion. Elsewhere the section opens at once, which is the native behaviour.
+- Browsers that do not support `name` let several sections of a group stay open.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Secondary content most people do not need at once: answers, advanced options, the details of a row.
+- Pages that are rendered on the server and must work without script.
+
+### When not to use
+
+- Content that is needed to make a decision or finish a task: show it.
+- A set of views of one thing, where one is always shown (use tabs), or a menu of actions.
+- A message that must be seen (use `Banner`).
+
+### Content guidelines
+
+Write the `summary` so it makes sense on its own and says what is inside: "Shipping and returns", not "More". Keep it to
+one line where you can; it wraps and the chevron stays at the end.
+
+</Section>

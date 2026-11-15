@@ -72,7 +72,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-space-2`, `--lufia-spinner-arc`, `--lufia-spinner-track`.
 
 ## Content guidelines
 
