@@ -1,0 +1,336 @@
+/* Theming hooks: --lufia-table-bg (the surface, also the cover of the scroll shadows), --lufia-table-border,
+   --lufia-table-scroll-shadow (the colour at the edge of a scrollable table), --lufia-table-row-hover.
+   Cells and headers are styled from here, through the `.table` selectors, so a plain `<th>` or `SortableTh` looks the same. */
+.root {
+  --table-bg: var(--lufia-table-bg, var(--lufia-color-bg-surface));
+  --table-border: var(--lufia-table-border, var(--lufia-color-border-subtle));
+  --table-row-hover: var(--lufia-table-row-hover, var(--lufia-color-bg-surface-raised));
+  --table-shadow: var(
+    --lufia-table-scroll-shadow,
+    color-mix(in srgb, var(--lufia-color-border-strong) 85%, transparent)
+  );
+  --table-pad-y: var(--lufia-space-3);
+  --table-pad-x: var(--lufia-space-4);
+
+  /* The table reacts to its own width, not the window's, so one in a narrow panel turns into cards too. */
+  container: lufia-table / inline-size;
+  min-inline-size: 0;
+}
+
+.root[data-density="compact"] {
+  --table-pad-y: var(--lufia-space-1);
+}
+
+/* The surface. In card mode it disappears and each row carries its own. */
+.frame {
+  box-sizing: border-box;
+  overflow: hidden;
+  border: var(--lufia-border-width-thin) solid var(--table-border);
+  border-radius: var(--lufia-radius-card);
+  background: var(--table-bg);
+  color: var(--lufia-color-text-default);
+}
+
+/* Edge shadows without script: the covers scroll with the content and hide the shadows at the ends, so a shadow shows
+   only on a side that has more to scroll to. The positions are physical on purpose: the shadow belongs to the left or right
+   of the content, in either text direction. */
+.scroller {
+  /* Positioned so that absolutely placed content inside, such as a visually hidden header label, is contained and scrolls
+     with the table instead of widening the page. */
+  position: relative;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  background:
+    linear-gradient(to right, var(--table-bg) 70%, transparent) 0 0 / 2rem 100% no-repeat local,
+    linear-gradient(to left, var(--table-bg) 70%, transparent) 100% 0 / 2rem 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--table-shadow), transparent) 0 0 / 0.75rem 100% no-repeat
+      scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--table-shadow), transparent) 100% 0 / 0.75rem 100%
+      no-repeat scroll;
+}
+
+.scroller:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: var(--lufia-font-size-sm);
+  line-height: var(--lufia-font-line-height-normal);
+}
+
+/* Hidden from sight, never from the accessibility tree. */
+.caption {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.caption[data-visible] {
+  position: static;
+  inline-size: auto;
+  block-size: auto;
+  margin: 0;
+  padding: var(--table-pad-y) var(--table-pad-x);
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  text-align: start;
+  font-weight: var(--lufia-font-weight-semibold);
+  color: var(--lufia-color-text-default);
+}
+
+.table th {
+  padding: var(--table-pad-y) var(--table-pad-x);
+  border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
+  color: var(--lufia-color-text-muted);
+  font-family: var(--lufia-font-family-mono);
+  font-size: var(--lufia-font-size-2xs);
+  font-weight: var(--lufia-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-align: start;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--table-pad-y) var(--table-pad-x);
+  border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
+  vertical-align: middle;
+  overflow-wrap: break-word;
+}
+
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.table :is(th, td)[data-numeric] {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table td[data-primary] {
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.table td[data-actions] {
+  white-space: nowrap;
+}
+
+.table td[data-actions] > * + * {
+  margin-inline-start: var(--lufia-space-2);
+}
+
+/* A row that opens something. The link or button of its cell is stretched over the whole row by its ::after, so the row
+   has a real, focusable, nameable control and no click handler of its own. Controls in the other cells are lifted above it. */
+.rowLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.table tr:has(.rowLink) {
+  position: relative;
+}
+
+.rowLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* The ring is drawn on the stretched layer so it surrounds the whole row, not just the text. */
+.rowLink:focus-visible {
+  outline: 0 solid transparent;
+}
+
+.rowLink:focus-visible::after {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.table tr:has(.rowLink) :is(a, button, input, select, textarea, summary, [tabindex]):not(.rowLink) {
+  position: relative;
+  z-index: 1;
+}
+
+.table tr:has(.rowLink):hover {
+  background: var(--table-row-hover);
+}
+
+.emptyRow:hover {
+  background: none;
+}
+
+.emptyCell {
+  padding: 0;
+}
+
+.footer {
+  min-inline-size: 0;
+}
+
+/* Cards: the table's own width is under 40rem. Rows become cards, the header row is hidden visually but kept for assistive
+   technology, and the first cell is the title. There is nothing wide left to scroll. */
+@container lufia-table (width < 40rem) {
+  .root[data-responsive="cards"] .frame {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .root[data-responsive="cards"] .scroller {
+    overflow: visible;
+    background: none;
+  }
+
+  .root[data-responsive="cards"] .table {
+    position: relative;
+    display: block;
+  }
+
+  .root[data-responsive="cards"] .footer {
+    margin-block-start: var(--lufia-space-3);
+  }
+
+  .root[data-responsive="cards"] .caption[data-visible] {
+    display: block;
+    padding-inline: 0;
+  }
+
+  .root[data-responsive="cards"] .table > tbody {
+    display: grid;
+    gap: var(--lufia-space-3);
+  }
+
+  .root[data-responsive="cards"] .table > thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr {
+    display: block;
+    padding: var(--lufia-space-2) var(--lufia-space-4);
+    border: var(--lufia-border-width-thin) solid var(--table-border);
+    border-radius: var(--lufia-radius-card);
+    background: var(--table-bg);
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr.emptyRow {
+    padding: 0;
+    border-style: dashed;
+  }
+
+  /* A sortable header is still a control. When one takes focus the header row shows, as a wrapping row of labels, so a
+     keyboard user is never on something they cannot see. */
+  .root[data-responsive="cards"] .table > thead:focus-within {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0 0 var(--lufia-space-3);
+    overflow: visible;
+    clip-path: none;
+  }
+
+  .root[data-responsive="cards"] .table > thead:focus-within tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lufia-space-1) var(--lufia-space-4);
+    padding: var(--lufia-space-2) var(--lufia-space-4);
+    border: var(--lufia-border-width-thin) solid var(--table-border);
+    border-radius: var(--lufia-radius-card);
+    background: var(--table-bg);
+  }
+
+  .root[data-responsive="cards"] .table > thead:focus-within th {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .root[data-responsive="cards"] .rowLink::after {
+    border-radius: var(--lufia-radius-card);
+  }
+
+  .root[data-responsive="cards"] .table td {
+    display: block;
+    padding: var(--lufia-space-1) 0;
+    border: 0;
+    text-align: start;
+    overflow-wrap: anywhere;
+  }
+
+  /* The column label comes from the cell, so the markup carries it once. The empty alternative text keeps the label out of
+     the speech: the hidden header row already names the column. */
+  .root[data-responsive="cards"] .table td[data-label] {
+    display: grid;
+    grid-template-columns: minmax(5rem, 38%) minmax(0, 1fr);
+    place-items: baseline start;
+    column-gap: var(--lufia-space-3);
+  }
+
+  .root[data-responsive="cards"] .table td[data-label]::before {
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    color: var(--lufia-color-text-muted);
+    font-family: var(--lufia-font-family-mono);
+    font-size: var(--lufia-font-size-2xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .root[data-responsive="cards"] .table td[data-primary] {
+    display: block;
+    padding-block: var(--lufia-space-2);
+    font-size: var(--lufia-font-size-md);
+  }
+
+  .root[data-responsive="cards"] .table td[data-primary]::before,
+  .root[data-responsive="cards"] .table td[data-actions]::before {
+    content: none;
+  }
+
+  .root[data-responsive="cards"] .table td[data-actions] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--lufia-space-2);
+    padding-block: var(--lufia-space-2);
+    white-space: normal;
+  }
+
+  .root[data-responsive="cards"] .table td[data-actions] > * + * {
+    margin-inline-start: 0;
+  }
+
+  .root[data-responsive="cards"] .table :is(th, td)[data-numeric] {
+    text-align: start;
+  }
+}
+
+@media (forced-colors: active) {
+  .table tr:has(.rowLink):hover {
+    outline: var(--lufia-border-width-thin) solid Highlight;
+    outline-offset: -1px;
+  }
+}

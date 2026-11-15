@@ -2454,3 +2454,206 @@ test.describe("file field", () => {
     });
   });
 });
+
+test.describe("table", () => {
+  const id = (name: string) => `components-data-display-table--${name}`;
+  const pageOverflow = (page: Page) =>
+    page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+
+  test("a clickable row's link covers the whole row and the actions cell stays on top", async ({ page }) => {
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, id("clickable-rows-as-links"));
+      const hits = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const point = (el: Element, dx: number, dy: number) => {
+          const box = el.getBoundingClientRect();
+          return document.elementFromPoint(box.left + dx, box.top + dy);
+        };
+        const cells = [...row.children];
+        const button = row.querySelector("td:last-child button")!;
+        const onTop = document.elementFromPoint(
+          button.getBoundingClientRect().left + 4,
+          button.getBoundingClientRect().top + 4,
+        );
+        return {
+          cells: cells.map((cell) => point(cell, 4, 4)?.closest("a")?.tagName ?? null),
+          button: onTop?.closest("button") === button,
+        };
+      });
+      expect(hits.cells.every((tag) => tag === "A")).toBe(true);
+      expect(hits.button).toBe(true);
+    }
+  });
+
+  test("clicking the actions button does not follow the row's link", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, id("clickable-rows-as-buttons"));
+    await page.getByRole("button", { name: "Edit" }).first().click();
+    await expect(page.getByText("Opened: nothing yet")).toBeVisible();
+    await page.getByRole("button", { name: "Billing migration" }).click();
+    await expect(page.getByText("Opened: Billing migration")).toBeVisible();
+  });
+
+  test("Enter and Space activate a button row from the keyboard", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, id("clickable-rows-as-buttons"));
+    await page.getByRole("button", { name: "Mobile onboarding" }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Opened: Mobile onboarding")).toBeVisible();
+    await page.getByRole("button", { name: "Partner portal" }).focus();
+    await page.keyboard.press("Space");
+    await expect(page.getByText("Opened: Partner portal")).toBeVisible();
+  });
+
+  test("under 40rem the rows are cards: the header row is clipped and each cell shows its column label", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("default"));
+    const result = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root")!;
+      const head = root.querySelector("thead")!.getBoundingClientRect();
+      const cell = root.querySelector<HTMLElement>("tbody td[data-label='Owner']")!;
+      return {
+        headSize: [head.width, head.height],
+        rowDisplay: getComputedStyle(cell.parentElement!).display,
+        labelContent: getComputedStyle(cell, "::before").content,
+        primaryLabel: getComputedStyle(root.querySelector("tbody td[data-primary]")!, "::before").content,
+        tableScrolls:
+          root.querySelector<HTMLElement>("[role='region']")!.scrollWidth >
+          root.querySelector<HTMLElement>("[role='region']")!.clientWidth,
+      };
+    });
+    expect(result.headSize[0]).toBeLessThanOrEqual(1);
+    expect(result.headSize[1]).toBeLessThanOrEqual(1);
+    expect(result.rowDisplay).toBe("block");
+    expect(result.labelContent).toContain("Owner");
+    expect(["none", "normal"]).toContain(result.primaryLabel);
+    expect(result.tableScrolls).toBe(false);
+  });
+
+  test("above 40rem it is a table", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, id("default"));
+    const display = await page.evaluate(
+      () => getComputedStyle(document.querySelector("#storybook-root tbody tr")!).display,
+    );
+    expect(display).toBe("table-row");
+  });
+
+  test("a table in a narrow column turns into cards on a wide page", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, id("narrow-container"));
+    const display = await page.evaluate(
+      () => getComputedStyle(document.querySelector("#storybook-root tbody tr")!).display,
+    );
+    expect(display).toBe("block");
+  });
+
+  for (const name of [
+    "phone-cards",
+    "scroll-on-phone",
+    "long-content-on-phone",
+    "empty-on-phone",
+    "footer-on-phone",
+  ]) {
+    test(`${name} does not widen the page at 390px`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 800 });
+      await openStory(page, id(name));
+      expect(await pageOverflow(page)).toBeLessThanOrEqual(0);
+    });
+  }
+
+  test("scroll mode scrolls inside the region and draws the edge shadow gradients", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("scroll-on-phone"));
+    const region = await page.evaluate(() => {
+      const el = document.querySelector<HTMLElement>("#storybook-root [role='region']")!;
+      return {
+        scrolls: el.scrollWidth > el.clientWidth,
+        gradients: (getComputedStyle(el).backgroundImage.match(/gradient/g) ?? []).length,
+      };
+    });
+    expect(region.scrolls).toBe(true);
+    expect(region.gradients).toBe(4);
+  });
+
+  test("a sortable header shows while it has keyboard focus in card mode", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("sortable-on-phone"));
+    const before = await page.evaluate(
+      () => document.querySelector("#storybook-root thead")!.getBoundingClientRect().height,
+    );
+    expect(before).toBeLessThanOrEqual(1);
+    await page.getByRole("button", { name: "Project" }).focus();
+    const after = await page.evaluate(
+      () => document.querySelector("#storybook-root thead")!.getBoundingClientRect().height,
+    );
+    expect(after).toBeGreaterThan(20);
+  });
+
+  test("the table has no axe violations in cards, scroll and empty states", async ({ page }) => {
+    for (const [name, width] of [
+      ["default", 1280],
+      ["phone-cards", 390],
+      ["scroll-on-phone", 390],
+      ["clickable-rows-as-links", 1280],
+      ["empty", 1280],
+      ["footer-with-pagination", 1280],
+    ] as const) {
+      await page.setViewportSize({ width, height: 800 });
+      await openStory(page, id(name));
+      expect(await runAxe(page, "#storybook-root"), name).toEqual([]);
+    }
+  });
+});
+
+test.describe("disclosure", () => {
+  test("Enter and Space open and close it, and a shared name keeps one open", async ({ page }) => {
+    await openStory(page, "components-data-display-disclosure--exclusive-group");
+    const details = page.locator("#storybook-root details");
+    await expect(details.nth(0)).toHaveAttribute("open", "");
+    await page.locator("#storybook-root summary").nth(1).focus();
+    await page.keyboard.press("Enter");
+    await expect(details.nth(1)).toHaveAttribute("open", "");
+    await expect(details.nth(0)).not.toHaveAttribute("open", "");
+    await page.keyboard.press("Space");
+    await expect(details.nth(1)).not.toHaveAttribute("open", "");
+  });
+
+  test("the native marker is replaced by the chevron", async ({ page }) => {
+    await openStory(page, "components-data-display-disclosure--default");
+    const style = await page.evaluate(() => {
+      const summary = document.querySelector("#storybook-root summary")!;
+      return {
+        listStyle: getComputedStyle(summary).listStyleType,
+        chevron: getComputedStyle(summary, "::after").content,
+      };
+    });
+    expect(style.listStyle).toBe("none");
+    expect(style.chevron).not.toBe("none");
+  });
+
+  test("it has no axe violations open and closed, and in the classes-on-native-details story", async ({
+    page,
+  }) => {
+    for (const name of ["open-by-default", "default", "classes-on-native-details"]) {
+      await openStory(page, `components-data-display-disclosure--${name}`);
+      expect(await runAxe(page, "#storybook-root"), name).toEqual([]);
+    }
+  });
+});
+
+test.describe("spinner", () => {
+  test("it turns, and stands still under reduced motion", async ({ page }) => {
+    await openStory(page, "components-feedback-spinner--default");
+    const animation = () =>
+      page.evaluate(
+        () => getComputedStyle(document.querySelector("#storybook-root [role='status']")!).animationName,
+      );
+    expect(await animation()).not.toBe("none");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    expect(await animation()).toBe("none");
+  });
+});

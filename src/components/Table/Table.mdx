@@ -1,0 +1,168 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Table.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Table"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A data table built from native table elements, styled with CSS only. It scrolls sideways with a shadow on each edge that
+has more to see, sets its headers in small monospace capitals and, when its own width is under 40rem, becomes a list
+of cards. It holds no state: sorting, filtering and paging stay with the app, which hands in the rows.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Table, TableHead, TableBody, TableRow, Th, Td } from "@lufia/design-system/components/Table";
+
+<Table caption="Projects">
+  <TableHead>
+    <TableRow>
+      <Th>Project</Th>
+      <Th>Status</Th>
+      <Th numeric>Budget</Th>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <Td primary label="Project" href="/projects/1">
+        Harbour redesign
+      </Td>
+      <Td label="Status">Active</Td>
+      <Td label="Budget" numeric>
+        12,400
+      </Td>
+    </TableRow>
+  </TableBody>
+</Table>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+None of the parts has `"use client"`, so a table renders in a Server Component. `onActivate` passes a function, so a row that
+uses it has to be written in a Client Component; `href` does not.
+
+### Cards on narrow widths
+
+`responsive="cards"` (the default) answers to the width of the table itself, not of the window, so a table in a narrow
+column is a list of cards on a wide page. Under 40rem the header row is hidden visually and kept for assistive technology,
+each row is a card, the `primary` cell is its title, every other cell shows its `label` before the value and an `actions`
+cell wraps its buttons. There is no sideways scroll in that mode. Give every `Td` the same `label` as its column header.
+
+<Canvas of={Stories.PhoneCards} />
+
+`responsive="scroll"` keeps the table at every width and scrolls it instead.
+
+<Canvas of={Stories.ScrollOnPhone} />
+
+### Clickable rows
+
+Give one cell of the row `href` (a link through the `linkComponent` of `LufiaProvider`) or `onActivate` (a button). The
+cell's content becomes that real control, and its click area is stretched over the whole row. The `<tr>` has no click
+handler and no `role="button"`, so the row is announced once, as a link or a button named by the cell, and links keep
+open in new tab, copy address and middle click. Buttons and links in other cells, such as an `actions` cell, sit above the
+stretched area and do their own thing.
+
+<Canvas of={Stories.ClickableRowsAsLinks} />
+
+### Empty and footer
+
+`TableEmpty` is a one-row body that hosts an `EmptyState`. `footer` takes a `Pagination`, outside the scrolling area.
+
+<Canvas of={Stories.Empty} />
+
+<Canvas of={Stories.FooterWithPagination} />
+
+</Section>
+
+<Section id="examples">
+
+### Sortable headers
+
+`SortableTh` goes in the header row beside `Th`. Pass `data-numeric` to it to align a numeric column.
+
+<Canvas of={Stories.SortableHeaders} />
+
+### Long content
+
+<Canvas of={Stories.LongContent} />
+
+### Compact
+
+<Canvas of={Stories.Compact} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+Parts: `TableHead`, `TableBody` and `TableRow` take their native element's props. `Th` adds `numeric` (default
+`scope="col"`). `Td` adds `label`, `numeric`, `primary`, `actions`, `href` and `onActivate`. `TableEmpty` takes the props of
+`EmptyState` plus `colSpan`.
+
+Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow` and `--lufia-table-row-hover`.
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard and accessibility
+
+| Key                        | Action                                                                                    |
+| -------------------------- | ----------------------------------------------------------------------------------------- |
+| Tab / Shift+Tab            | Moves through the scroll region, each row's link or button, and the controls in its cells |
+| Enter                      | Follows a row's link, or presses its button                                               |
+| Space                      | Presses a row's button (a link answers to Enter only)                                     |
+| Arrow keys (on the region) | Scroll the table sideways when it is focused                                              |
+
+- The `<caption>` names the table and the scroll region around it. The region is focusable, so a keyboard user can scroll a
+  table that has nothing focusable in the hidden columns (WCAG 2.1.1). It costs one tab stop; give each table on a page its own
+  caption, since a region is a landmark and landmarks need distinct names.
+- Card mode changes `display` on table parts, which some browsers answer by dropping the table semantics. Explicit `table`,
+  `rowgroup`, `row`, `columnheader`, `rowheader` and `cell` roles keep them, and the hidden header row keeps naming every
+  column. The visible column label in a card is drawn by CSS with an empty text alternative, so it is not read twice.
+- A sortable header in card mode is still a control. While one has keyboard focus the header row shows, so no one is on
+  something they cannot see.
+- A clickable row is a real `<a>` or `<button>` in one cell, stretched over the row, not a `<tr tabindex="0" role="button">`.
+  That keeps one tab stop and one announcement per row, lets controls inside the row be reached on their own (a button
+  inside a `role="button"` row is a nested control), and keeps link behaviour. A consequence: text in a clickable row
+  cannot be selected with the mouse.
+- The focus ring surrounds the whole row. Reduced motion needs nothing: the table has no animation. In forced colours the row
+  hover gets an outline, and the scroll shadows, which are backgrounds, are not drawn.
+- Interactive controls in a row reach at least 24 by 24 CSS pixels through their own components; the stretched control
+  covers the row.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Records with several attributes that people compare, scan or open.
+
+### When not to use
+
+- A layout (use CSS grid) or a short list of one value per line (use `DetailList` or a list).
+- Data that needs cell editing, selection, a virtual window of many thousand rows or a column model. This is the
+  presentation of a table, not a data grid.
+
+### Content guidelines
+
+`caption` says what the rows are: "Projects", "Invoices for March". Keep a `label` identical to its column header. Put the
+row's identity in the `primary` cell and make it the one with `href` or `onActivate`; keep the actions to a few short
+buttons that wrap well.
+
+</Section>

@@ -1,0 +1,47 @@
+/* Theming hooks: --lufia-spinner-track (the ring) and --lufia-spinner-arc (the turning arc). Both default to the text colour,
+   so a spinner in a button, a link or a muted line takes that colour with no setup. */
+.root {
+  --spinner-size: var(--lufia-icon-size-md);
+
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  inline-size: var(--spinner-size);
+  block-size: var(--spinner-size);
+  border: var(--lufia-border-width-thick) solid
+    var(--lufia-spinner-track, color-mix(in srgb, currentcolor 35%, transparent));
+  border-block-start-color: var(--lufia-spinner-arc, currentcolor);
+  border-radius: var(--lufia-radius-full);
+  vertical-align: middle;
+  animation: spinner-turn 800ms linear infinite;
+}
+
+.root[data-size="sm"] {
+  --spinner-size: var(--lufia-icon-size-sm);
+}
+
+.root[data-size="lg"] {
+  --spinner-size: var(--lufia-icon-size-lg);
+}
+
+@keyframes spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An endless loop is stopped, not shortened. The ring stays, with its arc, so the state is still visible. */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    animation: none;
+  }
+}
+
+/* Forced colours replace every border colour with one system colour, which would flatten the arc into the ring. */
+@media (forced-colors: active) {
+  .root {
+    border-color: GrayText;
+    border-block-start-color: Highlight;
+  }
+}

@@ -3379,6 +3379,107 @@ Strings arrive localised through props. Titles are nouns ("Contacts"), not sente
 - `components-data-display-detailsectioncard--long-content`
 - `components-data-display-detailsectioncard--all-themes`
 
+## Disclosure
+
+> A native details and summary with a turning chevron, for content that opens and closes without script.
+
+- Status: beta
+- Category: Data display
+- Import: `import { Disclosure, disclosureClasses } from "@lufia/design-system/components/Disclosure"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/Disclosure](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Disclosure)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-disclosure--docs)
+
+### Purpose
+
+A section that opens and closes, built on the native `<details>` and `<summary>`. It is a real `<details>` element, so it
+works without JavaScript, in a Server Component and in server-rendered pages; the package adds the look, a chevron that
+turns and, where the browser supports it, a slide.
+
+### When to use
+
+- Secondary content most people do not need at once: answers, advanced options, the details of a row.
+- Pages that are rendered on the server and must work without script.
+
+### When not to use
+
+- Content that is needed to make a decision or finish a task: show it.
+- A set of views of one thing, where one is always shown (use tabs), or a menu of actions.
+- A message that must be seen (use `Banner`).
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `Disclosure` | component |
+| `disclosureClasses` | constant |
+
+### API
+
+#### `Disclosure`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `children` | `ReactNode` | yes |  | The content that opens and closes. |
+| `name` | `string` | no |  | Group name: details sharing a `name` open one at a time, natively. Browsers without support let several stay open, which is harmless. |
+| `summary` | `ReactNode` | yes |  | The always visible label, rendered inside the native `<summary>`. Text or inline content; it is the control's name. |
+| `defaultOpen` | `boolean` | no |  | Start open. The browser owns the state afterwards, so this works without JavaScript. |
+| `variant` | `"boxed" \| "plain"` | no | `"boxed"` | `boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content. |
+| `panelClassName` | `string` | no |  | Class for the content wrapper. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `DisclosureProps`: `Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "title" | "summary"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: "boxed" | "plain" | undefined; panelClassName?: string | undefined; }`
+
+### Example
+
+```tsx
+import { Disclosure } from "@lufia/design-system/components/Disclosure";
+
+<Disclosure summary="What is included in the plan?">Unlimited projects and email support.</Disclosure>;
+
+{/* Opens one at a time: the same `name` makes a native group. */}
+<Disclosure summary="Question one" name="help" defaultOpen>Answer one.</Disclosure>
+<Disclosure summary="Question two" name="help">Answer two.</Disclosure>
+```
+
+### Accessibility
+
+Follows the WAI-ARIA Authoring Practices pattern: [Disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
+
+Keyboard:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift+Tab | Moves to the summary |
+| Enter or Space | Opens or closes the section |
+
+### Motion
+
+Its stylesheet has a `prefers-reduced-motion` branch.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
+
+### Content guidelines
+
+Write the `summary` so it makes sense on its own and says what is inside: "Shipping and returns", not "More". Keep it to
+one line where you can; it wraps and the chevron stays at the end.
+
+### Stories
+
+- `components-data-display-disclosure--default`
+- `components-data-display-disclosure--open-by-default`
+- `components-data-display-disclosure--plain`
+- `components-data-display-disclosure--exclusive-group`
+- `components-data-display-disclosure--long-content`
+- `components-data-display-disclosure--on-phone`
+- `components-data-display-disclosure--classes-on-native-details`
+- `components-data-display-disclosure--all-themes`
+
 ## EmptyState
 
 > What to show when a list or panel has nothing yet, with the one next step.
@@ -5474,7 +5575,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-space-2`, `--lufia-spinner-arc`, `--lufia-spinner-track`.
 
 ### Content guidelines
 
@@ -6955,6 +7056,88 @@ Reads these semantic tokens: `--lufia-color-accent-default`, `--lufia-color-bord
 - `components-data-display-sparkline--right-to-left`
 - `components-data-display-sparkline--all-themes`
 
+## Spinner
+
+> A small inline loading ring that takes the colour of its text and can carry an accessible label.
+
+- Status: beta
+- Category: Feedback
+- Import: `import { Spinner } from "@lufia/design-system/components/Spinner"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/Spinner](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Spinner)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-feedback-spinner--docs)
+
+### Purpose
+
+A small inline loading ring for work of unknown length. It takes the colour of the text around it, comes in three sizes
+and stands still under `prefers-reduced-motion`.
+
+### When to use
+
+- A short, indeterminate wait inside a control, a row or a panel.
+
+### When not to use
+
+- A known amount of progress (use `ProgressBar`) or the shape of a page that is loading (use the skeletons).
+- A page that must not be used until the work is done: use a modal pattern or `aria-busy` on the region.
+
+### API
+
+#### `Spinner`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | Ring size, from the icon scale: 16, 20 or 24px. Default `md`. |
+| `label` | `string` | no |  | The accessible name ("Loading results"). With it the spinner is a polite status region that assistive technology reads. Without it the spinner is decorative (`aria-hidden`): use that when the surrounding control already says it is busy, for example a button with `aria-busy` and its own label. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `SpinnerProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { size?: SpinnerSize | undefined; label?: string | undefined; }`
+- `SpinnerSize`: `"sm" | "md" | "lg"`
+
+### Example
+
+```tsx
+import { Spinner } from "@lufia/design-system/components/Spinner";
+
+<Spinner label="Loading results" />;
+
+<p>
+  <Spinner size="sm" /> Loading projects…
+</p>;
+```
+
+### Accessibility
+
+- With a `label` the spinner is `role="status"` and its text is read by assistive technology. Mount it when the work starts, or put the label on a region that already exists, so the announcement is reliable.
+- Without a `label` it is `aria-hidden`. Use that when something else already says the page or control is busy: a button with `aria-busy` and its own text, or a line such as "Loading projects…" beside the ring.
+- Never rely on the ring alone to say that work is in progress: it carries no text of its own.
+- Under `prefers-reduced-motion` the ring stops turning and keeps its arc, so the state still reads. Under forced colours the track and the arc use system colours.
+- The ring is a visual size of 16, 20 or 24px and is not interactive, so it has no target size.
+
+### Motion
+
+Its stylesheet has a `prefers-reduced-motion` branch.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-icon-size-lg`, `--lufia-icon-size-md`, `--lufia-icon-size-sm`, `--lufia-radius-full`, `--lufia-spinner-arc`, `--lufia-spinner-track`.
+
+### Content guidelines
+
+`label` is the localised state, in the present tense: "Loading results", not "Please wait".
+
+### Stories
+
+- `components-feedback-spinner--default`
+- `components-feedback-spinner--sizes`
+- `components-feedback-spinner--decorative`
+- `components-feedback-spinner--inherits-colour`
+- `components-feedback-spinner--in-a-button`
+- `components-feedback-spinner--all-themes`
+
 ## StackedBar
 
 > One bar split into proportional segments, with a legend and a text alternative.
@@ -7725,6 +7908,180 @@ that flips meaning with the state ("Enable alerts").
 - `components-forms-switch--phone-320`
 - `components-forms-switch--right-to-left`
 - `components-forms-switch--all-themes`
+
+## Table
+
+> A data table that scrolls sideways with edge shadows and turns into cards on narrow widths, with clickable rows and an empty state.
+
+- Status: beta
+- Category: Data display
+- Import: `import { Table, TableBody, TableEmpty, TableHead, TableRow, Td, Th } from "@lufia/design-system/components/Table"`
+- Also from: `@lufia/design-system`
+- Source: [src/components/Table](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Table)
+- Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-table--docs)
+
+### Purpose
+
+A data table built from native table elements, styled with CSS only. It scrolls sideways with a shadow on each edge that
+has more to see, sets its headers in small monospace capitals and, when its own width is under 40rem, becomes a list
+of cards. It holds no state: sorting, filtering and paging stay with the app, which hands in the rows.
+
+### When to use
+
+- Records with several attributes that people compare, scan or open.
+
+### When not to use
+
+- A layout (use CSS grid) or a short list of one value per line (use `DetailList` or a list).
+- Data that needs cell editing, selection, a virtual window of many thousand rows or a column model. This is the presentation of a table, not a data grid.
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `Table` | component |
+| `TableBody` | component |
+| `TableEmpty` | component |
+| `TableHead` | component |
+| `TableRow` | component |
+| `Td` | component |
+| `Th` | component |
+
+### API
+
+#### `Table`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `children` | `ReactNode` | yes |  | `TableHead` and `TableBody`. |
+| `caption` | `string` | yes |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
+| `showCaption` | `boolean` | no | `false` | Show the caption above the table instead of hiding it visually. |
+| `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
+| `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | Row padding. Default `comfortable`. |
+| `footer` | `ReactNode` | no |  | Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. |
+| `tableClassName` | `string` | no |  | Class for the `<table>` element; `className` goes to the outer wrapper. |
+
+Other native element attributes pass through to the root element.
+
+#### `TableBody`, `TableHead`, `TableRow`
+
+No props of its own. Native element attributes pass through.
+
+#### `TableEmpty`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
+| `title` | `string` | yes |  |  |
+| `body` | `string` | no |  |  |
+| `action` | `ReactNode` | no |  | Next step, usually a button or link. |
+| `colSpan` | `number` | yes |  | The number of columns, so the message spans the whole row. |
+
+Other native element attributes pass through to the root element.
+
+#### `Td`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `string` | no |  | The column's name, shown before the value in card mode ("Status"). Use the same text as the column header. Without it the value takes the whole line. Not shown for a `primary` or `actions` cell. |
+| `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures. |
+| `primary` | `boolean` | no |  | The row's identity: bolder, and the title of the card. Usually the first cell. |
+| `actions` | `boolean` | no |  | The row's buttons and links, laid out in a wrapping row. Never activates the row. |
+| `href` | `string` | no |  | Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row. |
+| `onActivate` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function. |
+
+Other native element attributes pass through to the root element.
+
+#### `Th`
+
+| Prop | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. |
+
+Other native element attributes pass through to the root element.
+
+### Types
+
+- `TableEmptyProps`: `Omit<HTMLAttributes<HTMLDivElement>, "title"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }`
+- `TableProps`: `Omit<HTMLAttributes<HTMLDivElement>, "children"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: "scroll" | "cards" | undefined; density?: "compact" | "comfortable" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }`
+- `TdProps`: `Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }`
+- `ThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & { numeric?: boolean | undefined; }`
+
+### Example
+
+```tsx
+import { Table, TableHead, TableBody, TableRow, Th, Td } from "@lufia/design-system/components/Table";
+
+<Table caption="Projects">
+  <TableHead>
+    <TableRow>
+      <Th>Project</Th>
+      <Th>Status</Th>
+      <Th numeric>Budget</Th>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <Td primary label="Project" href="/projects/1">
+        Harbour redesign
+      </Td>
+      <Td label="Status">Active</Td>
+      <Td label="Budget" numeric>
+        12,400
+      </Td>
+    </TableRow>
+  </TableBody>
+</Table>;
+```
+
+### Accessibility
+
+Follows the WAI-ARIA Authoring Practices pattern: [Table](https://www.w3.org/WAI/ARIA/apg/patterns/table/).
+
+Keyboard:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift+Tab | Moves through the scroll region, each row's link or button, and the controls in its cells |
+| Enter | Follows a row's link, or presses its button |
+| Space | Presses a row's button (a link answers to Enter only) |
+| Arrow keys (on the region) | Scroll the table sideways when it is focused |
+
+### Motion
+
+Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+
+### Tokens
+
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-medium`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-row-hover`, `--lufia-table-scroll-shadow`.
+
+### Content guidelines
+
+`caption` says what the rows are: "Projects", "Invoices for March". Keep a `label` identical to its column header. Put the
+row's identity in the `primary` cell and make it the one with `href` or `onActivate`; keep the actions to a few short
+buttons that wrap well.
+
+### Stories
+
+- `components-data-display-table--default`
+- `components-data-display-table--compact`
+- `components-data-display-table--visible-caption`
+- `components-data-display-table--phone-cards`
+- `components-data-display-table--smallest-phone`
+- `components-data-display-table--scroll-on-phone`
+- `components-data-display-table--sortable-headers`
+- `components-data-display-table--sortable-on-phone`
+- `components-data-display-table--clickable-rows-as-links`
+- `components-data-display-table--clickable-rows-as-buttons`
+- `components-data-display-table--clickable-rows-on-phone`
+- `components-data-display-table--empty`
+- `components-data-display-table--empty-on-phone`
+- `components-data-display-table--footer-with-pagination`
+- `components-data-display-table--footer-on-phone`
+- `components-data-display-table--long-content`
+- `components-data-display-table--long-content-on-phone`
+- `components-data-display-table--narrow-container`
+- `components-data-display-table--all-themes`
 
 ## TableToolbar
 

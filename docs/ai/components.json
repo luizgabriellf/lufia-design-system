@@ -6916,6 +6916,183 @@
       "tokens": []
     },
     {
+      "name": "Disclosure",
+      "category": "Data display",
+      "summary": "A native details and summary with a turning chevron, for content that opens and closes without script.",
+      "status": "beta",
+      "source": "src/components/Disclosure",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Disclosure",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Disclosure",
+          "kind": "component",
+          "description": "A disclosure built on the native `<details>` and `<summary>`: it works without JavaScript and in a Server Component, keeps the browser's keyboard behaviour (Enter or Space on the summary) and find-in-page, which opens a closed section that holds the match. The chevron turns with the state, and where the browser supports it the content also slides open. Pass `open` with `onToggle` to control it from a Client Component.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The content that opens and closes."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Group name: details sharing a `name` open one at a time, natively. Browsers without support let several stay open, which is harmless."
+            },
+            {
+              "name": "summary",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The always visible label, rendered inside the native `<summary>`. Text or inline content; it is the control's name."
+            },
+            {
+              "name": "defaultOpen",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Start open. The browser owns the state afterwards, so this works without JavaScript."
+            },
+            {
+              "name": "variant",
+              "type": "\"boxed\" | \"plain\"",
+              "required": false,
+              "default": "\"boxed\"",
+              "description": "`boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content."
+            },
+            {
+              "name": "panelClassName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Class for the content wrapper."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "DisclosureProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<DetailsHTMLAttributes<HTMLDetailsElement>, \"title\" | \"summary\"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: \"boxed\" | \"plain\" | undefined; panelClassName?: string | undefined; }"
+        },
+        {
+          "name": "disclosureClasses",
+          "kind": "constant",
+          "type": "Readonly<{ root: string; summary: string; panel: string; }>"
+        }
+      ],
+      "aliases": {
+        "DisclosureProps": "Omit<DetailsHTMLAttributes<HTMLDetailsElement>, \"title\" | \"summary\"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: \"boxed\" | \"plain\" | undefined; panelClassName?: string | undefined; }"
+      },
+      "story": {
+        "docsId": "components-data-display-disclosure--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-disclosure--default"
+          },
+          {
+            "export": "OpenByDefault",
+            "id": "components-data-display-disclosure--open-by-default"
+          },
+          {
+            "export": "Plain",
+            "id": "components-data-display-disclosure--plain"
+          },
+          {
+            "export": "ExclusiveGroup",
+            "id": "components-data-display-disclosure--exclusive-group"
+          },
+          {
+            "export": "LongContent",
+            "id": "components-data-display-disclosure--long-content"
+          },
+          {
+            "export": "OnPhone",
+            "id": "components-data-display-disclosure--on-phone"
+          },
+          {
+            "export": "ClassesOnNativeDetails",
+            "id": "components-data-display-disclosure--classes-on-native-details"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-disclosure--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Disclosure/Disclosure.mdx",
+        "overview": "A section that opens and closes, built on the native `<details>` and `<summary>`. It is a real `<details>` element, so it\nworks without JavaScript, in a Server Component and in server-rendered pages; the package adds the look, a chevron that\nturns and, where the browser supports it, a slide.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Disclosure } from \"@lufia/design-system/components/Disclosure\";\n\n<Disclosure summary=\"What is included in the plan?\">Unlimited projects and email support.</Disclosure>;\n\n{/* Opens one at a time: the same `name` makes a native group. */}\n<Disclosure summary=\"Question one\" name=\"help\" defaultOpen>Answer one.</Disclosure>\n<Disclosure summary=\"Question two\" name=\"help\">Answer two.</Disclosure>"
+        },
+        "whenToUse": [
+          "Secondary content most people do not need at once: answers, advanced options, the details of a row.",
+          "Pages that are rendered on the server and must work without script."
+        ],
+        "whenNotToUse": [
+          "Content that is needed to make a decision or finish a task: show it.",
+          "A set of views of one thing, where one is always shown (use tabs), or a menu of actions.",
+          "A message that must be seen (use `Banner`)."
+        ],
+        "contentGuidelines": "Write the `summary` so it makes sense on its own and says what is inside: \"Shipping and returns\", not \"More\". Keep it to\none line where you can; it wraps and the chevron stays at the end."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Disclosure",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+        },
+        "keyboard": [
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Moves to the summary"
+          },
+          {
+            "keys": "Enter or Space",
+            "action": "Opens or closes the section"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": []
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-disclosure-bg",
+        "--lufia-disclosure-border",
+        "--lufia-font-weight-medium",
+        "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-fast",
+        "--lufia-motion-easing-in-out",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-card",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4",
+        "--lufia-target-touch"
+      ]
+    },
+    {
       "name": "EmptyState",
       "category": "Feedback",
       "summary": "What to show when a list or panel has nothing yet, with the one next step.",
@@ -12801,7 +12978,9 @@
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-color-focus-ring",
-        "--lufia-space-2"
+        "--lufia-space-2",
+        "--lufia-spinner-arc",
+        "--lufia-spinner-track"
       ]
     },
     {
@@ -15652,6 +15831,127 @@
       ]
     },
     {
+      "name": "Spinner",
+      "category": "Feedback",
+      "summary": "A small inline loading ring that takes the colour of its text and can carry an accessible label.",
+      "status": "beta",
+      "source": "src/components/Spinner",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Spinner",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Spinner",
+          "kind": "component",
+          "description": "A small inline loading ring. It takes the colour of the surrounding text (`currentcolor`), turns until the work is done and stands still, ring and arc kept, under `prefers-reduced-motion`. It does not know about progress; for a known amount use `ProgressBar`.",
+          "props": [
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\" | \"lg\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "Ring size, from the icon scale: 16, 20 or 24px. Default `md`."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The accessible name (\"Loading results\"). With it the spinner is a polite status region that assistive technology reads. Without it the spinner is decorative (`aria-hidden`): use that when the surrounding control already says it is busy, for example a button with `aria-busy` and its own label."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SpinnerProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { size?: SpinnerSize | undefined; label?: string | undefined; }"
+        },
+        {
+          "name": "SpinnerSize",
+          "kind": "type",
+          "description": "",
+          "definition": "\"sm\" | \"md\" | \"lg\""
+        }
+      ],
+      "aliases": {
+        "SpinnerProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { size?: SpinnerSize | undefined; label?: string | undefined; }",
+        "SpinnerSize": "\"sm\" | \"md\" | \"lg\""
+      },
+      "story": {
+        "docsId": "components-feedback-spinner--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-spinner--default"
+          },
+          {
+            "export": "Sizes",
+            "id": "components-feedback-spinner--sizes"
+          },
+          {
+            "export": "Decorative",
+            "id": "components-feedback-spinner--decorative"
+          },
+          {
+            "export": "InheritsColour",
+            "id": "components-feedback-spinner--inherits-colour"
+          },
+          {
+            "export": "InAButton",
+            "id": "components-feedback-spinner--in-a-button"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-spinner--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Spinner/Spinner.mdx",
+        "overview": "A small inline loading ring for work of unknown length. It takes the colour of the text around it, comes in three sizes\nand stands still under `prefers-reduced-motion`.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Spinner } from \"@lufia/design-system/components/Spinner\";\n\n<Spinner label=\"Loading results\" />;\n\n<p>\n  <Spinner size=\"sm\" /> Loading projects…\n</p>;"
+        },
+        "whenToUse": [
+          "A short, indeterminate wait inside a control, a row or a panel."
+        ],
+        "whenNotToUse": [
+          "A known amount of progress (use `ProgressBar`) or the shape of a page that is loading (use the skeletons).",
+          "A page that must not be used until the work is done: use a modal pattern or `aria-busy` on the region."
+        ],
+        "contentGuidelines": "`label` is the localised state, in the present tense: \"Loading results\", not \"Please wait\"."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "With a `label` the spinner is `role=\"status\"` and its text is read by assistive technology. Mount it when the work starts, or put the label on a region that already exists, so the announcement is reliable.",
+          "Without a `label` it is `aria-hidden`. Use that when something else already says the page or control is busy: a button with `aria-busy` and its own text, or a line such as \"Loading projects…\" beside the ring.",
+          "Never rely on the ring alone to say that work is in progress: it carries no text of its own.",
+          "Under `prefers-reduced-motion` the ring stops turning and keeps its arc, so the state still reads. Under forced colours the track and the arc use system colours.",
+          "The ring is a visual size of 16, 20 or 24px and is not interactive, so it has no target size."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-icon-size-lg",
+        "--lufia-icon-size-md",
+        "--lufia-icon-size-sm",
+        "--lufia-radius-full",
+        "--lufia-spinner-arc",
+        "--lufia-spinner-track"
+      ]
+    },
+    {
       "name": "StackedBar",
       "category": "Data display",
       "summary": "One bar split into proportional segments, with a legend and a text alternative.",
@@ -17178,6 +17478,407 @@
         "--lufia-radius-full",
         "--lufia-space-1",
         "--lufia-space-3"
+      ]
+    },
+    {
+      "name": "Table",
+      "category": "Data display",
+      "summary": "A data table that scrolls sideways with edge shadows and turns into cards on narrow widths, with clickable rows and an empty state.",
+      "status": "beta",
+      "source": "src/components/Table",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Table",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Table",
+          "kind": "component",
+          "description": "A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under 40rem of its own width (`responsive=\"cards\"`) a list of cards. It is CSS only: it holds no state and does not sort, filter or page. Own those, and hand the result in as rows. Compose it from `TableHead`, `TableBody`, `TableRow`, `Th`, `Td` and `TableEmpty`; `SortableTh` also works in a header row.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "`TableHead` and `TableBody`."
+            },
+            {
+              "name": "caption",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": "The table's accessible name (\"Projects\"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set."
+            },
+            {
+              "name": "showCaption",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Show the caption above the table instead of hiding it visually."
+            },
+            {
+              "name": "responsive",
+              "type": "\"scroll\" | \"cards\"",
+              "required": false,
+              "default": "\"cards\"",
+              "description": "What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see."
+            },
+            {
+              "name": "density",
+              "type": "\"compact\" | \"comfortable\"",
+              "required": false,
+              "default": "\"comfortable\"",
+              "description": "Row padding. Default `comfortable`."
+            },
+            {
+              "name": "footer",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area."
+            },
+            {
+              "name": "tableClassName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Class for the `<table>` element; `className` goes to the outer wrapper."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TableBody",
+          "kind": "component",
+          "description": "The body group: `TableRow`s, or one `TableEmpty`.",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "TableBodyProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "TableEmpty",
+          "kind": "component",
+          "description": "The body of a table with nothing to show: one full-width row that hosts an `EmptyState`. Put it alone in `TableBody`.",
+          "props": [
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative illustration or icon (hidden from assistive technology)."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "body",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "action",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Next step, usually a button or link."
+            },
+            {
+              "name": "colSpan",
+              "type": "number",
+              "required": true,
+              "default": null,
+              "description": "The number of columns, so the message spans the whole row."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TableEmptyProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }"
+        },
+        {
+          "name": "TableHead",
+          "kind": "component",
+          "description": "The header group. In card mode it is hidden visually and stays in the accessibility tree.",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "TableHeadProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "TableProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: \"scroll\" | \"cards\" | undefined; density?: \"compact\" | \"comfortable\" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }"
+        },
+        {
+          "name": "TableRow",
+          "kind": "component",
+          "description": "A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its cells `href` or `onActivate` (see `Td`).",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "TableRowProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        },
+        {
+          "name": "Td",
+          "kind": "component",
+          "description": "A body cell. `label` is the column name for card mode; `primary` and `actions` mark the title and the button cluster of a card. `href` or `onActivate` makes the whole row clickable through a real link or button in this cell, not through a click handler on the `<tr>`.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "The column's name, shown before the value in card mode (\"Status\"). Use the same text as the column header. Without it the value takes the whole line. Not shown for a `primary` or `actions` cell."
+            },
+            {
+              "name": "numeric",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Right-aligned digits in tabular figures."
+            },
+            {
+              "name": "primary",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "The row's identity: bolder, and the title of the card. Usually the first cell."
+            },
+            {
+              "name": "actions",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "The row's buttons and links, laid out in a wrapping row. Never activates the row."
+            },
+            {
+              "name": "href",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row."
+            },
+            {
+              "name": "onActivate",
+              "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
+              "required": false,
+              "default": null,
+              "description": "Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "TdProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<TdHTMLAttributes<HTMLTableCellElement>, \"role\"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }"
+        },
+        {
+          "name": "Th",
+          "kind": "component",
+          "description": "A plain column header (`scope=\"col\"`). Pass `scope=\"row\"` for a row header. For a column the user can sort, use `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.",
+          "props": [
+            {
+              "name": "numeric",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "ThProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; }"
+        }
+      ],
+      "aliases": {
+        "TableEmptyProps": "Omit<HTMLAttributes<HTMLDivElement>, \"title\"> & { icon?: ReactNode; title: string; body?: string | undefined; action?: ReactNode; } & { colSpan: number; }",
+        "TableProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & { children: ReactNode; caption: string; showCaption?: boolean | undefined; responsive?: \"scroll\" | \"cards\" | undefined; density?: \"compact\" | \"comfortable\" | undefined; footer?: ReactNode; tableClassName?: string | undefined; }",
+        "TdProps": "Omit<TdHTMLAttributes<HTMLTableCellElement>, \"role\"> & { label?: string | undefined; numeric?: boolean | undefined; primary?: boolean | undefined; actions?: boolean | undefined; href?: string | undefined; onActivate?: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) | undefined; }",
+        "ThProps": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; }"
+      },
+      "story": {
+        "docsId": "components-data-display-table--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-table--default"
+          },
+          {
+            "export": "Compact",
+            "id": "components-data-display-table--compact"
+          },
+          {
+            "export": "VisibleCaption",
+            "id": "components-data-display-table--visible-caption"
+          },
+          {
+            "export": "PhoneCards",
+            "id": "components-data-display-table--phone-cards"
+          },
+          {
+            "export": "SmallestPhone",
+            "id": "components-data-display-table--smallest-phone"
+          },
+          {
+            "export": "ScrollOnPhone",
+            "id": "components-data-display-table--scroll-on-phone"
+          },
+          {
+            "export": "SortableHeaders",
+            "id": "components-data-display-table--sortable-headers"
+          },
+          {
+            "export": "SortableOnPhone",
+            "id": "components-data-display-table--sortable-on-phone"
+          },
+          {
+            "export": "ClickableRowsAsLinks",
+            "id": "components-data-display-table--clickable-rows-as-links"
+          },
+          {
+            "export": "ClickableRowsAsButtons",
+            "id": "components-data-display-table--clickable-rows-as-buttons"
+          },
+          {
+            "export": "ClickableRowsOnPhone",
+            "id": "components-data-display-table--clickable-rows-on-phone"
+          },
+          {
+            "export": "Empty",
+            "id": "components-data-display-table--empty"
+          },
+          {
+            "export": "EmptyOnPhone",
+            "id": "components-data-display-table--empty-on-phone"
+          },
+          {
+            "export": "FooterWithPagination",
+            "id": "components-data-display-table--footer-with-pagination"
+          },
+          {
+            "export": "FooterOnPhone",
+            "id": "components-data-display-table--footer-on-phone"
+          },
+          {
+            "export": "LongContent",
+            "id": "components-data-display-table--long-content"
+          },
+          {
+            "export": "LongContentOnPhone",
+            "id": "components-data-display-table--long-content-on-phone"
+          },
+          {
+            "export": "NarrowContainer",
+            "id": "components-data-display-table--narrow-container"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-table--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Table/Table.mdx",
+        "overview": "A data table built from native table elements, styled with CSS only. It scrolls sideways with a shadow on each edge that\nhas more to see, sets its headers in small monospace capitals and, when its own width is under 40rem, becomes a list\nof cards. It holds no state: sorting, filtering and paging stay with the app, which hands in the rows.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Table, TableHead, TableBody, TableRow, Th, Td } from \"@lufia/design-system/components/Table\";\n\n<Table caption=\"Projects\">\n  <TableHead>\n    <TableRow>\n      <Th>Project</Th>\n      <Th>Status</Th>\n      <Th numeric>Budget</Th>\n    </TableRow>\n  </TableHead>\n  <TableBody>\n    <TableRow>\n      <Td primary label=\"Project\" href=\"/projects/1\">\n        Harbour redesign\n      </Td>\n      <Td label=\"Status\">Active</Td>\n      <Td label=\"Budget\" numeric>\n        12,400\n      </Td>\n    </TableRow>\n  </TableBody>\n</Table>;"
+        },
+        "whenToUse": [
+          "Records with several attributes that people compare, scan or open."
+        ],
+        "whenNotToUse": [
+          "A layout (use CSS grid) or a short list of one value per line (use `DetailList` or a list).",
+          "Data that needs cell editing, selection, a virtual window of many thousand rows or a column model. This is the presentation of a table, not a data grid."
+        ],
+        "contentGuidelines": "`caption` says what the rows are: \"Projects\", \"Invoices for March\". Keep a `label` identical to its column header. Put the\nrow's identity in the `primary` cell and make it the one with `href` or `onActivate`; keep the actions to a few short\nbuttons that wrap well."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Table",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/table/"
+        },
+        "keyboard": [
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Moves through the scroll region, each row's link or button, and the controls in its cells"
+          },
+          {
+            "keys": "Enter",
+            "action": "Follows a row's link, or presses its button"
+          },
+          {
+            "keys": "Space",
+            "action": "Presses a row's button (a link answers to Enter only)"
+          },
+          {
+            "keys": "Arrow keys (on the region)",
+            "action": "Scroll the table sideways when it is focused"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": []
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-border-strong",
+        "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-family-mono",
+        "--lufia-font-line-height-normal",
+        "--lufia-font-size-2xs",
+        "--lufia-font-size-md",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-medium",
+        "--lufia-font-weight-semibold",
+        "--lufia-radius-card",
+        "--lufia-space-1",
+        "--lufia-space-2",
+        "--lufia-space-3",
+        "--lufia-space-4",
+        "--lufia-table-bg",
+        "--lufia-table-border",
+        "--lufia-table-row-hover",
+        "--lufia-table-scroll-shadow"
       ]
     },
     {
