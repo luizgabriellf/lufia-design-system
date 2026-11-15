@@ -411,6 +411,49 @@ describe("Tour", () => {
       await waitFor(() => expect(card().closest("dialog")).toHaveAttribute("id", "under"));
     });
 
+    it("is not hosted in a closed, kept-mounted modal, which renders at no size", () => {
+      withLayout();
+      render(
+        <>
+          <dialog aria-modal="true" id="stale-dialog">
+            Closed native dialog that still carries aria-modal
+          </dialog>
+          <div role="dialog" aria-modal="true" data-state="closed" hidden id="stale-panel" />
+          <div hidden>
+            <div role="dialog" aria-modal="true" id="stale-nested" />
+          </div>
+          <Modal open={false} keepMounted onClose={() => {}} title="Kept">
+            Body
+          </Modal>
+          <Modal open={false} keepMounted renderAs="dialog" onClose={() => {}} title="Kept native">
+            Body
+          </Modal>
+          <Tour steps={lonely} open labels={labels} />
+        </>,
+      );
+      expect(card().parentElement?.parentElement).toBe(document.body);
+      expect(card().closest("dialog, [aria-modal='true']")).toBeNull();
+    });
+
+    it("skips closed kept-mounted modals and uses the open one", () => {
+      withLayout();
+      render(
+        <>
+          <Modal open={false} keepMounted onClose={() => {}} title="Closed">
+            Body
+          </Modal>
+          <Modal id="live" open onClose={() => {}} title="Open">
+            Body
+          </Modal>
+          <Modal open={false} keepMounted renderAs="dialog" onClose={() => {}} title="Closed too">
+            Body
+          </Modal>
+          <Tour steps={lonely} open labels={labels} />
+        </>,
+      );
+      expect(card().closest("#live")).not.toBeNull();
+    });
+
     it("ignores a dialog that is open but not modal, and falls back to the body", () => {
       withLayout();
       render(
@@ -845,7 +888,7 @@ describe("Tour", () => {
 
   describe("inside a dialog", () => {
     const dialogBoxes = () => {
-      boxes.dlg = new DOMRect(300, 100, 300, 500);
+      boxes.dlg ??= new DOMRect(300, 100, 300, 500);
     };
     const withDialog = (props: Partial<TourProps>, pageWidth = 1000) => {
       withLayout({ width: pageWidth, height: pageWidth < 600 ? 640 : 800 });
@@ -877,6 +920,7 @@ describe("Tour", () => {
       );
     };
     afterEach(() => {
+      cleanup();
       delete boxes.dlg;
       delete boxes.scroller;
       delete boxes.hdr;
@@ -935,6 +979,87 @@ describe("Tour", () => {
       view.rerender(<dialog id="dlg" open />);
       expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
       expect(dialog.style.getPropertyValue("height")).toBe("");
+    });
+
+    describe("with no target", () => {
+      const lonelyInDialog = (props: Partial<TourProps>) =>
+        render(
+          <div role="dialog" aria-modal="true" aria-label="Region" id="dlg">
+            <button id="first" type="button">
+              A field
+            </button>
+            <Tour steps={[{ title: "Blocked", body: "Here." }]} open labels={labels} {...props} />
+          </div>,
+        );
+
+      it("docks a full-screen phone dialog above the sheet, so the footer stays reachable", () => {
+        withLayout({ width: 360, height: 640 });
+        boxes.dlg = new DOMRect(0, 0, 360, 640);
+        const view = lonelyInDialog({ dialogLayout: { dock: true } });
+        const dialog = view.container.querySelector("#dlg") as HTMLElement;
+        expect(dialog).toHaveAttribute("data-lufia-tour-docked");
+        expect(card()).toHaveAttribute("data-kind", "sheet");
+        expect(dialog.style.getPropertyValue("height")).toContain("180px");
+        view.rerender(<div role="dialog" aria-modal="true" aria-label="Region" id="dlg" />);
+        expect(dialog).not.toHaveAttribute("data-lufia-tour-docked");
+      });
+
+      it("leaves the phone dialog alone without the dock option", () => {
+        withLayout({ width: 360, height: 640 });
+        boxes.dlg = new DOMRect(0, 0, 360, 640);
+        const view = lonelyInDialog({});
+        expect(view.container.querySelector("#dlg")).not.toHaveAttribute("data-lufia-tour-docked");
+      });
+
+      it("sits beside the dialog on a wide screen when there is room, only when asked", () => {
+        withLayout({ width: 1000, height: 800 });
+        boxes.dlg = new DOMRect(300, 100, 300, 500);
+        lonelyInDialog({ dialogLayout: { beside: true } });
+        expect(card()).toHaveAttribute("data-kind", "float");
+        expect(parseFloat(card().style.left)).toBeGreaterThanOrEqual(600);
+      });
+
+      it("stays centred without the beside option", () => {
+        withLayout({ width: 1000, height: 800 });
+        boxes.dlg = new DOMRect(300, 100, 300, 500);
+        lonelyInDialog({});
+        expect(card()).toHaveAttribute("data-kind", "center");
+      });
+
+      it("goes below the dialog, clear of its footer, when no side has room", () => {
+        withLayout({ width: 1000, height: 800 });
+        boxes.dlg = new DOMRect(20, 20, 960, 500);
+        lonelyInDialog({ dialogLayout: { beside: true } });
+        expect(card()).toHaveAttribute("data-kind", "float");
+        expect(parseFloat(card().style.top)).toBeGreaterThanOrEqual(520);
+      });
+
+      it("goes above the dialog when there is no room below either", () => {
+        withLayout({ width: 1000, height: 800 });
+        boxes.dlg = new DOMRect(20, 300, 960, 490);
+        lonelyInDialog({ dialogLayout: { beside: true } });
+        expect(parseFloat(card().style.top) + 180).toBeLessThanOrEqual(300);
+      });
+
+      it("stays centred when the dialog leaves no room anywhere", () => {
+        withLayout({ width: 1000, height: 800 });
+        boxes.dlg = new DOMRect(20, 20, 960, 760);
+        lonelyInDialog({ dialogLayout: { beside: true } });
+        expect(card()).toHaveAttribute("data-kind", "center");
+      });
+    });
+
+    it("moves the card below the dialog, off its fields, when there is no room beside it", () => {
+      boxes.dlg = new DOMRect(20, 20, 960, 500);
+      withDialog({ dialogLayout: { beside: true } });
+      expect(card()).toHaveAttribute("data-kind", "float");
+      expect(parseFloat(card().style.top)).toBeGreaterThanOrEqual(520);
+    });
+
+    it("keeps the card by the target when the dialog leaves no room anywhere", () => {
+      boxes.dlg = new DOMRect(20, 20, 960, 760);
+      withDialog({ dialogLayout: { beside: true } }, 1000);
+      expect(parseFloat(card().style.top)).toBeLessThan(520);
     });
 
     it("resizes a marked shell with the dialog, and never an unmarked first child", () => {
@@ -1177,6 +1302,58 @@ describe("Tour", () => {
       Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
       Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
       delete boxes["part:footer"];
+    });
+  });
+
+  describe("the spotlight ring", () => {
+    const popupTree = (expanded: boolean) => (
+      <div id="first">
+        <input role="combobox" aria-label="City" aria-expanded={expanded} aria-controls="list" />
+        {expanded && (
+          <ul id="list" role="listbox">
+            <li role="option" aria-selected="false">
+              Lisbon
+            </li>
+          </ul>
+        )}
+      </div>
+    );
+
+    it("is not drawn while the target's own popup is open, and comes back when it closes", () => {
+      withLayout();
+      const step: TourStep[] = [{ target: "#first", title: "Pick", body: "Choose one." }];
+      const view = render(
+        <>
+          {popupTree(true)}
+          <Tour steps={step} open labels={labels} />
+        </>,
+      );
+      expect(layer()).toHaveAttribute("data-popup");
+      view.rerender(
+        <>
+          {popupTree(false)}
+          <Tour steps={step} open labels={labels} />
+        </>,
+      );
+      act(() => {});
+      return waitFor(() => expect(layer()).not.toHaveAttribute("data-popup"));
+    });
+
+    it("stops where a docked sheet starts instead of running under it", () => {
+      Element.prototype.scrollBy = vi.fn();
+      withLayout({ width: 360, height: 640 });
+      // Taller than the room above the sheet: it flips to the top edge, so the ring starts below the card (180).
+      boxes.first = new DOMRect(10, 100, 300, 600);
+      render(
+        <Page>
+          <Tour steps={steps.slice(0, 1)} open labels={labels} />
+        </Page>,
+      );
+      expect(card()).toHaveAttribute("data-edge", "top");
+      // 180 to 640 is 460 tall, plus the padding on both sides.
+      expect(spot().style.blockSize).toBe("472px");
+      boxes.first = new DOMRect(100, 200, 80, 40);
+      Reflect.deleteProperty(Element.prototype, "scrollBy");
     });
   });
 

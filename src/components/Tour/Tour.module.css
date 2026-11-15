@@ -44,6 +44,17 @@
   box-shadow: 0 0 0 4px var(--lufia-color-accent-subtle);
 }
 
+/* The target's own popup (a listbox, a menu) is open: no ring is drawn across it, the page stays dimmed around the target. */
+.layer[data-popup] .spot {
+  border-color: transparent;
+  box-shadow: 0 0 0 200vmax
+    var(--lufia-tour-scrim, color-mix(in srgb, var(--lufia-color-bg-canvas) 72%, transparent));
+}
+
+.layer[data-popup][data-dim="false"] .spot {
+  box-shadow: none;
+}
+
 .card {
   position: fixed;
   inset: auto;

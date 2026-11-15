@@ -246,7 +246,8 @@ export function Modal({
   const panelProps = {
     ...rest,
     role,
-    "aria-modal": true,
+    // A closed, kept-mounted modal is hidden: it must not advertise itself as a modal.
+    "aria-modal": open ? true : undefined,
     "aria-labelledby": titleId,
     "aria-describedby": description ? descriptionId : rest["aria-describedby"],
     "aria-busy": busy || undefined,

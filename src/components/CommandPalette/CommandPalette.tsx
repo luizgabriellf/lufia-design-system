@@ -15,6 +15,7 @@ import { usePresence } from "../internal/usePresence";
 import { FieldSpinner } from "../FormField/FieldSpinner";
 import { useFocusTrap } from "../useFocusTrap";
 import { useLufia } from "../LufiaProvider";
+import { openAriaModals } from "../internal/portalContext";
 import { CloseIcon, SearchIcon } from "../Icon/icons";
 import styles from "./CommandPalette.module.css";
 
@@ -250,7 +251,7 @@ export function CommandPalette({
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.defaultPrevented || event.isComposing || event.repeat) return;
       if (!(event.metaKey || event.ctrlKey) || event.altKey || event.key.toLowerCase() !== "k") return;
-      if (document.querySelector('[aria-modal="true"]')) return;
+      if (openAriaModals().length > 0) return;
       event.preventDefault();
       onOpenChange(true);
     };
