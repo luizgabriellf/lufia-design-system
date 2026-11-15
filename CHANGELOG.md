@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.46.1
+
+### Patch Changes
+
+- [#164](https://github.com/luizgabriellf/lufia-design-system/pull/164) [`0c8bad4`](https://github.com/luizgabriellf/lufia-design-system/commit/0c8bad4444c4347705d47e72f59ecec89c695392) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tour: `dialogLayout.dock` now resizes only the modal itself and lifts it clear of the card with a bottom margin, so docking into the package `Modal` (either `renderAs`) no longer stretches its header. A wrapper that fills a custom dialog opts in with `data-lufia-tour-shell` (it was the dialog's first child before). The reveal, `clipSpotlight` and docking also work for a portal `Modal`, read only the modal's own header and footer (not ones inside the content), and `clipSpotlight` stops at the sticky header and footer.
+
 ## 0.46.0
 
 ### Minor Changes
