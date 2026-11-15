@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.49.1
+
+### Patch Changes
+
+- [#180](https://github.com/luizgabriellf/lufia-design-system/pull/180) [`4ce97f7`](https://github.com/luizgabriellf/lufia-design-system/commit/4ce97f7b0b850455742853874ebc0f1a058ad05e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix four `Table` layout defects. In card mode a badge wraps instead of being clipped by the value column (a container can opt badges in with `--lufia-badge-white-space: normal`), and under 30rem the label stacks above the value so a long label word is no longer split inside the word. The scroll-shadow covers take their own `--lufia-table-cover-bg` token (opaque; defaults to `--lufia-table-bg`), which `frame="flush"` on a translucent surface needs. In table layout the actions column shrinks to its buttons and end-aligns them.
+
+- [#180](https://github.com/luizgabriellf/lufia-design-system/pull/180) [`4ce97f7`](https://github.com/luizgabriellf/lufia-design-system/commit/4ce97f7b0b850455742853874ebc0f1a058ad05e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Table`: numeric cells no longer wrap in table layout, so ISO dates and date-times stay on one line. `Td` takes a new `wrap` prop (with `actions`) that lets a row's controls wrap onto a second line, end-aligned, instead of forcing a sideways scroll; the default stays one line.
+
 ## 0.49.0
 
 ### Minor Changes
