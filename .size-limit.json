@@ -92,7 +92,7 @@
   {
     "name": "Table",
     "path": "dist/components/Table/**/*.{js,css}",
-    "limit": "5.2 kB",
+    "limit": "5.7 kB",
     "gzip": true
   },
   {

@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ReactNode } from "react";
+import { createRef, type ReactNode } from "react";
 import { axe } from "../../test/axe";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { Pagination } from "../Pagination";
@@ -677,6 +677,191 @@ describe("row header", () => {
 
   it("has no axe violations", async () => {
     const { container } = render(<WithRowHeader />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("row ref and style", () => {
+  it("hands the <tr> to ref and passes style and data attributes through", () => {
+    const ref = createRef<HTMLTableRowElement>();
+    render(
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow
+            ref={ref}
+            style={{ transform: "translateY(4px)", transition: "transform 150ms" }}
+            data-id="7"
+          >
+            <Td>One</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLTableRowElement);
+    expect(ref.current).toBe(screen.getByRole("row"));
+    expect(ref.current).toHaveStyle({ transform: "translateY(4px)" });
+    expect(ref.current).toHaveAttribute("data-id", "7");
+  });
+
+  it("hands the section and cell elements to ref", () => {
+    const head = createRef<HTMLTableSectionElement>();
+    const body = createRef<HTMLTableSectionElement>();
+    const th = createRef<HTMLTableCellElement>();
+    const td = createRef<HTMLTableCellElement>();
+    render(
+      <Table caption="Projects">
+        <TableHead ref={head}>
+          <TableRow>
+            <Th ref={th}>Name</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody ref={body}>
+          <TableRow>
+            <Td ref={td}>One</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(head.current?.tagName).toBe("THEAD");
+    expect(body.current?.tagName).toBe("TBODY");
+    expect(th.current?.tagName).toBe("TH");
+    expect(td.current?.tagName).toBe("TD");
+  });
+});
+
+describe("disabled row control", () => {
+  function Disabled({ onActivate, href }: { onActivate?: () => void; href?: string }) {
+    return (
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow>
+            <Td
+              primary
+              activateDisabled
+              href={href}
+              onActivate={onActivate}
+              activateLabel="Open Harbour redesign"
+            >
+              Harbour redesign
+            </Td>
+            <Td>Active</Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("keeps the button focusable, marks it aria-disabled and ignores activation", async () => {
+    const onActivate = vi.fn();
+    render(<Disabled onActivate={onActivate} />);
+    const button = screen.getByRole("button", { name: "Open Harbour redesign" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).not.toBeDisabled();
+    await userEvent.click(button);
+    button.focus();
+    await userEvent.keyboard("{Enter} ");
+    expect(button).toHaveFocus();
+    expect(onActivate).not.toHaveBeenCalled();
+  });
+
+  it("renders the link form without an href, so it cannot be followed", async () => {
+    const onActivate = vi.fn();
+    render(<Disabled href="/projects/1" onActivate={onActivate} />);
+    const link = screen.getByRole("link", { name: "Open Harbour redesign" });
+    expect(link).not.toHaveAttribute("href");
+    expect(link).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(link);
+    expect(onActivate).not.toHaveBeenCalled();
+  });
+
+  it("does nothing without href or onActivate", () => {
+    render(
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow>
+            <Td activateDisabled>Plain</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(screen.queryByRole("link")).toBeNull();
+  });
+
+  it.each([
+    ["button", { onActivate: () => {} }],
+    ["link", { href: "/projects/1" }],
+  ])("has no axe violations as a %s", async (_name, props) => {
+    const { container } = render(<Disabled {...props} />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("grouped bodies", () => {
+  function Grouped({ responsive }: { responsive?: "cards" | "scroll" }) {
+    return (
+      <Table caption="Projects" responsive={responsive}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th>Status</Th>
+          </TableRow>
+        </TableHead>
+        {["Active", "On hold"].map((group) => (
+          <TableBody key={group}>
+            <TableRow group>
+              <Th scope="colgroup" colSpan={2}>
+                {group}
+              </Th>
+            </TableRow>
+            <TableRow>
+              <Td primary>{group} project</Td>
+              <Td label="Status">{group}</Td>
+            </TableRow>
+          </TableBody>
+        ))}
+      </Table>
+    );
+  }
+
+  it.each(["cards", "scroll"] as const)(
+    "holds several bodies and spanning group headers in %s mode",
+    (mode) => {
+      const { container } = render(<Grouped responsive={mode} />);
+      expect(container.querySelectorAll("tbody")).toHaveLength(2);
+      const groups = container.querySelectorAll("tr[data-group]");
+      expect(groups).toHaveLength(2);
+      const header = within(groups[0] as HTMLElement).getByRole("columnheader", { name: "Active" });
+      expect(header).toHaveAttribute("scope", "colgroup");
+      expect(header).toHaveAttribute("colspan", "2");
+      expect(container.querySelector("[data-responsive]")).toHaveAttribute("data-responsive", mode);
+    },
+  );
+
+  it("passes colSpan and rowSpan to cells and gives a rowgroup header the rowheader role", () => {
+    render(
+      <Table caption="Projects">
+        <TableBody>
+          <TableRow>
+            <Th scope="rowgroup" rowSpan={2}>
+              Group
+            </Th>
+            <Td colSpan={2}>Wide</Td>
+          </TableRow>
+          <TableRow>
+            <Td>A</Td>
+            <Td>B</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    const header = screen.getByRole("rowheader", { name: "Group" });
+    expect(header).toHaveAttribute("rowspan", "2");
+    expect(screen.getByRole("cell", { name: "Wide" })).toHaveAttribute("colspan", "2");
+  });
+
+  it.each(["cards", "scroll"] as const)("has no axe violations in %s mode", async (mode) => {
+    const { container } = render(<Grouped responsive={mode} />);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

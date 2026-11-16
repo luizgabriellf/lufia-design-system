@@ -15052,7 +15052,7 @@
           "props": [
             {
               "name": "variant",
-              "type": "\"text\" | \"rect\" | \"circle\"",
+              "type": "\"circle\" | \"rect\" | \"text\"",
               "required": false,
               "default": "\"text\"",
               "description": "`text` is one line of text, `rect` a block, `circle` an avatar."
@@ -15092,11 +15092,11 @@
           "name": "SkeletonProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"text\" | \"rect\" | \"circle\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"circle\" | \"rect\" | \"text\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
         }
       ],
       "aliases": {
-        "SkeletonProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"text\" | \"rect\" | \"circle\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
+        "SkeletonProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { variant?: \"circle\" | \"rect\" | \"text\" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }"
       },
       "story": {
         "docsId": "components-motion-skeleton--docs",
@@ -17640,7 +17640,7 @@
         {
           "name": "TableRow",
           "kind": "component",
-          "description": "A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox.",
+          "description": "A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox. `ref` and `style` reach the `<tr>`, so a sortable-list library can drive it.",
           "props": [
             {
               "name": "selected",
@@ -17655,6 +17655,13 @@
               "required": false,
               "default": null,
               "description": "Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current=\"true\"` and an accent on its start edge."
+            },
+            {
+              "name": "group",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks a group header row: a row inside `TableBody` whose single `Th scope=\"colgroup\"` has a `colSpan` over every column and names the rows that follow, up to the next group header. In card mode it is a full-width heading above its cards, not a card. Several `TableBody`s in one `Table` work too; put the group header first in each."
             }
           ],
           "nativeProps": true
@@ -17663,7 +17670,7 @@
           "name": "TableRowProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; }"
+          "definition": "Omit<DetailedHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; group?: boolean | undefined; }"
         },
         {
           "name": "Td",
@@ -17739,6 +17746,13 @@
               "required": false,
               "default": null,
               "description": "`aria-describedby` of the generated link or button: ids of elements that describe the row control."
+            },
+            {
+              "name": "activateDisabled",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Turns the row control off while keeping it in the page: for a row that cannot be opened right now. The button stays focusable (`aria-disabled=\"true\"`, like `Button` and `Pagination`, so focus is not lost and a reader can still find it) and activation is ignored; the link is rendered without `href`, so it cannot be followed. The cell reads muted. Needs `href` or `onActivate`."
             },
             {
               "name": "description",
@@ -17857,13 +17871,12 @@
           "name": "ThProps",
           "kind": "type",
           "description": "",
-          "definition": "(Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, \"children\" | \"aria-label\" | \"aria-labelledby\"> & { actions: true; label: string; })"
+          "definition": null
         }
       ],
       "aliases": {
         "TableEmptyProps": "Omit<EmptyStateProps, \"title\"> & { colSpan: number; title?: string | undefined; }",
-        "TableRowProps": "Omit<HTMLAttributes<HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; }",
-        "ThProps": "(Omit<ThHTMLAttributes<HTMLTableCellElement>, \"role\"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, \"children\" | \"aria-label\" | \"aria-labelledby\"> & { actions: true; label: string; })"
+        "TableRowProps": "Omit<DetailedHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>, \"role\"> & { selected?: boolean | undefined; current?: boolean | undefined; group?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-data-display-table--docs",
@@ -18023,6 +18036,30 @@
           {
             "export": "TightNumericColumns",
             "id": "components-data-display-table--tight-numeric-columns"
+          },
+          {
+            "export": "RowWithRefAndStyle",
+            "id": "components-data-display-table--row-with-ref-and-style"
+          },
+          {
+            "export": "DisabledRowControl",
+            "id": "components-data-display-table--disabled-row-control"
+          },
+          {
+            "export": "DisabledRowControlOnPhone",
+            "id": "components-data-display-table--disabled-row-control-on-phone"
+          },
+          {
+            "export": "GroupedBodies",
+            "id": "components-data-display-table--grouped-bodies"
+          },
+          {
+            "export": "GroupedBodiesOnPhone",
+            "id": "components-data-display-table--grouped-bodies-on-phone"
+          },
+          {
+            "export": "GroupedBodiesScroll",
+            "id": "components-data-display-table--grouped-bodies-scroll"
           }
         ]
       },

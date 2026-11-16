@@ -80,6 +80,12 @@ stretched area and do their own thing.
 
 <Canvas of={Stories.ClickableRowsAsLinks} />
 
+A row that cannot be opened right now takes `activateDisabled` on the same cell. The button form stays focusable with
+`aria-disabled="true"`, the way `Button` and `Pagination` do, so focus is not lost; activation is ignored. The link form
+is rendered without `href`, so it cannot be followed. Both read in the muted text colour and the row loses its hover.
+
+<Canvas of={Stories.DisabledRowControl} />
+
 ### Inside a panel
 
 `frame="flush"` drops the table's own border, radius and background, so the table sits edge to edge in a container that
@@ -151,6 +157,25 @@ table adds nothing for either.
 the start edge). The app owns the state; there are no checkboxes.
 
 <Canvas of={Stories.RowState} />
+
+### Grouped rows
+
+One `Table` can hold several `TableBody`s. Start each with a group header row, `<TableRow group>` holding a single
+`<Th scope="colgroup" colSpan={n}>` that spans every column; `colSpan` and `rowSpan` pass through on `Td` and `Th`, and a
+`Th scope="rowgroup"` is announced as a row header. In card mode the group header is a full-width heading above its cards,
+not a card.
+
+<Canvas of={Stories.GroupedBodies} />
+
+<Canvas of={Stories.GroupedBodiesOnPhone} />
+
+### Refs and inline styles on rows
+
+`TableRow`, `TableHead`, `TableBody`, `Th` and `Td` take `ref` and `style` like the elements they render, so a
+sortable-list library that needs the row element, an inline `transform` and `transition` and its own `data-*` and `aria-*`
+attributes can drive them.
+
+<Canvas of={Stories.RowWithRefAndStyle} />
 
 ### Focus room under sticky bars
 
