@@ -73,7 +73,7 @@ export const FIXTURES = {
   RadioGroup: { options: `[{ value: "a", label: "A" }]`, "aria-label": `"x"` },
   SegmentedToggle: { options: `[{ value: "a", label: "A" }]` },
   Sparkline: { values: `[1, 3, 2]` },
-  Table: { children: `<tbody><tr><td>Cell</td></tr></tbody>` },
+  Table: { children: `<tbody><tr><td>Cell</td></tr></tbody>`, caption: `"x"` },
   StackedBar: { segments: `[{ key: "a", label: "A", value: 1 }]` },
   StatusTimeline: {
     tracks: `[{ id: "t", title: "Track", nodes: [{ id: "n", label: "Step", state: "done", stateLabel: "Done" }] }]`,

@@ -7,6 +7,8 @@
    --lufia-table-caption-color, -font-size and -font-weight (the visible caption),
    --lufia-table-cell-vertical-align (body cells, default middle),
    --lufia-table-cell-color (body cells that are not primary) and --lufia-table-primary-color (the primary cell),
+   --lufia-table-emphasis-bg, -color and -font-weight (a column marked with `emphasis` on its `Th` and `Td`; default the accent
+   subtle background, the inherited colour and weight; forced colours drop the tint and set the cell bold instead),
    --lufia-table-row-scroll-margin (the room kept around a focused row control or action control when the browser scrolls it
    into view, default 0: set it to the height of a sticky header or fixed bar).
    Cells and headers are styled from here, through the `.table` selectors, so a plain `<th>` or `SortableTh` looks the same. */
@@ -218,6 +220,14 @@
 
 .table :is(td, th[scope="row"])[data-primary] {
   font-weight: var(--lufia-font-weight-semibold);
+}
+
+/* `emphasis`: a highlighted column, header and cells alike. Only a tint and a weight: any meaning it carries reaches
+   assistive technology through `emphasisLabel`. */
+.table :is(th, td)[data-emphasis] {
+  background: var(--lufia-table-emphasis-bg, var(--lufia-color-accent-subtle));
+  color: var(--lufia-table-emphasis-color, inherit);
+  font-weight: var(--lufia-table-emphasis-font-weight, inherit);
 }
 
 /* Shrink to the buttons, end-aligned; card mode resets it. */
@@ -597,6 +607,12 @@
     font-size: var(--lufia-font-size-md);
   }
 
+  /* An emphasised cell is a tinted block in the card: room around its text so the tint does not hug it. */
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-emphasis] {
+    padding-inline: var(--lufia-space-2);
+    border-radius: var(--lufia-radius-sm);
+  }
+
   /* `stretch`: block content in the value slot takes the full width instead of its min-content. */
   .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label][data-stretch] {
     justify-items: stretch;
@@ -692,7 +708,7 @@
   }
 }
 
-/* `cardLayout="grid"`: two columns of label-over-value pairs. The title, the actions, cells without a `label` and cells with
+/* `cardLayout="grid"`: two columns (`cardColumns`: up to four) of label-over-value pairs. The title, the actions, cells without a `label` and cells with
    `cardSpan="full"` take the whole row.
    The card is a wrapping flex row, not a CSS grid, on purpose: a cell is half the row wide but never narrower than its own
    min-content, and a pair that does not fit beside its neighbour wraps to a line of its own. A grid track cannot react to
@@ -703,10 +719,29 @@
   .root[data-responsive="cards"][data-card-layout="grid"] .table > tbody > tr,
   .root[data-responsive="cards"][data-card-layout="grid"] .table > tfoot > tr {
     --table-grid-gap: var(--lufia-space-4);
+    --table-card-cols: 2;
+    --table-card-trim: 0px;
 
     flex-flow: row wrap;
     column-gap: var(--table-grid-gap);
     align-items: flex-start;
+  }
+
+  /* `cardColumns` 3 or 4. The trim keeps the sum of the tracks and gaps under the row, so rounding never wraps the last one. */
+  .root[data-responsive="cards"][data-card-layout="grid"][data-card-columns="3"]
+    .table
+    > :is(tbody, tfoot)
+    > tr {
+    --table-card-cols: 3;
+    --table-card-trim: 0.5px;
+  }
+
+  .root[data-responsive="cards"][data-card-layout="grid"][data-card-columns="4"]
+    .table
+    > :is(tbody, tfoot)
+    > tr {
+    --table-card-cols: 4;
+    --table-card-trim: 0.5px;
   }
 
   .root[data-responsive="cards"][data-card-layout="grid"] .table tr[data-group] {
@@ -718,7 +753,10 @@
     .table
     :is(td, th[scope="row"])[data-label]:not([data-card-slot="corner"], [data-hide-in-cards]) {
     flex: 0 0 auto;
-    inline-size: calc((100% - var(--table-grid-gap)) / 2);
+    inline-size: calc(
+      (100% - (var(--table-card-cols) - 1) * var(--table-grid-gap)) / var(--table-card-cols) -
+        var(--table-card-trim)
+    );
     min-inline-size: min-content;
     max-inline-size: 100%;
     grid-template-columns: minmax(0, 1fr);
@@ -742,9 +780,10 @@
   }
 }
 
-/* A grid card with the room of under 20rem is one column. */
+/* A two-column grid card with the room of under 20rem is one column. With `cardColumns` 3 or 4 the pairs keep their
+   columns and wrap by their own content width instead. */
 @container lufia-table (width < 20rem) {
-  .root[data-responsive="cards"][data-card-layout="grid"]
+  .root[data-responsive="cards"][data-card-layout="grid"]:not([data-card-columns])
     .table
     :is(td, th[scope="row"])[data-label]:not([data-card-slot="corner"], [data-hide-in-cards]) {
     inline-size: 100%;
@@ -760,6 +799,11 @@
 }
 
 @media (forced-colors: active) {
+  .table :is(th, td)[data-emphasis] {
+    background: none;
+    font-weight: var(--lufia-font-weight-bold, bold);
+  }
+
   .table tr:has(.rowLink):hover {
     outline: var(--lufia-border-width-thin) solid Highlight;
     outline-offset: -1px;

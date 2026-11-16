@@ -120,6 +120,24 @@ All of these apply in card mode only; table layout and `responsive="scroll"` ign
 
 <Canvas of={Stories.CardControlsGridSmallestPhone} />
 
+- **`cardColumns` on `Table`.** With `cardLayout="grid"`, `cardColumns={3}` (or `4`) puts that many labelled cells on a line
+  of the card, for a comparison row: the title, then one value per option side by side. The default, `2`, is the layout
+  above and leaves every existing table as it was. A pair is never narrower than its content: when the cells do not fit
+  they wrap onto the next line, so a narrow card does not overflow. With 3 or 4 columns the one-column fallback under 20rem
+  does not apply, that wrapping does the work instead; keep the values short (a price, a tick) or use `cardSpan="full"`
+  for a long one. Use it on tables of up to four value columns.
+
+<Canvas of={Stories.ComparisonCards} />
+
+- **`emphasis` on `Th` and `Td`.** Highlights one column in table and card mode with a tinted background. Set it on the
+  column's `Th` and on each of its `Td`s. The tint is a visual cue only: when it means something (a recommended plan), pass
+  `emphasisLabel="Recommended"` on the `Th` and the cells, text from the app, which is added visually hidden after the
+  content so assistive technology reads it too. Restyle it with `--lufia-table-emphasis-bg` (default the accent subtle
+  background), `--lufia-table-emphasis-color` and `--lufia-table-emphasis-font-weight`, both inherited by default. In forced
+  colours the tint is dropped and the cell is set bold.
+
+<Canvas of={Stories.ComparisonTable} />
+
 <Canvas of={Stories.GridWithLongPills} />
 
 <Canvas of={Stories.CornerWithInlineWidth} />
@@ -366,6 +384,11 @@ colour of the shadow covers; default `--lufia-table-bg`), `--lufia-table-row-hov
 - The `<caption>` names the table and the scroll region around it. The region is focusable, so a keyboard user can scroll a
   table that has nothing focusable in the hidden columns (WCAG 2.1.1). It costs one tab stop; give each table on a page its own
   caption, since a region is a landmark and landmarks need distinct names.
+- Exactly one of `caption`, `aria-label` and `aria-labelledby` is required (the type enforces it). With `aria-label` or
+  `aria-labelledby` no `<caption>` is rendered, and the same name is put on the table and on the scroll region. Use them for
+  a table generated from free content (rendered markdown) or one a heading already names. There is no unnamed form: WAI-ARIA
+  does not strictly require a name on a simple data table, but this one sits in a focusable scrolling region, which is a
+  landmark, and an unnamed focusable region fails axe and is announced as just "region".
 - Card mode changes `display` on table parts, which some browsers answer by dropping the table semantics. Explicit `table`,
   `rowgroup`, `row`, `columnheader`, `rowheader` and `cell` roles keep them, and the hidden header row keeps naming every
   column. The visible column label in a card is drawn by CSS with an empty text alternative, so it is not read twice.

@@ -3184,6 +3184,55 @@ test.describe("table", () => {
     expect(small.overflow).toBeLessThanOrEqual(0);
   });
 
+  test("cardColumns 3 puts three values on one line of the card at 390px and 320px, without overflow", async ({
+    page,
+  }) => {
+    for (const [width, story] of [
+      [390, "comparison-cards"],
+      [320, "comparison-cards-smallest-phone"],
+    ] as const) {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id(story));
+      const result = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const box = (label: string) =>
+          row.querySelector<HTMLElement>(`[data-label="${label}"]`)!.getBoundingClientRect();
+        const [a, b, c] = [box("Starter"), box("Team"), box("Scale")];
+        const rowBox = row.getBoundingClientRect();
+        return {
+          sameLine: Math.abs(a.top - b.top) < 2 && Math.abs(b.top - c.top) < 2,
+          ordered: a.left < b.left && b.left < c.left,
+          insideRow: c.right <= rowBox.right + 1 && a.left >= rowBox.left - 1,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(result.sameLine, `${width}`).toBe(true);
+      expect(result.ordered, `${width}`).toBe(true);
+      expect(result.insideRow, `${width}`).toBe(true);
+      expect(result.overflow, `${width}`).toBeLessThanOrEqual(0);
+    }
+  });
+
+  test("an emphasised column is tinted in table and card mode and untinted cells are not", async ({
+    page,
+  }) => {
+    for (const [width, story] of [
+      [1440, "comparison-table"],
+      [390, "comparison-cards"],
+    ] as const) {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id(story));
+      const result = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const bg = (label: string) =>
+          getComputedStyle(row.querySelector<HTMLElement>(`[data-label="${label}"]`)!).backgroundColor;
+        return { starter: bg("Starter"), team: bg("Team") };
+      });
+      expect(result.starter, `${width}`).toBe("rgba(0, 0, 0, 0)");
+      expect(result.team, `${width}`).not.toBe("rgba(0, 0, 0, 0)");
+    }
+  });
+
   test("a wrapping or abbreviated header lets a nine-column table fit at 1440px", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const measure = async (name: string) => {

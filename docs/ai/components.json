@@ -17512,16 +17512,9 @@
           "description": "A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under 40rem of its own width (`responsive=\"cards\"`) a list of cards. It is CSS only: it holds no state and does not sort, filter or page. Own those, and hand the result in as rows. Compose it from `TableHead`, `TableBody`, `TableRow`, `Th`, `Td`, `TableFoot` and `TableEmpty`; `SortableTh` also works in a header row.",
           "props": [
             {
-              "name": "children",
-              "type": "ReactNode",
-              "required": true,
-              "default": null,
-              "description": "`TableHead`, `TableBody` and, for a total row, `TableFoot`."
-            },
-            {
               "name": "caption",
               "type": "string",
-              "required": true,
+              "required": false,
               "default": null,
               "description": "The table's accessible name (\"Projects\"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set."
             },
@@ -17538,6 +17531,27 @@
               "required": false,
               "default": "\"default\"",
               "description": "With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either."
+            },
+            {
+              "name": "aria-label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the table and its scroll region without a `<caption>`."
+            },
+            {
+              "name": "aria-labelledby",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Names the table and its scroll region by the id of an element the page already shows (a heading)."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "`TableHead`, `TableBody` and, for a total row, `TableFoot`."
             },
             {
               "name": "responsive",
@@ -17561,6 +17575,13 @@
               "description": "How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan=\"full\"`. No effect in `responsive=\"scroll\"` or above 40rem."
             },
             {
+              "name": "cardColumns",
+              "type": "2 | 3 | 4",
+              "required": false,
+              "default": "2",
+              "description": "With `cardLayout=\"grid\"`: how many labelled cells share a line of the card, 2 (default), 3 or 4, for a comparison row (one title and a value per option). A pair never gets narrower than its own content: when the cells do not fit they wrap onto the next line, so a narrow card does not overflow. With 2 a container under 20rem is one column; with 3 or 4 it keeps the columns and relies on that wrapping. `Td cardSpan=\"full\"` still takes the whole line."
+            },
+            {
               "name": "density",
               "type": "\"compact\" | \"comfortable\"",
               "required": false,
@@ -17582,7 +17603,124 @@
               "description": "Class for the `<table>` element; `className` goes to the outer wrapper."
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "aria-label",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "aria-label: undefined",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "caption",
+                    "type": "string",
+                    "required": true,
+                    "description": "The table's accessible name (\"Projects\"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set."
+                  },
+                  {
+                    "name": "captionTone",
+                    "type": "\"default\" | \"muted\"",
+                    "required": false,
+                    "description": "With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either.",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "showCaption",
+                    "type": "boolean",
+                    "required": false,
+                    "description": "Show the caption above the table instead of hiding it visually.",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              },
+              {
+                "name": "aria-label: string",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "string",
+                    "required": true,
+                    "description": "Names the table and its scroll region without a `<caption>`."
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "caption",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "captionTone",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "showCaption",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              },
+              {
+                "name": "aria-label: undefined",
+                "props": [
+                  {
+                    "name": "aria-label",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "aria-labelledby",
+                    "type": "string",
+                    "required": true,
+                    "description": "Names the table and its scroll region by the id of an element the page already shows (a heading)."
+                  },
+                  {
+                    "name": "caption",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "captionTone",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "showCaption",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "TableBody",
@@ -17772,7 +17910,7 @@
               "type": "\"full\"",
               "required": false,
               "default": null,
-              "description": "Card mode only, with `cardLayout=\"grid\"`: `full` makes the cell span both columns, for a wide value. Without the grid layout every cell already has the full width."
+              "description": "Card mode only, with `cardLayout=\"grid\"`: `full` makes the cell span every column, for a wide value. Without the grid layout every cell already has the full width."
             },
             {
               "name": "cardSlot",
@@ -17794,6 +17932,20 @@
               "required": false,
               "default": null,
               "description": "Card mode only: hides the cell visually, for a column whose value already appears elsewhere in the card (a company column repeated in the title). The cell stays in the accessibility tree, so the row keeps one cell per column header and assistive technology can still read it; hide it from assistive technology yourself only if the value is truly redundant. Pair it with `Th hideInCards`."
+            },
+            {
+              "name": "emphasis",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`."
+            },
+            {
+              "name": "emphasisLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says (\"Recommended\"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only."
             },
             {
               "name": "href",
@@ -17887,6 +18039,20 @@
               "description": "Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden."
             },
             {
+              "name": "emphasis",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`."
+            },
+            {
+              "name": "emphasisLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says (\"Recommended\"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only."
+            },
+            {
               "name": "actions",
               "type": "false | true",
               "required": false,
@@ -17944,6 +18110,13 @@
                     "native": true
                   },
                   {
+                    "name": "emphasisLabel",
+                    "type": "string",
+                    "required": false,
+                    "description": "With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says (\"Recommended\"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only.",
+                    "onlyTypeDiffers": true
+                  },
+                  {
                     "name": "label",
                     "type": "undefined",
                     "required": false,
@@ -17973,6 +18146,13 @@
                     "type": "true",
                     "required": true,
                     "description": "Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required."
+                  },
+                  {
+                    "name": "emphasisLabel",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
                   },
                   {
                     "name": "label",
@@ -18235,6 +18415,22 @@
             "id": "components-data-display-table--grid-with-long-pills"
           },
           {
+            "export": "ComparisonTable",
+            "id": "components-data-display-table--comparison-table"
+          },
+          {
+            "export": "ComparisonCards",
+            "id": "components-data-display-table--comparison-cards"
+          },
+          {
+            "export": "ComparisonCardsSmallestPhone",
+            "id": "components-data-display-table--comparison-cards-smallest-phone"
+          },
+          {
+            "export": "NamedWithoutCaption",
+            "id": "components-data-display-table--named-without-caption"
+          },
+          {
             "export": "HeaderTypographyHooks",
             "id": "components-data-display-table--header-typography-hooks"
           },
@@ -18329,10 +18525,12 @@
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
+        "--lufia-font-weight-bold",
         "--lufia-font-weight-medium",
         "--lufia-font-weight-regular",
         "--lufia-font-weight-semibold",
         "--lufia-radius-card",
+        "--lufia-radius-sm",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
@@ -18347,6 +18545,9 @@
         "--lufia-table-cell-color",
         "--lufia-table-cell-vertical-align",
         "--lufia-table-cover-bg",
+        "--lufia-table-emphasis-bg",
+        "--lufia-table-emphasis-color",
+        "--lufia-table-emphasis-font-weight",
         "--lufia-table-header-font-family",
         "--lufia-table-header-font-size",
         "--lufia-table-header-font-weight",

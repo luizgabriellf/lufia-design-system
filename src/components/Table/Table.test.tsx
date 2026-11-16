@@ -1155,3 +1155,167 @@ describe("Table style hooks", () => {
     );
   });
 });
+
+describe("Table named without a caption", () => {
+  function Body() {
+    return (
+      <>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td label="Project">Harbour redesign</Td>
+          </TableRow>
+        </TableBody>
+      </>
+    );
+  }
+
+  it("names the table and the scroll region with aria-label, and renders no caption", () => {
+    const { container } = render(
+      <Table aria-label="Release notes">
+        <Body />
+      </Table>,
+    );
+    const region = screen.getByRole("region", { name: "Release notes" });
+    expect(region).toHaveAttribute("tabindex", "0");
+    expect(within(region).getByRole("table", { name: "Release notes" })).toBeInTheDocument();
+    expect(container.querySelector("caption")).toBeNull();
+    expect(container.firstElementChild).not.toHaveAttribute("aria-label");
+  });
+
+  it("names both by the element an aria-labelledby points at", () => {
+    const { container } = render(
+      <>
+        <h2 id="notes-heading">Release notes</h2>
+        <Table aria-labelledby="notes-heading">
+          <Body />
+        </Table>
+      </>,
+    );
+    expect(screen.getByRole("region", { name: "Release notes" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Release notes" })).toBeInTheDocument();
+    expect(container.querySelector("caption")).toBeNull();
+  });
+
+  it("requires exactly one way of naming the table", () => {
+    const body = <Body />;
+    // @ts-expect-error a table needs a caption, an aria-label or an aria-labelledby
+    const unnamed = <Table>{body}</Table>;
+    const both = (
+      // @ts-expect-error a caption and an aria-label together are ambiguous
+      <Table caption="A" aria-label="B">
+        {body}
+      </Table>
+    );
+    const orphan = (
+      // @ts-expect-error showCaption needs a caption to show
+      <Table aria-label="B" showCaption>
+        {body}
+      </Table>
+    );
+    expect([unnamed, both, orphan]).toHaveLength(3);
+  });
+
+  it("has no axe violations named by aria-label or aria-labelledby", async () => {
+    const { container } = render(
+      <>
+        <h2 id="notes-heading">Release notes</h2>
+        <Table aria-label="Release notes">
+          <Body />
+        </Table>
+        <Table aria-labelledby="other-heading" responsive="scroll">
+          <Body />
+        </Table>
+        <h2 id="other-heading">Changelog</h2>
+      </>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Table card columns and emphasis", () => {
+  function Comparison({ cardColumns, label }: { cardColumns?: 2 | 3 | 4; label?: string }) {
+    return (
+      <Table caption="Plans" cardLayout="grid" cardColumns={cardColumns}>
+        <TableHead>
+          <TableRow>
+            <Th>Feature</Th>
+            <Th>Starter</Th>
+            <Th emphasis emphasisLabel={label}>
+              Team
+            </Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td primary rowHeader label="Feature">
+              Storage
+            </Td>
+            <Td label="Starter">5 GB</Td>
+            <Td label="Team" emphasis emphasisLabel={label} data-testid="team">
+              100 GB
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+  const root = () => screen.getByRole("region").parentElement?.parentElement;
+
+  it("sets the column count only when it is not the default two", () => {
+    const { rerender } = render(<Comparison />);
+    expect(root()).not.toHaveAttribute("data-card-columns");
+    rerender(<Comparison cardColumns={2} />);
+    expect(root()).not.toHaveAttribute("data-card-columns");
+    rerender(<Comparison cardColumns={3} />);
+    expect(root()).toHaveAttribute("data-card-columns", "3");
+    rerender(<Comparison cardColumns={4} />);
+    expect(root()).toHaveAttribute("data-card-columns", "4");
+  });
+
+  it("ignores the column count without the grid layout", () => {
+    render(
+      <Table caption="Plans" cardColumns={3}>
+        <TableBody>
+          <TableRow>
+            <Td>1</Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(root()).not.toHaveAttribute("data-card-columns");
+  });
+
+  it("marks emphasised cells and reads emphasisLabel after their content", () => {
+    render(<Comparison label="Recommended" />);
+    const cell = screen.getByTestId("team");
+    expect(cell).toHaveAttribute("data-emphasis");
+    expect(cell).toHaveTextContent("100 GB Recommended");
+    expect(screen.getByRole("columnheader", { name: "Team Recommended" })).toHaveAttribute("data-emphasis");
+  });
+
+  it("leaves a cell unmarked and unlabelled by default, and shows no label without emphasis", () => {
+    render(
+      <Table caption="Plans">
+        <TableBody>
+          <TableRow>
+            <Td data-testid="plain" emphasisLabel="Recommended">
+              5 GB
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    expect(screen.getByTestId("plain")).not.toHaveAttribute("data-emphasis");
+    expect(screen.getByTestId("plain")).toHaveTextContent(/^5 GB$/);
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<Comparison cardColumns={3} label="Recommended" />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
