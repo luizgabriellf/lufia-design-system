@@ -234,6 +234,13 @@
   position: relative;
 }
 
+/* A disabled row control: still in the page, muted, and nothing happens on click. The muted text token is a contrast-checked
+   pair on the table surface; opacity is not used, so the text keeps that contrast. */
+.rowLink[aria-disabled="true"] {
+  color: var(--lufia-color-text-muted);
+  cursor: not-allowed;
+}
+
 .rowLink::after {
   content: "";
   position: absolute;
@@ -259,7 +266,7 @@
   scroll-margin-block: var(--table-scroll-margin);
 }
 
-.table tr:has(.rowLink):hover {
+.table tr:has(.rowLink:not([aria-disabled="true"])):hover {
   background: var(--table-row-hover);
 }
 
@@ -284,6 +291,13 @@
 
 .footer {
   min-inline-size: 0;
+}
+
+/* A group header row: one header cell over every column, set apart from the rows it names. */
+.table tr[data-group] > th {
+  background: var(--table-row-hover);
+  border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
+  color: var(--lufia-color-text-default);
 }
 
 /* Cards: the table's own width is under 40rem. Rows become cards, the header row is hidden visually but kept for assistive
@@ -335,6 +349,27 @@
     border: var(--lufia-border-width-thin) solid var(--table-border);
     border-radius: var(--lufia-radius-card);
     background: var(--table-bg);
+  }
+
+  /* Several bodies stack like one list, and a group header row is a full-width heading above its cards. */
+  .root[data-responsive="cards"] .table > tbody + tbody {
+    margin-block-start: var(--lufia-space-3);
+  }
+
+  .root[data-responsive="cards"] .table > tbody > tr[data-group] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .root[data-responsive="cards"] .table tr[data-group] > th {
+    display: block;
+    padding: var(--lufia-space-2) 0 0;
+    border: 0;
+    background: none;
+    color: var(--lufia-color-text-muted);
+    white-space: normal;
   }
 
   .root[data-responsive="cards"] .table > tbody > tr.emptyRow {

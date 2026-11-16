@@ -28,7 +28,7 @@ A placeholder that holds the shape of content while it loads, with a calm shimme
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `variant` | `"text" \| "rect" \| "circle"` | no | `"text"` | `text` is one line of text, `rect` a block, `circle` an avatar. |
+| `variant` | `"circle" \| "rect" \| "text"` | no | `"text"` | `text` is one line of text, `rect` a block, `circle` an avatar. |
 | `width` | `string` | no |  | CSS length. Give the size of the content that will replace the placeholder so nothing jumps. |
 | `height` | `string` | no |  | CSS length. Text defaults to one line height. |
 | `still` | `boolean` | no | `false` | Turn the shimmer off. It also stops under `prefers-reduced-motion`. |
@@ -38,7 +38,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `SkeletonProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { variant?: "text" | "rect" | "circle" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }`
+- `SkeletonProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { variant?: "circle" | "rect" | "text" | undefined; width?: string | undefined; height?: string | undefined; still?: boolean | undefined; label?: string | undefined; }`
 
 ## Example
 

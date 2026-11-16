@@ -1,12 +1,12 @@
 import { useId } from "react";
-import type { HTMLAttributes, MouseEvent, ReactNode, TdHTMLAttributes, ThHTMLAttributes } from "react";
+import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import { EmptyState, type EmptyStateProps } from "../EmptyState";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Table.module.css";
 
 const join = (...names: (string | undefined)[]) => names.filter(Boolean).join(" ");
 
-export type TableProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
+export type TableProps = Omit<ComponentProps<"div">, "children"> & {
   /** `TableHead` and `TableBody`. */
   children: ReactNode;
   /**
@@ -81,7 +81,7 @@ export function Table({
   );
 }
 
-export type TableHeadProps = Omit<HTMLAttributes<HTMLTableSectionElement>, "role">;
+export type TableHeadProps = Omit<ComponentProps<"thead">, "role">;
 
 /** The header group. In card mode it is hidden visually and stays in the accessibility tree. */
 export function TableHead({ className, ...rest }: TableHeadProps) {
@@ -89,7 +89,7 @@ export function TableHead({ className, ...rest }: TableHeadProps) {
   return <thead role="rowgroup" {...rest} className={join(styles.head, className)} />;
 }
 
-export type TableBodyProps = Omit<HTMLAttributes<HTMLTableSectionElement>, "role">;
+export type TableBodyProps = Omit<ComponentProps<"tbody">, "role">;
 
 /** The body group: `TableRow`s, or one `TableEmpty`. */
 export function TableBody({ className, ...rest }: TableBodyProps) {
@@ -97,18 +97,25 @@ export function TableBody({ className, ...rest }: TableBodyProps) {
   return <tbody role="rowgroup" {...rest} className={join(styles.body, className)} />;
 }
 
-export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, "role"> & {
+export type TableRowProps = Omit<ComponentProps<"tr">, "role"> & {
   /** Marks the row as selected: sets `aria-selected` and a selected background. The app owns the selection. */
   selected?: boolean;
   /** Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current="true"` and an accent on its start edge. */
   current?: boolean;
+  /**
+   * Marks a group header row: a row inside `TableBody` whose single `Th scope="colgroup"` has a `colSpan` over every
+   * column and names the rows that follow, up to the next group header. In card mode it is a full-width heading above its
+   * cards, not a card. Several `TableBody`s in one `Table` work too; put the group header first in each.
+   */
+  group?: boolean;
 };
 
 /**
  * A row, and in card mode one card. It has no click handler of its own: to make a row open something, give one of its
- * cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox.
+ * cells `href` or `onActivate` (see `Td`). `selected` and `current` only mark state; they add no checkbox. `ref` and
+ * `style` reach the `<tr>`, so a sortable-list library can drive it.
  */
-export function TableRow({ selected, current, className, ...rest }: TableRowProps) {
+export function TableRow({ selected, current, group, className, ...rest }: TableRowProps) {
   return (
     <tr
       role="row"
@@ -118,11 +125,12 @@ export function TableRow({ selected, current, className, ...rest }: TableRowProp
       className={join(styles.row, className)}
       data-selected={selected ? "" : undefined}
       data-current={current ? "" : undefined}
+      data-group={group ? "" : undefined}
     />
   );
 }
 
-type ThBaseProps = Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & {
+type ThBaseProps = Omit<ComponentProps<"th">, "role"> & {
   /** Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. */
   numeric?: boolean;
 };
@@ -144,7 +152,7 @@ export type ThProps =
 export function Th({ numeric, actions, label, scope = "col", className, ...rest }: ThProps) {
   return (
     <th
-      role={scope === "row" ? "rowheader" : "columnheader"}
+      role={scope === "row" || scope === "rowgroup" ? "rowheader" : "columnheader"}
       scope={scope}
       {...rest}
       className={className}
@@ -156,7 +164,7 @@ export function Th({ numeric, actions, label, scope = "col", className, ...rest 
   );
 }
 
-export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
+export type TdProps = Omit<ComponentProps<"td">, "role"> & {
   /**
    * The column's name, shown before the value in card mode ("Status"). Use the same text as the column header. Without it
    * the value takes the whole line. Not shown for a `primary` or `actions` cell.
@@ -203,6 +211,13 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
   /** `aria-describedby` of the generated link or button: ids of elements that describe the row control. */
   activateDescribedBy?: string;
   /**
+   * Turns the row control off while keeping it in the page: for a row that cannot be opened right now. The button stays
+   * focusable (`aria-disabled="true"`, like `Button` and `Pagination`, so focus is not lost and a reader can still find it)
+   * and activation is ignored; the link is rendered without `href`, so it cannot be followed. The cell reads muted. Needs
+   * `href` or `onActivate`.
+   */
+  activateDisabled?: boolean;
+  /**
    * A muted, regular-weight line under the cell's content: a description or an identifier under a `primary` name. In a
    * cell with `href` or `onActivate` it is inside the control, so the whole block stays clickable and, without
    * `activateLabel`, is part of the control's name. In card mode it stays under the value.
@@ -232,6 +247,7 @@ export function Td({
   onActivate,
   activateLabel,
   activateDescribedBy,
+  activateDisabled,
   description,
   after,
   className,
@@ -245,7 +261,16 @@ export function Td({
     </>
   );
   const target =
-    href !== undefined ? (
+    activateDisabled && (href !== undefined || onActivate) ? (
+      // Inert: a link without `href` cannot be followed (the role keeps it announced as a link), and a button with no
+      // handler does nothing. The button stays focusable.
+      <InertControl
+        link={href !== undefined}
+        label={activateLabel}
+        describedBy={activateDescribedBy}
+        content={content}
+      />
+    ) : href !== undefined ? (
       <LufiaLink
         href={href}
         className={styles.rowLink}
@@ -284,6 +309,32 @@ export function Td({
       {actions && wrap ? <div className={styles.actionsRow}>{target}</div> : target}
       {after ? <div className={styles.after}>{after}</div> : null}
     </Cell>
+  );
+}
+
+function InertControl({
+  link,
+  label,
+  describedBy,
+  content,
+}: {
+  link: boolean;
+  label?: string;
+  describedBy?: string;
+  content: ReactNode;
+}) {
+  const Tag = link ? "a" : "button";
+  return (
+    <Tag
+      role={link ? "link" : undefined}
+      type={link ? undefined : "button"}
+      className={styles.rowLink}
+      aria-disabled="true"
+      aria-label={label}
+      aria-describedby={describedBy}
+    >
+      {content}
+    </Tag>
   );
 }
 

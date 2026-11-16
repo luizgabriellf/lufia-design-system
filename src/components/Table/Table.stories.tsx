@@ -834,3 +834,140 @@ export const TightNumericColumns: Story = {
     </div>
   ),
 };
+
+/**
+ * `TableRow` takes `ref` and `style` like a `<tr>`, plus any `data-*` or `aria-*` attribute, so a sortable-list library
+ * that needs the row element and an inline `transform` and `transition` can drive it. Here the second row carries a
+ * transform by hand; no library is involved.
+ */
+export const RowWithRefAndStyle: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 3).map((project, index) => (
+          <TableRow
+            key={project.id}
+            ref={(node) => {
+              if (node) node.dataset.measured = "true";
+            }}
+            data-row-id={project.id}
+            style={
+              index === 1
+                ? {
+                    transform: "translateY(0.25rem)",
+                    transition: "transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out)",
+                    position: "relative",
+                  }
+                : undefined
+            }
+          >
+            <Td primary label="Project">
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+/**
+ * `activateDisabled` turns the row control off for a row that cannot be opened now. The button form keeps focus
+ * (`aria-disabled`, as `Button` and `Pagination` do) and ignores activation; the link form has no `href`. Both read muted.
+ */
+export const DisabledRowControl: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 3).map((project, index) => (
+          <TableRow key={project.id}>
+            <Td
+              primary
+              label="Project"
+              {...(index === 0 ? { href: `#project-${project.id}` } : { onActivate: () => {} })}
+              activateDisabled={index > 0}
+              description={index > 0 ? "Archived, cannot be opened" : undefined}
+            >
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const DisabledRowControlOnPhone: Story = {
+  ...DisabledRowControl,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * Grouped rows: several `TableBody`s in one `Table`, each starting with a `<TableRow group>` whose one
+ * `<Th scope="colgroup" colSpan>` spans every column. In card mode the group header is a full-width heading above its cards.
+ */
+export const GroupedBodies: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      {["Active", "On hold"].map((group, groupIndex) => (
+        <TableBody key={group}>
+          <TableRow group>
+            <Th scope="colgroup" colSpan={5}>
+              {group}
+            </Th>
+          </TableRow>
+          {projects.slice(groupIndex * 2, groupIndex * 2 + 2).map((project) => (
+            <TableRow key={project.id}>
+              <Td primary label="Project">
+                {project.name}
+              </Td>
+              <Td label="Owner">{project.owner}</Td>
+              <Td label="Status">{project.status}</Td>
+              <Td label="Budget" numeric>
+                {money.format(project.budget)}
+              </Td>
+              <Td actions>
+                <Button size="sm" variant="secondary">
+                  Edit
+                </Button>
+              </Td>
+            </TableRow>
+          ))}
+        </TableBody>
+      ))}
+    </Table>
+  ),
+};
+
+export const GroupedBodiesOnPhone: Story = {
+  ...GroupedBodies,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+export const GroupedBodiesScroll: Story = {
+  ...GroupedBodies,
+  args: { responsive: "scroll" },
+};

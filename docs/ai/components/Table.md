@@ -75,6 +75,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `selected` | `boolean` | no |  | Marks the row as selected: sets `aria-selected` and a selected background. The app owns the selection. |
 | `current` | `boolean` | no |  | Marks the row as the current one (the item shown in a detail pane, say): sets `aria-current="true"` and an accent on its start edge. |
+| `group` | `boolean` | no |  | Marks a group header row: a row inside `TableBody` whose single `Th scope="colgroup"` has a `colSpan` over every column and names the rows that follow, up to the next group header. In card mode it is a full-width heading above its cards, not a card. Several `TableBody`s in one `Table` work too; put the group header first in each. |
 
 Other native element attributes pass through to the root element.
 
@@ -92,6 +93,7 @@ Other native element attributes pass through to the root element.
 | `onActivate` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function. |
 | `activateLabel` | `string` | no |  | The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: "Open details of Harbour redesign". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included. |
 | `activateDescribedBy` | `string` | no |  | `aria-describedby` of the generated link or button: ids of elements that describe the row control. |
+| `activateDisabled` | `boolean` | no |  | Turns the row control off while keeping it in the page: for a row that cannot be opened right now. The button stays focusable (`aria-disabled="true"`, like `Button` and `Pagination`, so focus is not lost and a reader can still find it) and activation is ignored; the link is rendered without `href`, so it cannot be followed. The cell reads muted. Needs `href` or `onActivate`. |
 | `description` | `ReactNode` | no |  | A muted, regular-weight line under the cell's content: a description or an identifier under a `primary` name. In a cell with `href` or `onActivate` it is inside the control, so the whole block stays clickable and, without `activateLabel`, is part of the control's name. In card mode it stays under the value. |
 | `after` | `ReactNode` | no |  | Content rendered in the same cell but outside the generated control, lifted above the row's stretched click area: a second link or a mailto next to the name. Interactive content here is valid HTML (never nested in the row's link or button), reachable in DOM order after the control and clickable. It sits on its own line under the content. |
 
@@ -131,8 +133,7 @@ The props are a union of forms; `actions` selects the form. Only the props that 
 ## Types
 
 - `TableEmptyProps`: `Omit<EmptyStateProps, "title"> & { colSpan: number; title?: string | undefined; }`
-- `TableRowProps`: `Omit<HTMLAttributes<HTMLTableRowElement>, "role"> & { selected?: boolean | undefined; current?: boolean | undefined; }`
-- `ThProps`: `(Omit<ThHTMLAttributes<HTMLTableCellElement>, "role"> & { numeric?: boolean | undefined; } & { actions?: false | undefined; label?: undefined; }) | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby"> & { actions: true; label: string; })`
+- `TableRowProps`: `Omit<DetailedHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>, "role"> & { selected?: boolean | undefined; current?: boolean | undefined; group?: boolean | undefined; }`
 
 ## Example
 
@@ -229,3 +230,9 @@ buttons that wrap well.
 - `components-data-display-table--numeric-and-wrapping-actions`
 - `components-data-display-table--wrapping-actions-with-room`
 - `components-data-display-table--tight-numeric-columns`
+- `components-data-display-table--row-with-ref-and-style`
+- `components-data-display-table--disabled-row-control`
+- `components-data-display-table--disabled-row-control-on-phone`
+- `components-data-display-table--grouped-bodies`
+- `components-data-display-table--grouped-bodies-on-phone`
+- `components-data-display-table--grouped-bodies-scroll`
