@@ -945,3 +945,89 @@ describe("TableFoot", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("Table card layout controls", () => {
+  function CardControls({ cardLayout }: { cardLayout?: "stack" | "grid" }) {
+    return (
+      <Table caption="Projects" cardLayout={cardLayout}>
+        <TableHead>
+          <TableRow>
+            <Th hideInCards>Company</Th>
+            <Th>Status</Th>
+            <Th>Project</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td label="Company" hideInCards data-testid="company">
+              Northwind
+            </Td>
+            <Td
+              label="Status"
+              stretch
+              cardSpan="full"
+              cardOrder={2.7}
+              style={{ color: "red" }}
+              data-testid="status"
+            >
+              Active
+            </Td>
+            <Td primary label="Project" data-testid="title">
+              Harbour redesign
+            </Td>
+            <Td cardSlot="corner" data-testid="corner">
+              <button type="button">More</button>
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("marks the table with the card layout, stack by default", () => {
+    const { rerender } = render(<CardControls />);
+    expect(screen.getByRole("region").parentElement?.parentElement).toHaveAttribute(
+      "data-card-layout",
+      "stack",
+    );
+    rerender(<CardControls cardLayout="grid" />);
+    expect(screen.getByRole("region").parentElement?.parentElement).toHaveAttribute(
+      "data-card-layout",
+      "grid",
+    );
+  });
+
+  it("exposes the per-cell controls as data attributes and keeps them in the accessibility tree", () => {
+    render(<CardControls />);
+    const status = screen.getByTestId("status");
+    expect(status).toHaveAttribute("data-stretch");
+    expect(status).toHaveAttribute("data-card-span", "full");
+    expect(screen.getByTestId("corner")).toHaveAttribute("data-card-slot", "corner");
+    expect(screen.getByTestId("company")).toHaveAttribute("data-hide-in-cards");
+    expect(screen.getByRole("columnheader", { name: "Company", hidden: true })).toHaveAttribute(
+      "data-hide-in-cards",
+    );
+    expect(screen.getByTestId("company")).toBeInTheDocument();
+  });
+
+  it("maps cardOrder to a whole-number custom property and keeps the caller's style", () => {
+    render(<CardControls />);
+    const status = screen.getByTestId("status");
+    expect(status.style.getPropertyValue("--table-card-order")).toBe("2");
+    expect(status).toHaveStyle({ color: "rgb(255, 0, 0)" });
+    expect(screen.getByTestId("title").style.getPropertyValue("--table-card-order")).toBe("");
+  });
+
+  it("leaves every control off by default", () => {
+    render(<Sample />);
+    const cell = screen.getByRole("cell", { name: "Active" });
+    for (const name of ["data-stretch", "data-card-span", "data-card-slot", "data-hide-in-cards"]) {
+      expect(cell).not.toHaveAttribute(name);
+    }
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<CardControls cardLayout="grid" />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

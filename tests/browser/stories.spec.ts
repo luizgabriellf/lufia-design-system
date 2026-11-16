@@ -2527,7 +2527,7 @@ test.describe("table", () => {
     });
     expect(result.headSize[0]).toBeLessThanOrEqual(1);
     expect(result.headSize[1]).toBeLessThanOrEqual(1);
-    expect(result.rowDisplay).toBe("block");
+    expect(result.rowDisplay).toBe("flex");
     expect(result.labelContent).toContain("Owner");
     expect(["none", "normal"]).toContain(result.primaryLabel);
     expect(result.tableScrolls).toBe(false);
@@ -2548,7 +2548,7 @@ test.describe("table", () => {
     const display = await page.evaluate(
       () => getComputedStyle(document.querySelector("#storybook-root tbody tr")!).display,
     );
-    expect(display).toBe("block");
+    expect(display).toBe("flex");
   });
 
   for (const name of [
@@ -2717,7 +2717,7 @@ test.describe("table", () => {
         probe.remove();
         const columns = getComputedStyle(cell).gridTemplateColumns.split(" ");
         return {
-          cards: getComputedStyle(cell.parentElement!).display === "block",
+          cards: getComputedStyle(cell.parentElement!).display === "flex",
           clipped: badges.map(
             (badge) =>
               badge.scrollWidth > badge.clientWidth + 1 || badge.scrollHeight > badge.clientHeight + 1,
@@ -2907,6 +2907,126 @@ test.describe("table", () => {
     expect(result.overflows).toBe(false);
   });
 
+  test("the controls of an actions cell share one centre line", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, id("actions-alignment"));
+    const centres = await page.evaluate(() =>
+      [...document.querySelectorAll("#storybook-root td[data-actions]")].map((cell) =>
+        [...cell.querySelectorAll("button")].map((button) => {
+          const box = button.getBoundingClientRect();
+          return box.top + box.height / 2;
+        }),
+      ),
+    );
+    for (const row of centres) {
+      expect(row).toHaveLength(2);
+      expect(Math.abs(row[0]! - row[1]!)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test("a stretched labelled cell gives block content the full value width", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("card-controls"));
+    const result = await page.evaluate(() => {
+      const cell = document.querySelector<HTMLElement>('#storybook-root td[data-label="Progress"]')!;
+      const bar = cell.querySelector<HTMLElement>('[role="progressbar"]')!;
+      const status = document.querySelector<HTMLElement>('#storybook-root td[data-label="Status"]')!;
+      const badge = status.firstElementChild as HTMLElement;
+      return {
+        cell: cell.getBoundingClientRect().width,
+        bar: bar.getBoundingClientRect().width,
+        status: status.getBoundingClientRect().width,
+        badge: badge.getBoundingClientRect().width,
+      };
+    });
+    expect(result.bar).toBeGreaterThan(result.cell * 0.9);
+    // An unstretched cell keeps a badge at its natural width.
+    expect(result.badge).toBeLessThan(result.status * 0.6);
+  });
+
+  test("in cards the primary cell is the title even as the third column, and the corner cell stays clear of it", async ({
+    page,
+  }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("card-controls"));
+      const result = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const box = (el: Element) => el.getBoundingClientRect();
+        const cells = [...row.children] as HTMLElement[];
+        const title = cells.find((cell) => cell.hasAttribute("data-primary"))!;
+        const corner = cells.find((cell) => cell.dataset.cardSlot === "corner")!;
+        const actions = cells.find((cell) => cell.hasAttribute("data-actions"))!;
+        const visible = cells.filter((cell) => !cell.hasAttribute("data-hide-in-cards") && cell !== corner);
+        const range = document.createRange();
+        range.selectNodeContents(title);
+        const text = range.getBoundingClientRect();
+        const rtl = getComputedStyle(row).direction === "rtl";
+        return {
+          firstTop: Math.min(...visible.map((cell) => box(cell).top)),
+          titleTop: box(title).top,
+          actionsAfterTitle: box(actions).top >= box(title).bottom - 1,
+          actionsBeforeRest: box(actions).top < box(cells.find((c) => c.dataset.label === "Owner")!).top,
+          cornerTop: box(corner).top - box(row).top,
+          cornerEndGap: rtl ? box(corner).left - box(row).left : box(row).right - box(corner).right,
+          cornerOverlapsText: !(
+            text.right <= box(corner).left ||
+            text.left >= box(corner).right ||
+            text.bottom <= box(corner).top ||
+            text.top >= box(corner).bottom
+          ),
+          corner: getComputedStyle(corner).position,
+          hidden: box(row.querySelector('[data-label="Team"]')!).width,
+        };
+      });
+      expect(result.titleTop, `${width}`).toBe(result.firstTop);
+      expect(result.actionsAfterTitle && result.actionsBeforeRest, `${width}`).toBe(true);
+      expect(result.corner).toBe("absolute");
+      expect(result.cornerTop).toBeLessThan(16);
+      expect(result.cornerEndGap).toBeLessThan(16);
+      expect(result.cornerOverlapsText, `${width}`).toBe(false);
+      expect(result.hidden).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test("cardLayout grid sets labelled cells in two columns at 390px and one at 320px", async ({ page }) => {
+    const columns = async (width: number) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("card-controls-grid"));
+      return page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const owner = row.querySelector<HTMLElement>('[data-label="Owner"]')!.getBoundingClientRect();
+        const status = row.querySelector<HTMLElement>('[data-label="Status"]')!.getBoundingClientRect();
+        const bar = row.querySelector<HTMLElement>('[data-label="Progress"]')!.getBoundingClientRect();
+        return {
+          sameLine: Math.abs(owner.top - status.top) < 2,
+          distinctColumns: owner.left !== status.left,
+          progressFull: bar.width > owner.width * 1.8,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+    };
+    const phone = await columns(390);
+    expect(phone.sameLine && phone.distinctColumns).toBe(true);
+    expect(phone.progressFull).toBe(true);
+    expect(phone.overflow).toBeLessThanOrEqual(0);
+    const small = await columns(320);
+    expect(small.sameLine).toBe(false);
+    expect(small.overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("the card controls mirror in right-to-left", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 900 });
+    await openStory(page, id("card-controls-grid"), "default", "light", "rtl");
+    const result = await page.evaluate(() => {
+      const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+      const corner = row.querySelector<HTMLElement>('[data-card-slot="corner"]')!.getBoundingClientRect();
+      const box = row.getBoundingClientRect();
+      return { cornerNearStart: corner.left - box.left, cornerNearEnd: box.right - corner.right };
+    });
+    expect(result.cornerNearStart).toBeLessThan(result.cornerNearEnd);
+  });
+
   test("the table has no axe violations in cards, scroll and empty states", async ({ page }) => {
     for (const [name, width] of [
       ["default", 1280],
@@ -2927,6 +3047,10 @@ test.describe("table", () => {
       ["named-row-control-on-phone", 390],
       ["row-state", 1280],
       ["plain-empty", 1280],
+      ["actions-alignment", 1280],
+      ["card-controls", 390],
+      ["card-controls-grid", 390],
+      ["card-controls-grid-smallest-phone", 320],
     ] as const) {
       await page.setViewportSize({ width, height: 800 });
       await openStory(page, id(name));

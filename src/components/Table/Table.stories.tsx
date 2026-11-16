@@ -3,6 +3,8 @@ import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Badge, type BadgeTone } from "../Badge";
 import { Button } from "../Button";
+import { PlusIcon } from "../Icon/icons";
+import { ProgressBar } from "../ProgressBar";
 import { Pagination, type PaginationLabels } from "../Pagination";
 import { SortableTh, type SortDirection } from "../SortableTh";
 import { Table, TableBody, TableEmpty, TableFoot, TableHead, TableRow, Td, Th } from "./Table";
@@ -93,6 +95,7 @@ const meta = {
   args: { caption: "Projects", children: null },
   argTypes: {
     responsive: { control: "inline-radio", options: ["cards", "scroll"] },
+    cardLayout: { control: "inline-radio", options: ["stack", "grid"] },
     density: { control: "inline-radio", options: ["comfortable", "compact"] },
     frame: { control: "inline-radio", options: ["framed", "flush"] },
   },
@@ -1019,4 +1022,151 @@ export const GroupedBodiesOnPhone: Story = {
 export const GroupedBodiesScroll: Story = {
   ...GroupedBodies,
   args: { responsive: "scroll" },
+};
+
+type Task = {
+  id: number;
+  title: string;
+  team: string;
+  owner: string;
+  status: string;
+  tone: BadgeTone;
+  done: number;
+};
+
+const tasks: Task[] = [
+  {
+    id: 1,
+    title: "Prepare the release notes",
+    team: "Docs",
+    owner: "Amira Okafor",
+    status: "Active",
+    tone: "success",
+    done: 70,
+  },
+  {
+    id: 2,
+    title: "Review the onboarding flow",
+    team: "Design",
+    owner: "Jonas Weber",
+    status: "In review",
+    tone: "info",
+    done: 35,
+  },
+  {
+    id: 3,
+    title: "Migrate the billing service",
+    team: "Platform",
+    owner: "Priya Nair",
+    status: "Blocked",
+    tone: "danger",
+    done: 10,
+  },
+];
+
+/**
+ * Card controls on one table: `Td` order is deliberately awkward. The title is the third column, a repeated team column
+ * is hidden in cards, the progress cell stretches, the menu cell is pinned to the card corner and the actions cell is
+ * moved right after the title with `cardOrder`. Open it at 390 px; at 320 px the grid falls back to one column.
+ */
+function CardControlsTable({ args }: { args: React.ComponentProps<typeof Table> }) {
+  return (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th actions label="Row menu" />
+          <Th hideInCards>Team</Th>
+          <Th>Task</Th>
+          <Th>Owner</Th>
+          <Th>Status</Th>
+          <Th>Progress</Th>
+          <Th actions label="Actions" />
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {tasks.map((task) => (
+          <TableRow key={task.id}>
+            <Td cardSlot="corner">
+              <Button size="sm" variant="ghost" aria-label={`More for ${task.title}`}>
+                More
+              </Button>
+            </Td>
+            <Td label="Team" hideInCards>
+              {task.team}
+            </Td>
+            <Td primary label="Task">
+              {task.title}
+            </Td>
+            <Td label="Owner">{task.owner}</Td>
+            <Td label="Status">
+              <Badge tone={task.tone} dot wrap>
+                {task.status}
+              </Badge>
+            </Td>
+            <Td label="Progress" stretch cardSpan="full">
+              <div>
+                <ProgressBar value={task.done} label={`${task.title} progress`} />
+              </div>
+            </Td>
+            <Td actions cardOrder={-1}>
+              <Button size="sm" variant="secondary">
+                Open
+              </Button>
+              <Button size="sm" variant="secondary">
+                Archive
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+export const CardControls: Story = {
+  render: (args) => <CardControlsTable args={args} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+export const CardControlsGrid: Story = {
+  args: { cardLayout: "grid" },
+  render: (args) => <CardControlsTable args={args} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+export const CardControlsGridSmallestPhone: Story = {
+  args: { cardLayout: "grid" },
+  render: (args) => <CardControlsTable args={args} />,
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+
+/** In table layout the controls of an actions cell share one centre line, an icon button beside a text-only one. */
+export const ActionsAlignment: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th actions label="Actions" />
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {projects.slice(0, 2).map((project) => (
+          <TableRow key={project.id}>
+            <Td primary label="Project">
+              {project.name}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary" iconStart={<PlusIcon />}>
+                Add
+              </Button>
+              <Button size="sm" variant="secondary">
+                Archive
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
 };
