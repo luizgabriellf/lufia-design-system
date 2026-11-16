@@ -1,5 +1,5 @@
 import { useId } from "react";
-import type { ComponentProps, MouseEvent, ReactNode } from "react";
+import type { ComponentProps, CSSProperties, MouseEvent, ReactNode } from "react";
 import { EmptyState, type EmptyStateProps } from "../EmptyState";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Table.module.css";
@@ -18,7 +18,7 @@ export type TableProps = Omit<ComponentProps<"div">, "children"> & {
   showCaption?: boolean;
   /**
    * What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row
-   * is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table
+   * is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table
    * and scrolls it sideways, with a shadow on each edge that has more to see.
    */
   responsive?: "cards" | "scroll";
@@ -28,6 +28,13 @@ export type TableProps = Omit<ComponentProps<"div">, "children"> & {
    * mode each card keeps its own border either way.
    */
   frame?: "framed" | "flush";
+  /**
+   * How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells
+   * in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when
+   * the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value
+   * can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem.
+   */
+  cardLayout?: "stack" | "grid";
   /** Row padding. Default `comfortable`. */
   density?: "comfortable" | "compact";
   /** Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. */
@@ -47,6 +54,7 @@ export function Table({
   caption,
   showCaption = false,
   responsive = "cards",
+  cardLayout = "stack",
   density = "comfortable",
   frame = "framed",
   footer,
@@ -60,6 +68,7 @@ export function Table({
       {...rest}
       className={join(styles.root, className)}
       data-responsive={responsive}
+      data-card-layout={cardLayout}
       data-density={density}
       data-frame={frame}
     >
@@ -146,6 +155,12 @@ export function TableRow({ selected, current, group, className, ...rest }: Table
 type ThBaseProps = Omit<ComponentProps<"th">, "role"> & {
   /** Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. */
   numeric?: boolean;
+  /**
+   * Card mode only: drops this header's visible label when the matching `Td hideInCards` is dropped. The header row is
+   * already hidden visually in card mode; this also keeps the header out of the revealed row that shows while a sortable
+   * header has keyboard focus. It stays in the accessibility tree.
+   */
+  hideInCards?: boolean;
 };
 
 export type ThProps =
@@ -162,7 +177,7 @@ export type ThProps =
  * with `primary`, `label`, `description` or `href`, use `Td rowHeader`. For a column the user can sort, use
  * `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.
  */
-export function Th({ numeric, actions, label, scope = "col", className, ...rest }: ThProps) {
+export function Th({ numeric, hideInCards, actions, label, scope = "col", className, ...rest }: ThProps) {
   return (
     <th
       role={scope === "row" || scope === "rowgroup" ? "rowheader" : "columnheader"}
@@ -171,6 +186,7 @@ export function Th({ numeric, actions, label, scope = "col", className, ...rest 
       className={className}
       data-numeric={numeric ? "" : undefined}
       data-actions={actions ? "" : undefined}
+      data-hide-in-cards={hideInCards ? "" : undefined}
     >
       {actions ? <span className={styles.hiddenLabel}>{label}</span> : (rest as ThBaseProps).children}
     </th>
@@ -204,6 +220,40 @@ export type TdProps = Omit<ComponentProps<"td">, "role"> & {
    * already wraps.
    */
   wrap?: boolean;
+  /**
+   * Card mode only: lets block content take the whole width of the value slot (a progress bar, a `flex: 1` child). By
+   * default the value is start-aligned and as wide as its content, which keeps a `Badge` or short text at its natural
+   * size but shrinks a block child that relies on stretching to its minimum width. Set it on cells whose content is
+   * block-level; leave it off for badges and text. Needs a `label`.
+   */
+  stretch?: boolean;
+  /**
+   * Card mode only, with `cardLayout="grid"`: `full` makes the cell span both columns, for a wide value. Without the grid
+   * layout every cell already has the full width.
+   */
+  cardSpan?: "full";
+  /**
+   * Card mode only: `corner` takes the cell out of the card's flow and pins it to the card's top end corner (a drag handle
+   * or an overflow menu). It leaves no line of its own, the title reserves room beside it so text never runs under it,
+   * and it follows the text direction. Its `label` is not shown. Keep the cell small (an icon button); a `primary` cell
+   * in the same row is the one that reserves the room.
+   */
+  cardSlot?: "corner";
+  /**
+   * Card mode only: the cell's position among the card's cells, as CSS `order` (lower first, default 0). The `primary`
+   * cell defaults to a position before every other cell, so the title is first whatever the column order; give an
+   * `actions` cell a negative number to put it right after the title, or a positive one to keep it last. Visual order
+   * only: reading order and Tab order keep following the markup, so keep the markup order sensible and use this for small
+   * moves.
+   */
+  cardOrder?: number;
+  /**
+   * Card mode only: hides the cell visually, for a column whose value already appears elsewhere in the card (a company
+   * column repeated in the title). The cell stays in the accessibility tree, so the row keeps one cell per column header
+   * and assistive technology can still read it; hide it from assistive technology yourself only if the value is truly
+   * redundant. Pair it with `Th hideInCards`.
+   */
+  hideInCards?: boolean;
   /**
    * Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose
    * click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive
@@ -256,6 +306,11 @@ export function Td({
   rowHeader,
   actions,
   wrap,
+  stretch,
+  cardSpan,
+  cardSlot,
+  cardOrder,
+  hideInCards,
   href,
   onActivate,
   activateLabel,
@@ -264,6 +319,7 @@ export function Td({
   description,
   after,
   className,
+  style,
   children,
   ...rest
 }: TdProps) {
@@ -313,11 +369,20 @@ export function Td({
       scope={rowHeader ? "row" : undefined}
       {...rest}
       className={className}
+      style={
+        cardOrder !== undefined && Number.isFinite(cardOrder)
+          ? ({ ...style, "--table-card-order": Math.trunc(cardOrder) } as CSSProperties)
+          : style
+      }
       data-label={label}
       data-numeric={numeric ? "" : undefined}
       data-primary={primary ? "" : undefined}
       data-actions={actions ? "" : undefined}
       data-wrap={actions && wrap ? "" : undefined}
+      data-stretch={stretch ? "" : undefined}
+      data-card-span={cardSpan}
+      data-card-slot={cardSlot}
+      data-hide-in-cards={hideInCards ? "" : undefined}
     >
       {actions && wrap ? <div className={styles.actionsRow}>{target}</div> : target}
       {after ? <div className={styles.after}>{after}</div> : null}

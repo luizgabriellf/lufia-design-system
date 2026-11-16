@@ -1,0 +1,5 @@
+---
+"@lufia/design-system": minor
+---
+
+Add card layout controls to `Table` and fix three card and action alignments. New, all opt-in and card mode only: `Table cardLayout="grid"` (two columns of label-over-value pairs, one column under 20rem), `Td cardSpan="full"`, `Td cardSlot="corner"` (pinned to the top end corner, the title reserves room), `Td cardOrder` (CSS `order`), `Td stretch` (block content takes the full value width) and `Td`/`Th hideInCards` (hidden visually, kept for assistive technology). Fixes that change existing tables: the controls of a `Td actions` cell in table layout are now centre-aligned instead of baseline-aligned (an icon button and a text-only button no longer sit a few pixels apart; a lone control or equal-height controls do not move); in card mode the `primary` cell is now always the first line of the card even when it is not the first column (cards with the primary cell first look the same), and each card row is now a flex column instead of a block (no visible change; `tr` computed `display` is `flex`).

@@ -74,6 +74,39 @@ for its card cells).
 
 <Canvas of={Stories.CardLongLabelsAndBadges} />
 
+#### Card layout controls
+
+All of these apply in card mode only; table layout and `responsive="scroll"` ignore them.
+
+- **Title first.** The `primary` cell is always the first line of the card, whatever its column. Cards are a flex column and
+  the primary cell has a low CSS `order`. Trade-off: `order` changes the visual order only. Reading order and Tab order
+  follow the markup, so keep the primary cell early in the markup when you can and treat `cardOrder` as a small move, not
+  a reshuffle (WCAG 1.3.2 and 2.4.3).
+- **`stretch` on `Td`.** By default the value of a labelled cell is start-aligned and as wide as its content, which keeps a
+  `Badge` at its natural size. Block content that relies on stretching (a progress bar in a wrapper, a `flex: 1` child)
+  would shrink to its minimum width, so set `stretch` on that cell: its value then takes the whole width. Existing badge
+  and text cells are unchanged because it is opt-in.
+- **`cardLayout="grid"` on `Table`.** Labelled cells sit in two columns of label-over-value pairs, so a nine-column row is
+  a few lines, not a tall stack. Under 20rem of the table's width it falls back to one column. The title, the actions
+  cell and cells without a `label` take the full width; give a wide value `cardSpan="full"` on its `Td`. Default is
+  `stack`, one cell per line.
+- **`cardSlot="corner"` on `Td`.** The cell leaves the flow and is pinned to the card's top end corner (a drag handle or an
+  overflow menu), so it adds no line of its own and a cell with no `label` leaves no gap. It uses logical properties and
+  mirrors in right-to-left. The `primary` cell reserves room beside it (`--table-corner-reserve`, default 2rem, wide enough for
+  a small icon button), so the title never runs under it; with no `primary` cell nothing reserves that room.
+- **`cardOrder` on `Td`.** A number, mapped to CSS `order` (lower first, default 0, `primary` before everything). Use a
+  negative number on the `actions` cell to put it right under the title, a positive one to keep it last.
+- **`hideInCards` on `Td` and `Th`.** For a column whose value is repeated in the card (a company name already in the title).
+  The cell is hidden visually but kept in the accessibility tree, on purpose: removing it would leave the row with fewer
+  cells than header cells and break the header association. It is read by assistive technology like any cell; if the value
+  is truly redundant there, mark it `aria-hidden` yourself.
+
+<Canvas of={Stories.CardControls} />
+
+<Canvas of={Stories.CardControlsGrid} />
+
+<Canvas of={Stories.CardControlsGridSmallestPhone} />
+
 `responsive="scroll"` keeps the table at every width and scrolls it instead.
 
 <Canvas of={Stories.ScrollOnPhone} />
@@ -112,7 +145,8 @@ shadows and a band shows at both edges even when there is nothing to scroll.
 
 In table layout the `Td actions` column is as wide as its buttons and its content sits at the end edge (the right edge in
 left-to-right text, the left in right-to-left), however few columns there are, and it never wraps, so three or four text
-buttons can force a sideways scroll at mid widths. Card mode is unchanged.
+buttons can force a sideways scroll at mid widths. The controls share one centre line, so an icon button and a text-only
+button do not drift apart. Card mode is unchanged.
 
 <Canvas of={Stories.FewColumnsActions} />
 

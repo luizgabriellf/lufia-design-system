@@ -18,6 +18,9 @@
   --table-pad-y: var(--lufia-space-3);
   --table-pad-x: var(--lufia-space-4);
 
+  /* The room a `cardSlot="corner"` cell takes at the end of the title. */
+  --table-corner-reserve: var(--lufia-space-8);
+
   /* The table reacts to its own width, not the window's, so one in a narrow panel turns into cards too. */
   container: lufia-table / inline-size;
   min-inline-size: 0;
@@ -159,6 +162,7 @@
 .actionsRow {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: var(--lufia-space-2);
 }
@@ -213,6 +217,12 @@
 
 .table td[data-actions] > * + * {
   margin-inline-start: var(--lufia-space-2);
+}
+
+/* The controls sit on one centre line, so a button that starts with an icon and a text-only one do not drift apart on the
+   baseline. A table cell cannot be a flex container, so the alignment is on the children. */
+.table td[data-actions] > * {
+  vertical-align: middle;
 }
 
 /* A row that opens something. The link or button of its cell is stretched over the whole row by its ::after, so the row
@@ -361,8 +371,12 @@
     clip-path: inset(50%);
   }
 
+  /* A flex column, so a cell can move with `order` (the primary cell is the title wherever its column is) and a corner cell
+     can be placed against the card. The corner and hidden cells are out of flow. */
   .root[data-responsive="cards"] .table > tbody > tr {
-    display: block;
+    position: relative;
+    display: flex;
+    flex-direction: column;
     padding: var(--lufia-space-2) var(--lufia-space-4);
     border: var(--lufia-border-width-thin) solid var(--table-border);
     border-radius: var(--lufia-radius-card);
@@ -376,7 +390,9 @@
   }
 
   .root[data-responsive="cards"] .table > tfoot > tr {
-    display: block;
+    position: relative;
+    display: flex;
+    flex-direction: column;
     padding: var(--lufia-space-2) var(--lufia-space-4);
     border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
     border-radius: var(--lufia-radius-card);
@@ -448,6 +464,8 @@
     display: block;
     padding: var(--lufia-space-1) 0;
     border: 0;
+    min-inline-size: 0;
+    order: var(--table-card-order, 0);
     text-align: start;
     overflow-wrap: anywhere;
 
@@ -477,8 +495,48 @@
 
   .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-primary] {
     display: block;
+    order: var(--table-card-order, -100);
     padding-block: var(--lufia-space-2);
     font-size: var(--lufia-font-size-md);
+  }
+
+  /* `stretch`: block content in the value slot takes the full width instead of its min-content. */
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label][data-stretch] {
+    justify-items: stretch;
+  }
+
+  /* `cardSlot="corner"`: pinned to the top end corner, out of the flow (no empty line), and the title keeps clear of it. */
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-card-slot="corner"] {
+    position: absolute;
+    inset-block-start: var(--lufia-space-2);
+    inset-inline-end: var(--lufia-space-2);
+    display: block;
+    padding: 0;
+  }
+
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-card-slot="corner"]::before {
+    content: none;
+  }
+
+  .root[data-responsive="cards"] .table tr:has(> [data-card-slot="corner"]) > [data-primary] {
+    padding-inline-end: var(--table-corner-reserve);
+  }
+
+  /* `hideInCards`: invisible but still in the accessibility tree, so the row keeps one cell per column header. */
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"], th)[data-hide-in-cards] {
+    position: absolute;
+    display: block;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"], th)[data-hide-in-cards]::before {
+    content: none;
   }
 
   .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label] > .after {
@@ -527,6 +585,41 @@
   .root[data-responsive="cards"] .table :is(th, td)[data-numeric] {
     text-align: start;
     white-space: normal;
+  }
+}
+
+/* `cardLayout="grid"`: two columns of label-over-value pairs. The title, the actions, cells without a label and cells with
+   `cardSpan="full"` take the whole row. */
+@container lufia-table (width < 40rem) {
+  .root[data-responsive="cards"][data-card-layout="grid"] .table > tbody > tr,
+  .root[data-responsive="cards"][data-card-layout="grid"] .table > tfoot > tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--lufia-space-4);
+    align-items: start;
+  }
+
+  .root[data-responsive="cards"][data-card-layout="grid"] .table tr[data-group] {
+    display: block;
+  }
+
+  .root[data-responsive="cards"][data-card-layout="grid"] .table :is(td, th[scope="row"])[data-label] {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--lufia-space-1);
+  }
+
+  .root[data-responsive="cards"][data-card-layout="grid"]
+    .table
+    :is(td, th[scope="row"]):is([data-primary], [data-actions], [data-card-span="full"], :not([data-label])) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* A grid card with the room of under 20rem is one column. */
+@container lufia-table (width < 20rem) {
+  .root[data-responsive="cards"][data-card-layout="grid"] .table > tbody > tr,
+  .root[data-responsive="cards"][data-card-layout="grid"] .table > tfoot > tr {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
