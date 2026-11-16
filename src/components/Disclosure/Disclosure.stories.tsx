@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { CSSProperties } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Disclosure, disclosureClasses } from "./Disclosure";
 
@@ -27,6 +28,43 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const OpenByDefault: Story = { args: { defaultOpen: true } };
 export const Plain: Story = { args: { variant: "plain", defaultOpen: true } };
+
+/**
+ * A consuming app restores the inline padding of a plain disclosure without a specificity fight: through the documented
+ * custom properties, or with an ordinary `root > summary` rule of its own.
+ */
+export const PlainWithConsumerPadding: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: 8 }}>
+      <style>
+        {
+          ".consumer-padded > summary { padding-inline: 1rem; } .consumer-padded > div { padding-inline: 1rem; }"
+        }
+      </style>
+      <Disclosure
+        variant="plain"
+        defaultOpen
+        summary="Padded by a single-class rule"
+        className="consumer-padded"
+      >
+        Content
+      </Disclosure>
+      <Disclosure
+        variant="plain"
+        defaultOpen
+        summary="Padded by the custom properties"
+        style={
+          {
+            "--lufia-disclosure-summary-padding-inline": "1.5rem",
+            "--lufia-disclosure-panel-padding-inline": "1.5rem",
+          } as CSSProperties
+        }
+      >
+        Content
+      </Disclosure>
+    </div>
+  ),
+};
 
 const questions = [
   ["How do I invite a team member?", "Open Team, choose Invite and enter their email address."],

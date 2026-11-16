@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Button } from "../Button";
 import { ChevronDownIcon, CopyIcon, DownloadIcon, FileTextIcon, HomeIcon, UsersIcon } from "../Icon/icons";
+import { Modal } from "../Modal";
 import { Menu, type MenuEntry, type MenuItem, type MenuProps } from "./Menu";
 
 type DemoProps = Omit<MenuProps, "trigger" | "label" | "items"> &
@@ -236,6 +237,34 @@ export const InlineLinks: Story = {
     </div>
   ),
   decorators: [],
+};
+
+const sheetChoices: MenuEntry[] = [
+  { key: "all", label: "All workspaces", current: true },
+  { key: "long", label: "A workspace with a very long name that has to wrap inside the sheet", meta: "Team" },
+  { key: "unbroken", label: "Averyveryveryveryverylongwordwithoutanyspacestobreakon_workspace_2026" },
+  { key: "archived", label: "Archived", disabled: true },
+];
+
+function InlineInSheet() {
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      <Button variant="primary" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        Choose scope
+      </Button>
+      <Modal title="Choose scope" open={open} onClose={() => setOpen(false)}>
+        <Menu presentation="inline" role="listbox" label="Scope" items={sheetChoices} />
+      </Modal>
+    </>
+  );
+}
+
+/** An inline listbox inside a modal sheet: it needs no token mapping, wraps long labels and marks the selected option. */
+export const InlineInModalSheet: Story = {
+  render: () => <InlineInSheet />,
+  decorators: [],
+  globals: { viewport: { value: "w390", isRotated: false } },
 };
 
 export const Phone320: Story = {

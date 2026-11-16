@@ -439,6 +439,72 @@ test.describe("menu", () => {
     expect(Math.min(...heights)).toBeGreaterThanOrEqual(44);
     await context.close();
   });
+
+  for (const width of [320, 390] as const) {
+    for (const mode of ["light", "dark"] as const) {
+      test(`an inline listbox in a modal sheet reads correctly at ${width}px in ${mode} mode`, async ({
+        browser,
+      }) => {
+        const context = await browser.newContext({
+          hasTouch: true,
+          isMobile: true,
+          viewport: { width, height: 700 },
+        });
+        const page = await context.newPage();
+        await openStory(page, "components-overlays-menu--inline-in-modal-sheet", "default", mode);
+        const sheet = page.getByRole("dialog", { name: "Choose scope" });
+        await expect(sheet).toBeVisible();
+        const list = sheet.getByRole("listbox", { name: "Scope" });
+        await expect(list).toBeVisible();
+        const options = list.getByRole("option");
+        await expect(options).toHaveCount(4);
+        await expect
+          .poll(async () =>
+            list.evaluate((element) => {
+              const box = element.getBoundingClientRect();
+              const dialog = element.closest('[role="dialog"]') as HTMLElement;
+              return {
+                fits: box.left >= 0 && box.right <= innerWidth,
+                noOverflow: element.scrollWidth <= element.clientWidth,
+                sheetNoOverflow: dialog.scrollWidth <= dialog.clientWidth,
+                page: document.documentElement.scrollWidth <= innerWidth,
+              };
+            }),
+          )
+          .toEqual({ fits: true, noOverflow: true, sheetNoOverflow: true, page: true });
+        // Layout height, not the painted box: the sheet scales in while it opens, and a scaled box reads short.
+        const heights = await options.evaluateAll((elements) =>
+          elements.map((el) => (el as HTMLElement).offsetHeight),
+        );
+        expect(Math.min(...heights)).toBeGreaterThanOrEqual(44);
+        // The long label wraps onto more than one line.
+        expect(heights[1]).toBeGreaterThan(heights[0]!);
+        // The selected option is announced, bold and carries a visible check; the others do not.
+        const selected = list.getByRole("option", { selected: true });
+        await expect(selected).toHaveCount(1);
+        await expect(selected).toHaveText(/All workspaces/);
+        const look = await selected.evaluate((element) => {
+          const check = element.querySelector("svg");
+          const style = getComputedStyle(element);
+          return {
+            weight: Number(style.fontWeight),
+            checkWidth: check?.getBoundingClientRect().width ?? 0,
+            checkColour: check ? getComputedStyle(check).color : "",
+            text: style.color,
+          };
+        });
+        expect(look.weight).toBeGreaterThanOrEqual(600);
+        expect(look.checkWidth).toBeGreaterThan(0);
+        expect(look.checkColour).not.toBe("rgba(0, 0, 0, 0)");
+        await expect(list.locator('[role="option"]:not([aria-selected="true"]) svg')).toHaveCount(0);
+        // Readable against the sheet: the text colour differs from the sheet background in this mode.
+        const background = await sheet.evaluate((element) => getComputedStyle(element).backgroundColor);
+        expect(look.text).not.toBe(background);
+        expect(await runAxe(page, '[role="dialog"]')).toEqual([]);
+        await context.close();
+      });
+    }
+  }
 });
 
 test.describe("tour", () => {
@@ -3511,6 +3577,48 @@ test.describe("disclosure", () => {
     });
     expect(style.listStyle).toBe("none");
     expect(style.chevron).not.toBe("none");
+  });
+
+  test("a plain disclosure takes consumer padding from a one-class rule or the custom properties", async ({
+    page,
+  }) => {
+    await openStory(page, "components-data-display-disclosure--plain-with-consumer-padding");
+    const padding = (index: number) =>
+      page.evaluate((index) => {
+        const root = document.querySelectorAll("#storybook-root details")[index]!;
+        return {
+          summary: getComputedStyle(root.querySelector("summary")!).paddingInlineStart,
+          panel: getComputedStyle(root.querySelector(":scope > div")!).paddingInlineStart,
+        };
+      }, index);
+    const fontSize = await page.evaluate(() =>
+      parseFloat(getComputedStyle(document.documentElement).fontSize),
+    );
+    expect((await padding(0)).summary).toBe(`${fontSize}px`);
+    expect((await padding(0)).panel).toBe(`${fontSize}px`);
+    expect((await padding(1)).summary).toBe(`${fontSize * 1.5}px`);
+    expect((await padding(1)).panel).toBe(`${fontSize * 1.5}px`);
+  });
+
+  test("a plain disclosure has no inline padding by default and a boxed one keeps its own", async ({
+    page,
+  }) => {
+    await openStory(page, "components-data-display-disclosure--plain");
+    const plain = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root details")!;
+      return [root.querySelector("summary")!, root.querySelector(":scope > div")!].map(
+        (element) => getComputedStyle(element).paddingInlineStart,
+      );
+    });
+    expect(plain).toEqual(["0px", "0px"]);
+    await openStory(page, "components-data-display-disclosure--open-by-default");
+    const boxed = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root details")!;
+      return [root.querySelector("summary")!, root.querySelector(":scope > div")!].map(
+        (element) => getComputedStyle(element).paddingInlineStart,
+      );
+    });
+    expect(boxed).toEqual(["16px", "16px"]);
   });
 
   test("it has no axe violations open and closed, and in the classes-on-native-details story", async ({
