@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.50.0
+
+### Minor Changes
+
+- [#184](https://github.com/luizgabriellf/lufia-design-system/pull/184) [`3795fb5`](https://github.com/luizgabriellf/lufia-design-system/commit/3795fb5114d07a99a96a041599c6e5eb8683a34d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Table: add `Td rowHeader`, which renders the row's `<th scope="row">` with the look of a body cell and, with `primary`, the card title in card mode. A `Th` with `scope="row"` in a body row now also looks like a body cell instead of a column header.
+
+- [#186](https://github.com/luizgabriellf/lufia-design-system/pull/186) [`ff4da7f`](https://github.com/luizgabriellf/lufia-design-system/commit/ff4da7fb2e831052f19e4ef1e17c4664f7924825) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Table: `TableRow`, `TableHead`, `TableBody`, `Th`, `Td` and the root now type `ref` (and `style`) as the element they render, so a sortable-list library can drive a row. `Td` gains `activateDisabled`: a disabled row control that keeps the button focusable with `aria-disabled="true"` and ignores activation, or renders the link without `href`, in the muted text colour. `TableRow` gains `group` for a group header row (`Th scope="colgroup"` with `colSpan`) inside one of several `TableBody`s; in card mode it is a full-width heading, not a card. A `Th` with `scope="rowgroup"` now has the `rowheader` role.
+
 ## 0.49.2
 
 ### Patch Changes
