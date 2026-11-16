@@ -30,6 +30,7 @@ export * from "./components/IconButton";
 export * from "./components/Link";
 export * from "./components/ListField";
 export * from "./components/LufiaProvider";
+export * from "./components/Menu";
 export * from "./components/Modal";
 export * from "./components/MoreActions";
 export * from "./components/NavRow";

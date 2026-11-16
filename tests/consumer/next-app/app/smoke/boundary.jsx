@@ -16,6 +16,7 @@ import { FormField as FormField_FormField } from "@lufia/design-system/component
 import { IconButton as IconButton_IconButton } from "@lufia/design-system/components/IconButton";
 import { ListField as ListField_ListField } from "@lufia/design-system/components/ListField";
 import { LufiaProvider as LufiaProvider_LufiaProvider } from "@lufia/design-system/components/LufiaProvider";
+import { Menu as Menu_Menu } from "@lufia/design-system/components/Menu";
 import { Modal as Modal_Modal } from "@lufia/design-system/components/Modal";
 import { MoreActions as MoreActions_MoreActions } from "@lufia/design-system/components/MoreActions";
 import { NavRow as NavRow_NavRow } from "@lufia/design-system/components/NavRow";
@@ -76,6 +77,7 @@ export default function ClientSmoke() {
       <section data-smoke="IconButton"><IconButton_IconButton aria-label={"x"} icon={"x"} /></section>
       <section data-smoke="ListField"><ListField_ListField labels={{ add: "Add", remove: (index, text) => "Remove " + index + ": " + text, entry: (index) => "Entry " + index }} label={"x"} /></section>
       <section data-smoke="LufiaProvider"><LufiaProvider_LufiaProvider>{"x"}</LufiaProvider_LufiaProvider></section>
+      <section data-smoke="Menu"><Menu_Menu items={[{ key: "a", label: "A" }]} trigger={(props) => <button type="button" {...props}>Open</button>} label={"x"} /></section>
       <section data-smoke="Modal"><Modal_Modal open={false} onClose={() => {}} title={"x"} /></section>
       <section data-smoke="MoreActions"><MoreActions_MoreActions items={[{ key: "a", label: "Action" }]} label={"x"} /></section>
       <section data-smoke="NavRow"><NavRow_NavRow title={"x"} /></section>

@@ -1,0 +1,183 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Menu.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Menu"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A list of choices that hangs from a trigger: a workspace or scope switcher, an export menu, a set of section links. It owns
+the keyboard model of a list (arrow keys, Home, End, type-ahead), which `Popover` deliberately does not have.
+
+<Canvas of={Stories.Open} />
+
+### Usage
+
+`trigger` is a function that receives the props the trigger needs (`ref`, `onClick`, `onKeyDown`, `aria-expanded`,
+`aria-controls`, `aria-haspopup`) and returns the element, so any button component works and none is imposed. `items` are
+action items (`onSelect`), link items (`href`, rendered through the `LufiaProvider` link adapter), groups and separators.
+
+```tsx
+import { Menu } from "@lufia/design-system/components/Menu";
+
+<Menu
+  label="Export"
+  trigger={(props) => <Button {...props}>Export</Button>}
+  items={[
+    { key: "csv", label: "Export as CSV", onSelect: exportCsv },
+    { key: "pdf", label: "Export as PDF", onSelect: exportPdf },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. The `ref` has to reach
+the trigger's DOM element: it is what the list is placed against and where focus returns.
+
+</Section>
+
+<Section id="examples">
+
+### Links
+
+An item with `href` is a link. `current` marks the page the person is on (`aria-current="page"`) and is where the open list
+puts focus.
+
+<Canvas of={Stories.LinkItems} />
+
+### Descriptions, meta, groups and separators
+
+An item can carry a `description` under its label, trailing `meta` text and a leading `icon`. A group with a `label` has a
+visible heading that also names the group; a separator splits the list without a heading.
+
+<Canvas of={Stories.WithDescriptionsAndGroups} />
+
+### Listbox
+
+`role="listbox"` is for choosing one value, such as a scope. Items become `option`, the `current` one is `aria-selected` and
+shows a check mark, so the selection does not rely on colour. The state stays in the caller: update `current` from
+`onSelect`. With `matchTriggerWidth` the list is at least as wide as the trigger.
+
+<Canvas of={Stories.Listbox} />
+<Canvas of={Stories.ListboxPicked} />
+
+### Long labels
+
+Labels, descriptions and meta wrap; nothing overflows the list, even a single unbroken word.
+
+<Canvas of={Stories.LongLabels} />
+
+### Placement
+
+`placement` is the side of the trigger (`top`, `bottom`, `start`, `end`; the last two follow the writing direction) and `align`
+lines the list up along the other axis. The list flips to the opposite side when it does not fit, shifts to stay in the
+viewport, scrolls inside when it is taller than the room, and follows the trigger on scroll and resize: the placement is
+shared with `Popover`.
+
+<Canvas of={Stories.PlacedAbove} />
+<Canvas of={Stories.AlignedToEnd} />
+<Canvas of={Stories.FlipsNearTheBottom} story={{ inline: false, height: "20rem" }} />
+
+### Portal and clipping
+
+The open list is portalled to `document.body`, or into the open modal the trigger sits in, and placed with
+`position: fixed`: an ancestor with `overflow: hidden` cannot clip it. A nested theme scope, `dir`, `lang` and inline
+`--lufia-*` custom properties on the trigger's subtree are copied onto it. Until the component has mounted (server render,
+hydration) the list is not rendered. It stacks at `--lufia-z-dropdown`.
+
+<Canvas of={Stories.InClippingCard} />
+
+### Controlled
+
+Pass `open` and `onOpenChange` to keep the state in the caller. `defaultOpen` starts it open without moving focus.
+`closeOnSelect={false}` keeps the list open after an item is activated.
+
+<Canvas of={Stories.ControlledByTheCaller} />
+
+### Inline
+
+`presentation="inline"` renders the same items as a plain, always-visible list: no trigger, no portal, no popover. Use it
+where the list is already in a container of its own, such as a phone sheet. The roles, the single Tab stop and the keyboard
+navigation are the same; `onSelect` runs and nothing closes.
+
+<Canvas of={Stories.Inline} />
+<Canvas of={Stories.InlineLinks} />
+
+### Narrow screens and right-to-left
+
+<Canvas of={Stories.Phone320} />
+<Canvas of={Stories.RightToLeft} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key                 | Where       | Action                                                                                   |
+| ------------------- | ----------- | ---------------------------------------------------------------------------------------- |
+| Enter / Space       | Trigger     | Opens or closes the list; focus goes to the current item, or the first                   |
+| ArrowDown           | Trigger     | Opens the list and focuses the current item, or the first                                |
+| ArrowUp             | Trigger     | Opens the list and focuses the last item                                                 |
+| ArrowDown / ArrowUp | In the list | Next or previous item, wrapping at the ends                                              |
+| Home / End          | In the list | First or last item                                                                       |
+| Letters             | In the list | Focus the next item whose label starts with what was typed; the same letter again cycles |
+| Enter / Space       | On an item  | Activates it (a link navigates); the list closes and focus returns to the trigger        |
+| Escape              | In the list | Closes the list and returns focus to the trigger                                         |
+| Tab / Shift+Tab     | In the list | Closes the list; focus moves on from the trigger                                         |
+
+A press outside closes the list and leaves focus where the press put it. Escape and outside presses go through `useDismiss` and
+the shared layer stack, so inside a `Modal` Escape closes the list first and the modal on the next press. Disabled items stay
+focusable and are read out as disabled (`aria-disabled`), but cannot be activated.
+
+### Accessibility
+
+- The trigger carries `aria-haspopup` (`menu` or `listbox`), `aria-expanded` and `aria-controls` while the list is rendered.
+- The list is `role="menu"` with `menuitem` items, or `role="listbox"` with `option` items; `label` is its accessible name.
+  A link item in a menu has `aria-current="page"` when it is `current`. A listbox sets `aria-selected` on every option.
+- Focus is real focus on the items (a roving tabindex), not `aria-activedescendant`. The current item is the one Tab stop.
+- Group headings name their `role="group"`. Separators are `role="separator"` in a menu and presentational in a listbox,
+  where the role is not allowed.
+- The list is `inert` while it animates out. Under reduced motion it appears and disappears without the scale and fade. In
+  forced-colors mode the border is `CanvasText` and the current item has an outline.
+- Items are at least 36px tall, and 44px under a coarse pointer; both sizes are above the 24px minimum of WCAG 2.5.8.
+- This follows the WAI-ARIA menu button pattern. A list of navigation links is better as a disclosure of links when it is not
+  an application menu; use `role="menu"` for it only when the arrow-key model is wanted.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A short list of actions, links or choices that hangs from one control.
+- A picker for one value (scope, workspace, sort order) with `role="listbox"`.
+
+### When not to use
+
+- A panel with a form, filters or rich content: use `Popover`.
+- Overflow actions behind an icon button, with a bottom sheet on phones: use `MoreActions`.
+- A searchable or free-text choice: use `Combobox`. A choice inside a form: use `Select` or `RadioGroup`.
+- A question that must be answered: use `Modal` or `ConfirmDialog`.
+
+### Content guidelines
+
+Start action labels with a verb ("Export as CSV"). Keep labels short and put detail in `description`, not in the label.
+Name the list by what it holds ("Export", "Switch workspace"); the trigger's visible text is often the same.
+
+</Section>

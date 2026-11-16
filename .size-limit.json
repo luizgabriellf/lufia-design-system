@@ -2,7 +2,7 @@
   {
     "name": "index barrel",
     "path": "dist/index.js",
-    "limit": "580 B",
+    "limit": "600 B",
     "gzip": true
   },
   {
@@ -27,6 +27,12 @@
     "name": "Popover",
     "path": "dist/components/Popover/**/*.{js,css}",
     "limit": "3 kB",
+    "gzip": true
+  },
+  {
+    "name": "Menu",
+    "path": "dist/components/Menu/**/*.{js,css}",
+    "limit": "5.6 kB",
     "gzip": true
   },
   {
