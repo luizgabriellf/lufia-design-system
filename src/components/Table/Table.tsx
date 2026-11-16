@@ -6,47 +6,83 @@ import styles from "./Table.module.css";
 
 const join = (...names: (string | undefined)[]) => names.filter(Boolean).join(" ");
 
-export type TableProps = Omit<ComponentProps<"div">, "children"> & {
-  /** `TableHead`, `TableBody` and, for a total row, `TableFoot`. */
-  children: ReactNode;
-  /**
-   * The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`,
-   * visually hidden unless `showCaption` is set.
-   */
-  caption: string;
-  /** Show the caption above the table instead of hiding it visually. */
-  showCaption?: boolean;
-  /**
-   * With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and
-   * should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either.
-   */
-  captionTone?: "default" | "muted";
-  /**
-   * What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row
-   * is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table
-   * and scrolls it sideways, with a shadow on each edge that has more to see.
-   */
-  responsive?: "cards" | "scroll";
-  /**
-   * `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to
-   * edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card
-   * mode each card keeps its own border either way.
-   */
-  frame?: "framed" | "flush";
-  /**
-   * How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells
-   * in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when
-   * the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value
-   * can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem.
-   */
-  cardLayout?: "stack" | "grid";
-  /** Row padding. Default `comfortable`. */
-  density?: "comfortable" | "compact";
-  /** Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. */
-  footer?: ReactNode;
-  /** Class for the `<table>` element; `className` goes to the outer wrapper. */
-  tableClassName?: string;
-};
+/**
+ * How the table is named: exactly one of a `caption`, an `aria-label` or an `aria-labelledby`. The name is also the name
+ * of the scrollable region around the table, which is a landmark and must have one, so a table is never left unnamed. Use
+ * `aria-label` or `aria-labelledby` when there is no caption worth showing (a table generated from free content, or one a
+ * heading on the page already names).
+ */
+type TableName =
+  | {
+      /**
+       * The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real
+       * `<caption>`, visually hidden unless `showCaption` is set.
+       */
+      caption: string;
+      /** Show the caption above the table instead of hiding it visually. */
+      showCaption?: boolean;
+      /**
+       * With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and
+       * should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either.
+       */
+      captionTone?: "default" | "muted";
+      "aria-label"?: never;
+      "aria-labelledby"?: never;
+    }
+  | {
+      caption?: never;
+      showCaption?: never;
+      captionTone?: never;
+      /** Names the table and its scroll region without a `<caption>`. */
+      "aria-label": string;
+      "aria-labelledby"?: never;
+    }
+  | {
+      caption?: never;
+      showCaption?: never;
+      captionTone?: never;
+      "aria-label"?: never;
+      /** Names the table and its scroll region by the id of an element the page already shows (a heading). */
+      "aria-labelledby": string;
+    };
+
+export type TableProps = Omit<ComponentProps<"div">, "children" | "aria-label" | "aria-labelledby"> &
+  TableName & {
+    /** `TableHead`, `TableBody` and, for a total row, `TableFoot`. */
+    children: ReactNode;
+    /**
+     * What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row
+     * is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table
+     * and scrolls it sideways, with a shadow on each edge that has more to see.
+     */
+    responsive?: "cards" | "scroll";
+    /**
+     * `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to
+     * edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card
+     * mode each card keeps its own border either way.
+     */
+    frame?: "framed" | "flush";
+    /**
+     * How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells
+     * in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when
+     * the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value
+     * can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem.
+     */
+    cardLayout?: "stack" | "grid";
+    /**
+     * With `cardLayout="grid"`: how many labelled cells share a line of the card, 2 (default), 3 or 4, for a comparison row
+     * (one title and a value per option). A pair never gets narrower than its own content: when the cells do not fit they
+     * wrap onto the next line, so a narrow card does not overflow. With 2 a container under 20rem is one column; with 3 or 4
+     * it keeps the columns and relies on that wrapping. `Td cardSpan="full"` still takes the whole line.
+     */
+    cardColumns?: 2 | 3 | 4;
+    /** Row padding. Default `comfortable`. */
+    density?: "comfortable" | "compact";
+    /** Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. */
+    footer?: ReactNode;
+    /** Class for the `<table>` element; `className` goes to the outer wrapper. */
+    tableClassName?: string;
+  };
 
 /**
  * A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under
@@ -57,10 +93,13 @@ export type TableProps = Omit<ComponentProps<"div">, "children"> & {
 export function Table({
   children,
   caption,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
   showCaption = false,
   captionTone = "default",
   responsive = "cards",
   cardLayout = "stack",
+  cardColumns = 2,
   density = "comfortable",
   frame = "framed",
   footer,
@@ -75,23 +114,37 @@ export function Table({
       className={join(styles.root, className)}
       data-responsive={responsive}
       data-card-layout={cardLayout}
+      data-card-columns={cardLayout === "grid" && cardColumns !== 2 ? cardColumns : undefined}
       data-density={density}
       data-frame={frame}
     >
       <div className={styles.frame}>
         {/* A scrolling region needs a tab stop and a name, or a keyboard user cannot reach what is off screen. */}
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable */}
-        <div className={styles.scroller} role="region" aria-labelledby={captionId} tabIndex={0}>
+        <div
+          className={styles.scroller}
+          role="region"
+          aria-label={caption === undefined ? ariaLabel : undefined}
+          aria-labelledby={caption !== undefined ? captionId : ariaLabelledby}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable
+          tabIndex={0}
+        >
           {/* The explicit roles keep the table semantics when a browser drops them for a table styled as cards. */}
-          <table role="table" className={join(styles.table, tableClassName)}>
-            <caption
-              id={captionId}
-              className={styles.caption}
-              data-visible={showCaption ? "" : undefined}
-              data-tone={captionTone}
-            >
-              {caption}
-            </caption>
+          <table
+            role="table"
+            className={join(styles.table, tableClassName)}
+            aria-label={caption === undefined ? ariaLabel : undefined}
+            aria-labelledby={caption === undefined ? ariaLabelledby : undefined}
+          >
+            {caption !== undefined ? (
+              <caption
+                id={captionId}
+                className={styles.caption}
+                data-visible={showCaption ? "" : undefined}
+                data-tone={captionTone}
+              >
+                {caption}
+              </caption>
+            ) : null}
             {children}
           </table>
         </div>
@@ -185,13 +238,25 @@ type ThBaseProps = Omit<ComponentProps<"th">, "role"> & {
    * `<th>`. Default: the children are shown as they are.
    */
   abbr?: string;
+  /**
+   * Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card
+   * mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the
+   * column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`.
+   */
+  emphasis?: boolean;
+  /**
+   * With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says
+   * ("Recommended"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only.
+   */
+  emphasisLabel?: string;
 };
 
 export type ThProps =
   | (ThBaseProps & { actions?: false; label?: never })
-  | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby" | "wrap" | "abbr"> & {
+  | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby" | "wrap" | "abbr" | "emphasisLabel"> & {
       wrap?: never;
       abbr?: never;
+      emphasisLabel?: never;
       /** Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. */
       actions: true;
       /** The column's name for assistive technology ("Actions"), visually hidden. */
@@ -208,6 +273,8 @@ export function Th({
   hideInCards,
   wrap,
   abbr,
+  emphasis,
+  emphasisLabel,
   actions,
   label,
   scope = "col",
@@ -225,6 +292,7 @@ export function Th({
       data-actions={actions ? "" : undefined}
       data-hide-in-cards={hideInCards ? "" : undefined}
       data-wrap={wrap ? "" : undefined}
+      data-emphasis={emphasis ? "" : undefined}
       abbr={abbr}
     >
       {actions ? (
@@ -244,6 +312,12 @@ export function Th({
       ) : (
         children
       )}
+      {emphasis && emphasisLabel ? (
+        <>
+          {" "}
+          <span className={styles.hiddenLabel}>{emphasisLabel}</span>
+        </>
+      ) : null}
     </th>
   );
 }
@@ -283,7 +357,7 @@ export type TdProps = Omit<ComponentProps<"td">, "role"> & {
    */
   stretch?: boolean;
   /**
-   * Card mode only, with `cardLayout="grid"`: `full` makes the cell span both columns, for a wide value. Without the grid
+   * Card mode only, with `cardLayout="grid"`: `full` makes the cell span every column, for a wide value. Without the grid
    * layout every cell already has the full width.
    */
   cardSpan?: "full";
@@ -309,6 +383,17 @@ export type TdProps = Omit<ComponentProps<"td">, "role"> & {
    * redundant. Pair it with `Th hideInCards`.
    */
   hideInCards?: boolean;
+  /**
+   * Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card
+   * mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the
+   * column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`.
+   */
+  emphasis?: boolean;
+  /**
+   * With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says
+   * ("Recommended"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only.
+   */
+  emphasisLabel?: string;
   /**
    * Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose
    * click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive
@@ -366,6 +451,8 @@ export function Td({
   cardSlot,
   cardOrder,
   hideInCards,
+  emphasis,
+  emphasisLabel,
   href,
   onActivate,
   activateLabel,
@@ -382,6 +469,12 @@ export function Td({
     <>
       {children}
       {description ? <span className={styles.description}>{description}</span> : null}
+      {emphasis && emphasisLabel ? (
+        <>
+          {" "}
+          <span className={styles.hiddenLabel}>{emphasisLabel}</span>
+        </>
+      ) : null}
     </>
   );
   const target =
@@ -438,6 +531,7 @@ export function Td({
       data-card-span={cardSpan}
       data-card-slot={cardSlot}
       data-hide-in-cards={hideInCards ? "" : undefined}
+      data-emphasis={emphasis ? "" : undefined}
     >
       {actions && wrap ? <div className={styles.actionsRow}>{target}</div> : target}
       {after ? <div className={styles.after}>{after}</div> : null}

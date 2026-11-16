@@ -7,7 +7,20 @@ import { PlusIcon } from "../Icon/icons";
 import { ProgressBar } from "../ProgressBar";
 import { Pagination, type PaginationLabels } from "../Pagination";
 import { SortableTh, type SortDirection } from "../SortableTh";
-import { Table, TableBody, TableEmpty, TableFoot, TableHead, TableRow, Td, Th } from "./Table";
+import {
+  Table,
+  TableBody,
+  TableEmpty,
+  TableFoot,
+  TableHead,
+  TableRow,
+  Td,
+  Th,
+  type TableProps,
+} from "./Table";
+
+/** The stories drive the caption shape; the `aria-label` story renders its own table. */
+type CaptionedProps = Extract<TableProps, { caption: string }>;
 
 type Project = { id: number; name: string; owner: string; status: string; tone: BadgeTone; budget: number };
 
@@ -90,7 +103,7 @@ function Header() {
 
 const meta = {
   title: "Components/Data display/Table",
-  component: Table,
+  component: Table as (props: CaptionedProps) => React.ReactNode,
   parameters: { layout: "padded" },
   args: { caption: "Projects", children: null },
   argTypes: {
@@ -105,7 +118,7 @@ const meta = {
       <Rows />
     </Table>
   ),
-} satisfies Meta<typeof Table>;
+} satisfies Meta<CaptionedProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -1069,7 +1082,7 @@ const tasks: Task[] = [
  * is hidden in cards, the progress cell stretches, the menu cell is pinned to the card corner and the actions cell is
  * moved right after the title with `cardOrder`. Open it at 390 px; at 320 px the grid falls back to one column.
  */
-function CardControlsTable({ args }: { args: React.ComponentProps<typeof Table> }) {
+function CardControlsTable({ args }: { args: CaptionedProps }) {
   return (
     <Table {...args}>
       <TableHead>
@@ -1332,6 +1345,81 @@ export const GridWithLongPills: Story = {
     </Table>
   ),
   globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+const plans = [
+  { feature: "Projects", starter: "3", team: "25", scale: "Unlimited" },
+  { feature: "Storage", starter: "5 GB", team: "100 GB", scale: "1 TB" },
+  { feature: "Support", starter: "Email", team: "Chat", scale: "Phone" },
+];
+
+function ComparisonRows({ cardColumns }: Pick<CaptionedProps, "cardColumns">) {
+  return (
+    <Table
+      caption="Plan comparison"
+      showCaption
+      cardLayout="grid"
+      cardColumns={cardColumns}
+      responsive="cards"
+    >
+      <TableHead>
+        <TableRow>
+          <Th>Feature</Th>
+          <Th>Starter</Th>
+          <Th emphasis emphasisLabel="(recommended)">
+            Team
+          </Th>
+          <Th>Scale</Th>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {plans.map((plan) => (
+          <TableRow key={plan.feature}>
+            <Td primary rowHeader label="Feature">
+              {plan.feature}
+            </Td>
+            <Td label="Starter">{plan.starter}</Td>
+            <Td label="Team" emphasis emphasisLabel="(recommended)">
+              {plan.team}
+            </Td>
+            <Td label="Scale">{plan.scale}</Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+/**
+ * A comparison: one row label and a value per plan. The Team column is emphasised with a tint and carries
+ * `emphasisLabel`, so the recommendation is also read, not only seen.
+ */
+export const ComparisonTable: Story = {
+  render: () => <ComparisonRows cardColumns={3} />,
+};
+
+/** `cardColumns={3}`: under 40rem each row is a card with the three values side by side. Open it at 390 px. */
+export const ComparisonCards: Story = {
+  render: () => <ComparisonRows cardColumns={3} />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+export const ComparisonCardsSmallestPhone: Story = {
+  render: () => <ComparisonRows cardColumns={3} />,
+  globals: { viewport: { value: "w320", isRotated: false } },
+};
+
+/**
+ * `aria-label` names the table and its scroll region when there is no caption worth showing, as in a table generated from
+ * free content. No `<caption>` is rendered.
+ */
+export const NamedWithoutCaption: Story = {
+  render: () => (
+    <Table aria-label="Release notes comparison">
+      <Header />
+      <Rows rows={projects.slice(0, 2)} />
+    </Table>
+  ),
 };
 
 const proseRows = [

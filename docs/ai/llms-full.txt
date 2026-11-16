@@ -7956,18 +7956,55 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  | `TableHead`, `TableBody` and, for a total row, `TableFoot`. |
-| `caption` | `string` | yes |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
+| `caption` | `string` | no |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
 | `showCaption` | `boolean` | no | `false` | Show the caption above the table instead of hiding it visually. |
 | `captionTone` | `"default" \| "muted"` | no | `"default"` | With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either. |
+| `aria-label` | `string` | no |  | Names the table and its scroll region without a `<caption>`. |
+| `aria-labelledby` | `string` | no |  | Names the table and its scroll region by the id of an element the page already shows (a heading). |
+| `children` | `ReactNode` | yes |  | `TableHead`, `TableBody` and, for a total row, `TableFoot`. |
 | `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
 | `frame` | `"flush" \| "framed"` | no | `"framed"` | `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card mode each card keeps its own border either way. |
 | `cardLayout` | `"stack" \| "grid"` | no | `"stack"` | How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem. |
+| `cardColumns` | `2 \| 3 \| 4` | no | `2` | With `cardLayout="grid"`: how many labelled cells share a line of the card, 2 (default), 3 or 4, for a comparison row (one title and a value per option). A pair never gets narrower than its own content: when the cells do not fit they wrap onto the next line, so a narrow card does not overflow. With 2 a container under 20rem is one column; with 3 or 4 it keeps the columns and relies on that wrapping. `Td cardSpan="full"` still takes the whole line. |
 | `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | Row padding. Default `comfortable`. |
 | `footer` | `ReactNode` | no |  | Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. |
 | `tableClassName` | `string` | no |  | Class for the `<table>` element; `className` goes to the outer wrapper. |
 
 Other native element attributes pass through to the root element.
+
+##### Variants
+
+The props are a union of forms; `aria-label` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+
+###### `aria-label: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `undefined` | no |  |
+| `aria-labelledby` | `undefined` | no |  |
+| `caption` | `string` | yes | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
+| `captionTone` | `"default" \| "muted"` | no | With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either. In every form; only its type differs. |
+| `showCaption` | `boolean` | no | Show the caption above the table instead of hiding it visually. In every form; only its type differs. |
+
+###### `aria-label: string`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | yes | Names the table and its scroll region without a `<caption>`. |
+| `aria-labelledby` | `undefined` | no |  |
+| `caption` | `undefined` | no |  |
+| `captionTone` | `undefined` | no | In every form; only its type differs. |
+| `showCaption` | `undefined` | no | In every form; only its type differs. |
+
+###### `aria-label: undefined`
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `undefined` | no |  |
+| `aria-labelledby` | `string` | yes | Names the table and its scroll region by the id of an element the page already shows (a heading). |
+| `caption` | `undefined` | no |  |
+| `captionTone` | `undefined` | no | In every form; only its type differs. |
+| `showCaption` | `undefined` | no | In every form; only its type differs. |
 
 #### `TableBody`, `TableFoot`, `TableHead`
 
@@ -8006,10 +8043,12 @@ Other native element attributes pass through to the root element.
 | `actions` | `boolean` | no |  | The row's buttons and links, laid out in a wrapping row. Never activates the row. |
 | `wrap` | `boolean` | no |  | With `actions`: in table layout, lets the controls wrap onto a second line (end-aligned, with a gap) instead of keeping one line that can force a sideways scroll at mid widths. With room the controls still share one line; they wrap only when the table would overflow. Default off: the cell shrinks to its buttons. Use it for up to two or three short actions; for more than two text actions prefer one overflow menu in the cell. Card mode already wraps. |
 | `stretch` | `boolean` | no |  | Card mode only: lets block content take the whole width of the value slot (a progress bar, a `flex: 1` child). By default the value is start-aligned and as wide as its content, which keeps a `Badge` or short text at its natural size but shrinks a block child that relies on stretching to its minimum width. Set it on cells whose content is block-level; leave it off for badges and text. Needs a `label`. |
-| `cardSpan` | `"full"` | no |  | Card mode only, with `cardLayout="grid"`: `full` makes the cell span both columns, for a wide value. Without the grid layout every cell already has the full width. |
+| `cardSpan` | `"full"` | no |  | Card mode only, with `cardLayout="grid"`: `full` makes the cell span every column, for a wide value. Without the grid layout every cell already has the full width. |
 | `cardSlot` | `"corner"` | no |  | Card mode only: `corner` takes the cell out of the card's flow and pins it to the card's top end corner (a drag handle or an overflow menu). It leaves no line of its own, the title reserves room beside it so text never runs under it, and it follows the text direction. Its `label` is not shown. Keep the cell small (an icon button); a `primary` cell in the same row is the one that reserves the room. |
 | `cardOrder` | `number` | no |  | Card mode only: the cell's position among the card's cells, as CSS `order` (lower first, default 0). The `primary` cell defaults to a position before every other cell, so the title is first whatever the column order; give an `actions` cell a negative number to put it right after the title, or a positive one to keep it last. Visual order only: reading order and Tab order keep following the markup, so keep the markup order sensible and use this for small moves. |
 | `hideInCards` | `boolean` | no |  | Card mode only: hides the cell visually, for a column whose value already appears elsewhere in the card (a company column repeated in the title). The cell stays in the accessibility tree, so the row keeps one cell per column header and assistive technology can still read it; hide it from assistive technology yourself only if the value is truly redundant. Pair it with `Th hideInCards`. |
+| `emphasis` | `boolean` | no |  | Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`. |
+| `emphasisLabel` | `string` | no |  | With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says ("Recommended"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only. |
 | `href` | `string` | no |  | Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row. |
 | `onActivate` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called when the row is activated. With `href` it is the link's click handler (call `event.preventDefault()` to handle the navigation yourself). Without `href` the cell's content becomes a real `<button>` stretched over the row, which Enter and Space both activate. One per row. Needs a Client Component, since it passes a function. |
 | `activateLabel` | `string` | no |  | The accessible name of the generated link or button (`aria-label`), for a cell with `href` or `onActivate`: "Open details of Harbour redesign". Keep the cell's visible text inside it (WCAG 2.5.3). Without it the control is named by the whole cell content, `description` included. |
@@ -8028,6 +8067,8 @@ Other native element attributes pass through to the root element.
 | `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. |
 | `hideInCards` | `boolean` | no |  | Card mode only: drops this header's visible label when the matching `Td hideInCards` is dropped. The header row is already hidden visually in card mode; this also keeps the header out of the revealed row that shows while a sortable header has keyboard focus. It stays in the accessibility tree. |
 | `wrap` | `boolean` | no |  | Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden. |
+| `emphasis` | `boolean` | no |  | Marks this column as the one to look at (a recommended plan in a comparison): a tinted background, in table and card mode, set with `--lufia-table-emphasis-bg`, `-color` and `-font-weight`. Set it on the `Th` and on every `Td` of the column. A tint alone is not an accessible cue, so when the emphasis carries meaning also pass `emphasisLabel`. |
+| `emphasisLabel` | `string` | no |  | With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says ("Recommended"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only. |
 | `actions` | `false \| true` | no |  | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
 | `label` | `string` | no |  | The column's name for assistive technology ("Actions"), visually hidden. |
 
@@ -8046,6 +8087,7 @@ The props are a union of forms; `abbr` selects the form. Only the props that dif
 | `aria-label` | `string` | no | Native attribute in this form. |
 | `aria-labelledby` | `string` | no | Native attribute in this form. |
 | `children` | `ReactNode` | no | Native attribute in this form. |
+| `emphasisLabel` | `string` | no | With `emphasis`: visually hidden text read after the content, so assistive technology gets what the tint says ("Recommended"). A string from the app, since the package has no copy of its own. Without it the emphasis is visual only. In every form; only its type differs. |
 | `label` | `undefined` | no |  |
 | `wrap` | `boolean` | no | Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden. In every form; only its type differs. |
 
@@ -8055,6 +8097,7 @@ The props are a union of forms; `abbr` selects the form. Only the props that dif
 | --- | --- | --- | --- |
 | `abbr` | `undefined` | no | In every form; only its type differs. |
 | `actions` | `true` | yes | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
+| `emphasisLabel` | `undefined` | no | In every form; only its type differs. |
 | `label` | `string` | yes | The column's name for assistive technology ("Actions"), visually hidden. |
 | `wrap` | `undefined` | no | In every form; only its type differs. |
 
@@ -8117,7 +8160,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-badge-white-space`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-space-8`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-caption-color`, `--lufia-table-caption-font-size`, `--lufia-table-caption-font-weight`, `--lufia-table-cell-color`, `--lufia-table-cell-vertical-align`, `--lufia-table-cover-bg`, `--lufia-table-header-font-family`, `--lufia-table-header-font-size`, `--lufia-table-header-font-weight`, `--lufia-table-header-letter-spacing`, `--lufia-table-header-text-transform`, `--lufia-table-primary-color`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
+Reads these semantic tokens: `--lufia-badge-white-space`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-radius-sm`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-space-8`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-caption-color`, `--lufia-table-caption-font-size`, `--lufia-table-caption-font-weight`, `--lufia-table-cell-color`, `--lufia-table-cell-vertical-align`, `--lufia-table-cover-bg`, `--lufia-table-emphasis-bg`, `--lufia-table-emphasis-color`, `--lufia-table-emphasis-font-weight`, `--lufia-table-header-font-family`, `--lufia-table-header-font-size`, `--lufia-table-header-font-weight`, `--lufia-table-header-letter-spacing`, `--lufia-table-header-text-transform`, `--lufia-table-primary-color`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
 
 ### Content guidelines
 
@@ -8184,6 +8227,10 @@ buttons that wrap well.
 - `components-data-display-table--wide-headers-abbr-on-phone`
 - `components-data-display-table--corner-with-inline-width`
 - `components-data-display-table--grid-with-long-pills`
+- `components-data-display-table--comparison-table`
+- `components-data-display-table--comparison-cards`
+- `components-data-display-table--comparison-cards-smallest-phone`
+- `components-data-display-table--named-without-caption`
 - `components-data-display-table--header-typography-hooks`
 - `components-data-display-table--header-typography-hooks-on-phone`
 - `components-data-display-table--caption-tone`
