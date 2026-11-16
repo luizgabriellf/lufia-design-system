@@ -1,5 +1,17 @@
 # @lufia/design-system
 
+## 0.56.0
+
+### Minor Changes
+
+- [#197](https://github.com/luizgabriellf/lufia-design-system/pull/197) [`da69189`](https://github.com/luizgabriellf/lufia-design-system/commit/da691898d8ef7b762a1908b8eb164dd8df7bd38d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Menu (beta): a list of choices that hangs from its own trigger, for pickers such as a scope switcher or an export menu.
+  `role="menu"` (default, `menuitem`) or `role="listbox"` (`option`, the `current` one `aria-selected`); action items
+  (`onSelect`) and link items (`href`, through the provider's link adapter, `aria-current="page"` on the current one), each
+  with an optional `description`, `meta` text and `icon`, plus groups with headings and separators. Roving focus with the
+  arrow keys, Home, End and type-ahead; Escape and Tab close and focus returns to the trigger. Controlled or uncontrolled
+  `open`, `placement` and `align` with the same clip-aware flip as `Popover`, `matchTriggerWidth`, `closeOnSelect`, and
+  `presentation="inline"` for the same items as an always-visible list. Themed with `--lufia-menu-*` hooks.
+
 ## 0.55.0
 
 ### Minor Changes
