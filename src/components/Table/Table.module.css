@@ -117,6 +117,30 @@
   white-space: nowrap;
 }
 
+/* `wrap`: the header text may take two lines, balanced. Beats the numeric nowrap below by specificity. */
+.table th:not([scope="row"])[data-wrap] {
+  white-space: normal;
+  text-wrap: balance;
+}
+
+/* A sortable header's button keeps its text on one line by itself; with `wrap` it follows the cell. */
+.table th[data-wrap] button {
+  white-space: normal;
+  text-align: start;
+}
+
+/* `abbr`: the short text is seen, the full name is read (visually hidden, still in the accessibility tree). */
+.table th [data-th-full] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .table :is(td, th[scope="row"]) {
   padding: var(--table-pad-y) var(--table-pad-x);
   border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
@@ -328,6 +352,12 @@
   color: var(--lufia-color-text-default);
 }
 
+/* Every header of a row with a wrapping header sits on the bottom edge, so a one-line header lines up with the last line of
+   a two-line one. */
+.table thead tr:has(> th[data-wrap]) > th {
+  vertical-align: bottom;
+}
+
 /* Cards: the table's own width is under 40rem. Rows become cards, the header row is hidden visually but kept for assistive
    technology, and the first cell is the title. There is nothing wide left to scroll. */
 @container lufia-table (width < 40rem) {
@@ -456,6 +486,21 @@
     border: 0;
   }
 
+  /* An abbreviated header shows its full name where the header row is revealed: the short form is only for a tight table. */
+  .root[data-responsive="cards"] .table th [data-th-short] {
+    display: none;
+  }
+
+  .root[data-responsive="cards"] .table th [data-th-full] {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: inherit;
+  }
+
   .root[data-responsive="cards"] .rowLink::after {
     border-radius: var(--lufia-radius-card);
   }
@@ -512,6 +557,13 @@
     inset-inline-end: var(--lufia-space-2);
     display: block;
     padding: 0;
+
+    /* A consumer's inline width (a narrow desktop column, `width: 1%`) is a percentage of the card here and would squeeze
+       the cell to a few pixels. Only an important declaration beats an inline style; scoped to card mode, so table layout
+       keeps the consumer's width. */
+    /* stylelint-disable-next-line declaration-no-important -- the one way to beat an inline style, scoped to card mode */
+    /* stylelint-disable-next-line declaration-no-important -- the one way to beat an inline style, scoped to card mode */
+    inline-size: max-content !important;
   }
 
   .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-card-slot="corner"]::before {
@@ -588,38 +640,62 @@
   }
 }
 
-/* `cardLayout="grid"`: two columns of label-over-value pairs. The title, the actions, cells without a label and cells with
-   `cardSpan="full"` take the whole row. */
+/* `cardLayout="grid"`: two columns of label-over-value pairs. The title, the actions, cells without a `label` and cells with
+   `cardSpan="full"` take the whole row.
+   The card is a wrapping flex row, not a CSS grid, on purpose: a cell is half the row wide but never narrower than its own
+   min-content, and a pair that does not fit beside its neighbour wraps to a line of its own. A grid track cannot react to
+   its content like that. A badge keeps its text on one line here (`--lufia-badge-white-space: nowrap`), so a long pill (a
+   date, a status) has a wide min-content and takes its own line instead of wrapping into two. Short pills and text still
+   pair up. Text values break anywhere, so their min-content is small and they never force a line of their own. */
 @container lufia-table (width < 40rem) {
   .root[data-responsive="cards"][data-card-layout="grid"] .table > tbody > tr,
   .root[data-responsive="cards"][data-card-layout="grid"] .table > tfoot > tr {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--lufia-space-4);
-    align-items: start;
+    --table-grid-gap: var(--lufia-space-4);
+
+    flex-flow: row wrap;
+    column-gap: var(--table-grid-gap);
+    align-items: flex-start;
   }
 
   .root[data-responsive="cards"][data-card-layout="grid"] .table tr[data-group] {
     display: block;
   }
 
-  .root[data-responsive="cards"][data-card-layout="grid"] .table :is(td, th[scope="row"])[data-label] {
+  /* The corner and hidden cells are out of the flow and keep their own size. */
+  .root[data-responsive="cards"][data-card-layout="grid"]
+    .table
+    :is(td, th[scope="row"])[data-label]:not([data-card-slot="corner"], [data-hide-in-cards]) {
+    flex: 0 0 auto;
+    inline-size: calc((100% - var(--table-grid-gap)) / 2);
+    min-inline-size: min-content;
+    max-inline-size: 100%;
     grid-template-columns: minmax(0, 1fr);
     row-gap: var(--lufia-space-1);
+
+    --lufia-badge-white-space: nowrap;
   }
 
   .root[data-responsive="cards"][data-card-layout="grid"]
     .table
-    :is(td, th[scope="row"]):is([data-primary], [data-actions], [data-card-span="full"], :not([data-label])) {
-    grid-column: 1 / -1;
+    :is(td, th[scope="row"]):is(
+      [data-primary],
+      [data-actions],
+      [data-card-span="full"],
+      :not([data-label])
+    ):not([data-card-slot="corner"], [data-hide-in-cards]) {
+    flex: 0 0 100%;
+    inline-size: 100%;
+
+    --lufia-badge-white-space: normal;
   }
 }
 
 /* A grid card with the room of under 20rem is one column. */
 @container lufia-table (width < 20rem) {
-  .root[data-responsive="cards"][data-card-layout="grid"] .table > tbody > tr,
-  .root[data-responsive="cards"][data-card-layout="grid"] .table > tfoot > tr {
-    grid-template-columns: minmax(0, 1fr);
+  .root[data-responsive="cards"][data-card-layout="grid"]
+    .table
+    :is(td, th[scope="row"])[data-label]:not([data-card-slot="corner"], [data-hide-in-cards]) {
+    inline-size: 100%;
   }
 }
 

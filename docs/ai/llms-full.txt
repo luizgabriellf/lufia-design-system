@@ -6923,16 +6923,18 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `dir` | `"asc" \| "desc"` | yes |  |  |
+| `abbr` | `string` | no |  | A short visible text for a long `label`, as `Th abbr` does inside a `Table`. The full `label` stays the button's accessible name, and the short text carries it as a `title` tooltip. Also set natively on the `<th>`. |
 | `label` | `string` | yes |  |  |
 | `active` | `boolean` | yes |  | Whether the table is currently sorted by this column. |
 | `onSort` | `() => void` | yes |  |  |
+| `wrap` | `boolean` | no |  | Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
 - `SortDirection`: `"asc" | "desc"`
-- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }`
+- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; wrap?: boolean | undefined; abbr?: string | undefined; }`
 
 ### Example
 
@@ -8021,8 +8023,10 @@ Other native element attributes pass through to the root element.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `abbr` | `string` | no |  | A short visible text for a long header ("Qty" for "Quantity ordered"). `children` stays the full name: it is what assistive technology reads (the short text is hidden from it and carries the full name as a `title` tooltip when the children are a string), what the revealed header row shows in card mode, and the attribute is also set natively on the `<th>`. Default: the children are shown as they are. |
 | `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures: use it on the header of a numeric column, with `numeric` on its cells. |
 | `hideInCards` | `boolean` | no |  | Card mode only: drops this header's visible label when the matching `Td hideInCards` is dropped. The header row is already hidden visually in card mode; this also keeps the header out of the revealed row that shows while a sortable header has keyboard focus. It stays in the accessibility tree. |
+| `wrap` | `boolean` | no |  | Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden. |
 | `actions` | `false \| true` | no |  | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
 | `label` | `string` | no |  | The column's name for assistive technology ("Actions"), visually hidden. |
 
@@ -8030,24 +8034,28 @@ Other native element attributes pass through to the root element.
 
 ##### Variants
 
-The props are a union of forms; `actions` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
+The props are a union of forms; `abbr` selects the form. Only the props that differ between forms are listed: a prop with the same type and requirement in every form is not repeated.
 
-###### `actions: false`
+###### `abbr: string`
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
+| `abbr` | `string` | no | A short visible text for a long header ("Qty" for "Quantity ordered"). `children` stays the full name: it is what assistive technology reads (the short text is hidden from it and carries the full name as a `title` tooltip when the children are a string), what the revealed header row shows in card mode, and the attribute is also set natively on the `<th>`. Default: the children are shown as they are. In every form; only its type differs. |
 | `actions` | `false` | no |  |
 | `aria-label` | `string` | no | Native attribute in this form. |
 | `aria-labelledby` | `string` | no | Native attribute in this form. |
 | `children` | `ReactNode` | no | Native attribute in this form. |
 | `label` | `undefined` | no |  |
+| `wrap` | `boolean` | no | Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden. In every form; only its type differs. |
 
-###### `actions: true`
+###### `abbr: undefined`
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
+| `abbr` | `undefined` | no | In every form; only its type differs. |
 | `actions` | `true` | yes | Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. |
 | `label` | `string` | yes | The column's name for assistive technology ("Actions"), visually hidden. |
+| `wrap` | `undefined` | no | In every form; only its type differs. |
 
 ### Types
 
@@ -8169,6 +8177,12 @@ buttons that wrap well.
 - `components-data-display-table--card-controls-grid`
 - `components-data-display-table--card-controls-grid-smallest-phone`
 - `components-data-display-table--actions-alignment`
+- `components-data-display-table--wide-headers-plain`
+- `components-data-display-table--wide-headers-wrap`
+- `components-data-display-table--wide-headers-abbr`
+- `components-data-display-table--wide-headers-abbr-on-phone`
+- `components-data-display-table--corner-with-inline-width`
+- `components-data-display-table--grid-with-long-pills`
 
 ## TableToolbar
 

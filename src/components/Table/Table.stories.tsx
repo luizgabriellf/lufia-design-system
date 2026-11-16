@@ -1170,3 +1170,166 @@ export const ActionsAlignment: Story = {
     </Table>
   ),
 };
+
+const wideColumns = [
+  "Planned start date",
+  "Delivery due date",
+  "Budget owner name",
+  "Overall risk level",
+  "Open issue count",
+  "Current review state",
+  "Approved budget total",
+  "Spent to date",
+  "Remaining budget left",
+];
+
+/**
+ * Nine long uppercase headers. With `wrap` a header takes two balanced lines, aligned to the bottom of the header row, so
+ * the table fits at 1440 px without a sideways scroll. `abbr` shows a short text and keeps the full name for assistive
+ * technology and as a tooltip. Both work on `SortableTh`. The top story has neither, for comparison.
+ */
+function WideHeaders({
+  mode,
+  responsive = "scroll",
+}: {
+  mode: "plain" | "wrap" | "abbr";
+  responsive?: "cards" | "scroll";
+}) {
+  const [sort, setSort] = useState(0);
+  const short = ["Start", "Due", "Owner", "Risk", "Issues", "Review", "Approved", "Spent", "Left"];
+  return (
+    <Table caption="Wide table" responsive={responsive}>
+      <TableHead>
+        <TableRow>
+          {wideColumns.map((name, index) =>
+            index === 1 ? (
+              <SortableTh
+                key={name}
+                label={name}
+                wrap={mode === "wrap"}
+                abbr={mode === "abbr" ? short[index] : undefined}
+                active={sort === index}
+                dir="asc"
+                onSort={() => setSort(index)}
+              />
+            ) : (
+              <Th
+                key={name}
+                numeric={index > 3}
+                wrap={mode === "wrap"}
+                abbr={mode === "abbr" ? short[index] : undefined}
+              >
+                {name}
+              </Th>
+            ),
+          )}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow>
+          {wideColumns.map((name, index) => (
+            <Td key={name} label={name} numeric={index > 3}>
+              {index > 3 ? "12,400" : "2026-03-14"}
+            </Td>
+          ))}
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+}
+
+export const WideHeadersPlain: Story = {
+  render: () => <WideHeaders mode="plain" />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+export const WideHeadersWrap: Story = {
+  render: () => <WideHeaders mode="wrap" />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+export const WideHeadersAbbr: Story = {
+  render: () => <WideHeaders mode="abbr" />,
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** The abbreviated headers in card mode: the header row is hidden, and a sortable header revealed by focus shows full names. */
+export const WideHeadersAbbrOnPhone: Story = {
+  render: () => <WideHeaders mode="abbr" responsive="cards" />,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * A corner cell whose column has an inline `width` for the desktop table (`1%` keeps the column narrow). In card mode the
+ * corner ignores that width and keeps the size of its content. Open it at 390 px.
+ */
+export const CornerWithInlineWidth: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th actions label="Row menu" />
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {projects.slice(0, 2).map((project) => (
+          <TableRow key={project.id}>
+            <Td primary label="Project">
+              {project.name}
+            </Td>
+            <Td cardSlot="corner" style={{ width: "1%" }}>
+              <Button size="sm" variant="ghost" aria-label={`More for ${project.name}`}>
+                More
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * Half-width cells of a grid card. A long pill (a date, a status) does not wrap onto two lines: its pair takes a line of
+ * its own, while short pills and text still share a line. Open it at 390 px.
+ */
+export const GridWithLongPills: Story = {
+  args: { cardLayout: "grid" },
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th>Owner</Th>
+          <Th>Status</Th>
+          <Th>Delivery</Th>
+          <Th>Review</Th>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {projects.slice(0, 2).map((project) => (
+          <TableRow key={project.id}>
+            <Td primary label="Project">
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">
+              <Badge tone={project.tone} dot>
+                {project.status}
+              </Badge>
+            </Td>
+            <Td label="Delivery">
+              <Badge tone="info">Delivered 14 March 2026</Badge>
+            </Td>
+            <Td label="Review">
+              <Badge tone="neutral">Due soon</Badge>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+  globals: { viewport: { value: "w390", isRotated: false } },
+};

@@ -1031,3 +1031,80 @@ describe("Table card layout controls", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("Th wrap and abbr", () => {
+  function Headers() {
+    return (
+      <Table caption="Orders">
+        <TableHead>
+          <TableRow>
+            <Th wrap>Quantity ordered</Th>
+            <Th abbr="Qty" wrap numeric>
+              Quantity ordered
+            </Th>
+            <SortableTh label="Delivery date" abbr="Due" wrap active dir="asc" onSort={() => {}} />
+            <Th>Status</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td label="Quantity ordered">1</Td>
+            <Td label="Quantity ordered">2</Td>
+            <Td label="Delivery date">Today</Td>
+            <Td label="Status">Open</Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("marks a wrapping header and leaves the others alone", () => {
+    render(<Headers />);
+    expect(screen.getAllByRole("columnheader")[0]).toHaveAttribute("data-wrap");
+    expect(screen.getByRole("columnheader", { name: "Status" })).not.toHaveAttribute("data-wrap");
+    expect(screen.getByRole("columnheader", { name: "Status" })).not.toHaveAttribute("abbr");
+  });
+
+  it("shows the short text, names the header by the full text and keeps the native abbr attribute", () => {
+    render(<Headers />);
+    const header = screen.getAllByRole("columnheader")[1]!;
+    expect(header).toHaveAccessibleName("Quantity ordered");
+    expect(header).toHaveAttribute("abbr", "Qty");
+    const short = header.querySelector("[data-th-short]")!;
+    expect(short).toHaveTextContent("Qty");
+    expect(short).toHaveAttribute("aria-hidden", "true");
+    expect(short).toHaveAttribute("title", "Quantity ordered");
+    expect(header.querySelector("[data-th-full]")).toHaveTextContent("Quantity ordered");
+  });
+
+  it("does not touch a header without abbr", () => {
+    render(<Headers />);
+    expect(
+      screen.getAllByRole("columnheader")[0]!.querySelector("[data-th-short], [data-th-full]"),
+    ).toBeNull();
+  });
+
+  it("works on a sortable header: the button keeps the full name and still sorts", async () => {
+    const onSort = vi.fn();
+    render(
+      <table>
+        <thead>
+          <tr>
+            <SortableTh label="Delivery date" abbr="Due" wrap active={false} dir="asc" onSort={onSort} />
+          </tr>
+        </thead>
+      </table>,
+    );
+    const button = screen.getByRole("button", { name: "Delivery date" });
+    expect(button).toHaveTextContent("Due");
+    expect(button.closest("th")).toHaveAttribute("data-wrap");
+    expect(button.closest("th")).toHaveAttribute("abbr", "Due");
+    await userEvent.click(button);
+    expect(onSort).toHaveBeenCalledTimes(1);
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<Headers />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

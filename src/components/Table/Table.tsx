@@ -161,11 +161,26 @@ type ThBaseProps = Omit<ComponentProps<"th">, "role"> & {
    * header has keyboard focus. It stays in the accessibility tree.
    */
   hideInCards?: boolean;
+  /**
+   * Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on
+   * one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default
+   * off: headers keep one line. Has no effect in card mode, where the header row is hidden.
+   */
+  wrap?: boolean;
+  /**
+   * A short visible text for a long header ("Qty" for "Quantity ordered"). `children` stays the full name: it is what
+   * assistive technology reads (the short text is hidden from it and carries the full name as a `title` tooltip when the
+   * children are a string), what the revealed header row shows in card mode, and the attribute is also set natively on the
+   * `<th>`. Default: the children are shown as they are.
+   */
+  abbr?: string;
 };
 
 export type ThProps =
   | (ThBaseProps & { actions?: false; label?: never })
-  | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby"> & {
+  | (Omit<ThBaseProps, "children" | "aria-label" | "aria-labelledby" | "wrap" | "abbr"> & {
+      wrap?: never;
+      abbr?: never;
       /** Header of the column of `Td actions` cells. Its text is visually hidden, so `label` is required. */
       actions: true;
       /** The column's name for assistive technology ("Actions"), visually hidden. */
@@ -177,18 +192,47 @@ export type ThProps =
  * with `primary`, `label`, `description` or `href`, use `Td rowHeader`. For a column the user can sort, use
  * `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.
  */
-export function Th({ numeric, hideInCards, actions, label, scope = "col", className, ...rest }: ThProps) {
+export function Th({
+  numeric,
+  hideInCards,
+  wrap,
+  abbr,
+  actions,
+  label,
+  scope = "col",
+  className,
+  ...rest
+}: ThProps) {
+  const { children, ...restProps } = rest as ThBaseProps;
   return (
     <th
       role={scope === "row" || scope === "rowgroup" ? "rowheader" : "columnheader"}
       scope={scope}
-      {...rest}
+      {...restProps}
       className={className}
       data-numeric={numeric ? "" : undefined}
       data-actions={actions ? "" : undefined}
       data-hide-in-cards={hideInCards ? "" : undefined}
+      data-wrap={wrap ? "" : undefined}
+      abbr={abbr}
     >
-      {actions ? <span className={styles.hiddenLabel}>{label}</span> : (rest as ThBaseProps).children}
+      {actions ? (
+        <span className={styles.hiddenLabel}>{label}</span>
+      ) : abbr ? (
+        <>
+          {/* The short text is for the eye; the full name, visually hidden in table layout, is what is read. */}
+          <span
+            aria-hidden="true"
+            data-th-short=""
+            title={typeof children === "string" ? children : undefined}
+          >
+            {abbr}
+          </span>
+          <span data-th-full="">{children}</span>
+        </>
+      ) : (
+        children
+      )}
     </th>
   );
 }
