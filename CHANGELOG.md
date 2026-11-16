@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.56.1
+
+### Patch Changes
+
+- [#199](https://github.com/luizgabriellf/lufia-design-system/pull/199) [`398f06a`](https://github.com/luizgabriellf/lufia-design-system/commit/398f06a36a0d66e0840d3e818b06a4762bde6569) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Disclosure: the `plain` variant no longer outranks a consumer's own rules. The summary and panel inline padding are now the documented `--lufia-disclosure-summary-padding-inline` and `--lufia-disclosure-panel-padding-inline` custom properties, and an ordinary `root > summary` rule also wins. The default rendering is unchanged. Menu: add a story and browser test for an inline listbox inside a modal sheet.
+
 ## 0.56.0
 
 ### Minor Changes
