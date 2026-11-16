@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.51.0
+
+### Minor Changes
+
+- [#187](https://github.com/luizgabriellf/lufia-design-system/pull/187) [`0d5e119`](https://github.com/luizgabriellf/lufia-design-system/commit/0d5e11956c5ce59f8258ac2b859cc99abb174b10) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `TableFoot` to `Table`: a `<tfoot>` part for total rows. Its rows are ordinary `TableRow`s with a `Td rowHeader` first cell and `Td numeric` cells, read stronger than body rows with a rule above and no hover, and become one last summary card in `responsive="cards"` mode.
+
 ## 0.50.0
 
 ### Minor Changes
