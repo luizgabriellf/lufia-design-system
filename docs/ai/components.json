@@ -17495,14 +17495,14 @@
         {
           "name": "Table",
           "kind": "component",
-          "description": "A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under 40rem of its own width (`responsive=\"cards\"`) a list of cards. It is CSS only: it holds no state and does not sort, filter or page. Own those, and hand the result in as rows. Compose it from `TableHead`, `TableBody`, `TableRow`, `Th`, `Td` and `TableEmpty`; `SortableTh` also works in a header row.",
+          "description": "A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under 40rem of its own width (`responsive=\"cards\"`) a list of cards. It is CSS only: it holds no state and does not sort, filter or page. Own those, and hand the result in as rows. Compose it from `TableHead`, `TableBody`, `TableRow`, `Th`, `Td`, `TableFoot` and `TableEmpty`; `SortableTh` also works in a header row.",
           "props": [
             {
               "name": "children",
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": "`TableHead` and `TableBody`."
+              "description": "`TableHead`, `TableBody` and, for a total row, `TableFoot`."
             },
             {
               "name": "caption",
@@ -17617,6 +17617,19 @@
           "kind": "type",
           "description": "",
           "definition": "Omit<EmptyStateProps, \"title\"> & { colSpan: number; title?: string | undefined; }"
+        },
+        {
+          "name": "TableFoot",
+          "kind": "component",
+          "description": "The footer group, for a total row: `TableRow`s whose first cell is a `Td rowHeader` (\"Total\") followed by `Td numeric` cells. Foot rows read stronger than body rows, with a rule above them, and carry no hover. Give them no `href` or `onActivate`. In card mode the foot becomes one last summary card, one `label` and value pair per cell like a body row. Put it after `TableBody`.",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "TableFootProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
         },
         {
           "name": "TableHead",
@@ -17990,6 +18003,14 @@
             "id": "components-data-display-table--row-header-on-phone"
           },
           {
+            "export": "TotalRow",
+            "id": "components-data-display-table--total-row"
+          },
+          {
+            "export": "TotalRowOnPhone",
+            "id": "components-data-display-table--total-row-on-phone"
+          },
+          {
             "export": "HighlightedRowAndInlineBar",
             "id": "components-data-display-table--highlighted-row-and-inline-bar"
           },
@@ -18068,7 +18089,7 @@
         "overview": "A data table built from native table elements, styled with CSS only. It scrolls sideways with a shadow on each edge that\nhas more to see, sets its headers in small monospace capitals and, when its own width is under 40rem, becomes a list\nof cards. It holds no state: sorting, filtering and paging stay with the app, which hands in the rows.",
         "usage": {
           "language": "tsx",
-          "code": "import { Table, TableHead, TableBody, TableRow, Th, Td } from \"@lufia/design-system/components/Table\";\n\n<Table caption=\"Projects\">\n  <TableHead>\n    <TableRow>\n      <Th>Project</Th>\n      <Th>Status</Th>\n      <Th numeric>Budget</Th>\n    </TableRow>\n  </TableHead>\n  <TableBody>\n    <TableRow>\n      <Td primary label=\"Project\" href=\"/projects/1\">\n        Harbour redesign\n      </Td>\n      <Td label=\"Status\">Active</Td>\n      <Td label=\"Budget\" numeric>\n        12,400\n      </Td>\n    </TableRow>\n  </TableBody>\n</Table>;"
+          "code": "import {\n  Table,\n  TableHead,\n  TableBody,\n  TableFoot,\n  TableRow,\n  Th,\n  Td,\n} from \"@lufia/design-system/components/Table\";\n\n<Table caption=\"Projects\">\n  <TableHead>\n    <TableRow>\n      <Th>Project</Th>\n      <Th>Status</Th>\n      <Th numeric>Budget</Th>\n    </TableRow>\n  </TableHead>\n  <TableBody>\n    <TableRow>\n      <Td primary label=\"Project\" href=\"/projects/1\">\n        Harbour redesign\n      </Td>\n      <Td label=\"Status\">Active</Td>\n      <Td label=\"Budget\" numeric>\n        12,400\n      </Td>\n    </TableRow>\n  </TableBody>\n</Table>;"
         },
         "whenToUse": [
           "Records with several attributes that people compare, scan or open."

@@ -77,7 +77,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
 - StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone hint +6
 - StatusTimeline: tracks*
-- Table: caption* showCaption responsive frame density footer tableClassName | also TableBody TableEmpty TableHead +3
+- Table: caption* showCaption responsive frame density footer tableClassName | also TableBody TableEmpty TableFoot +4
 - TableToolbar: filters activeFilter onFilterChange search onSearchChange searchPlaceholder clearSearchLabel variant
 
 ### Feedback

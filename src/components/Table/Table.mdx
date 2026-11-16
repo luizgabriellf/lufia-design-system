@@ -21,7 +21,15 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 ### Usage
 
 ```tsx
-import { Table, TableHead, TableBody, TableRow, Th, Td } from "@lufia/design-system/components/Table";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableFoot,
+  TableRow,
+  Th,
+  Td,
+} from "@lufia/design-system/components/Table";
 
 <Table caption="Projects">
   <TableHead>
@@ -151,6 +159,19 @@ table adds nothing for either.
 
 <Canvas of={Stories.HighlightedRowAndInlineBar} />
 
+### Total row
+
+`TableFoot` renders `<tfoot>` and goes after `TableBody`. Its rows are ordinary `TableRow`s: start with a `Td rowHeader`
+("Total", a real `<th scope="row">`) and follow with `Td numeric` cells. Foot rows read stronger than body rows (semibold,
+a rule above the first one) and have no hover; do not give them `href` or `onActivate`. In `responsive="cards"` mode the
+foot becomes one last summary card, with a stronger border and the raised surface, and each cell shows its `label` and
+value like a body card, so give foot cells with a value the same `label` as the column (an empty cell without a `label` shows nothing). In
+`scroll` mode it is a plain table foot.
+
+<Canvas of={Stories.TotalRow} />
+
+<Canvas of={Stories.TotalRowOnPhone} />
+
 ### Row state
 
 `TableRow` takes `selected` (`aria-selected` and a selected background) and `current` (`aria-current="true"` and an accent on
@@ -171,7 +192,7 @@ not a card.
 
 ### Refs and inline styles on rows
 
-`TableRow`, `TableHead`, `TableBody`, `Th` and `Td` take `ref` and `style` like the elements they render, so a
+`TableRow`, `TableHead`, `TableBody`, `TableFoot`, `Th` and `Td` take `ref` and `style` like the elements they render, so a
 sortable-list library that needs the row element, an inline `transform` and `transition` and its own `data-*` and `aria-*`
 attributes can drive them.
 
@@ -226,7 +247,7 @@ line. `footer` takes a `Pagination`, outside the scrolling area.
 
 <Controls of={Stories.Default} />
 
-Parts: `TableHead` and `TableBody` take their native element's props. `TableRow` adds `selected` and `current`. `Th` adds
+Parts: `TableHead`, `TableBody` and `TableFoot` take their native element's props. `TableRow` adds `selected` and `current`. `Th` adds
 `numeric` (default `scope="col"`) and `actions` with a required `label`, for the header of the actions column: its text is
 visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `numeric`, `primary`, `actions`, `wrap` (with `actions`), `href`,
 `onActivate`, `activateLabel`, `activateDescribedBy`, `description` and `after`. `TableEmpty` takes the props of

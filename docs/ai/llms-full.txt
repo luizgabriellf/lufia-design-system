@@ -7915,7 +7915,7 @@ that flips meaning with the state ("Enable alerts").
 
 - Status: beta
 - Category: Data display
-- Import: `import { Table, TableBody, TableEmpty, TableHead, TableRow, Td, Th } from "@lufia/design-system/components/Table"`
+- Import: `import { Table, TableBody, TableEmpty, TableFoot, TableHead, TableRow, Td, Th } from "@lufia/design-system/components/Table"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/Table](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Table)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-table--docs)
@@ -7942,6 +7942,7 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 | `Table` | component |
 | `TableBody` | component |
 | `TableEmpty` | component |
+| `TableFoot` | component |
 | `TableHead` | component |
 | `TableRow` | component |
 | `Td` | component |
@@ -7953,7 +7954,7 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  | `TableHead` and `TableBody`. |
+| `children` | `ReactNode` | yes |  | `TableHead`, `TableBody` and, for a total row, `TableFoot`. |
 | `caption` | `string` | yes |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
 | `showCaption` | `boolean` | no | `false` | Show the caption above the table instead of hiding it visually. |
 | `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the first cell becomes the title and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
@@ -7964,7 +7965,7 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 
 Other native element attributes pass through to the root element.
 
-#### `TableBody`, `TableHead`
+#### `TableBody`, `TableFoot`, `TableHead`
 
 No props of its own. Native element attributes pass through.
 
@@ -8049,7 +8050,15 @@ The props are a union of forms; `actions` selects the form. Only the props that 
 ### Example
 
 ```tsx
-import { Table, TableHead, TableBody, TableRow, Th, Td } from "@lufia/design-system/components/Table";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableFoot,
+  TableRow,
+  Th,
+  Td,
+} from "@lufia/design-system/components/Table";
 
 <Table caption="Projects">
   <TableHead>
@@ -8129,6 +8138,8 @@ buttons that wrap well.
 - `components-data-display-table--description-line`
 - `components-data-display-table--row-header`
 - `components-data-display-table--row-header-on-phone`
+- `components-data-display-table--total-row`
+- `components-data-display-table--total-row-on-phone`
 - `components-data-display-table--highlighted-row-and-inline-bar`
 - `components-data-display-table--row-state`
 - `components-data-display-table--row-state-on-phone`

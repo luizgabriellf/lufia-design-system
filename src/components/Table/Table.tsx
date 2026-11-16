@@ -7,7 +7,7 @@ import styles from "./Table.module.css";
 const join = (...names: (string | undefined)[]) => names.filter(Boolean).join(" ");
 
 export type TableProps = Omit<ComponentProps<"div">, "children"> & {
-  /** `TableHead` and `TableBody`. */
+  /** `TableHead`, `TableBody` and, for a total row, `TableFoot`. */
   children: ReactNode;
   /**
    * The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`,
@@ -40,7 +40,7 @@ export type TableProps = Omit<ComponentProps<"div">, "children"> & {
  * A data table: a surface that scrolls sideways with edge shadows, header cells in small monospace capitals, and under
  * 40rem of its own width (`responsive="cards"`) a list of cards. It is CSS only: it holds no state and does not sort,
  * filter or page. Own those, and hand the result in as rows. Compose it from `TableHead`, `TableBody`, `TableRow`, `Th`,
- * `Td` and `TableEmpty`; `SortableTh` also works in a header row.
+ * `Td`, `TableFoot` and `TableEmpty`; `SortableTh` also works in a header row.
  */
 export function Table({
   children,
@@ -95,6 +95,19 @@ export type TableBodyProps = Omit<ComponentProps<"tbody">, "role">;
 export function TableBody({ className, ...rest }: TableBodyProps) {
   // eslint-disable-next-line jsx-a11y/no-redundant-roles -- explicit so card mode keeps the semantics
   return <tbody role="rowgroup" {...rest} className={join(styles.body, className)} />;
+}
+
+export type TableFootProps = Omit<ComponentProps<"tfoot">, "role">;
+
+/**
+ * The footer group, for a total row: `TableRow`s whose first cell is a `Td rowHeader` ("Total") followed by `Td numeric`
+ * cells. Foot rows read stronger than body rows, with a rule above them, and carry no hover. Give them no `href` or
+ * `onActivate`. In card mode the foot becomes one last summary card, one `label` and value pair per cell like a body row.
+ * Put it after `TableBody`.
+ */
+export function TableFoot({ className, ...rest }: TableFootProps) {
+  // eslint-disable-next-line jsx-a11y/no-redundant-roles -- explicit so card mode keeps the semantics
+  return <tfoot role="rowgroup" {...rest} className={join(styles.foot, className)} />;
 }
 
 export type TableRowProps = Omit<ComponentProps<"tr">, "role"> & {
