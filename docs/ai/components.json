@@ -17533,6 +17533,13 @@
               "description": "Show the caption above the table instead of hiding it visually."
             },
             {
+              "name": "captionTone",
+              "type": "\"default\" | \"muted\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either."
+            },
+            {
               "name": "responsive",
               "type": "\"scroll\" | \"cards\"",
               "required": false,
@@ -18226,6 +18233,34 @@
           {
             "export": "GridWithLongPills",
             "id": "components-data-display-table--grid-with-long-pills"
+          },
+          {
+            "export": "HeaderTypographyHooks",
+            "id": "components-data-display-table--header-typography-hooks"
+          },
+          {
+            "export": "HeaderTypographyHooksOnPhone",
+            "id": "components-data-display-table--header-typography-hooks-on-phone"
+          },
+          {
+            "export": "CaptionTone",
+            "id": "components-data-display-table--caption-tone"
+          },
+          {
+            "export": "TopAlignedCells",
+            "id": "components-data-display-table--top-aligned-cells"
+          },
+          {
+            "export": "DimmerCells",
+            "id": "components-data-display-table--dimmer-cells"
+          },
+          {
+            "export": "DimmerCellsOnPhone",
+            "id": "components-data-display-table--dimmer-cells-on-phone"
+          },
+          {
+            "export": "FlushTranslucentIdle",
+            "id": "components-data-display-table--flush-translucent-idle"
           }
         ]
       },
@@ -18306,7 +18341,18 @@
         "--lufia-space-8",
         "--lufia-table-bg",
         "--lufia-table-border",
+        "--lufia-table-caption-color",
+        "--lufia-table-caption-font-size",
+        "--lufia-table-caption-font-weight",
+        "--lufia-table-cell-color",
+        "--lufia-table-cell-vertical-align",
         "--lufia-table-cover-bg",
+        "--lufia-table-header-font-family",
+        "--lufia-table-header-font-size",
+        "--lufia-table-header-font-weight",
+        "--lufia-table-header-letter-spacing",
+        "--lufia-table-header-text-transform",
+        "--lufia-table-primary-color",
         "--lufia-table-row-hover",
         "--lufia-table-row-scroll-margin",
         "--lufia-table-scroll-shadow"

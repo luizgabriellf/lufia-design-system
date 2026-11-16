@@ -46,6 +46,7 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 | `children` | `ReactNode` | yes |  | `TableHead`, `TableBody` and, for a total row, `TableFoot`. |
 | `caption` | `string` | yes |  | The table's accessible name ("Projects"), and the name of the scrollable region around it. It is a real `<caption>`, visually hidden unless `showCaption` is set. |
 | `showCaption` | `boolean` | no | `false` | Show the caption above the table instead of hiding it visually. |
+| `captionTone` | `"default" \| "muted"` | no | `"default"` | With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either. |
 | `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
 | `frame` | `"flush" \| "framed"` | no | `"framed"` | `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card mode each card keeps its own border either way. |
 | `cardLayout` | `"stack" \| "grid"` | no | `"stack"` | How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem. |
@@ -203,7 +204,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-badge-white-space`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-space-8`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-cover-bg`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
+Reads these semantic tokens: `--lufia-badge-white-space`, `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xs`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-font-weight-semibold`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`, `--lufia-space-8`, `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-caption-color`, `--lufia-table-caption-font-size`, `--lufia-table-caption-font-weight`, `--lufia-table-cell-color`, `--lufia-table-cell-vertical-align`, `--lufia-table-cover-bg`, `--lufia-table-header-font-family`, `--lufia-table-header-font-size`, `--lufia-table-header-font-weight`, `--lufia-table-header-letter-spacing`, `--lufia-table-header-text-transform`, `--lufia-table-primary-color`, `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, `--lufia-table-scroll-shadow`.
 
 ## Content guidelines
 
@@ -270,3 +271,10 @@ buttons that wrap well.
 - `components-data-display-table--wide-headers-abbr-on-phone`
 - `components-data-display-table--corner-with-inline-width`
 - `components-data-display-table--grid-with-long-pills`
+- `components-data-display-table--header-typography-hooks`
+- `components-data-display-table--header-typography-hooks-on-phone`
+- `components-data-display-table--caption-tone`
+- `components-data-display-table--top-aligned-cells`
+- `components-data-display-table--dimmer-cells`
+- `components-data-display-table--dimmer-cells-on-phone`
+- `components-data-display-table--flush-translucent-idle`

@@ -2907,6 +2907,175 @@ test.describe("table", () => {
     expect(result.overflows).toBe(false);
   });
 
+  test("header typography hooks restyle the column headers and the card labels, defaults unchanged", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const header = () =>
+      page.evaluate(() => {
+        const th = document.querySelector<HTMLElement>("#storybook-root th")!;
+        const style = getComputedStyle(th);
+        return {
+          transform: style.textTransform,
+          size: style.fontSize,
+          weight: style.fontWeight,
+          spacing: style.letterSpacing,
+          family: style.fontFamily,
+          bodyFamily: getComputedStyle(document.querySelector("#storybook-root td")!).fontFamily,
+        };
+      });
+    await openStory(page, id("default"));
+    const base = await header();
+    expect(base.transform).toBe("uppercase");
+    expect(base.family).not.toBe(base.bodyFamily);
+    expect(base.spacing).not.toBe("normal");
+
+    await openStory(page, id("header-typography-hooks"));
+    const hooked = await header();
+    expect(hooked.transform).toBe("none");
+    expect(hooked.family).toBe(hooked.bodyFamily);
+    expect(hooked.spacing).toBe("normal");
+    expect(hooked.weight).toBe("600");
+    expect(hooked.size).not.toBe(base.size);
+
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("header-typography-hooks-on-phone"));
+    const label = await page.evaluate(() => {
+      const cell = document.querySelector<HTMLElement>("#storybook-root td[data-label]")!;
+      const style = getComputedStyle(cell, "::before");
+      return { transform: style.textTransform, spacing: style.letterSpacing, weight: style.fontWeight };
+    });
+    expect(label).toEqual({ transform: "none", spacing: "normal", weight: "600" });
+    await openStory(page, id("phone-cards"));
+    const plain = await page.evaluate(() => {
+      const cell = document.querySelector<HTMLElement>("#storybook-root td[data-label]")!;
+      return getComputedStyle(cell, "::before").textTransform;
+    });
+    expect(plain).toBe("uppercase");
+  });
+
+  test("the caption follows captionTone and the caption hooks", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("visible-caption"));
+    const read = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>("#storybook-root caption")].map((caption) => {
+          const style = getComputedStyle(caption);
+          return { color: style.color, size: style.fontSize, weight: style.fontWeight };
+        }),
+      );
+    const [plain] = await read();
+    await openStory(page, id("caption-tone"));
+    const [muted, hooked] = await read();
+    expect(muted!.color).not.toBe(plain!.color);
+    expect(muted!.weight).toBe(plain!.weight);
+    expect(hooked!.color).toBe(muted!.color);
+    expect(hooked!.weight).toBe("400");
+    expect(hooked!.size).not.toBe(plain!.size);
+  });
+
+  test("cells can be top aligned without moving the actions' shared centre line", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("top-aligned-cells"));
+    const result = await page.evaluate(() => {
+      const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+      const [, note, actions] = [...row.children] as HTMLElement[];
+      const buttons = [...actions!.querySelectorAll("button")].map((button) => {
+        const box = button.getBoundingClientRect();
+        return box.top + box.height / 2;
+      });
+      return {
+        align: getComputedStyle(note!).verticalAlign,
+        lines: Math.round(
+          note!.getBoundingClientRect().height / parseFloat(getComputedStyle(note!).lineHeight),
+        ),
+        buttons,
+      };
+    });
+    expect(result.align).toBe("top");
+    expect(result.lines, "the prose cell is the reproduction").toBeGreaterThan(2);
+    expect(result.buttons).toHaveLength(2);
+    expect(Math.abs(result.buttons[0]! - result.buttons[1]!)).toBeLessThanOrEqual(1);
+    // The short title cell starts at the top of the row, level with the first line of the prose.
+    const rule = await page.evaluate(() => {
+      const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+      const cell = row.children[0] as HTMLElement;
+      const text = document.createRange();
+      text.selectNodeContents(cell);
+      return text.getBoundingClientRect().top - row.getBoundingClientRect().top;
+    });
+    const note = await page.evaluate(() => {
+      const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+      const cell = row.children[1] as HTMLElement;
+      const text = document.createRange();
+      text.selectNodeContents(cell);
+      return text.getBoundingClientRect().top - row.getBoundingClientRect().top;
+    });
+    expect(Math.abs(rule - note)).toBeLessThanOrEqual(2);
+    await openStory(page, id("actions-alignment"));
+    const middle = await page.evaluate(
+      () => getComputedStyle(document.querySelector("#storybook-root td")!).verticalAlign,
+    );
+    expect(middle).toBe("middle");
+  });
+
+  test("the cell colour hook dims body cells but not the primary cell, in table and card mode", async ({
+    page,
+  }) => {
+    const colours = (storyId: string) =>
+      openStory(page, storyId).then(() =>
+        page.evaluate(() => {
+          const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+          const [primary, other] = [...row.children] as HTMLElement[];
+          return { primary: getComputedStyle(primary!).color, other: getComputedStyle(other!).color };
+        }),
+      );
+    await page.setViewportSize({ width: 1440, height: 900 });
+    for (const [story, size] of [
+      ["dimmer-cells", { width: 1440, height: 900 }],
+      ["dimmer-cells-on-phone", { width: 390, height: 800 }],
+    ] as const) {
+      await page.setViewportSize(size);
+      const result = await colours(id(story));
+      expect(result.other, story).not.toBe(result.primary);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const plain = await colours(id("default"));
+    expect(plain.other).toBe(plain.primary);
+  });
+
+  test("idle scroll covers and shadows are not painted where scroll-driven animation is supported", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const sizes = () =>
+      page.evaluate(() => {
+        const scroller = document.querySelector<HTMLElement>("#storybook-root [role='region']")!;
+        return {
+          overflows: scroller.scrollWidth > scroller.clientWidth,
+          supported: CSS.supports("animation-timeline", "scroll(self inline)"),
+          // background-size of the four layers: cover, cover, shadow, shadow
+          widths: getComputedStyle(scroller)
+            .backgroundSize.split(",")
+            .map((layer) => layer.trim().split(" ")[0]),
+        };
+      });
+    await openStory(page, id("flush-translucent-idle"));
+    const idle = await sizes();
+    expect(idle.overflows).toBe(false);
+    expect(idle.widths).toHaveLength(4);
+    // Unsupported browsers keep today's always-painted edges (opaque surfaces are unaffected).
+    expect(idle.widths, idle.supported ? "supported" : "fallback").toEqual(
+      idle.supported ? ["0px", "0px", "0px", "0px"] : ["32px", "32px", "12px", "12px"],
+    );
+
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, id("scroll-on-phone"));
+    const busy = await sizes();
+    expect(busy.overflows).toBe(true);
+    expect(busy.widths).toEqual(["32px", "32px", "12px", "12px"]);
+  });
+
   test("the controls of an actions cell share one centre line", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await openStory(page, id("actions-alignment"));

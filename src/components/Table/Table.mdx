@@ -158,9 +158,48 @@ already has a frame. The header rule and the row separators stay; in card mode e
 The scroll shadows are hidden by two covers that scroll with the content, painted with `--lufia-table-cover-bg` (default
 `--lufia-table-bg`). Under `flush`, when the surface token is translucent or the table sits on a different colour, set
 `--lufia-table-cover-bg` to an **opaque** colour equal to what is behind the table; a translucent cover cannot hide the
-shadows and a band shows at both edges even when there is nothing to scroll.
+shadows and a band shows at both edges once the table overflows.
 
 <Canvas of={Stories.FlushTranslucentSurface} />
+
+**Idle covers.** When the table does not overflow, the covers and the shadows are not painted at all, so a translucent
+surface shows no band at either edge even with no cover token. This uses a scroll-driven animation: the scroll timeline of a
+container with nothing to scroll is inactive, so a constant keyframe that switches the covers on never applies. It needs
+`animation-timeline` (Chromium 115 and later, Safari 26 and later; check current support for Firefox). Where it is missing
+the rule is skipped and nothing changes from before: the covers and shadows are always painted, which is invisible on an
+opaque surface and a band on a translucent one, so keep setting an opaque `--lufia-table-cover-bg` there. While the table
+does overflow, a translucent surface still needs the opaque cover token, as above.
+
+<Canvas of={Stories.FlushTranslucentIdle} />
+
+### Typography, caption, alignment and colour hooks
+
+For a table placed in prose, a container can restyle the table without redefining global tokens. Every hook falls back to
+today's value, so nothing changes until one is set. Set them to a concrete value: a custom property set to the keyword
+`inherit` does not inherit the font, so name a token such as `var(--lufia-font-family-body)`.
+
+| Hook                                                                                                   | Applies to                                                | Default                                                         |
+| ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------- |
+| `--lufia-table-header-font-family`, `-font-size`, `-font-weight`, `-letter-spacing`, `-text-transform` | column headers and, in card mode, the labels              | mono, 2xs, medium, 0.06em, uppercase (labels: weight inherited) |
+| `--lufia-table-caption-color`, `-font-size`, `-font-weight`                                            | the visible caption (`showCaption`)                       | default text, inherited, semibold                               |
+| `--lufia-table-cell-vertical-align`                                                                    | body cells and row headers                                | `middle`                                                        |
+| `--lufia-table-cell-color`                                                                             | body cells that are not `primary`, in table and card mode | inherited text colour                                           |
+| `--lufia-table-primary-color`                                                                          | the `primary` cell                                        | default text colour                                             |
+
+`captionTone="muted"` sets the visible caption in the muted text colour; `--lufia-table-caption-color` overrides either tone.
+The colour hooks apply with no specificity, so a colour a consumer sets on a cell or its content still wins. Set
+`--lufia-table-cell-vertical-align: top` for rows of several lines; the controls of a `Td actions` cell still share one centre
+line, and a header row with `Th wrap` keeps its bottom alignment. To keep a long header on one line or let it wrap, see `Th wrap`
+and `abbr` in the card controls notes above. Pick colours that keep WCAG AA contrast on the surface: the package's contrast
+gate checks its own tokens, not what a container sets.
+
+<Canvas of={Stories.HeaderTypographyHooks} />
+
+<Canvas of={Stories.CaptionTone} />
+
+<Canvas of={Stories.TopAlignedCells} />
+
+<Canvas of={Stories.DimmerCells} />
 
 ### Actions column
 
@@ -306,10 +345,10 @@ Parts: `TableHead`, `TableBody` and `TableFoot` take their native element's prop
 `numeric` (default `scope="col"`) and `actions` with a required `label`, for the header of the actions column: its text is
 visually hidden, so no `aria-label` on an empty header. `Td` adds `label`, `numeric`, `primary`, `actions`, `wrap` (with `actions`), `href`,
 `onActivate`, `activateLabel`, `activateDescribedBy`, `description` and `after`. `TableEmpty` takes the props of
-`EmptyState` plus `colSpan`, with `title` optional: without it `children` is the one-line message. `Table` adds `frame`.
+`EmptyState` plus `colSpan`, with `title` optional: without it `children` is the one-line message. `Table` adds `frame` and `captionTone`.
 
 Theming hooks: `--lufia-table-bg`, `--lufia-table-border`, `--lufia-table-scroll-shadow`, `--lufia-table-cover-bg` (opaque
-colour of the shadow covers; default `--lufia-table-bg`), `--lufia-table-row-hover` and `--lufia-table-row-scroll-margin`.
+colour of the shadow covers; default `--lufia-table-bg`), `--lufia-table-row-hover`, `--lufia-table-row-scroll-margin`, and the typography, caption, alignment and colour hooks listed under "Typography, caption, alignment and colour hooks".
 
 </Section>
 

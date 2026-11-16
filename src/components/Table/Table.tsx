@@ -17,6 +17,11 @@ export type TableProps = Omit<ComponentProps<"div">, "children"> & {
   /** Show the caption above the table instead of hiding it visually. */
   showCaption?: boolean;
   /**
+   * With `showCaption`: `muted` sets the visible caption in the muted text colour, for a table that sits under prose and
+   * should not compete with its heading. Default `default`. `--lufia-table-caption-color` overrides either.
+   */
+  captionTone?: "default" | "muted";
+  /**
    * What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row
    * is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table
    * and scrolls it sideways, with a shadow on each edge that has more to see.
@@ -53,6 +58,7 @@ export function Table({
   children,
   caption,
   showCaption = false,
+  captionTone = "default",
   responsive = "cards",
   cardLayout = "stack",
   density = "comfortable",
@@ -78,7 +84,12 @@ export function Table({
         <div className={styles.scroller} role="region" aria-labelledby={captionId} tabIndex={0}>
           {/* The explicit roles keep the table semantics when a browser drops them for a table styled as cards. */}
           <table role="table" className={join(styles.table, tableClassName)}>
-            <caption id={captionId} className={styles.caption} data-visible={showCaption ? "" : undefined}>
+            <caption
+              id={captionId}
+              className={styles.caption}
+              data-visible={showCaption ? "" : undefined}
+              data-tone={captionTone}
+            >
               {caption}
             </caption>
             {children}
