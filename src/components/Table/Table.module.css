@@ -2,6 +2,11 @@
    --lufia-table-scroll-shadow (the colour at the edge of a scrollable table), --lufia-table-cover-bg (the colour of the
    covers that hide those shadows; opaque, defaults to --lufia-table-bg: set it when that surface is translucent),
    --lufia-table-row-hover,
+   --lufia-table-header-font-family, -font-size, -font-weight, -letter-spacing and -text-transform (the column headers and the
+   card-mode labels; default the monospace 2xs medium uppercase look; a container sets them to restyle both),
+   --lufia-table-caption-color, -font-size and -font-weight (the visible caption),
+   --lufia-table-cell-vertical-align (body cells, default middle),
+   --lufia-table-cell-color (body cells that are not primary) and --lufia-table-primary-color (the primary cell),
    --lufia-table-row-scroll-margin (the room kept around a focused row control or action control when the browser scrolls it
    into view, default 0: set it to the height of a sticky header or fixed bar).
    Cells and headers are styled from here, through the `.table` selectors, so a plain `<th>` or `SortableTh` looks the same. */
@@ -51,18 +56,47 @@
    only on a side that has more to scroll to. The positions are physical on purpose: the shadow belongs to the left or right
    of the content, in either text direction. */
 .scroller {
+  /* The widths of the covers and of the shadows. Where the browser has scroll-driven animations they start at zero and the
+     animation below grows them only while the content overflows; elsewhere they are always painted, as before. */
+  --table-cover-size: 2rem;
+  --table-shadow-size: 0.75rem;
+
   /* Positioned so that absolutely placed content inside, such as a visually hidden header label, is contained and scrolls
      with the table instead of widening the page. */
   position: relative;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   background:
-    linear-gradient(to right, var(--table-cover) 70%, transparent) 0 0 / 2rem 100% no-repeat local,
-    linear-gradient(to left, var(--table-cover) 70%, transparent) 100% 0 / 2rem 100% no-repeat local,
-    radial-gradient(farthest-side at 0 50%, var(--table-shadow), transparent) 0 0 / 0.75rem 100% no-repeat
-      scroll,
-    radial-gradient(farthest-side at 100% 50%, var(--table-shadow), transparent) 100% 0 / 0.75rem 100%
-      no-repeat scroll;
+    linear-gradient(to right, var(--table-cover) 70%, transparent) 0 0 / var(--table-cover-size) 100%
+      no-repeat local,
+    linear-gradient(to left, var(--table-cover) 70%, transparent) 100% 0 / var(--table-cover-size) 100%
+      no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--table-shadow), transparent) 0 0 / var(--table-shadow-size)
+      100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--table-shadow), transparent) 100% 0 /
+      var(--table-shadow-size) 100% no-repeat scroll;
+}
+
+/* Covers and shadows only while there is something to scroll. The scroll timeline of a container that does not overflow is
+   inactive, so the animation does not apply and the sizes stay at zero: a translucent surface shows no band at either edge.
+   Without support for `animation-timeline` the rule is skipped and the covers and shadows are always painted. The keyframe
+   is constant, so nothing moves; it is a switch, not an effect. */
+@supports (animation-timeline: scroll(self inline)) {
+  .scroller {
+    --table-cover-size: 0px;
+    --table-shadow-size: 0px;
+
+    animation: edges linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+@keyframes edges {
+  from,
+  to {
+    --table-cover-size: 2rem;
+    --table-shadow-size: 0.75rem;
+  }
 }
 
 .scroller:focus-visible {
@@ -100,20 +134,26 @@
   clip-path: none;
   white-space: normal;
   text-align: start;
-  font-weight: var(--lufia-font-weight-semibold);
-  color: var(--lufia-color-text-default);
+  font-size: var(--lufia-table-caption-font-size, inherit);
+  font-weight: var(--lufia-table-caption-font-weight, var(--lufia-font-weight-semibold));
+  color: var(--lufia-table-caption-color, var(--lufia-color-text-default));
+}
+
+/* `captionTone="muted"`; the colour hook still wins. */
+.caption[data-visible][data-tone="muted"] {
+  color: var(--lufia-table-caption-color, var(--lufia-color-text-muted));
 }
 
 .table th:not([scope="row"]) {
   padding: var(--table-pad-y) var(--table-pad-x);
   border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
   color: var(--lufia-color-text-muted);
-  font-family: var(--lufia-font-family-mono);
-  font-size: var(--lufia-font-size-2xs);
-  font-weight: var(--lufia-font-weight-medium);
-  letter-spacing: 0.06em;
+  font-family: var(--lufia-table-header-font-family, var(--lufia-font-family-mono));
+  font-size: var(--lufia-table-header-font-size, var(--lufia-font-size-2xs));
+  font-weight: var(--lufia-table-header-font-weight, var(--lufia-font-weight-medium));
+  letter-spacing: var(--lufia-table-header-letter-spacing, 0.06em);
   text-align: start;
-  text-transform: uppercase;
+  text-transform: var(--lufia-table-header-text-transform, uppercase);
   white-space: nowrap;
 }
 
@@ -144,8 +184,19 @@
 .table :is(td, th[scope="row"]) {
   padding: var(--table-pad-y) var(--table-pad-x);
   border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
-  vertical-align: middle;
+  vertical-align: var(--lufia-table-cell-vertical-align, middle);
   overflow-wrap: break-word;
+}
+
+/* Text colour hooks, at zero specificity so a colour a consumer sets on a cell, its class or its content still wins. Unset,
+   a cell inherits the frame's text colour as before. The primary cell comes second so it takes the default colour, not the
+   dimmer one a consumer gave the other cells. */
+:where(.table :is(td, th[scope="row"])) {
+  color: var(--lufia-table-cell-color, inherit);
+}
+
+:where(.table :is(td, th[scope="row"])[data-primary]) {
+  color: var(--lufia-table-primary-color, var(--lufia-color-text-default));
 }
 
 /* A body row header (`Td rowHeader`, or a `Th` with `scope="row"`) is a body cell: not the column-header look, and the
@@ -530,10 +581,11 @@
     content: attr(data-label);
     content: attr(data-label) / "";
     color: var(--lufia-color-text-muted);
-    font-family: var(--lufia-font-family-mono);
-    font-size: var(--lufia-font-size-2xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-family: var(--lufia-table-header-font-family, var(--lufia-font-family-mono));
+    font-size: var(--lufia-table-header-font-size, var(--lufia-font-size-2xs));
+    font-weight: var(--lufia-table-header-font-weight, inherit);
+    letter-spacing: var(--lufia-table-header-letter-spacing, 0.06em);
+    text-transform: var(--lufia-table-header-text-transform, uppercase);
     overflow-wrap: break-word;
     hyphens: auto;
   }

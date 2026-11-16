@@ -1333,3 +1333,175 @@ export const GridWithLongPills: Story = {
   ),
   globals: { viewport: { value: "w390", isRotated: false } },
 };
+
+const proseRows = [
+  {
+    term: "Retention",
+    note: "How long a record is kept before it is archived. The default covers the legal minimum and can be extended per project, which also moves the date of the next review.",
+  },
+  {
+    term: "Ownership",
+    note: "The person answerable for the record. It changes hands when the owner leaves, and the previous owner stays in the history.",
+  },
+  {
+    term: "Review",
+    note: "A yearly check that the record is still needed.",
+  },
+];
+
+function ProseTable({ responsive, withActions }: { responsive?: "cards" | "scroll"; withActions?: boolean }) {
+  return (
+    <Table caption="Record rules" showCaption responsive={responsive}>
+      <TableHead>
+        <TableRow>
+          <Th>Rule</Th>
+          <Th>What it means</Th>
+          {withActions ? <Th actions label="Actions" /> : null}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {proseRows.map((row) => (
+          <TableRow key={row.term}>
+            <Td primary label="Rule">
+              {row.term}
+            </Td>
+            <Td label="What it means">{row.note}</Td>
+            {withActions ? (
+              <Td actions>
+                <Button size="sm" variant="secondary">
+                  Edit
+                </Button>
+                <Button size="sm" variant="secondary">
+                  Archive
+                </Button>
+              </Td>
+            ) : null}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+/**
+ * Header typography hooks. A container sets `--lufia-table-header-font-family`, `-font-size`, `-font-weight`,
+ * `-letter-spacing` and `-text-transform` and both the column headers and the card-mode labels follow, without redefining
+ * a global token. Here the headers read as sentence-case body text.
+ */
+export const HeaderTypographyHooks: Story = {
+  render: () => (
+    <div
+      style={
+        {
+          "--lufia-table-header-font-family": "var(--lufia-font-family-body)",
+          "--lufia-table-header-font-size": "var(--lufia-font-size-sm)",
+          "--lufia-table-header-font-weight": "var(--lufia-font-weight-semibold)",
+          "--lufia-table-header-letter-spacing": "normal",
+          "--lufia-table-header-text-transform": "none",
+        } as React.CSSProperties
+      }
+    >
+      <ProseTable />
+    </div>
+  ),
+};
+
+/** The same hooks on a phone: the card labels take the header look. */
+export const HeaderTypographyHooksOnPhone: Story = {
+  ...HeaderTypographyHooks,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/** `captionTone="muted"` for the visible caption, and the `--lufia-table-caption-*` hooks for colour, size and weight. */
+export const CaptionTone: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: "var(--lufia-space-6)" }}>
+      <Table caption="Muted caption" showCaption captionTone="muted">
+        <Header />
+        <Rows rows={projects.slice(0, 1)} />
+      </Table>
+      <div
+        style={
+          {
+            "--lufia-table-caption-color": "var(--lufia-color-text-muted)",
+            "--lufia-table-caption-font-size": "var(--lufia-font-size-xs)",
+            "--lufia-table-caption-font-weight": "var(--lufia-font-weight-regular)",
+          } as React.CSSProperties
+        }
+      >
+        <Table caption="Caption set by hooks" showCaption>
+          <Header />
+          <Rows rows={projects.slice(0, 1)} />
+        </Table>
+      </div>
+    </div>
+  ),
+};
+
+/** `--lufia-table-cell-vertical-align: top` for rows of several lines of prose. The actions cell keeps its controls on one centre line. */
+export const TopAlignedCells: Story = {
+  render: () => (
+    <div style={{ "--lufia-table-cell-vertical-align": "top" } as React.CSSProperties}>
+      <ProseTable responsive="scroll" withActions />
+    </div>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};
+
+/** `--lufia-table-cell-color` dims the body cells; `--lufia-table-primary-color` keeps the primary cell at full strength. Card mode follows. */
+export const DimmerCells: Story = {
+  render: () => (
+    <div
+      style={
+        {
+          "--lufia-table-cell-color": "var(--lufia-color-text-muted)",
+          "--lufia-table-primary-color": "var(--lufia-color-text-default)",
+        } as React.CSSProperties
+      }
+    >
+      <ProseTable />
+    </div>
+  ),
+};
+
+/** The same on a phone. */
+export const DimmerCellsOnPhone: Story = {
+  ...DimmerCells,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * `frame="flush"` on a translucent surface with no cover token set. Where the browser supports scroll-driven animations the
+ * covers and shadows are painted only while the table overflows, so nothing shows at the edges here.
+ */
+export const FlushTranslucentIdle: Story = {
+  render: (args) => (
+    <div style={{ ...panelStyle, background: "var(--lufia-color-bg-surface)" }}>
+      <div
+        style={
+          {
+            "--lufia-table-bg": "color-mix(in srgb, var(--lufia-color-bg-surface) 40%, transparent)",
+          } as React.CSSProperties
+        }
+      >
+        <Table {...args} frame="flush" responsive="scroll">
+          <TableHead>
+            <TableRow>
+              <Th>Project</Th>
+              <Th>Owner</Th>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {projects.slice(0, 3).map((project) => (
+              <TableRow key={project.id}>
+                <Td primary>{project.name}</Td>
+                <Td>{project.owner}</Td>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  ),
+  globals: { viewport: { value: "w1440", isRotated: false } },
+};

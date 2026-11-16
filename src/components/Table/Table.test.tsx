@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef, type ReactNode } from "react";
@@ -1106,5 +1107,51 @@ describe("Th wrap and abbr", () => {
   it("has no axe violations", async () => {
     const { container } = render(<Headers />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Table style hooks", () => {
+  const css = readFileSync("src/components/Table/Table.module.css", "utf8");
+
+  it("sets the caption tone as data-tone, default first", () => {
+    const { container, rerender } = render(
+      <Table caption="Projects" showCaption>
+        <TableBody />
+      </Table>,
+    );
+    expect(container.querySelector("caption")).toHaveAttribute("data-tone", "default");
+    rerender(
+      <Table caption="Projects" showCaption captionTone="muted">
+        <TableBody />
+      </Table>,
+    );
+    expect(container.querySelector("caption")).toHaveAttribute("data-tone", "muted");
+  });
+
+  it.each([
+    [
+      "header typography",
+      /th:not\(\[scope="row"\]\)\s*\{[^}]*font-family: var\(--lufia-table-header-font-family, var\(--lufia-font-family-mono\)\)[^}]*text-transform: var\(--lufia-table-header-text-transform, uppercase\)/,
+    ],
+    [
+      "card label typography",
+      /::before\s*\{[^}]*font-family: var\(--lufia-table-header-font-family[^}]*letter-spacing: var\(--lufia-table-header-letter-spacing, 0.06em\)/,
+    ],
+    [
+      "caption colour",
+      /\.caption\[data-visible\]\s*\{[^}]*color: var\(--lufia-table-caption-color, var\(--lufia-color-text-default\)\)/,
+    ],
+    ["cell vertical align", /vertical-align: var\(--lufia-table-cell-vertical-align, middle\)/],
+    ["cell colour", /color: var\(--lufia-table-cell-color, inherit\)/],
+    ["primary colour", /color: var\(--lufia-table-primary-color, var\(--lufia-color-text-default\)\)/],
+  ])("reads the %s hook with today's value as the fallback", (_name, pattern) => {
+    expect(css).toMatch(pattern);
+  });
+
+  it("keeps the scroll edges behind the scroll-timeline support query, off by default only there", () => {
+    expect(css).toMatch(/--table-cover-size: 2rem;[^}]*--table-shadow-size: 0\.75rem;/);
+    expect(css).toMatch(
+      /@supports \(animation-timeline: scroll\(self inline\)\)\s*\{\s*\.scroller\s*\{[^}]*--table-cover-size: 0px;[^}]*animation-timeline: scroll\(self inline\)/,
+    );
   });
 });
