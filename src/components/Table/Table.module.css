@@ -293,6 +293,24 @@
   min-inline-size: 0;
 }
 
+/* The foot (total rows): stronger than a body row, with a rule above the first one, and nothing to hover or open. A
+   body-cell look is kept: the column-header capitals belong to the header only. */
+.table tfoot :is(td, th[scope="row"]) {
+  font-weight: var(--lufia-font-weight-semibold);
+}
+
+.table tfoot tr:first-child > * {
+  border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+}
+
+.table tfoot tr:last-child :is(td, th[scope="row"]) {
+  border-block-end: 0;
+}
+
+.table tfoot tr:has(.rowLink:not([aria-disabled="true"])):hover {
+  background: none;
+}
+
 /* A group header row: one header cell over every column, set apart from the rows it names. */
 .table tr[data-group] > th {
   background: var(--table-row-hover);
@@ -349,6 +367,24 @@
     border: var(--lufia-border-width-thin) solid var(--table-border);
     border-radius: var(--lufia-radius-card);
     background: var(--table-bg);
+  }
+
+  /* The foot is a last card, set apart by a stronger border and the raised surface. */
+  .root[data-responsive="cards"] .table > tfoot {
+    display: block;
+    margin-block-start: var(--lufia-space-3);
+  }
+
+  .root[data-responsive="cards"] .table > tfoot > tr {
+    display: block;
+    padding: var(--lufia-space-2) var(--lufia-space-4);
+    border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);
+    border-radius: var(--lufia-radius-card);
+    background: var(--table-row-hover);
+  }
+
+  .root[data-responsive="cards"] .table > tfoot > tr + tr {
+    margin-block-start: var(--lufia-space-3);
   }
 
   /* Several bodies stack like one list, and a group header row is a full-width heading above its cards. */

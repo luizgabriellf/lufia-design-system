@@ -5,7 +5,7 @@ import { Badge, type BadgeTone } from "../Badge";
 import { Button } from "../Button";
 import { Pagination, type PaginationLabels } from "../Pagination";
 import { SortableTh, type SortDirection } from "../SortableTh";
-import { Table, TableBody, TableEmpty, TableHead, TableRow, Td, Th } from "./Table";
+import { Table, TableBody, TableEmpty, TableFoot, TableHead, TableRow, Td, Th } from "./Table";
 
 type Project = { id: number; name: string; owner: string; status: string; tone: BadgeTone; budget: number };
 
@@ -458,6 +458,55 @@ export const RowHeader: Story = {
 
 export const RowHeaderOnPhone: Story = {
   ...RowHeader,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * `TableFoot` holds a total row: a `Td rowHeader` ("Total") and `Td numeric` cells, stronger than the body rows with a rule
+ * above. In card mode (try the phone story) it is one last summary card with label and value pairs.
+ */
+export const TotalRow: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 3).map((project) => (
+          <TableRow key={project.id}>
+            <Td rowHeader primary label="Project">
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFoot>
+        <TableRow>
+          <Td rowHeader label="Project">
+            Total
+          </Td>
+          <Td />
+          <Td />
+          <Td label="Budget" numeric>
+            {money.format(projects.slice(0, 3).reduce((sum, project) => sum + project.budget, 0))}
+          </Td>
+          <Td actions />
+        </TableRow>
+      </TableFoot>
+    </Table>
+  ),
+};
+
+export const TotalRowOnPhone: Story = {
+  ...TotalRow,
   globals: { viewport: { value: "w390", isRotated: false } },
 };
 

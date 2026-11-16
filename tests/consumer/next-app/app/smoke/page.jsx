@@ -32,7 +32,7 @@ import { StatusIcon as StatusIcon_StatusIcon } from "@lufia/design-system/compon
 import { StatusTimeline as StatusTimeline_StatusTimeline } from "@lufia/design-system/components/StatusTimeline";
 import { Stepper as Stepper_Stepper } from "@lufia/design-system/components/Stepper";
 import { SuccessCheck as SuccessCheck_SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
-import { Table as Table_Table, TableBody as Table_TableBody, TableEmpty as Table_TableEmpty, TableHead as Table_TableHead, TableRow as Table_TableRow, Td as Table_Td, Th as Table_Th } from "@lufia/design-system/components/Table";
+import { Table as Table_Table, TableBody as Table_TableBody, TableEmpty as Table_TableEmpty, TableFoot as Table_TableFoot, TableHead as Table_TableHead, TableRow as Table_TableRow, Td as Table_Td, Th as Table_Th } from "@lufia/design-system/components/Table";
 import { TableToolbar as TableToolbar_TableToolbar } from "@lufia/design-system/components/TableToolbar";
 import { VisuallyHidden as VisuallyHidden_VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
 import ClientSmoke from "./boundary";
@@ -138,6 +138,7 @@ export default function SmokePage() {
       <section data-smoke="Table"><Table_Table caption={"x"}>{<tbody><tr><td>Cell</td></tr></tbody>}</Table_Table></section>
       <section data-smoke="Table/TableBody"><Table_TableBody /></section>
       <section data-smoke="Table/TableEmpty"><Table_TableEmpty colSpan={1} /></section>
+      <section data-smoke="Table/TableFoot"><Table_TableFoot /></section>
       <section data-smoke="Table/TableHead"><Table_TableHead /></section>
       <section data-smoke="Table/TableRow"><Table_TableRow /></section>
       <section data-smoke="Table/Td"><Table_Td /></section>

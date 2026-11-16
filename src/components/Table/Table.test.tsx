@@ -5,7 +5,7 @@ import { axe } from "../../test/axe";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { Pagination } from "../Pagination";
 import { SortableTh } from "../SortableTh";
-import { Table, TableBody, TableEmpty, TableHead, TableRow, Td, Th } from "./Table";
+import { Table, TableBody, TableEmpty, TableFoot, TableHead, TableRow, Td, Th } from "./Table";
 
 function Sample({
   rowProps,
@@ -862,6 +862,86 @@ describe("grouped bodies", () => {
 
   it.each(["cards", "scroll"] as const)("has no axe violations in %s mode", async (mode) => {
     const { container } = render(<Grouped responsive={mode} />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("TableFoot", () => {
+  function WithTotal({
+    responsive,
+    caption = "Budget",
+  }: {
+    responsive?: "cards" | "scroll";
+    caption?: string;
+  }) {
+    return (
+      <Table caption={caption} responsive={responsive}>
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Budget</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <Td rowHeader primary label="Project">
+              Harbour redesign
+            </Td>
+            <Td label="Budget" numeric>
+              12,400
+            </Td>
+          </TableRow>
+        </TableBody>
+        <TableFoot data-testid="foot">
+          <TableRow>
+            <Td rowHeader label="Project">
+              Total
+            </Td>
+            <Td label="Budget" numeric>
+              12,400
+            </Td>
+          </TableRow>
+        </TableFoot>
+      </Table>
+    );
+  }
+
+  it("renders a tfoot row group whose row header and numeric cells keep their semantics", () => {
+    render(<WithTotal />);
+    const foot = screen.getByTestId("foot");
+    expect(foot.tagName).toBe("TFOOT");
+    expect(foot).toHaveAttribute("role", "rowgroup");
+    const total = within(foot).getByRole("rowheader", { name: "Total" });
+    expect(total.tagName).toBe("TH");
+    expect(total).toHaveAttribute("scope", "row");
+    const cell = within(foot).getByRole("cell", { name: "12,400" });
+    expect(cell).toHaveAttribute("data-numeric");
+    expect(cell).toHaveAttribute("data-label", "Budget");
+  });
+
+  it("passes ref, style and className to the tfoot", () => {
+    const ref = createRef<HTMLTableSectionElement>();
+    render(
+      <Table caption="Budget">
+        <TableFoot ref={ref} className="extra" style={{ color: "red" }}>
+          <TableRow>
+            <Td rowHeader>Total</Td>
+          </TableRow>
+        </TableFoot>
+      </Table>,
+    );
+    expect(ref.current?.tagName).toBe("TFOOT");
+    expect(ref.current).toHaveClass("extra");
+    expect(ref.current).toHaveStyle({ color: "rgb(255, 0, 0)" });
+  });
+
+  it("has no axe violations in cards and scroll mode", async () => {
+    const { container } = render(
+      <>
+        <WithTotal />
+        <WithTotal responsive="scroll" caption="Budget, scrolling" />
+      </>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });
