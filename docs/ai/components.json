@@ -7008,6 +7008,10 @@
             "id": "components-data-display-disclosure--plain"
           },
           {
+            "export": "PlainWithConsumerPadding",
+            "id": "components-data-display-disclosure--plain-with-consumer-padding"
+          },
+          {
             "export": "ExclusiveGroup",
             "id": "components-data-display-disclosure--exclusive-group"
           },
@@ -7080,6 +7084,8 @@
         "--lufia-color-text-muted",
         "--lufia-disclosure-bg",
         "--lufia-disclosure-border",
+        "--lufia-disclosure-panel-padding-inline",
+        "--lufia-disclosure-summary-padding-inline",
         "--lufia-font-weight-medium",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-fast",
@@ -10585,6 +10591,10 @@
           {
             "export": "InlineLinks",
             "id": "components-overlays-menu--inline-links"
+          },
+          {
+            "export": "InlineInModalSheet",
+            "id": "components-overlays-menu--inline-in-modal-sheet"
           },
           {
             "export": "Phone320",

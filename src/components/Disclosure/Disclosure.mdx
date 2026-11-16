@@ -61,6 +61,12 @@ the element must be rendered by code that imports them.
 
 <Canvas of={Stories.Plain} />
 
+The plain variant has no inline padding. To restore it, set `--lufia-disclosure-summary-padding-inline` and
+`--lufia-disclosure-panel-padding-inline` on the root (through `className` or `style`), or write an ordinary
+`root > summary` rule: the variant selectors carry no extra specificity, so no override needs to outrank them.
+
+<Canvas of={Stories.PlainWithConsumerPadding} />
+
 ### Existing details with the classes
 
 <Canvas of={Stories.ClassesOnNativeDetails} />

@@ -81,7 +81,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-disclosure-panel-padding-inline`, `--lufia-disclosure-summary-padding-inline`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -93,6 +93,7 @@ one line where you can; it wraps and the chevron stays at the end.
 - `components-data-display-disclosure--default`
 - `components-data-display-disclosure--open-by-default`
 - `components-data-display-disclosure--plain`
+- `components-data-display-disclosure--plain-with-consumer-padding`
 - `components-data-display-disclosure--exclusive-group`
 - `components-data-display-disclosure--long-content`
 - `components-data-display-disclosure--on-phone`

@@ -1,5 +1,11 @@
-/* Theming hooks: --lufia-disclosure-bg (the boxed surface) and --lufia-disclosure-border (its outline). */
+/* Theming hooks: --lufia-disclosure-bg (the boxed surface), --lufia-disclosure-border (its outline),
+   --lufia-disclosure-summary-padding-inline and --lufia-disclosure-panel-padding-inline (the inline padding of the
+   summary row and of the content; the plain variant defaults both to 0). Set them on the root: a single-class rule is
+   enough. The `--_` properties are internal and may change. */
 .root {
+  --_summary-padding-inline: var(--lufia-space-4);
+  --_panel-padding-inline: var(--lufia-space-4);
+
   box-sizing: border-box;
   border: var(--lufia-border-width-thin) solid
     var(--lufia-disclosure-border, var(--lufia-color-border-subtle));
@@ -12,6 +18,9 @@
   border: 0;
   border-radius: 0;
   background: transparent;
+
+  --_summary-padding-inline: 0;
+  --_panel-padding-inline: 0;
 }
 
 /* The native marker is replaced by the chevron below, in every engine. */
@@ -23,7 +32,10 @@
   box-sizing: border-box;
   min-block-size: 2.5rem;
   padding-block: var(--lufia-space-2);
-  padding-inline: var(--lufia-space-4);
+  padding-inline: var(
+    --lufia-disclosure-summary-padding-inline,
+    var(--_summary-padding-inline, var(--lufia-space-4))
+  );
   border-radius: inherit;
   font-weight: var(--lufia-font-weight-medium);
   cursor: pointer;
@@ -68,10 +80,6 @@
   border-end-end-radius: 0;
 }
 
-.root[data-variant="plain"] > .summary {
-  padding-inline: 0;
-}
-
 .root[data-variant="plain"] > .summary:hover {
   background: transparent;
 }
@@ -79,11 +87,10 @@
 .panel {
   overflow-wrap: anywhere;
   padding-block: var(--lufia-space-1) var(--lufia-space-4);
-  padding-inline: var(--lufia-space-4);
-}
-
-.root[data-variant="plain"] > .panel {
-  padding-inline: 0;
+  padding-inline: var(
+    --lufia-disclosure-panel-padding-inline,
+    var(--_panel-padding-inline, var(--lufia-space-4))
+  );
 }
 
 /* Progressive enhancement: where the engine can style the content box and animate to `auto`, the content slides open.

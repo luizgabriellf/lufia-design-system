@@ -127,6 +127,7 @@ Name the list by what it holds ("Export", "Switch workspace"); the trigger's vis
 - `components-overlays-menu--in-clipping-card`
 - `components-overlays-menu--inline`
 - `components-overlays-menu--inline-links`
+- `components-overlays-menu--inline-in-modal-sheet`
 - `components-overlays-menu--phone-320`
 - `components-overlays-menu--phone-390`
 - `components-overlays-menu--right-to-left`
