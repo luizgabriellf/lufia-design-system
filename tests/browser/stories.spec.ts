@@ -351,6 +351,96 @@ test.describe("popover", () => {
   });
 });
 
+test.describe("menu", () => {
+  test("near the bottom edge it flips above the trigger and stays inside the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-menu--flips-near-the-bottom");
+    const list = page.getByRole("menu", { name: "Export" });
+    await expect(list).toBeVisible();
+    await expect(list).toHaveAttribute("data-side", "top");
+    await expect
+      .poll(async () =>
+        list.evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth;
+        }),
+      )
+      .toBe(true);
+  });
+
+  test("inside an overflow-hidden card it is portalled out and not clipped; arrows move focus and Escape returns it", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await openStory(page, "components-overlays-menu--in-clipping-card");
+    const list = page.getByRole("menu", { name: "Export" });
+    await expect(list).toBeVisible();
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const menu = document.querySelector<HTMLElement>('[role="menu"]');
+          const card = document
+            .querySelector("main, #storybook-root")
+            ?.querySelector("div[style*='overflow']");
+          if (!menu) return "missing";
+          const box = menu.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.bottom - 4);
+          return { escaped: !card?.contains(menu), hit: !!hit && menu.contains(hit) };
+        }),
+      )
+      .toEqual({ escaped: true, hit: true });
+    const trigger = page.getByRole("button", { name: "Export", exact: true });
+    // The story starts open without moving focus: close it, then open it with the keyboard.
+    await trigger.focus();
+    await page.keyboard.press("Escape");
+    await expect(list).toHaveCount(0);
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("menuitem").first()).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("menuitem").nth(1)).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(list).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
+  test("at 320px long labels wrap inside the list and nothing overflows the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-overlays-menu--long-labels");
+    const list = page.getByRole("menu", { name: "Workspaces" });
+    await expect(list).toBeVisible();
+    await expect
+      .poll(async () =>
+        list.evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return {
+            fits: box.left >= 0 && box.right <= innerWidth,
+            noOverflow: element.scrollWidth <= element.clientWidth,
+            page: document.documentElement.scrollWidth <= innerWidth,
+          };
+        }),
+      )
+      .toEqual({ fits: true, noOverflow: true, page: true });
+  });
+
+  test("the listbox options are at least 44px tall under a coarse pointer", async ({ browser }) => {
+    const context = await browser.newContext({
+      hasTouch: true,
+      isMobile: true,
+      viewport: { width: 390, height: 800 },
+    });
+    const page = await context.newPage();
+    await openStory(page, "components-overlays-menu--listbox");
+    const options = page.getByRole("option");
+    await expect(options.first()).toBeVisible();
+    // Layout height, not the painted box: the panel scales in while it opens, and a scaled box reads short.
+    const heights = await options.evaluateAll((elements) =>
+      elements.map((el) => (el as HTMLElement).offsetHeight),
+    );
+    expect(Math.min(...heights)).toBeGreaterThanOrEqual(44);
+    await context.close();
+  });
+});
+
 test.describe("tour", () => {
   test("the spotlight surrounds the target, the card sits beside it inside the viewport, and the page stays operable", async ({
     page,

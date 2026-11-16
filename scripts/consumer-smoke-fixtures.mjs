@@ -41,6 +41,10 @@ export const FIXTURES = {
     unreadCountLabel: `(count) => String(count)`,
     items: `[{ id: "a", title: "Notification" }]`,
   },
+  Menu: {
+    items: `[{ key: "a", label: "A" }]`,
+    trigger: `(props) => <button type="button" {...props}>Open</button>`,
+  },
   Popover: { trigger: `(props) => <button type="button" {...props}>Open</button>` },
   Tour: {
     steps: `[{ title: "Step", body: "Body" }]`,

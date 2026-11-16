@@ -130,6 +130,12 @@ export const ENTRIES: Entry[] = [
     "A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog.",
   ),
   c(
+    "Menu",
+    "Overlays",
+    "A list of actions, links or choices that hangs from a trigger, as a menu or a listbox, with arrow-key navigation and type-ahead.",
+    apg("Menu button", "menu-button"),
+  ),
+  c(
     "Tour",
     "Overlays",
     "A non-modal guided tour: a card that walks through steps with a spotlight on each target, while the page stays usable.",
