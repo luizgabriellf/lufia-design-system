@@ -29,16 +29,18 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `dir` | `"asc" \| "desc"` | yes |  |  |
+| `abbr` | `string` | no |  | A short visible text for a long `label`, as `Th abbr` does inside a `Table`. The full `label` stays the button's accessible name, and the short text carries it as a `title` tooltip. Also set natively on the `<th>`. |
 | `label` | `string` | yes |  |  |
 | `active` | `boolean` | yes |  | Whether the table is currently sorted by this column. |
 | `onSort` | `() => void` | yes |  |  |
+| `wrap` | `boolean` | no |  | Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
 - `SortDirection`: `"asc" | "desc"`
-- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }`
+- `SortableThProps`: `Omit<ThHTMLAttributes<HTMLTableCellElement>, "children" | "onClick"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; wrap?: boolean | undefined; abbr?: string | undefined; }`
 
 ## Example
 

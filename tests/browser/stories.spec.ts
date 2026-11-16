@@ -3015,6 +3015,126 @@ test.describe("table", () => {
     expect(small.overflow).toBeLessThanOrEqual(0);
   });
 
+  test("a wrapping or abbreviated header lets a nine-column table fit at 1440px", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const measure = async (name: string) => {
+      await openStory(page, id(name));
+      return page.evaluate(() => {
+        const scroller = document.querySelector<HTMLElement>("#storybook-root [role='region']")!;
+        const headers = [...scroller.querySelectorAll<HTMLElement>("thead th")];
+        const bottoms = headers.map((th) => th.getBoundingClientRect().bottom);
+        const sortable = scroller.querySelector<HTMLElement>("th[aria-sort] button")!;
+        return {
+          scrolls: scroller.scrollWidth - scroller.clientWidth,
+          twoLines: headers.some((th) => th.getBoundingClientRect().height > 50),
+          alignBottom: headers.every((th) => getComputedStyle(th).verticalAlign === "bottom"),
+          sameBottom: Math.max(...bottoms) - Math.min(...bottoms) < 1,
+          sortableHeight: sortable.getBoundingClientRect().height,
+          shortText: sortable.querySelector<HTMLElement>("[data-th-short]")?.textContent ?? null,
+          fullWidth:
+            sortable.querySelector<HTMLElement>("[data-th-full]")?.getBoundingClientRect().width ?? null,
+        };
+      });
+    };
+    const plain = await measure("wide-headers-plain");
+    expect(plain.scrolls, "the plain table is the reproduction").toBeGreaterThan(0);
+    expect(plain.twoLines).toBe(false);
+    expect(plain.alignBottom).toBe(false);
+    const wrap = await measure("wide-headers-wrap");
+    expect(wrap.scrolls).toBeLessThanOrEqual(0);
+    expect(wrap.twoLines).toBe(true);
+    expect(wrap.alignBottom).toBe(true);
+    expect(wrap.sameBottom).toBe(true);
+    expect(wrap.sortableHeight).toBeGreaterThan(30);
+    const abbr = await measure("wide-headers-abbr");
+    expect(abbr.scrolls).toBeLessThanOrEqual(0);
+    expect(abbr.shortText).toBe("Due");
+    // The full name is in the tree but takes no room.
+    expect(abbr.fullWidth).toBeLessThanOrEqual(1);
+  });
+
+  test("an abbreviated header keeps its full name for assistive tech and shows it in the revealed card header", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, id("wide-headers-abbr"));
+    await expect(page.getByRole("columnheader", { name: "Planned start date" })).toHaveAttribute(
+      "abbr",
+      "Start",
+    );
+    await expect(page.locator("th [data-th-short]").first()).toHaveAttribute("title", "Planned start date");
+    await page.setViewportSize({ width: 390, height: 900 });
+    await openStory(page, id("wide-headers-abbr-on-phone"));
+    await page.locator("th[aria-sort] button").focus();
+    const shown = await page.evaluate(() => {
+      const root = document.querySelector("#storybook-root")!;
+      const short = root.querySelector<HTMLElement>("th[aria-sort] [data-th-short]")!;
+      const full = root.querySelector<HTMLElement>("th[aria-sort] [data-th-full]")!;
+      return { short: getComputedStyle(short).display, full: full.getBoundingClientRect().width };
+    });
+    expect(shown.short).toBe("none");
+    expect(shown.full).toBeGreaterThan(20);
+  });
+
+  test("in card mode the corner cell ignores an inline width and keeps its content size", async ({
+    page,
+  }) => {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("corner-with-inline-width"));
+      const result = await page.evaluate(() => {
+        const cell = document.querySelector<HTMLElement>("#storybook-root td[data-card-slot='corner']")!;
+        const button = cell.querySelector("button")!.getBoundingClientRect();
+        return {
+          card: getComputedStyle(cell.parentElement!).display === "flex",
+          cell: cell.getBoundingClientRect().width,
+          button: button.width,
+        };
+      });
+      if (width < 1000) {
+        expect(result.card).toBe(true);
+        expect(result.cell).toBeGreaterThanOrEqual(result.button - 1);
+      } else {
+        // Table layout keeps the consumer's width.
+        expect(result.card).toBe(false);
+      }
+    }
+  });
+
+  test("a long pill in a half-width grid cell stays on one line and takes its own row", async ({ page }) => {
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await openStory(page, id("grid-with-long-pills"));
+      const result = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>("#storybook-root tbody tr")!;
+        const cell = (label: string) => row.querySelector<HTMLElement>(`[data-label="${label}"]`)!;
+        const pill = (label: string) =>
+          cell(label).querySelector<HTMLElement>("span")!.getBoundingClientRect();
+        const line = parseFloat(getComputedStyle(cell("Owner")).lineHeight);
+        return {
+          owner: cell("Owner").getBoundingClientRect(),
+          status: cell("Status").getBoundingClientRect(),
+          delivery: cell("Delivery").getBoundingClientRect(),
+          review: cell("Review").getBoundingClientRect(),
+          deliveryPillHeight: pill("Delivery").height,
+          reviewPillHeight: pill("Review").height,
+          line,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          rowBox: row.getBoundingClientRect(),
+          pillRight: pill("Delivery").right,
+        };
+      });
+      expect(Math.abs(result.deliveryPillHeight - result.reviewPillHeight), `${width}`).toBeLessThan(2);
+      expect(result.overflow).toBeLessThanOrEqual(0);
+      expect(result.pillRight).toBeLessThanOrEqual(result.rowBox.right + 1);
+      if (width === 390) {
+        // Short pairs still share a line; the long pill starts a new one.
+        expect(Math.abs(result.owner.top - result.status.top)).toBeLessThan(2);
+        expect(result.delivery.top).toBeGreaterThan(result.status.top + 10);
+      }
+    }
+  });
+
   test("the card controls mirror in right-to-left", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 900 });
     await openStory(page, id("card-controls-grid"), "default", "light", "rtl");

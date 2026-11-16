@@ -15576,6 +15576,13 @@
               "description": ""
             },
             {
+              "name": "abbr",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "A short visible text for a long `label`, as `Th abbr` does inside a `Table`. The full `label` stays the button's accessible name, and the short text carries it as a `title` tooltip. Also set natively on the `<th>`."
+            },
+            {
               "name": "label",
               "type": "string",
               "required": true,
@@ -15595,6 +15602,13 @@
               "required": true,
               "default": null,
               "description": ""
+            },
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`."
             }
           ],
           "nativeProps": true
@@ -15603,12 +15617,12 @@
           "name": "SortableThProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }"
+          "definition": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; wrap?: boolean | undefined; abbr?: string | undefined; }"
         }
       ],
       "aliases": {
         "SortDirection": "\"asc\" | \"desc\"",
-        "SortableThProps": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; }"
+        "SortableThProps": "Omit<ThHTMLAttributes<HTMLTableCellElement>, \"children\" | \"onClick\"> & { label: string; active: boolean; dir: SortDirection; onSort: () => void; wrap?: boolean | undefined; abbr?: string | undefined; }"
       },
       "story": {
         "docsId": "components-data-display-sortableth--docs",
@@ -17838,6 +17852,13 @@
           "description": "A plain column header (`scope=\"col\"`). `scope=\"row\"` makes a row header that looks like a body cell; for a row header with `primary`, `label`, `description` or `href`, use `Td rowHeader`. For a column the user can sort, use `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.",
           "props": [
             {
+              "name": "abbr",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "A short visible text for a long header (\"Qty\" for \"Quantity ordered\"). `children` stays the full name: it is what assistive technology reads (the short text is hidden from it and carries the full name as a `title` tooltip when the children are a string), what the revealed header row shows in card mode, and the attribute is also set natively on the `<th>`. Default: the children are shown as they are."
+            },
+            {
               "name": "numeric",
               "type": "boolean",
               "required": false,
@@ -17850,6 +17871,13 @@
               "required": false,
               "default": null,
               "description": "Card mode only: drops this header's visible label when the matching `Td hideInCards` is dropped. The header row is already hidden visually in card mode; this also keeps the header out of the revealed row that shows while a sortable header has keyboard focus. It stays in the accessibility tree."
+            },
+            {
+              "name": "wrap",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden."
             },
             {
               "name": "actions",
@@ -17868,12 +17896,19 @@
           ],
           "nativeProps": true,
           "variants": {
-            "discriminant": "actions",
+            "discriminant": "abbr",
             "nativeTypesDiffer": false,
             "branches": [
               {
-                "name": "actions: false",
+                "name": "abbr: string",
                 "props": [
+                  {
+                    "name": "abbr",
+                    "type": "string",
+                    "required": false,
+                    "description": "A short visible text for a long header (\"Qty\" for \"Quantity ordered\"). `children` stays the full name: it is what assistive technology reads (the short text is hidden from it and carries the full name as a `title` tooltip when the children are a string), what the revealed header row shows in card mode, and the attribute is also set natively on the `<th>`. Default: the children are shown as they are.",
+                    "onlyTypeDiffers": true
+                  },
                   {
                     "name": "actions",
                     "type": "false",
@@ -17906,12 +17941,26 @@
                     "type": "undefined",
                     "required": false,
                     "description": ""
+                  },
+                  {
+                    "name": "wrap",
+                    "type": "boolean",
+                    "required": false,
+                    "description": "Lets the header text wrap onto a second line (balanced, aligned to the bottom of the header row) instead of staying on one line, so a long header such as a two-word label takes less width and a wide table scrolls sideways less. Default off: headers keep one line. Has no effect in card mode, where the header row is hidden.",
+                    "onlyTypeDiffers": true
                   }
                 ]
               },
               {
-                "name": "actions: true",
+                "name": "abbr: undefined",
                 "props": [
+                  {
+                    "name": "abbr",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
                   {
                     "name": "actions",
                     "type": "true",
@@ -17923,6 +17972,13 @@
                     "type": "string",
                     "required": true,
                     "description": "The column's name for assistive technology (\"Actions\"), visually hidden."
+                  },
+                  {
+                    "name": "wrap",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
                   }
                 ]
               }
@@ -18146,6 +18202,30 @@
           {
             "export": "ActionsAlignment",
             "id": "components-data-display-table--actions-alignment"
+          },
+          {
+            "export": "WideHeadersPlain",
+            "id": "components-data-display-table--wide-headers-plain"
+          },
+          {
+            "export": "WideHeadersWrap",
+            "id": "components-data-display-table--wide-headers-wrap"
+          },
+          {
+            "export": "WideHeadersAbbr",
+            "id": "components-data-display-table--wide-headers-abbr"
+          },
+          {
+            "export": "WideHeadersAbbrOnPhone",
+            "id": "components-data-display-table--wide-headers-abbr-on-phone"
+          },
+          {
+            "export": "CornerWithInlineWidth",
+            "id": "components-data-display-table--corner-with-inline-width"
+          },
+          {
+            "export": "GridWithLongPills",
+            "id": "components-data-display-table--grid-with-long-pills"
           }
         ]
       },

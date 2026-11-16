@@ -89,11 +89,24 @@ All of these apply in card mode only; table layout and `responsive="scroll"` ign
 - **`cardLayout="grid"` on `Table`.** Labelled cells sit in two columns of label-over-value pairs, so a nine-column row is
   a few lines, not a tall stack. Under 20rem of the table's width it falls back to one column. The title, the actions
   cell and cells without a `label` take the full width; give a wide value `cardSpan="full"` on its `Td`. Default is
-  `stack`, one cell per line.
+  `stack`, one cell per line. A cell is half the row wide but never narrower than its content: a badge keeps its text on
+  one line in this layout, so a long pill (a date, a status) takes a line of its own instead of wrapping onto two, while
+  short pills and text still pair up. This needs no prop. A pill longer than the whole card still overflows; give that one
+  `Badge wrap`, which opts it back in to wrapping.
 - **`cardSlot="corner"` on `Td`.** The cell leaves the flow and is pinned to the card's top end corner (a drag handle or an
   overflow menu), so it adds no line of its own and a cell with no `label` leaves no gap. It uses logical properties and
   mirrors in right-to-left. The `primary` cell reserves room beside it (`--table-corner-reserve`, default 2rem, wide enough for
   a small icon button), so the title never runs under it; with no `primary` cell nothing reserves that room.
+  In card mode the corner cell ignores an inline `width` (such as `style={{ width: "1%" }}`, used to keep the column narrow in
+  table layout) and keeps the size of its content: a percentage would resolve against the card and squeeze it to a few
+  pixels. The table layout keeps your width.
+- **`wrap` and `abbr` on `Th` and `SortableTh`.** Two ways for a long header to take less width, so a wide table scrolls
+  sideways less. `wrap` lets the text take two balanced lines, aligned to the bottom of the header row (the whole row
+  aligns to the bottom, so one-line headers sit level with the last line). `abbr="Qty"` shows the short text and keeps
+  the children as the full name: the full name is what assistive technology reads, the short text is hidden from it and
+  carries the full name as a `title` tooltip (when the children are a string), the `<th>` gets the native `abbr`
+  attribute, and the revealed header row of a card table shows the full name. Both are opt-in; a header without them
+  behaves as before. They combine, and `SortableTh` accepts both.
 - **`cardOrder` on `Td`.** A number, mapped to CSS `order` (lower first, default 0, `primary` before everything). Use a
   negative number on the `actions` cell to put it right under the title, a positive one to keep it last.
 - **`hideInCards` on `Td` and `Th`.** For a column whose value is repeated in the card (a company name already in the title).
@@ -106,6 +119,14 @@ All of these apply in card mode only; table layout and `responsive="scroll"` ign
 <Canvas of={Stories.CardControlsGrid} />
 
 <Canvas of={Stories.CardControlsGridSmallestPhone} />
+
+<Canvas of={Stories.GridWithLongPills} />
+
+<Canvas of={Stories.CornerWithInlineWidth} />
+
+<Canvas of={Stories.WideHeadersWrap} />
+
+<Canvas of={Stories.WideHeadersAbbr} />
 
 `responsive="scroll"` keeps the table at every width and scrolls it instead.
 

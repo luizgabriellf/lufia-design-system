@@ -72,7 +72,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Disclosure: summary* name defaultOpen variant panelClassName
 - ProgressBar: value* label* max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
-- SortableTh: dir* label* active* onSort*
+- SortableTh: dir* label* active* onSort* abbr wrap
 - Sparkline: values* label* variant tone
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
 - StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone hint +6
