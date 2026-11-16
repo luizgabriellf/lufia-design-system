@@ -137,7 +137,8 @@ export type ThProps =
     });
 
 /**
- * A plain column header (`scope="col"`). Pass `scope="row"` for a row header. For a column the user can sort, use
+ * A plain column header (`scope="col"`). `scope="row"` makes a row header that looks like a body cell; for a row header
+ * with `primary`, `label`, `description` or `href`, use `Td rowHeader`. For a column the user can sort, use
  * `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.
  */
 export function Th({ numeric, actions, label, scope = "col", className, ...rest }: ThProps) {
@@ -165,6 +166,13 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
   numeric?: boolean;
   /** The row's identity: bolder, and the title of the card. Usually the first cell. */
   primary?: boolean;
+  /**
+   * Renders the cell as the row's header (`<th scope="row">`, `role="rowheader"`) instead of a `<td>`, so assistive
+   * technology announces it as the name of every other cell in the row. It keeps the look of a body cell (not the
+   * column-header capitals) and every other prop works as on a plain `Td`; with `primary` it is the card's title. Use it on
+   * the cell that identifies the row, usually the first.
+   */
+  rowHeader?: boolean;
   /** The row's buttons and links, laid out in a wrapping row. Never activates the row. */
   actions?: boolean;
   /**
@@ -209,7 +217,7 @@ export type TdProps = Omit<TdHTMLAttributes<HTMLTableCellElement>, "role"> & {
 };
 
 /**
- * A body cell. `label` is the column name for card mode; `primary` and `actions` mark the title and the button cluster of a
+ * A body cell. `rowHeader` makes it the row's `<th scope="row">`, still styled as a body cell. `label` is the column name for card mode; `primary` and `actions` mark the title and the button cluster of a
  * card. `href` or `onActivate` makes the whole row clickable through a real link or button in this cell, not through a
  * click handler on the `<tr>`.
  */
@@ -217,6 +225,7 @@ export function Td({
   label,
   numeric,
   primary,
+  rowHeader,
   actions,
   wrap,
   href,
@@ -259,10 +268,11 @@ export function Td({
     ) : (
       content
     );
+  const Cell = rowHeader ? "th" : "td";
   return (
-    <td
-      // eslint-disable-next-line jsx-a11y/no-interactive-element-to-noninteractive-role -- explicit so card mode keeps the semantics
-      role="cell"
+    <Cell
+      role={rowHeader ? "rowheader" : "cell"}
+      scope={rowHeader ? "row" : undefined}
       {...rest}
       className={className}
       data-label={label}
@@ -273,7 +283,7 @@ export function Td({
     >
       {actions && wrap ? <div className={styles.actionsRow}>{target}</div> : target}
       {after ? <div className={styles.after}>{after}</div> : null}
-    </td>
+    </Cell>
   );
 }
 

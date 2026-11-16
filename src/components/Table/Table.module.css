@@ -101,7 +101,7 @@
   color: var(--lufia-color-text-default);
 }
 
-.table th {
+.table th:not([scope="row"]) {
   padding: var(--table-pad-y) var(--table-pad-x);
   border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
   color: var(--lufia-color-text-muted);
@@ -114,14 +114,21 @@
   white-space: nowrap;
 }
 
-.table td {
+.table :is(td, th[scope="row"]) {
   padding: var(--table-pad-y) var(--table-pad-x);
   border-block-end: var(--lufia-border-width-thin) solid var(--table-border);
   vertical-align: middle;
   overflow-wrap: break-word;
 }
 
-.table tbody tr:last-child td {
+/* A body row header (`Td rowHeader`, or a `Th` with `scope="row"`) is a body cell: not the column-header look, and the
+   element's own bold and centring are undone. */
+.table th[scope="row"] {
+  font-weight: inherit;
+  text-align: start;
+}
+
+.table tbody tr:last-child :is(td, th[scope="row"]) {
   border-block-end: 0;
 }
 
@@ -131,7 +138,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.table td[data-primary] {
+.table :is(td, th[scope="row"])[data-primary] {
   font-weight: var(--lufia-font-weight-semibold);
 }
 
@@ -366,7 +373,7 @@
     border-radius: var(--lufia-radius-card);
   }
 
-  .root[data-responsive="cards"] .table td {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"]) {
     display: block;
     padding: var(--lufia-space-1) 0;
     border: 0;
@@ -378,14 +385,14 @@
 
   /* The column label comes from the cell, so the markup carries it once. The empty alternative text keeps the label out of
      the speech: the hidden header row already names the column. */
-  .root[data-responsive="cards"] .table td[data-label] {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label] {
     display: grid;
     grid-template-columns: minmax(6rem, 38%) minmax(0, 1fr);
     place-items: baseline start;
     column-gap: var(--lufia-space-3);
   }
 
-  .root[data-responsive="cards"] .table td[data-label]::before {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label]::before {
     content: attr(data-label);
     content: attr(data-label) / "";
     color: var(--lufia-color-text-muted);
@@ -397,13 +404,13 @@
     hyphens: auto;
   }
 
-  .root[data-responsive="cards"] .table td[data-primary] {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-primary] {
     display: block;
     padding-block: var(--lufia-space-2);
     font-size: var(--lufia-font-size-md);
   }
 
-  .root[data-responsive="cards"] .table td[data-label] > .after {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label] > .after {
     grid-column: -2 / -1;
   }
 
@@ -423,7 +430,7 @@
     box-shadow: none;
   }
 
-  .root[data-responsive="cards"] .table td[data-primary]::before,
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-primary]::before,
   .root[data-responsive="cards"] .table td[data-actions]::before {
     content: none;
   }
@@ -454,7 +461,7 @@
 
 /* Narrow cards stack the label above the value. */
 @container lufia-table (width < 30rem) {
-  .root[data-responsive="cards"] .table td[data-label] {
+  .root[data-responsive="cards"] .table :is(td, th[scope="row"])[data-label] {
     grid-template-columns: minmax(0, 1fr);
     row-gap: var(--lufia-space-1);
   }

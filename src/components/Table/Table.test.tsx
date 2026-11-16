@@ -617,3 +617,66 @@ describe("TableEmpty without a title", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("row header", () => {
+  function WithRowHeader({ rowHeaderProps }: { rowHeaderProps?: Partial<React.ComponentProps<typeof Td>> }) {
+    return (
+      <Table caption="Projects">
+        <TableHead>
+          <TableRow>
+            <Th>Project</Th>
+            <Th numeric>Budget</Th>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow className="highlight" data-testid="row">
+            <Td rowHeader primary label="Project" description="PRJ-100" {...rowHeaderProps}>
+              Harbour redesign
+            </Td>
+            <Td label="Budget" numeric>
+              <span data-testid="bar" />
+            </Td>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+
+  it("renders Td rowHeader as a th scope row that carries the card attributes", () => {
+    render(<WithRowHeader />);
+    const header = screen.getByRole("rowheader", { name: /Harbour redesign/ });
+    expect(header.tagName).toBe("TH");
+    expect(header).toHaveAttribute("scope", "row");
+    expect(header).toHaveAttribute("data-primary");
+    expect(header).toHaveAttribute("data-label", "Project");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(2);
+    expect(screen.getAllByRole("cell")).toHaveLength(1);
+  });
+
+  it("keeps numeric, className, description and the row link working on a row header", () => {
+    render(<WithRowHeader rowHeaderProps={{ numeric: true, className: "mine", href: "/p/1" }} />);
+    const header = screen.getByRole("rowheader");
+    expect(header).toHaveClass("mine");
+    expect(header).toHaveAttribute("data-numeric");
+    expect(within(header).getByRole("link")).toHaveAttribute("href", "/p/1");
+    expect(within(header).getByText("PRJ-100")).toBeInTheDocument();
+  });
+
+  it("leaves a plain Td as a td without scope", () => {
+    render(<WithRowHeader />);
+    const cell = screen.getByRole("cell");
+    expect(cell.tagName).toBe("TD");
+    expect(cell).not.toHaveAttribute("scope");
+  });
+
+  it("hosts a row className and non-text cell content", () => {
+    render(<WithRowHeader />);
+    expect(screen.getByTestId("row")).toHaveClass("highlight");
+    expect(screen.getByRole("cell")).toContainElement(screen.getByTestId("bar"));
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<WithRowHeader />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

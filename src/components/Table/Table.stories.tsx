@@ -425,6 +425,84 @@ export const DescriptionLine: Story = {
   ),
 };
 
+/**
+ * `rowHeader` renders the cell as `<th scope="row">`, so assistive technology announces it as the name of the row. It
+ * keeps the body-cell look; with `primary` it is the card's title. The column header stays a `Th`.
+ */
+export const RowHeader: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <Header />
+      <TableBody>
+        {projects.slice(0, 3).map((project) => (
+          <TableRow key={project.id}>
+            <Td rowHeader primary label="Project" description={`Reference PRJ-${project.id}00`}>
+              {project.name}
+            </Td>
+            <Td label="Owner">{project.owner}</Td>
+            <Td label="Status">{project.status}</Td>
+            <Td label="Budget" numeric>
+              {money.format(project.budget)}
+            </Td>
+            <Td actions>
+              <Button size="sm" variant="secondary">
+                Edit
+              </Button>
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const RowHeaderOnPhone: Story = {
+  ...RowHeader,
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
+
+/**
+ * A plain highlighted row is a `className` or `style` on `TableRow`, and a cell can hold any inline content, such as a
+ * bar that shows a share of a total. The table adds nothing for either.
+ */
+export const HighlightedRowAndInlineBar: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <Th>Project</Th>
+          <Th>Share of budget</Th>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {projects.slice(0, 3).map((project, index) => (
+          <TableRow
+            key={project.id}
+            style={index === 1 ? { background: "var(--lufia-color-accent-subtle)" } : undefined}
+          >
+            <Td rowHeader primary label="Project">
+              {project.name}
+            </Td>
+            <Td label="Share of budget">
+              <span
+                role="img"
+                aria-label={`${Math.round(project.budget / 520)}%`}
+                style={{
+                  display: "inline-block",
+                  blockSize: "0.5rem",
+                  inlineSize: `${Math.round(project.budget / 520)}%`,
+                  borderRadius: "var(--lufia-radius-sm)",
+                  background: "var(--lufia-color-accent-default)",
+                }}
+              />
+            </Td>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
 /** `selected` and `current` only mark state: the app owns the selection and the detail pane. */
 export const RowState: Story = {
   render: (args) => (

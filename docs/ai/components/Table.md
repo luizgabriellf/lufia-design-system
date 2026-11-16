@@ -85,6 +85,7 @@ Other native element attributes pass through to the root element.
 | `label` | `string` | no |  | The column's name, shown before the value in card mode ("Status"). Use the same text as the column header. Without it the value takes the whole line. Not shown for a `primary` or `actions` cell. |
 | `numeric` | `boolean` | no |  | Right-aligned digits in tabular figures. |
 | `primary` | `boolean` | no |  | The row's identity: bolder, and the title of the card. Usually the first cell. |
+| `rowHeader` | `boolean` | no |  | Renders the cell as the row's header (`<th scope="row">`, `role="rowheader"`) instead of a `<td>`, so assistive technology announces it as the name of every other cell in the row. It keeps the look of a body cell (not the column-header capitals) and every other prop works as on a plain `Td`; with `primary` it is the card's title. Use it on the cell that identifies the row, usually the first. |
 | `actions` | `boolean` | no |  | The row's buttons and links, laid out in a wrapping row. Never activates the row. |
 | `wrap` | `boolean` | no |  | With `actions`: in table layout, lets the controls wrap onto a second line (end-aligned, with a gap) instead of keeping one line that can force a sideways scroll at mid widths. With room the controls still share one line; they wrap only when the table would overflow. Default off: the cell shrinks to its buttons. Use it for up to two or three short actions; for more than two text actions prefer one overflow menu in the cell. Card mode already wraps. |
 | `href` | `string` | no |  | Makes the row a link. The cell's content becomes a real link (through the `linkComponent` of `LufiaProvider`) whose click area is stretched over the whole row, so it can be opened in a new tab and is announced as a link. Interactive children of other cells (buttons, links) stay on top and do their own thing. One per row. |
@@ -214,6 +215,9 @@ buttons that wrap well.
 - `components-data-display-table--named-row-control`
 - `components-data-display-table--named-row-control-on-phone`
 - `components-data-display-table--description-line`
+- `components-data-display-table--row-header`
+- `components-data-display-table--row-header-on-phone`
+- `components-data-display-table--highlighted-row-and-inline-bar`
 - `components-data-display-table--row-state`
 - `components-data-display-table--row-state-on-phone`
 - `components-data-display-table--plain-empty`

@@ -130,6 +130,21 @@ redesign"; a label that drops a visible `description` does not.
 
 <Canvas of={Stories.NamedRowControl} />
 
+### Row header
+
+Set `rowHeader` on the `Td` that names the row, usually the first. It renders `<th scope="row">` (`role="rowheader"`), so
+assistive technology reads it as the header of every other cell in the row, and it keeps the look of a body cell: the
+monospace capitals belong to column headers only. Every other `Td` prop works on it, and with `primary` it is the title of
+the card. A bare `<Th scope="row">` in a body row gets the same body-cell look, but has no `primary`, `label` or `description`; use
+`Td rowHeader` for those.
+
+A highlighted row is a `className` or `style` on `TableRow`, and a cell can hold any inline content, such as a bar: the
+table adds nothing for either.
+
+<Canvas of={Stories.RowHeader} />
+
+<Canvas of={Stories.HighlightedRowAndInlineBar} />
+
 ### Row state
 
 `TableRow` takes `selected` (`aria-selected` and a selected background) and `current` (`aria-current="true"` and an accent on
