@@ -433,7 +433,9 @@ test.describe("menu", () => {
     const options = page.getByRole("option");
     await expect(options.first()).toBeVisible();
     // Layout height, not the painted box: the panel scales in while it opens, and a scaled box reads short.
-    const heights = await options.evaluateAll((elements) => elements.map((el) => (el as HTMLElement).offsetHeight));
+    const heights = await options.evaluateAll((elements) =>
+      elements.map((el) => (el as HTMLElement).offsetHeight),
+    );
     expect(Math.min(...heights)).toBeGreaterThanOrEqual(44);
     await context.close();
   });
