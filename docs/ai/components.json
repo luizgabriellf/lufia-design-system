@@ -17668,7 +17668,7 @@
         {
           "name": "Td",
           "kind": "component",
-          "description": "A body cell. `label` is the column name for card mode; `primary` and `actions` mark the title and the button cluster of a card. `href` or `onActivate` makes the whole row clickable through a real link or button in this cell, not through a click handler on the `<tr>`.",
+          "description": "A body cell. `rowHeader` makes it the row's `<th scope=\"row\">`, still styled as a body cell. `label` is the column name for card mode; `primary` and `actions` mark the title and the button cluster of a card. `href` or `onActivate` makes the whole row clickable through a real link or button in this cell, not through a click handler on the `<tr>`.",
           "props": [
             {
               "name": "label",
@@ -17690,6 +17690,13 @@
               "required": false,
               "default": null,
               "description": "The row's identity: bolder, and the title of the card. Usually the first cell."
+            },
+            {
+              "name": "rowHeader",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Renders the cell as the row's header (`<th scope=\"row\">`, `role=\"rowheader\"`) instead of a `<td>`, so assistive technology announces it as the name of every other cell in the row. It keeps the look of a body cell (not the column-header capitals) and every other prop works as on a plain `Td`; with `primary` it is the card's title. Use it on the cell that identifies the row, usually the first."
             },
             {
               "name": "actions",
@@ -17759,7 +17766,7 @@
         {
           "name": "Th",
           "kind": "component",
-          "description": "A plain column header (`scope=\"col\"`). Pass `scope=\"row\"` for a row header. For a column the user can sort, use `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.",
+          "description": "A plain column header (`scope=\"col\"`). `scope=\"row\"` makes a row header that looks like a body cell; for a row header with `primary`, `label`, `description` or `href`, use `Td rowHeader`. For a column the user can sort, use `SortableTh` in the same row; it takes the same look from the table, and `data-numeric` aligns it like `numeric`.",
           "props": [
             {
               "name": "numeric",
@@ -17960,6 +17967,18 @@
           {
             "export": "DescriptionLine",
             "id": "components-data-display-table--description-line"
+          },
+          {
+            "export": "RowHeader",
+            "id": "components-data-display-table--row-header"
+          },
+          {
+            "export": "RowHeaderOnPhone",
+            "id": "components-data-display-table--row-header-on-phone"
+          },
+          {
+            "export": "HighlightedRowAndInlineBar",
+            "id": "components-data-display-table--highlighted-row-and-inline-bar"
           },
           {
             "export": "RowState",
