@@ -91,6 +91,23 @@ describe("FilterLinks", () => {
     expect(ref.current?.tagName).toBe("NAV");
   });
 
+  it("wraps by default and marks the grid layout on the nav", () => {
+    const { rerender } = render(<FilterLinks label="Filter" items={items} />);
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-layout", "wrap");
+    rerender(<FilterLinks label="Filter" items={items} layout="grid" />);
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-layout", "grid");
+  });
+
+  it("accepts an element as the count and keeps it in the link name", () => {
+    render(
+      <FilterLinks
+        label="Filter"
+        items={[{ key: "late", label: "Late", href: "?q=late", count: <b>7</b> }]}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Late 7" })).toBeInTheDocument();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(<FilterLinks label="Filter by status" items={items} value="open" />);
     expect(await axe(container)).toHaveNoViolations();

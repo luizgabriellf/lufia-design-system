@@ -1,4 +1,5 @@
 /* Theming hooks, all optional, set in the consuming theme or on the row: --lufia-filter-links-gap,
+   --lufia-filter-links-column-min (grid layout only),
    --lufia-filter-links-min-block-size, --lufia-filter-links-radius, --lufia-filter-links-current-color,
    --lufia-filter-links-current-bg, --lufia-filter-links-current-border, --lufia-filter-links-focus-width. */
 .root {
@@ -77,6 +78,23 @@
   flex: 0 0 auto;
   font-size: var(--lufia-font-size-xs);
   font-variant-numeric: tabular-nums;
+}
+
+/* Grid layout: equal columns, as many as fit; every chip fills its cell, label at the start and count at the end. */
+.root[data-layout="grid"] .list {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--lufia-filter-links-column-min, 9rem), 100%), 1fr)
+  );
+  align-items: stretch;
+}
+
+.root[data-layout="grid"] .chip {
+  display: flex;
+  inline-size: 100%;
+  justify-content: space-between;
+  text-align: start;
 }
 
 @media (pointer: coarse) {

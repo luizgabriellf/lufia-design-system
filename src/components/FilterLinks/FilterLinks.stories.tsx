@@ -51,6 +51,28 @@ export const Wrapping: Story = {
     value: "f2",
   },
 };
+/** Equal columns: each chip fills its cell, with the label at the start and the count at the end. */
+export const Grid: Story = {
+  args: {
+    layout: "grid",
+    value: "signature",
+    items: [
+      { key: "approvals", label: "Approvals", href: "?queue=approvals", count: 1 },
+      { key: "ready", label: "Ready to hand over", href: "?queue=ready", count: 1 },
+      { key: "signature", label: "Waiting for signature", href: "?queue=signature", count: 4 },
+      { key: "exchanges", label: "Exchanges", href: "?queue=exchanges", count: 2 },
+      { key: "review", label: "Certificates to review", href: "?queue=review", count: 2 },
+      { key: "minimum", label: "Below minimum", href: "?queue=minimum", count: 6 },
+      { key: "transfers", label: "Transfers waiting for an invoice", href: "?queue=transfers", count: 1 },
+    ],
+  },
+};
+
+export const GridPhone320: Story = {
+  args: Grid.args,
+  parameters: { viewport: { defaultViewport: "phone320" } },
+};
+
 export const Phone320: Story = {
   args: { items: statusItems },
   globals: { viewport: { value: "w320", isRotated: false } },

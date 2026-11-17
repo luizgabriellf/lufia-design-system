@@ -3748,14 +3748,15 @@ count. The filter lives in the URL, so every chip is a real link and the current
 | `label` | `string` | yes |  | Accessible name of the group ("Filter by status"). Required: a page can have more than one navigation. |
 | `items` | `readonly FilterLinksItem[]` | yes |  |  |
 | `value` | `string` | no |  | Key of the current filter. Its link gets `aria-current="true"`. Leave it out when none is current. |
+| `layout` | `"wrap" \| "grid"` | no | `"wrap"` | `"wrap"` (default) keeps each chip as wide as its text. `"grid"` lays the chips out in equal columns, each chip filling its cell with the label at the start and the count at the end: use it for many filters with counts, where ragged widths are hard to scan. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`). |
 | `ref` | `Ref<HTMLElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `FilterLinksItem`: `{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }`
-- `FilterLinksProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; ref?: Ref<HTMLElement> | undefined; }`
+- `FilterLinksItem`: `{ key: string; label: ReactNode; href: string; count?: ReactNode; native?: boolean | undefined; }`
+- `FilterLinksProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; layout?: "wrap" | "grid" | undefined; ref?: Ref<HTMLElement> | undefined; }`
 
 ### Example
 
@@ -3793,7 +3794,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-filter-links-current-bg`, `--lufia-filter-links-current-border`, `--lufia-filter-links-current-color`, `--lufia-filter-links-focus-width`, `--lufia-filter-links-gap`, `--lufia-filter-links-min-block-size`, `--lufia-filter-links-radius`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-filter-links-column-min`, `--lufia-filter-links-current-bg`, `--lufia-filter-links-current-border`, `--lufia-filter-links-current-color`, `--lufia-filter-links-focus-width`, `--lufia-filter-links-gap`, `--lufia-filter-links-min-block-size`, `--lufia-filter-links-radius`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -3806,6 +3807,8 @@ Labels are one or two words, in sentence case. Keep counts short.
 - `components-navigation-filterlinks--none-current`
 - `components-navigation-filterlinks--native-item`
 - `components-navigation-filterlinks--wrapping`
+- `components-navigation-filterlinks--grid`
+- `components-navigation-filterlinks--grid-phone-320`
 - `components-navigation-filterlinks--phone-320`
 - `components-navigation-filterlinks--right-to-left`
 - `components-navigation-filterlinks--all-themes`
@@ -8294,7 +8297,7 @@ of cards. It holds no state: sorting, filtering and paging stay with the app, wh
 | `children` | `ReactNode` | yes |  | `TableHead`, `TableBody` and, for a total row, `TableFoot`. |
 | `responsive` | `"scroll" \| "cards"` | no | `"cards"` | What the table does when its own width is under 40rem. `cards` (default) turns every row into a card: the header row is hidden visually, the `primary` cell becomes the title (first, wherever its column is) and each other cell shows its `label`. `scroll` keeps the table and scrolls it sideways, with a shadow on each edge that has more to see. |
 | `frame` | `"flush" \| "framed"` | no | `"framed"` | `framed` (default) draws the table's own border, radius and background. `flush` drops them so the table sits edge to edge inside a container that already has a frame (a card or panel); the header rule and row separators stay. In card mode each card keeps its own border either way. |
-| `cardLayout` | `"stack" \| "grid"` | no | `"stack"` | How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem. |
+| `cardLayout` | `"grid" \| "stack"` | no | `"stack"` | How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan="full"`. No effect in `responsive="scroll"` or above 40rem. |
 | `cardColumns` | `2 \| 3 \| 4` | no | `2` | With `cardLayout="grid"`: how many labelled cells share a line of the card, 2 (default), 3 or 4, for a comparison row (one title and a value per option). A pair never gets narrower than its own content: when the cells do not fit they wrap onto the next line, so a narrow card does not overflow. With 2 a container under 20rem is one column; with 3 or 4 it keeps the columns and relies on that wrapping. `Td cardSpan="full"` still takes the whole line. |
 | `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | Row padding. Default `comfortable`. |
 | `footer` | `ReactNode` | no |  | Hosts a `Pagination` (or any footer) under the rows. It is not part of the scrolling area. |
