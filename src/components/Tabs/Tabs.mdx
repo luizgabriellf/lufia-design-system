@@ -1,0 +1,147 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Tabs.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Tabs"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Views of one page where one is shown at a time. It follows the WAI-ARIA tabs pattern: a `tablist` of `tab` buttons and one
+`tabpanel` for the chosen tab. The same component renders a row of navigation links for views that have their own URL.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { Tabs } from "@lufia/design-system/components/Tabs";
+
+<Tabs
+  label="Account sections"
+  defaultValue="profile"
+  items={[
+    { key: "profile", label: "Profile", panel: <ProfileForm /> },
+    { key: "security", label: "Security", panel: <SecurityForm /> },
+    { key: "billing", label: "Billing", panel: <BillingForm />, disabled: true },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Give the list a name
+with `label` or `labelledBy` (the id of a heading).
+
+Controlled: `value` and `onValueChange`. Uncontrolled: `defaultValue` (the first enabled tab by default).
+
+### Links mode
+
+When **every** item has an `href`, the component renders a `<nav>` of links through the `linkComponent` set on
+`LufiaProvider`, so client-side routing works. The current page is `value`; that link gets `aria-current="page"`. There is no
+`tablist`, no `tab` role and no panel: a tablist would promise arrow-key behaviour that links do not have, so every link is
+an ordinary tab stop. The page owns the state, so `value` follows the route and `onValueChange` is not used. A single item
+without an `href` makes all of them tabs and the `href`s are ignored.
+
+<Canvas of={Stories.Links} />
+
+### Activation
+
+`activation="automatic"` (default) chooses the tab as soon as an arrow key focuses it. Use `"manual"` when showing a panel is
+slow (it fetches data): arrow keys only move focus, and Enter or Space chooses.
+
+<Canvas of={Stories.ManualActivation} />
+
+### Panels
+
+Only the chosen panel is rendered. `keepMounted` keeps the others in the DOM, hidden, so a form in one keeps its state while
+another is shown.
+
+<Canvas of={Stories.KeepMounted} />
+
+</Section>
+
+<Section id="examples">
+
+### Vertical
+
+<Canvas of={Stories.Vertical} />
+
+### Disabled tab
+
+<Canvas of={Stories.DisabledTab} />
+
+### Overflow
+
+A row that does not fit scrolls sideways inside itself; the page never widens.
+
+<Canvas of={Stories.Overflow} />
+
+### Theming hooks
+
+All optional `--lufia-tabs-*` custom properties: `gap`, `tab-padding-block`, `tab-padding-inline`, `tab-min-block-size`,
+`indicator-size`, `indicator-color`, `selected-color`, `focus-width`, `disabled-opacity`, `panel-padding` and `panel-gap`.
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key                        | Action                                                   |
+| -------------------------- | -------------------------------------------------------- |
+| Tab / Shift+Tab            | One stop in the list (the chosen tab), then the panel    |
+| Left / Right arrow         | Previous / next tab, wrapping; reversed in right-to-left |
+| Up / Down arrow (vertical) | Previous / next tab, wrapping                            |
+| Home / End                 | First / last tab                                         |
+| Enter / Space              | Chooses the focused tab (manual activation)              |
+
+In links mode the keys are the browser's: Tab moves between links and Enter follows one.
+
+Disabled tabs are skipped.
+
+### Accessibility
+
+- Always give `label` or `labelledBy`: a page often has more than one set.
+- Roving tabindex: exactly one tab is in the tab order. With manual activation, after focus leaves the list it comes back to
+  the chosen tab, not to the last one browsed.
+- The panel is focusable (`tabindex="0"`), so a panel with no focusable content is still reachable by keyboard.
+- The chosen tab has a bar on the edge next to the panel as well as stronger text, so it reads without colour. The focus ring
+  is visible, uses the focus-ring token and is kept in `forced-colors` mode.
+- Colour changes are the only transition and are removed under `prefers-reduced-motion`.
+- Tabs are at least 2.5rem tall, and 2.75rem under a coarse pointer.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Two to seven views of one screen that share a heading, where only one is needed at a time.
+- Use links mode for the same look when each view is its own route.
+
+### When not to use
+
+- Page-level navigation (use the app shell) or steps in order (`Stepper`).
+- A choice that changes how the same data is shown (`SegmentedToggle`).
+- Sibling views that need a description or an icon tile with a sliding indicator: `PeerNav`.
+- Content that should all be visible at once or collapsed in place (`Disclosure`).
+
+### Content guidelines
+
+Labels are one or two words, in sentence case, and stay on one line.
+
+</Section>

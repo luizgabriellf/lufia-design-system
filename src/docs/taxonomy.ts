@@ -167,6 +167,12 @@ export const ENTRIES: Entry[] = [
     "Links or tabs for moving between sibling views of the same page.",
     apg("Tabs", "tabs"),
   ),
+  c(
+    "Tabs",
+    "Navigation",
+    "Tabs that switch the content of one page, or links for views that have their own URL.",
+    apg("Tabs", "tabs"),
+  ),
   c("NavRow", "Navigation", "A row that links to a destination, for lists of places and settings."),
   c("Pagination", "Navigation", "Previous, next and numbered pages for long lists."),
   c(

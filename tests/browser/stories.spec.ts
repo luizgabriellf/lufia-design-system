@@ -352,6 +352,24 @@ test.describe("popover", () => {
 });
 
 test.describe("menu", () => {
+  for (const reducedMotion of ["no-preference", "reduce"] as const) {
+    test(`a native download item downloads the file and closes the list (${reducedMotion} motion)`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion });
+      await openStory(page, "components-overlays-menu--native-link-items");
+      const item = page.getByRole("menuitem", { name: "Download CSV" });
+      await expect(item).toHaveAttribute("download", "report.csv");
+      expect(await item.evaluate((element) => element.tagName)).toBe("A");
+      const downloading = page.waitForEvent("download");
+      await item.focus();
+      await page.keyboard.press("Enter");
+      const download = await downloading;
+      expect(download.suggestedFilename()).toBe("report.csv");
+      await expect(page.getByRole("menu")).toHaveCount(0);
+    });
+  }
+
   test("near the bottom edge it flips above the trigger and stays inside the viewport", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await openStory(page, "components-overlays-menu--flips-near-the-bottom");
@@ -3637,10 +3655,44 @@ test.describe("disclosure", () => {
     expect(boxed).toEqual(["16px", "16px"]);
   });
 
+  test("compact is tighter than default, and the indicator can be replaced or removed", async ({ page }) => {
+    const measure = () =>
+      page.evaluate(() => {
+        const summary = document.querySelector("#storybook-root summary")!;
+        return {
+          height: summary.getBoundingClientRect().height,
+          paddingBlock: parseFloat(getComputedStyle(summary).paddingBlockStart),
+          chevron: getComputedStyle(summary, "::after").display,
+          children: summary.children.length,
+        };
+      });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-data-display-disclosure--default");
+    const regular = await measure();
+    await openStory(page, "components-data-display-disclosure--compact");
+    const compact = await measure();
+    expect(compact.height).toBeLessThan(regular.height);
+    expect(compact.paddingBlock).toBeLessThan(regular.paddingBlock);
+    expect(regular.chevron).not.toBe("none");
+    await openStory(page, "components-data-display-disclosure--no-indicator");
+    expect((await measure()).chevron).toBe("none");
+    await openStory(page, "components-data-display-disclosure--custom-indicator");
+    const custom = await measure();
+    expect(custom.chevron).toBe("none");
+    expect(custom.children).toBe(1);
+  });
+
   test("it has no axe violations open and closed, and in the classes-on-native-details story", async ({
     page,
   }) => {
-    for (const name of ["open-by-default", "default", "classes-on-native-details"]) {
+    for (const name of [
+      "open-by-default",
+      "default",
+      "classes-on-native-details",
+      "compact",
+      "custom-indicator",
+      "no-indicator",
+    ]) {
       await openStory(page, `components-data-display-disclosure--${name}`);
       expect(await runAxe(page, "#storybook-root"), name).toEqual([]);
     }
@@ -3657,5 +3709,76 @@ test.describe("spinner", () => {
     expect(await animation()).not.toBe("none");
     await page.emulateMedia({ reducedMotion: "reduce" });
     expect(await animation()).toBe("none");
+  });
+});
+
+test.describe("tabs", () => {
+  test("arrow keys, Home and End move focus and the chosen tab, with one tab stop", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default");
+    const tabs = page.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tabpanel")).toContainText("What needs attention today");
+    await page.keyboard.press("End");
+    await expect(tabs.last()).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.first()).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("tabpanel")).toBeFocused();
+  });
+
+  test("right-to-left reverses Left and Right", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default", "default", "light", "rtl");
+    const tabs = page.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect(tabs.nth(1)).toBeFocused();
+  });
+
+  test("at 320px a long row scrolls inside itself and the page does not widen", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-navigation-tabs--overflow");
+    const list = page.getByRole("tablist");
+    const sizes = await list.evaluate((element) => ({
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(sizes.scrollWidth).toBeGreaterThan(sizes.clientWidth);
+    expect(sizes.page).toBeLessThanOrEqual(sizes.view);
+    await page.getByRole("tab").last().focus();
+    await expect.poll(() => list.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  });
+
+  test("the chosen tab shows an indicator and the focus ring is visible", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default");
+    const indicator = () =>
+      page.getByRole("tab", { selected: true }).evaluate((element) => ({
+        background: getComputedStyle(element, "::after").backgroundColor,
+        height: getComputedStyle(element, "::after").height,
+      }));
+    const chosen = await indicator();
+    expect(chosen.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(chosen.height).not.toBe("0px");
+    await page.keyboard.press("Tab");
+    const outline = await page.getByRole("tab", { selected: true }).evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { style: style.outlineStyle, width: style.outlineWidth };
+    });
+    expect(outline.style).toBe("solid");
+    expect(outline.width).not.toBe("0px");
+  });
+
+  test("links mode has no tablist and Tab visits every link", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--links");
+    await expect(page.getByRole("tablist")).toHaveCount(0);
+    const links = page.getByRole("navigation", { name: "Sections" }).getByRole("link");
+    await expect(links.first()).toHaveAttribute("aria-current", "page");
+    await links.first().focus();
+    await page.keyboard.press("Tab");
+    await expect(links.nth(1)).toBeFocused();
   });
 });

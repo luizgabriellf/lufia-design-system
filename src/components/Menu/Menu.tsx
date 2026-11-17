@@ -34,8 +34,20 @@ export type MenuItem = {
   meta?: string;
   /** Decorative icon before the label; hidden from assistive technology. */
   icon?: ReactNode;
-  /** Makes the item a link (through the `LufiaProvider` link adapter) instead of a button. */
+  /** Makes the item a link (through the `LufiaProvider` link adapter, or a plain `<a>` with `native`) instead of a button. */
   href?: string;
+  /**
+   * With `href`: render a plain `<a>` instead of going through the `LufiaProvider` link adapter. The browser follows it, so
+   * it is never prefetched and never a client-side transition: use it for a file download or a server route that must be
+   * requested for real. Keyboard, type-ahead and closing on activation work as for every other item.
+   */
+  native?: boolean;
+  /** With `native`: downloads the target instead of navigating; a string suggests the file name. Ignored otherwise. */
+  download?: boolean | string;
+  /** With `native`: where to open the target (`_blank` for a new tab), passed to the anchor as is. Ignored otherwise. */
+  target?: string;
+  /** With `native`: the anchor's `rel` (for example `noopener noreferrer` with `target="_blank"`), passed as is. Ignored otherwise. */
+  rel?: string;
   /** Runs when the item is activated, after the menu has closed (`closeOnSelect`) and focus is back on the trigger. */
   onSelect?: () => void;
   /**
@@ -243,7 +255,21 @@ function MenuList({ ref, label, role, items, onActivate, onTab, onKeyDown, class
     );
     return (
       <li key={item.key} role="none" className={styles.entry}>
-        {item.href !== undefined ? (
+        {item.href !== undefined && item.native ? (
+          <a
+            {...props}
+            href={item.href}
+            download={item.download}
+            target={item.target}
+            rel={item.rel}
+            onClick={(event) => {
+              if (item.disabled) return event.preventDefault();
+              onActivate(item);
+            }}
+          >
+            {content}
+          </a>
+        ) : item.href !== undefined ? (
           <LufiaLink
             {...props}
             href={item.href}

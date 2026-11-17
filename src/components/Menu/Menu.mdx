@@ -50,6 +50,17 @@ puts focus.
 
 <Canvas of={Stories.LinkItems} />
 
+### Native links and downloads
+
+A link item normally goes through the `LufiaProvider` link adapter, so a router can prefetch it and navigate on the client.
+Set `native` on the item to render a plain `<a>` instead: the browser follows it, nothing is prefetched, and `download`,
+`target` and `rel` are passed to the anchor as they are. Use it for a file download or a server route (an export, a
+generated PDF) that must be requested for real. `download` is `true` or the suggested file name; `target`, `rel` and
+`download` apply only with `native`. Keyboard navigation, type-ahead, `aria-current` and closing on activation are the same as for
+every other item.
+
+<Canvas of={Stories.NativeLinkItems} />
+
 ### Descriptions, meta, groups and separators
 
 An item can carry a `description` under its label, trailing `meta` text and a leading `icon`. A group with a `label` has a

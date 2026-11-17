@@ -44,13 +44,12 @@ turns and, where the browser supports it, a slide.
 | `summary` | `ReactNode` | yes |  | The always visible label, rendered inside the native `<summary>`. Text or inline content; it is the control's name. |
 | `defaultOpen` | `boolean` | no |  | Start open. The browser owns the state afterwards, so this works without JavaScript. |
 | `variant` | `"boxed" \| "plain"` | no | `"boxed"` | `boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content. |
+| `size` | `"default" \| "compact"` | no | `"default"` | `default` keeps the regular row height and padding; `compact` tightens the padding and the row, for dense lists and sidebars. |
 | `panelClassName` | `string` | no |  | Class for the content wrapper. |
+| `summaryClassName` | `string` | no |  | Class for the `<summary>` row, for an app that styles its own header (type size, colour, spacing). |
+| `indicator` | `ReactNode` | no |  | What sits at the end of the summary row. Omit it for the built-in chevron, which turns with the state; `null` shows nothing; any other node (an icon, a count, text) replaces the chevron. A custom node does not turn: style it from the state the browser exposes, such as `details[open] .your-class`. It is decorative and hidden from assistive technology, so the summary text has to carry the meaning. |
 
 Other native element attributes pass through to the root element.
-
-## Types
-
-- `DisclosureProps`: `Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "title" | "summary"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: "boxed" | "plain" | undefined; panelClassName?: string | undefined; }`
 
 ## Example
 
@@ -81,7 +80,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-disclosure-panel-padding-inline`, `--lufia-disclosure-summary-padding-inline`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-disclosure-panel-padding-block`, `--lufia-disclosure-panel-padding-inline`, `--lufia-disclosure-summary-min-block-size`, `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-padding-inline`, `--lufia-font-size-sm`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -94,6 +93,11 @@ one line where you can; it wraps and the chevron stays at the end.
 - `components-data-display-disclosure--open-by-default`
 - `components-data-display-disclosure--plain`
 - `components-data-display-disclosure--plain-with-consumer-padding`
+- `components-data-display-disclosure--compact`
+- `components-data-display-disclosure--compact-plain`
+- `components-data-display-disclosure--summary-class-name`
+- `components-data-display-disclosure--custom-indicator`
+- `components-data-display-disclosure--no-indicator`
 - `components-data-display-disclosure--exclusive-group`
 - `components-data-display-disclosure--long-content`
 - `components-data-display-disclosure--on-phone`

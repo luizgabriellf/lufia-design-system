@@ -67,6 +67,21 @@ The plain variant has no inline padding. To restore it, set `--lufia-disclosure-
 
 <Canvas of={Stories.PlainWithConsumerPadding} />
 
+### Compact, summary class and indicator
+
+`size="compact"` tightens the padding and the row (a plain disclosure still has no inline padding). `summaryClassName` adds a
+class to the `<summary>`. `indicator` sets what sits at the end of the row: leave it out for the built-in chevron, pass
+`null` for nothing, or pass a node (an icon, a count) to replace it. A custom indicator is decorative (hidden from assistive
+technology) and does not turn; style it from the native state, for example `details[open] .your-class`. Without the
+props nothing changes.
+
+<Canvas of={Stories.Compact} />
+<Canvas of={Stories.CustomIndicator} />
+<Canvas of={Stories.NoIndicator} />
+
+The vertical rhythm has hooks too: `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-min-block-size`
+and `--lufia-disclosure-panel-padding-block`. On touch screens and phones the summary keeps its 44px target.
+
 ### Existing details with the classes
 
 <Canvas of={Stories.ClassesOnNativeDetails} />
@@ -99,7 +114,7 @@ starting state and needs no script.
   button, and its expanded state is exposed natively. Nothing is re-implemented, so nothing can drift from it.
 - Find in page opens a closed section that contains the match, which a script-driven disclosure would have to be built
   to do.
-- The chevron is decorative (a CSS shape), always at the end of the row and not mirrored in right-to-left, since it points
+- The chevron (or a custom `indicator`) is decorative (a CSS shape), always at the end of the row and not mirrored in right-to-left, since it points
   down and up rather than along the text.
 - A visible focus ring is always present, and the summary is at least 40px tall (44px on phones and touch screens).
 - The slide uses `::details-content` and `interpolate-size`, in browsers that have them, and only when the person has not

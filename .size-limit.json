@@ -36,6 +36,12 @@
     "gzip": true
   },
   {
+    "name": "Tabs",
+    "path": "dist/components/Tabs/**/*.{js,css}",
+    "limit": "3.3 kB",
+    "gzip": true
+  },
+  {
     "name": "Tour",
     "path": "dist/components/Tour/**/*.{js,css}",
     "limit": "10.5 kB",
@@ -110,7 +116,7 @@
   {
     "name": "Disclosure",
     "path": "dist/components/Disclosure/**/*.{js,css}",
-    "limit": "1.9 kB",
+    "limit": "2.5 kB",
     "gzip": true
   },
   {
