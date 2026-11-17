@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.61.0
+
+### Minor Changes
+
+- [#214](https://github.com/luizgabriellf/lufia-design-system/pull/214) [`decf021`](https://github.com/luizgabriellf/lufia-design-system/commit/decf021c3be21d1638f7ce6d884c0ad18aca6086) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - FilterLinks has a `layout="grid"` option: equal columns, as many as fit, where each chip fills its cell with the label at the start and the count at the end. It suits many filters with counts, whose ragged widths are hard to scan when wrapped. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`). `count` also accepts an element, for a count that carries its own emphasis.
+
 ## 0.60.0
 
 ### Minor Changes
