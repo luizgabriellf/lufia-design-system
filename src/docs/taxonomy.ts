@@ -249,6 +249,12 @@ export const ENTRIES: Entry[] = [
   ),
 
   c(
+    "OneWayDisclosure",
+    "Data display",
+    "A button that reveals a region and hides itself once it has, moving focus into the content.",
+    apg("Disclosure", "disclosure"),
+  ),
+  c(
     "Banner",
     "Feedback",
     "An inline message for a page or section: info, success, warning, danger or neutral, with an optional action and dismiss.",

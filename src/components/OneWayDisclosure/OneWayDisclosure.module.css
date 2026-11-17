@@ -1,0 +1,26 @@
+.root {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* Button sets its own display, which would beat the hidden attribute. */
+.trigger[hidden],
+.panel[hidden] {
+  display: none;
+}
+
+.panel {
+  min-inline-size: 0;
+}
+
+/* The panel takes focus by script when it opens; it is not a control, so the ring marks where focus landed. */
+.panel:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .panel:focus-visible {
+    outline-color: Highlight;
+  }
+}

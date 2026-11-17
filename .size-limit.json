@@ -36,6 +36,12 @@
     "gzip": true
   },
   {
+    "name": "OneWayDisclosure",
+    "path": "dist/components/OneWayDisclosure/**/*.{js,css}",
+    "limit": "1.3 kB",
+    "gzip": true
+  },
+  {
     "name": "Tabs",
     "path": "dist/components/Tabs/**/*.{js,css}",
     "limit": "3.3 kB",
