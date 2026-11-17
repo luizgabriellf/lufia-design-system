@@ -1,0 +1,117 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./FilterLinks.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="FilterLinks"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A labelled row of links that each apply a different filter to one list, such as "All", "Open" and "Closed", with an optional
+count. The filter lives in the URL, so every chip is a real link and the current one is marked `aria-current="true"`.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { FilterLinks } from "@lufia/design-system/components/FilterLinks";
+
+<FilterLinks
+  label="Filter by status"
+  value="open"
+  items={[
+    { key: "all", label: "All", href: "?status=all", count: 128 },
+    { key: "open", label: "Open", href: "?status=open", count: 42 },
+    { key: "resolved", label: "Resolved", href: "?status=resolved", count: 79 },
+  ]}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Links render through
+the `linkComponent` set on `LufiaProvider`, so client-side routing works. It carries no state and no `"use client"`, so a
+Server Component can render it.
+
+### Counts
+
+`count` is shown after the label. `0` is shown; leave it out for no count. Pass a string (`"99+"`) when it needs a cap or a
+locale.
+
+<Canvas of={Stories.WithoutCounts} />
+
+</Section>
+
+<Section id="examples">
+
+### Wrapping
+
+Many filters wrap onto more lines; nothing is hidden behind a scroll and the page never widens.
+
+<Canvas of={Stories.Wrapping} />
+
+### No current filter
+
+<Canvas of={Stories.NoneCurrent} />
+
+### Phone
+
+<Canvas of={Stories.Phone320} />
+
+### Theming hooks
+
+All optional `--lufia-filter-links-*` custom properties: `gap`, `min-block-size`, `radius`, `current-color`, `current-bg`,
+`current-border` and `focus-width`.
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key             | Action                                       |
+| --------------- | -------------------------------------------- |
+| Tab / Shift+Tab | Moves between the links                      |
+| Enter           | Follows the focused link (the browser's own) |
+
+### Accessibility
+
+- A `<nav>` with the `label` as its name, around a list of links. Give a `label` that says what is filtered.
+- The current filter has `aria-current="true"`, not `"page"`: the page is the same, only the filter changes. It also differs
+  by weight and border, so it reads without colour. The focus ring is visible and kept in `forced-colors` mode.
+- Chips are at least 2rem tall, and 2.75rem (`--lufia-target-touch`) under a coarse pointer.
+- Colour changes are the only transition and are removed under `prefers-reduced-motion`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Chips that narrow one list through the URL (a query string or a path), with an optional count.
+
+### When not to use
+
+- Views of a page that each have their own content: `Tabs` or `PeerNav` in links mode.
+- Filters applied in the browser without changing the URL: the filter chips of `TableToolbar`.
+- A choice between display modes of the same data: `SegmentedToggle`.
+
+### Content guidelines
+
+Labels are one or two words, in sentence case. Keep counts short.
+
+</Section>

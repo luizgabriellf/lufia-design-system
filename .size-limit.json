@@ -2,7 +2,7 @@
   {
     "name": "index barrel",
     "path": "dist/index.js",
-    "limit": "600 B",
+    "limit": "660 B",
     "gzip": true
   },
   {
@@ -39,6 +39,12 @@
     "name": "OneWayDisclosure",
     "path": "dist/components/OneWayDisclosure/**/*.{js,css}",
     "limit": "1.3 kB",
+    "gzip": true
+  },
+  {
+    "name": "FilterLinks",
+    "path": "dist/components/FilterLinks/**/*.{js,css}",
+    "limit": "1.7 kB",
     "gzip": true
   },
   {

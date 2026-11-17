@@ -33,6 +33,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Banner, focus on mount: a banner with `focusOnMount` takes focus once when it mounts and is not a tab stop (tabindex -1).
 - Disclosure, compact and indicator: the compact summary is shorter than the default one, and a custom or `null` indicator removes the built-in chevron.
 - OneWayDisclosure: activating the button by keyboard shows the content, hides the button and leaves focus on the content (not on the body), so Tab continues from inside it; the button is a 44px target under a coarse pointer.
+- FilterLinks: a long row wraps at 320 px without widening the page, the current link is `aria-current="true"` and shows a focus ring, and under a coarse pointer the links are at least 44px tall.
 - Tabs: arrow keys, Home and End move focus and the chosen tab (reversed in right-to-left), a long row at 320 px scrolls inside itself without widening the page and keeps a focused tab in view, the chosen tab shows an indicator and a focus ring, and links mode has no tablist.
 - Disclosure, plain padding: the variant has no inline padding by default (boxed keeps 16px), and a one-class `root > summary` rule or the `--lufia-disclosure-*-padding-inline` custom properties restore it.
 - Tour: the spotlight surrounds the target and the card sits beside it inside the viewport while the page behind still takes input; arrow keys step and Escape closes; a missing target gives a centred card; at 390 px the card is a docked sheet clear of the target.

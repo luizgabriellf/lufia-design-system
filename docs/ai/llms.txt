@@ -53,6 +53,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 ## Components: Navigation
 
 - [AppShell](https://luizgabriellf.github.io/lufia-design-system/ai/components/AppShell.md): The application frame: sidebar, content area and the phone navigation sheet. (beta)
+- [FilterLinks](https://luizgabriellf.github.io/lufia-design-system/ai/components/FilterLinks.md): A labelled row of links that each apply a filter to one list through the URL, with an optional count. (beta)
 - [NavRow](https://luizgabriellf.github.io/lufia-design-system/ai/components/NavRow.md): A row that links to a destination, for lists of places and settings. (beta)
 - [PageHeader](https://luizgabriellf.github.io/lufia-design-system/ai/components/PageHeader.md): The title row of a page with eyebrow, description and actions. (beta)
 - [Pagination](https://luizgabriellf.github.io/lufia-design-system/ai/components/Pagination.md): Previous, next and numbered pages for long lists. (beta)

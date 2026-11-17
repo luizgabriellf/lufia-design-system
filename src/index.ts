@@ -24,6 +24,7 @@ export * from "./components/DetailSectionCard";
 export * from "./components/Disclosure";
 export * from "./components/EmptyState";
 export * from "./components/FileField";
+export * from "./components/FilterLinks";
 export * from "./components/FormField";
 export * from "./components/Icon";
 export * from "./components/IconButton";
