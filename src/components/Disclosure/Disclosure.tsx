@@ -15,15 +15,27 @@ export type DisclosureProps = Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "s
   name?: string;
   /** `boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content. */
   variant?: "boxed" | "plain";
+  /** `default` keeps the regular row height and padding; `compact` tightens the padding and the row, for dense lists and sidebars. */
+  size?: "default" | "compact";
   /** Class for the content wrapper. */
   panelClassName?: string;
+  /** Class for the `<summary>` row, for an app that styles its own header (type size, colour, spacing). */
+  summaryClassName?: string;
+  /**
+   * What sits at the end of the summary row. Omit it for the built-in chevron, which turns with the state; `null` shows
+   * nothing; any other node (an icon, a count, text) replaces the chevron. A custom node does not turn: style it from the
+   * state the browser exposes, such as `details[open] .your-class`. It is decorative and hidden from assistive technology,
+   * so the summary text has to carry the meaning.
+   */
+  indicator?: ReactNode;
 };
 
 /**
  * A disclosure built on the native `<details>` and `<summary>`: it works without JavaScript and in a Server Component,
  * keeps the browser's keyboard behaviour (Enter or Space on the summary) and find-in-page, which opens a closed section
  * that holds the match. The chevron turns with the state, and where the browser supports it the content also slides open.
- * Pass `open` with `onToggle` to control it from a Client Component.
+ * Pass `open` with `onToggle` to control it from a Client Component. `size="compact"` tightens the padding, `summaryClassName`
+ * styles the row, and `indicator` replaces the chevron (or removes it with `null`).
  */
 export function Disclosure({
   summary,
@@ -31,8 +43,11 @@ export function Disclosure({
   defaultOpen,
   open,
   variant = "boxed",
+  size = "default",
   className,
   panelClassName,
+  summaryClassName,
+  indicator,
   ...rest
 }: DisclosureProps) {
   return (
@@ -41,8 +56,17 @@ export function Disclosure({
       open={open ?? defaultOpen}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-variant={variant}
+      data-size={size}
+      data-indicator={indicator === undefined ? undefined : indicator === null ? "none" : "custom"}
     >
-      <summary className={styles.summary}>{summary}</summary>
+      <summary className={[styles.summary, summaryClassName].filter(Boolean).join(" ")}>
+        {summary}
+        {indicator !== undefined && indicator !== null ? (
+          <span className={styles.indicator} aria-hidden="true">
+            {indicator}
+          </span>
+        ) : null}
+      </summary>
       <div className={[styles.panel, panelClassName].filter(Boolean).join(" ")}>{children}</div>
     </details>
   );

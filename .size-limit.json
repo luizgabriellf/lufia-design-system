@@ -110,7 +110,7 @@
   {
     "name": "Disclosure",
     "path": "dist/components/Disclosure/**/*.{js,css}",
-    "limit": "1.9 kB",
+    "limit": "2.5 kB",
     "gzip": true
   },
   {
