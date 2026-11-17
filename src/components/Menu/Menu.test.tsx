@@ -325,6 +325,137 @@ describe("Menu", () => {
     expect(screen.getByRole("menuitem", { name: "Overview" })).toHaveAttribute("href", "/app/overview");
   });
 
+  describe("native link items", () => {
+    const fileItems: MenuEntry[] = [
+      { key: "a", label: "Alpha", href: "/files/a.csv", native: true, download: "a.csv", onSelect: vi.fn() },
+      {
+        key: "b",
+        label: "Beta",
+        href: "https://example.com/b",
+        native: true,
+        target: "_blank",
+        rel: "noopener noreferrer",
+      },
+      { key: "c", label: "Gamma", href: "/files/c.csv", native: true },
+      { key: "d", label: "Delta" },
+    ];
+
+    it("renders a plain anchor with download, target and rel passed through, bypassing the link adapter", async () => {
+      withLayout();
+      const user = userEvent.setup();
+      render(
+        <LufiaProvider
+          linkComponent={({ children, ...rest }) => (
+            <a data-adapter="yes" {...rest}>
+              {children}
+            </a>
+          )}
+        >
+          <Menu
+            label="Export"
+            items={fileItems}
+            trigger={(props) => (
+              <button type="button" {...props}>
+                Open
+              </button>
+            )}
+          />
+        </LufiaProvider>,
+      );
+      await user.click(screen.getByRole("button", { name: "Open" }));
+      const alpha = screen.getByRole("menuitem", { name: "Alpha" });
+      expect(alpha.tagName).toBe("A");
+      expect(alpha).toHaveAttribute("href", "/files/a.csv");
+      expect(alpha).toHaveAttribute("download", "a.csv");
+      expect(alpha).not.toHaveAttribute("data-adapter");
+      const beta = screen.getByRole("menuitem", { name: "Beta" });
+      expect(beta).toHaveAttribute("target", "_blank");
+      expect(beta).toHaveAttribute("rel", "noopener noreferrer");
+      const gamma = screen.getByRole("menuitem", { name: "Gamma" });
+      expect(gamma).not.toHaveAttribute("download");
+      expect(gamma).not.toHaveAttribute("target");
+    });
+
+    it("sets download as a boolean attribute", async () => {
+      const { user, trigger } = setup({
+        items: [{ key: "a", label: "Alpha", href: "/a", native: true, download: true }],
+      });
+      await user.click(trigger);
+      expect(screen.getByRole("menuitem", { name: "Alpha" })).toHaveAttribute("download", "");
+    });
+
+    it("closes on activation, runs onSelect and returns focus to the trigger", async () => {
+      const onSelect = vi.fn();
+      const { user, trigger } = setup({
+        initialFocus: "first",
+        items: [{ key: "a", label: "Alpha", href: "#a", native: true, onSelect }],
+      });
+      await user.click(trigger);
+      await user.keyboard("{Enter}");
+      expect(onSelect).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+      expect(trigger).toHaveFocus();
+    });
+
+    it("activates with Space and stays open with closeOnSelect false", async () => {
+      const onSelect = vi.fn();
+      const { user, trigger } = setup({
+        initialFocus: "first",
+        closeOnSelect: false,
+        items: [{ key: "a", label: "Alpha", href: "#a", native: true, onSelect }],
+      });
+      await user.click(trigger);
+      await user.keyboard(" ");
+      expect(onSelect).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+    });
+
+    it("moves with the arrow keys and type-ahead like every other item", async () => {
+      const { user, trigger } = setup({ initialFocus: "first", items: fileItems });
+      await user.click(trigger);
+      expect(screen.getByRole("menuitem", { name: "Alpha" })).toHaveFocus();
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("menuitem", { name: "Beta" })).toHaveFocus();
+      await user.keyboard("d");
+      expect(screen.getByRole("menuitem", { name: "Delta" })).toHaveFocus();
+      await user.keyboard("{ArrowUp}{ArrowUp}");
+      expect(screen.getByRole("menuitem", { name: "Beta" })).toHaveFocus();
+      await user.keyboard("{End}");
+      expect(screen.getByRole("menuitem", { name: "Delta" })).toHaveFocus();
+    });
+
+    it("does not activate a disabled native item and cancels the navigation", async () => {
+      const onSelect = vi.fn();
+      const { user, trigger } = setup({
+        items: [{ key: "a", label: "Alpha", href: "/a", native: true, disabled: true, onSelect }],
+      });
+      await user.click(trigger);
+      const alpha = screen.getByRole("menuitem", { name: "Alpha" });
+      expect(alpha).toHaveAttribute("aria-disabled", "true");
+      await user.click(alpha);
+      expect(onSelect).not.toHaveBeenCalled();
+      expect(screen.getByRole("menu")).toBeInTheDocument();
+    });
+
+    it("works in the inline presentation and has no axe violations", async () => {
+      withLayout();
+      const onSelect = vi.fn();
+      const user = userEvent.setup();
+      const { container } = render(
+        <main>
+          <Menu
+            presentation="inline"
+            label="Export"
+            items={[{ key: "a", label: "Alpha", href: "#a", native: true, download: "a.csv", onSelect }]}
+          />
+        </main>,
+      );
+      expect(await axe(container, PAGE_RULES_OFF)).toHaveNoViolations();
+      await user.click(screen.getByRole("menuitem", { name: "Alpha" }));
+      expect(onSelect).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it("activates a link item with Space", async () => {
     const onSelect = vi.fn();
     const { user, trigger } = setup({
