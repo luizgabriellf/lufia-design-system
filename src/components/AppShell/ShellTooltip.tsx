@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { usePresence } from "../internal/usePresence";
 import styles from "./ShellTooltip.module.css";
 
 /** Pointer hover waits this long before the tooltip shows, so sweeping across the rail does not flicker. */
@@ -39,7 +40,7 @@ export type ShellTooltipTrigger = {
  *
  * It is a sighted-person aid and `aria-hidden`: the control keeps its own accessible name, so nothing is announced twice. It shows on
  * mouse and pen hover after a short delay and on keyboard focus, never on touch (a tap would leave it stuck), and it
- * goes away on Escape, on leaving, on blur and on scroll, and stays while the pointer is over it. Only opacity animates.
+ * goes away on Escape, on leaving, on blur and on scroll, and stays while the pointer is over it. Only opacity animates, in and out.
  */
 export function useShellTooltip(label: string, enabled: boolean) {
   const [placement, setPlacement] = useState<Placement | null>(null);
@@ -68,6 +69,12 @@ export function useShellTooltip(label: string, enabled: boolean) {
   }, []);
 
   const visible = enabled && placement !== null;
+  const tooltipRef = useRef<HTMLSpanElement>(null);
+  const presence = usePresence(visible, tooltipRef);
+  // Where it was, so it can fade out in place after `placement` is cleared.
+  const [lastPlacement, setLastPlacement] = useState<Placement | null>(null);
+  if (placement !== null && placement !== lastPlacement) setLastPlacement(placement);
+  const shown = placement ?? lastPlacement;
   // Escape closes it without moving focus; a scroll moves the trigger away from where it was measured.
   useEffect(() => {
     if (!visible) return;
@@ -112,17 +119,22 @@ export function useShellTooltip(label: string, enabled: boolean) {
   };
 
   const tooltip: ReactNode =
-    visible && client
+    presence.phase !== "unmounted" && client && shown
       ? createPortal(
           <span
+            ref={tooltipRef}
             role="tooltip"
             // Sighted people only: the control already carries this text as its name, and a portaled node outside a
             // landmark would be announced twice and flagged as content outside the landmarks.
             aria-hidden="true"
             className={styles.tooltip}
-            style={{ insetBlockStart: placement.top, insetInlineStart: placement.inlineStart }}
+            style={{ insetBlockStart: shown.top, insetInlineStart: shown.inlineStart }}
+            data-state={presence.phase === "open" ? "open" : "closed"}
             onPointerEnter={clear}
             onPointerLeave={hide}
+            onAnimationEnd={(event) => {
+              if (event.target === event.currentTarget) presence.finish();
+            }}
           >
             {label}
           </span>,

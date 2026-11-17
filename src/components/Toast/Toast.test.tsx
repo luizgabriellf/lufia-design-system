@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useEffect, useState } from "react";
 import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
@@ -396,6 +396,8 @@ describe("useToast", () => {
       );
       await act(async () => screen.getByRole("button", { name: "Save" }).click());
       await act(async () => {});
+      // The dialog leaves on the next frame (no stylesheet, so no exit animation to wait for).
+      await waitFor(() => expect(document.querySelector("dialog")).toBeNull());
       expect(bodyPolite()).toBe(region);
       expect(region.isConnected).toBe(true);
       expect(region).toHaveTextContent("Saved");
@@ -484,6 +486,7 @@ describe("useToast", () => {
       await act(async () => {});
       await act(async () => screen.getByRole("button", { name: "Save" }).click());
       await act(async () => {});
+      await waitFor(() => expect(document.querySelector("dialog")).not.toHaveAttribute("open"));
       const holders = Array.from(document.querySelectorAll("[data-lufia-announcer] [aria-live]")).filter(
         (region) => region.textContent?.includes("Saved"),
       );

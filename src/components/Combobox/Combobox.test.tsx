@@ -1,7 +1,9 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
 import { axe } from "../../test/axe";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { FormField } from "../FormField";
 import { useDismiss } from "../useDismiss";
 import { Combobox, type ComboboxOption } from "./Combobox";
@@ -930,6 +932,8 @@ describe("Combobox placement", () => {
     act(() => frames.shift()!(0));
     expect(root).toHaveAttribute("data-placement", "top");
     await user.keyboard("{Escape}");
+    // Closing queues one frame for the popup's exit (no stylesheet, so no animation to wait for); run it, then scroll.
+    act(() => frames.splice(0).forEach((frame) => frame(0)));
     document.dispatchEvent(new Event("scroll"));
     expect(frames).toHaveLength(0);
   });
@@ -1052,5 +1056,108 @@ describe("Combobox axe", () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.keyboard("zzz");
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Combobox popup exit", () => {
+  const popup = () => screen.queryByRole("listbox", { hidden: true })?.parentElement ?? null;
+
+  it("keeps the popup mounted, inert and click-through while it animates out, then removes it", async () => {
+    mockReducedMotion(false);
+    const user = userEvent.setup();
+    renderCombobox();
+    await user.click(box());
+    const open = popup()!;
+    expect(open).toHaveAttribute("data-state", "open");
+    stubExitAnimation("popup-out");
+    await user.keyboard("{Escape}");
+    expect(popup()).toBe(open);
+    expect(open).toHaveAttribute("data-state", "closed");
+    expect(open).toHaveAttribute("inert");
+    expect(box()).toHaveAttribute("aria-expanded", "false");
+    expect(box()).toHaveFocus();
+    act(() => endAnimation(open));
+    expect(open).not.toBeInTheDocument();
+  });
+
+  it("holds the list as it was while it leaves: typed narrowing and the chosen mark do not change mid-fade", async () => {
+    mockReducedMotion(false);
+    const user = userEvent.setup();
+    renderCombobox();
+    await user.click(box());
+    await user.keyboard("par");
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    stubExitAnimation("popup-out");
+    await user.click(screen.getByRole("option", { name: "Paris" }));
+    expect(box()).toHaveValue("Paris");
+    // Closing resets the typed text, which would show all four options if the list were live.
+    expect(screen.getAllByRole("option", { hidden: true })).toHaveLength(1);
+    act(() => endAnimation(popup()!));
+    expect(screen.queryByRole("listbox", { hidden: true })).not.toBeInTheDocument();
+  });
+
+  it("removes the popup by a timeout when animationend never arrives", async () => {
+    mockReducedMotion(false);
+    const user = userEvent.setup();
+    renderCombobox();
+    await user.click(box());
+    stubExitAnimation("popup-out");
+    await user.keyboard("{Escape}");
+    expect(popup()).not.toBeNull();
+    await waitFor(() => expect(popup()).toBeNull(), { timeout: 1000 });
+  });
+
+  it("goes straight back to open when it is opened again during the exit", async () => {
+    mockReducedMotion(false);
+    const user = userEvent.setup();
+    renderCombobox();
+    await user.click(box());
+    const open = popup()!;
+    stubExitAnimation("popup-out");
+    await user.keyboard("{Escape}");
+    await user.keyboard("{ArrowDown}");
+    expect(box()).toHaveAttribute("aria-expanded", "true");
+    expect(popup()).toBe(open);
+    expect(open).toHaveAttribute("data-state", "open");
+    expect(open).not.toHaveAttribute("inert");
+    act(() => endAnimation(open));
+    expect(popup()).toBe(open);
+  });
+
+  it("still closes on Escape and outside press the open popup had, and leaves nothing behind", async () => {
+    mockReducedMotion(false);
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">Outside</button>
+        <Combobox aria-label="City" options={options} {...texts} />
+      </>,
+    );
+    await user.click(box());
+    stubExitAnimation("popup-out");
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+    expect(box()).toHaveAttribute("aria-expanded", "false");
+    act(() => endAnimation(popup()!));
+    expect(popup()).toBeNull();
+  });
+
+  it("is removed at once under reduced motion", async () => {
+    mockReducedMotion(true);
+    const user = userEvent.setup();
+    renderCombobox();
+    await user.click(box());
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox", { hidden: true })).not.toBeInTheDocument();
+  });
+
+  it("leaves with the exit duration and easing, the reverse of its entrance, and takes no pointer", () => {
+    const css = readFileSync("src/components/Combobox/Combobox.module.css", "utf8");
+    expect(css).toMatch(
+      /\.popup\[data-state="closed"\] \{\s*pointer-events: none;\s*animation: popup-out var\(--lufia-motion-duration-exit\) var\(--lufia-motion-easing-in\) both;/,
+    );
+    expect(css).toMatch(
+      /@keyframes popup-out \{\s*to \{\s*opacity: 0;\s*transform: translateY\(calc\(-1 \* /,
+    );
+    expect(css).toMatch(/@keyframes popup-out-top \{\s*to \{\s*opacity: 0;\s*transform: translateY\(var\(/);
   });
 });

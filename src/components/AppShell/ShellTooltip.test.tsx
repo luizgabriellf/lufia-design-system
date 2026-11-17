@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 
 function Rail({ collapsed = true }: { collapsed?: boolean }) {
@@ -37,6 +38,8 @@ describe("rail tooltip", () => {
     expect(container).not.toContainElement(tip);
     fireEvent.pointerLeave(home);
     act(() => void vi.advanceTimersByTime(200));
+    // No stylesheet in jsdom, so there is no exit animation to wait for: the tooltip goes on the next frame.
+    act(() => void vi.advanceTimersByTime(50));
     expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
   });
 
@@ -59,6 +62,7 @@ describe("rail tooltip", () => {
     act(() => void vi.advanceTimersByTime(300));
     expect(screen.getByRole("tooltip", { hidden: true })).toBeInTheDocument();
     fireEvent.keyDown(document.body, { key: "Escape" });
+    act(() => void vi.advanceTimersByTime(50));
     expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
   });
 
@@ -78,7 +82,7 @@ describe("rail tooltip", () => {
     expect(home).toHaveFocus();
     expect(screen.getByRole("tooltip", { hidden: true })).toHaveTextContent("Home");
     await user.keyboard("{Escape}");
-    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument());
     expect(home).toHaveFocus();
   });
 
@@ -87,10 +91,11 @@ describe("rail tooltip", () => {
     render(<Rail />);
     await user.tab();
     await user.tab();
-    expect(screen.getAllByRole("tooltip", { hidden: true })).toHaveLength(1);
+    // The one for the item that lost focus finishes leaving on the next frame.
+    await waitFor(() => expect(screen.getAllByRole("tooltip", { hidden: true })).toHaveLength(1));
     expect(screen.getByRole("tooltip", { hidden: true })).toHaveTextContent("Inbox");
     fireEvent.scroll(window);
-    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument());
   });
 
   it("does not exist while the sidebar is open", async () => {
@@ -98,6 +103,78 @@ describe("rail tooltip", () => {
     render(<Rail collapsed={false} />);
     await user.tab();
     expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+  });
+
+  describe("exit", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    });
+
+    const withExitAnimation = () => stubExitAnimation("tooltip-out");
+
+    it("fades out in place, takes no pointer, and is removed when the animation ends", async () => {
+      mockReducedMotion(false);
+      const user = userEvent.setup();
+      render(<Rail />);
+      await user.tab();
+      const tip = screen.getByRole("tooltip", { hidden: true });
+      expect(tip).toHaveAttribute("data-state", "open");
+      const place = tip.getAttribute("style");
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(tip).toBeInTheDocument();
+      expect(tip).toHaveAttribute("data-state", "closed");
+      expect(tip).toHaveAttribute("style", place);
+      act(() => endAnimation(tip));
+      expect(tip).not.toBeInTheDocument();
+    });
+
+    it("is removed by a timeout when animationend never arrives", async () => {
+      mockReducedMotion(false);
+      const user = userEvent.setup();
+      render(<Rail />);
+      await user.tab();
+      const tip = screen.getByRole("tooltip", { hidden: true });
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(tip).toBeInTheDocument();
+      await waitFor(() => expect(tip).not.toBeInTheDocument(), { timeout: 1000 });
+    });
+
+    it("goes straight back to shown when it is asked for again during the exit", async () => {
+      mockReducedMotion(false);
+      const user = userEvent.setup();
+      render(<Rail />);
+      await user.tab();
+      const home = screen.getByRole("link", { name: "Home" });
+      const tip = screen.getByRole("tooltip", { hidden: true });
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(tip).toHaveAttribute("data-state", "closed");
+      fireEvent.blur(home);
+      fireEvent.focus(home);
+      expect(screen.getByRole("tooltip", { hidden: true })).toHaveAttribute("data-state", "open");
+      act(() => endAnimation(screen.getByRole("tooltip", { hidden: true })));
+      expect(screen.getByRole("tooltip", { hidden: true })).toBeInTheDocument();
+    });
+
+    it("is removed at once under reduced motion", async () => {
+      mockReducedMotion(true);
+      const user = userEvent.setup();
+      render(<Rail />);
+      await user.tab();
+      expect(screen.getByRole("tooltip", { hidden: true })).toBeInTheDocument();
+      await user.keyboard("{Escape}");
+      expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+    });
+
+    it("leaves with opacity only, for the exit duration and the exit easing", () => {
+      expect(css).toMatch(
+        /\.tooltip\[data-state="closed"\] \{[^}]*pointer-events: none;[^}]*tooltip-out var\(--lufia-motion-duration-exit\) var\(--lufia-motion-easing-in\)/,
+      );
+      expect(css).toMatch(/@keyframes tooltip-out \{\s*to \{\s*opacity: 0;\s*\}\s*\}/);
+    });
   });
 
   it("has no axe violations with a tooltip showing", async () => {

@@ -141,6 +141,16 @@
   animation-name: popup-in-top;
 }
 
+/* It leaves faster than it came, the way it came in, and on its way out it takes no pointer. */
+.popup[data-state="closed"] {
+  pointer-events: none;
+  animation: popup-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+.root[data-placement="top"] .popup[data-state="closed"] {
+  animation-name: popup-out-top;
+}
+
 .list {
   max-block-size: var(--combobox-list-max, 15rem);
   margin: 0;
@@ -222,6 +232,20 @@
 
 @keyframes popup-in-top {
   from {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-nudge));
+  }
+}
+
+@keyframes popup-out {
+  to {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
+}
+
+@keyframes popup-out-top {
+  to {
     opacity: 0;
     transform: translateY(var(--lufia-motion-distance-nudge));
   }

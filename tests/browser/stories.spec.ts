@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type ElementHandle, type Locator, type Page } from "@playwright/test";
 
 const axePath = createRequire(import.meta.url).resolve("axe-core/axe.min.js");
 
@@ -3859,5 +3859,285 @@ test.describe("one-way disclosure", () => {
       .evaluate((element) => (element as HTMLElement).offsetHeight);
     expect(height).toBeGreaterThanOrEqual(44);
     await context.close();
+  });
+});
+
+test.describe("overlay exits", () => {
+  type Seen = { connected: boolean; animation: string; pointerEvents: string };
+
+  /**
+   * Closes a surface and reports what it looks like right after: still in the document, playing an `-out` animation and
+   * letting clicks through. Resolves with the handle so the caller can wait for it to leave the document.
+   */
+  async function closeAndWatch(surface: Locator, close: () => Promise<void>) {
+    const handle = await surface.elementHandle();
+    if (!handle) throw new Error("surface not found");
+    await close();
+    const seen = await handle.evaluate((element): Seen => ({
+      connected: element.isConnected,
+      animation: getComputedStyle(element).animationName,
+      pointerEvents: getComputedStyle(element).pointerEvents,
+    }));
+    return { handle, seen };
+  }
+  const connected = (handle: ElementHandle) => handle.evaluate((element) => element.isConnected);
+
+  async function expectExit(surface: Locator, close: () => Promise<void>) {
+    const { handle, seen } = await closeAndWatch(surface, close);
+    expect(seen.connected).toBe(true);
+    expect(seen.animation).toMatch(/-out/);
+    expect(seen.pointerEvents).toBe("none");
+    await expect.poll(() => connected(handle)).toBe(false);
+  }
+
+  async function expectGoneAtOnce(surface: Locator, close: () => Promise<void>) {
+    const handle = await surface.elementHandle();
+    if (!handle) throw new Error("surface not found");
+    await close();
+    await expect.poll(() => connected(handle), { timeout: 150 }).toBe(false);
+  }
+
+  const phone = { width: 390, height: 844 };
+
+  test.describe("more actions sheet", () => {
+    const open = async (page: Page) => {
+      await page.setViewportSize(phone);
+      await openStory(page, "components-actions-moreactions--sheet");
+      // The story opens by itself; close it and open it from the trigger as a person would.
+      await page.keyboard.press("Escape");
+      await expect(page.locator('[data-lufia-part="layer"]')).toHaveCount(0);
+      const trigger = page.getByRole("button", { name: "More actions" });
+      await trigger.click();
+      await expect(page.getByRole("menu", { name: "More actions" })).toBeVisible();
+      return trigger;
+    };
+
+    test("the sheet and its backdrop animate out on Escape, then leave the document and focus returns", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const trigger = await open(page);
+      const backdrop = await page.locator('[data-lufia-part="layer"] > div').first().elementHandle();
+      await expectExit(page.locator('[data-lufia-part="sheet"]'), () => page.keyboard.press("Escape"));
+      expect(await connected(backdrop!)).toBe(false);
+      await expect(page.locator('[data-lufia-part="layer"]')).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+    });
+
+    test("a press on the backdrop closes it with the same exit", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await open(page);
+      await expectExit(page.locator('[data-lufia-part="sheet"]'), () => page.mouse.click(195, 40));
+    });
+
+    test("opening again during the exit goes straight back to open", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const trigger = await open(page);
+      await page.keyboard.press("Escape");
+      await trigger.click();
+      await page.waitForTimeout(500);
+      await expect(page.getByRole("menu", { name: "More actions" })).toBeVisible();
+      await expect(page.locator('[data-lufia-part="layer"]')).toHaveCount(1);
+    });
+
+    test("it leaves the document at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const trigger = await open(page);
+      await expectGoneAtOnce(page.locator('[data-lufia-part="sheet"]'), () => page.keyboard.press("Escape"));
+      await expect(trigger).toBeFocused();
+    });
+  });
+
+  test.describe("notification centre sheet", () => {
+    const sheet = (page: Page) => page.locator('[data-lufia-part="notification-sheet"]');
+    const open = async (page: Page) => {
+      await page.setViewportSize(phone);
+      await openStory(page, "components-overlays-notificationcenter--sheet-phone-390");
+      // The story opens by itself; close it and open it from the bell as a person would.
+      await page.keyboard.press("Escape");
+      await expect(page.locator('[data-lufia-part="notification-layer"]')).toHaveCount(0);
+      const trigger = page.getByRole("button", { name: /^Notifications/ });
+      await trigger.click();
+      await expect(sheet(page)).toBeVisible();
+      return trigger;
+    };
+
+    test("animates out on Escape, then leaves the document and focus returns to the bell", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const trigger = await open(page);
+      const layer = await page.locator('[data-lufia-part="notification-layer"]').elementHandle();
+      await expectExit(sheet(page), () => page.keyboard.press("Escape"));
+      expect(await connected(layer!)).toBe(false);
+      await expect(trigger).toBeFocused();
+    });
+
+    test("opening again during the exit goes straight back to open", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const trigger = await open(page);
+      await page.keyboard.press("Escape");
+      await trigger.click();
+      await page.waitForTimeout(500);
+      await expect(sheet(page)).toBeVisible();
+    });
+
+    test("it leaves the document at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const trigger = await open(page);
+      await expectGoneAtOnce(sheet(page), () => page.keyboard.press("Escape"));
+      await expect(trigger).toBeFocused();
+    });
+  });
+
+  test.describe("combobox popup", () => {
+    const popup = (page: Page) => page.getByRole("listbox").locator("xpath=..");
+    const open = async (page: Page) => {
+      await openStory(page, "components-forms-combobox--default");
+      const input = page.getByRole("combobox");
+      await input.click();
+      await expect(page.getByRole("listbox")).toBeVisible();
+      return input;
+    };
+
+    test("animates out on Escape and leaves the document, with focus staying in the field", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const input = await open(page);
+      await expectExit(popup(page), () => page.keyboard.press("Escape"));
+      await expect(input).toBeFocused();
+    });
+
+    test("choosing an option animates out too and keeps the list as it was", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await open(page);
+      const options = await page.getByRole("option").count();
+      const choice = page.getByRole("option").nth(1);
+      await expectExit(popup(page), () => choice.click());
+      expect(options).toBeGreaterThan(1);
+    });
+
+    test("opening again during the exit goes straight back to open", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const input = await open(page);
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(500);
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(input).toHaveAttribute("aria-expanded", "true");
+    });
+
+    test("it leaves the document at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await open(page);
+      await expectGoneAtOnce(popup(page), () => page.keyboard.press("Escape"));
+    });
+  });
+
+  test.describe("shell tooltip", () => {
+    const open = async (page: Page) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await openStory(page, "components-navigation-appshell--rail");
+      const link = page.getByRole("navigation").getByRole("link").first();
+      await link.focus();
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Tab");
+      await expect(page.getByRole("tooltip", { includeHidden: true })).toHaveCount(1);
+      return link;
+    };
+    const tooltip = (page: Page) => page.locator('[role="tooltip"]');
+
+    test("fades out on Escape and leaves the document", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await open(page);
+      await expectExit(tooltip(page), () => page.keyboard.press("Escape"));
+    });
+
+    test("showing again during the exit goes straight back to visible", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const link = await open(page);
+      await page.keyboard.press("Escape");
+      await link.blur();
+      await link.focus();
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(500);
+      await expect(tooltip(page)).toHaveCount(1);
+    });
+
+    test("it leaves the document at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await open(page);
+      await expectGoneAtOnce(tooltip(page), () => page.keyboard.press("Escape"));
+    });
+  });
+
+  test.describe("modal", () => {
+    const dialog = (page: Page) => page.getByRole("dialog", { name: "Edit project" });
+
+    test("a native dialog animates out, is closed and removed afterwards, and focus returns to the opener", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--native-top-layer");
+      await expect(dialog(page)).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(page.locator("dialog")).toHaveCount(0);
+      const trigger = page.getByRole("button", { name: "Open modal" });
+      await trigger.click();
+      await expect(dialog(page)).toBeVisible();
+      await expectExit(page.locator("dialog[open]"), () => page.keyboard.press("Escape"));
+      await expect(trigger).toBeFocused();
+    });
+
+    test("a native dialog opened again during the exit stays open", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--native-top-layer");
+      await page.keyboard.press("Escape");
+      await expect(page.locator("dialog")).toHaveCount(0);
+      const trigger = page.getByRole("button", { name: "Open modal" });
+      await trigger.click();
+      await expect(dialog(page)).toBeVisible();
+      await page.keyboard.press("Escape");
+      await page.evaluate(() => {
+        [...document.querySelectorAll("button")].find((b) => b.textContent === "Open modal")?.click();
+      });
+      await page.waitForTimeout(500);
+      await expect(page.locator("dialog[open]")).toHaveCount(1);
+    });
+
+    test("a native dialog is closed and removed at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await openStory(page, "components-overlays-modal--native-top-layer");
+      await expect(dialog(page)).toBeVisible();
+      await expectGoneAtOnce(page.locator("dialog[open]"), () => page.keyboard.press("Escape"));
+    });
+
+    test("a keep-mounted panel animates out, then hides, and keeps its state", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--keep-mounted");
+      const trigger = page.getByRole("button", { name: "Open modal" });
+      await trigger.click();
+      await expect(dialog(page)).toBeVisible();
+      await page.getByLabel("Project name").fill("Typed text");
+      const panel = page.locator('[data-lufia-part="panel"][data-kept]');
+      const { seen } = await closeAndWatch(panel, () => page.keyboard.press("Escape"));
+      expect(seen.animation).toMatch(/-out/);
+      expect(seen.pointerEvents).toBe("none");
+      await expect(panel).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await trigger.click();
+      await expect(page.getByLabel("Project name")).toHaveValue("Typed text");
+    });
+
+    test("a keep-mounted panel is hidden at once under reduced motion", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await openStory(page, "components-overlays-modal--keep-mounted");
+      await page.getByRole("button", { name: "Open modal" }).click();
+      await expect(dialog(page)).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(page.locator('[data-lufia-part="panel"][data-kept]')).toBeHidden({ timeout: 150 });
+    });
   });
 });

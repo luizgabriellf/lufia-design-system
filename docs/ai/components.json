@@ -5428,8 +5428,10 @@
         "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
         "--lufia-motion-distance-nudge",
+        "--lufia-motion-duration-exit",
         "--lufia-motion-duration-fast",
         "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-in",
         "--lufia-motion-easing-out",
         "--lufia-opacity-disabled",
         "--lufia-radius-control",
@@ -11065,14 +11067,14 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it has no exit animation."
+              "description": "Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it plays the same exit as any other modal, then is hidden."
             },
             {
               "name": "renderAs",
               "type": "\"portal\" | \"dialog\"",
               "required": false,
               "default": "\"portal\"",
-              "description": "`portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`."
+              "description": "`portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once it has closed; the backdrop is the native `::backdrop`."
             },
             {
               "name": "classNames",
@@ -11408,7 +11410,9 @@
         "--lufia-motion-distance-rise",
         "--lufia-motion-distance-travel",
         "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
         "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-in",
         "--lufia-motion-easing-out",
         "--lufia-opacity-disabled",
         "--lufia-radius-md",
@@ -11700,6 +11704,8 @@
         "--lufia-font-size-xs",
         "--lufia-motion-distance-nudge",
         "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-easing-in",
         "--lufia-motion-easing-out",
         "--lufia-opacity-disabled",
         "--lufia-overlay-z",
@@ -12508,7 +12514,7 @@
       },
       "motion": {
         "respectsReducedMotion": true,
-        "notes": "Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under\n`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.\n\n| Moment                         | What happens                                                                                                   |\n| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |\n| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet |\n| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`), then it unmounts; it is inert meanwhile   |\n| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps             |\n| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter          |\n| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`     |\n| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                 |\n| \"Mark all as read\"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                   |\n| The highlight card first shows | Its progress segments fill one after another                                                                   |\n\nNothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open\nthe panel, switch tabs, mark everything read and simulate an arrival."
+        "notes": "Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under\n`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.\n\n| Moment                         | What happens                                                                                                                     |\n| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |\n| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet                   |\n| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`); a sheet slides back down. Then it unmounts, inert meanwhile |\n| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps                               |\n| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter                            |\n| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`                       |\n| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                                   |\n| \"Mark all as read\"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                                     |\n| The highlight card first shows | Its progress segments fill one after another                                                                                     |\n\nNothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open\nthe panel, switch tabs, mark everything read and simulate an arrival."
       },
       "tokens": [
         "--lufia-border-width-thin",

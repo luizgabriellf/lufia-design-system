@@ -14,13 +14,13 @@
   {
     "name": "Modal",
     "path": "dist/components/Modal/**/*.{js,css}",
-    "limit": "8 kB",
+    "limit": "8.8 kB",
     "gzip": true
   },
   {
     "name": "Combobox",
     "path": "dist/components/Combobox/**/*.{js,css}",
-    "limit": "6.5 kB",
+    "limit": "7.1 kB",
     "gzip": true
   },
   {

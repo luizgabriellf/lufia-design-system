@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { LufiaProvider } from "../LufiaProvider";
@@ -129,7 +129,8 @@ describe("ShellFooterItem", () => {
     rerender(inSidebar(footer, false));
     expect(screen.getByRole("group", { name: "Account" })).not.toHaveAttribute("data-collapsed");
     link.focus();
-    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+    // The one that was leaving finishes on the next frame; none is shown for the open sidebar.
+    await waitFor(() => expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument());
   });
 
   it("has no axe violations", async () => {

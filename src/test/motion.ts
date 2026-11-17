@@ -27,3 +27,23 @@ export function endAnimation(element: Element) {
     element.dispatchEvent(new Event(type, { bubbles: true }));
   }
 }
+
+/**
+ * Test helper: jsdom has no stylesheet, so an exit animation never exists there. Makes `getComputedStyle` report an animation
+ * (`name`, `duration`) on every element while passing everything else through, so overlays that wait for their exit stay
+ * mounted until `endAnimation` (or their timeout fallback). Undo with `vi.restoreAllMocks()`.
+ */
+export function stubExitAnimation(name = "exit", duration = "0.16s") {
+  const real = window.getComputedStyle.bind(window);
+  return vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) => {
+    const style = real(element, pseudo);
+    return new Proxy(style, {
+      get(target, key) {
+        if (key === "animationName") return name;
+        if (key === "animationDuration") return duration;
+        const value = Reflect.get(target, key);
+        return typeof value === "function" ? value.bind(target) : value;
+      },
+    });
+  });
+}

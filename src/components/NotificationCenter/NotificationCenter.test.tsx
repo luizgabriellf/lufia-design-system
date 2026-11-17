@@ -1,9 +1,10 @@
+import { readFileSync } from "node:fs";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { Modal } from "../Modal";
 import { axe } from "../../test/axe";
-import { endAnimation, mockReducedMotion } from "../../test/motion";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import {
   NotificationCenter,
   NotificationPanel,
@@ -464,20 +465,105 @@ describe("NotificationCenter", () => {
       expect(dialog.closest('[data-lufia-part="notification-layer"]')?.parentElement).toBe(document.body);
       expect(dialog).toHaveFocus();
       await user.keyboard("{Escape}");
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(trigger).toHaveFocus();
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     });
 
     it("has a close button and closes on the backdrop", async () => {
       const { user, trigger } = setup({ presentation: "sheet" });
       await user.click(trigger);
       await user.click(screen.getByRole("button", { name: "Close" }));
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       await user.click(trigger);
       await user.click(
         document.querySelector('[data-lufia-part="notification-layer"] > [aria-hidden="true"]')!,
       );
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    });
+
+    describe("exit", () => {
+      const layer = () => document.querySelector<HTMLElement>('[data-lufia-part="notification-layer"]');
+      const sheetElement = () =>
+        document.querySelector<HTMLElement>('[data-lufia-part="notification-sheet"]');
+
+      it("keeps the sheet mounted, inert and click-through while it animates out, with focus and the page already back", async () => {
+        mockReducedMotion(false);
+        const { user, trigger, container } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        const sheet = sheetElement()!;
+        expect(layer()).toHaveAttribute("data-state", "open");
+        stubExitAnimation("sheet-out");
+        await user.keyboard("{Escape}");
+        expect(layer()).toBe(sheet.parentElement);
+        expect(layer()).toHaveAttribute("data-state", "closed");
+        expect(layer()).toHaveAttribute("inert");
+        expect(trigger).toHaveFocus();
+        expect(container.querySelector("[inert]")).toBeNull();
+        act(() => endAnimation(sheet));
+        expect(layer()).toBeNull();
+        expect(sheet).not.toBeInTheDocument();
+      });
+
+      it("removes the sheet by a timeout when animationend never arrives", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        stubExitAnimation("sheet-out");
+        await user.keyboard("{Escape}");
+        expect(layer()).not.toBeNull();
+        await waitFor(() => expect(layer()).toBeNull(), { timeout: 1000 });
+      });
+
+      it("goes straight back to open when it is opened again during the exit", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        const sheet = sheetElement()!;
+        stubExitAnimation("sheet-out");
+        await user.keyboard("{Escape}");
+        await user.click(trigger);
+        expect(layer()).toHaveAttribute("data-state", "open");
+        expect(layer()).not.toHaveAttribute("inert");
+        expect(sheetElement()).toBe(sheet);
+        act(() => endAnimation(sheet));
+        expect(layer()).not.toBeNull();
+      });
+
+      it("closes from the backdrop during an exit-capable close and leaves no layer behind", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        stubExitAnimation("sheet-out");
+        await user.click(
+          document.querySelector('[data-lufia-part="notification-layer"] > [aria-hidden="true"]')!,
+        );
+        expect(layer()).toHaveAttribute("data-state", "closed");
+        act(() => endAnimation(sheetElement()!));
+        expect(layer()).toBeNull();
+        expect(trigger).toHaveFocus();
+      });
+
+      it("is removed at once under reduced motion", async () => {
+        mockReducedMotion(true);
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        await user.keyboard("{Escape}");
+        expect(layer()).toBeNull();
+        expect(trigger).toHaveFocus();
+      });
+
+      it("leaves with the exit duration and easing, the reverse of its entrance, and takes no pointer", () => {
+        const css = readFileSync("src/components/NotificationCenter/NotificationCenter.module.css", "utf8");
+        expect(css).toMatch(/\.layer\[data-state="closed"\] \{\s*pointer-events: none;/);
+        for (const part of ["backdrop", "sheet"]) {
+          expect(css).toMatch(
+            new RegExp(
+              `\\.layer\\[data-state="closed"\\] \\.${part} \\{\\s*animation: [\\w-]+ var\\(--lufia-motion-duration-exit\\) var\\(--lufia-motion-easing-in\\) both;`,
+            ),
+          );
+        }
+        expect(css).toMatch(/@keyframes sheet-out \{\s*to \{\s*transform: translateY\(100%\);/);
+      });
     });
 
     it("is chosen by presentation auto below 60rem", async () => {

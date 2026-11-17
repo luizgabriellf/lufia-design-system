@@ -16,9 +16,21 @@
   animation: tooltip-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 
+/* It leaves faster than it came, and on its way out it takes no pointer (so it can never be hovered while it goes). */
+.tooltip[data-state="closed"] {
+  pointer-events: none;
+  animation: tooltip-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
 /* Opacity only, `from` only: the resting state is the end state, and the fill is `backwards`. */
 @keyframes tooltip-in {
   from {
+    opacity: 0;
+  }
+}
+
+@keyframes tooltip-out {
+  to {
     opacity: 0;
   }
 }

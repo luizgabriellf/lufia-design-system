@@ -239,8 +239,27 @@
   font-size: var(--lufia-font-size-md);
 }
 
+/* It leaves faster than it came, along the way it came in, and on its way out it takes no pointer. */
+.layer[data-state="closed"] {
+  pointer-events: none;
+}
+
+.layer[data-state="closed"] .backdrop {
+  animation: sheet-fade-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+.layer[data-state="closed"] .sheet {
+  animation: sheet-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
 @keyframes sheet-in {
   from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-out {
+  to {
     transform: translateY(100%);
   }
 }
@@ -251,10 +270,18 @@
   }
 }
 
+@keyframes sheet-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .menu,
   .backdrop,
-  .sheet {
+  .sheet,
+  .layer[data-state="closed"] .backdrop,
+  .layer[data-state="closed"] .sheet {
     animation: none;
   }
 }

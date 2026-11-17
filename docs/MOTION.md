@@ -69,6 +69,15 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
   `matchMedia`) and renders the final state.
 - **Reduced motion means less motion, not less information.** Show the new value; do not hide the change.
 
+### Exits
+
+Anything that enters with an animation leaves with one: `--lufia-motion-duration-exit` and `--lufia-motion-easing-in`, opacity
+plus the reverse of the entrance transform, and a `data-state="closed"` rule that sets `pointer-events: none`. A component
+that owns its structure (a sheet, a popup, a native dialog, a keep-mounted panel, a tooltip) uses `usePresence`: it stays
+mounted until `animationend` (or a timeout, when the event never arrives), is `inert` meanwhile, goes straight back to open
+if it is asked for again, and unmounts at once under reduced motion. Focus and the page behind come back when it starts to
+leave, not when it ends; a native `<dialog>` is the one exception, because it cannot give focus back while it is still modal.
+
 ## Primitives
 
 | Primitive                 | Use for                                    | Reduced motion               |

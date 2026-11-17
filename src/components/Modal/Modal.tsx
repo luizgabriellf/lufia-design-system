@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type AnimationEvent,
   type CSSProperties,
   type HTMLAttributes,
   type ReactNode,
@@ -14,6 +15,7 @@ import {
 import { createPortal } from "react-dom";
 import { Reveal } from "../../motion/Reveal";
 import { useLufia } from "../LufiaProvider";
+import { usePresence } from "../internal/usePresence";
 import { useBodyScrollLock } from "../useBodyScrollLock";
 import { useFocusTrap } from "../useFocusTrap";
 import { useTopModalDialog } from "./topModalDialog";
@@ -82,14 +84,15 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   scrollShadow?: boolean;
   /**
    * Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is
-   * hidden and inert; it has no exit animation.
+   * hidden and inert; it plays the same exit as any other modal, then is hidden.
    */
   keepMounted?: boolean;
   /**
    * `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with
    * `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape,
    * scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made
-   * inert by the browser, not by the package; the exit is not animated; the backdrop is the native `::backdrop`.
+   * inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once
+   * it has closed; the backdrop is the native `::backdrop`.
    */
   renderAs?: "portal" | "dialog";
   /**
@@ -216,11 +219,16 @@ export function Modal({
     if (exited.current.size >= 2) setLayerPresent(false);
   };
 
+  // A native dialog and a keep-mounted panel are never unmounted by `Reveal`, so they play their own exit: they stay mounted
+  // (and a native dialog stays open) until it ends, then the dialog is closed and a kept panel is hidden. Focus, the trap and
+  // the scroll lock end with `open`; the leaving panel is inert and takes no pointer.
+  const presence = usePresence(open && (native || keepMounted), panelRef);
+  const leaving = presence.phase !== "unmounted" && !open;
   const requestClose = () => {
     if (!busy) onClose();
   };
   // Declared before the focus trap so the native dialog is open (and focusable) when the trap moves focus into it.
-  const nativeDialog = useNativeDialog(panelRef, native && visible, {
+  const nativeDialog = useNativeDialog(panelRef, native && (visible || leaving), {
     onCloseRequest: requestClose,
     closeOnCancel: closeOnEscape,
     closeOnOutsideClick,
@@ -320,11 +328,22 @@ export function Modal({
   );
 
   const target = container ?? hostDialog ?? document.body;
+  const onExitEnd = (event: AnimationEvent<HTMLElement>) => {
+    if (event.target === event.currentTarget) presence.finish();
+  };
 
   if (native) {
-    if (!open && !keepMounted) return null;
+    if (!open && !keepMounted && !leaving) return null;
     return createPortal(
-      <dialog {...(panelProps as HTMLAttributes<HTMLDialogElement>)} ref={panelRef} {...nativeDialog}>
+      <dialog
+        {...(panelProps as HTMLAttributes<HTMLDialogElement>)}
+        ref={panelRef}
+        {...nativeDialog}
+        onAnimationEnd={(event) => {
+          rest.onAnimationEnd?.(event as unknown as AnimationEvent<HTMLDivElement>);
+          onExitEnd(event);
+        }}
+      >
         {content}
       </dialog>,
       target,
@@ -338,7 +357,8 @@ export function Modal({
           className={cx(styles.backdrop, classNames?.backdrop)}
           data-lufia-part="backdrop"
           data-state={open ? "open" : "closed"}
-          hidden={!open}
+          data-kept=""
+          hidden={!open && !leaving}
           aria-hidden="true"
           onPointerDown={() => {
             pressedBackdrop.current = true;
@@ -352,9 +372,18 @@ export function Modal({
           className={cx(styles.frame, classNames?.frame)}
           data-lufia-part="frame"
           data-sheet={sheetPlacement}
-          hidden={!open}
+          hidden={!open && !leaving}
         >
-          <div {...(panelProps as HTMLAttributes<HTMLDivElement>)} ref={panelRef} data-kept="" hidden={!open}>
+          <div
+            {...(panelProps as HTMLAttributes<HTMLDivElement>)}
+            ref={panelRef}
+            data-kept=""
+            hidden={!open && !leaving}
+            onAnimationEnd={(event) => {
+              rest.onAnimationEnd?.(event);
+              onExitEnd(event);
+            }}
+          >
             {content}
           </div>
         </div>
