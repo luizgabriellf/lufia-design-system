@@ -55,6 +55,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - PeerNav: label* items* value defaultValue onValueChange layout onItemClick phoneGrid
 - SectionHeader: title* headingLevel description actions titleId
 - Stepper: steps* current* onStepClick
+- Tabs: items* label labelledBy value defaultValue onValueChange orientation activation keepMounted
 
 ### Data display
 

@@ -3677,3 +3677,74 @@ test.describe("spinner", () => {
     expect(await animation()).toBe("none");
   });
 });
+
+test.describe("tabs", () => {
+  test("arrow keys, Home and End move focus and the chosen tab, with one tab stop", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default");
+    const tabs = page.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tabpanel")).toContainText("What needs attention today");
+    await page.keyboard.press("End");
+    await expect(tabs.last()).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.first()).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("tabpanel")).toBeFocused();
+  });
+
+  test("right-to-left reverses Left and Right", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default", "default", "light", "rtl");
+    const tabs = page.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect(tabs.nth(1)).toBeFocused();
+  });
+
+  test("at 320px a long row scrolls inside itself and the page does not widen", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-navigation-tabs--overflow");
+    const list = page.getByRole("tablist");
+    const sizes = await list.evaluate((element) => ({
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(sizes.scrollWidth).toBeGreaterThan(sizes.clientWidth);
+    expect(sizes.page).toBeLessThanOrEqual(sizes.view);
+    await page.getByRole("tab").last().focus();
+    await expect.poll(() => list.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  });
+
+  test("the chosen tab shows an indicator and the focus ring is visible", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--default");
+    const indicator = () =>
+      page.getByRole("tab", { selected: true }).evaluate((element) => ({
+        background: getComputedStyle(element, "::after").backgroundColor,
+        height: getComputedStyle(element, "::after").height,
+      }));
+    const chosen = await indicator();
+    expect(chosen.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(chosen.height).not.toBe("0px");
+    await page.keyboard.press("Tab");
+    const outline = await page.getByRole("tab", { selected: true }).evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { style: style.outlineStyle, width: style.outlineWidth };
+    });
+    expect(outline.style).toBe("solid");
+    expect(outline.width).not.toBe("0px");
+  });
+
+  test("links mode has no tablist and Tab visits every link", async ({ page }) => {
+    await openStory(page, "components-navigation-tabs--links");
+    await expect(page.getByRole("tablist")).toHaveCount(0);
+    const links = page.getByRole("navigation", { name: "Sections" }).getByRole("link");
+    await expect(links.first()).toHaveAttribute("aria-current", "page");
+    await links.first().focus();
+    await page.keyboard.press("Tab");
+    await expect(links.nth(1)).toBeFocused();
+  });
+});
