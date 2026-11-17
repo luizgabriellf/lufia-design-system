@@ -9,7 +9,7 @@ const [baseCss = "", forcedCss = ""] = source.split("@media (forced-colors: acti
 
 const rules = (css: string) =>
   [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => ({
-    selectors: (m[1] ?? "").split(",").map((x) => x.trim()),
+    selectors: (m[1] ?? "").split(/,(?![^()]*\))/).map((x) => x.trim()),
     body: m[2] ?? "",
   }));
 
@@ -28,6 +28,32 @@ describe("field control autofill CSS", () => {
     expect(body).toContain("-webkit-text-fill-color: var(--lufia-color-text-default)");
     expect(body).toContain("filter: none");
   });
+
+  it.each(["-webkit-autofill", "autofill"])(
+    "tints the whole box, affixes included, for :%s, in its own rule",
+    (pseudo) => {
+      const body = rule(baseCss, `.box:not([data-readonly], [data-disabled]):has(.native:${pseudo})`);
+      expect(body).toContain(`background: ${COVER}`);
+    },
+  );
+
+  it("leaves the read-only and disabled boxes on their surface and never tints through :focus or invalid", () => {
+    const tints = rules(baseCss).filter((r) => r.selectors.some((x) => x.includes(":has(.native:")));
+    expect(tints.length).toBe(2);
+    for (const r of tints) {
+      expect(r.selectors.join()).toContain(":not([data-readonly], [data-disabled])");
+      expect(r.body).not.toContain("border");
+      expect(r.body).not.toContain("outline");
+    }
+    expect(rule(baseCss, ".box[data-readonly]")).toContain("background: var(--lufia-color-bg-surface)");
+  });
+
+  it.each(["-webkit-autofill", "autofill"])(
+    "resets the box tint to Field under forced-colors for :%s",
+    (pseudo) => {
+      expect(rule(forcedCss, `.box[class]:has(.native:${pseudo})`)).toContain("background: Field");
+    },
+  );
 
   it("draws the invalid inner line once, on the box, and not through autofill rules", () => {
     const body = rule(baseCss, ".box[data-invalid]::after");
