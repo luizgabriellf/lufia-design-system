@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.60.0
+
+### Minor Changes
+
+- [#212](https://github.com/luizgabriellf/lufia-design-system/pull/212) [`4ddffca`](https://github.com/luizgabriellf/lufia-design-system/commit/4ddffcae1bdbd4e8541a46702ebaad0965bf5570) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Button `primary` and `secondary` fills have optional theme hooks, like `danger` already had: `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-fg`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border` and `--lufia-button-secondary-fg`. Unset, each falls back to the semantic token the variant used before, so nothing changes until a theme sets one.
+
 ## 0.59.0
 
 ### Minor Changes
