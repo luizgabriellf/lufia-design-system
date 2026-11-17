@@ -3829,3 +3829,34 @@ test.describe("filter links", () => {
     await context.close();
   });
 });
+
+test.describe("one-way disclosure", () => {
+  test("Enter shows the content, hides the button and keeps focus in the content", async ({ page }) => {
+    await openStory(page, "components-data-display-onewaydisclosure--default");
+    const trigger = page.getByRole("button", { name: "Fill in now" });
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    const region = page.getByRole("region", { name: "Your details" });
+    await expect(region).toBeVisible();
+    await expect(region).toBeFocused();
+    await expect(trigger).toBeHidden();
+    await page.keyboard.press("Tab");
+    await expect(page.getByLabel("Full name")).toBeFocused();
+  });
+
+  test("the button is at least 44px tall under a coarse pointer", async ({ browser }) => {
+    const context = await browser.newContext({
+      hasTouch: true,
+      isMobile: true,
+      viewport: { width: 390, height: 800 },
+    });
+    const page = await context.newPage();
+    await openStory(page, "components-data-display-onewaydisclosure--default");
+    const height = await page
+      .getByRole("button", { name: "Fill in now" })
+      .evaluate((element) => (element as HTMLElement).offsetHeight);
+    expect(height).toBeGreaterThanOrEqual(44);
+    await context.close();
+  });
+});

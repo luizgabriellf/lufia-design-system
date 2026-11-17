@@ -1,0 +1,110 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./OneWayDisclosure.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="OneWayDisclosure"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A button that reveals a region and leaves once it has. It is a disclosure whose trigger is spent: an invitation such as
+"Fill in now" that opens a form in place, where a button that stayed behind to fold the content away would be noise.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { OneWayDisclosure } from "@lufia/design-system/components/OneWayDisclosure";
+
+<OneWayDisclosure trigger="Fill in now" label="Your details" variant="primary">
+  <ProfileForm />
+</OneWayDisclosure>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
+
+### Why not `Disclosure`
+
+`Disclosure` is a native `<details>`: its summary is the control and always stays, so it cannot hide itself and focus has no
+place to go. `OneWayDisclosure` is a client component with a real button and a region, and it manages focus.
+
+### Controlled
+
+Pass `open` and `onOpenChange` to own the state. The component only ever asks to open; the app may close it again, and the
+button comes back.
+
+<Canvas of={Stories.Controlled} />
+
+</Section>
+
+<Section id="examples">
+
+### Open by default
+
+Renders the content with no button, and does not move focus.
+
+<Canvas of={Stories.OpenByDefault} />
+
+### Secondary button
+
+<Canvas of={Stories.Secondary} />
+
+### Phone
+
+<Canvas of={Stories.Phone320} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key             | Action                                                        |
+| --------------- | ------------------------------------------------------------- |
+| Tab / Shift+Tab | Moves to the button                                           |
+| Enter or Space  | Shows the content, hides the button, focus enters the content |
+
+### Accessibility
+
+- The button has `aria-expanded` and `aria-controls` pointing at the content, which stays in the DOM while hidden.
+- Activating moves focus to the content wrapper (`tabindex="-1"`, not a tab stop) before the button is hidden, so focus is never
+  left on a control that disappeared. Tab then continues from inside the content. Focus is not moved on first render or when
+  the app opens it without the person pressing the button.
+- Give `label` when the content is a self-contained section: it becomes a `region` with that name, announced as focus enters.
+- The button is the package `Button`: visible focus ring and 44px touch target under a coarse pointer.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- An invitation to start a task in place (fill in a form, add details) that is not needed again once started.
+
+### When not to use
+
+- Content that people open and close repeatedly: `Disclosure`.
+- Views of one page: `Tabs`.
+- Content people need to make a decision: show it.
+
+### Content guidelines
+
+Write the trigger as the action, in sentence case: "Fill in now", not "More".
+
+</Section>

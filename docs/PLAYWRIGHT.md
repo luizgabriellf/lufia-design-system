@@ -32,6 +32,7 @@ Use `npm run test:browser:ui` for interactive debugging.
 - Menu, inline listbox in a modal sheet: at 320 and 390 px in light and dark the list fits the sheet and the viewport with no horizontal overflow, a long label wraps, options are at least 44px tall under a coarse pointer, the selected option is `aria-selected`, bold and shows a check, and axe finds no violations.
 - Banner, focus on mount: a banner with `focusOnMount` takes focus once when it mounts and is not a tab stop (tabindex -1).
 - Disclosure, compact and indicator: the compact summary is shorter than the default one, and a custom or `null` indicator removes the built-in chevron.
+- OneWayDisclosure: activating the button by keyboard shows the content, hides the button and leaves focus on the content (not on the body), so Tab continues from inside it; the button is a 44px target under a coarse pointer.
 - FilterLinks: a long row wraps at 320 px without widening the page, the current link is `aria-current="true"` and shows a focus ring, and under a coarse pointer the links are at least 44px tall.
 - Tabs: arrow keys, Home and End move focus and the chosen tab (reversed in right-to-left), a long row at 320 px scrolls inside itself without widening the page and keeps a focused tab in view, the chosen tab shows an indicator and a focus ring, and links mode has no tablist.
 - Disclosure, plain padding: the variant has no inline padding by default (boxed keeps 16px), and a one-class `root > summary` rule or the `--lufia-disclosure-*-padding-inline` custom properties restore it.

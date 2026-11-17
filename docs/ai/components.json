@@ -12511,6 +12511,167 @@
       ]
     },
     {
+      "name": "OneWayDisclosure",
+      "category": "Data display",
+      "summary": "A button that reveals a region and hides itself once it has, moving focus into the content.",
+      "status": "beta",
+      "source": "src/components/OneWayDisclosure",
+      "entry": {
+        "subpath": "@lufia/design-system/components/OneWayDisclosure",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "OneWayDisclosure",
+          "kind": "component",
+          "description": "A button that reveals a region and leaves once it has. It is a disclosure whose trigger is spent: use it for an invitation such as \"Fill in now\" that opens a form in place, where a button that stayed behind and could fold the content away again would only be noise. The button carries `aria-expanded` and `aria-controls`. On activation the content is shown, the button is hidden and focus moves to the content, so a keyboard or screen reader user is not left on a control that disappeared. Focus moves only for an activation by the person, never on first render. State is uncontrolled (`defaultOpen`) or controlled (`open` with `onOpenChange`, which lets the app also close it again; the button comes back).",
+          "props": [
+            {
+              "name": "trigger",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The label of the button that reveals the content (\"Fill in now\"). It is the control's name."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The content that is revealed."
+            },
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Controlled state. Pair it with `onOpenChange`."
+            },
+            {
+              "name": "defaultOpen",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Initial state when `open` is not given. Start open to render the content with no button."
+            },
+            {
+              "name": "onOpenChange",
+              "type": "(open: boolean) => void",
+              "required": false,
+              "default": null,
+              "description": "Called with `true` when the person activates the button. The component never closes itself."
+            },
+            {
+              "name": "variant",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "required": false,
+              "default": "\"secondary\"",
+              "description": "Look of the button. Defaults to `\"secondary\"`."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Accessible name of the revealed content. When given, the content is exposed as a `region` landmark with this name, which is also what a screen reader announces when focus moves into it. Leave it out for content that is not a landmark."
+            },
+            {
+              "name": "panelClassName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Class for the revealed content wrapper."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "OneWayDisclosureProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        }
+      ],
+      "aliases": {},
+      "story": {
+        "docsId": "components-data-display-onewaydisclosure--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-data-display-onewaydisclosure--default"
+          },
+          {
+            "export": "OpenByDefault",
+            "id": "components-data-display-onewaydisclosure--open-by-default"
+          },
+          {
+            "export": "Secondary",
+            "id": "components-data-display-onewaydisclosure--secondary"
+          },
+          {
+            "export": "Controlled",
+            "id": "components-data-display-onewaydisclosure--controlled"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-data-display-onewaydisclosure--phone-320"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-data-display-onewaydisclosure--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/OneWayDisclosure/OneWayDisclosure.mdx",
+        "overview": "A button that reveals a region and leaves once it has. It is a disclosure whose trigger is spent: an invitation such as\n\"Fill in now\" that opens a form in place, where a button that stayed behind to fold the content away would be noise.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { OneWayDisclosure } from \"@lufia/design-system/components/OneWayDisclosure\";\n\n<OneWayDisclosure trigger=\"Fill in now\" label=\"Your details\" variant=\"primary\">\n  <ProfileForm />\n</OneWayDisclosure>;"
+        },
+        "whenToUse": [
+          "An invitation to start a task in place (fill in a form, add details) that is not needed again once started."
+        ],
+        "whenNotToUse": [
+          "Content that people open and close repeatedly: `Disclosure`.",
+          "Views of one page: `Tabs`.",
+          "Content people need to make a decision: show it."
+        ],
+        "contentGuidelines": "Write the trigger as the action, in sentence case: \"Fill in now\", not \"More\"."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Disclosure",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+        },
+        "keyboard": [
+          {
+            "keys": "Tab / Shift+Tab",
+            "action": "Moves to the button"
+          },
+          {
+            "keys": "Enter or Space",
+            "action": "Shows the content, hides the button, focus enters the content"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The button has `aria-expanded` and `aria-controls` pointing at the content, which stays in the DOM while hidden.",
+          "Activating moves focus to the content wrapper (`tabindex=\"-1\"`, not a tab stop) before the button is hidden, so focus is never left on a control that disappeared. Tab then continues from inside the content. Focus is not moved on first render or when the app opens it without the person pressing the button.",
+          "Give `label` when the content is a self-contained section: it becomes a `region` with that name, announced as focus enters.",
+          "The button is the package `Button`: visible focus ring and 44px touch target under a coarse pointer."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-color-focus-ring"
+      ]
+    },
+    {
       "name": "PageActions",
       "category": "Actions",
       "summary": "The action bar of a page: one primary action, the rest collapsed on narrow screens.",

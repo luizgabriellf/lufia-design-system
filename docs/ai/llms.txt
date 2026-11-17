@@ -77,6 +77,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [DetailList](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailList.md): Label and value pairs for the details of one record. (beta)
 - [DetailSectionCard](https://luizgabriellf.github.io/lufia-design-system/ai/components/DetailSectionCard.md): A titled card that holds one section of a detail page. (beta)
 - [Disclosure](https://luizgabriellf.github.io/lufia-design-system/ai/components/Disclosure.md): A native details and summary with a turning chevron, for content that opens and closes without script. (beta)
+- [OneWayDisclosure](https://luizgabriellf.github.io/lufia-design-system/ai/components/OneWayDisclosure.md): A button that reveals a region and hides itself once it has, moving focus into the content. (beta)
 - [ProgressBar](https://luizgabriellf.github.io/lufia-design-system/ai/components/ProgressBar.md): A determinate progress bar with a native progressbar role. (beta)
 - [QueueSummary](https://luizgabriellf.github.io/lufia-design-system/ai/components/QueueSummary.md): Work queues by urgency: open ones as rows, empty ones folded into one line, an all-clear when none are open. (beta)
 - [SortableTh](https://luizgabriellf.github.io/lufia-design-system/ai/components/SortableTh.md): A table header cell that sorts a column and announces the order. (beta)

@@ -22,6 +22,7 @@ import { Modal as Modal_Modal } from "@lufia/design-system/components/Modal";
 import { MoreActions as MoreActions_MoreActions } from "@lufia/design-system/components/MoreActions";
 import { NavRow as NavRow_NavRow } from "@lufia/design-system/components/NavRow";
 import { NotificationCenter as NotificationCenter_NotificationCenter } from "@lufia/design-system/components/NotificationCenter";
+import { OneWayDisclosure as OneWayDisclosure_OneWayDisclosure } from "@lufia/design-system/components/OneWayDisclosure";
 import { PageActions as PageActions_PageActions } from "@lufia/design-system/components/PageActions";
 import { Pagination as Pagination_Pagination } from "@lufia/design-system/components/Pagination";
 import { PeerNav as PeerNav_PeerNav } from "@lufia/design-system/components/PeerNav";
@@ -85,6 +86,7 @@ export default function ClientSmoke() {
       <section data-smoke="MoreActions"><MoreActions_MoreActions items={[{ key: "a", label: "Action" }]} label={"x"} /></section>
       <section data-smoke="NavRow"><NavRow_NavRow title={"x"} /></section>
       <section data-smoke="NotificationCenter"><NotificationCenter_NotificationCenter unreadCountLabel={(count) => String(count)} items={[{ id: "a", title: "Notification" }]} label={"x"} unreadCount={1} unreadLabel={"x"} /></section>
+      <section data-smoke="OneWayDisclosure"><OneWayDisclosure_OneWayDisclosure trigger={"Fill in now"}>{"x"}</OneWayDisclosure_OneWayDisclosure></section>
       <section data-smoke="PageActions"><PageActions_PageActions moreLabel={"x"} /></section>
       <section data-smoke="Pagination"><Pagination_Pagination labels={{
       nav: "Pages",
