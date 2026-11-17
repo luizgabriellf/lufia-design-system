@@ -33,6 +33,13 @@ export const WithoutCounts: Story = {
 };
 export const NoneCurrent: Story = { args: { value: undefined } };
 /** Many filters wrap onto more lines; the page does not gain a horizontal scrollbar. */
+/** An item with `native` is a plain `<a>`, for a link that must do a full document navigation. */
+export const NativeItem: Story = {
+  args: {
+    items: statusItems.map((item) => (item.key === "archived" ? { ...item, native: true } : item)),
+  },
+};
+
 export const Wrapping: Story = {
   args: {
     items: Array.from({ length: 14 }, (_, index) => ({

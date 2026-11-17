@@ -7614,7 +7614,7 @@
         {
           "name": "FilterLinks",
           "kind": "component",
-          "description": "A labelled row of links that each apply a different filter to one list, such as \"All\", \"Open\" and \"Closed\" with a count. The filter lives in the URL, so every chip is a real link (opened in a new tab, crawled, followed without script) rendered through the `linkComponent` of `LufiaProvider`. The current one is marked `aria-current=\"true\"`, not `\"page\"`: the page is the same, only the filter changes. The row wraps onto more lines, so nothing is hidden and the page never widens. Works in a Server Component.",
+          "description": "A labelled row of links that each apply a different filter to one list, such as \"All\", \"Open\" and \"Closed\" with a count. The filter lives in the URL, so every chip is a real link (opened in a new tab, crawled, followed without script) rendered through the `linkComponent` of `LufiaProvider` (or a plain `<a>` for an item with `native`). The current one is marked `aria-current=\"true\"`, not `\"page\"`: the page is the same, only the filter changes. The row wraps onto more lines, so nothing is hidden and the page never widens. Works in a Server Component.",
           "props": [
             {
               "name": "label",
@@ -7651,7 +7651,7 @@
           "name": "FilterLinksItem",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; }"
+          "definition": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }"
         },
         {
           "name": "FilterLinksProps",
@@ -7661,7 +7661,7 @@
         }
       ],
       "aliases": {
-        "FilterLinksItem": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; }",
+        "FilterLinksItem": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }",
         "FilterLinksProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; ref?: Ref<HTMLElement> | undefined; }"
       },
       "story": {
@@ -7678,6 +7678,10 @@
           {
             "export": "NoneCurrent",
             "id": "components-navigation-filterlinks--none-current"
+          },
+          {
+            "export": "NativeItem",
+            "id": "components-navigation-filterlinks--native-item"
           },
           {
             "export": "Wrapping",
