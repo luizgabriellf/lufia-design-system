@@ -138,10 +138,12 @@
 }
 
 /*
- * Autofilled text. Browsers paint their own tint over the field and ignore background; an opaque inset shadow covers it and
- * the text fill replaces its colour. The cover falls back to the field colour for a theme without the autofill token, an
- * invalid box keeps its inner danger line above the cover, and a read-only or disabled box covers with its surface colour.
- * One rule set per pseudo-class, because a selector list with one unknown pseudo-class is dropped whole.
+ * Autofilled text. Browsers paint their own tint over the native control and ignore background; an opaque inset shadow on
+ * the control covers it and the text fill replaces its colour. The cover falls back to the field colour for a theme without
+ * the autofill token. The same colour then fills the whole box, so an affix (a unit, a show/hide button) sits on the tint
+ * too and the field does not look cut in two; affixes are transparent and their text tokens are contrast-checked against
+ * this colour. An invalid box keeps its inner danger line above the cover, and a read-only or disabled box covers with its
+ * surface colour. One rule set per pseudo-class, because a selector list with one unknown pseudo-class is dropped whole.
  */
 .native:-webkit-autofill {
   -webkit-text-fill-color: var(--lufia-color-text-default);
@@ -155,6 +157,14 @@
   caret-color: var(--lufia-color-text-default);
   filter: none;
   box-shadow: 0 0 0 100rem var(--lufia-color-bg-field-autofill, var(--lufia-color-bg-field)) inset;
+}
+
+.box:not([data-readonly], [data-disabled]):has(.native:-webkit-autofill) {
+  background: var(--lufia-color-bg-field-autofill, var(--lufia-color-bg-field));
+}
+
+.box:not([data-readonly], [data-disabled]):has(.native:autofill) {
+  background: var(--lufia-color-bg-field-autofill, var(--lufia-color-bg-field));
 }
 
 .native:disabled {
@@ -185,6 +195,15 @@
   .box[class] .native:-webkit-autofill {
     -webkit-text-fill-color: FieldText;
     box-shadow: none;
+  }
+
+  /* The box tint goes too: the system's own field colour and autofill indication stay. */
+  .box[class]:has(.native:autofill) {
+    background: Field;
+  }
+
+  .box[class]:has(.native:-webkit-autofill) {
+    background: Field;
   }
 
   .box:has(:focus-visible),

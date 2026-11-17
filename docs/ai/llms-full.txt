@@ -8799,7 +8799,7 @@ icons.
 ### When to use
 
 - Short free text, numbers, e-mail, URLs, passwords: anything that fits on one line.
-- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill.
+- Set `type`, `inputMode` and `autoComplete` for the data: they pick the on-screen keyboard and enable autofill. When the browser autofills the value, the whole box, prefix and suffix included, takes the autofill colour, so a show/hide button in the suffix stays on one fill with the text.
 
 ### When not to use
 
