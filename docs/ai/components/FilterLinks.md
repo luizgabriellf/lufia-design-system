@@ -39,7 +39,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `FilterLinksItem`: `{ key: string; label: ReactNode; href: string; count?: string | number | undefined; }`
+- `FilterLinksItem`: `{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }`
 - `FilterLinksProps`: `Omit<HTMLAttributes<HTMLElement>, "children"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; ref?: Ref<HTMLElement> | undefined; }`
 
 ## Example
@@ -89,6 +89,7 @@ Labels are one or two words, in sentence case. Keep counts short.
 - `components-navigation-filterlinks--default`
 - `components-navigation-filterlinks--without-counts`
 - `components-navigation-filterlinks--none-current`
+- `components-navigation-filterlinks--native-item`
 - `components-navigation-filterlinks--wrapping`
 - `components-navigation-filterlinks--phone-320`
 - `components-navigation-filterlinks--right-to-left`

@@ -44,6 +44,14 @@ locale.
 
 <Canvas of={Stories.WithoutCounts} />
 
+### Native links
+
+An item normally goes through the `linkComponent` of `LufiaProvider`, so a router can prefetch it and navigate on the
+client. Set `native` on an item to render a plain `<a>` instead: the browser follows it and nothing is prefetched. Use it for
+a link that must do a full document navigation. `aria-current` and the look are the same as for every other item.
+
+<Canvas of={Stories.NativeItem} />
+
 </Section>
 
 <Section id="examples">

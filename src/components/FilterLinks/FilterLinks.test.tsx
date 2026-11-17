@@ -44,6 +44,31 @@ describe("FilterLinks", () => {
     expect(screen.getByRole("link", { name: "Closed" })).toBeInTheDocument();
   });
 
+  it("renders a native item as a plain anchor and leaves the others on the adapter", () => {
+    const Custom: LinkComponent = ({ children, ...rest }) => (
+      <a {...rest} data-custom="">
+        {children}
+      </a>
+    );
+    render(
+      <LufiaProvider linkComponent={Custom}>
+        <FilterLinks
+          label="Filter"
+          value="open"
+          items={[
+            { key: "all", label: "All", href: "/all", count: 3 },
+            { key: "open", label: "Open", href: "/open", native: true, count: 2 },
+          ]}
+        />
+      </LufiaProvider>,
+    );
+    const native = screen.getByRole("link", { name: "Open 2" });
+    expect(native).not.toHaveAttribute("data-custom");
+    expect(native).toHaveAttribute("href", "/open");
+    expect(native).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: "All 3" })).toHaveAttribute("data-custom");
+  });
+
   it("renders through the configured link component", () => {
     const Custom: LinkComponent = ({ children, ...rest }) => (
       <a {...rest} data-custom="">
