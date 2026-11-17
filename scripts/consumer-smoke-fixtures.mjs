@@ -66,6 +66,7 @@ export const FIXTURES = {
       summary: (page, totalPages) => page + " of " + totalPages,
     }`,
   },
+  Tabs: { items: `[{ key: "a", label: "A", panel: "Panel" }]` },
   PeerNav: { items: `[{ key: "a", label: "A", href: "/" }]` },
   QueueSummary: {
     items: `[{ id: "a", label: "Open", count: 1 }]`,

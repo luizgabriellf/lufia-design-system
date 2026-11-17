@@ -1,0 +1,150 @@
+/* Theming hooks, all optional, set in the consuming theme or on the tabs: --lufia-tabs-gap, --lufia-tabs-tab-padding-block,
+   --lufia-tabs-tab-padding-inline, --lufia-tabs-tab-min-block-size, --lufia-tabs-indicator-size,
+   --lufia-tabs-indicator-color, --lufia-tabs-selected-color, --lufia-tabs-focus-width, --lufia-tabs-disabled-opacity,
+   --lufia-tabs-panel-padding. */
+.root {
+  display: flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  flex-direction: column;
+  gap: var(--lufia-tabs-panel-gap, var(--lufia-space-4));
+}
+
+.root[data-orientation="vertical"] {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.list {
+  display: flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  gap: var(--lufia-tabs-gap, var(--lufia-space-1));
+  border-block-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+
+  /* A row that does not fit scrolls sideways inside itself; the page never widens. */
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.list[data-orientation="vertical"] {
+  flex: 0 0 auto;
+  flex-direction: column;
+  overflow: hidden auto;
+  border-block-end: 0;
+  border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  min-block-size: var(--lufia-tabs-tab-min-block-size, 2.5rem);
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  padding-block: var(--lufia-tabs-tab-padding-block, var(--lufia-space-2));
+  padding-inline: var(--lufia-tabs-tab-padding-inline, var(--lufia-space-3));
+  border: 0;
+  background: transparent;
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+/* The selected indicator: a bar on the edge next to the panel, so it reads without colour as well as with it. */
+.tab::after {
+  position: absolute;
+  inset-block-end: calc(-1 * var(--lufia-border-width-thin));
+  inset-inline: 0;
+  block-size: var(--lufia-tabs-indicator-size, var(--lufia-border-width-thick));
+  background: transparent;
+  content: "";
+}
+
+.tab:hover {
+  color: var(--lufia-color-text-default);
+}
+
+.tab[data-selected] {
+  color: var(--lufia-tabs-selected-color, var(--lufia-color-text-default));
+  font-weight: var(--lufia-font-weight-bold);
+}
+
+.tab[data-selected]::after {
+  background: var(--lufia-tabs-indicator-color, var(--lufia-color-accent-border));
+}
+
+.panel {
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  padding: var(--lufia-tabs-panel-padding, 0);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.tab:focus-visible,
+.panel:focus-visible {
+  outline: var(--lufia-tabs-focus-width, var(--lufia-border-width-thick)) solid var(--lufia-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.tab:disabled,
+.tab[aria-disabled="true"] {
+  opacity: var(--lufia-tabs-disabled-opacity, var(--lufia-opacity-disabled));
+  cursor: not-allowed;
+}
+
+.tab:disabled:hover,
+.tab[aria-disabled="true"]:hover {
+  color: var(--lufia-color-text-muted);
+}
+
+.list[data-orientation="vertical"] .tab {
+  justify-content: flex-start;
+}
+
+.list[data-orientation="vertical"] .tab::after {
+  inset-block: 0;
+  inset-inline: auto calc(-1 * var(--lufia-border-width-thin));
+  inline-size: var(--lufia-tabs-indicator-size, var(--lufia-border-width-thick));
+  block-size: auto;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+@media (pointer: coarse) {
+  .tab {
+    min-block-size: max(var(--lufia-tabs-tab-min-block-size, 2.5rem), 2.75rem);
+  }
+}
+
+@media (forced-colors: active) {
+  .tab[data-selected]::after {
+    background: Highlight;
+  }
+
+  .tab:focus-visible,
+  .panel:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+}

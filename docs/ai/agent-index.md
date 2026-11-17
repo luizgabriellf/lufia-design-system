@@ -55,6 +55,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - PeerNav: label* items* value defaultValue onValueChange layout onItemClick phoneGrid
 - SectionHeader: title* headingLevel description actions titleId
 - Stepper: steps* current* onStepClick
+- Tabs: items* label labelledBy value defaultValue onValueChange orientation activation keepMounted
 
 ### Data display
 
@@ -70,7 +71,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DetailAttentionCard: tone* title* description meta action toneLabel
 - DetailList: rows*
 - DetailSectionCard: title* description icon action
-- Disclosure: summary* name defaultOpen variant panelClassName
+- Disclosure: summary* name defaultOpen variant size panelClassName summaryClassName indicator
 - ProgressBar: value* label* max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
 - SortableTh: dir* label* active* onSort* abbr wrap
