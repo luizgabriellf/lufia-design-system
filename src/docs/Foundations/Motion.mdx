@@ -2,7 +2,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 import { PatternHeader } from "../patterns/PatternHeader";
 import { DocTable } from "../blocks/DocTable";
 import { TokenTable } from "../TokenTable";
-import { TrackDemo, DistanceDemo, ReducedMotionReadout } from "../MotionDemos";
+import { TrackDemo, DistanceDemo, SpringDemo, PressDemo, ReducedMotionReadout } from "../MotionDemos";
 
 <Meta title="Foundations/Motion" />
 
@@ -40,12 +40,38 @@ marketing-style reveals and large surfaces.
     ["`--lufia-motion-easing-in`", "Exits: slow start, accelerates away"],
     ["`--lufia-motion-easing-in-out`", "Moving between two resting places"],
     ["`--lufia-motion-easing-drawer`", "Large travel (sheets): a soft start and a long settle"],
+    [
+      "`--lufia-motion-easing-spring`",
+      "Small elements travelling under about 2 rem: one gentle overshoot, then rest",
+    ],
   ]}
 />
 
 <TokenTable group="motion.easing" />
 
 <TrackDemo kind="easing" />
+
+## Spring
+
+`--lufia-motion-easing-spring` is a gently under-damped spring: about 5% overshoot, once, then it settles. It is a
+`cubic-bezier()` everywhere and a sampled `linear()` curve in browsers that support it. Use it only for **small elements
+travelling less than about 2 rem**: a toggle thumb, a sliding indicator, a check mark landing. Never put it on dialogs,
+sheets, popovers, menus or toasts: an overshoot on a large surface reads as a wobble.
+
+<SpringDemo />
+
+## Press
+
+Small controls compress while they are held, so a press feels physical. The scale is a token, and it is `1` under reduced
+motion, so nothing moves.
+
+<TokenTable group="motion.scale" />
+
+- `--lufia-motion-scale-press` (0.97): buttons, icon buttons, switch thumbs, checkbox boxes and radio circles.
+- `--lufia-motion-scale-press-subtle` (0.985): rows, cards, tabs, filter chips, pagination buttons and segments.
+- Apply it on `:active`, with `--lufia-motion-duration-instant`, never on a disabled or `aria-disabled` control.
+
+<PressDemo />
 
 ## Distance
 
@@ -58,7 +84,7 @@ How far something travels while entering or leaving. Distances are in `rem`, so 
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce`, `tokens.css` collapses every `--lufia-motion-duration-*` to `0.01ms` and every
-`--lufia-motion-distance-*` to `0rem`. Durations stay just above zero, not zero, on purpose: `transitionend` and
+`--lufia-motion-distance-*` to `0rem`, and both `--lufia-motion-scale-*` press tokens to `1`. Durations stay just above zero, not zero, on purpose: `transitionend` and
 `animationend` still fire, so code that waits for them keeps working, and the end state is reached on the next frame.
 
 - Anything built from the tokens needs no extra work.

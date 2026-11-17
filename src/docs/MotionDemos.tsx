@@ -72,6 +72,57 @@ export function DistanceDemo() {
   );
 }
 
+/** Two small elements side by side: one eases out, the other springs, over the 1.5 rem a spring is meant for. */
+export function SpringDemo() {
+  const [end, setEnd] = useState(false);
+  return (
+    <div className={styles.demo}>
+      {(["out", "spring"] as const).map((easing) => (
+        <div key={easing} className={styles.row}>
+          <code>easing-{easing}</code>
+          <div className={styles.track}>
+            <span
+              className={styles.dot}
+              data-end={end ? "" : undefined}
+              style={
+                {
+                  "--demo-track": "2.75rem",
+                  "--demo-duration": "var(--lufia-motion-duration-fast)",
+                  "--demo-easing": `var(--lufia-motion-easing-${easing})`,
+                } as CSSProperties
+              }
+            />
+          </div>
+        </div>
+      ))}
+      <div className={styles.actions}>
+        <Button variant="primary" size="sm" onClick={() => setEnd(!end)}>
+          Play
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Hold the pointer (or Space) on each sample to feel the press scale; it stays still under reduced motion. */
+export function PressDemo() {
+  return (
+    <div className={styles.demo}>
+      <div className={styles.actions}>
+        <Button variant="primary">Press</Button>
+        <Button variant="secondary">Secondary</Button>
+        <button type="button" className={styles.pressSubtle}>
+          Press subtle
+        </button>
+      </div>
+      <p className={styles.note}>
+        Buttons and small controls use <code>--lufia-motion-scale-press</code>; rows, cards and tabs use{" "}
+        <code>--lufia-motion-scale-press-subtle</code>.
+      </p>
+    </div>
+  );
+}
+
 /** Shows the live reduced-motion state so readers can see the tokens collapse. */
 export function ReducedMotionReadout() {
   const reduced = usePrefersReducedMotion();

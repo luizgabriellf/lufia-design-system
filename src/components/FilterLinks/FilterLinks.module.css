@@ -46,7 +46,12 @@
   transition:
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
     border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.chip:active {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .chip:hover {

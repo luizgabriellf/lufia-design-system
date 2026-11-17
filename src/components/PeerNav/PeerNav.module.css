@@ -34,7 +34,7 @@
 }
 
 .indicator[data-ready] {
-  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-spring);
 }
 
 .item {
@@ -58,7 +58,8 @@
   transition:
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
     border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 .item:hover {
@@ -76,6 +77,10 @@
 .item:disabled {
   opacity: var(--lufia-peer-nav-disabled-opacity, var(--lufia-opacity-disabled));
   cursor: not-allowed;
+}
+
+.item:active:not([aria-disabled="true"], :disabled) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .item[data-active] {

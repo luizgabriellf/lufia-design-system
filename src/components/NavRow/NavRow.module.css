@@ -21,13 +21,19 @@ button.root {
   cursor: pointer;
   transition:
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 a.root:hover,
 button.root:hover:not(:disabled) {
   border-color: var(--lufia-color-border-strong);
   background: var(--lufia-color-bg-surface-raised);
+}
+
+a.root:active:not([data-disabled]),
+button.root:active:not(:disabled, [data-disabled]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .root:focus-visible {

@@ -136,7 +136,12 @@
   cursor: pointer;
   transition:
     border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
-    box-shadow var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+    box-shadow var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.root[data-interactive]:active {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .root[data-interactive]:hover {
