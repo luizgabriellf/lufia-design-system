@@ -46,24 +46,28 @@
 }
 
 /* Variants */
+
+/* Each fill has its own optional hooks, so a theme can give buttons a brand colour apart from the accent
+   that steppers, links and focus marks share. Unset, they fall back to the semantic tokens. */
 .root[data-variant="primary"] {
-  background: var(--lufia-color-accent-default);
-  border-color: var(--lufia-color-accent-default);
-  color: var(--lufia-color-text-on-accent);
+  background: var(--lufia-button-primary-bg, var(--lufia-color-accent-default));
+  border-color: var(--lufia-button-primary-bg, var(--lufia-color-accent-default));
+  color: var(--lufia-button-primary-fg, var(--lufia-color-text-on-accent));
 }
 
 .root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
-  background: var(--lufia-color-accent-hover);
-  border-color: var(--lufia-color-accent-hover);
+  background: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
+  border-color: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
 }
 
 .root[data-variant="secondary"] {
-  background: var(--lufia-color-bg-field);
-  border-color: var(--lufia-color-border-strong);
+  background: var(--lufia-button-secondary-bg, var(--lufia-color-bg-field));
+  border-color: var(--lufia-button-secondary-border, var(--lufia-color-border-strong));
+  color: var(--lufia-button-secondary-fg, var(--lufia-color-text-default));
 }
 
 .root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"]) {
-  background: var(--lufia-color-bg-surface-raised);
+  background: var(--lufia-button-secondary-bg-hover, var(--lufia-color-bg-surface-raised));
 }
 
 .root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
