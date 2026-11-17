@@ -172,7 +172,17 @@
       "out": { "$value": "{core.easing.out}" },
       "in": { "$value": "{core.easing.in}" },
       "in-out": { "$value": "{core.easing.in-out}" },
-      "drawer": { "$value": "{core.easing.drawer}" }
+      "drawer": { "$value": "{core.easing.drawer}" },
+      "spring": {
+        "$value": "{core.easing.spring}",
+        "$description": "Small elements travelling less than about 2rem (toggle thumbs, indicators). Never dialogs, sheets, popovers, menus or toasts."
+      }
+    },
+    "scale": {
+      "$type": "number",
+      "$description": "Press feedback. Resets to 1 under prefers-reduced-motion.",
+      "press": { "$value": "{core.scale.97}", "$description": "Buttons and small controls while pressed" },
+      "press-subtle": { "$value": "{core.scale.985}", "$description": "Rows, cards and tabs while pressed" }
     }
   }
 }

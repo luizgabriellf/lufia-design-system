@@ -28,28 +28,47 @@ Motion**.
 
 All defined in `tokens/` (DTCG) and built to `--lufia-motion-*` in `tokens.css`.
 
-| Token                                      | Value                            | Use                                                 |
-| ------------------------------------------ | -------------------------------- | --------------------------------------------------- |
-| `--lufia-motion-duration-instant`          | 120 ms                           | Hover, press, colour changes                        |
-| `--lufia-motion-duration-fast`             | 180 ms                           | Small control motion, chevrons                      |
-| `--lufia-motion-duration-enter`            | 240 ms                           | Anything entering: dialogs, toasts, steps, page in  |
-| `--lufia-motion-duration-exit`             | 160 ms                           | Anything leaving (always shorter than its entrance) |
-| `--lufia-motion-duration-medium` / `-slow` | 380 / 640 ms                     | Large surfaces, number counts, marketing reveals    |
-| `--lufia-motion-easing-out`                | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances                                           |
-| `--lufia-motion-easing-in`                 | `cubic-bezier(0.4, 0, 1, 1)`     | Exits                                               |
-| `--lufia-motion-easing-in-out`             | `cubic-bezier(0.65, 0, 0.35, 1)` | Movement between two resting places                 |
-| `--lufia-motion-easing-drawer`             | `cubic-bezier(0.32, 0.72, 0, 1)` | Large travel such as sheets                         |
-| `--lufia-motion-distance-nudge`            | 0.25 rem                         | Small controls and indicators                       |
-| `--lufia-motion-distance-rise`             | 0.375 rem                        | Content and page entrances                          |
-| `--lufia-motion-distance-slide`            | 0.5 rem                          | List rows and panels                                |
-| `--lufia-motion-distance-travel`           | 1 rem                            | Sheets and full-screen surfaces                     |
+| Token                                      | Value                                                                       | Use                                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `--lufia-motion-duration-instant`          | 120 ms                                                                      | Hover, press, colour changes                                                  |
+| `--lufia-motion-duration-fast`             | 180 ms                                                                      | Small control motion, chevrons                                                |
+| `--lufia-motion-duration-enter`            | 240 ms                                                                      | Anything entering: dialogs, toasts, steps, page in                            |
+| `--lufia-motion-duration-exit`             | 160 ms                                                                      | Anything leaving (always shorter than its entrance)                           |
+| `--lufia-motion-duration-medium` / `-slow` | 380 / 640 ms                                                                | Large surfaces, number counts, marketing reveals                              |
+| `--lufia-motion-easing-out`                | `cubic-bezier(0.22, 1, 0.36, 1)`                                            | Entrances                                                                     |
+| `--lufia-motion-easing-in`                 | `cubic-bezier(0.4, 0, 1, 1)`                                                | Exits                                                                         |
+| `--lufia-motion-easing-in-out`             | `cubic-bezier(0.65, 0, 0.35, 1)`                                            | Movement between two resting places                                           |
+| `--lufia-motion-easing-drawer`             | `cubic-bezier(0.32, 0.72, 0, 1)`                                            | Large travel such as sheets                                                   |
+| `--lufia-motion-easing-spring`             | `cubic-bezier(0.34, 1.26, 0.64, 1)`, or a `linear()` spring where supported | Small elements travelling under about 2 rem                                   |
+| `--lufia-motion-scale-press`               | 0.97                                                                        | Buttons, icon buttons, switch thumbs, checkbox and radio marks, while pressed |
+| `--lufia-motion-scale-press-subtle`        | 0.985                                                                       | Rows, cards, tabs, chips, pagination and segments, while pressed              |
+| `--lufia-motion-distance-nudge`            | 0.25 rem                                                                    | Small controls and indicators                                                 |
+| `--lufia-motion-distance-rise`             | 0.375 rem                                                                   | Content and page entrances                                                    |
+| `--lufia-motion-distance-slide`            | 0.5 rem                                                                     | List rows and panels                                                          |
+| `--lufia-motion-distance-travel`           | 1 rem                                                                       | Sheets and full-screen surfaces                                               |
 
 Write durations and easings as `var(--lufia-motion-*)`. A literal fails `lufia-verify-motion`. Distances are in `rem`.
+
+### Spring and press
+
+`--lufia-motion-easing-spring` is a gently under-damped spring (damping ratio about 0.7, about 5% overshoot, once, then it
+settles). `tokens.css` defines it as the `cubic-bezier()` above and, inside `@supports (transition-timing-function:
+linear(0, 1))`, replaces it with a `linear()` curve that `scripts/lib/spring.mjs` samples at build time (28 points,
+deterministic). Rules:
+
+- **Spring is for small elements travelling less than about 2 rem**: a switch thumb, a sliding indicator, a mark landing.
+  Never put it on dialogs, sheets, popovers, menus or toasts; those keep `out`, `in` and `drawer`.
+- It is for entrances and movement between two resting places. An exit never uses it.
+- **Press feedback** is `transform: scale(var(--lufia-motion-scale-press))` (or `-subtle` for rows, cards and tabs) on
+  `:active`, with `--lufia-motion-duration-instant`, and never on `:disabled` or `[aria-disabled="true"]`. It is a rest-state
+  `transform: none`, so it does not make the control the containing block of a `position: fixed` descendant, except while held.
+- A mark that appears (checkbox check, radio dot) animates with a **transition**, not a keyframe animation, so a control
+  that is already checked on first paint is simply drawn. Unchecking is a plain fast fade.
 
 ## Reduced motion
 
 Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufia-motion-duration-*` to `0.01ms` and every
-`--lufia-motion-distance-*` to `0rem`. So:
+`--lufia-motion-distance-*` to `0rem`, and both `--lufia-motion-scale-press*` tokens to `1`. So:
 
 - **Token-driven CSS needs no extra work.** The end state is reached at once. The duration is `0.01ms` and not `0` so that
   `transitionend` and `animationend` still fire.

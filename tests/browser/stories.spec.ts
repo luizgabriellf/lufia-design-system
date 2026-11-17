@@ -3861,3 +3861,84 @@ test.describe("one-way disclosure", () => {
     await context.close();
   });
 });
+
+test.describe("press feedback and spring", () => {
+  const transformOf = (locator: ReturnType<Page["locator"]>) =>
+    locator.evaluate((element) => getComputedStyle(element).transform);
+  const thumbOf = (page: Page) => page.locator('[role="switch"] > span').first();
+
+  test("a held button compresses to the press scale and a disabled one does not", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--primary");
+    const button = page.getByRole("button").first();
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect.poll(() => transformOf(button)).toMatch(/^matrix\(0\.97,/);
+    await page.mouse.up();
+    await expect.poll(() => transformOf(button)).toBe("none");
+
+    await openStory(page, "components-actions-button--disabled");
+    const disabled = page.getByRole("button").first();
+    const disabledBox = (await disabled.boundingBox())!;
+    await page.mouse.move(disabledBox.x + disabledBox.width / 2, disabledBox.y + disabledBox.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(250);
+    expect(await transformOf(disabled)).toBe("none");
+    await page.mouse.up();
+  });
+
+  test("the switch thumb compresses on press and travels to its end state", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-forms-switch--default");
+    const toggle = page.getByRole("switch");
+    const thumb = thumbOf(page);
+    const box = (await toggle.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect.poll(() => thumb.evaluate((element) => getComputedStyle(element).scale)).toBe("0.97");
+    await page.mouse.up();
+    await expect(toggle).toBeChecked();
+    // 1rem of travel (16px) once the spring has settled.
+    await expect.poll(() => transformOf(thumb)).toBe("matrix(1, 0, 0, 1, 16, 0)");
+  });
+
+  test("the spring token is a sampled linear() curve where the browser supports it", async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName !== "chromium", "linear() support is asserted in Chromium");
+    await openStory(page, "components-forms-switch--default");
+    const spring = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue("--lufia-motion-easing-spring").trim(),
+    );
+    expect(spring).toMatch(/^linear\(0, /);
+  });
+
+  test("under reduced motion the press scale is 1 and the switch still reaches its end state", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await openStory(page, "components-actions-button--primary");
+    const scales = await page.evaluate(() => {
+      const style = getComputedStyle(document.documentElement);
+      return ["press", "press-subtle"].map((name) =>
+        style.getPropertyValue(`--lufia-motion-scale-${name}`).trim(),
+      );
+    });
+    expect(scales).toEqual(["1", "1"]);
+    const button = page.getByRole("button").first();
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(100);
+    expect(await transformOf(button)).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+    await page.mouse.up();
+
+    await openStory(page, "components-forms-switch--default");
+    const toggle = page.getByRole("switch");
+    await toggle.click();
+    await expect(toggle).toBeChecked();
+    await expect.poll(() => transformOf(thumbOf(page))).toBe("matrix(1, 0, 0, 1, 16, 0)");
+  });
+});

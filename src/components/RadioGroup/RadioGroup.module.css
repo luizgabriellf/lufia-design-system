@@ -62,9 +62,14 @@
   border-radius: var(--lufia-radius-full);
   transition:
     border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
+/*
+  The dot grows in with the spring when the option becomes chosen (a transition, so a chosen option on first paint is
+  simply drawn). Unchoosing is a plain fast fade: the shrink waits for the fade to finish.
+*/
 .circle::after {
   content: "";
   inline-size: 0.625rem;
@@ -72,6 +77,10 @@
   background: var(--lufia-color-text-on-accent);
   border-radius: var(--lufia-radius-full);
   opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform 1ms linear var(--lufia-motion-duration-instant);
 }
 
 .option[aria-checked="true"] .circle {
@@ -81,6 +90,15 @@
 
 .option[aria-checked="true"] .circle::after {
   opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-spring);
+}
+
+/* Press feedback: the circle compresses while the option is held. */
+.option:active:not(:disabled) .circle {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .option:focus-visible {

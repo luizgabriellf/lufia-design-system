@@ -41,8 +41,9 @@
   cursor: progress;
 }
 
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
 .root:active:not(:disabled, [aria-disabled="true"]) {
-  transform: translateY(1px);
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 /* Variants */

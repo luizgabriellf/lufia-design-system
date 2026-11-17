@@ -359,7 +359,7 @@
 
 .root[data-interactive]:active {
   box-shadow: var(--lufia-shadow-sm);
-  transform: scale(0.985);
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 /* Pressed (a toggle button tile): accent border and background, plus two cues that are not colour: the border doubles
