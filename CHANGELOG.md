@@ -1,5 +1,30 @@
 # @lufia/design-system
 
+## 0.57.0
+
+### Minor Changes
+
+- [#204](https://github.com/luizgabriellf/lufia-design-system/pull/204) [`f1c9570`](https://github.com/luizgabriellf/lufia-design-system/commit/f1c95709ee6b6a2592d1d25e0e1c6de724040f1a) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Banner: `ref` now reaches the root element (typed), and the opt-in `focusOnMount` gives the root `tabIndex={-1}` and moves
+  focus to it once when it mounts, for a message that replaces what the person was doing. It never takes focus again on a
+  re-render. The `live` roles are unchanged and the banner still never takes focus by default; the page documents when to
+  use `live` and when to use `focusOnMount`. Banner is now a client component, as it owns a ref and an effect.
+
+- [#202](https://github.com/luizgabriellf/lufia-design-system/pull/202) [`5649234`](https://github.com/luizgabriellf/lufia-design-system/commit/5649234bdb37b54a9ff8f7e77f495b5c969b343d) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Disclosure: `summaryClassName` for the `<summary>` row, `size="compact"` for a tighter row and padding (with
+  `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-min-block-size` and
+  `--lufia-disclosure-panel-padding-block` hooks), and `indicator` to replace the chevron with any node or remove it with
+  `null`. Without the props the rendering is unchanged.
+
+- [#203](https://github.com/luizgabriellf/lufia-design-system/pull/203) [`2f8adc3`](https://github.com/luizgabriellf/lufia-design-system/commit/2f8adc3a249f1d37946cf19f8dd8461d8b3def29) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Menu: a link item can be `native`. It renders a plain `<a>` with `href`, and `download`, `target` and `rel` passed
+  through, instead of going through the `LufiaProvider` link adapter, so it is never prefetched and never a client-side
+  transition (file downloads, server routes). Keyboard, type-ahead and closing on activation work as for every other item.
+
+- [#201](https://github.com/luizgabriellf/lufia-design-system/pull/201) [`563dba4`](https://github.com/luizgabriellf/lufia-design-system/commit/563dba44ad8f35e6e3f6f55adb4419c6715c759a) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Tabs (beta): views of one page where one is shown at a time, as a WAI-ARIA tablist. `tab` buttons with roving tabindex,
+  arrow keys, Home and End (Left and Right reversed in right-to-left), `orientation="vertical"`, automatic activation or
+  `activation="manual"`, controlled (`value`, `onValueChange`) or uncontrolled (`defaultValue`) state, disabled tabs, a name
+  through `label` or `labelledBy`, panels optionally kept mounted (`keepMounted`), and sideways scrolling inside the row when
+  the tabs do not fit. When every item has an `href` it renders a `<nav>` of links through the `LufiaProvider` link adapter
+  with `aria-current="page"` instead of a tablist. Themed with `--lufia-tabs-*` hooks.
+
 ## 0.56.1
 
 ### Patch Changes
