@@ -1,10 +1,15 @@
 /* Theming hooks: --lufia-disclosure-bg (the boxed surface), --lufia-disclosure-border (its outline),
    --lufia-disclosure-summary-padding-inline and --lufia-disclosure-panel-padding-inline (the inline padding of the
-   summary row and of the content; the plain variant defaults both to 0). Set them on the root: a single-class rule is
-   enough. The `--_` properties are internal and may change. */
+   summary row and of the content; the plain variant defaults both to 0), --lufia-disclosure-summary-padding-block,
+   --lufia-disclosure-summary-min-block-size and --lufia-disclosure-panel-padding-block (the vertical rhythm; the compact
+   size tightens all three). Set them on the root: a single-class rule is enough. The `--_` properties are internal and may
+   change. */
 .root {
   --_summary-padding-inline: var(--lufia-space-4);
   --_panel-padding-inline: var(--lufia-space-4);
+  --_summary-padding-block: var(--lufia-space-2);
+  --_summary-min-block-size: 2.5rem;
+  --_panel-padding-block: var(--lufia-space-1) var(--lufia-space-4);
 
   box-sizing: border-box;
   border: var(--lufia-border-width-thin) solid
@@ -23,6 +28,20 @@
   --_panel-padding-inline: 0;
 }
 
+/* Compact: a tighter row and padding. A plain disclosure keeps no inline padding. */
+.root[data-size="compact"] {
+  --_summary-padding-block: var(--lufia-space-1);
+  --_summary-min-block-size: 2rem;
+  --_panel-padding-block: 0 var(--lufia-space-2);
+
+  font-size: var(--lufia-font-size-sm);
+}
+
+.root[data-size="compact"]:not([data-variant="plain"]) {
+  --_summary-padding-inline: var(--lufia-space-3);
+  --_panel-padding-inline: var(--lufia-space-3);
+}
+
 /* The native marker is replaced by the chevron below, in every engine. */
 .summary {
   display: flex;
@@ -30,8 +49,11 @@
   justify-content: space-between;
   gap: var(--lufia-space-3);
   box-sizing: border-box;
-  min-block-size: 2.5rem;
-  padding-block: var(--lufia-space-2);
+  min-block-size: var(--lufia-disclosure-summary-min-block-size, var(--_summary-min-block-size, 2.5rem));
+  padding-block: var(
+    --lufia-disclosure-summary-padding-block,
+    var(--_summary-padding-block, var(--lufia-space-2))
+  );
   padding-inline: var(
     --lufia-disclosure-summary-padding-inline,
     var(--_summary-padding-inline, var(--lufia-space-4))
@@ -71,6 +93,19 @@
   transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
 }
 
+/* A replaced or removed indicator takes the built-in chevron away. */
+.root[data-indicator] > .summary::after {
+  content: none;
+  display: none;
+}
+
+.indicator {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--lufia-color-text-muted);
+}
+
 .root[open] > .summary::after {
   transform: translateY(25%) rotate(-135deg);
 }
@@ -86,7 +121,10 @@
 
 .panel {
   overflow-wrap: anywhere;
-  padding-block: var(--lufia-space-1) var(--lufia-space-4);
+  padding-block: var(
+    --lufia-disclosure-panel-padding-block,
+    var(--_panel-padding-block, var(--lufia-space-1) var(--lufia-space-4))
+  );
   padding-inline: var(
     --lufia-disclosure-panel-padding-inline,
     var(--_panel-padding-inline, var(--lufia-space-4))

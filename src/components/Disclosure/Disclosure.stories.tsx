@@ -12,7 +12,10 @@ const meta = {
     children:
       "Unlimited projects, five team members and email support. Upgrade at any time from the billing page.",
   },
-  argTypes: { variant: { control: "inline-radio", options: ["boxed", "plain"] } },
+  argTypes: {
+    variant: { control: "inline-radio", options: ["boxed", "plain"] },
+    size: { control: "inline-radio", options: ["default", "compact"] },
+  },
   decorators: [
     (Story) => (
       <div style={{ inlineSize: "min(100%, 40rem)" }}>
@@ -65,6 +68,31 @@ export const PlainWithConsumerPadding: Story = {
     </div>
   ),
 };
+
+/** `size="compact"` tightens the row and the padding, for dense lists and sidebars. */
+export const Compact: Story = { args: { size: "compact", defaultOpen: true } };
+export const CompactPlain: Story = { args: { size: "compact", variant: "plain", defaultOpen: true } };
+
+/** `summaryClassName` styles the summary row. */
+export const SummaryClassName: Story = {
+  args: { summaryClassName: "story-summary", defaultOpen: true },
+  decorators: [
+    (Story) => (
+      <>
+        <style>{".story-summary { text-transform: uppercase; letter-spacing: 0.05em; }"}</style>
+        <Story />
+      </>
+    ),
+  ],
+};
+
+/** `indicator` replaces the chevron with any node; it does not turn, so style it from `details[open]`. */
+export const CustomIndicator: Story = {
+  args: { indicator: <span style={{ fontVariantNumeric: "tabular-nums" }}>3 items</span>, defaultOpen: true },
+};
+
+/** `indicator={null}` shows nothing at the end of the row. */
+export const NoIndicator: Story = { args: { indicator: null, defaultOpen: true } };
 
 const questions = [
   ["How do I invite a team member?", "Open Team, choose Invite and enter their email address."],

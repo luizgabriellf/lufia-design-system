@@ -6930,7 +6930,7 @@
         {
           "name": "Disclosure",
           "kind": "component",
-          "description": "A disclosure built on the native `<details>` and `<summary>`: it works without JavaScript and in a Server Component, keeps the browser's keyboard behaviour (Enter or Space on the summary) and find-in-page, which opens a closed section that holds the match. The chevron turns with the state, and where the browser supports it the content also slides open. Pass `open` with `onToggle` to control it from a Client Component.",
+          "description": "A disclosure built on the native `<details>` and `<summary>`: it works without JavaScript and in a Server Component, keeps the browser's keyboard behaviour (Enter or Space on the summary) and find-in-page, which opens a closed section that holds the match. The chevron turns with the state, and where the browser supports it the content also slides open. Pass `open` with `onToggle` to control it from a Client Component. `size=\"compact\"` tightens the padding, `summaryClassName` styles the row, and `indicator` replaces the chevron (or removes it with `null`).",
           "props": [
             {
               "name": "children",
@@ -6968,11 +6968,32 @@
               "description": "`boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content."
             },
             {
+              "name": "size",
+              "type": "\"default\" | \"compact\"",
+              "required": false,
+              "default": "\"default\"",
+              "description": "`default` keeps the regular row height and padding; `compact` tightens the padding and the row, for dense lists and sidebars."
+            },
+            {
               "name": "panelClassName",
               "type": "string",
               "required": false,
               "default": null,
               "description": "Class for the content wrapper."
+            },
+            {
+              "name": "summaryClassName",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Class for the `<summary>` row, for an app that styles its own header (type size, colour, spacing)."
+            },
+            {
+              "name": "indicator",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "What sits at the end of the summary row. Omit it for the built-in chevron, which turns with the state; `null` shows nothing; any other node (an icon, a count, text) replaces the chevron. A custom node does not turn: style it from the state the browser exposes, such as `details[open] .your-class`. It is decorative and hidden from assistive technology, so the summary text has to carry the meaning."
             }
           ],
           "nativeProps": true
@@ -6981,7 +7002,7 @@
           "name": "DisclosureProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<DetailsHTMLAttributes<HTMLDetailsElement>, \"title\" | \"summary\"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: \"boxed\" | \"plain\" | undefined; panelClassName?: string | undefined; }"
+          "definition": null
         },
         {
           "name": "disclosureClasses",
@@ -6989,9 +7010,7 @@
           "type": "Readonly<{ root: string; summary: string; panel: string; }>"
         }
       ],
-      "aliases": {
-        "DisclosureProps": "Omit<DetailsHTMLAttributes<HTMLDetailsElement>, \"title\" | \"summary\"> & { summary: ReactNode; children: ReactNode; defaultOpen?: boolean | undefined; name?: string | undefined; variant?: \"boxed\" | \"plain\" | undefined; panelClassName?: string | undefined; }"
-      },
+      "aliases": {},
       "story": {
         "docsId": "components-data-display-disclosure--docs",
         "stories": [
@@ -7010,6 +7029,26 @@
           {
             "export": "PlainWithConsumerPadding",
             "id": "components-data-display-disclosure--plain-with-consumer-padding"
+          },
+          {
+            "export": "Compact",
+            "id": "components-data-display-disclosure--compact"
+          },
+          {
+            "export": "CompactPlain",
+            "id": "components-data-display-disclosure--compact-plain"
+          },
+          {
+            "export": "SummaryClassName",
+            "id": "components-data-display-disclosure--summary-class-name"
+          },
+          {
+            "export": "CustomIndicator",
+            "id": "components-data-display-disclosure--custom-indicator"
+          },
+          {
+            "export": "NoIndicator",
+            "id": "components-data-display-disclosure--no-indicator"
           },
           {
             "export": "ExclusiveGroup",
@@ -7084,8 +7123,12 @@
         "--lufia-color-text-muted",
         "--lufia-disclosure-bg",
         "--lufia-disclosure-border",
+        "--lufia-disclosure-panel-padding-block",
         "--lufia-disclosure-panel-padding-inline",
+        "--lufia-disclosure-summary-min-block-size",
+        "--lufia-disclosure-summary-padding-block",
         "--lufia-disclosure-summary-padding-inline",
+        "--lufia-font-size-sm",
         "--lufia-font-weight-medium",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-fast",

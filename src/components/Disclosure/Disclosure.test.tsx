@@ -80,6 +80,55 @@ describe("Disclosure", () => {
     expect(container.querySelector(".inner")).toHaveTextContent("Text");
   });
 
+  it("changes nothing by default: no custom indicator, the default size", () => {
+    const { container } = render(<Disclosure summary="More">Text</Disclosure>);
+    expect(details(container)).toHaveAttribute("data-size", "default");
+    expect(details(container)).not.toHaveAttribute("data-indicator");
+    expect(container.querySelector("summary")!.children).toHaveLength(0);
+  });
+
+  it("sets the compact size", () => {
+    const { container } = render(
+      <Disclosure summary="More" size="compact">
+        Text
+      </Disclosure>,
+    );
+    expect(details(container)).toHaveAttribute("data-size", "compact");
+  });
+
+  it("merges summaryClassName onto the summary only", () => {
+    const { container } = render(
+      <Disclosure summary="More" summaryClassName="row" className="extra">
+        Text
+      </Disclosure>,
+    );
+    expect(container.querySelector("summary")).toHaveClass("row");
+    expect(container.querySelector("summary")).toHaveClass(disclosureClasses.summary);
+    expect(details(container)).not.toHaveClass("row");
+  });
+
+  it("replaces the chevron with a decorative custom indicator", () => {
+    const { container } = render(
+      <Disclosure summary="More" indicator={<span data-testid="plus">+</span>}>
+        Text
+      </Disclosure>,
+    );
+    expect(details(container)).toHaveAttribute("data-indicator", "custom");
+    const wrapper = screen.getByTestId("plus").parentElement!;
+    expect(wrapper).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector("summary")).toContainElement(wrapper);
+  });
+
+  it("removes the chevron with indicator null and adds no element", () => {
+    const { container } = render(
+      <Disclosure summary="More" indicator={null}>
+        Text
+      </Disclosure>,
+    );
+    expect(details(container)).toHaveAttribute("data-indicator", "none");
+    expect(container.querySelector("summary")!.children).toHaveLength(0);
+  });
+
   it("exports the class names for an existing native details", () => {
     const { container } = render(<Disclosure summary="More">Text</Disclosure>);
     expect(details(container)).toHaveClass(disclosureClasses.root);
@@ -93,6 +142,12 @@ describe("Disclosure", () => {
         <Disclosure summary="Closed">Text</Disclosure>
         <Disclosure summary="Open" defaultOpen variant="plain">
           <p>Text</p>
+        </Disclosure>
+        <Disclosure summary="Compact" size="compact" indicator={<span>+</span>} summaryClassName="row">
+          Text
+        </Disclosure>
+        <Disclosure summary="No indicator" indicator={null}>
+          Text
         </Disclosure>
       </div>,
     );

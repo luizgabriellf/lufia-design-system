@@ -3621,10 +3621,44 @@ test.describe("disclosure", () => {
     expect(boxed).toEqual(["16px", "16px"]);
   });
 
+  test("compact is tighter than default, and the indicator can be replaced or removed", async ({ page }) => {
+    const measure = () =>
+      page.evaluate(() => {
+        const summary = document.querySelector("#storybook-root summary")!;
+        return {
+          height: summary.getBoundingClientRect().height,
+          paddingBlock: parseFloat(getComputedStyle(summary).paddingBlockStart),
+          chevron: getComputedStyle(summary, "::after").display,
+          children: summary.children.length,
+        };
+      });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "components-data-display-disclosure--default");
+    const regular = await measure();
+    await openStory(page, "components-data-display-disclosure--compact");
+    const compact = await measure();
+    expect(compact.height).toBeLessThan(regular.height);
+    expect(compact.paddingBlock).toBeLessThan(regular.paddingBlock);
+    expect(regular.chevron).not.toBe("none");
+    await openStory(page, "components-data-display-disclosure--no-indicator");
+    expect((await measure()).chevron).toBe("none");
+    await openStory(page, "components-data-display-disclosure--custom-indicator");
+    const custom = await measure();
+    expect(custom.chevron).toBe("none");
+    expect(custom.children).toBe(1);
+  });
+
   test("it has no axe violations open and closed, and in the classes-on-native-details story", async ({
     page,
   }) => {
-    for (const name of ["open-by-default", "default", "classes-on-native-details"]) {
+    for (const name of [
+      "open-by-default",
+      "default",
+      "classes-on-native-details",
+      "compact",
+      "custom-indicator",
+      "no-indicator",
+    ]) {
       await openStory(page, `components-data-display-disclosure--${name}`);
       expect(await runAxe(page, "#storybook-root"), name).toEqual([]);
     }
