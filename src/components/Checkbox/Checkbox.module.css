@@ -47,7 +47,8 @@
   cursor: inherit;
   transition:
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
-    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 /* The drawn box is 22px, under the 24px minimum target (WCAG 2.5.8): an invisible layer one pixel larger on every side
@@ -59,22 +60,33 @@
   inset: calc(-1 * var(--lufia-border-width-thick) - 0.0625rem);
 }
 
-/* The mark is drawn with borders so it needs no image and follows the text colour token. */
+/*
+  The mark is drawn with borders so it needs no image and follows the text colour token. It always has its shape and is
+  hidden by a clip-path: checking sweeps the clip open diagonally, from the short stroke to the long one, so the check
+  draws in; unchecking waits out a plain fast fade (the clip closes only when the fade ends). A transition, not a
+  keyframe animation, so a box that is checked on first paint is simply drawn.
+*/
 .input::after {
   content: "";
   box-sizing: border-box;
   display: block;
-  opacity: 0;
-}
-
-.input:checked::after {
   inline-size: 0.375rem;
   block-size: 0.7rem;
   margin-block-end: 0.125rem;
   border: solid var(--lufia-color-text-on-accent);
   border-width: 0 var(--lufia-border-width-thick) var(--lufia-border-width-thick) 0;
+  clip-path: polygon(0 100%, 0 100%, 0 100%);
   transform: rotate(45deg);
+  opacity: 0;
+  transition:
+    opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    clip-path 1ms linear var(--lufia-motion-duration-instant);
+}
+
+.input:checked::after {
+  clip-path: polygon(0 100%, 200% 100%, 0 -100%);
   opacity: 1;
+  transition: clip-path var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
 }
 
 .input:indeterminate::after {
@@ -83,6 +95,7 @@
   margin: 0;
   background: var(--lufia-color-text-on-accent);
   border: 0;
+  clip-path: none;
   transform: none;
   opacity: 1;
 }
@@ -113,6 +126,11 @@
 .root[data-invalid] .input:checked,
 .root[data-invalid] .input:indeterminate {
   background: var(--lufia-color-status-danger-fg);
+}
+
+/* Press feedback: the box compresses while the row is held, whether the pointer is on the box or on its label. */
+.row:active .input:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .mark {

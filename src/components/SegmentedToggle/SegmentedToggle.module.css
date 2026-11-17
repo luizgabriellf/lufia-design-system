@@ -32,7 +32,7 @@
 }
 
 .indicator[data-ready] {
-  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out);
+  transition: transform var(--lufia-motion-duration-enter) var(--lufia-motion-easing-spring);
 }
 
 .segment {
@@ -60,7 +60,9 @@
   white-space: nowrap;
   cursor: pointer;
   touch-action: manipulation;
-  transition: color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 .label {
@@ -94,6 +96,10 @@
 .segment:disabled {
   opacity: var(--lufia-opacity-disabled);
   cursor: not-allowed;
+}
+
+.segment:active:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .segment:hover:not(:disabled, [aria-checked="true"]) {

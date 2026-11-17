@@ -124,7 +124,7 @@
 
 .button[data-variant="primary"]:active,
 .button[data-variant="icon"]:active {
-  transform: scale(0.94);
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .button[data-variant="icon"] .text {

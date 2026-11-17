@@ -181,28 +181,47 @@ Motion**.
 
 All defined in `tokens/` (DTCG) and built to `--lufia-motion-*` in `tokens.css`.
 
-| Token                                      | Value                            | Use                                                 |
-| ------------------------------------------ | -------------------------------- | --------------------------------------------------- |
-| `--lufia-motion-duration-instant`          | 120 ms                           | Hover, press, colour changes                        |
-| `--lufia-motion-duration-fast`             | 180 ms                           | Small control motion, chevrons                      |
-| `--lufia-motion-duration-enter`            | 240 ms                           | Anything entering: dialogs, toasts, steps, page in  |
-| `--lufia-motion-duration-exit`             | 160 ms                           | Anything leaving (always shorter than its entrance) |
-| `--lufia-motion-duration-medium` / `-slow` | 380 / 640 ms                     | Large surfaces, number counts, marketing reveals    |
-| `--lufia-motion-easing-out`                | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances                                           |
-| `--lufia-motion-easing-in`                 | `cubic-bezier(0.4, 0, 1, 1)`     | Exits                                               |
-| `--lufia-motion-easing-in-out`             | `cubic-bezier(0.65, 0, 0.35, 1)` | Movement between two resting places                 |
-| `--lufia-motion-easing-drawer`             | `cubic-bezier(0.32, 0.72, 0, 1)` | Large travel such as sheets                         |
-| `--lufia-motion-distance-nudge`            | 0.25 rem                         | Small controls and indicators                       |
-| `--lufia-motion-distance-rise`             | 0.375 rem                        | Content and page entrances                          |
-| `--lufia-motion-distance-slide`            | 0.5 rem                          | List rows and panels                                |
-| `--lufia-motion-distance-travel`           | 1 rem                            | Sheets and full-screen surfaces                     |
+| Token                                      | Value                                                                       | Use                                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `--lufia-motion-duration-instant`          | 120 ms                                                                      | Hover, press, colour changes                                                  |
+| `--lufia-motion-duration-fast`             | 180 ms                                                                      | Small control motion, chevrons                                                |
+| `--lufia-motion-duration-enter`            | 240 ms                                                                      | Anything entering: dialogs, toasts, steps, page in                            |
+| `--lufia-motion-duration-exit`             | 160 ms                                                                      | Anything leaving (always shorter than its entrance)                           |
+| `--lufia-motion-duration-medium` / `-slow` | 380 / 640 ms                                                                | Large surfaces, number counts, marketing reveals                              |
+| `--lufia-motion-easing-out`                | `cubic-bezier(0.22, 1, 0.36, 1)`                                            | Entrances                                                                     |
+| `--lufia-motion-easing-in`                 | `cubic-bezier(0.4, 0, 1, 1)`                                                | Exits                                                                         |
+| `--lufia-motion-easing-in-out`             | `cubic-bezier(0.65, 0, 0.35, 1)`                                            | Movement between two resting places                                           |
+| `--lufia-motion-easing-drawer`             | `cubic-bezier(0.32, 0.72, 0, 1)`                                            | Large travel such as sheets                                                   |
+| `--lufia-motion-easing-spring`             | `cubic-bezier(0.34, 1.26, 0.64, 1)`, or a `linear()` spring where supported | Small elements travelling under about 2 rem                                   |
+| `--lufia-motion-scale-press`               | 0.97                                                                        | Buttons, icon buttons, switch thumbs, checkbox and radio marks, while pressed |
+| `--lufia-motion-scale-press-subtle`        | 0.985                                                                       | Rows, cards, tabs, chips, pagination and segments, while pressed              |
+| `--lufia-motion-distance-nudge`            | 0.25 rem                                                                    | Small controls and indicators                                                 |
+| `--lufia-motion-distance-rise`             | 0.375 rem                                                                   | Content and page entrances                                                    |
+| `--lufia-motion-distance-slide`            | 0.5 rem                                                                     | List rows and panels                                                          |
+| `--lufia-motion-distance-travel`           | 1 rem                                                                       | Sheets and full-screen surfaces                                               |
 
 Write durations and easings as `var(--lufia-motion-*)`. A literal fails `lufia-verify-motion`. Distances are in `rem`.
+
+#### Spring and press
+
+`--lufia-motion-easing-spring` is a gently under-damped spring (damping ratio about 0.7, about 5% overshoot, once, then it
+settles). `tokens.css` defines it as the `cubic-bezier()` above and, inside `@supports (transition-timing-function:
+linear(0, 1))`, replaces it with a `linear()` curve that `scripts/lib/spring.mjs` samples at build time (28 points,
+deterministic). Rules:
+
+- **Spring is for small elements travelling less than about 2 rem**: a switch thumb, a sliding indicator, a mark landing.
+  Never put it on dialogs, sheets, popovers, menus or toasts; those keep `out`, `in` and `drawer`.
+- It is for entrances and movement between two resting places. An exit never uses it.
+- **Press feedback** is `transform: scale(var(--lufia-motion-scale-press))` (or `-subtle` for rows, cards and tabs) on
+  `:active`, with `--lufia-motion-duration-instant`, and never on `:disabled` or `[aria-disabled="true"]`. It is a rest-state
+  `transform: none`, so it does not make the control the containing block of a `position: fixed` descendant, except while held.
+- A mark that appears (checkbox check, radio dot) animates with a **transition**, not a keyframe animation, so a control
+  that is already checked on first paint is simply drawn. Unchecking is a plain fast fade.
 
 ### Reduced motion
 
 Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufia-motion-duration-*` to `0.01ms` and every
-`--lufia-motion-distance-*` to `0rem`. So:
+`--lufia-motion-distance-*` to `0rem`, and both `--lufia-motion-scale-press*` tokens to `1`. So:
 
 - **Token-driven CSS needs no extra work.** The end state is reached at once. The duration is `0.01ms` and not `0` so that
   `transitionend` and `animationend` still fire.
@@ -1777,7 +1796,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-fg`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-fg`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-fg`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-fg`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-fg`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-fg`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -1884,7 +1903,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ### Content guidelines
 
@@ -2090,7 +2109,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-field`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-xs`, `--lufia-space-1`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-field`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-xs`, `--lufia-space-1`, `--lufia-space-3`.
 
 ### Content guidelines
 
@@ -3803,7 +3822,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-filter-links-column-min`, `--lufia-filter-links-current-bg`, `--lufia-filter-links-current-border`, `--lufia-filter-links-current-color`, `--lufia-filter-links-focus-width`, `--lufia-filter-links-gap`, `--lufia-filter-links-min-block-size`, `--lufia-filter-links-radius`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-filter-links-column-min`, `--lufia-filter-links-current-bg`, `--lufia-filter-links-current-border`, `--lufia-filter-links-current-color`, `--lufia-filter-links-focus-width`, `--lufia-filter-links-gap`, `--lufia-filter-links-min-block-size`, `--lufia-filter-links-radius`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-md`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -5073,7 +5092,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-sm`, `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-sm`, `--lufia-space-2`.
 
 ### Content guidelines
 
@@ -5698,7 +5717,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
 
 ### Content guidelines
 
@@ -5815,7 +5834,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-peer-nav-active-icon-color`, `--lufia-peer-nav-description-line-height`, `--lufia-peer-nav-description-size`, `--lufia-peer-nav-disabled-opacity`, `--lufia-peer-nav-focus-width`, `--lufia-peer-nav-indicator-border`, `--lufia-peer-nav-indicator-shadow`, `--lufia-peer-nav-item-radius`, `--lufia-peer-nav-label-line-height`, `--lufia-peer-nav-label-size`, `--lufia-peer-nav-label-size-phone`, `--lufia-peer-nav-max-inline-size`, `--lufia-peer-nav-radius`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-easing-spring`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-peer-nav-active-icon-color`, `--lufia-peer-nav-description-line-height`, `--lufia-peer-nav-description-size`, `--lufia-peer-nav-disabled-opacity`, `--lufia-peer-nav-focus-width`, `--lufia-peer-nav-indicator-border`, `--lufia-peer-nav-indicator-shadow`, `--lufia-peer-nav-item-radius`, `--lufia-peer-nav-label-line-height`, `--lufia-peer-nav-label-size`, `--lufia-peer-nav-label-size-phone`, `--lufia-peer-nav-max-inline-size`, `--lufia-peer-nav-radius`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-space-2`.
 
 ### Content guidelines
 
@@ -6333,7 +6352,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-easing-spring`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-6`.
 
 ### Content guidelines
 
@@ -6788,7 +6807,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-shadow-sm`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-neutral-bg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-easing-spring`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-md`, `--lufia-shadow-sm`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`.
 
 ### Content guidelines
 
@@ -7778,7 +7797,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-lines`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-link-hover-decoration`, `--lufia-stat-tile-row-value-size`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-2xl`, `--lufia-font-size-2xs`, `--lufia-font-size-3xl`, `--lufia-font-size-sm`, `--lufia-font-size-xl`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-semibold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-md`, `--lufia-shadow-md`, `--lufia-shadow-sm`, `--lufia-stat-tile-label-color`, `--lufia-stat-tile-label-font`, `--lufia-stat-tile-label-lines`, `--lufia-stat-tile-label-size`, `--lufia-stat-tile-label-tracking`, `--lufia-stat-tile-link-hover-decoration`, `--lufia-stat-tile-row-value-size`, `--lufia-stat-tile-value-size`, `--lufia-stat-tile-value-size-narrow`, `--lufia-target-touch`.
 
 ### Stories
 
@@ -8229,7 +8248,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-3`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-accent-default`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-fg`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-on-accent`, `--lufia-font-line-height-normal`, `--lufia-font-size-md`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-easing-spring`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-3`.
 
 ### Content guidelines
 
@@ -8771,7 +8790,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-opacity-disabled`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-tabs-disabled-opacity`, `--lufia-tabs-focus-width`, `--lufia-tabs-gap`, `--lufia-tabs-indicator-color`, `--lufia-tabs-indicator-size`, `--lufia-tabs-panel-gap`, `--lufia-tabs-panel-padding`, `--lufia-tabs-selected-color`, `--lufia-tabs-tab-min-block-size`, `--lufia-tabs-tab-padding-block`, `--lufia-tabs-tab-padding-inline`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-tabs-disabled-opacity`, `--lufia-tabs-focus-width`, `--lufia-tabs-gap`, `--lufia-tabs-indicator-color`, `--lufia-tabs-indicator-size`, `--lufia-tabs-panel-gap`, `--lufia-tabs-panel-padding`, `--lufia-tabs-selected-color`, `--lufia-tabs-tab-min-block-size`, `--lufia-tabs-tab-padding-block`, `--lufia-tabs-tab-padding-inline`.
 
 ### Content guidelines
 

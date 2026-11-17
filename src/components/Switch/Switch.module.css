@@ -53,7 +53,8 @@
   background: var(--lufia-color-text-muted);
   border-radius: var(--lufia-radius-full);
   transition:
-    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-spring),
+    scale var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
@@ -70,6 +71,11 @@
 
 .switch[aria-checked="true"]:dir(rtl) .thumb {
   transform: translateX(-1rem);
+}
+
+/* Press feedback: the thumb compresses (the individual `scale` property composes with the travel `transform`). */
+.switch:active:not(:disabled) .thumb {
+  scale: var(--lufia-motion-scale-press);
 }
 
 .switch:focus-visible {
@@ -124,7 +130,8 @@
   background: var(--lufia-color-text-muted);
   border-radius: var(--lufia-radius-full);
   transition:
-    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-spring),
+    scale var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
     background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
@@ -140,6 +147,10 @@
 
 .input:checked:dir(rtl)::after {
   transform: translateX(-1rem);
+}
+
+.input:active:not(:disabled)::after {
+  scale: var(--lufia-motion-scale-press);
 }
 
 .input:focus-visible {

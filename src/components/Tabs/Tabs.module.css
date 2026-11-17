@@ -56,7 +56,9 @@
   white-space: nowrap;
   cursor: pointer;
   touch-action: manipulation;
-  transition: color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 /* The selected indicator: a bar on the edge next to the panel, so it reads without colour as well as with it. */
@@ -107,6 +109,10 @@
 .tab:disabled:hover,
 .tab[aria-disabled="true"]:hover {
   color: var(--lufia-color-text-muted);
+}
+
+.tab:active:not(:disabled, [aria-disabled="true"]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .list[data-orientation="vertical"] .tab {
