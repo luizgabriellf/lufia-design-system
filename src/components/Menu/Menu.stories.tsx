@@ -77,6 +77,35 @@ export const LinkItems: Story = {
   args: { defaultOpen: true, label: "Sections", items: links, triggerLabel: "Sections" },
 };
 
+const downloads: MenuEntry[] = [
+  {
+    key: "csv",
+    label: "Download CSV",
+    href: "data:text/csv;charset=utf-8,name%2Cvalue%0Aa%2C1",
+    native: true,
+    download: "report.csv",
+    icon: <DownloadIcon />,
+  },
+  {
+    key: "pdf",
+    label: "Open the PDF in a new tab",
+    href: "https://example.com/report.pdf",
+    native: true,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    icon: <FileTextIcon />,
+  },
+  { key: "copy", label: "Copy link", icon: <CopyIcon /> },
+];
+
+/**
+ * `native` renders a plain `<a>` with `download`, `target` and `rel` passed through: never prefetched and never a client
+ * transition, for file downloads and server routes. It behaves like any other item and the list closes on activation.
+ */
+export const NativeLinkItems: Story = {
+  args: { defaultOpen: true, label: "Export", items: downloads },
+};
+
 const withDetails: MenuEntry[] = [
   {
     type: "group",

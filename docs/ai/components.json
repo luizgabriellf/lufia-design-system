@@ -10501,7 +10501,7 @@
           "name": "MenuItem",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: string; description?: string | undefined; meta?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; current?: boolean | undefined; disabled?: boolean | undefined; attributes?: Record<`data-${string}`, string> | undefined; }"
+          "definition": null
         },
         {
           "name": "MenuProps",
@@ -10525,7 +10525,6 @@
       "aliases": {
         "MenuEntry": "MenuItem | MenuGroup | MenuSeparator",
         "MenuGroup": "{ type: \"group\"; key: string; label?: string | undefined; items: readonly MenuItem[]; }",
-        "MenuItem": "{ key: string; label: string; description?: string | undefined; meta?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; current?: boolean | undefined; disabled?: boolean | undefined; attributes?: Record<`data-${string}`, string> | undefined; }",
         "MenuSeparator": "{ type: \"separator\"; key: string; }",
         "MenuTriggerProps": "{ ref: (element: HTMLElement | null) => void; onClick: () => void; onKeyDown: (event: KeyboardEvent<HTMLElement>) => void; \"aria-expanded\": boolean; \"aria-controls\": string | undefined; \"aria-haspopup\": \"menu\" | \"listbox\"; }"
       },
@@ -10543,6 +10542,10 @@
           {
             "export": "LinkItems",
             "id": "components-overlays-menu--link-items"
+          },
+          {
+            "export": "NativeLinkItems",
+            "id": "components-overlays-menu--native-link-items"
           },
           {
             "export": "WithDescriptionsAndGroups",

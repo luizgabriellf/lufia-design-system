@@ -352,6 +352,24 @@ test.describe("popover", () => {
 });
 
 test.describe("menu", () => {
+  for (const reducedMotion of ["no-preference", "reduce"] as const) {
+    test(`a native download item downloads the file and closes the list (${reducedMotion} motion)`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion });
+      await openStory(page, "components-overlays-menu--native-link-items");
+      const item = page.getByRole("menuitem", { name: "Download CSV" });
+      await expect(item).toHaveAttribute("download", "report.csv");
+      expect(await item.evaluate((element) => element.tagName)).toBe("A");
+      const downloading = page.waitForEvent("download");
+      await item.focus();
+      await page.keyboard.press("Enter");
+      const download = await downloading;
+      expect(download.suggestedFilename()).toBe("report.csv");
+      await expect(page.getByRole("menu")).toHaveCount(0);
+    });
+  }
+
   test("near the bottom edge it flips above the trigger and stays inside the viewport", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await openStory(page, "components-overlays-menu--flips-near-the-bottom");

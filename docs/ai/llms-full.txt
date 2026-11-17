@@ -4512,7 +4512,6 @@ Other native element attributes pass through to the root element.
 
 - `MenuEntry`: `MenuItem | MenuGroup | MenuSeparator`
 - `MenuGroup`: `{ type: "group"; key: string; label?: string | undefined; items: readonly MenuItem[]; }`
-- `MenuItem`: `{ key: string; label: string; description?: string | undefined; meta?: string | undefined; icon?: ReactNode; href?: string | undefined; onSelect?: (() => void) | undefined; current?: boolean | undefined; disabled?: boolean | undefined; attributes?: Record<'data-${string}', string> | undefined; }`
 - `MenuSeparator`: `{ type: "separator"; key: string; }`
 - `MenuTriggerProps`: `{ ref: (element: HTMLElement | null) => void; onClick: () => void; onKeyDown: (event: KeyboardEvent<HTMLElement>) => void; "aria-expanded": boolean; "aria-controls": string | undefined; "aria-haspopup": "menu" | "listbox"; }`
 
@@ -4575,6 +4574,7 @@ Name the list by what it holds ("Export", "Switch workspace"); the trigger's vis
 - `components-overlays-menu--default`
 - `components-overlays-menu--open`
 - `components-overlays-menu--link-items`
+- `components-overlays-menu--native-link-items`
 - `components-overlays-menu--with-descriptions-and-groups`
 - `components-overlays-menu--listbox`
 - `components-overlays-menu--listbox-picked`
