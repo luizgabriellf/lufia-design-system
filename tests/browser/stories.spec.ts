@@ -518,7 +518,8 @@ test.describe("menu", () => {
         // Readable against the sheet: the text colour differs from the sheet background in this mode.
         const background = await sheet.evaluate((element) => getComputedStyle(element).backgroundColor);
         expect(look.text).not.toBe(background);
-        expect(await runAxe(page, '[role="dialog"]')).toEqual([]);
+        // Poll: the sheet fades in, and a contrast check on half-opaque text fails (seen in WebKit).
+        await expect.poll(() => runAxe(page, '[role="dialog"]')).toEqual([]);
         await context.close();
       });
     }
