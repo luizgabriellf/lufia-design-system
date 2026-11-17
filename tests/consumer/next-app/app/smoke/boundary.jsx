@@ -3,6 +3,7 @@
 import { AnimatedNumber as AnimatedNumber_AnimatedNumber, ChangeHighlight as ChangeHighlight_ChangeHighlight, Reveal as Reveal_Reveal, RouteTransition as RouteTransition_RouteTransition, Stagger as Stagger_Stagger } from "@lufia/design-system/motion";
 import * as usePrefersReducedMotion from "@lufia/design-system/motion";
 import { AppShell as AppShell_AppShell } from "@lufia/design-system/components/AppShell";
+import { Banner as Banner_Banner } from "@lufia/design-system/components/Banner";
 import { Button as Button_Button } from "@lufia/design-system/components/Button";
 import { Checkbox as Checkbox_Checkbox } from "@lufia/design-system/components/Checkbox";
 import { ColumnChart as ColumnChart_ColumnChart } from "@lufia/design-system/components/ColumnChart";
@@ -59,6 +60,7 @@ export default function ClientSmoke() {
       collapseSidebar: "Collapse",
       expandSidebar: "Expand",
     }}>{"x"}</AppShell_AppShell></section>
+      <section data-smoke="Banner"><Banner_Banner /></section>
       <section data-smoke="Button"><Button_Button /></section>
       <section data-smoke="ChangeHighlight"><ChangeHighlight_ChangeHighlight value={"x"} /></section>
       <section data-smoke="Checkbox"><Checkbox_Checkbox label={"x"} /></section>

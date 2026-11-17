@@ -1,9 +1,87 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createRef } from "react";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { axe } from "../../test/axe";
 import { BANNER_VARIANTS, Banner, type BannerVariant } from "./Banner";
+
+describe("Banner ref and focusOnMount", () => {
+  it("forwards a ref object and a callback ref to the root element", () => {
+    const ref = createRef<HTMLDivElement>();
+    const callback = vi.fn();
+    const { unmount } = render(
+      <>
+        <Banner ref={ref}>One</Banner>
+        <Banner ref={callback}>Two</Banner>
+      </>,
+    );
+    expect(ref.current).toBe(screen.getAllByRole("status")[0]);
+    expect(callback).toHaveBeenCalledWith(screen.getAllByRole("status")[1]);
+    unmount();
+    expect(callback).toHaveBeenLastCalledWith(null);
+  });
+
+  it("does not take focus or become focusable by default", () => {
+    render(<Banner>Message</Banner>);
+    expect(screen.getByRole("status")).not.toHaveAttribute("tabindex");
+    expect(screen.getByRole("status")).not.toHaveFocus();
+  });
+
+  it("takes focus once on mount with tabIndex -1, and keeps its live role", () => {
+    render(
+      <Banner focusOnMount variant="danger">
+        Failed
+      </Banner>,
+    );
+    const banner = screen.getByRole("alert");
+    expect(banner).toHaveAttribute("tabindex", "-1");
+    expect(banner).toHaveFocus();
+  });
+
+  it("does not steal focus back on re-render or when the prop changes", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <>
+        <Banner focusOnMount>Message</Banner>
+        <button type="button">Elsewhere</button>
+      </>,
+    );
+    await user.click(screen.getByRole("button", { name: "Elsewhere" }));
+    expect(screen.getByRole("button", { name: "Elsewhere" })).toHaveFocus();
+    rerender(
+      <>
+        <Banner focusOnMount title="Updated">
+          Message
+        </Banner>
+        <button type="button">Elsewhere</button>
+      </>,
+    );
+    expect(screen.getByRole("button", { name: "Elsewhere" })).toHaveFocus();
+    rerender(
+      <>
+        <Banner focusOnMount={false}>Message</Banner>
+        <button type="button">Elsewhere</button>
+      </>,
+    );
+    expect(screen.getByRole("button", { name: "Elsewhere" })).toHaveFocus();
+  });
+
+  it("does not take focus when focusOnMount turns on after mount", () => {
+    const { rerender } = render(<Banner>Message</Banner>);
+    rerender(<Banner focusOnMount>Message</Banner>);
+    expect(screen.getByRole("status")).not.toHaveFocus();
+  });
+
+  it("has no axe violations when it takes focus", async () => {
+    const { container } = render(
+      <Banner focusOnMount variant="warning" title="Check the form">
+        Two fields need attention.
+      </Banner>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
 
 describe("Banner", () => {
   it("renders title, description and action", () => {

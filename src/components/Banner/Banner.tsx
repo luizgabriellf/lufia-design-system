@@ -1,4 +1,6 @@
-import type { HTMLAttributes, ReactNode } from "react";
+"use client";
+
+import { useEffect, useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { CloseIcon } from "../Icon/icons";
 import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
 import styles from "./Banner.module.css";
@@ -49,6 +51,16 @@ export type BannerProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" 
    * (`role="status"`) for the others.
    */
   live?: BannerLive;
+  /**
+   * Moves focus to the banner once, when it mounts (it gets `tabIndex={-1}`, so it is focusable by script but not a tab
+   * stop). For a message that replaces what the person was just doing, such as a failed submit above a form, so a keyboard
+   * or screen reader user lands on it. It does not take focus again when the banner re-renders or when this prop changes.
+   * Default `false`: a banner never takes focus. See `live` for the announcement; use this one or the other for the same
+   * message, not both.
+   */
+  focusOnMount?: boolean;
+  /** The root element, for measuring, scrolling to it or moving focus yourself. */
+  ref?: Ref<HTMLDivElement>;
   /** Plays the enter motion (a short fade and slide) when the banner mounts. Default `false`: a banner already on the page at load stays still. */
   animateIn?: boolean;
 };
@@ -69,7 +81,7 @@ const ROLE: Record<BannerLive, "status" | "alert" | "note"> = {
 
 /**
  * An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in
- * the flow, never takes focus and is not dismissed by a timer. For a message that confirms an action and leaves by itself use
+ * the flow, does not take focus unless `focusOnMount` asks for it, and is not dismissed by a timer. For a message that confirms an action and leaves by itself use
  * `Toast`; for a short label use `Badge`; for an empty list use `EmptyState`.
  */
 export function Banner({
@@ -82,16 +94,30 @@ export function Banner({
   lead,
   live,
   animateIn = false,
+  focusOnMount = false,
   onDismiss,
   dismissLabel,
   className,
+  ref,
   ...rest
 }: BannerProps) {
+  const root = useRef<HTMLDivElement | null>(null);
+  // Mount only, on purpose: a later render or a change of the prop must not pull focus back from where the person is.
+  const shouldFocus = useRef(focusOnMount);
+  useEffect(() => {
+    if (shouldFocus.current) root.current?.focus();
+  }, []);
   const announce = live ?? (variant === "warning" || variant === "danger" ? "assertive" : "polite");
   return (
     <div
       role={ROLE[announce]}
+      tabIndex={focusOnMount ? -1 : undefined}
       {...rest}
+      ref={(node) => {
+        root.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      }}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-variant={variant}
       data-size={size}

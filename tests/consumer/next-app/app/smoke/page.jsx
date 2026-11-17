@@ -3,7 +3,6 @@ import { DeleteIcon as ActionIcons_DeleteIcon, DuplicateIcon as ActionIcons_Dupl
 import { ActivityList as ActivityList_ActivityList } from "@lufia/design-system/components/ActivityList";
 import { AttentionList as AttentionList_AttentionList } from "@lufia/design-system/components/AttentionList";
 import { Badge as Badge_Badge, StatusBadge as Badge_StatusBadge } from "@lufia/design-system/components/Badge";
-import { Banner as Banner_Banner } from "@lufia/design-system/components/Banner";
 import { BarList as BarList_BarList } from "@lufia/design-system/components/BarList";
 import { BulletBar as BulletBar_BulletBar } from "@lufia/design-system/components/BulletBar";
 import { Card as Card_Card } from "@lufia/design-system/components/Card";
@@ -54,7 +53,6 @@ export default function SmokePage() {
       <section data-smoke="AttentionList"><AttentionList_AttentionList /></section>
       <section data-smoke="Badge"><Badge_Badge>{"x"}</Badge_Badge></section>
       <section data-smoke="Badge/StatusBadge"><Badge_StatusBadge>{"x"}</Badge_StatusBadge></section>
-      <section data-smoke="Banner"><Banner_Banner /></section>
       <section data-smoke="BarList"><BarList_BarList rows={[{ key: "a", name: "A", value: "10", amount: 10 }]} title={"x"} /></section>
       <section data-smoke="BulletBar"><BulletBar_BulletBar value={1} target={1} label={"x"} /></section>
       <section data-smoke="Card"><Card_Card /></section>
