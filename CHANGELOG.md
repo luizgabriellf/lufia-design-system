@@ -1,5 +1,19 @@
 # @lufia/design-system
 
+## 0.58.0
+
+### Minor Changes
+
+- [#206](https://github.com/luizgabriellf/lufia-design-system/pull/206) [`f390b74`](https://github.com/luizgabriellf/lufia-design-system/commit/f390b74d512a2e8b8b506b7c16c077785037a9ec) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - FilterLinks (beta): a labelled row of links that each apply a filter to one list through the URL, with an optional count. Links render
+  through the `LufiaProvider` link adapter, the current one is marked `aria-current="true"`, the row wraps onto more lines
+  without widening the page, and chips are 44px tall under a coarse pointer. It carries no state, so a Server Component can render
+  it. Themed with `--lufia-filter-links-*` hooks.
+
+- [#207](https://github.com/luizgabriellf/lufia-design-system/pull/207) [`3f9bb7d`](https://github.com/luizgabriellf/lufia-design-system/commit/3f9bb7d479f4752e31cd4d92e058c48e2bcc2425) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - OneWayDisclosure (beta): a button that reveals a region and hides itself once it has, for an invitation such as "Fill in now" that opens a
+  form in place. The button carries `aria-expanded` and `aria-controls`; on activation the content is shown and focus moves into it
+  before the button is hidden, so focus is never lost. Uncontrolled (`defaultOpen`) or controlled (`open`, `onOpenChange`); `label`
+  exposes the content as a named region, `variant` styles the button. Focus does not move on first render.
+
 ## 0.57.0
 
 ### Minor Changes
