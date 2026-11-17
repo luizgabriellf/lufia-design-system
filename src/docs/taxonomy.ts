@@ -173,6 +173,11 @@ export const ENTRIES: Entry[] = [
     "Tabs that switch the content of one page, or links for views that have their own URL.",
     apg("Tabs", "tabs"),
   ),
+  c(
+    "FilterLinks",
+    "Navigation",
+    "A labelled row of links that each apply a filter to one list through the URL, with an optional count.",
+  ),
   c("NavRow", "Navigation", "A row that links to a destination, for lists of places and settings."),
   c("Pagination", "Navigation", "Previous, next and numbered pages for long lists."),
   c(
@@ -247,7 +252,6 @@ export const ENTRIES: Entry[] = [
     "A native details and summary with a turning chevron, for content that opens and closes without script.",
     apg("Disclosure", "disclosure"),
   ),
-
   c(
     "Banner",
     "Feedback",

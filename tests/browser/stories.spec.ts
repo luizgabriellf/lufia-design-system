@@ -3782,3 +3782,50 @@ test.describe("tabs", () => {
     await expect(links.nth(1)).toBeFocused();
   });
 });
+
+test.describe("filter links", () => {
+  test("a long row wraps at 320px and the page does not widen", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-navigation-filterlinks--wrapping");
+    const nav = page.getByRole("navigation", { name: "Filter by status" });
+    await expect(nav.getByRole("link")).toHaveCount(14);
+    const sizes = await nav.evaluate((element) => ({
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      page: document.documentElement.scrollWidth,
+      view: document.documentElement.clientWidth,
+    }));
+    expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth);
+    expect(sizes.page).toBeLessThanOrEqual(sizes.view);
+  });
+
+  test("the current link is marked aria-current true and shows a focus ring", async ({ page }) => {
+    await openStory(page, "components-navigation-filterlinks--default");
+    const current = page.locator('a[aria-current="true"]');
+    await expect(current).toHaveCount(1);
+    await expect(current).toContainText("Open");
+    await page.keyboard.press("Tab");
+    const outline = await page
+      .getByRole("link")
+      .first()
+      .evaluate((element) => getComputedStyle(element).outlineStyle);
+    expect(outline).toBe("solid");
+  });
+
+  test("the links are at least 44px tall under a coarse pointer", async ({ browser }) => {
+    const context = await browser.newContext({
+      hasTouch: true,
+      isMobile: true,
+      viewport: { width: 390, height: 800 },
+    });
+    const page = await context.newPage();
+    await openStory(page, "components-navigation-filterlinks--default");
+    const links = page.getByRole("navigation", { name: "Filter by status" }).getByRole("link");
+    await expect(links.first()).toBeVisible();
+    const heights = await links.evaluateAll((elements) =>
+      elements.map((el) => (el as HTMLElement).offsetHeight),
+    );
+    expect(Math.min(...heights)).toBeGreaterThanOrEqual(44);
+    await context.close();
+  });
+});

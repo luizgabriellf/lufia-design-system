@@ -49,6 +49,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 ### Navigation
 
 - AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger primaryAction desktopPrimaryFallback +29 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
+- FilterLinks: label* items* value
 - NavRow: title* description meta badge icon href onClick disabled
 - PageHeader: title* eyebrow headingLevel description actions
 - Pagination: page* totalPages* onPageChange* labels* total hrefFor siblingCount variant buttonClassName disabledMode

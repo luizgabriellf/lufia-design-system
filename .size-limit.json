@@ -36,6 +36,12 @@
     "gzip": true
   },
   {
+    "name": "FilterLinks",
+    "path": "dist/components/FilterLinks/**/*.{js,css}",
+    "limit": "1.7 kB",
+    "gzip": true
+  },
+  {
     "name": "Tabs",
     "path": "dist/components/Tabs/**/*.{js,css}",
     "limit": "3.3 kB",

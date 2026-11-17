@@ -1,0 +1,102 @@
+/* Theming hooks, all optional, set in the consuming theme or on the row: --lufia-filter-links-gap,
+   --lufia-filter-links-min-block-size, --lufia-filter-links-radius, --lufia-filter-links-current-color,
+   --lufia-filter-links-current-bg, --lufia-filter-links-current-border, --lufia-filter-links-focus-width. */
+.root {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* The chips wrap onto more lines: every filter stays visible and the page never gains a horizontal scrollbar. */
+.list {
+  display: flex;
+  min-inline-size: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lufia-filter-links-gap, var(--lufia-space-2));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.chip {
+  display: inline-flex;
+  min-block-size: var(--lufia-filter-links-min-block-size, 2rem);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  align-items: center;
+  gap: var(--lufia-space-2);
+  padding-block: var(--lufia-space-1);
+  padding-inline: var(--lufia-space-3);
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-filter-links-radius, var(--lufia-radius-md));
+  background: transparent;
+  color: var(--lufia-color-text-muted);
+  font: inherit;
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  text-decoration: none;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.chip:hover {
+  border-color: var(--lufia-color-border-strong);
+  color: var(--lufia-color-text-default);
+}
+
+.chip:focus-visible {
+  outline: var(--lufia-filter-links-focus-width, var(--lufia-border-width-thick)) solid
+    var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* The current chip differs by weight and a border as well as by colour, so it reads without colour. */
+.chip[data-current] {
+  border-color: var(--lufia-filter-links-current-border, var(--lufia-color-accent-border));
+  background: var(--lufia-filter-links-current-bg, var(--lufia-color-accent-subtle));
+  color: var(--lufia-filter-links-current-color, var(--lufia-color-text-accent));
+  font-weight: var(--lufia-font-weight-bold);
+}
+
+/* A long label wraps inside the chip instead of widening the page. */
+.label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.count {
+  flex: 0 0 auto;
+  font-size: var(--lufia-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (pointer: coarse) {
+  .chip {
+    min-block-size: var(--lufia-target-touch, 2.75rem);
+  }
+}
+
+@media (forced-colors: active) {
+  .chip[data-current] {
+    border-color: Highlight;
+  }
+
+  .chip:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}
