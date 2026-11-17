@@ -66,7 +66,7 @@ export const FIXTURES = {
       summary: (page, totalPages) => page + " of " + totalPages,
     }`,
   },
-  FilterLinks: { label: "Filter", items: `[{ key: "a", label: "A", href: "/" }]` },
+  FilterLinks: { label: `"Filter"`, items: `[{ key: "a", label: "A", href: "/" }]` },
   Tabs: { items: `[{ key: "a", label: "A", panel: "Panel" }]` },
   PeerNav: { items: `[{ key: "a", label: "A", href: "/" }]` },
   QueueSummary: {

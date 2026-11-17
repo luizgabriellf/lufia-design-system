@@ -66,7 +66,7 @@ export default function SmokePage() {
       <section data-smoke="DetailSectionCard"><DetailSectionCard_DetailSectionCard title={"x"}>{"x"}</DetailSectionCard_DetailSectionCard></section>
       <section data-smoke="Disclosure"><Disclosure_Disclosure summary={"x"}>{"x"}</Disclosure_Disclosure></section>
       <section data-smoke="EmptyState"><EmptyState_EmptyState title={"x"} /></section>
-      <section data-smoke="FilterLinks"><FilterLinks_FilterLinks label={Filter} items={[{ key: "a", label: "A", href: "/" }]} /></section>
+      <section data-smoke="FilterLinks"><FilterLinks_FilterLinks label={"Filter"} items={[{ key: "a", label: "A", href: "/" }]} /></section>
       <section data-smoke="Icon"><Icon_Icon /></section>
       <section data-smoke="Icon/ArrowDownIcon"><Icon_ArrowDownIcon /></section>
       <section data-smoke="Icon/ArrowLeftIcon"><Icon_ArrowLeftIcon /></section>
