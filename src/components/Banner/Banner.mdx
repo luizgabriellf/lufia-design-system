@@ -13,7 +13,7 @@ import * as Stories from "./Banner.stories";
 <Section id="overview">
 
 An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the
-page flow, never takes focus and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot
+page flow, takes focus only when asked to (`focusOnMount`) and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot
 and an optional dismiss button.
 
 <Canvas of={Stories.Default} />
@@ -48,6 +48,24 @@ name (`dismissLabel`) is one of them, and it is required whenever `onDismiss` is
 | `danger`  | Something failed or is blocked                  | `role="alert"` (assertive) |
 
 `live` overrides the announcement: `polite`, `assertive`, or `off` (`role="note"`, not a live region).
+
+### Announcing, focusing and the ref
+
+Pick one way to bring a banner to the person's attention, by what the message does.
+
+| Situation                                                                                                      | Use                                                              |
+| -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| A banner that is part of the page at load                                                                      | `live="off"` (a static note), or the default for its variant     |
+| Something appears or changes while the person is working, no action needed                                     | the default `live` (`status`, or `alert` for warning and danger) |
+| The message replaces what the person was doing (a failed submit, a blocked step) and they should act on it now | `focusOnMount`                                                   |
+
+`focusOnMount` gives the root `tabIndex={-1}` and moves focus to it once, when it mounts. It never takes focus again on a
+re-render or when the prop changes, and a banner without it never takes focus. It keeps the variant's `role`, so a
+`danger` banner is still `role="alert"`; for a banner that takes focus, set `live="off"` if the announcement would repeat
+what the focus move already reads out. `ref` is the root `<div>`, for measuring, scrolling to it or moving focus yourself
+at the moment you choose.
+
+<Canvas of={Stories.FocusOnMount} />
 
 </Section>
 
@@ -131,7 +149,7 @@ A theme can change them with the `--lufia-banner-*` component tokens. See [Themi
 
 ### Keyboard
 
-The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
+The banner takes no focus unless `focusOnMount` is set (then only on mount, and it is not a tab stop). The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
 and the dismiss button works with Enter and Space.
 
 ### Accessibility

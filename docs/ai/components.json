@@ -2755,7 +2755,7 @@
         {
           "name": "Banner",
           "kind": "component",
-          "description": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the flow, never takes focus and is not dismissed by a timer. For a message that confirms an action and leaves by itself use `Toast`; for a short label use `Badge`; for an empty list use `EmptyState`.",
+          "description": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the flow, does not take focus unless `focusOnMount` asks for it, and is not dismissed by a timer. For a message that confirms an action and leaves by itself use `Toast`; for a short label use `Badge`; for an empty list use `EmptyState`.",
           "props": [
             {
               "name": "variant",
@@ -2826,6 +2826,20 @@
               "required": false,
               "default": null,
               "description": "Overrides how the banner is announced. Default: `assertive` (`role=\"alert\"`) for `warning` and `danger`, `polite` (`role=\"status\"`) for the others."
+            },
+            {
+              "name": "focusOnMount",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Moves focus to the banner once, when it mounts (it gets `tabIndex={-1}`, so it is focusable by script but not a tab stop). For a message that replaces what the person was just doing, such as a failed submit above a form, so a keyboard or screen reader user lands on it. It does not take focus again when the banner re-renders or when this prop changes. Default `false`: a banner never takes focus. See `live` for the announcement; use this one or the other for the same message, not both."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLDivElement>",
+              "required": false,
+              "default": null,
+              "description": "The root element, for measuring, scrolling to it or moving focus yourself."
             },
             {
               "name": "animateIn",
@@ -2928,6 +2942,10 @@
             "id": "components-feedback-banner--narrow"
           },
           {
+            "export": "FocusOnMount",
+            "id": "components-feedback-banner--focus-on-mount"
+          },
+          {
             "export": "AnimatedIn",
             "id": "components-feedback-banner--animated-in"
           },
@@ -2943,7 +2961,7 @@
       },
       "docs": {
         "mdx": "src/components/Banner/Banner.mdx",
-        "overview": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the\npage flow, never takes focus and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot\nand an optional dismiss button.",
+        "overview": "An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the\npage flow, takes focus only when asked to (`focusOnMount`) and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot\nand an optional dismiss button.",
         "usage": {
           "language": "tsx",
           "code": "import { Banner } from \"@lufia/design-system/components/Banner\";\n\n<Banner\n  variant=\"warning\"\n  title=\"Access expires in 3 days\"\n  action={<a href=\"/renew\">Renew access</a>}\n  onDismiss={() => setDismissed(true)}\n  dismissLabel=\"Dismiss message\"\n>\n  Renew it to keep editing without interruption.\n</Banner>;"
@@ -2968,7 +2986,7 @@
           "url": "https://www.w3.org/WAI/ARIA/apg/patterns/alert/"
         },
         "keyboard": [],
-        "keyboardNotes": "The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,\nand the dismiss button works with Enter and Space.",
+        "keyboardNotes": "The banner takes no focus unless `focusOnMount` is set (then only on mount, and it is not a tab stop). The dismiss button and any buttons or links in `action` are in the tab order, in reading order,\nand the dismiss button works with Enter and Space.",
         "notes": [
           "`info`, `success` and `neutral` are `role=\"status\"` (a polite live region); `warning` and `danger` are `role=\"alert\"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live=\"off\"` (`role=\"note\"`) for one that is part of the page and must not interrupt.",
           "Meaning never rests on colour (WCAG 1.4.1): each variant has its own icon shape, and the text states the message. If you hide the icon with `icon={null}`, say the kind of message in the title or text.",

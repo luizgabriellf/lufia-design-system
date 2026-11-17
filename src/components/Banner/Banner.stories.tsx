@@ -213,6 +213,26 @@ export const Narrow: Story = {
 };
 
 /** The enter motion (`animateIn`) plays on mount; it is off under reduced motion. */
+/**
+ * `focusOnMount` moves focus to the banner once, when it mounts: for a message that replaces what the person was doing, such
+ * as a failed submit. Press the button to mount it; the banner takes focus, and re-renders do not pull it back.
+ */
+export const FocusOnMount: Story = {
+  render: (args) => {
+    const [failed, setFailed] = useState(false);
+    return (
+      <div style={{ display: "grid", gap: "0.75rem" }}>
+        {failed ? (
+          <Banner {...args} variant="danger" title={TITLES.danger} focusOnMount>
+            {TEXT.danger}
+          </Banner>
+        ) : null}
+        <Button onClick={() => setFailed(true)}>Submit</Button>
+      </div>
+    );
+  },
+};
+
 export const AnimatedIn: Story = { args: { animateIn: true } };
 
 export const AllThemes: Story = {

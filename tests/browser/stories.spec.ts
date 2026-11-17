@@ -3553,6 +3553,22 @@ test.describe("table", () => {
   });
 });
 
+test.describe("banner", () => {
+  test("focusOnMount moves focus to the banner once and leaves it out of the tab order", async ({ page }) => {
+    await openStory(page, "components-feedback-banner--focus-on-mount");
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await page.getByRole("button", { name: "Submit" }).click();
+    const banner = page.getByRole("alert");
+    await expect(banner).toBeFocused();
+    await expect(banner).toHaveAttribute("tabindex", "-1");
+    // Tab leaves the banner for the next control instead of cycling back to it.
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "Submit" })).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await expect(banner).not.toBeFocused();
+  });
+});
+
 test.describe("disclosure", () => {
   test("Enter and Space open and close it, and a shared name keeps one open", async ({ page }) => {
     await openStory(page, "components-data-display-disclosure--exclusive-group");

@@ -12,7 +12,7 @@
 ## Purpose
 
 An inline message for a page or a section: a note above a form, a warning that access expires, a failed sync. It stays in the
-page flow, never takes focus and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot
+page flow, takes focus only when asked to (`focusOnMount`) and does not leave by itself. It has a variant, an optional title, a leading icon, an action slot
 and an optional dismiss button.
 
 ## When to use
@@ -52,6 +52,8 @@ and an optional dismiss button.
 | `size` | `"md" \| "compact" \| "inline"` | no | `"md"` | `md` (default), `compact` (less padding and a smaller icon, for a banner inside a card or a dense form) or `inline` (no card chrome: a tone-coloured start border on a subtle tone background, no minimum height, for guidance between form fields). |
 | `lead` | `ReactNode` | no |  | A bold lead-in rendered inline before `children`, in the same paragraph ("Note: ..."). It does not add a title row. Say the kind of message in words; do not rely on the icon or the colour. |
 | `live` | `"polite" \| "assertive" \| "off"` | no |  | Overrides how the banner is announced. Default: `assertive` (`role="alert"`) for `warning` and `danger`, `polite` (`role="status"`) for the others. |
+| `focusOnMount` | `boolean` | no | `false` | Moves focus to the banner once, when it mounts (it gets `tabIndex={-1}`, so it is focusable by script but not a tab stop). For a message that replaces what the person was just doing, such as a failed submit above a form, so a keyboard or screen reader user lands on it. It does not take focus again when the banner re-renders or when this prop changes. Default `false`: a banner never takes focus. See `live` for the announcement; use this one or the other for the same message, not both. |
+| `ref` | `Ref<HTMLDivElement>` | no |  | The root element, for measuring, scrolling to it or moving focus yourself. |
 | `animateIn` | `boolean` | no | `false` | Plays the enter motion (a short fade and slide) when the banner mounts. Default `false`: a banner already on the page at load stays still. |
 
 Other native element attributes pass through to the root element.
@@ -83,7 +85,7 @@ Follows the WAI-ARIA Authoring Practices pattern: [Alert](https://www.w3.org/WAI
 
 Keyboard:
 
-The banner takes no focus. The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
+The banner takes no focus unless `focusOnMount` is set (then only on mount, and it is not a tab stop). The dismiss button and any buttons or links in `action` are in the tab order, in reading order,
 and the dismiss button works with Enter and Space.
 
 - `info`, `success` and `neutral` are `role="status"` (a polite live region); `warning` and `danger` are `role="alert"` (assertive). A live region only announces what is added after it exists, so a banner present at load is not read out unprompted; set `live="off"` (`role="note"`) for one that is part of the page and must not interrupt.
@@ -126,6 +128,7 @@ blocked, `warning` for something that will if nothing is done.
 - `components-feedback-banner--no-icon`
 - `components-feedback-banner--long-text`
 - `components-feedback-banner--narrow`
+- `components-feedback-banner--focus-on-mount`
 - `components-feedback-banner--animated-in`
 - `components-feedback-banner--all-themes`
 - `components-feedback-banner--themed-by-tokens`

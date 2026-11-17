@@ -187,6 +187,12 @@
   outline-offset: 2px;
 }
 
+/* Only a banner that was asked to take focus (`focusOnMount`) is focusable by script; its ring follows the dismiss button's. */
+.root:focus-visible {
+  outline: 2px solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
 @keyframes banner-in {
   from {
     opacity: 0;
@@ -218,6 +224,7 @@
     color: ButtonText;
   }
 
+  .root:focus-visible,
   .dismiss:focus-visible {
     outline-color: Highlight;
   }
