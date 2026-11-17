@@ -62,6 +62,14 @@ Many filters wrap onto more lines; nothing is hidden behind a scroll and the pag
 
 <Canvas of={Stories.Wrapping} />
 
+### Grid
+
+With `layout="grid"` the chips form equal columns, as many as fit. Each chip fills its cell, with the label at the start
+and the count at the end, so a long set of filters with counts scans as a tidy table and not as a ragged cloud. Set
+`--lufia-filter-links-column-min` to change the narrowest column (default `9rem`).
+
+<Canvas of={Stories.Grid} />
+
 ### No current filter
 
 <Canvas of={Stories.NoneCurrent} />

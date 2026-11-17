@@ -7621,7 +7621,7 @@
         {
           "name": "FilterLinks",
           "kind": "component",
-          "description": "A labelled row of links that each apply a different filter to one list, such as \"All\", \"Open\" and \"Closed\" with a count. The filter lives in the URL, so every chip is a real link (opened in a new tab, crawled, followed without script) rendered through the `linkComponent` of `LufiaProvider` (or a plain `<a>` for an item with `native`). The current one is marked `aria-current=\"true\"`, not `\"page\"`: the page is the same, only the filter changes. The row wraps onto more lines, so nothing is hidden and the page never widens. Works in a Server Component.",
+          "description": "A labelled row of links that each apply a different filter to one list, such as \"All\", \"Open\" and \"Closed\" with a count. The filter lives in the URL, so every chip is a real link (opened in a new tab, crawled, followed without script) rendered through the `linkComponent` of `LufiaProvider` (or a plain `<a>` for an item with `native`). The current one is marked `aria-current=\"true\"`, not `\"page\"`: the page is the same, only the filter changes. The row wraps onto more lines (or, with `layout=\"grid\"`, forms equal columns), so nothing is hidden and the page never widens. Works in a Server Component.",
           "props": [
             {
               "name": "label",
@@ -7645,6 +7645,13 @@
               "description": "Key of the current filter. Its link gets `aria-current=\"true\"`. Leave it out when none is current."
             },
             {
+              "name": "layout",
+              "type": "\"wrap\" | \"grid\"",
+              "required": false,
+              "default": "\"wrap\"",
+              "description": "`\"wrap\"` (default) keeps each chip as wide as its text. `\"grid\"` lays the chips out in equal columns, each chip filling its cell with the label at the start and the count at the end: use it for many filters with counts, where ragged widths are hard to scan. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`)."
+            },
+            {
               "name": "ref",
               "type": "Ref<HTMLElement>",
               "required": false,
@@ -7658,18 +7665,18 @@
           "name": "FilterLinksItem",
           "kind": "type",
           "description": "",
-          "definition": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }"
+          "definition": "{ key: string; label: ReactNode; href: string; count?: ReactNode; native?: boolean | undefined; }"
         },
         {
           "name": "FilterLinksProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; ref?: Ref<HTMLElement> | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; layout?: \"wrap\" | \"grid\" | undefined; ref?: Ref<HTMLElement> | undefined; }"
         }
       ],
       "aliases": {
-        "FilterLinksItem": "{ key: string; label: ReactNode; href: string; count?: string | number | undefined; native?: boolean | undefined; }",
-        "FilterLinksProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; ref?: Ref<HTMLElement> | undefined; }"
+        "FilterLinksItem": "{ key: string; label: ReactNode; href: string; count?: ReactNode; native?: boolean | undefined; }",
+        "FilterLinksProps": "Omit<HTMLAttributes<HTMLElement>, \"children\"> & { label: string; items: readonly FilterLinksItem[]; value?: string | undefined; layout?: \"wrap\" | \"grid\" | undefined; ref?: Ref<HTMLElement> | undefined; }"
       },
       "story": {
         "docsId": "components-navigation-filterlinks--docs",
@@ -7693,6 +7700,14 @@
           {
             "export": "Wrapping",
             "id": "components-navigation-filterlinks--wrapping"
+          },
+          {
+            "export": "Grid",
+            "id": "components-navigation-filterlinks--grid"
+          },
+          {
+            "export": "GridPhone320",
+            "id": "components-navigation-filterlinks--grid-phone-320"
           },
           {
             "export": "Phone320",
@@ -7760,6 +7775,7 @@
         "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-filter-links-column-min",
         "--lufia-filter-links-current-bg",
         "--lufia-filter-links-current-border",
         "--lufia-filter-links-current-color",
@@ -18326,7 +18342,7 @@
             },
             {
               "name": "cardLayout",
-              "type": "\"stack\" | \"grid\"",
+              "type": "\"grid\" | \"stack\"",
               "required": false,
               "default": "\"stack\"",
               "description": "How a card lays out its labelled cells under 40rem. `stack` (default) is one cell per line. `grid` sets labelled cells in two columns of label-over-value pairs, which makes a many-column row far shorter; it falls back to one column when the table is under 20rem wide. The title, the actions and unlabelled cells always take the full width, and a wide value can ask for it with `Td cardSpan=\"full\"`. No effect in `responsive=\"scroll\"` or above 40rem."

@@ -44,7 +44,7 @@
   {
     "name": "FilterLinks",
     "path": "dist/components/FilterLinks/**/*.{js,css}",
-    "limit": "1.7 kB",
+    "limit": "1.9 kB",
     "gzip": true
   },
   {
