@@ -1,5 +1,18 @@
 # @lufia/design-system
 
+## 0.59.0
+
+### Minor Changes
+
+- [#209](https://github.com/luizgabriellf/lufia-design-system/pull/209) [`74dd6f1`](https://github.com/luizgabriellf/lufia-design-system/commit/74dd6f17459d4e3435c2106d692f0bd7f459647f) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - FilterLinks: an item accepts `native`, which renders a plain `<a>` instead of going through the `LufiaProvider` link
+  adapter, for a link that must do a full document navigation. It has the same meaning as the `native` option of `Menu` items.
+
+### Patch Changes
+
+- [#210](https://github.com/luizgabriellf/lufia-design-system/pull/210) [`7fb6b02`](https://github.com/luizgabriellf/lufia-design-system/commit/7fb6b02a29d0729464f0d5cc2d1ea221c7e881d6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Text controls: the autofill colour now fills the whole field box, so a prefix or suffix (a unit, a show/hide button) sits on
+  the same tint as the autofilled text instead of the field looking cut in two. Read-only and disabled boxes keep their
+  surface colour, the invalid inner line and the focus ring are unchanged, and forced-colors keeps the system colours.
+
 ## 0.58.0
 
 ### Minor Changes
