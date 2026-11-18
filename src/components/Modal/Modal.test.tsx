@@ -8,6 +8,7 @@ import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/m
 import { isBodyScrollLocked } from "../useBodyScrollLock";
 import { LufiaProvider } from "../LufiaProvider";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { NavSheet } from "../AppShell/NavSheet";
 import { Modal, type ModalProps } from "./Modal";
 import { findModalDialogs } from "./topModalDialog";
 
@@ -851,6 +852,69 @@ describe("Modal", () => {
         expect(b).toContainElement(document.activeElement as HTMLElement);
         await user.keyboard("{Escape}");
         act(() => endAnimation(screen.getByRole("dialog", { name: "B", hidden: true })));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    /** The same swap, with the second layer placed before or after the first in the tree (sibling effects run in that order). */
+    function OrderedSwap({ order, second }: { order: "before" | "after"; second: "dialog" | "navsheet" }) {
+      const [a, setA] = useState(false);
+      const [b, setB] = useState(false);
+      const secondLayer =
+        second === "dialog" ? (
+          <Modal open={b} renderAs="dialog" title="B" onClose={() => setB(false)}>
+            <input aria-label="In B" />
+          </Modal>
+        ) : (
+          <NavSheet open={b} onOpenChange={setB} label="B" renderAs="dialog">
+            <a href="/one">One</a>
+          </NavSheet>
+        );
+      return (
+        <>
+          {order === "before" ? secondLayer : null}
+          <button type="button" onClick={() => setA(true)}>
+            Open A
+          </button>
+          <Modal open={a} renderAs="dialog" title="A" onClose={() => setA(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setA(false);
+                setB(true);
+              }}
+            >
+              Swap
+            </button>
+          </Modal>
+          {order === "after" ? secondLayer : null}
+        </>
+      );
+    }
+
+    it.each([
+      ["before", "dialog"],
+      ["after", "dialog"],
+      ["before", "navsheet"],
+      ["after", "navsheet"],
+    ] as const)(
+      "a native layer placed %s the first dialog in the tree (%s) gets focus, then returns it to the first opener",
+      async (order, second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<OrderedSwap order={order} second={second} />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        await waitFor(() => expect(screen.queryByRole("dialog", { name: "A" })).not.toBeInTheDocument());
+        const b = screen.getByRole("dialog", { name: "B" });
+        expect(b).toContainElement(document.activeElement as HTMLElement);
+        await user.keyboard("{Escape}");
+        // A native NavSheet has no exit of its own; a native Modal plays one.
+        const leavingB = screen.queryByRole("dialog", { name: "B", hidden: true });
+        if (leavingB) act(() => endAnimation(leavingB));
         await waitFor(() => expect(opener).toHaveFocus());
       },
     );

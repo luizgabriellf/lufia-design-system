@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
-import { flushLeavingDialogs } from "../internal/leavingDialogs";
+import { flushLeavingDialogs, resolveReturnFocus } from "../internal/leavingDialogs";
 import { inertBackground } from "./inertBackground";
 import { isTopLayer, pushLayer, removeLayer } from "./layerStack";
 
@@ -105,7 +105,7 @@ export function useFocusTrap(
     const container = ref.current;
     if (!open || !container) return;
     // A native dialog still animating out would cover this layer: let it go first, and return focus to where it would have.
-    const released = flushLeavingDialogs();
+    const released = flushLeavingDialogs(container);
     const layer = pushLayer();
     const previous = released ?? (document.activeElement as HTMLElement | null);
     const releaseInert = inert ? inertBackground(container) : undefined;
@@ -157,7 +157,8 @@ export function useFocusTrap(
       const active = document.activeElement as HTMLElement | null;
       if (!focusMovedOutside(container, active)) {
         active?.blur();
-        if (restoreFocus && previous?.isConnected) previous.focus({ preventScroll: true });
+        const back = resolveReturnFocus(previous);
+        if (restoreFocus && back) back.focus({ preventScroll: true });
       }
     };
   }, [open, ref, inert, restoreFocus, refocusKey]);

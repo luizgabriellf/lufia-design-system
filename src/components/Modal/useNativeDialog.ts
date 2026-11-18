@@ -10,7 +10,7 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from "react";
-import { flushLeavingDialogs, registerLeavingDialog } from "../internal/leavingDialogs";
+import { flushLeavingDialogs, registerLeavingDialog, resolveReturnFocus } from "../internal/leavingDialogs";
 import { notifyTopModalDialogChanged } from "./topModalDialog";
 
 export type UseNativeDialogOptions = {
@@ -80,7 +80,7 @@ export function useNativeDialog(
     const dialog = ref.current;
     if (!active || !dialog) return;
     // Another dialog still leaving would cover this one: finish it, and return focus to what it would have.
-    const handedOver = flushLeavingDialogs();
+    const handedOver = flushLeavingDialogs(dialog);
     const previous = handedOver ?? (document.activeElement as HTMLElement | null);
     opener.current = previous;
     released.current = false;
@@ -94,8 +94,10 @@ export function useNativeDialog(
       // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
       const focused = document.activeElement;
       if (released.current) return;
-      if (previous?.isConnected && (!focused || focused === document.body || dialog.contains(focused)))
-        previous.focus({ preventScroll: true });
+      // `previous` may have lived in a dialog that was flushed meanwhile: its opener is the target then.
+      const back = resolveReturnFocus(previous);
+      if (back && (!focused || focused === document.body || dialog.contains(focused)))
+        back.focus({ preventScroll: true });
     };
   }, [ref, active]);
 
@@ -103,7 +105,7 @@ export function useNativeDialog(
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (!leaving || !dialog) return;
-    return registerLeavingDialog(() => {
+    return registerLeavingDialog(dialog, () => {
       if (dialog.open) {
         pendingOwnCloses.current += 1;
         dialog.close();
