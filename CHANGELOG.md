@@ -1,5 +1,12 @@
 # @lufia/design-system
 
+## 0.63.0
+
+### Minor Changes
+
+- [#222](https://github.com/luizgabriellf/lufia-design-system/pull/222) [`887c06b`](https://github.com/luizgabriellf/lufia-design-system/commit/887c06bff7aeaddbf927db4e8ba152478d77de45) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Button: add `render`, which swaps in an element of your own (a router link with a route object or a locale, or a plain
+  anchor) and gives it the button's class, state and content.
+
 ## 0.62.0
 
 ### Minor Changes
