@@ -10,7 +10,12 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from "react";
-import { flushLeavingDialogs, registerLeavingDialog, resolveReturnFocus } from "../internal/leavingDialogs";
+import {
+  flushLeavingDialogs,
+  forgetFlushedDialog,
+  registerLeavingDialog,
+  resolveReturnFocus,
+} from "../internal/leavingDialogs";
 import { notifyTopModalDialogChanged } from "./topModalDialog";
 
 export type UseNativeDialogOptions = {
@@ -84,6 +89,7 @@ export function useNativeDialog(
     const previous = handedOver ?? (document.activeElement as HTMLElement | null);
     opener.current = previous;
     released.current = false;
+    forgetFlushedDialog(dialog);
     if (!dialog.open) dialog.showModal();
     return () => {
       if (dialog.open) {

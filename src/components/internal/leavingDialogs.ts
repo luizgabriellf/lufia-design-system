@@ -7,19 +7,26 @@
  * straight to the new state.
  *
  * Effects of sibling components run in tree order, so a layer can record its own return target (a button inside the dialog
- * that is about to go) before that dialog has registered. The registry therefore remembers what it flushed, and
- * `resolveReturnFocus` maps a target that lived inside a flushed dialog to that dialog's opener, whenever it is asked.
+ * that is about to go) before that dialog has registered. The registry therefore remembers, per dialog element, the opener of
+ * a dialog it flushed, and `resolveReturnFocus` maps a target that lived inside such a dialog to that opener. A record is
+ * valid only while that dialog is closed: it is dropped when the dialog opens again (`forgetFlushedDialog`), and a record for
+ * a dialog that opened again is never consulted.
  */
 type Finish = () => HTMLElement | null;
 
 const leaving = new Map<Finish, HTMLDialogElement>();
-const flushed: { dialog: HTMLDialogElement; opener: HTMLElement | null }[] = [];
-const REMEMBERED = 8;
+const flushed = new WeakMap<HTMLDialogElement, { opener: HTMLElement | null }>();
+const MAX_HOPS = 8;
 
 /** Registers a leaving dialog's "finish now": it closes the dialog and returns the element focus would have gone back to. */
 export function registerLeavingDialog(dialog: HTMLDialogElement, finish: Finish): () => void {
   leaving.set(finish, dialog);
   return () => void leaving.delete(finish);
+}
+
+/** Drops what was remembered about `dialog`: call it when the dialog opens again. */
+export function forgetFlushedDialog(dialog: HTMLDialogElement) {
+  flushed.delete(dialog);
 }
 
 /**
@@ -32,8 +39,7 @@ export function flushLeavingDialogs(layer?: Element | null): HTMLElement | null 
   for (const [finish, dialog] of [...leaving]) {
     if (layer && dialog.contains(layer)) continue;
     const target = finish();
-    flushed.push({ dialog, opener: target });
-    if (flushed.length > REMEMBERED) flushed.shift();
+    flushed.set(dialog, { opener: target });
     if (!opener && target?.isConnected) opener = target;
   }
   return opener;
@@ -46,15 +52,28 @@ function isFocusable(element: HTMLElement): boolean {
   return !dialog || dialog.hasAttribute("open");
 }
 
+/** The record of the closest closed, flushed dialog around `element` (it works for a subtree that was already removed). */
+function flushedAround(element: HTMLElement) {
+  for (
+    let dialog = element.closest("dialog");
+    dialog;
+    dialog = dialog.parentElement?.closest("dialog") ?? null
+  ) {
+    const record = flushed.get(dialog);
+    if (record && !dialog.hasAttribute("open")) return record;
+  }
+  return undefined;
+}
+
 /**
- * Where a layer should give focus back to. A target that lived inside a flushed dialog maps to that dialog's opener first (a
- * keep-mounted dialog stays in the document, inert, after it closes). Otherwise `target` itself when it can take focus: one
- * inside an inert subtree or a closed dialog cannot, and gives way to `null`.
+ * Where a layer should give focus back to. A target that lived inside a flushed dialog that is still closed maps to that
+ * dialog's opener first (a keep-mounted dialog stays in the document, inert, after it closes). Otherwise `target` itself when
+ * it can take focus: one inside an inert subtree or a closed dialog cannot, and gives way to `null`.
  */
 export function resolveReturnFocus(target: HTMLElement | null): HTMLElement | null {
   let current = target;
-  for (let hops = 0; current && hops <= REMEMBERED; hops += 1) {
-    const record = flushed.find(({ dialog }) => dialog.contains(current));
+  for (let hops = 0; current && hops <= MAX_HOPS; hops += 1) {
+    const record = flushedAround(current);
     if (!record) return isFocusable(current) ? current : null;
     current = record.opener;
   }
