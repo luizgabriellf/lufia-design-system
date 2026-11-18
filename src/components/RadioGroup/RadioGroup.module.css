@@ -147,7 +147,7 @@
   margin-inline-start: auto;
   padding-inline-start: var(--lufia-space-2);
   font-size: var(--lufia-font-size-sm);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   font-weight: var(--lufia-font-weight-semibold);
   overflow-wrap: anywhere;
   text-align: end;

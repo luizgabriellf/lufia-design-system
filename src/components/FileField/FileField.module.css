@@ -148,7 +148,7 @@
   flex: 0 0 auto;
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 .remove {

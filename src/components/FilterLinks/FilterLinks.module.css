@@ -82,7 +82,7 @@
 .count {
   flex: 0 0 auto;
   font-size: var(--lufia-font-size-xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 /* Grid layout: equal columns, as many as fit; every chip fills its cell, label at the start and count at the end. */

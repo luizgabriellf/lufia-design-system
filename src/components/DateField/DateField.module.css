@@ -6,6 +6,7 @@
   display: block;
   min-block-size: calc(var(--lufia-target-touch, 2.75rem) - 2 * var(--lufia-border-width-thin));
   appearance: none;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   text-align: start;
   text-overflow: clip;
 }

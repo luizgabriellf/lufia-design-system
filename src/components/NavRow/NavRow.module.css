@@ -83,7 +83,7 @@ button.root:active:not(:disabled, [data-disabled]) {
   background: var(--lufia-color-bg-surface-raised);
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 .description {

@@ -208,7 +208,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-size-2xs`, `--lufia-font-weight-bold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-overlay-z`, `--lufia-radius-full`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-sheet-backdrop`, `--lufia-sheet-max-block-size`, `--lufia-sheet-max-inline-size`, `--lufia-z-dropdown`, `--lufia-z-modal`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-default`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-numeric-tabular`, `--lufia-font-size-2xs`, `--lufia-font-weight-bold`, `--lufia-motion-distance-nudge`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-overlay-z`, `--lufia-radius-full`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-sheet-backdrop`, `--lufia-sheet-max-block-size`, `--lufia-sheet-max-inline-size`, `--lufia-z-dropdown`, `--lufia-z-modal`.
 
 ## Content guidelines
 

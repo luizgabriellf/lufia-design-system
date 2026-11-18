@@ -59,7 +59,7 @@
 
 .value {
   font-size: var(--lufia-font-size-sm);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   text-align: end;
   white-space: nowrap;
 }
@@ -157,7 +157,7 @@
   padding-block-start: 0.5rem;
   border-block-start: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
   font-size: var(--lufia-font-size-sm);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   font-weight: var(--lufia-font-weight-semibold);
 }
 

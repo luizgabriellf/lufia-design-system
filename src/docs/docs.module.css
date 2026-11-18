@@ -38,7 +38,7 @@
 .table th {
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
   white-space: nowrap;

@@ -122,12 +122,13 @@
   flex: none;
   inline-size: 0.625rem;
   block-size: 0.625rem;
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list -- 2px legend swatch corner: smaller than the smallest radius token */
   border-radius: 0.125rem;
 }
 
 .legend[data-visible] strong {
   color: var(--lufia-color-text-default);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   font-weight: var(--lufia-font-weight-semibold);
 }
 

@@ -13,7 +13,10 @@ const read = (name: string) =>
  */
 const CONTRACT: [string, string][] = [
   ["PageHeader", "color: var(--lufia-page-header-eyebrow-color, var(--lufia-color-text-subtle))"],
-  ["PageHeader", "letter-spacing: var(--lufia-page-header-eyebrow-tracking, 0.08em)"],
+  [
+    "PageHeader",
+    "letter-spacing: var(--lufia-page-header-eyebrow-tracking, var(--lufia-letter-spacing-wide))",
+  ],
   ["PageHeader", "inline-size: var(--lufia-page-header-eyebrow-dash-size, 0)"],
   [
     "PageHeader",
@@ -26,7 +29,7 @@ const CONTRACT: [string, string][] = [
   ["StatTile", "color: var(--lufia-stat-tile-label-color, var(--lufia-color-text-muted))"],
   ["StatTile", "font-family: var(--lufia-stat-tile-label-font, var(--lufia-font-family-mono))"],
   ["StatTile", "font-size: var(--lufia-stat-tile-label-size, var(--lufia-font-size-2xs))"],
-  ["StatTile", "letter-spacing: var(--lufia-stat-tile-label-tracking, 0.09em)"],
+  ["StatTile", "letter-spacing: var(--lufia-stat-tile-label-tracking, var(--lufia-letter-spacing-wide))"],
   ["StatTile", "font-size: var(--lufia-stat-tile-value-size, var(--lufia-font-size-3xl))"],
   ["Card", "padding: var(--lufia-card-header-padding, var(--card-padding))"],
   [

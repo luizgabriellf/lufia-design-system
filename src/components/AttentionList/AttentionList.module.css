@@ -129,7 +129,7 @@
   flex: none;
   color: var(--lufia-color-text-default);
   font-size: var(--lufia-font-size-sm);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   font-weight: var(--lufia-font-weight-semibold);
 }
 
@@ -212,7 +212,7 @@
   box-sizing: border-box;
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   text-align: center;
 }
 

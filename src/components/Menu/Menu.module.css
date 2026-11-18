@@ -12,7 +12,7 @@
 }
 
 .list:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .panel {
@@ -206,7 +206,7 @@
   }
 
   .item[data-current] {
-    outline: 1px solid CanvasText;
+    outline: var(--lufia-border-width-thin) solid CanvasText;
     outline-offset: -1px;
   }
 

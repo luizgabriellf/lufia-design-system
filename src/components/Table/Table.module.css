@@ -153,7 +153,7 @@
   font-family: var(--lufia-table-header-font-family, var(--lufia-font-family-mono));
   font-size: var(--lufia-table-header-font-size, var(--lufia-font-size-2xs));
   font-weight: var(--lufia-table-header-font-weight, var(--lufia-font-weight-medium));
-  letter-spacing: var(--lufia-table-header-letter-spacing, 0.06em);
+  letter-spacing: var(--lufia-table-header-letter-spacing, var(--lufia-letter-spacing-caps));
   text-align: start;
   text-transform: var(--lufia-table-header-text-transform, uppercase);
   white-space: nowrap;
@@ -215,7 +215,7 @@
 .table :is(th, td)[data-numeric] {
   white-space: nowrap;
   text-align: end;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 .table :is(td, th[scope="row"])[data-primary] {
@@ -594,7 +594,7 @@
     font-family: var(--lufia-table-header-font-family, var(--lufia-font-family-mono));
     font-size: var(--lufia-table-header-font-size, var(--lufia-font-size-2xs));
     font-weight: var(--lufia-table-header-font-weight, inherit);
-    letter-spacing: var(--lufia-table-header-letter-spacing, 0.06em);
+    letter-spacing: var(--lufia-table-header-letter-spacing, var(--lufia-letter-spacing-caps));
     text-transform: var(--lufia-table-header-text-transform, uppercase);
     overflow-wrap: break-word;
     hyphens: auto;

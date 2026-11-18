@@ -66,7 +66,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 
 1. `npm run typecheck` (builds tokens, then `tsc --noEmit`)
 2. `npm run lint` (ESLint with React, hooks, jsx-a11y)
-3. `npm run lint:css` (Stylelint: no raw colours, no `outline: none` without a replacement, no physical `left`/`right` properties)
+3. `npm run lint:css` (Stylelint: no raw colours, no `outline: none` without a replacement, no physical `left`/`right` properties, no literal `letter-spacing`, focus-ring width, radius or `box-shadow` colour: use the tokens)
 4. `npm run format:check` (Prettier; `npm run format` fixes)
 5. `npm run test` (Vitest, Testing Library, vitest-axe)
 6. `npm run contrast` (WCAG 2.2 AA for every text and UI pair, every theme and mode)

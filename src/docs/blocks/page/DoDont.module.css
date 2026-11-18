@@ -52,7 +52,7 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
 }
 

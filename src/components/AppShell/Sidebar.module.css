@@ -145,7 +145,7 @@
   color: var(--lufia-color-text-subtle);
   font-size: var(--lufia-font-size-2xs);
   font-weight: var(--lufia-font-weight-medium);
-  letter-spacing: 0.12em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
 }
 
@@ -252,6 +252,7 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-2xs);
   font-weight: var(--lufia-font-weight-semibold);
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   line-height: 1.25;
   text-align: center;
 }

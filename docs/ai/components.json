@@ -512,7 +512,9 @@
         "respectsReducedMotion": false,
         "notes": null
       },
-      "tokens": []
+      "tokens": [
+        "--lufia-font-numeric-tabular"
+      ]
     },
     {
       "name": "AppShell",
@@ -2495,6 +2497,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-font-line-height-normal",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
@@ -3251,6 +3254,7 @@
         "--lufia-font-family-display",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
@@ -5066,6 +5070,7 @@
         "--lufia-font-family-display",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-2xs",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
@@ -5776,6 +5781,7 @@
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-medium",
+        "--lufia-letter-spacing-wide",
         "--lufia-motion-distance-rise",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-exit",
@@ -6042,6 +6048,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-accent-hover",
@@ -6283,6 +6290,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
+        "--lufia-font-numeric-tabular",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-radius-full",
@@ -7596,6 +7604,7 @@
         "--lufia-color-status-danger-fg",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-medium",
@@ -7790,6 +7799,7 @@
         "--lufia-filter-links-gap",
         "--lufia-filter-links-min-block-size",
         "--lufia-filter-links-radius",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
@@ -11396,6 +11406,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-canvas",
         "--lufia-color-bg-surface-raised",
@@ -11716,6 +11727,7 @@
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
+        "--lufia-letter-spacing-caps",
         "--lufia-motion-distance-nudge",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-exit",
@@ -11904,6 +11916,7 @@
         "--lufia-color-focus-ring",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
@@ -12532,6 +12545,7 @@
         "notes": "Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under\n`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.\n\n| Moment                         | What happens                                                                                                                     |\n| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |\n| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet                   |\n| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`); a sheet slides back down. Then it unmounts, inert meanwhile |\n| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps                               |\n| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter                            |\n| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`                       |\n| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                                   |\n| \"Mark all as read\"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                                     |\n| The highlight card first shows | Its progress segments fill one after another                                                                                     |\n\nNothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open\nthe panel, switch tabs, mark everything read and simulate an arrival."
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-bg-canvas",
@@ -12540,6 +12554,7 @@
         "--lufia-color-border-subtle",
         "--lufia-color-text-on-accent",
         "--lufia-font-family-body",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-2xs",
         "--lufia-font-weight-bold",
         "--lufia-motion-distance-nudge",
@@ -13080,6 +13095,7 @@
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
         "--lufia-font-weight-semibold",
+        "--lufia-letter-spacing-wide",
         "--lufia-page-header-eyebrow-color",
         "--lufia-page-header-eyebrow-dash-gap",
         "--lufia-page-header-eyebrow-dash-size",
@@ -13310,6 +13326,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-weight-semibold",
         "--lufia-motion-duration-instant",
@@ -14002,6 +14019,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-surface-solid",
         "--lufia-color-border-subtle",
@@ -14335,6 +14353,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-font-line-height-normal",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
@@ -14704,6 +14723,7 @@
         "--lufia-color-text-on-accent",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
@@ -16944,6 +16964,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-xs",
         "--lufia-font-weight-semibold",
         "--lufia-motion-duration-medium",
@@ -17459,6 +17480,7 @@
         "--lufia-font-family-display",
         "--lufia-font-family-mono",
         "--lufia-font-line-height-normal",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-2xl",
         "--lufia-font-size-2xs",
         "--lufia-font-size-3xl",
@@ -17467,6 +17489,8 @@
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
         "--lufia-font-weight-semibold",
+        "--lufia-letter-spacing-tight",
+        "--lufia-letter-spacing-wide",
         "--lufia-motion-distance-nudge",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
@@ -17767,6 +17791,7 @@
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
         "--lufia-font-family-display",
+        "--lufia-font-numeric-tabular",
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3",
@@ -19326,6 +19351,7 @@
         "--lufia-color-text-muted",
         "--lufia-font-family-mono",
         "--lufia-font-line-height-normal",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-2xs",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
@@ -19334,6 +19360,7 @@
         "--lufia-font-weight-medium",
         "--lufia-font-weight-regular",
         "--lufia-font-weight-semibold",
+        "--lufia-letter-spacing-caps",
         "--lufia-radius-card",
         "--lufia-radius-sm",
         "--lufia-space-1",
@@ -20203,6 +20230,7 @@
       "tokens": [
         "--lufia-color-status-warning-fg",
         "--lufia-color-text-muted",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-xs",
         "--lufia-font-weight-bold",
         "--lufia-space-1"
@@ -20515,6 +20543,7 @@
         "notes": "| Toast                         | Closes by itself?                                       |\n| ----------------------------- | ------------------------------------------------------- |\n| `info`, `success`, `warning`  | After `duration` (5 s).                                 |\n| `error`                       | Never, unless `duration` says so.                       |\n| Any toast with an `action`    | Never, unless `duration` says so.                       |\n| Any toast, hovered or focused | Paused; resumes with at least 1.5 s left when released. |\n\nThis follows WCAG 2.2.1 (Timing Adjustable): errors carry the most important and often the longest text, and an action\nneeds time to be found."
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-bg-surface-raised",
@@ -20973,6 +21002,7 @@
         "--lufia-color-text-muted",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
+        "--lufia-font-numeric-tabular",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",

@@ -60,7 +60,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Its stylesheet reads no `--lufia-*` tokens directly (no CSS module, or it composes other components).
+Reads these semantic tokens: `--lufia-font-numeric-tabular`.
 
 ## Stories
 

@@ -212,7 +212,7 @@
 }
 
 .sheet:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .heading {
@@ -221,7 +221,7 @@
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   text-transform: uppercase;
 }
 

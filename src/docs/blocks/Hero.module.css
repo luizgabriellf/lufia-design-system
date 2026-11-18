@@ -29,7 +29,7 @@
   margin: 0;
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   color: var(--lufia-color-text-accent);
   background: var(--lufia-color-accent-subtle);
   border: 1px solid var(--lufia-color-accent-border);
@@ -42,7 +42,7 @@
   font-size: clamp(2.25rem, 6vw, 3.5rem);
   font-weight: var(--lufia-font-weight-bold);
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
   text-wrap: balance;
   border: 0;
 }
@@ -177,7 +177,7 @@
   font-family: var(--lufia-font-family-display);
   font-size: var(--lufia-font-size-3xl);
   font-weight: var(--lufia-font-weight-bold);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   line-height: var(--lufia-font-line-height-tight);
   color: var(--lufia-color-text-default);
 }

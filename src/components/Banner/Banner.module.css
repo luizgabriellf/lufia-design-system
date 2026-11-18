@@ -183,13 +183,13 @@
 }
 
 .dismiss:focus-visible {
-  outline: 2px solid var(--lufia-color-focus-ring);
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: 2px;
 }
 
 /* Only a banner that was asked to take focus (`focusOnMount`) is focusable by script; its ring follows the dismiss button's. */
 .root:focus-visible {
-  outline: 2px solid var(--lufia-color-focus-ring);
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: 2px;
 }
 

@@ -124,6 +124,7 @@
   color: var(--lufia-color-text-muted);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 /* Each step's text fades in; the card itself stays where it is and moves with the target. */
@@ -144,7 +145,7 @@
 
 /* The card takes focus on its heading so a screen reader reads each step; the heading is not a control, so no drawn ring. */
 .title:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .body {
