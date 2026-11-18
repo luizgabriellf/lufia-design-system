@@ -84,6 +84,21 @@
       "tight": { "$value": "{core.line-height.120}" },
       "normal": { "$value": "{core.line-height.150}" },
       "relaxed": { "$value": "{core.line-height.160}" }
+    },
+    "numeric": {
+      "tabular": {
+        "$value": "tabular-nums",
+        "$description": "font-variant-numeric for digits that change or line up in a column: stat values, table cells, counts, percentages, times, chart labels"
+      }
+    }
+  },
+  "letter-spacing": {
+    "$type": "dimension",
+    "tight": { "$value": "-0.03em", "$description": "Large display numbers and headings" },
+    "caps": { "$value": "0.06em", "$description": "Small uppercase labels, column headers, eyebrows" },
+    "wide": {
+      "$value": "0.1em",
+      "$description": "The most spaced uppercase label: section headings over a dense list"
     }
   },
   "shadow": {

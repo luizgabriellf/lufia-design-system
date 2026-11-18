@@ -137,7 +137,7 @@ button.clearRow:hover {
 .clearCount {
   flex: none;
   font-size: var(--lufia-font-size-sm);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
 }
 
 .clearChevron {

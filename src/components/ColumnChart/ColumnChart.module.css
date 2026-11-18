@@ -128,7 +128,7 @@
   padding-block-end: 0.125rem;
   color: var(--lufia-color-text-default);
   font-size: var(--lufia-font-size-2xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   line-height: var(--lufia-font-line-height-tight);
   overflow-wrap: anywhere;
   text-align: center;

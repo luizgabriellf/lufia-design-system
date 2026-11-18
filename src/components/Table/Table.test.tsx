@@ -1135,7 +1135,7 @@ describe("Table style hooks", () => {
     ],
     [
       "card label typography",
-      /::before\s*\{[^}]*font-family: var\(--lufia-table-header-font-family[^}]*letter-spacing: var\(--lufia-table-header-letter-spacing, 0.06em\)/,
+      /::before\s*\{[^}]*font-family: var\(--lufia-table-header-font-family[^}]*letter-spacing: var\(--lufia-table-header-letter-spacing, var\(--lufia-letter-spacing-caps\)\)/,
     ],
     [
       "caption colour",

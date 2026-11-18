@@ -64,7 +64,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-status-warning-fg`, `--lufia-color-text-muted`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-space-1`.
+Reads these semantic tokens: `--lufia-color-status-warning-fg`, `--lufia-color-text-muted`, `--lufia-font-numeric-tabular`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-space-1`.
 
 ## Content guidelines
 

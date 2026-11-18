@@ -37,7 +37,7 @@
   background: transparent;
   color: var(--lufia-color-text-default);
   font: inherit;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;

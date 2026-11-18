@@ -155,7 +155,7 @@
   color: var(--lufia-color-text-subtle);
   font-size: var(--lufia-font-size-2xs);
   font-weight: var(--lufia-font-weight-medium);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
 }
 

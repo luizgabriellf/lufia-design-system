@@ -18,7 +18,7 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-page-header-eyebrow-weight, var(--lufia-font-weight-semibold));
-  letter-spacing: var(--lufia-page-header-eyebrow-tracking, 0.08em);
+  letter-spacing: var(--lufia-page-header-eyebrow-tracking, var(--lufia-letter-spacing-wide));
   text-transform: uppercase;
 }
 

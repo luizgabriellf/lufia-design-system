@@ -27,7 +27,7 @@
 
 .sbdocs .sbdocs-content :is(h1, h2, h3, h4):not(.sb-unstyled *) {
   font-family: var(--lufia-font-family-display);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
   color: var(--lufia-color-text-default);
   text-wrap: balance;
 }
@@ -36,7 +36,7 @@
   margin-block: 2rem 1rem;
   font-size: clamp(1.75rem, 6vw, 2.5rem);
   font-weight: var(--lufia-font-weight-bold);
-  letter-spacing: -0.035em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
 }
 
 .sbdocs .sbdocs-content h2:not(.sb-unstyled *) {
@@ -232,7 +232,7 @@
 .sbdocs .sbdocs-content table:not(.docblock-argstable, .sb-unstyled *) th {
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
   background: var(--lufia-color-bg-surface-raised);
@@ -271,7 +271,7 @@
 .sbdocs .docblock-argstable thead th {
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
   background: var(--lufia-color-bg-surface-raised);

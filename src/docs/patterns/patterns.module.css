@@ -18,7 +18,7 @@
   margin: 0;
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
 }
@@ -29,7 +29,7 @@
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: var(--lufia-font-weight-bold);
   line-height: 1.05;
-  letter-spacing: -0.035em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
   border: 0;
 }
 
@@ -52,7 +52,7 @@
 .usesLabel {
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
 }

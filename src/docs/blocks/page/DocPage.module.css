@@ -24,7 +24,7 @@
   margin: 0;
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   text-transform: uppercase;
   color: var(--lufia-color-text-muted);
 }
@@ -47,7 +47,7 @@
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: var(--lufia-font-weight-bold);
   line-height: 1.05;
-  letter-spacing: -0.035em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
   overflow-wrap: anywhere;
   border: 0;
 }
@@ -60,7 +60,7 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-medium);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   text-transform: uppercase;
   background: var(--lufia-color-bg-field);
   border: 1px solid currentcolor;
@@ -207,7 +207,7 @@
   font-family: var(--lufia-font-family-display);
   font-size: var(--lufia-font-size-2xl);
   font-weight: var(--lufia-font-weight-bold);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--lufia-letter-spacing-tight);
   color: var(--lufia-color-text-default);
   border-block-end: 1px solid var(--lufia-color-border-subtle);
 }
@@ -216,6 +216,6 @@
   font-family: var(--lufia-font-family-mono);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-medium);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--lufia-letter-spacing-wide);
   color: var(--lufia-color-text-accent);
 }

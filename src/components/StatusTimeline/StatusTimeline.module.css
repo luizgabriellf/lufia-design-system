@@ -90,13 +90,13 @@
 /* Dates use the body font, like every other date in an app; tabular figures keep stacked times aligned. */
 .timestamp {
   font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   color: var(--lufia-color-text-muted);
 }
 
 .due {
   font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   color: var(--lufia-color-text-subtle);
 }
 

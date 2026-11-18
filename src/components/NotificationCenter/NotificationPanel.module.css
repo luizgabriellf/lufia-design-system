@@ -186,7 +186,7 @@
   background: var(--lufia-color-status-neutral-bg);
   color: var(--lufia-color-status-neutral-fg);
   font-size: var(--lufia-font-size-xs);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--lufia-font-numeric-tabular);
   line-height: 1.25rem;
   text-align: center;
 }
@@ -219,7 +219,7 @@
   font-family: var(--lufia-font-family-body);
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-semibold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--lufia-letter-spacing-caps);
   line-height: var(--lufia-font-line-height-normal);
   text-transform: uppercase;
 }
