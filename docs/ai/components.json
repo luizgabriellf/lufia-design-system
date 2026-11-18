@@ -6048,6 +6048,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-accent-hover",
@@ -11405,6 +11406,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-canvas",
         "--lufia-color-bg-surface-raised",
@@ -12543,6 +12545,7 @@
         "notes": "Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under\n`prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.\n\n| Moment                         | What happens                                                                                                                     |\n| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |\n| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet                   |\n| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`); a sheet slides back down. Then it unmounts, inert meanwhile |\n| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps                               |\n| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter                            |\n| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`                       |\n| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                                   |\n| \"Mark all as read\"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                                     |\n| The highlight card first shows | Its progress segments fill one after another                                                                                     |\n\nNothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open\nthe panel, switch tabs, mark everything read and simulate an arrival."
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-bg-canvas",
@@ -14016,6 +14019,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-surface-solid",
         "--lufia-color-border-subtle",
@@ -20539,6 +20543,7 @@
         "notes": "| Toast                         | Closes by itself?                                       |\n| ----------------------------- | ------------------------------------------------------- |\n| `info`, `success`, `warning`  | After `duration` (5 s).                                 |\n| `error`                       | Never, unless `duration` says so.                       |\n| Any toast with an `action`    | Never, unless `duration` says so.                       |\n| Any toast, hovered or focused | Paused; resumes with at least 1.5 s left when released. |\n\nThis follows WCAG 2.2.1 (Timing Adjustable): errors carry the most important and often the longest text, and an action\nneeds time to be found."
       },
       "tokens": [
+        "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-accent-default",
         "--lufia-color-bg-surface-raised",

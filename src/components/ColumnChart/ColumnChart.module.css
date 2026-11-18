@@ -255,6 +255,7 @@
   flex: none;
   inline-size: 0.625rem;
   block-size: 0.625rem;
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list -- 2px legend swatch corner: smaller than the smallest radius token */
   border-radius: 0.125rem;
   background: var(--chart-color);
 }

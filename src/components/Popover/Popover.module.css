@@ -22,7 +22,7 @@
 /* The panel takes focus programmatically so a screen reader announces it; it is not a control, so a drawn ring around the
    whole panel only adds noise. A transparent outline still shows in forced colours, and the first Tab lands on a control. */
 .panel:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .panel[data-side="top"] {

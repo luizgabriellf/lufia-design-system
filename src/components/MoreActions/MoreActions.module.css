@@ -212,7 +212,7 @@
 }
 
 .sheet:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .heading {

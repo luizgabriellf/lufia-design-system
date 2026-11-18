@@ -82,7 +82,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thin`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-color-text-default`, `--lufia-font-size-sm`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-popover-max-inline-size`, `--lufia-popover-padding`, `--lufia-popover-radius`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-space-4`, `--lufia-z-dropdown`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-subtle`, `--lufia-color-text-default`, `--lufia-font-size-sm`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-popover-max-inline-size`, `--lufia-popover-padding`, `--lufia-popover-radius`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-space-4`, `--lufia-z-dropdown`.
 
 ## Content guidelines
 

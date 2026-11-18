@@ -75,7 +75,7 @@
 }
 
 .popover:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .root[data-align="end"] .popover {
@@ -151,7 +151,7 @@
 }
 
 .sheet:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .grabber {

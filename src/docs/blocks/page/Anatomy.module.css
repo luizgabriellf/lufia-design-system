@@ -27,7 +27,7 @@
 }
 
 .render {
-  outline: 1px dashed var(--lufia-color-accent-border);
+  outline: var(--lufia-border-width-thin) dashed var(--lufia-color-accent-border);
   outline-offset: 0.375rem;
 }
 

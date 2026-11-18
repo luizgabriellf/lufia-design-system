@@ -145,7 +145,7 @@
 
 /* The card takes focus on its heading so a screen reader reads each step; the heading is not a control, so no drawn ring. */
 .title:focus {
-  outline: 2px solid transparent;
+  outline: var(--lufia-border-width-thick) solid transparent;
 }
 
 .body {

@@ -134,7 +134,7 @@
 @media (width <= 959px) {
   .sectionCard {
     padding: 0.9rem;
-    border-radius: 14px;
+    border-radius: var(--lufia-radius-card);
   }
 
   .sectionContent {
@@ -142,7 +142,7 @@
   }
 
   .attentionCard {
-    border-radius: 14px;
+    border-radius: var(--lufia-radius-card);
     padding: 0.9rem;
   }
 }
