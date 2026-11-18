@@ -1,9 +1,19 @@
 import { readFileSync } from "node:fs";
-import { render, screen } from "@testing-library/react";
+import { createRef, type ComponentProps } from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { Button } from "./Button";
+
+/** Stands in for a router link that takes more than `href`: here a locale it turns into a path prefix. */
+function RouteLink({ locale, href, children, ...rest }: ComponentProps<"a"> & { locale?: string }) {
+  return (
+    <a {...rest} href={locale ? `/${locale}${href}` : href} hrefLang={locale}>
+      {children}
+    </a>
+  );
+}
 
 describe("Button", () => {
   it("renders a button of type button by default, with variant and size as data attributes", () => {
@@ -151,6 +161,68 @@ describe("Button", () => {
       );
       await user.click(screen.getByRole("link"));
       expect(onClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("with render", () => {
+    it("renders the given element with the button's class, state and content, keeping its own props", () => {
+      const ref = createRef<HTMLAnchorElement>();
+      render(
+        <Button
+          variant="primary"
+          size="sm"
+          iconStart={<svg data-testid="icon" />}
+          title="All reports"
+          render={<RouteLink ref={ref} href="/reports" locale="en" className="own" />}
+        >
+          Reports
+        </Button>,
+      );
+      const link = screen.getByRole("link", { name: "Reports" });
+      expect(link).toHaveAttribute("href", "/en/reports");
+      expect(link).toHaveAttribute("hreflang", "en");
+      expect(link).toHaveAttribute("title", "All reports");
+      expect(link).toHaveAttribute("data-variant", "primary");
+      expect(link).toHaveAttribute("data-size", "sm");
+      expect(link).toHaveClass("own");
+      expect(link.className).toContain("root");
+      expect(link).toContainElement(screen.getByTestId("icon"));
+      expect(ref.current).toBe(link);
+    });
+
+    it("calls the element's onClick and the button's when active", async () => {
+      const own = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
+      const onClick = vi.fn();
+      render(
+        <Button onClick={onClick} render={<RouteLink href="/a" onClick={own} />}>
+          Go
+        </Button>,
+      );
+      await userEvent.click(screen.getByRole("link", { name: "Go" }));
+      expect(own).toHaveBeenCalledTimes(1);
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores activation when disabled or loading, and says so with aria-disabled", async () => {
+      const own = vi.fn();
+      const onClick = vi.fn();
+      const { rerender } = render(
+        <Button disabled onClick={onClick} render={<RouteLink href="/a" onClick={own} />}>
+          Go
+        </Button>,
+      );
+      const link = screen.getByRole("link", { name: "Go" });
+      expect(link).toHaveAttribute("aria-disabled", "true");
+      expect(fireEvent.click(link)).toBe(false);
+      rerender(
+        <Button loading onClick={onClick} render={<RouteLink href="/a" onClick={own} />}>
+          Go
+        </Button>,
+      );
+      expect(link).toHaveAttribute("aria-busy", "true");
+      expect(fireEvent.click(link)).toBe(false);
+      expect(own).not.toHaveBeenCalled();
+      expect(onClick).not.toHaveBeenCalled();
     });
   });
 

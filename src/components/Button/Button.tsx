@@ -1,6 +1,15 @@
 "use client";
 
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactNode, Ref } from "react";
+import { cloneElement } from "react";
+import type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  MouseEvent,
+  MouseEventHandler,
+  ReactElement,
+  ReactNode,
+  Ref,
+} from "react";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Button.module.css";
 
@@ -22,6 +31,20 @@ type ButtonOwnProps = {
   iconStart?: ReactNode;
   /** Decorative icon after the label; hidden from assistive technology. */
   iconEnd?: ReactNode;
+  /**
+   * The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component
+   * cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It
+   * receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put
+   * `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is
+   * not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation.
+   */
+  render?: ReactElement<RenderedElementProps>;
+};
+
+/** What the element given to `render` may already carry; the button merges its own values into these. */
+type RenderedElementProps = {
+  className?: string;
+  onClick?: MouseEventHandler<HTMLElement>;
 };
 
 type AsButton = ButtonOwnProps &
@@ -44,7 +67,7 @@ export type ButtonProps = AsButton | AsLink;
 
 /**
  * The action control. It renders a `<button>`, or a link when `href` is given, so navigation stays a link and an action
- * stays a button. The look is the same for both.
+ * stays a button. The look is the same for both. `render` swaps in an element of your own when neither fits.
  */
 export function Button(props: ButtonProps) {
   const {
@@ -54,6 +77,7 @@ export function Button(props: ButtonProps) {
     fullWidth = false,
     iconStart,
     iconEnd,
+    render,
     className,
     children,
     ...rest
@@ -82,6 +106,37 @@ export function Button(props: ButtonProps) {
       {loading ? <span className={styles.spinner} aria-hidden="true" /> : null}
     </>
   );
+
+  if (render !== undefined) {
+    // `href` belongs on the element and `type` is a button-only default. A `ref` given here replaces the element's own.
+    const { disabled, onClick, ...passed } = rest as Record<string, unknown> & {
+      disabled?: boolean;
+      onClick?: MouseEventHandler<HTMLElement>;
+    };
+    delete passed.href;
+    delete passed.type;
+    if (passed.ref === undefined) delete passed.ref;
+    const inert = Boolean(disabled) || loading;
+    const own = render.props;
+    return cloneElement(
+      render,
+      {
+        ...passed,
+        className: [classes, own.className].filter(Boolean).join(" "),
+        ...state,
+        "aria-disabled": inert || undefined,
+        onClick: (event: MouseEvent<HTMLElement>) => {
+          if (inert) {
+            event.preventDefault();
+            return;
+          }
+          own.onClick?.(event);
+          onClick?.(event);
+        },
+      } as RenderedElementProps,
+      content,
+    );
+  }
 
   if (props.href !== undefined) {
     const { href, disabled, onClick, ...anchor } = rest as Omit<AsLink, keyof ButtonOwnProps | "children">;

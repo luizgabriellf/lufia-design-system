@@ -36,6 +36,7 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 | `fullWidth` | `boolean` | no | `false` | Stretches to the full width of its container. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
 | `iconEnd` | `ReactNode` | no |  | Decorative icon after the label; hidden from assistive technology. |
+| `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. |
 | `href` | `string` | no |  | When present the button renders as a link (through the `LufiaProvider` link component). |
 | `ref` | `Ref<HTMLButtonElement> \| Ref<HTMLAnchorElement>` | no |  | Forwarded to the anchor (the link component must forward its `ref`, as plain `<a>` and router links do). |
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
@@ -135,6 +136,7 @@ truncating. Give the destructive action a specific name rather than "Yes".
 - `components-actions-button--icon-end`
 - `components-actions-button--full-width`
 - `components-actions-button--as-link`
+- `components-actions-button--rendered`
 - `components-actions-button--long-label`
 - `components-actions-button--all-variants-and-sizes`
 - `components-actions-button--phone-320`
