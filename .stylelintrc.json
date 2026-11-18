@@ -6,7 +6,14 @@
     "declaration-property-value-disallowed-list": {
       "outline": ["none", "0"],
       "/^outline(-style)?$/": ["none"],
-      "/^(text-align|float|clear)$/": ["left", "right"]
+      "/^(text-align|float|clear)$/": ["left", "right"],
+      "letter-spacing": ["/(^|[\\s(,])-?\\d*\\.?\\d+(px|rem|em)\\b/"],
+      "/^outline(-width)?$/": [
+        "/(^|[\\s(,])\\d*\\.?\\d+(px|rem|em)\\b/",
+        "/(^|\\s)(thin|medium|thick)(\\s|$)/"
+      ],
+      "/radius$/": ["/(^|[\\s(,])\\d*\\.?\\d+(px|rem|em)\\b/"],
+      "box-shadow": ["/#[0-9a-f]{3,8}\\b/i", "/\\b(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\\(/i"]
     },
     "property-disallowed-list": [
       [
