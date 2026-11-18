@@ -206,6 +206,8 @@ describe("Button surface hooks (stylesheet)", () => {
     );
     expect(media?.[1]).toContain(':not(:disabled, [aria-disabled="true"], [data-loading])');
     expect(media?.[1]).toContain("translate: 0 calc(var(--lufia-button-hover-lift, 0px) * -1)");
+    expect(media?.[1]).toContain("::after");
+    expect(css.match(/:hover:not\(:disabled, \[aria-disabled="true"\]\)/g)).toBeNull();
     expect(css.indexOf("--lufia-button-hover-lift")).toBeLessThan(css.indexOf(".root:active"));
     expect(rule('.root:active:not(:disabled, [aria-disabled="true"])')).toContain("translate: none");
   });

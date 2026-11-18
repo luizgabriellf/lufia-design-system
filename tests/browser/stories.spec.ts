@@ -4286,7 +4286,7 @@ test.describe("button surface hooks", () => {
   const OLD_BORDER = "border-color: var(--lufia-color-accent-default); background-origin: padding-box;";
   /** A screenshot once the colour transitions (150 ms) have settled. */
   /**
-   * Pixels that differ between two screenshots of one element, outside a 4px band along its edge and the 12px corner squares (CSS pixels). The outline is excluded
+   * Pixels that differ between two screenshots of one element, outside the 12px (CSS) corner squares. The outline is excluded
    * because painting the fill under a transparent border and painting a border of the same colour over it differ only
    * in the anti-aliasing of the rounded outline.
    */
@@ -4303,11 +4303,10 @@ test.describe("button surface hooks", () => {
           return context.getImageData(0, 0, bitmap.width, bitmap.height);
         };
         const [first, second] = [await read(a!), await read(b!)];
-        const band = 4 * devicePixelRatio;
         const reach = 12 * devicePixelRatio;
         let differing = 0;
-        for (let y = band; y < first.height - band; y++)
-          for (let x = band; x < first.width - band; x++) {
+        for (let y = 0; y < first.height; y++)
+          for (let x = 0; x < first.width; x++) {
             const corner =
               (x < reach || x >= first.width - reach) && (y < reach || y >= first.height - reach);
             if (corner) continue;
@@ -4431,6 +4430,52 @@ test.describe("button surface hooks", () => {
     await expect
       .poll(() => computed(button, ["translate"]).then((value) => value["translate"]))
       .toBe("0px -2px");
+  });
+
+  test("a pointer resting on the bottom strip the lift vacates keeps the button hovered and lifted", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const button = page
+      .getByRole("region", { name: "Themed surface, light" })
+      .getByRole("button", { name: "Primary light" });
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await expect
+      .poll(() => computed(button, ["translate"]).then((value) => value["translate"]))
+      .toBe("0px -2px");
+    const samples: string[] = [];
+    for (let step = 0; step < 30; step++) {
+      await page.mouse.move(box.x + 10 + step, box.y + box.height - 0.5);
+      await page.waitForTimeout(40);
+      const state = await button.evaluate(
+        (element) => `${element.matches(":hover")}|${getComputedStyle(element).translate}`,
+      );
+      samples.push(state);
+    }
+    expect(samples.filter((state) => state !== "true|0px -2px")).toEqual([]);
+    // Back at rest nothing below the button takes the hover.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height + 4);
+    await expect.poll(() => button.evaluate((element) => element.matches(":hover"))).toBe(false);
+  });
+
+  test("a loading themed button keeps its resting shadow and does not lift", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const button = page
+      .getByRole("region", { name: "Themed surface, light" })
+      .getByRole("button", { name: "Primary light" });
+    await button.evaluate((element) => element.setAttribute("data-loading", ""));
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(300);
+    const rest = await computed(button, ["box-shadow", "background-image"]);
+    await button.hover();
+    await page.waitForTimeout(300);
+    expect(await computed(button, ["box-shadow", "background-image", "translate"])).toEqual({
+      ...rest,
+      translate: "none",
+    });
   });
 
   test("a disabled themed button has no shadow and no lift on hover", async ({ page }) => {

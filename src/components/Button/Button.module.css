@@ -51,6 +51,17 @@
   .root:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
     translate: 0 calc(var(--lufia-button-hover-lift, 0px) * -1);
   }
+
+  /* The lifted box no longer covers the strip it moved out of, so a pointer resting there would lose :hover, drop the
+     button and regain it in a loop. While lifted, a pseudo-element of the same height fills that strip; it exists only
+     under :hover, so at rest nothing outside the button takes a click, and it is out of the layout and the overflow. */
+  .root:hover:not(:disabled, [aria-disabled="true"], [data-loading])::after {
+    content: "";
+    position: absolute;
+    inset-block-end: calc((var(--lufia-button-hover-lift, 0px) + var(--lufia-border-width-thin)) * -1);
+    inset-inline: 0;
+    block-size: calc(var(--lufia-button-hover-lift, 0px) + var(--lufia-border-width-thin));
+  }
 }
 
 /* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
@@ -74,7 +85,7 @@
   color: var(--lufia-button-primary-fg, var(--lufia-color-text-on-accent));
 }
 
-.root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
+.root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
   background: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
   background-origin: border-box;
   border-color: var(--lufia-button-primary-border-hover, var(--lufia-button-primary-border, transparent));
@@ -89,7 +100,7 @@
   color: var(--lufia-button-secondary-fg, var(--lufia-color-text-default));
 }
 
-.root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"]) {
+.root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
   background: var(--lufia-button-secondary-bg-hover, var(--lufia-color-bg-surface-raised));
   background-origin: border-box;
   border-color: var(
@@ -103,7 +114,7 @@
   box-shadow: var(--lufia-button-ghost-shadow, none);
 }
 
-.root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
+.root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
   background: var(--lufia-color-accent-subtle);
   box-shadow: var(--lufia-button-ghost-shadow-hover, var(--lufia-button-ghost-shadow, none));
 }
@@ -117,7 +128,7 @@
   color: var(--lufia-button-danger-fg, var(--lufia-color-status-danger-on-solid));
 }
 
-.root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
+.root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
   box-shadow: var(--lufia-button-danger-shadow-hover, var(--lufia-button-danger-shadow, none));
   filter: brightness(0.9);
 }
