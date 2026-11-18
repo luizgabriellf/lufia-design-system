@@ -1,9 +1,11 @@
+import { readFileSync } from "node:fs";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { configureAxe } from "vitest-axe";
 import { axe } from "../../test/axe";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { pushLayer, removeLayer } from "../useFocusTrap/layerStack";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
 import { useState } from "react";
@@ -738,9 +740,10 @@ describe("MoreActions", () => {
       const { user, view, trigger } = setupSheet();
       await user.click(trigger);
       await user.keyboard("{Escape}");
-      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      // Focus and the page are back at once; the sheet itself is gone on the next frame (no stylesheet, so no exit to wait for).
       expect(trigger).toHaveFocus();
       expect(view.container).not.toHaveAttribute("inert");
+      await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
     });
 
     it("closes on a tap on the backdrop but not on a press on the sheet", async () => {
@@ -750,7 +753,7 @@ describe("MoreActions", () => {
       expect(screen.getByRole("menu")).toBeInTheDocument();
       const backdrop = document.body.querySelector<HTMLElement>('[aria-hidden="true"][class*="backdrop"]')!;
       await user.click(backdrop);
-      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
       expect(trigger).toHaveFocus();
     });
 
@@ -773,9 +776,107 @@ describe("MoreActions", () => {
       await user.click(trigger);
       await user.click(screen.getByRole("menuitem", { name: "Duplicate" }));
       expect(onSelect).toHaveBeenCalledTimes(1);
-      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
       expect(focusedAtCall).toBe(trigger);
       onSelect.mockReset();
+    });
+
+    describe("exit", () => {
+      afterEach(() => vi.unstubAllGlobals());
+
+      const withExitAnimation = () => stubExitAnimation("sheet-out");
+      const layer = () => document.body.querySelector<HTMLElement>('[data-lufia-part="layer"]');
+      const sheetElement = () => document.body.querySelector<HTMLElement>('[data-lufia-part="sheet"]');
+
+      it("keeps the sheet mounted, inert and click-through while it animates out, with focus and the page already back", async () => {
+        mockReducedMotion(false);
+        const { user, view, trigger } = setupSheet();
+        await user.click(trigger);
+        const sheet = sheetElement()!;
+        withExitAnimation();
+        await user.keyboard("{Escape}");
+        expect(layer()).toBe(sheet.parentElement);
+        expect(layer()).toHaveAttribute("data-state", "closed");
+        expect(layer()).toHaveAttribute("inert");
+        expect(trigger).toHaveFocus();
+        expect(view.container).not.toHaveAttribute("inert");
+        act(() => endAnimation(sheet));
+        expect(layer()).toBeNull();
+        expect(sheet).not.toBeInTheDocument();
+      });
+
+      it("ignores an animationend that bubbles from inside the sheet", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        withExitAnimation();
+        await user.keyboard("{Escape}");
+        act(() => endAnimation(screen.getByRole("menu", { hidden: true })));
+        expect(layer()).not.toBeNull();
+      });
+
+      it("removes the sheet by a timeout when animationend never arrives", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        withExitAnimation();
+        await user.keyboard("{Escape}");
+        expect(layer()).not.toBeNull();
+        await waitFor(() => expect(layer()).toBeNull(), { timeout: 1000 });
+      });
+
+      it("goes straight back to open when it is opened again during the exit", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        const sheet = sheetElement()!;
+        withExitAnimation();
+        await user.keyboard("{Escape}");
+        await user.click(trigger);
+        expect(layer()).toHaveAttribute("data-state", "open");
+        expect(layer()).not.toHaveAttribute("inert");
+        expect(sheetElement()).toBe(sheet);
+        act(() => endAnimation(sheet));
+        expect(layer()).not.toBeNull();
+        expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus();
+      });
+
+      it("still closes on Escape and on the backdrop that the open sheet had, and never leaves a layer behind", async () => {
+        mockReducedMotion(false);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        withExitAnimation();
+        await user.click(
+          document.body.querySelector<HTMLElement>('[aria-hidden="true"][class*="backdrop"]')!,
+        );
+        expect(layer()).toHaveAttribute("data-state", "closed");
+        act(() => endAnimation(sheetElement()!));
+        expect(layer()).toBeNull();
+        expect(trigger).toHaveFocus();
+      });
+
+      it("is removed at once under reduced motion", async () => {
+        mockReducedMotion(true);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        await user.keyboard("{Escape}");
+        expect(layer()).toBeNull();
+        expect(trigger).toHaveFocus();
+      });
+
+      it("leaves with the exit duration and easing, the reverse of its entrance, and takes no pointer", () => {
+        const css = readFileSync("src/components/MoreActions/MoreActions.module.css", "utf8");
+        expect(css).toMatch(/\.layer\[data-state="closed"\] \{\s*pointer-events: none;/);
+        for (const part of ["backdrop", "sheet"]) {
+          expect(css).toMatch(
+            new RegExp(
+              `\\.layer\\[data-state="closed"\\] \\.${part} \\{\\s*animation: [\\w-]+ var\\(--lufia-motion-duration-exit\\) var\\(--lufia-motion-easing-in\\) both;`,
+            ),
+          );
+        }
+        expect(css).toMatch(/@keyframes sheet-out \{\s*to \{\s*transform: translateY\(100%\);/);
+        expect(css).toMatch(/@keyframes sheet-fade-out \{\s*to \{\s*opacity: 0;/);
+      });
     });
 
     it("gives every item a leading slot when only some have an icon", async () => {
@@ -929,7 +1030,7 @@ describe("MoreActions", () => {
         await user.click(trigger);
         await user.click(screen.getByRole("menuitem", { name: "Rename" }));
         const dialog = await screen.findByRole("dialog", { name: "Rename record" });
-        expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+        await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
         expect(dialog).toContainElement(document.activeElement as HTMLElement);
 
         await user.keyboard("{Escape}");

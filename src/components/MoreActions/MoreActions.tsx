@@ -22,6 +22,7 @@ import { VisuallyHidden } from "../VisuallyHidden";
 import type { ButtonVariant } from "../Button";
 import { MoreIcon } from "../Icon/icons";
 import { portalHost } from "../internal/portalContext";
+import { usePresence } from "../internal/usePresence";
 import styles from "./MoreActions.module.css";
 
 export type MoreActionItem = {
@@ -229,6 +230,11 @@ export function MoreActions({
     inertBackground: true,
   });
   useBodyScrollLock(open && sheet && mounted);
+  // The sheet stays mounted while it animates out. The page is already usable again (the trap, the inert background and the
+  // scroll lock end with `open`), so the leaving layer takes no clicks and no focus.
+  const presence = usePresence(open && sheet && mounted, sheetRef);
+  // Crossing to the popover breakpoint while open swaps presentations at once; only a close plays the exit.
+  const sheetShown = mounted && presence.phase !== "unmounted" && (!open || sheet);
 
   // Items that are shown right now and can take focus. Layout decides, because some items are hidden by CSS on wide pages.
   // Disabled items stay in the list: they are focusable and readable (APG), they just cannot be activated.
@@ -532,11 +538,24 @@ export function MoreActions({
             host,
           )
         : null}
-      {open && sheet && mounted
+      {sheetShown
         ? createPortal(
-            <div className={styles.layer} data-lufia-part="layer">
+            <div
+              className={styles.layer}
+              data-lufia-part="layer"
+              data-state={presence.phase === "open" ? "open" : "closed"}
+              inert={presence.phase !== "open" || undefined}
+            >
               <div className={styles.backdrop} aria-hidden="true" onClick={close} />
-              <div ref={sheetRef} className={styles.sheet} tabIndex={-1} data-lufia-part="sheet">
+              <div
+                ref={sheetRef}
+                className={styles.sheet}
+                tabIndex={-1}
+                data-lufia-part="sheet"
+                onAnimationEnd={(event) => {
+                  if (event.target === event.currentTarget) presence.finish();
+                }}
+              >
                 <div className={styles.heading} aria-hidden="true">
                   {label}
                 </div>

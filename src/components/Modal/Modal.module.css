@@ -82,13 +82,30 @@
   max-inline-size: var(--lufia-modal-size);
 }
 
-/* Keep-mounted panels play the enter themselves: they are never unmounted, so there is no exit to wait for. */
+/* Keep-mounted panels and native dialogs play the enter and the exit themselves: `Reveal` is not wrapped around them. The
+   exit is shorter, runs the enter backwards and leaves the panel inert and click-through; the component hides (or closes)
+   it when the exit ends. */
 .panel[data-kept][data-state="open"] {
   animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
 
 .native[open] {
   animation: modal-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.panel[data-kept][data-state="closed"],
+.native[open][data-state="closed"] {
+  pointer-events: none;
+  animation: modal-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+}
+
+.backdrop[data-kept][data-state="open"] {
+  animation: modal-backdrop-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.backdrop[data-kept][data-state="closed"] {
+  pointer-events: none;
+  animation: modal-backdrop-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
 }
 
 .native::backdrop {
@@ -357,9 +374,30 @@
   }
 }
 
+@keyframes modal-out {
+  to {
+    opacity: 0;
+    transform: translateY(var(--lufia-motion-distance-rise)) scale(0.98);
+  }
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .panel[data-kept][data-state="open"],
-  .native[open] {
+  .panel[data-kept][data-state],
+  .native[open],
+  .native[open][data-state="closed"],
+  .backdrop[data-kept][data-state] {
     animation: none;
   }
 }

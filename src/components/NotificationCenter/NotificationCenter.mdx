@@ -125,16 +125,16 @@ app's fixed dock or bar. Optional hooks: `--lufia-sheet-backdrop`, `--lufia-shee
 Motion uses the package's tokens and primitives and only moves `transform` and `opacity`. Every piece collapses under
 `prefers-reduced-motion`: the panel simply appears and disappears, and nothing is hidden.
 
-| Moment                         | What happens                                                                                                   |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet |
-| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`), then it unmounts; it is inert meanwhile   |
-| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps             |
-| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter          |
-| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`     |
-| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                 |
-| "Mark all as read"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                   |
-| The highlight card first shows | Its progress segments fill one after another                                                                   |
+| Moment                         | What happens                                                                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| The panel opens                | It grows out of the bell's corner (scale 0.96 to 1 with a fade). A sheet slides up, as the `MoreActions` sheet                   |
+| The panel closes               | A shorter fade and a slight shrink (`--lufia-motion-duration-exit`); a sheet slides back down. Then it unmounts, inert meanwhile |
+| The first view of the panel    | Rows rise in a short step apart, the same sequence as the `Stagger` primitive, capped at six steps                               |
+| A tab changes                  | The indicator slides to the tab (`useSlidingIndicator`) and the list crossfades; rows do not re-enter                            |
+| The unread count changes       | The bell's badge counts with `AnimatedNumber` and pops; tab and header counts flash with `ChangeHighlight`                       |
+| A notification arrives         | The new row enters at the top and flashes once; nothing moves for rows that were already there                                   |
+| "Mark all as read"             | Each unread dot scales and fades out and the row tint fades, from top to bottom, 40 ms apart                                     |
+| The highlight card first shows | Its progress segments fill one after another                                                                                     |
 
 Nothing animates on first paint of a closed bell, and a re-render never replays an entrance. Try it in **Interactive**: open
 the panel, switch tabs, mark everything read and simulate an arrival.
@@ -206,3 +206,7 @@ Titles say what happened in one line. The meta line names the source; the time i
 Keep tab labels to one word and the number of tabs to four or five. The `unreadLabel` is one word ("unread").
 
 </Section>
+
+### Testing
+
+A closed surface stays in the document, `inert`, until its exit ends (about 160 ms, or one frame in jsdom, which has no stylesheet): the sheet presentation. Await the removal in assertions made after a close (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden. To remove it at once, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in your test setup (stub `matchMedia`): under reduced motion it unmounts immediately.

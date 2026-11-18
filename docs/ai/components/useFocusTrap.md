@@ -81,7 +81,7 @@ registerOverlayLayer(): OverlayLayer
 Contains Tab and Shift+Tab inside `ref`'s subtree while `open` is true, optionally closes on Escape, moves focus in when it opens and puts it back where it was when it closes. Follows the WAI-ARIA APG "Dialog (Modal)" pattern. Only the topmost layer reacts (see `useDismiss`: a popup inside the overlay counts as a layer), so nested overlays and popups close one at a time.
 
 ```ts
-useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, initialFocus, restoreFocus, inertBackground: inert, }?: UseFocusTrapOptions): void
+useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, initialFocus, restoreFocus, inertBackground: inert, refocusKey, }?: UseFocusTrapOptions): void
 ```
 
 | Parameter | Type | Required | Description |
@@ -93,7 +93,7 @@ useFocusTrap(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, init
 ## Types
 
 - `OverlayLayer`: `{ isTop: () => boolean; release: () => void; }`
-- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | "container" | "first" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }`
+- `UseFocusTrapOptions`: `{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | "container" | "first" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; refocusKey?: unknown; }`
 
 ## Example
 

@@ -4,11 +4,13 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
 import { mockDialog } from "../../test/dialog";
-import { mockReducedMotion } from "../../test/motion";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { isBodyScrollLocked } from "../useBodyScrollLock";
 import { LufiaProvider } from "../LufiaProvider";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { NavSheet } from "../AppShell/NavSheet";
 import { Modal, type ModalProps } from "./Modal";
+import { findModalDialogs } from "./topModalDialog";
 
 beforeEach(() => {
   window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
@@ -438,8 +440,9 @@ describe("Modal", () => {
       expect(dialog).not.toHaveAttribute("hidden");
       await user.type(screen.getByLabelText("Name"), "Ada");
       await user.keyboard("{Escape}");
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(isBodyScrollLocked()).toBe(false);
+      // The exit has no stylesheet to wait for in jsdom: the panel is hidden on the next frame.
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
       await user.click(screen.getByRole("button", { name: "Open modal" }));
       expect(screen.getByLabelText("Name")).toHaveValue("Ada");
@@ -499,7 +502,7 @@ describe("Modal", () => {
       expect(dialog).toHaveAccessibleName("Edit profile");
       expect(dialog).toHaveFocus();
       await user.keyboard("{Escape}");
-      expect(dialogMock.close).toHaveBeenCalled();
+      await waitFor(() => expect(dialogMock.close).toHaveBeenCalled());
       expect(document.querySelector("dialog")).toBeNull();
     });
 
@@ -512,7 +515,7 @@ describe("Modal", () => {
       await user.keyboard("{Escape}");
       expect(onClose).toHaveBeenCalledTimes(1);
       expect(isBodyScrollLocked()).toBe(false);
-      expect(trigger).toHaveFocus();
+      await waitFor(() => expect(trigger).toHaveFocus());
     });
 
     it("traps Tab inside the dialog", async () => {
@@ -718,7 +721,7 @@ describe("Modal", () => {
       const { user, dialog } = await openModal();
       await user.type(screen.getByLabelText("Name"), "Ada");
       await user.keyboard("{Escape}");
-      expect(dialog).not.toHaveAttribute("open");
+      await waitFor(() => expect(dialog).not.toHaveAttribute("open"));
       await user.click(screen.getByRole("button", { name: "Open modal" }));
       expect(screen.getByLabelText("Name")).toHaveValue("Ada");
     });
@@ -727,6 +730,357 @@ describe("Modal", () => {
       render(<Harness renderAs="dialog" description="Changes apply to everyone." />);
       await openModal();
       expect(await axe(document.body)).toHaveNoViolations();
+    });
+  });
+
+  describe("exit of a native dialog and a keep-mounted panel", () => {
+    let dialogMock: ReturnType<typeof mockDialog>;
+    beforeEach(() => {
+      dialogMock = mockDialog();
+    });
+    afterEach(() => {
+      cleanup();
+      vi.restoreAllMocks();
+      dialogMock.restore();
+    });
+
+    const withExitAnimation = () => stubExitAnimation("modal-out");
+
+    it("keeps a native dialog open and inert while it animates out, then closes and removes it and returns focus", async () => {
+      mockReducedMotion(false);
+      render(<Harness renderAs="dialog" />);
+      const { user, trigger, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(dialog).toBeInTheDocument();
+      expect(dialog).toHaveAttribute("data-state", "closed");
+      expect(dialog).toHaveAttribute("inert");
+      expect(dialog).toHaveAttribute("open");
+      expect(dialogMock.close).not.toHaveBeenCalled();
+      expect(isBodyScrollLocked()).toBe(false);
+      act(() => endAnimation(dialog));
+      expect(dialogMock.close).toHaveBeenCalledTimes(1);
+      expect(document.querySelector("dialog")).toBeNull();
+      expect(trigger).toHaveFocus();
+    });
+
+    it("stops counting a native dialog as the top modal dialog from the moment it starts to leave", async () => {
+      mockReducedMotion(false);
+      render(<Harness renderAs="dialog" />);
+      const { user, dialog } = await openModal();
+      expect(findModalDialogs()).toEqual([dialog]);
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(dialog).toHaveAttribute("open");
+      expect(findModalDialogs()).toEqual([]);
+    });
+
+    it("does not ask to close a second time when Escape or a cancel arrives during the exit, and ends closed", async () => {
+      mockReducedMotion(false);
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(onClose).toHaveBeenCalledTimes(1);
+      const cancel = new Event("cancel", { cancelable: true });
+      dialog.dispatchEvent(cancel);
+      expect(cancel.defaultPrevented).toBe(true);
+      expect(onClose).toHaveBeenCalledTimes(1);
+      act(() => endAnimation(dialog));
+      expect(document.querySelector("dialog")).toBeNull();
+      expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not reopen or ask again when the browser closes a leaving dialog itself", async () => {
+      mockReducedMotion(false);
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      dialog.removeAttribute("open");
+      act(() => void dialog.dispatchEvent(new Event("close")));
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+      expect(document.querySelector("dialog")).toBeNull();
+    });
+
+    /** A native dialog whose button closes it and opens a second modal in the same handler. */
+    function Swap({ second }: { second: "portal" | "dialog" }) {
+      const [a, setA] = useState(false);
+      const [b, setB] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => setA(true)}>
+            Open A
+          </button>
+          <Modal open={a} renderAs="dialog" title="A" onClose={() => setA(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setA(false);
+                setB(true);
+              }}
+            >
+              Swap
+            </button>
+          </Modal>
+          <Modal open={b} renderAs={second} title="B" onClose={() => setB(false)}>
+            <input aria-label="In B" />
+          </Modal>
+        </>
+      );
+    }
+
+    it.each(["portal", "dialog"] as const)(
+      "finishes a leaving native dialog at once when a %s modal opens in the same handler, and focus goes back to A's opener when B closes",
+      async (second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<Swap second={second} />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        // A was closed synchronously, not left covering B for the rest of its exit.
+        await waitFor(() => expect(screen.queryByRole("dialog", { name: "A" })).not.toBeInTheDocument());
+        expect(dialogMock.close).toHaveBeenCalled();
+        const b = screen.getByRole("dialog", { name: "B" });
+        expect(b).toContainElement(document.activeElement as HTMLElement);
+        await user.keyboard("{Escape}");
+        act(() => endAnimation(screen.getByRole("dialog", { name: "B", hidden: true })));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    /** The same swap, with the second layer placed before or after the first in the tree (sibling effects run in that order). */
+    function OrderedSwap({
+      order,
+      second,
+      keepMounted = false,
+    }: {
+      order: "before" | "after";
+      second: "dialog" | "navsheet";
+      keepMounted?: boolean;
+    }) {
+      const [a, setA] = useState(false);
+      const [b, setB] = useState(false);
+      const secondLayer =
+        second === "dialog" ? (
+          <Modal open={b} renderAs="dialog" title="B" onClose={() => setB(false)}>
+            <input aria-label="In B" />
+          </Modal>
+        ) : (
+          <NavSheet open={b} onOpenChange={setB} label="B" renderAs="dialog">
+            <a href="/one">One</a>
+          </NavSheet>
+        );
+      return (
+        <>
+          {order === "before" ? secondLayer : null}
+          <button type="button" onClick={() => setA(true)}>
+            Open A
+          </button>
+          <Modal open={a} renderAs="dialog" keepMounted={keepMounted} title="A" onClose={() => setA(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setA(false);
+                setB(true);
+              }}
+            >
+              Swap
+            </button>
+          </Modal>
+          {order === "after" ? secondLayer : null}
+        </>
+      );
+    }
+
+    it.each([
+      ["before", "dialog"],
+      ["after", "dialog"],
+      ["before", "navsheet"],
+      ["after", "navsheet"],
+    ] as const)(
+      "a native layer placed %s the first dialog in the tree (%s) gets focus, then returns it to the first opener",
+      async (order, second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<OrderedSwap order={order} second={second} />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        await waitFor(() => expect(screen.queryByRole("dialog", { name: "A" })).not.toBeInTheDocument());
+        const b = screen.getByRole("dialog", { name: "B" });
+        expect(b).toContainElement(document.activeElement as HTMLElement);
+        await user.keyboard("{Escape}");
+        // A native NavSheet has no exit of its own; a native Modal plays one.
+        const leavingB = screen.queryByRole("dialog", { name: "B", hidden: true });
+        if (leavingB) act(() => endAnimation(leavingB));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    it.each([
+      ["before", "dialog"],
+      ["after", "dialog"],
+      ["before", "navsheet"],
+      ["after", "navsheet"],
+    ] as const)(
+      "with a keep-mounted first dialog, a native layer placed %s it (%s) returns focus to the first opener",
+      async (order, second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<OrderedSwap order={order} second={second} keepMounted />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        await waitFor(() => expect(screen.getByRole("dialog", { name: "B" })).toBeInTheDocument());
+        expect(screen.getByRole("dialog", { name: "B" })).toContainElement(
+          document.activeElement as HTMLElement,
+        );
+        await user.keyboard("{Escape}");
+        const leavingB = screen.queryByRole("dialog", { name: "B", hidden: true });
+        if (leavingB) act(() => endAnimation(leavingB));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    it("still animates and returns focus into the lower dialog when the top of two stacked native dialogs closes", async () => {
+      mockReducedMotion(false);
+      function Stack() {
+        const [lower, setLower] = useState(false);
+        const [upper, setUpper] = useState(false);
+        return (
+          <>
+            <button type="button" onClick={() => setLower(true)}>
+              Open lower
+            </button>
+            <Modal open={lower} renderAs="dialog" title="Lower" onClose={() => setLower(false)}>
+              <button type="button" onClick={() => setUpper(true)}>
+                Open upper
+              </button>
+            </Modal>
+            <Modal open={upper} renderAs="dialog" title="Upper" onClose={() => setUpper(false)}>
+              <p>Upper body</p>
+            </Modal>
+          </>
+        );
+      }
+      render(<Stack />);
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: "Open lower" }));
+      const lower = screen.getByRole("dialog", { name: "Lower" });
+      const inner = within(lower).getByRole("button", { name: "Open upper" });
+      await user.click(inner);
+      const upper = screen.getByRole("dialog", { name: "Upper" });
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(upper).toBeInTheDocument();
+      expect(upper).toHaveAttribute("data-state", "closed");
+      expect(lower).toHaveAttribute("open");
+      act(() => endAnimation(upper));
+      expect(upper).not.toBeInTheDocument();
+      expect(lower).toHaveAttribute("open");
+      expect(lower).toContainElement(document.activeElement as HTMLElement);
+    });
+
+    it("closes and removes a native dialog by a timeout when animationend never arrives", async () => {
+      mockReducedMotion(false);
+      render(<Harness renderAs="dialog" />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(dialog).toBeInTheDocument();
+      await waitFor(() => expect(document.querySelector("dialog")).toBeNull(), { timeout: 1000 });
+      expect(dialogMock.close).toHaveBeenCalledTimes(1);
+    });
+
+    it("stays open when a native dialog is opened again during the exit", async () => {
+      mockReducedMotion(false);
+      render(<Harness renderAs="dialog" />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(dialog).toHaveAttribute("data-state", "closed");
+      act(() => screen.getByRole("button", { name: "Open modal", hidden: true }).click());
+      expect(dialog).toHaveAttribute("data-state", "open");
+      expect(dialog).not.toHaveAttribute("inert");
+      act(() => endAnimation(dialog));
+      expect(document.querySelector("dialog")).toBe(dialog);
+      expect(dialog).toHaveAttribute("open");
+      expect(dialogMock.close).not.toHaveBeenCalled();
+    });
+
+    it("closes and removes a native dialog at once under reduced motion", async () => {
+      mockReducedMotion(true);
+      render(<Harness renderAs="dialog" />);
+      const { user, trigger } = await openModal();
+      await user.keyboard("{Escape}");
+      expect(dialogMock.close).toHaveBeenCalledTimes(1);
+      expect(document.querySelector("dialog")).toBeNull();
+      expect(trigger).toHaveFocus();
+    });
+
+    it("hides a keep-mounted panel and its backdrop when the exit ends, and returns focus at once", async () => {
+      mockReducedMotion(false);
+      render(<Harness keepMounted />);
+      const { user, trigger, dialog } = await openModal();
+      const backdrop = document.querySelector<HTMLElement>("[data-lufia-part='backdrop']")!;
+      await user.type(screen.getByLabelText("Name"), "Ada");
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(dialog).not.toHaveAttribute("hidden");
+      expect(dialog).toHaveAttribute("data-state", "closed");
+      expect(dialog).toHaveAttribute("inert");
+      expect(backdrop).toHaveAttribute("data-state", "closed");
+      expect(backdrop).not.toHaveAttribute("hidden");
+      expect(trigger).toHaveFocus();
+      act(() => endAnimation(dialog));
+      expect(dialog).toHaveAttribute("hidden");
+      expect(backdrop).toHaveAttribute("hidden");
+      await user.click(trigger);
+      expect(screen.getByLabelText("Name")).toHaveValue("Ada");
+    });
+
+    it("shows a keep-mounted panel again when it is opened during the exit", async () => {
+      mockReducedMotion(false);
+      render(<Harness keepMounted />);
+      const { user, trigger, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      await user.click(trigger);
+      expect(dialog).toHaveAttribute("data-state", "open");
+      expect(dialog).not.toHaveAttribute("hidden");
+      act(() => endAnimation(dialog));
+      expect(dialog).not.toHaveAttribute("hidden");
+    });
+
+    it("hides a keep-mounted panel at once under reduced motion", async () => {
+      mockReducedMotion(true);
+      render(<Harness keepMounted />);
+      const { user, dialog } = await openModal();
+      await user.keyboard("{Escape}");
+      expect(dialog).toHaveAttribute("hidden");
+    });
+
+    it("exits with opacity and the reverse of the entrance, in the exit duration, and takes no pointer", () => {
+      const css = readFileSync("src/components/Modal/Modal.module.css", "utf8");
+      expect(css).toMatch(
+        /\.panel\[data-kept\]\[data-state="closed"\],\s*\.native\[open\]\[data-state="closed"\] \{\s*pointer-events: none;\s*animation: modal-out var\(--lufia-motion-duration-exit\) var\(--lufia-motion-easing-in\) both;/,
+      );
+      const keyframes = (name: string) =>
+        css.match(new RegExp(`@keyframes ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? "";
+      expect(keyframes("modal-in")).toContain("translateY(var(--lufia-motion-distance-rise)) scale(0.98)");
+      expect(keyframes("modal-out")).toBe(keyframes("modal-in").replace("from", "to"));
     });
   });
 

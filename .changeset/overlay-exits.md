@@ -1,0 +1,7 @@
+---
+"@lufia/design-system": minor
+---
+
+The overlays that vanished on close now animate out, with the exit duration and easing, a fade and the reverse of their entrance: the `MoreActions` sheet and its backdrop, the `NotificationCenter` sheet, the `Combobox` popup (which holds its list as it was while it leaves), the app shell's rail tooltip, a `Modal` rendered as a native `dialog` (it stays open while it leaves, then closes and returns focus to the opener), and a `keepMounted` `Modal` panel and backdrop. A leaving surface is inert and takes no pointer, opening it again during the exit goes straight to open, and under reduced motion it goes at once. The shared presence hook also gets a timeout for an `animationend` that never arrives.
+
+Migration for tests: after a close, these now stay in the document, inert, until the exit ends (a frame in jsdom, which has no stylesheet): a `renderAs="dialog"` `Modal` (focus returns to its opener only once it has closed), a `keepMounted` `Modal` panel (hidden, not removed), the `Combobox` listbox, the `MoreActions` and `NotificationCenter` sheets, and the rail tooltip. Assertions made right after a close must await the removal (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden, so `queryByRole` still finds a leaving surface. To remove them at once instead, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in the test setup (stub `matchMedia`); the package offers no other switch and exports nothing new for it.

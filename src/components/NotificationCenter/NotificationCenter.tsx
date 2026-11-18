@@ -172,6 +172,11 @@ export function NotificationCenter({
   // The popover stays mounted while it animates out. A closing popover is inert: it takes no focus and no clicks.
   const presence = usePresence(open && !sheet, popoverRef);
   const popoverShown = presence.phase !== "unmounted" && !sheet;
+  // The sheet leaves the same way: it stays mounted while it animates out, and by then the page is usable again (the trap,
+  // the inert background and the scroll lock end with `open`), so the leaving layer takes no clicks and no focus.
+  const sheetPresence = usePresence(open && sheet && mounted, sheetRef);
+  // Crossing to the popover breakpoint while open swaps presentations at once; only a close plays the exit.
+  const sheetShown = mounted && sheetPresence.phase !== "unmounted" && (!open || sheet);
 
   // The count pops when it changes, never on first paint: two alternating names restart the animation.
   const [shownCount, setShownCount] = useState(unreadCount);
@@ -289,9 +294,14 @@ export function NotificationCenter({
           {panel}
         </div>
       ) : null}
-      {open && sheet && mounted
+      {sheetShown
         ? createPortal(
-            <div className={styles.layer} data-lufia-part="notification-layer">
+            <div
+              className={styles.layer}
+              data-lufia-part="notification-layer"
+              data-state={sheetPresence.phase === "open" ? "open" : "closed"}
+              inert={sheetPresence.phase !== "open" || undefined}
+            >
               <div className={styles.backdrop} aria-hidden="true" onClick={close} />
               <div
                 ref={sheetRef}
@@ -302,6 +312,9 @@ export function NotificationCenter({
                 tabIndex={-1}
                 className={styles.sheet}
                 data-lufia-part="notification-sheet"
+                onAnimationEnd={(event) => {
+                  if (event.target === event.currentTarget) sheetPresence.finish();
+                }}
               >
                 <span className={styles.grabber} aria-hidden="true" />
                 {panel}

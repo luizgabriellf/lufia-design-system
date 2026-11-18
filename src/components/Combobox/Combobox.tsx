@@ -19,6 +19,7 @@ import { CheckIcon, ChevronDownIcon, CloseIcon } from "../Icon/icons";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
+import { usePresence } from "../internal/usePresence";
 import { useDismiss } from "../useDismiss";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./Combobox.module.css";
@@ -32,6 +33,14 @@ export type ComboboxOption = {
   /** A second line in the list, such as an address or a code. Not searched. */
   description?: string;
   disabled?: boolean;
+};
+
+/** What the popup shows, kept apart from the live state so it can be held still while the popup animates out. */
+type PopupView = {
+  visible: readonly ComboboxOption[];
+  activeValue: string | undefined;
+  selectedValue: string | undefined;
+  loading: boolean | undefined;
 };
 
 export type ComboboxProps = Omit<
@@ -234,6 +243,11 @@ export function Combobox({
   const root = useRef<HTMLSpanElement>(null);
   const input = useRef<HTMLInputElement | null>(null);
   const list = useRef<HTMLUListElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const presence = usePresence(open, popupRef);
+  // The popup stays mounted while it animates out, painted as it was when it closed: closing resets what was typed, which
+  // would otherwise widen the list mid-fade.
+  const [leaving, setLeaving] = useState<PopupView | null>(null);
 
   const query = typed ?? "";
   const matches = (option: ComboboxOption) =>
@@ -250,6 +264,7 @@ export function Combobox({
       ? visible.find((option) => option.value === highlighted && !option.disabled)
       : undefined) ?? (auto ? firstEnabled : undefined);
   const optionId = (option: ComboboxOption) => `${baseId}-option-${idPart(option.value)}`;
+  const view: PopupView = { visible, activeValue: active?.value, selectedValue: selected?.value, loading };
 
   // A required combobox is invalid until an option is chosen, whatever text is typed. The constraint sits on the visible
   // input so the browser blocks submission, focuses it and shows its message there.
@@ -263,6 +278,7 @@ export function Combobox({
   }, [control.required, value, requiredMessage]);
 
   const close = () => {
+    if (open) setLeaving(view);
     setOpen(false);
     setTyped(null);
     setHighlighted(null);
@@ -422,6 +438,71 @@ export function Combobox({
         ? resultsLabel(visible.length, matching.length)
         : "";
 
+  // The popup as one state of its presence: `open` while it is shown, `closed` while it animates out.
+  const renderPopup = (
+    { visible, activeValue, selectedValue, loading }: PopupView,
+    state: "open" | "closed",
+  ) => (
+    // Keep the text field focused: a press on the popup must not blur it.
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+    <div
+      ref={popupRef}
+      className={styles.popup}
+      data-state={state}
+      inert={state === "closed" || undefined}
+      onMouseDown={(event) => event.preventDefault()}
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget) presence.finish();
+      }}
+    >
+      {visible.length > 0 ? (
+        <ul
+          ref={list}
+          id={listId}
+          role="listbox"
+          aria-label={labelId ? undefined : rest["aria-label"]}
+          aria-labelledby={labelId ?? rest["aria-labelledby"]}
+          className={styles.list}
+        >
+          {visible.map((option) => {
+            const isActive = option.value === activeValue;
+            return (
+              // The input owns the keyboard (aria-activedescendant), so options are not focusable or key-handled.
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+              <li
+                key={option.value}
+                id={optionId(option)}
+                role="option"
+                aria-selected={option.value === selectedValue}
+                aria-disabled={option.disabled || undefined}
+                data-active={isActive}
+                className={styles.option}
+                onClick={() => choose(option)}
+                onPointerMove={() => {
+                  if (!option.disabled && !isActive) setHighlighted(option.value);
+                }}
+              >
+                <span className={styles.optionText}>
+                  <span className={styles.optionLabel}>{option.label}</span>
+                  {option.description ? (
+                    <span className={styles.optionDescription}>{option.description}</span>
+                  ) : null}
+                </span>
+                {option.value === selectedValue ? <CheckIcon className={styles.check} size="sm" /> : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+      {loading || visible.length === 0 ? (
+        <p className={styles.message} aria-hidden="true">
+          {loading ? <FieldSpinner /> : null}
+          <span>{loading ? loadingLabel : emptyLabel}</span>
+        </p>
+      ) : null}
+    </div>
+  );
+
   return (
     <span
       ref={root}
@@ -523,59 +604,11 @@ export function Combobox({
       </span>
       {name ? <input type="hidden" name={name} value={value ?? ""} /> : null}
       <VisuallyHidden role="status">{open ? status : ""}</VisuallyHidden>
-      {open ? (
-        // Keep the text field focused: a press on the popup must not blur it.
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-        <div className={styles.popup} onMouseDown={(event) => event.preventDefault()}>
-          {visible.length > 0 ? (
-            <ul
-              ref={list}
-              id={listId}
-              role="listbox"
-              aria-label={labelId ? undefined : rest["aria-label"]}
-              aria-labelledby={labelId ?? rest["aria-labelledby"]}
-              className={styles.list}
-            >
-              {visible.map((option) => {
-                const isActive = option.value === active?.value;
-                return (
-                  // The input owns the keyboard (aria-activedescendant), so options are not focusable or key-handled.
-                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-                  <li
-                    key={option.value}
-                    id={optionId(option)}
-                    role="option"
-                    aria-selected={option.value === selected?.value}
-                    aria-disabled={option.disabled || undefined}
-                    data-active={isActive}
-                    className={styles.option}
-                    onClick={() => choose(option)}
-                    onPointerMove={() => {
-                      if (!option.disabled && !isActive) setHighlighted(option.value);
-                    }}
-                  >
-                    <span className={styles.optionText}>
-                      <span className={styles.optionLabel}>{option.label}</span>
-                      {option.description ? (
-                        <span className={styles.optionDescription}>{option.description}</span>
-                      ) : null}
-                    </span>
-                    {option.value === selected?.value ? (
-                      <CheckIcon className={styles.check} size="sm" />
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : null}
-          {loading || visible.length === 0 ? (
-            <p className={styles.message} aria-hidden="true">
-              {loading ? <FieldSpinner /> : null}
-              <span>{loading ? loadingLabel : emptyLabel}</span>
-            </p>
-          ) : null}
-        </div>
-      ) : null}
+      {open
+        ? renderPopup(view, "open")
+        : presence.phase === "closed" && leaving
+          ? renderPopup(leaving, "closed")
+          : null}
     </span>
   );
 }

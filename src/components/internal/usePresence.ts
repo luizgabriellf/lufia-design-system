@@ -5,11 +5,23 @@ import { usePrefersReducedMotion } from "../../motion";
 
 export type Phase = "open" | "closed" | "unmounted";
 
+/** Extra time past the exit animation before it is declared finished, in case `animationend` never arrives. */
+const EXIT_MARGIN_MS = 150;
+
+/** The first value of a CSS time list (`"0.2s"`, `"200ms"`) in milliseconds; 0 when absent or unparsable. */
+function toMs(value: string | undefined): number {
+  const first = (value ?? "").split(",")[0]?.trim() ?? "";
+  const number = parseFloat(first);
+  if (!Number.isFinite(number)) return 0;
+  return first.endsWith("ms") ? number : number * 1000;
+}
+
 /**
  * Keeps an overlay mounted while its exit animation plays. `phase` is `open`, `closed` (still mounted, animating out) or
  * `unmounted`; call `finish` from `onAnimationEnd` of the animated element. Under `prefers-reduced-motion`, or when the
- * stylesheet defines no animation, it unmounts at once. Same approach as `Reveal`, for overlays that need their own
- * structure.
+ * stylesheet defines no animation, it unmounts at once. If `animationend` never arrives (the element is under a
+ * `display: none` ancestor, or the animation is cancelled) a timeout finishes the exit. Same approach as `Reveal`, for
+ * overlays that need their own structure.
  */
 export function usePresence(open: boolean, animated: RefObject<HTMLElement | null>) {
   const reduced = usePrefersReducedMotion();
@@ -21,7 +33,13 @@ export function usePresence(open: boolean, animated: RefObject<HTMLElement | nul
   useEffect(() => {
     if (phase !== "closed") return;
     const style = animated.current ? getComputedStyle(animated.current) : null;
-    if (style && style.animationName !== "none" && parseFloat(style.animationDuration) > 0) return;
+    if (style && style.animationName !== "none" && parseFloat(style.animationDuration) > 0) {
+      const timeout = setTimeout(
+        () => setPhase("unmounted"),
+        toMs(style.animationDuration) + toMs(style.animationDelay) + EXIT_MARGIN_MS,
+      );
+      return () => clearTimeout(timeout);
+    }
     const frame = requestAnimationFrame(() => setPhase("unmounted"));
     return () => cancelAnimationFrame(frame);
   }, [phase, animated]);

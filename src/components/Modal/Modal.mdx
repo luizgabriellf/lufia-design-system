@@ -150,7 +150,7 @@ nothing is listening.
 ### Keep mounted and the native top layer
 
 `keepMounted` keeps the children mounted while the modal is closed (hidden and inert), so typed input and component state
-survive a close and reopen. A kept-mounted modal has no exit animation.
+survive a close and reopen. A kept-mounted modal plays its exit, then is hidden.
 
 `renderAs="dialog"` renders a native `<dialog>` opened with `showModal()`, so it sits in the browser's top layer above every
 fixed layer. Focus containment, Escape, scroll lock and the shared layer stack work as in portal mode.
@@ -160,7 +160,7 @@ fixed layer. Focus containment, Escape, scroll lock and the shared layer stack w
 | Stacking              | `z-index` layer in a portal                                | Browser top layer                                                                   |
 | Page behind           | Made `inert` by the package                                | Made inert by the browser                                                           |
 | Backdrop              | A fixed element                                            | The native `::backdrop`                                                             |
-| Exit                  | Animated                                                   | Immediate                                                                           |
+| Exit                  | Animated                                                   | Animated; the dialog is closed, and focus returns to the opener, when it ends       |
 | Closed by the browser | Not applicable                                             | The `close` and `cancel` events become `onClose`; refused while `busy`              |
 | Nesting               | Opened over a native dialog, it renders inside that dialog | A portal `Modal` or `ConfirmDialog` opened from it lives inside it and stays usable |
 
@@ -250,3 +250,7 @@ Titles say what the dialog is for ("Edit project", "Delete invoice 2041?"), not 
 primary action sits on top.
 
 </Section>
+
+### Testing
+
+A closed surface stays in the document, `inert`, until its exit ends (about 160 ms, or one frame in jsdom, which has no stylesheet): a `renderAs="dialog"` modal (focus returns to its opener once it has closed) and a `keepMounted` panel (hidden, not removed). Await the removal in assertions made after a close (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden. To remove it at once, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in your test setup (stub `matchMedia`): under reduced motion it unmounts immediately.

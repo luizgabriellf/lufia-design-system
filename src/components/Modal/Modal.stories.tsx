@@ -314,6 +314,69 @@ function Stacked() {
 
 export const StackedModals: Story = { render: () => <Stacked /> };
 
+/** A native dialog whose action closes it and opens a second modal in the same handler: the first must not cover the second. */
+function NativeThenPortal() {
+  const [first, setFirst] = useState(false);
+  const [second, setSecond] = useState(false);
+  return (
+    <>
+      <Button variant="primary" onClick={() => setFirst(true)}>
+        Open first
+      </Button>
+      <Modal
+        open={first}
+        renderAs="dialog"
+        onClose={() => setFirst(false)}
+        title="First"
+        footer={
+          <Button
+            onClick={() => {
+              setFirst(false);
+              setSecond(true);
+            }}
+          >
+            Continue
+          </Button>
+        }
+      >
+        Continue closes this dialog and opens the next one.
+      </Modal>
+      <Modal open={second} onClose={() => setSecond(false)} size="sm" title="Second">
+        <input aria-label="Second field" style={field} />
+      </Modal>
+    </>
+  );
+}
+
+export const NativeThenPortalModal: Story = { render: () => <NativeThenPortal /> };
+
+/** Two native dialogs, one over the other. */
+function StackedNative() {
+  const [first, setFirst] = useState(false);
+  const [second, setSecond] = useState(false);
+  return (
+    <>
+      <Button variant="primary" onClick={() => setFirst(true)}>
+        Open first
+      </Button>
+      <Modal
+        open={first}
+        renderAs="dialog"
+        onClose={() => setFirst(false)}
+        title="First"
+        footer={<Button onClick={() => setSecond(true)}>Open second</Button>}
+      >
+        Closing the second returns focus here.
+      </Modal>
+      <Modal open={second} renderAs="dialog" onClose={() => setSecond(false)} size="sm" title="Second">
+        Second dialog.
+      </Modal>
+    </>
+  );
+}
+
+export const StackedNativeModals: Story = { render: () => <StackedNative /> };
+
 /** Each cell portals its own modal into itself (`container`), so the four theme and mode combinations can be compared. */
 function ThemeCell() {
   return (

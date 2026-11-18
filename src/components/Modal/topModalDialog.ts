@@ -6,10 +6,16 @@ import { useSyncExternalStore } from "react";
  * The open modal `<dialog>` elements, in document order (the last is the topmost). Browsers without `:modal` see every open
  * dialog. Internal: lets overlays that are not native dialogs (a portal `Modal`, the toast region) render inside the top
  * layer, where they would otherwise be hidden or unusable.
+ *
+ * A dialog that is animating out (`data-state="closed"`, set by the package's native `Modal` from the moment it is asked to
+ * close) does not count: it is still open, but inert and about to go, so what followed it (the toast region) moves on at once
+ * instead of fading out with it.
  */
 export function findModalDialogs(): HTMLDialogElement[] {
   const found: HTMLDialogElement[] = [];
-  for (const dialog of document.querySelectorAll<HTMLDialogElement>("dialog[open]")) {
+  for (const dialog of document.querySelectorAll<HTMLDialogElement>(
+    "dialog[open]:not([data-state='closed'])",
+  )) {
     try {
       if (dialog.matches(":modal")) found.push(dialog);
     } catch {
@@ -59,7 +65,11 @@ function subscribe(listener: () => void) {
     const attributes = new MutationObserver((records) => {
       if (records.some((record) => (record.target as Element).localName === "dialog")) recompute();
     });
-    attributes.observe(document, { subtree: true, attributes: true, attributeFilter: ["open"] });
+    attributes.observe(document, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["open", "data-state"],
+    });
     const removals = new MutationObserver((records) => {
       if (records.some((record) => Array.from(record.removedNodes).some(isDialogNode))) recompute();
     });
