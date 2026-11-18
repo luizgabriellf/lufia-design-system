@@ -2018,7 +2018,10 @@ test.describe("shell follow-ups", () => {
     // Dispatched clicks: a real click would scroll the button into view first.
     await page.getByRole("button", { name: "Open overlay" }).dispatchEvent("click");
     await expect(page.getByRole("dialog", { name: "Demo overlay" })).toBeVisible();
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      // Taking the lock moves the document to 0 and its scroll event arrives with a later frame. Let it pass before
+      // listening, or a slow runner reports it as a position seen on the way back.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const seen: number[] = [];
       (window as unknown as { seen: number[] }).seen = seen;
       window.addEventListener("scroll", () => seen.push(window.scrollY));
@@ -3863,38 +3866,76 @@ test.describe("one-way disclosure", () => {
 });
 
 test.describe("overlay exits", () => {
-  type Seen = { connected: boolean; animation: string; pointerEvents: string };
+  type Seen = { animation: string; pointerEvents: string; removed: boolean; frames: number };
 
   /**
-   * Closes a surface and reports what it looks like right after: still in the document, playing an `-out` animation and
-   * letting clicks through. Resolves with the handle so the caller can wait for it to leave the document.
+   * Closes a surface and reports how it left. The watch runs inside the page, on every DOM change and every animation
+   * frame, and is installed before the close, so a slow runner cannot miss a short exit between two round trips. It records the
+   * first `-out` animation it sees and whether clicks pass through at that moment, counts the frames from the closing
+   * key or pointer press, and settles when the surface leaves the document or, for one that stays mounted, when its
+   * exit animation is over.
    */
-  async function closeAndWatch(surface: Locator, close: () => Promise<void>) {
+  async function closeAndWatch(surface: Locator, close: () => Promise<void>): Promise<Seen> {
     const handle = await surface.elementHandle();
     if (!handle) throw new Error("surface not found");
+    await handle.evaluate((element) => {
+      const seen = { animation: "", pointerEvents: "", removed: false, frames: 0 };
+      let closing = false;
+      const start = () => {
+        closing = true;
+      };
+      document.addEventListener("keydown", start, { capture: true, once: true });
+      document.addEventListener("pointerdown", start, { capture: true, once: true });
+      const deadline = performance.now() + 3000;
+      (window as unknown as { lufiaExit: Promise<typeof seen> }).lufiaExit = new Promise((resolve) => {
+        let settled = false;
+        const settle = (removed: boolean) => {
+          settled = true;
+          observer.disconnect();
+          resolve({ ...seen, removed });
+        };
+        // Returns true once there is nothing left to watch.
+        const sample = () => {
+          if (settled) return true;
+          if (!element.isConnected) return (settle(true), true);
+          const style = getComputedStyle(element);
+          const exiting = /-out/.test(style.animationName);
+          if (exiting && !seen.animation) {
+            seen.animation = style.animationName;
+            seen.pointerEvents = style.pointerEvents;
+          }
+          if ((seen.animation && !exiting) || performance.now() > deadline) return (settle(false), true);
+          return false;
+        };
+        // A DOM change is sampled as it happens, so the exit is seen even when the runner drops frames.
+        const observer = new MutationObserver(sample);
+        observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+        const tick = () => {
+          if (sample()) return;
+          if (closing) seen.frames += 1;
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    });
     await close();
-    const seen = await handle.evaluate((element): Seen => ({
-      connected: element.isConnected,
-      animation: getComputedStyle(element).animationName,
-      pointerEvents: getComputedStyle(element).pointerEvents,
-    }));
-    return { handle, seen };
+    return surface.page().evaluate(() => (window as unknown as { lufiaExit: Promise<Seen> }).lufiaExit);
   }
   const connected = (handle: ElementHandle) => handle.evaluate((element) => element.isConnected);
 
   async function expectExit(surface: Locator, close: () => Promise<void>) {
-    const { handle, seen } = await closeAndWatch(surface, close);
-    expect(seen.connected).toBe(true);
+    const seen = await closeAndWatch(surface, close);
     expect(seen.animation).toMatch(/-out/);
     expect(seen.pointerEvents).toBe("none");
-    await expect.poll(() => connected(handle)).toBe(false);
+    expect(seen.removed).toBe(true);
   }
 
+  /** Under reduced motion there is no exit to wait for: the surface is gone within a frame or two of the press. */
   async function expectGoneAtOnce(surface: Locator, close: () => Promise<void>) {
-    const handle = await surface.elementHandle();
-    if (!handle) throw new Error("surface not found");
-    await close();
-    await expect.poll(() => connected(handle), { timeout: 150 }).toBe(false);
+    const seen = await closeAndWatch(surface, close);
+    expect(seen.removed).toBe(true);
+    expect(seen.animation).toBe("");
+    expect(seen.frames).toBeLessThanOrEqual(2);
   }
 
   const phone = { width: 390, height: 844 };
@@ -4175,7 +4216,7 @@ test.describe("overlay exits", () => {
       await expect(dialog(page)).toBeVisible();
       await page.getByLabel("Project name").fill("Typed text");
       const panel = page.locator('[data-lufia-part="panel"][data-kept]');
-      const { seen } = await closeAndWatch(panel, () => page.keyboard.press("Escape"));
+      const seen = await closeAndWatch(panel, () => page.keyboard.press("Escape"));
       expect(seen.animation).toMatch(/-out/);
       expect(seen.pointerEvents).toBe("none");
       await expect(panel).toBeHidden();
