@@ -10,6 +10,7 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from "react";
+import { flushLeavingDialogs, registerLeavingDialog } from "../internal/leavingDialogs";
 import { notifyTopModalDialogChanged } from "./topModalDialog";
 
 export type UseNativeDialogOptions = {
@@ -19,6 +20,13 @@ export type UseNativeDialogOptions = {
   closeOnCancel?: boolean;
   /** A press on the backdrop counts as a dismissal. Default `true`. */
   closeOnOutsideClick?: boolean;
+  /**
+   * The dialog is animating out: it is still open (`active`) but its close was already requested. Cancel and close events then
+   * never ask the owner to close again, and the dialog registers to be finished at once if another modal layer opens.
+   */
+  leaving?: boolean;
+  /** The leaving dialog finished early (another layer opened, or the browser closed it): the owner may unmount it now. */
+  onFinish?: () => void;
   /** The caller's own handlers for the same events: they run first and are not replaced. */
   handlers?: {
     onClick?: MouseEventHandler<HTMLDialogElement & HTMLDivElement>;
@@ -42,21 +50,40 @@ export type UseNativeDialogOptions = {
 export function useNativeDialog(
   ref: RefObject<HTMLDialogElement | null>,
   active: boolean,
-  { onCloseRequest, closeOnCancel = true, closeOnOutsideClick = true, handlers }: UseNativeDialogOptions,
+  {
+    onCloseRequest,
+    closeOnCancel = true,
+    closeOnOutsideClick = true,
+    leaving = false,
+    onFinish,
+    handlers,
+  }: UseNativeDialogOptions,
 ) {
   const pressedBackdrop = useRef(false);
   // `close()` calls the package made whose `close` event has not arrived yet. Those events are not requests from the
   // person, and a count (not a flag) keeps a close-then-reopen from turning a late one into a request.
   const pendingOwnCloses = useRef(0);
-  const activeRef = useRef(active);
+  // What the owner wants right now: open, and not on its way out.
+  const activeRef = useRef(active && !leaving);
+  const leavingRef = useRef(leaving);
+  const onFinishRef = useRef(onFinish);
+  // Where focus returns on close; `released` is set when another layer took over and now owns that return.
+  const opener = useRef<HTMLElement | null>(null);
+  const released = useRef(false);
   useLayoutEffect(() => {
-    activeRef.current = active;
+    activeRef.current = active && !leaving;
+    leavingRef.current = leaving;
+    onFinishRef.current = onFinish;
   });
 
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (!active || !dialog) return;
-    const previous = document.activeElement as HTMLElement | null;
+    // Another dialog still leaving would cover this one: finish it, and return focus to what it would have.
+    const handedOver = flushLeavingDialogs();
+    const previous = handedOver ?? (document.activeElement as HTMLElement | null);
+    opener.current = previous;
+    released.current = false;
     if (!dialog.open) dialog.showModal();
     return () => {
       if (dialog.open) {
@@ -66,10 +93,27 @@ export function useNativeDialog(
       notifyTopModalDialogChanged();
       // The browser restores focus on close too; this covers an opener that was re-rendered in the meantime.
       const focused = document.activeElement;
+      if (released.current) return;
       if (previous?.isConnected && (!focused || focused === document.body || dialog.contains(focused)))
         previous.focus({ preventScroll: true });
     };
   }, [ref, active]);
+
+  // While it leaves, a layer that opens finishes it: close now, hand the focus return over, and let the owner unmount it.
+  useLayoutEffect(() => {
+    const dialog = ref.current;
+    if (!leaving || !dialog) return;
+    return registerLeavingDialog(() => {
+      if (dialog.open) {
+        pendingOwnCloses.current += 1;
+        dialog.close();
+      }
+      notifyTopModalDialogChanged();
+      released.current = true;
+      onFinishRef.current?.();
+      return opener.current;
+    });
+  }, [ref, leaving]);
 
   const outside = (event: { clientX: number; clientY: number }) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -88,7 +132,8 @@ export function useNativeDialog(
       // Escape is handled by the layer stack and its keydown is prevented, so this only arrives for a close request that
       // has no key (a platform back gesture). The dialog is never closed by the browser; the owner closes it.
       event.preventDefault();
-      if (closeOnCancel) onCloseRequest();
+      // Already closing: a second request would call the owner's `onClose` twice.
+      if (closeOnCancel && !leavingRef.current) onCloseRequest();
     },
     onPointerDown(event: PointerEvent<HTMLDialogElement>) {
       handlers?.onPointerDown?.(event as PointerEvent<HTMLDialogElement & HTMLDivElement>);
@@ -97,7 +142,8 @@ export function useNativeDialog(
     onClick(event: MouseEvent<HTMLDialogElement>) {
       handlers?.onClick?.(event as MouseEvent<HTMLDialogElement & HTMLDivElement>);
       // The native backdrop reports clicks on the dialog itself; only a press that began outside the panel counts.
-      if (pressedBackdrop.current && closeOnOutsideClick && outside(event)) onCloseRequest();
+      if (pressedBackdrop.current && closeOnOutsideClick && !leavingRef.current && outside(event))
+        onCloseRequest();
       pressedBackdrop.current = false;
     },
     onClose(event: SyntheticEvent<HTMLDialogElement>) {
@@ -108,6 +154,12 @@ export function useNativeDialog(
       const dialog = event.currentTarget;
       if (pendingOwnCloses.current > 0) {
         pendingOwnCloses.current -= 1;
+        return;
+      }
+      // The browser closed a dialog that was already leaving (a close watcher that skips `cancel`): it is simply done, with
+      // no second request to the owner and no reopening.
+      if (leavingRef.current) {
+        if (!dialog.open) onFinishRef.current?.();
         return;
       }
       // A real native close leaves the dialog closed; one that finds it open again is stale.

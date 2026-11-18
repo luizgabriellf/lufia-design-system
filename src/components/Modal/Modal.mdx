@@ -250,3 +250,7 @@ Titles say what the dialog is for ("Edit project", "Delete invoice 2041?"), not 
 primary action sits on top.
 
 </Section>
+
+### Testing
+
+A closed surface stays in the document, `inert`, until its exit ends (about 160 ms, or one frame in jsdom, which has no stylesheet): a `renderAs="dialog"` modal (focus returns to its opener once it has closed) and a `keepMounted` panel (hidden, not removed). Await the removal in assertions made after a close (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden. To remove it at once, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in your test setup (stub `matchMedia`): under reduced motion it unmounts immediately.

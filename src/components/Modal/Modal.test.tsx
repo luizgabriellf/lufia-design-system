@@ -774,6 +774,126 @@ describe("Modal", () => {
       expect(findModalDialogs()).toEqual([]);
     });
 
+    it("does not ask to close a second time when Escape or a cancel arrives during the exit, and ends closed", async () => {
+      mockReducedMotion(false);
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(onClose).toHaveBeenCalledTimes(1);
+      const cancel = new Event("cancel", { cancelable: true });
+      dialog.dispatchEvent(cancel);
+      expect(cancel.defaultPrevented).toBe(true);
+      expect(onClose).toHaveBeenCalledTimes(1);
+      act(() => endAnimation(dialog));
+      expect(document.querySelector("dialog")).toBeNull();
+      expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not reopen or ask again when the browser closes a leaving dialog itself", async () => {
+      mockReducedMotion(false);
+      const onClose = vi.fn();
+      render(<Harness renderAs="dialog" onClose={onClose} />);
+      const { user, dialog } = await openModal();
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      dialog.removeAttribute("open");
+      act(() => void dialog.dispatchEvent(new Event("close")));
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(dialogMock.showModal).toHaveBeenCalledTimes(1);
+      expect(document.querySelector("dialog")).toBeNull();
+    });
+
+    /** A native dialog whose button closes it and opens a second modal in the same handler. */
+    function Swap({ second }: { second: "portal" | "dialog" }) {
+      const [a, setA] = useState(false);
+      const [b, setB] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => setA(true)}>
+            Open A
+          </button>
+          <Modal open={a} renderAs="dialog" title="A" onClose={() => setA(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setA(false);
+                setB(true);
+              }}
+            >
+              Swap
+            </button>
+          </Modal>
+          <Modal open={b} renderAs={second} title="B" onClose={() => setB(false)}>
+            <input aria-label="In B" />
+          </Modal>
+        </>
+      );
+    }
+
+    it.each(["portal", "dialog"] as const)(
+      "finishes a leaving native dialog at once when a %s modal opens in the same handler, and focus goes back to A's opener when B closes",
+      async (second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<Swap second={second} />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        // A was closed synchronously, not left covering B for the rest of its exit.
+        await waitFor(() => expect(screen.queryByRole("dialog", { name: "A" })).not.toBeInTheDocument());
+        expect(dialogMock.close).toHaveBeenCalled();
+        const b = screen.getByRole("dialog", { name: "B" });
+        expect(b).toContainElement(document.activeElement as HTMLElement);
+        await user.keyboard("{Escape}");
+        act(() => endAnimation(screen.getByRole("dialog", { name: "B", hidden: true })));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    it("still animates and returns focus into the lower dialog when the top of two stacked native dialogs closes", async () => {
+      mockReducedMotion(false);
+      function Stack() {
+        const [lower, setLower] = useState(false);
+        const [upper, setUpper] = useState(false);
+        return (
+          <>
+            <button type="button" onClick={() => setLower(true)}>
+              Open lower
+            </button>
+            <Modal open={lower} renderAs="dialog" title="Lower" onClose={() => setLower(false)}>
+              <button type="button" onClick={() => setUpper(true)}>
+                Open upper
+              </button>
+            </Modal>
+            <Modal open={upper} renderAs="dialog" title="Upper" onClose={() => setUpper(false)}>
+              <p>Upper body</p>
+            </Modal>
+          </>
+        );
+      }
+      render(<Stack />);
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: "Open lower" }));
+      const lower = screen.getByRole("dialog", { name: "Lower" });
+      const inner = within(lower).getByRole("button", { name: "Open upper" });
+      await user.click(inner);
+      const upper = screen.getByRole("dialog", { name: "Upper" });
+      withExitAnimation();
+      await user.keyboard("{Escape}");
+      expect(upper).toBeInTheDocument();
+      expect(upper).toHaveAttribute("data-state", "closed");
+      expect(lower).toHaveAttribute("open");
+      act(() => endAnimation(upper));
+      expect(upper).not.toBeInTheDocument();
+      expect(lower).toHaveAttribute("open");
+      expect(lower).toContainElement(document.activeElement as HTMLElement);
+    });
+
     it("closes and removes a native dialog by a timeout when animationend never arrives", async () => {
       mockReducedMotion(false);
       render(<Harness renderAs="dialog" />);

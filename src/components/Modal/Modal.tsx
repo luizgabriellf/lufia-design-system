@@ -92,7 +92,8 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
    * `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape,
    * scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made
    * inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once
-   * it has closed; the backdrop is the native `::backdrop`.
+   * it has closed (a modal layer that opens meanwhile finishes it at once and takes over that focus return); the backdrop is
+   * the native `::backdrop`.
    */
   renderAs?: "portal" | "dialog";
   /**
@@ -232,6 +233,8 @@ export function Modal({
     onCloseRequest: requestClose,
     closeOnCancel: closeOnEscape,
     closeOnOutsideClick,
+    leaving,
+    onFinish: presence.finish,
     handlers: { onClick: rest.onClick, onPointerDown: rest.onPointerDown },
   });
 
@@ -246,6 +249,8 @@ export function Modal({
     initialFocus,
     inertBackground: !native,
     restoreFocus: !native,
+    // The portal may move (out of a native dialog that turns out to be leaving): the panel remounts and needs focus again.
+    refocusKey: container ?? hostDialog,
   });
 
   if (!mounted) return null;

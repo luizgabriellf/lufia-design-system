@@ -48,7 +48,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `titleWrap` | `"wrap" \| "ellipsis"` | no | `"wrap"` | `wrap` (default) lets a long title wrap onto several lines; `ellipsis` keeps it on one line and truncates it. |
 | `scrollShadow` | `boolean` | no | `false` | Scroll the body between the fixed header and footer and show an edge shadow where more content is hidden. |
 | `keepMounted` | `boolean` | no | `false` | Keep the content mounted while the modal is closed, so typed input and component state survive. The closed modal is hidden and inert; it plays the same exit as any other modal, then is hidden. |
-| `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once it has closed; the backdrop is the native `::backdrop`. |
+| `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once it has closed (a modal layer that opens meanwhile finishes it at once and takes over that focus return); the backdrop is the native `::backdrop`. |
 | `classNames` | `ModalClassNames` | no |  | Extra class names for the parts, for an app that attaches its own styles or test selectors. Every part also carries a stable `data-lufia-part` attribute: `layer`, `backdrop`, `frame`, `panel`, `header`, `title`, `description`, `body`, `footer`, `close`. |
 | `headerAction` | `ReactNode` | no |  | Extra controls placed beside the close button in the header. |
 | `footer` | `ReactNode` | no |  | Content of the footer bar, usually the actions. The bar is left out when this is empty. |
@@ -156,6 +156,8 @@ primary action sits on top.
 - `components-overlays-modal--keep-mounted`
 - `components-overlays-modal--phone`
 - `components-overlays-modal--stacked-modals`
+- `components-overlays-modal--native-then-portal-modal`
+- `components-overlays-modal--stacked-native-modals`
 - `components-overlays-modal--phone-footer`
 - `components-overlays-modal--phone-footer-stacked`
 - `components-overlays-modal--sheet-footer-stacked`

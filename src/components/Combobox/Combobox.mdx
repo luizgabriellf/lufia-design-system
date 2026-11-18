@@ -174,3 +174,7 @@ short and put the secondary detail (country, e-mail, code) in the description. D
 unique to tell options apart.
 
 </Section>
+
+### Testing
+
+A closed surface stays in the document, `inert`, until its exit ends (about 160 ms, or one frame in jsdom, which has no stylesheet): the listbox popup. Await the removal in assertions made after a close (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden. To remove it at once, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in your test setup (stub `matchMedia`): under reduced motion it unmounts immediately.

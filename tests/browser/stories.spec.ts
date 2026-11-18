@@ -4114,6 +4114,59 @@ test.describe("overlay exits", () => {
       await expectGoneAtOnce(page.locator("dialog[open]"), () => page.keyboard.press("Escape"));
     });
 
+    test("a modal opened in the handler that closes a native dialog gets focus, and closing it returns focus to the first opener", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--native-then-portal-modal");
+      const opener = page.getByRole("button", { name: "Open first" });
+      await opener.click();
+      await expect(page.getByRole("dialog", { name: "First" })).toBeVisible();
+      await page.getByRole("button", { name: "Continue" }).click();
+      const second = page.getByRole("dialog", { name: "Second" });
+      await expect(second).toBeVisible();
+      // Right after opening, focus is inside the second modal, and no native dialog is left open over it.
+      expect(await second.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+      await expect(page.locator("dialog[open]")).toHaveCount(0);
+      await page.keyboard.press("Escape");
+      await expect(second).toHaveCount(0);
+      await expect(opener).toBeFocused();
+    });
+
+    test("closing the top of two stacked native dialogs still animates and returns focus into the lower one", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--stacked-native-modals");
+      await page.getByRole("button", { name: "Open first" }).click();
+      const lower = page.getByRole("dialog", { name: "First" });
+      await expect(lower).toBeVisible();
+      const inner = page.getByRole("button", { name: "Open second" });
+      await inner.click();
+      const upper = page.getByRole("dialog", { name: "Second" });
+      await expect(upper).toBeVisible();
+      await expectExit(page.locator("dialog[open]", { has: page.getByText("Second dialog.") }), () =>
+        page.keyboard.press("Escape"),
+      );
+      await expect(lower).toBeVisible();
+      expect(await lower.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+      await expect(inner).toBeFocused();
+    });
+
+    test("Escape during a native dialog's exit does not close it a second time", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-overlays-modal--native-top-layer");
+      await page.keyboard.press("Escape");
+      await expect(page.locator("dialog")).toHaveCount(0);
+      const trigger = page.getByRole("button", { name: "Open modal" });
+      await trigger.click();
+      await expect(dialog(page)).toBeVisible();
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Escape");
+      await expect(page.locator("dialog")).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+    });
+
     test("a keep-mounted panel animates out, then hides, and keeps its state", async ({ page }) => {
       await page.emulateMedia({ reducedMotion: "no-preference" });
       await openStory(page, "components-overlays-modal--keep-mounted");

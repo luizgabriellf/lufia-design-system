@@ -11080,7 +11080,7 @@
               "type": "\"portal\" | \"dialog\"",
               "required": false,
               "default": "\"portal\"",
-              "description": "`portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once it has closed; the backdrop is the native `::backdrop`."
+              "description": "`portal` (default) renders a fixed-position layer in a portal. `dialog` renders a native `<dialog>` opened with `showModal()`, which sits in the browser's top layer above everything, including other fixed layers. Focus trap, Escape, scroll lock and the shared layer stack behave the same in both. Differences in `dialog` mode: the page behind is made inert by the browser, not by the package; the dialog stays open while it animates out, so focus returns to the opener once it has closed (a modal layer that opens meanwhile finishes it at once and takes over that focus return); the backdrop is the native `::backdrop`."
             },
             {
               "name": "classNames",
@@ -11330,6 +11330,14 @@
           {
             "export": "StackedModals",
             "id": "components-overlays-modal--stacked-modals"
+          },
+          {
+            "export": "NativeThenPortalModal",
+            "id": "components-overlays-modal--native-then-portal-modal"
+          },
+          {
+            "export": "StackedNativeModals",
+            "id": "components-overlays-modal--stacked-native-modals"
           },
           {
             "export": "PhoneFooter",
@@ -21262,7 +21270,7 @@
           "name": "UseFocusTrapOptions",
           "kind": "type",
           "description": "",
-          "definition": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+          "definition": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; refocusKey?: unknown; }"
         },
         {
           "name": "getFocusableElements",
@@ -21298,7 +21306,7 @@
           "name": "useFocusTrap",
           "kind": "hook",
           "description": "Contains Tab and Shift+Tab inside `ref`'s subtree while `open` is true, optionally closes on Escape, moves focus in when it opens and puts it back where it was when it closes. Follows the WAI-ARIA APG \"Dialog (Modal)\" pattern. Only the topmost layer reacts (see `useDismiss`: a popup inside the overlay counts as a layer), so nested overlays and popups close one at a time.",
-          "signature": "(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, initialFocus, restoreFocus, inertBackground: inert, }?: UseFocusTrapOptions): void",
+          "signature": "(open: boolean, ref: RefObject<HTMLElement | null>, { onEscape, initialFocus, restoreFocus, inertBackground: inert, refocusKey, }?: UseFocusTrapOptions): void",
           "parameters": [
             {
               "name": "open",
@@ -21325,7 +21333,7 @@
       ],
       "aliases": {
         "OverlayLayer": "{ isTop: () => boolean; release: () => void; }",
-        "UseFocusTrapOptions": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; }"
+        "UseFocusTrapOptions": "{ onEscape?: (() => void) | undefined; initialFocus?: RefObject<HTMLElement | null> | \"container\" | \"first\" | undefined; restoreFocus?: boolean | undefined; inertBackground?: boolean | undefined; refocusKey?: unknown; }"
       },
       "story": {
         "docsId": "hooks-usefocustrap--docs",

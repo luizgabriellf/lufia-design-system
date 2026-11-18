@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
+import { flushLeavingDialogs } from "../internal/leavingDialogs";
 import { inertBackground } from "./inertBackground";
 import { isTopLayer, pushLayer, removeLayer } from "./layerStack";
 
@@ -67,6 +68,11 @@ export type UseFocusTrapOptions = {
   restoreFocus?: boolean;
   /** Mark the rest of the page `inert` while the trap is open. Default `false`. */
   inertBackground?: boolean;
+  /**
+   * When this value changes while the trap is open, the trap closes and opens again: focus moves in once more. For a container
+   * that is remounted somewhere else (a portal whose host changed) and so lost the focus it had.
+   */
+  refocusKey?: unknown;
 };
 
 /**
@@ -83,6 +89,7 @@ export function useFocusTrap(
     initialFocus = "container",
     restoreFocus = true,
     inertBackground: inert = false,
+    refocusKey,
   }: UseFocusTrapOptions = {},
 ) {
   const onEscapeRef = useRef(onEscape);
@@ -97,8 +104,10 @@ export function useFocusTrap(
   useEffect(() => {
     const container = ref.current;
     if (!open || !container) return;
+    // A native dialog still animating out would cover this layer: let it go first, and return focus to where it would have.
+    const released = flushLeavingDialogs();
     const layer = pushLayer();
-    const previous = document.activeElement as HTMLElement | null;
+    const previous = released ?? (document.activeElement as HTMLElement | null);
     const releaseInert = inert ? inertBackground(container) : undefined;
 
     const target = initialFocusRef.current;
@@ -151,5 +160,5 @@ export function useFocusTrap(
         if (restoreFocus && previous?.isConnected) previous.focus({ preventScroll: true });
       }
     };
-  }, [open, ref, inert, restoreFocus]);
+  }, [open, ref, inert, restoreFocus, refocusKey]);
 }

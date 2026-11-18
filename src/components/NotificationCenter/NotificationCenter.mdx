@@ -206,3 +206,7 @@ Titles say what happened in one line. The meta line names the source; the time i
 Keep tab labels to one word and the number of tabs to four or five. The `unreadLabel` is one word ("unread").
 
 </Section>
+
+### Testing
+
+A closed surface stays in the document, `inert`, until its exit ends (about 160 ms, or one frame in jsdom, which has no stylesheet): the sheet presentation. Await the removal in assertions made after a close (`waitFor`, `findBy*`, `waitForElementToBeRemoved`); role queries do not treat `inert` as hidden. To remove it at once, make `window.matchMedia("(prefers-reduced-motion: reduce)").matches` true in your test setup (stub `matchMedia`): under reduced motion it unmounts immediately.
