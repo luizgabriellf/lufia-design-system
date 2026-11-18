@@ -88,35 +88,67 @@
   },
   "shadow": {
     "$type": "shadow",
+    "color": {
+      "$type": "color",
+      "$value": "#000000",
+      "$description": "Hue of the light-mode elevation shadows. Each layer mixes it with transparency, so a theme can tint every level by overriding this one token."
+    },
     "none": {
       "$value": { "color": "#00000000", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0px" }
     },
     "sm": {
-      "$value": {
-        "color": "{core.shadow-color.10}",
-        "offsetX": "0px",
-        "offsetY": "1px",
-        "blur": "2px",
-        "spread": "0px"
-      }
+      "$value": [
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 4%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "1px",
+          "spread": "0px"
+        },
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 6%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "2px",
+          "spread": "0px"
+        }
+      ]
     },
     "md": {
-      "$value": {
-        "color": "{core.shadow-color.10}",
-        "offsetX": "0px",
-        "offsetY": "8px",
-        "blur": "18px",
-        "spread": "0px"
-      }
+      "$value": [
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 6%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "1px",
+          "blur": "2px",
+          "spread": "0px"
+        },
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 10%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "4px",
+          "blur": "12px",
+          "spread": "-2px"
+        }
+      ]
     },
     "lg": {
-      "$value": {
-        "color": "{core.shadow-color.18}",
-        "offsetX": "0px",
-        "offsetY": "16px",
-        "blur": "40px",
-        "spread": "0px"
-      }
+      "$value": [
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 6%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "2px",
+          "blur": "4px",
+          "spread": "0px"
+        },
+        {
+          "color": "color-mix(in srgb, var(--lufia-shadow-color) 14%, transparent)",
+          "offsetX": "0px",
+          "offsetY": "12px",
+          "blur": "32px",
+          "spread": "-4px"
+        }
+      ]
     }
   },
   "z": {
