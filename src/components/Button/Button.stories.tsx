@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { ComponentProps, CSSProperties } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ArrowRightIcon, PlusIcon } from "../../docs/demo";
@@ -48,6 +48,23 @@ export const AsLink: Story = {
   args: {
     variant: "primary",
     href: "#destination",
+    children: "Open the report",
+    iconEnd: <ArrowRightIcon size={16} />,
+  },
+};
+/** Stands in for a router link that takes more than `href`. */
+function LocaleLink({ locale, children, ...rest }: ComponentProps<"a"> & { locale: string }) {
+  return (
+    <a {...rest} hrefLang={locale}>
+      {children}
+    </a>
+  );
+}
+/** `render` swaps in an element of your own, for a link the provider's link component cannot express. */
+export const Rendered: Story = {
+  args: {
+    variant: "primary",
+    render: <LocaleLink href="#destination" locale="en" />,
     children: "Open the report",
     iconEnd: <ArrowRightIcon size={16} />,
   },

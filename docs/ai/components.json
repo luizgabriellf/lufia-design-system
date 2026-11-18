@@ -3427,7 +3427,7 @@
         {
           "name": "Button",
           "kind": "component",
-          "description": "The action control. It renders a `<button>`, or a link when `href` is given, so navigation stays a link and an action stays a button. The look is the same for both.",
+          "description": "The action control. It renders a `<button>`, or a link when `href` is given, so navigation stays a link and an action stays a button. The look is the same for both. `render` swaps in an element of your own when neither fits.",
           "props": [
             {
               "name": "variant",
@@ -3470,6 +3470,13 @@
               "required": false,
               "default": null,
               "description": "Decorative icon after the label; hidden from assistive technology."
+            },
+            {
+              "name": "render",
+              "type": "ReactElement<RenderedElementProps, string | JSXElementConstructor<any>>",
+              "required": false,
+              "default": null,
+              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation."
             },
             {
               "name": "href",
@@ -3701,6 +3708,10 @@
           {
             "export": "AsLink",
             "id": "components-actions-button--as-link"
+          },
+          {
+            "export": "Rendered",
+            "id": "components-actions-button--rendered"
           },
           {
             "export": "LongLabel",
@@ -9793,6 +9804,13 @@
               "required": false,
               "default": null,
               "description": "Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts."
+            },
+            {
+              "name": "render",
+              "type": "ReactElement<RenderedElementProps, string | JSXElementConstructor<any>>",
+              "required": false,
+              "default": null,
+              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation."
             },
             {
               "name": "icon",

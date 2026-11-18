@@ -41,6 +41,24 @@ import { Button } from "@lufia/design-system/components/Button";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. With `href`, the link
 renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works.
 
+### A link the provider cannot express
+
+`href` is a string and goes through one link component. When a call to action needs more than that, such as a router link
+with a route object or a locale, or a plain `<a>` that must skip the router, pass the element as `render`. It gets the
+button's class, state, content and remaining props, and keeps its own props. Put `href` on the element.
+
+```tsx
+<Button
+  variant="primary"
+  render={<RouterLink href={{ pathname: "/reports", query: { year: "2026" } }} locale="en" />}
+>
+  Open reports
+</Button>
+```
+
+The element must render one anchor or button and pass `className`, `data-*`, `aria-*`, `onClick` and `children` through to
+it. `disabled` and `loading` mark it `aria-disabled` and ignore activation, as they do for `href`.
+
 ### Variants
 
 | Variant     | Use for                                                       |
