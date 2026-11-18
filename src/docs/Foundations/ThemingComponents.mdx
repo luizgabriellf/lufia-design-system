@@ -259,17 +259,37 @@ status tokens; to change one, set `--banner-bg`, `--banner-border` or `--banner-
     [
       "`--lufia-button-primary-bg`",
       "`--lufia-color-accent-default`",
-      "Fill and border of a `primary` Button, apart from the accent that steppers, links and selected marks share",
+      "Fill of a `primary` Button, apart from the accent that steppers, links and selected marks share. Any `background` value, a gradient included",
     ],
     [
       "`--lufia-button-primary-bg-hover`",
       "`--lufia-color-accent-hover`",
-      "Fill and border of a hovered `primary` Button",
+      "Fill of a hovered `primary` Button",
+    ],
+    [
+      "`--lufia-button-primary-border`",
+      "`transparent`",
+      "Border of a `primary` Button. The fill is painted under the border, so leave it unset for a border that matches the fill, plain colour or gradient. Set it for a visible ring",
+    ],
+    [
+      "`--lufia-button-primary-border-hover`",
+      "`--lufia-button-primary-border`",
+      "Border of a hovered `primary` Button",
     ],
     [
       "`--lufia-button-primary-fg`",
       "`--lufia-color-text-on-accent`",
       "Label of a `primary` Button. Keep at least 4.5:1 against the fill and the hover fill",
+    ],
+    [
+      "`--lufia-button-primary-shadow`",
+      "`none`",
+      "`box-shadow` of a `primary` Button, for elevation. A disabled button never shows it",
+    ],
+    [
+      "`--lufia-button-primary-shadow-hover`",
+      "`--lufia-button-primary-shadow`",
+      "`box-shadow` of a hovered `primary` Button",
     ],
     [
       "`--lufia-button-secondary-bg`",
@@ -287,19 +307,52 @@ status tokens; to change one, set `--banner-bg`, `--banner-border` or `--banner-
       "Border of a `secondary` Button. Keep at least 3:1 against the surface behind it",
     ],
     [
+      "`--lufia-button-secondary-border-hover`",
+      "`--lufia-button-secondary-border`",
+      "Border of a hovered `secondary` Button",
+    ],
+    [
       "`--lufia-button-secondary-fg`",
       "`--lufia-color-text-default`",
       "Label of a `secondary` Button. Keep at least 4.5:1 against the fill and the hover fill",
     ],
+    ["`--lufia-button-secondary-shadow`", "`none`", "`box-shadow` of a `secondary` Button"],
+    [
+      "`--lufia-button-secondary-shadow-hover`",
+      "`--lufia-button-secondary-shadow`",
+      "`box-shadow` of a hovered `secondary` Button",
+    ],
+    ["`--lufia-button-ghost-shadow`", "`none`", "`box-shadow` of a `ghost` Button"],
+    [
+      "`--lufia-button-ghost-shadow-hover`",
+      "`--lufia-button-ghost-shadow`",
+      "`box-shadow` of a hovered `ghost` Button",
+    ],
     [
       "`--lufia-button-danger-bg`",
       "`--lufia-color-status-danger-solid`",
-      "Fill and border of a `danger` Button, apart from danger marks in charts and lists, which keep the status token",
+      "Fill of a `danger` Button, apart from danger marks in charts and lists, which keep the status token",
+    ],
+    [
+      "`--lufia-button-danger-border`",
+      "`transparent`",
+      "Border of a `danger` Button; same rule as `primary`",
     ],
     [
       "`--lufia-button-danger-fg`",
       "`--lufia-color-status-danger-on-solid`",
       "Label of a `danger` Button. Keep at least 4.5:1 against the fill",
+    ],
+    ["`--lufia-button-danger-shadow`", "`none`", "`box-shadow` of a `danger` Button"],
+    [
+      "`--lufia-button-danger-shadow-hover`",
+      "`--lufia-button-danger-shadow`",
+      "`box-shadow` of a hovered `danger` Button",
+    ],
+    [
+      "`--lufia-button-hover-lift`",
+      "`0`",
+      "Length a hovered Button of any variant rises by, for example `2px`. Only where a pointer can hover, not while disabled or loading, never under `prefers-reduced-motion`; the press scale takes over while the button is held",
     ],
   ]}
 />

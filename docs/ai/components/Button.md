@@ -107,6 +107,7 @@ Keyboard:
 - Icons are decorative and hidden; the label is the accessible name.
 - Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers.
 - A link used as a button is marked `aria-disabled` when disabled or loading, and its activation is cancelled.
+- The hover lift applies only where a pointer can hover and is dropped under `prefers-reduced-motion`; the press scale takes over while the button is held.
 - The spinner is a rotation only and stops under `prefers-reduced-motion`; `aria-busy` and the cursor still say it is busy.
 
 ## Motion
@@ -115,7 +116,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-fg`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-fg`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-fg`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-border`, `--lufia-button-danger-fg`, `--lufia-button-danger-shadow`, `--lufia-button-danger-shadow-hover`, `--lufia-button-ghost-shadow`, `--lufia-button-ghost-shadow-hover`, `--lufia-button-hover-lift`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-border`, `--lufia-button-primary-border-hover`, `--lufia-button-primary-fg`, `--lufia-button-primary-shadow`, `--lufia-button-primary-shadow-hover`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-border-hover`, `--lufia-button-secondary-fg`, `--lufia-button-secondary-shadow`, `--lufia-button-secondary-shadow-hover`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -139,3 +140,4 @@ truncating. Give the destructive action a specific name rather than "Yes".
 - `components-actions-button--phone-320`
 - `components-actions-button--right-to-left`
 - `components-actions-button--all-themes`
+- `components-actions-button--themed-surface`

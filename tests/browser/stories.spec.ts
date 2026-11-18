@@ -4316,3 +4316,252 @@ test.describe("press feedback and spring", () => {
     await expect.poll(() => transformOf(thumbOf(page))).toBe("matrix(1, 0, 0, 1, 16, 0)");
   });
 });
+
+test.describe("button surface hooks", () => {
+  const computed = (locator: Locator, properties: string[]) =>
+    locator.evaluate((element, names) => {
+      const style = getComputedStyle(element);
+      return Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name)]));
+    }, properties);
+  /** The rule the Button had before the border hook: a border of the fill colour, the fill under the padding box. */
+  const OLD_BORDER = "border-color: var(--lufia-color-accent-default); background-origin: padding-box;";
+  /** A screenshot once the colour transitions (150 ms) have settled. */
+  /**
+   * Pixels that differ between two screenshots of one element, outside the 12px (CSS) corner squares. The outline is excluded
+   * because painting the fill under a transparent border and painting a border of the same colour over it differ only
+   * in the anti-aliasing of the rounded outline.
+   */
+  const innerDifference = (page: Page, one: Buffer, other: Buffer) =>
+    page.evaluate(
+      async ([a, b]) => {
+        const read = async (base64: string) => {
+          const bitmap = await createImageBitmap(
+            await (await fetch(`data:image/png;base64,${base64}`)).blob(),
+          );
+          const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+          const context = canvas.getContext("2d")!;
+          context.drawImage(bitmap, 0, 0);
+          return context.getImageData(0, 0, bitmap.width, bitmap.height);
+        };
+        const [first, second] = [await read(a!), await read(b!)];
+        const reach = 12 * devicePixelRatio;
+        let differing = 0;
+        for (let y = 0; y < first.height; y++)
+          for (let x = 0; x < first.width; x++) {
+            const corner =
+              (x < reach || x >= first.width - reach) && (y < reach || y >= first.height - reach);
+            if (corner) continue;
+            const at = (y * first.width + x) * 4;
+            for (let channel = 0; channel < 4; channel++)
+              if (first.data[at + channel] !== second.data[at + channel]) {
+                differing++;
+                break;
+              }
+          }
+        return { width: first.width, height: first.height, differing };
+      },
+      [one.toString("base64"), other.toString("base64")],
+    );
+  const shot = async (locator: Locator) => {
+    await locator.page().waitForTimeout(400);
+    return locator.screenshot({ animations: "disabled", caret: "hide" });
+  };
+
+  test("defaults render as before: no shadow, no lift, and the same pixels inside the outline as a border of the fill colour", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--primary");
+    const button = page.getByRole("button").first();
+    await page.mouse.move(0, 0);
+    const rest = await computed(button, ["box-shadow", "translate", "border-top-color", "background-image"]);
+    expect(rest["box-shadow"]).toBe("none");
+    expect(rest["translate"]).toBe("none");
+    expect(rest["border-top-color"]).toBe("rgba(0, 0, 0, 0)");
+    expect(rest["background-image"]).toBe("none");
+    const themed = await shot(button);
+    await button.evaluate((element, css) => element.setAttribute("style", css), OLD_BORDER);
+    const before = await innerDifference(page, themed, await shot(button));
+    expect(before.differing).toBe(0);
+
+    await button.evaluate((element) => element.removeAttribute("style"));
+    await button.hover();
+    await expect.poll(() => button.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
+    expect((await computed(button, ["box-shadow"]))["box-shadow"]).toBe("none");
+  });
+
+  test("a plain colour in the fill hook still gives a matching border; a gradient gives none of currentcolor", async ({
+    page,
+  }) => {
+    await openStory(page, "components-actions-button--primary");
+    const button = page.getByRole("button").first();
+    await page.mouse.move(0, 0);
+
+    await button.evaluate((element) =>
+      element.setAttribute("style", "--lufia-button-primary-bg: rgb(10, 100, 50)"),
+    );
+    await expect
+      .poll(async () => (await computed(button, ["background-color"]))["background-color"])
+      .toBe("rgb(10, 100, 50)");
+    const solid = await shot(button);
+    await button.evaluate((element) =>
+      element.setAttribute(
+        "style",
+        "--lufia-button-primary-bg: rgb(10, 100, 50); border-color: rgb(10, 100, 50); background-origin: padding-box;",
+      ),
+    );
+    expect((await innerDifference(page, solid, await shot(button))).differing).toBe(0);
+
+    const gradient = "linear-gradient(135deg, rgb(10, 100, 50), rgb(20, 60, 120))";
+    await button.evaluate(
+      (element, value) => element.setAttribute("style", `--lufia-button-primary-bg: ${value}`),
+      gradient,
+    );
+    const withGradient = await computed(button, ["background-image", "border-top-color", "color"]);
+    expect(withGradient["background-image"]).toContain("linear-gradient");
+    await expect
+      .poll(async () => (await computed(button, ["border-top-color"]))["border-top-color"])
+      .toBe("rgba(0, 0, 0, 0)");
+    expect(withGradient["border-top-color"]).not.toBe(withGradient["color"]);
+
+    await button.evaluate(
+      (element, value) =>
+        element.setAttribute(
+          "style",
+          `--lufia-button-primary-bg: ${value}; --lufia-button-primary-border: rgb(1, 2, 3); --lufia-button-primary-border-hover: rgb(4, 5, 6)`,
+        ),
+      gradient,
+    );
+    await expect
+      .poll(async () => (await computed(button, ["border-top-color"]))["border-top-color"])
+      .toBe("rgb(1, 2, 3)");
+    await button.hover();
+    await expect
+      .poll(async () => (await computed(button, ["border-top-color"]))["border-top-color"])
+      .toBe("rgb(4, 5, 6)");
+  });
+
+  test("the themed story has a fill gradient, a border, a shadow and a lift on hover that the press overrides", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const light = page.getByRole("region", { name: "Themed surface, light" });
+    const button = light.getByRole("button", { name: "Primary light" });
+    await page.mouse.move(0, 0);
+    const rest = await computed(button, ["background-image", "border-top-color", "box-shadow", "translate"]);
+    expect(rest["background-image"]).toContain("linear-gradient");
+    expect(rest["border-top-color"]).not.toBe("rgba(0, 0, 0, 0)");
+    expect(rest["box-shadow"]).not.toBe("none");
+    expect(rest["translate"]).toBe("none");
+
+    await button.hover();
+    await expect
+      .poll(() => computed(button, ["translate"]).then((value) => value["translate"]))
+      .toBe("0px -2px");
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect
+      .poll(() =>
+        computed(button, ["transform", "translate"]).then((v) => `${v["transform"]}|${v["translate"]}`),
+      )
+      .toMatch(/^matrix\(0\.97,.*\|none$/);
+    await page.mouse.up();
+    await expect
+      .poll(() => computed(button, ["translate"]).then((value) => value["translate"]))
+      .toBe("0px -2px");
+  });
+
+  test("a pointer resting on the bottom strip the lift vacates keeps the button hovered and lifted", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const button = page
+      .getByRole("region", { name: "Themed surface, light" })
+      .getByRole("button", { name: "Primary light" });
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await expect
+      .poll(() => computed(button, ["translate"]).then((value) => value["translate"]))
+      .toBe("0px -2px");
+    const samples: string[] = [];
+    for (let step = 0; step < 30; step++) {
+      await page.mouse.move(box.x + 10 + step, box.y + box.height - 0.5);
+      await page.waitForTimeout(40);
+      const state = await button.evaluate(
+        (element) => `${element.matches(":hover")}|${getComputedStyle(element).translate}`,
+      );
+      samples.push(state);
+    }
+    expect(samples.filter((state) => state !== "true|0px -2px")).toEqual([]);
+    // Back at rest nothing below the button takes the hover.
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height + 4);
+    await expect.poll(() => button.evaluate((element) => element.matches(":hover"))).toBe(false);
+  });
+
+  test("a loading themed button keeps its resting shadow and does not lift", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const button = page
+      .getByRole("region", { name: "Themed surface, light" })
+      .getByRole("button", { name: "Primary light" });
+    await button.evaluate((element) => element.setAttribute("data-loading", ""));
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(300);
+    const rest = await computed(button, ["box-shadow", "background-image"]);
+    await button.hover();
+    await page.waitForTimeout(300);
+    expect(await computed(button, ["box-shadow", "background-image", "translate"])).toEqual({
+      ...rest,
+      translate: "none",
+    });
+  });
+
+  test("a disabled themed button has no shadow and no lift on hover", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const disabled = page.getByRole("region", { name: "Themed surface, light" }).getByRole("button", {
+      name: "Disabled light",
+    });
+    await disabled.hover({ force: true });
+    await page.waitForTimeout(250);
+    const values = await computed(disabled, ["box-shadow", "translate", "transform"]);
+    expect(values).toEqual({ "box-shadow": "none", translate: "none", transform: "none" });
+  });
+
+  test("the lift is dropped under reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await openStory(page, "components-actions-button--themed-surface");
+    const button = page
+      .getByRole("region", { name: "Themed surface, light" })
+      .getByRole("button", { name: "Primary light" });
+    await button.hover();
+    await page.waitForTimeout(250);
+    expect((await computed(button, ["translate"]))["translate"]).toBe("none");
+  });
+
+  test("the themed story passes axe in light and dark", async ({ page }) => {
+    await openStory(page, "components-actions-button--themed-surface");
+    expect(await runAxe(page, "#storybook-root")).toEqual([]);
+    await openStory(page, "components-actions-button--themed-surface", "default", "dark");
+    expect(await runAxe(page, "#storybook-root")).toEqual([]);
+  });
+
+  test.describe("without hover", () => {
+    test.use({ hasTouch: true, isMobile: true });
+
+    test("the lift does not apply where the pointer cannot hover", async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await openStory(page, "components-actions-button--themed-surface");
+      expect(await page.evaluate(() => matchMedia("(hover: hover)").matches)).toBe(false);
+      const button = page
+        .getByRole("region", { name: "Themed surface, light" })
+        .getByRole("button", { name: "Primary light" });
+      await button.hover();
+      await page.waitForTimeout(250);
+      expect((await computed(button, ["translate"]))["translate"]).toBe("none");
+    });
+  });
+});
