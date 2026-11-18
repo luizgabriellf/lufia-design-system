@@ -1,5 +1,0 @@
----
-"@lufia/design-system": minor
----
-
-Surfaces and numbers read as more finished, through tokens only. The light `--lufia-shadow-sm`, `-md` and `-lg` are now two layers each, a tight contact shadow plus a soft ambient one with negative spread, whose hue comes from the new `--lufia-shadow-color` (override it to tint every light level; a theme that sets `--lufia-shadow-*` wholesale keeps working, and the dark levels are unchanged). New `--lufia-font-numeric-tabular` is applied to stat values, table numeric cells, counts, pagination, percentages, date and time fields and chart labels. New `--lufia-letter-spacing-tight` (-0.03em), `-caps` (0.06em) and `-wide` (0.1em) replace the literal tracking values: no label moves by more than 0.02em. Focus rings read `--lufia-border-width-thick`, and the narrow-screen `DetailSurface` cards read `--lufia-radius-card`. Stylelint now rejects a literal `letter-spacing`, focus-ring width, radius or `box-shadow` colour in component CSS. No component API changes.
