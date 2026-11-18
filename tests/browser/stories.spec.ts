@@ -2018,7 +2018,10 @@ test.describe("shell follow-ups", () => {
     // Dispatched clicks: a real click would scroll the button into view first.
     await page.getByRole("button", { name: "Open overlay" }).dispatchEvent("click");
     await expect(page.getByRole("dialog", { name: "Demo overlay" })).toBeVisible();
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      // Taking the lock moves the document to 0 and its scroll event arrives with a later frame. Let it pass before
+      // listening, or a slow runner reports it as a position seen on the way back.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const seen: number[] = [];
       (window as unknown as { seen: number[] }).seen = seen;
       window.addEventListener("scroll", () => seen.push(window.scrollY));
