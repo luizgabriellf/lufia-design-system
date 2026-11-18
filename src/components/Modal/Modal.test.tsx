@@ -857,7 +857,15 @@ describe("Modal", () => {
     );
 
     /** The same swap, with the second layer placed before or after the first in the tree (sibling effects run in that order). */
-    function OrderedSwap({ order, second }: { order: "before" | "after"; second: "dialog" | "navsheet" }) {
+    function OrderedSwap({
+      order,
+      second,
+      keepMounted = false,
+    }: {
+      order: "before" | "after";
+      second: "dialog" | "navsheet";
+      keepMounted?: boolean;
+    }) {
       const [a, setA] = useState(false);
       const [b, setB] = useState(false);
       const secondLayer =
@@ -876,7 +884,7 @@ describe("Modal", () => {
           <button type="button" onClick={() => setA(true)}>
             Open A
           </button>
-          <Modal open={a} renderAs="dialog" title="A" onClose={() => setA(false)}>
+          <Modal open={a} renderAs="dialog" keepMounted={keepMounted} title="A" onClose={() => setA(false)}>
             <button
               type="button"
               onClick={() => {
@@ -913,6 +921,33 @@ describe("Modal", () => {
         expect(b).toContainElement(document.activeElement as HTMLElement);
         await user.keyboard("{Escape}");
         // A native NavSheet has no exit of its own; a native Modal plays one.
+        const leavingB = screen.queryByRole("dialog", { name: "B", hidden: true });
+        if (leavingB) act(() => endAnimation(leavingB));
+        await waitFor(() => expect(opener).toHaveFocus());
+      },
+    );
+
+    it.each([
+      ["before", "dialog"],
+      ["after", "dialog"],
+      ["before", "navsheet"],
+      ["after", "navsheet"],
+    ] as const)(
+      "with a keep-mounted first dialog, a native layer placed %s it (%s) returns focus to the first opener",
+      async (order, second) => {
+        mockReducedMotion(false);
+        const user = userEvent.setup();
+        render(<OrderedSwap order={order} second={second} keepMounted />);
+        const opener = screen.getByRole("button", { name: "Open A" });
+        await user.click(opener);
+        const a = screen.getByRole("dialog", { name: "A" });
+        withExitAnimation();
+        await user.click(within(a).getByRole("button", { name: "Swap" }));
+        await waitFor(() => expect(screen.getByRole("dialog", { name: "B" })).toBeInTheDocument());
+        expect(screen.getByRole("dialog", { name: "B" })).toContainElement(
+          document.activeElement as HTMLElement,
+        );
+        await user.keyboard("{Escape}");
         const leavingB = screen.queryByRole("dialog", { name: "B", hidden: true });
         if (leavingB) act(() => endAnimation(leavingB));
         await waitFor(() => expect(opener).toHaveFocus());

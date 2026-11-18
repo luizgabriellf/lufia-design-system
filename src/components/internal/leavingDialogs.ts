@@ -39,16 +39,24 @@ export function flushLeavingDialogs(layer?: Element | null): HTMLElement | null 
   return opener;
 }
 
+/** Whether `element` could take focus now: in the document, and not inside an inert subtree or a dialog that is not open. */
+function isFocusable(element: HTMLElement): boolean {
+  if (!element.isConnected || element.closest("[inert]")) return false;
+  const dialog = element.closest("dialog");
+  return !dialog || dialog.hasAttribute("open");
+}
+
 /**
- * Where a layer should give focus back to. `target` itself when it is still in the document; when it was inside a dialog that
- * was flushed (and has since unmounted), that dialog's opener; otherwise `null`.
+ * Where a layer should give focus back to. A target that lived inside a flushed dialog maps to that dialog's opener first (a
+ * keep-mounted dialog stays in the document, inert, after it closes). Otherwise `target` itself when it can take focus: one
+ * inside an inert subtree or a closed dialog cannot, and gives way to `null`.
  */
 export function resolveReturnFocus(target: HTMLElement | null): HTMLElement | null {
   let current = target;
   for (let hops = 0; current && hops <= REMEMBERED; hops += 1) {
-    if (current.isConnected) return current;
     const record = flushed.find(({ dialog }) => dialog.contains(current));
-    current = record?.opener ?? null;
+    if (!record) return isFocusable(current) ? current : null;
+    current = record.opener;
   }
   return null;
 }

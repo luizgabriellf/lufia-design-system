@@ -63,7 +63,7 @@ describe("leaving dialogs registry: ordering and nesting", () => {
     // A sibling layer recorded `inside` as its return target before the dialog had registered; the flush comes later.
     flushLeavingDialogs();
     off();
-    expect(resolveReturnFocus(inside)).toBe(inside);
+    expect(resolveReturnFocus(inside)).toBe(opener);
     leavingDialog.remove();
     expect(resolveReturnFocus(inside)).toBe(opener);
     opener.remove();
@@ -72,5 +72,42 @@ describe("leaving dialogs registry: ordering and nesting", () => {
   it("gives null for a detached target the registry never flushed", () => {
     expect(resolveReturnFocus(document.createElement("button"))).toBeNull();
     expect(resolveReturnFocus(null)).toBeNull();
+  });
+});
+
+describe("resolveReturnFocus guard", () => {
+  it("never returns a target in an inert subtree or a closed dialog", () => {
+    const host = document.createElement("div");
+    host.setAttribute("inert", "");
+    const inertButton = document.createElement("button");
+    host.append(inertButton);
+    const closed = document.createElement("dialog");
+    const closedButton = document.createElement("button");
+    closed.append(closedButton);
+    const open = document.createElement("dialog");
+    open.setAttribute("open", "");
+    const openButton = document.createElement("button");
+    open.append(openButton);
+    document.body.append(host, closed, open);
+    expect(resolveReturnFocus(inertButton)).toBeNull();
+    expect(resolveReturnFocus(closedButton)).toBeNull();
+    expect(resolveReturnFocus(openButton)).toBe(openButton);
+    host.remove();
+    closed.remove();
+    open.remove();
+  });
+
+  it("prefers the opener of a flushed dialog that is still in the document", () => {
+    const opener = document.createElement("button");
+    const kept = document.createElement("dialog");
+    const inside = document.createElement("button");
+    kept.append(inside);
+    document.body.append(opener, kept);
+    const off = registerLeavingDialog(kept, () => opener);
+    flushLeavingDialogs();
+    off();
+    expect(resolveReturnFocus(inside)).toBe(opener);
+    opener.remove();
+    kept.remove();
   });
 });
