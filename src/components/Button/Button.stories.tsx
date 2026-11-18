@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ArrowRightIcon, PlusIcon } from "../../docs/demo";
@@ -109,3 +110,55 @@ export const AllThemes: Story = {
     </ThemeMatrix>
   ),
 };
+
+/** What a theme sets to give buttons a richer surface: demo values built from the shared tokens. */
+const THEMED_SURFACE = {
+  "--lufia-button-primary-bg":
+    "linear-gradient(135deg, var(--lufia-color-accent-default), var(--lufia-color-accent-hover))",
+  "--lufia-button-primary-bg-hover":
+    "linear-gradient(135deg, var(--lufia-color-accent-hover), var(--lufia-color-accent-default))",
+  "--lufia-button-primary-border": "var(--lufia-color-accent-hover)",
+  "--lufia-button-primary-shadow": "var(--lufia-shadow-sm)",
+  "--lufia-button-primary-shadow-hover": "var(--lufia-shadow-lg)",
+  "--lufia-button-secondary-shadow": "var(--lufia-shadow-sm)",
+  "--lufia-button-secondary-shadow-hover": "var(--lufia-shadow-md)",
+  "--lufia-button-hover-lift": "2px",
+} as CSSProperties;
+
+function ThemedSurfaceGrid() {
+  return (
+    <div style={{ display: "grid", gap: "1rem" }}>
+      {(["light", "dark"] as const).map((mode) => (
+        <section
+          key={mode}
+          data-lufia-theme="default"
+          data-lufia-mode={mode}
+          aria-label={`Themed surface, ${mode}`}
+          style={{
+            ...THEMED_SURFACE,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            alignItems: "center",
+            padding: "1.5rem",
+            background: "var(--lufia-color-bg-canvas)",
+            color: "var(--lufia-color-text-default)",
+          }}
+        >
+          <Button variant="primary">Primary {mode}</Button>
+          <Button variant="secondary">Secondary {mode}</Button>
+          <Button variant="primary" disabled>
+            Disabled {mode}
+          </Button>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * A theme that sets a gradient fill, a border, elevation and a hover lift through the `--lufia-button-*` hooks. The
+ * border has its own hook because a gradient is not a valid border colour; the lift applies only where a pointer can
+ * hover, and is dropped for disabled buttons and under reduced motion.
+ */
+export const ThemedSurface: Story = { render: () => <ThemedSurfaceGrid /> };

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -167,5 +168,45 @@ describe("Button", () => {
       </div>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Button surface hooks (stylesheet)", () => {
+  const css = readFileSync("src/components/Button/Button.module.css", "utf8");
+  const rule = (selector: string) =>
+    css.match(new RegExp(`${selector.replace(/[[\]().*"=^$]/g, "\\$&")}\\s*\\{([^}]*)\\}`))?.[1] ?? "";
+
+  it("never uses the fill hook as a border colour, so a gradient fill cannot turn the border into currentcolor", () => {
+    expect(css).not.toMatch(/border-color:\s*var\(--lufia-button-\w+-bg/);
+    expect(rule('.root[data-variant="primary"]')).toContain(
+      "border-color: var(--lufia-button-primary-border, transparent)",
+    );
+    expect(rule('.root[data-variant="danger"]')).toContain(
+      "border-color: var(--lufia-button-danger-border, transparent)",
+    );
+  });
+
+  it("paints the fill under the border, so an unset border hook looks like a border of the fill colour", () => {
+    for (const variant of ["primary", "secondary", "danger"])
+      expect(rule(`.root[data-variant="${variant}"]`)).toContain("background-origin: border-box");
+  });
+
+  it("offers a shadow and a hovered shadow for every variant, defaulting to none", () => {
+    for (const variant of ["primary", "secondary", "ghost", "danger"]) {
+      expect(css).toContain(`box-shadow: var(--lufia-button-${variant}-shadow, none)`);
+      expect(css).toContain(
+        `--lufia-button-${variant}-shadow-hover, var(--lufia-button-${variant}-shadow, none)`,
+      );
+    }
+  });
+
+  it("lifts through translate, only with a hovering pointer and without reduced motion, and the press resets it", () => {
+    const media = css.match(
+      /@media \(hover: hover\) and \(prefers-reduced-motion: no-preference\) \{([\s\S]*?)\n\}/,
+    );
+    expect(media?.[1]).toContain(':not(:disabled, [aria-disabled="true"], [data-loading])');
+    expect(media?.[1]).toContain("translate: 0 calc(var(--lufia-button-hover-lift, 0px) * -1)");
+    expect(css.indexOf("--lufia-button-hover-lift")).toBeLessThan(css.indexOf(".root:active"));
+    expect(rule('.root:active:not(:disabled, [aria-disabled="true"])')).toContain("translate: none");
   });
 });

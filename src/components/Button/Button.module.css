@@ -23,6 +23,8 @@
   transition:
     background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
     border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    box-shadow var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    translate var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
     transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
@@ -41,49 +43,88 @@
   cursor: progress;
 }
 
+/* Hover lift: a theme sets --lufia-button-hover-lift to a length (default 0) and a hovered button rises by it. Only
+   where a pointer can hover, never while disabled or loading, and not under reduced motion. It uses the individual
+   translate property, so it composes with the press scale (transform) and the button never reads a different transform
+   at rest. It sits before the press rule on purpose: both have the same specificity, so the press wins while held. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .root:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    translate: 0 calc(var(--lufia-button-hover-lift, 0px) * -1);
+  }
+}
+
 /* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
 .root:active:not(:disabled, [aria-disabled="true"]) {
   transform: scale(var(--lufia-motion-scale-press));
+  translate: none;
 }
 
 /* Variants */
 
-/* Each fill has its own optional hooks, so a theme can give buttons a brand colour apart from the accent
-   that steppers, links and focus marks share. Unset, they fall back to the semantic tokens. */
+/* Each variant has optional hooks, so a theme can give buttons a brand fill apart from the accent that steppers, links and
+   focus marks share. Unset, they fall back to the semantic tokens.
+   Fill and border are separate hooks: a fill may be a gradient, which is not a valid border colour. The border is
+   transparent unless a theme sets a border hook, and the fill is painted under it (background-origin: border-box), so a
+   plain colour or a gradient fills the whole box and the unset case looks the same as a border of the fill colour. */
 .root[data-variant="primary"] {
   background: var(--lufia-button-primary-bg, var(--lufia-color-accent-default));
-  border-color: var(--lufia-button-primary-bg, var(--lufia-color-accent-default));
+  background-origin: border-box;
+  border-color: var(--lufia-button-primary-border, transparent);
+  box-shadow: var(--lufia-button-primary-shadow, none);
   color: var(--lufia-button-primary-fg, var(--lufia-color-text-on-accent));
 }
 
 .root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
   background: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
-  border-color: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
+  background-origin: border-box;
+  border-color: var(--lufia-button-primary-border-hover, var(--lufia-button-primary-border, transparent));
+  box-shadow: var(--lufia-button-primary-shadow-hover, var(--lufia-button-primary-shadow, none));
 }
 
 .root[data-variant="secondary"] {
   background: var(--lufia-button-secondary-bg, var(--lufia-color-bg-field));
+  background-origin: border-box;
   border-color: var(--lufia-button-secondary-border, var(--lufia-color-border-strong));
+  box-shadow: var(--lufia-button-secondary-shadow, none);
   color: var(--lufia-button-secondary-fg, var(--lufia-color-text-default));
 }
 
 .root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"]) {
   background: var(--lufia-button-secondary-bg-hover, var(--lufia-color-bg-surface-raised));
+  background-origin: border-box;
+  border-color: var(
+    --lufia-button-secondary-border-hover,
+    var(--lufia-button-secondary-border, var(--lufia-color-border-strong))
+  );
+  box-shadow: var(--lufia-button-secondary-shadow-hover, var(--lufia-button-secondary-shadow, none));
+}
+
+.root[data-variant="ghost"] {
+  box-shadow: var(--lufia-button-ghost-shadow, none);
 }
 
 .root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
   background: var(--lufia-color-accent-subtle);
+  box-shadow: var(--lufia-button-ghost-shadow-hover, var(--lufia-button-ghost-shadow, none));
 }
 
 /* The fill has its own optional hooks, so a theme can tune destructive buttons apart from danger marks in charts. */
 .root[data-variant="danger"] {
   background: var(--lufia-button-danger-bg, var(--lufia-color-status-danger-solid));
-  border-color: var(--lufia-button-danger-bg, var(--lufia-color-status-danger-solid));
+  background-origin: border-box;
+  border-color: var(--lufia-button-danger-border, transparent);
+  box-shadow: var(--lufia-button-danger-shadow, none);
   color: var(--lufia-button-danger-fg, var(--lufia-color-status-danger-on-solid));
 }
 
 .root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
+  box-shadow: var(--lufia-button-danger-shadow-hover, var(--lufia-button-danger-shadow, none));
   filter: brightness(0.9);
+}
+
+/* A disabled button is flat: elevation says "can be pressed". */
+.root[data-variant]:is(:disabled, [aria-disabled="true"]:not([data-loading])) {
+  box-shadow: none;
 }
 
 /* Sizes */
