@@ -174,7 +174,7 @@ describe("Button", () => {
 describe("Button surface hooks (stylesheet)", () => {
   const css = readFileSync("src/components/Button/Button.module.css", "utf8");
   const rule = (selector: string) =>
-    css.match(new RegExp(`${selector.replace(/[[\]().*"=^$]/g, "\\$&")}\\s*\\{([^}]*)\\}`))?.[1] ?? "";
+    css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\{([^}]*)\\}`))?.[1] ?? "";
 
   it("never uses the fill hook as a border colour, so a gradient fill cannot turn the border into currentcolor", () => {
     expect(css).not.toMatch(/border-color:\s*var\(--lufia-button-\w+-bg/);
