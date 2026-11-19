@@ -184,6 +184,11 @@ export const ENTRIES: Entry[] = [
     "Navigation",
     "A labelled row of links that each apply a filter to one list through the URL, with an optional count.",
   ),
+  c(
+    "OptionRow",
+    "Forms",
+    "A full-width row that is one button, with leading and trailing slots and a selected state, for a list of choices.",
+  ),
   c("NavRow", "Navigation", "A row that links to a destination, for lists of places and settings."),
   c("Pagination", "Navigation", "Previous, next and numbered pages for long lists."),
   c(
