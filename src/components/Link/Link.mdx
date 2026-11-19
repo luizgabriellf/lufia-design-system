@@ -28,6 +28,18 @@ import { Link } from "@lufia/design-system/components/Link";
 Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Internal links render
 through the `linkComponent` set on `LufiaProvider`, so client-side routing works.
 
+### Variants
+
+| Variant      | Look                                                              | Use for                                     |
+| ------------ | ----------------------------------------------------------------- | ------------------------------------------- |
+| `inline`     | Underlined at rest (default)                                      | A link inside a sentence or a paragraph     |
+| `standalone` | No underline at rest, underline on hover and focus, medium weight | A link on its own line, in a list or footer |
+
+`iconEnd` adds a decorative icon after the text. It is hidden from assistive technology, nudges 2px along the inline axis on
+hover (mirrored in right-to-left layouts) and does not move under `prefers-reduced-motion`.
+
+<Canvas of={Stories.WithIconEnd} />
+
 </Section>
 
 <Section id="examples">
@@ -55,7 +67,7 @@ through the `linkComponent` set on `LufiaProvider`, so client-side routing works
 
 ### Accessibility
 
-- Links are underlined, so colour is not the only cue (WCAG 1.4.1).
+- Inline links are underlined, so colour is not the only cue (WCAG 1.4.1). A `standalone` link is not underlined at rest, so use it only where its place or its neighbours show that it is a link, never inside running text.
 - `externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new
   tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.
 - External links get `rel="noopener noreferrer"`.

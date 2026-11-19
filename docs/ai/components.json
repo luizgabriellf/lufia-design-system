@@ -10411,7 +10411,7 @@
         {
           "name": "Link",
           "kind": "component",
-          "description": "An inline text link. It renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works. An external link opens in a new tab, shows an indicator, and announces that through a visually hidden label.",
+          "description": "A text link, inline in running text by default or `standalone` on its own line. It renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works. An external link opens in a new tab, shows an indicator, and announces that through a visually hidden label.",
           "props": [
             {
               "name": "href",
@@ -10433,6 +10433,20 @@
               "required": false,
               "default": null,
               "description": "Marks the link as external: it opens in a new tab (`target=\"_blank\"`, `rel=\"noopener noreferrer\"`) and shows an indicator. The value is the visually hidden text read after the link text, such as \"(opens in new tab)\", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it."
+            },
+            {
+              "name": "variant",
+              "type": "\"inline\" | \"standalone\"",
+              "required": false,
+              "default": "\"inline\"",
+              "description": "`inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1)."
+            },
+            {
+              "name": "iconEnd",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon after the text, hidden from assistive technology. It moves 2px along the inline axis on hover, not under reduced motion. The external indicator, when there is one, comes after it."
             }
           ],
           "nativeProps": true
@@ -10441,11 +10455,18 @@
           "name": "LinkProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
+          "definition": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }"
+        },
+        {
+          "name": "LinkVariant",
+          "kind": "type",
+          "description": "",
+          "definition": "\"inline\" | \"standalone\""
         }
       ],
       "aliases": {
-        "LinkProps": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
+        "LinkProps": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }",
+        "LinkVariant": "\"inline\" | \"standalone\""
       },
       "story": {
         "docsId": "components-actions-link--docs",
@@ -10457,6 +10478,18 @@
           {
             "export": "External",
             "id": "components-actions-link--external"
+          },
+          {
+            "export": "Standalone",
+            "id": "components-actions-link--standalone"
+          },
+          {
+            "export": "WithIconEnd",
+            "id": "components-actions-link--with-icon-end"
+          },
+          {
+            "export": "InlineWithIconEnd",
+            "id": "components-actions-link--inline-with-icon-end"
           },
           {
             "export": "LongText",
@@ -10508,20 +10541,21 @@
         ],
         "keyboardNotes": null,
         "notes": [
-          "Links are underlined, so colour is not the only cue (WCAG 1.4.1).",
+          "Inline links are underlined, so colour is not the only cue (WCAG 1.4.1). A `standalone` link is not underlined at rest, so use it only where its place or its neighbours show that it is a link, never inside running text.",
           "`externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.",
           "External links get `rel=\"noopener noreferrer\"`.",
           "Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`."
         ]
       },
       "motion": {
-        "respectsReducedMotion": false,
+        "respectsReducedMotion": true,
         "notes": null
       },
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-color-focus-ring",
         "--lufia-color-text-accent",
+        "--lufia-font-weight-medium",
         "--lufia-motion-duration-fast",
         "--lufia-motion-easing-out",
         "--lufia-radius-xs"

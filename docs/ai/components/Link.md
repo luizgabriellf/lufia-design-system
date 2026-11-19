@@ -33,12 +33,15 @@ An inline text link. It goes through the app's router link, and an external one 
 | `href` | `string` | yes |  |  |
 | `children` | `ReactNode` | yes |  |  |
 | `externalLabel` | `string` | no |  | Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an indicator. The value is the visually hidden text read after the link text, such as "(opens in new tab)", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it. |
+| `variant` | `"inline" \| "standalone"` | no | `"inline"` | `inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1). |
+| `iconEnd` | `ReactNode` | no |  | Decorative icon after the text, hidden from assistive technology. It moves 2px along the inline axis on hover, not under reduced motion. The external indicator, when there is one, comes after it. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }`
+- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }`
+- `LinkVariant`: `"inline" | "standalone"`
 
 ## Example
 
@@ -58,18 +61,18 @@ Keyboard:
 | Tab | Moves focus to the link |
 | Enter | Follows the link |
 
-- Links are underlined, so colour is not the only cue (WCAG 1.4.1).
+- Inline links are underlined, so colour is not the only cue (WCAG 1.4.1). A `standalone` link is not underlined at rest, so use it only where its place or its neighbours show that it is a link, never inside running text.
 - `externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.
 - External links get `rel="noopener noreferrer"`.
 - Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`.
 
 ## Motion
 
-Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion comes from the motion tokens, which collapse under reduced motion.
+Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-xs`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-xs`.
 
 ## Content guidelines
 
@@ -80,6 +83,9 @@ the text unless the URL is the content.
 
 - `components-actions-link--default`
 - `components-actions-link--external`
+- `components-actions-link--standalone`
+- `components-actions-link--with-icon-end`
+- `components-actions-link--inline-with-icon-end`
 - `components-actions-link--long-text`
 - `components-actions-link--phone-320`
 - `components-actions-link--right-to-left`
