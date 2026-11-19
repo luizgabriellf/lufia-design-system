@@ -14,7 +14,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - ActionIcons (deprecated): <DeleteIcon> size title | also DuplicateIcon EditIcon OpenIcon +2
 - Button: variant size loading fullWidth iconStart iconEnd render href disabled
 - Chip: iconStart size tone disabled onClick selected onRemove removeLabel
-- IconButton: aria-label* icon* href title variant size loading render disabled
+- IconButton: aria-label* icon* href title variant loading render size shape disabled
 - Link: href* externalLabel variant iconStart iconEnd
 - MoreActions: label* items* align size variant icon presentation narrowOnlyScope defaultOpen
 - PageActions: moreLabel* primary secondary overflow size collapse hideBelow primaryPlacement
@@ -29,7 +29,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale +5
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
 - ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength maxTotalLength +9
-- OptionRow: title* disabled description leading trailing selected density onClick render
+- OptionRow: title* disabled eyebrow description meta leading trailing selected density truncate highlighted +3
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
 - RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue onValueChange +5
 - SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid

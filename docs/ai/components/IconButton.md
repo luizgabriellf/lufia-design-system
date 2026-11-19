@@ -34,9 +34,10 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `aria-label` | `string` | yes |  | Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one. |
 | `title` | `string` | no |  | Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name. |
 | `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet "show more"; it stays text-sized on touch screens, where a pseudo-element takes the touch. |
-| `size` | `"sm" \| "md" \| "lg"` | no |  | Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. |
 | `loading` | `boolean` | no |  | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. Server Components: create the element in a Client Component (an element passed from a Server Component can arrive as a lazy reference and throws); build the button inside a small client component, or pass a plain `<a>`. |
+| `size` | `"sm" \| "md" \| "lg" \| "xl"` | no |  | Default `md` (2.5rem). `xl` is 4rem, for a large media control such as a play button over a poster. |
+| `shape` | `"default" \| "circle"` | no |  | `circle` makes the control round with equal sides (full radius). Default `default`: the rounded square. |
 | `icon` | `ReactNode` | yes |  | The icon. Decorative: the name comes from `aria-label`. |
 | `disabled` | `boolean` | no |  | A link cannot be natively disabled; this marks it `aria-disabled` and ignores activation. |
 
@@ -76,7 +77,9 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 ## Types
 
-- `IconButtonProps`: `(Omit<AsButton, "children" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "fullWidth" | "iconStart" | "iconEnd">) & { "aria-label": string; icon: ReactNode; title?: string | undefined; }`
+- `IconButtonProps`: `(Omit<AsButton, "children" | "size" | "fullWidth" | "iconStart" | "iconEnd"> | Omit<AsLink, "children" | "size" | "fullWidth" | "iconStart" | "iconEnd">) & { size?: IconButtonSize | undefined; shape?: IconButtonShape | undefined; "aria-label": string; icon: ReactNode; title?: string | undefined; }`
+- `IconButtonShape`: `"default" | "circle"`
+- `IconButtonSize`: `"sm" | "md" | "lg" | "xl"`
 
 ## Example
 
@@ -124,6 +127,9 @@ Name the action, not the picture: "Open settings", not "Cog". Keep it to two or 
 - `components-actions-iconbutton--loading`
 - `components-actions-iconbutton--as-link`
 - `components-actions-iconbutton--custom-title`
+- `components-actions-iconbutton--media-play`
+- `components-actions-iconbutton--media-play-all-themes`
+- `components-actions-iconbutton--size-hook`
 - `components-actions-iconbutton--pressed`
 - `components-actions-iconbutton--pressed-secondary`
 - `components-actions-iconbutton--all-variants-and-sizes`

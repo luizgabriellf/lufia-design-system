@@ -135,7 +135,7 @@ describe("OptionRow", () => {
     expect(css).toMatch(/\.root\[data-density="compact"\] \{[^}]*box-shadow: none/);
     expect(css).toMatch(/\.root\[data-density="compact"\] \{[^}]*border-color: transparent/);
     expect(css).toMatch(
-      /@media \(pointer: coarse\) \{ \.root\[data-density="compact"\] \{ min-block-size: var\(--lufia-target-touch, 2\.75rem\)/,
+      /@media \(pointer: coarse\) \{ \.root\[data-density="compact"\] \{ min-block-size: max\(var\(--lufia-option-row-min-block-size, 0px\), var\(--lufia-target-touch, 2\.75rem\)\)/,
     );
   });
 
@@ -167,6 +167,122 @@ describe("OptionRow", () => {
         </li>
         <li>
           <OptionRow title="C" render={<DemoLink href="#c" />} />
+        </li>
+      </ul>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("renders the eyebrow before the title and the meta after the description, all in the name", () => {
+    render(<OptionRow title="Guide" eyebrow="Step 1" description="Read first" meta="5 min" />);
+    expect(screen.getByRole("button", { name: "Step 1 Guide Read first 5 min" })).toBeInTheDocument();
+  });
+
+  it("truncates only when asked", () => {
+    const { rerender } = render(<OptionRow title="A" truncate />);
+    expect(screen.getByRole("button")).toHaveAttribute("data-truncate");
+    rerender(<OptionRow title="A" />);
+    expect(screen.getByRole("button")).not.toHaveAttribute("data-truncate");
+    const css = readFileSync("src/components/OptionRow/OptionRow.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(
+      /\.root\[data-truncate\] :is\([^)]*\) \{[^}]*text-overflow: ellipsis[^}]*white-space: nowrap/,
+    );
+    expect(css).toMatch(/\.copy \{[^}]*min-inline-size: 0/);
+  });
+
+  it("highlights without exposing a state to assistive technology", () => {
+    const { rerender } = render(<OptionRow title="A" highlighted />);
+    const row = screen.getByRole("button");
+    expect(row).toHaveAttribute("data-highlighted");
+    expect(row).not.toHaveAttribute("aria-pressed");
+    expect(row).not.toHaveAttribute("aria-current");
+    rerender(<OptionRow title="A" highlighted render={<DemoLink href="#a" />} />);
+    expect(screen.getByRole("link")).toHaveAttribute("data-highlighted");
+    expect(screen.getByRole("link")).not.toHaveAttribute("aria-current");
+  });
+
+  it("passes a menu trigger's spread props through to the button and styles the open state", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const onKeyDown = vi.fn();
+    const ref = vi.fn();
+    function Trigger() {
+      const triggerProps = {
+        ref,
+        id: "trigger",
+        "aria-haspopup": "menu" as const,
+        "aria-controls": "menu-1",
+        "aria-expanded": true,
+        "aria-label": "Choose a place",
+        onClick,
+        onKeyDown,
+      };
+      return <OptionRow title="Place" {...triggerProps} />;
+    }
+    render(<Trigger />);
+    const row = screen.getByRole("button", { name: "Choose a place" });
+    expect(row).toHaveAttribute("id", "trigger");
+    expect(row).toHaveAttribute("aria-haspopup", "menu");
+    expect(row).toHaveAttribute("aria-controls", "menu-1");
+    expect(row).toHaveAttribute("aria-expanded", "true");
+    expect(ref).toHaveBeenCalledWith(row);
+    await user.click(row);
+    row.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
+    const css = readFileSync("src/components/OptionRow/OptionRow.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(
+      /\.root\[aria-expanded="true"\]:not\([^)]*\) \{ border-color: var\(--lufia-color-border-strong\); background: var\(--lufia-color-bg-surface-raised\)/,
+    );
+  });
+
+  it("renders a static row with no button semantics and no activation", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const { container, rerender } = render(
+      <OptionRow title="Fact" description="Detail" interactive={false} selected onClick={onClick} />,
+    );
+    const row = container.firstElementChild as HTMLElement;
+    expect(row.tagName).toBe("DIV");
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(row).toHaveAttribute("data-static");
+    expect(row).toHaveAttribute("data-selected");
+    expect(row).not.toHaveAttribute("aria-pressed");
+    expect(row).not.toHaveAttribute("type");
+    await user.click(row);
+    expect(onClick).not.toHaveBeenCalled();
+    rerender(<OptionRow title="Fact" interactive={false} render={<section aria-label="Fact" />} />);
+    expect(container.firstElementChild?.tagName).toBe("SECTION");
+  });
+
+  it("exposes the size hooks with today's values as fallbacks and keeps the touch floor", () => {
+    const css = readFileSync("src/components/OptionRow/OptionRow.module.css", "utf8").replace(/\s+/g, " ");
+    for (const [hook, value] of [
+      ["min-block-size", "3.5rem"],
+      ["padding-block", "0.75rem"],
+      ["padding-inline", "0.85rem"],
+      ["description-size", "var\\(--lufia-font-size-sm\\)"],
+    ]) {
+      expect(css).toMatch(new RegExp(`--lufia-option-row-${hook}, ${value}\\)`));
+    }
+    expect(css).toContain("--lufia-option-row-title-size, inherit");
+    expect(css).toMatch(
+      /@media \(pointer: coarse\) \{ \.root \{ min-block-size: max\(var\(--lufia-option-row-min-block-size, 3\.5rem\), var\(--lufia-target-touch/,
+    );
+  });
+
+  it("has no axe violations with every slot, highlighted, expanded and static", async () => {
+    const { container } = render(
+      <ul>
+        <li>
+          <OptionRow title="A" eyebrow="E" description="D" meta="M" trailing="Go" highlighted truncate />
+        </li>
+        <li>
+          <OptionRow title="B" aria-haspopup="menu" aria-expanded aria-controls="m" />
+        </li>
+        <li>
+          <OptionRow title="C" description="D" interactive={false} />
         </li>
       </ul>,
     );

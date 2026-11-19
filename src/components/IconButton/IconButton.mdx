@@ -46,6 +46,15 @@ border and text, which differs from rest and from hover, and a thicker `Highligh
 
 <Canvas of={Stories.Pressed} />
 
+### Large circular media control
+
+`size="xl"` is 4rem and `shape="circle"` makes the box round with equal sides. Together they make a control over a poster or a
+player. The icon is 1.75rem at `xl`; `--lufia-icon-button-icon-size` changes it. `xl` is an `IconButton` size: `Button` keeps
+`sm`, `md` and `lg`. A theme can resize every icon-only box with `--lufia-icon-button-size`.
+
+<Canvas of={Stories.MediaPlay} />
+<Canvas of={Stories.MediaPlayAllThemes} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />

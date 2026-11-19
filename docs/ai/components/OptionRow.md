@@ -32,13 +32,19 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 | --- | --- | --- | --- | --- |
 | `disabled` | `boolean` | no | `false` |  |
 | `title` | `ReactNode` | yes |  | The option's name. It is the row's accessible name together with the description. |
+| `eyebrow` | `ReactNode` | no |  | Small accent line above the title, such as a category or a step. It is read before the title. |
 | `description` | `ReactNode` | no |  | Supporting line under the title. |
+| `meta` | `ReactNode` | no |  | Small muted line under the description, which may hold inline icons. It is read after the description. |
 | `leading` | `ReactNode` | no |  | Decorative slot before the text, such as an icon or an avatar; hidden from assistive technology. |
 | `trailing` | `ReactNode` | no |  | Slot after the text, such as a check mark, a price or a count. It is read after the title, so text in it must carry its own context. Mark a purely decorative one `aria-hidden` yourself. |
 | `selected` | `boolean` | no |  | Marks the row as the chosen one: the accent subtle fill and border, and `aria-pressed` on the button (`aria-current` on an element given to `render`, which is usually a link). Leave it out for a row that is not a choice. |
 | `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | `comfortable` (default) is a bordered card row, for a short list of choices. `compact` is for a long pick list inside a menu, sheet or modal: no border or shadow, tighter block padding, a medium-weight title and a small muted description. The rows are separated by the parent's gap, or a hairline the parent draws. On a coarse pointer a compact row is still at least `--lufia-target-touch` tall. |
+| `truncate` | `boolean` | no | `false` | Keeps the title, the description, the eyebrow and the meta each on one line, cut with an ellipsis, for a row in a narrow container such as a menu trigger. Default `false`: the text wraps. |
+| `highlighted` | `boolean` | no | `false` | A purely visual emphasis: the accent subtle fill and border of `selected`, with no `aria-pressed` or `aria-current`. For a suggested or recommended option. Exposed as `data-highlighted`. |
+| `interactive` | `boolean` | no | `true` | Default `true`. `false` renders the same layout as a plain `<div>` (or the element given to `render`) with no button semantics, no hover, press or focus affordance and no `onClick`, for a row that only displays. `selected` and `highlighted` still style it. `disabled` has no effect. |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | The row's button, so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. |
 | `onClick` | `MouseEventHandler<HTMLElement>` | no |  |  |
-| `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. |
+| `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. With `interactive={false}` it is the static container instead. |
 
 Other native element attributes pass through to the root element.
 
@@ -75,7 +81,8 @@ Keyboard:
 - The leading slot is decorative and hidden from assistive technology.
 - The `selected` state is `aria-pressed` on the button and `aria-current` on an element given to `render`; pick the one the element's role fits and do not set both.
 - Comfortable rows are at least 3.5rem tall, above the touch target floor. Compact rows are 2.5rem on a fine pointer and at least `--lufia-target-touch` on a coarse one. Focus shows the shared ring.
-- In forced-colors mode the selected row takes a thicker `Highlight` border.
+- In forced-colors mode a selected, highlighted or expanded row takes a thicker `Highlight` border.
+- `highlighted` and the eyebrow are not announced as a state. A static row is plain content, not a control.
 - The press scale is off under `prefers-reduced-motion`.
 
 ## Motion
@@ -84,7 +91,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-option-row-description-size`, `--lufia-option-row-min-block-size`, `--lufia-option-row-padding-block`, `--lufia-option-row-padding-inline`, `--lufia-option-row-title-size`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -99,6 +106,12 @@ A title of one to four words, and a description that says what picking it means.
 - `components-forms-optionrow--disabled`
 - `components-forms-optionrow--rendered`
 - `components-forms-optionrow--long-text`
+- `components-forms-optionrow--guide-row`
+- `components-forms-optionrow--truncated-trigger`
+- `components-forms-optionrow--expanded`
+- `components-forms-optionrow--highlighted`
+- `components-forms-optionrow--static`
+- `components-forms-optionrow--size-hooks`
 - `components-forms-optionrow--choice-list`
 - `components-forms-optionrow--compact-list`
 - `components-forms-optionrow--compact-as-link`

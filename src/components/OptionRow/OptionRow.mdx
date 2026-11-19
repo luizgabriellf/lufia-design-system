@@ -64,6 +64,48 @@ Client Component.
 
 <Canvas of={Stories.Rendered} />
 
+### Richer content
+
+`eyebrow` is a small accent line above the title and `meta` a small muted line under the description; `meta` may hold inline
+icons. Both are read with the title, so keep them short.
+
+<Canvas of={Stories.GuideRow} />
+
+### Truncate
+
+`truncate` keeps the title, description, eyebrow and meta to one line each, cut with an ellipsis, for a row in a narrow
+container such as a menu trigger.
+
+<Canvas of={Stories.TruncatedTrigger} />
+
+### Highlighted
+
+`highlighted` is a purely visual emphasis, for a suggested item. It sets no `aria-pressed` or `aria-current`, so say it in
+text (the eyebrow) when it matters. Use `selected` for the user's choice.
+
+<Canvas of={Stories.Highlighted} />
+
+### As a menu or disclosure trigger
+
+Spread the trigger's props onto the row (`ref`, `id`, `aria-haspopup`, `aria-controls`, `aria-expanded`, `aria-label` and the
+handlers): they reach the button untouched. `aria-expanded="true"` gives the open look, the hover fill and border kept while
+open. The row rotates nothing: put a chevron in `trailing` and turn it yourself.
+
+<Canvas of={Stories.Expanded} />
+
+### Static
+
+`interactive={false}` renders the layout as a plain `<div>`, or as the element given to `render`, with no button
+semantics, hover, press or focus affordance, and ignores `onClick`. `selected` and `highlighted` still style it.
+
+<Canvas of={Stories.Static} />
+
+### Theming
+
+A theme tunes the row with `--lufia-option-row-min-block-size`, `--lufia-option-row-padding-block`,
+`--lufia-option-row-padding-inline`, `--lufia-option-row-title-size` and `--lufia-option-row-description-size`. See
+[Theming components](?path=/docs/foundations-theming-components--docs).
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />
@@ -95,7 +137,8 @@ Client Component.
   element's role fits and do not set both.
 - Comfortable rows are at least 3.5rem tall, above the touch target floor. Compact rows are 2.5rem on a fine pointer and at
   least `--lufia-target-touch` on a coarse one. Focus shows the shared ring.
-- In forced-colors mode the selected row takes a thicker `Highlight` border.
+- In forced-colors mode a selected, highlighted or expanded row takes a thicker `Highlight` border.
+- `highlighted` and the eyebrow are not announced as a state. A static row is plain content, not a control.
 - The press scale is off under `prefers-reduced-motion`.
 
 </Section>

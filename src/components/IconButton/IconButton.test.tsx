@@ -63,6 +63,35 @@ describe("IconButton", () => {
     expect(missing).toBeTruthy();
   });
 
+  it("supports the xl size and the circle shape without changing the default", () => {
+    const { rerender } = render(<IconButton icon={icon} aria-label="Go" />);
+    expect(screen.getByRole("button")).not.toHaveAttribute("data-shape");
+    expect(screen.getByRole("button")).toHaveAttribute("data-size", "md");
+    rerender(<IconButton icon={icon} aria-label="Go" size="xl" shape="circle" />);
+    expect(screen.getByRole("button")).toHaveAttribute("data-size", "xl");
+    expect(screen.getByRole("button")).toHaveAttribute("data-shape", "circle");
+    rerender(<IconButton icon={icon} aria-label="Go" shape="default" href="/x" />);
+    expect(screen.getByRole("link")).not.toHaveAttribute("data-shape");
+  });
+
+  it("sizes xl at 4rem, makes a circle round, and reads the size hook with today's sizes as fallbacks", () => {
+    const css = readFileSync("src/components/Button/Button.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(
+      /\[data-size="xl"\] \{ inline-size: var\(--lufia-icon-button-size, 4rem\); min-block-size: var\(--lufia-icon-button-size, 4rem\)/,
+    );
+    expect(css).toMatch(/\[data-shape="circle"\] \{ border-radius: var\(--lufia-radius-full\)/);
+    expect(css).toContain("inline-size: var(--lufia-icon-button-size, 2.5rem)");
+    expect(css).toContain("inline-size: var(--lufia-icon-button-size, 2rem)");
+    expect(css).toContain("inline-size: var(--lufia-icon-button-size, 3rem)");
+    expect(css).toMatch(/max\(var\(--lufia-icon-button-size, 0px\), var\(--lufia-target-touch, 2\.75rem\)\)/);
+  });
+
+  it("refuses an unknown size at the type level", () => {
+    // @ts-expect-error xl exists on IconButton only; 2xl does not exist
+    const bad = <IconButton icon={icon} aria-label="Go" size="2xl" />;
+    expect(bad).toBeTruthy();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <div>
@@ -70,6 +99,7 @@ describe("IconButton", () => {
         <IconButton icon={icon} aria-label="Two" variant="primary" loading />
         <IconButton icon={icon} aria-label="Three" href="/x" />
         <IconButton icon={icon} aria-label="Four" aria-pressed />
+        <IconButton icon={icon} aria-label="Five" size="xl" shape="circle" variant="primary" />
       </div>,
     );
     expect(await axe(container)).toHaveNoViolations();
