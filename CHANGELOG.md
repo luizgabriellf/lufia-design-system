@@ -1,5 +1,15 @@
 # @lufia/design-system
 
+## 0.65.0
+
+### Minor Changes
+
+- [#229](https://github.com/luizgabriellf/lufia-design-system/pull/229) [`6a8eaaa`](https://github.com/luizgabriellf/lufia-design-system/commit/6a8eaaace4d7cb5e0885d1148df5988c758baa5c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `ChoiceTile`, a pressable, selectable tile for picking one value from a short visible set laid out in a row, a wrapping grid or a scrolling strip, such as a day, a time slot or a plan. It has an optional eyebrow and description, `solid` and `subtle` selected emphasis, `sm` and `md` sizes with a touch-sized target, and `fullWidth`.
+
+- [#230](https://github.com/luizgabriellf/lufia-design-system/pull/230) [`a5428a3`](https://github.com/luizgabriellf/lufia-design-system/commit/a5428a333bfda4421f3ac263d271884ffd371a85) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Extend `OptionRow` for card-style rows and menu triggers: `eyebrow` and `meta` lines, `truncate` for one-line text with an ellipsis, a visual-only `highlighted` state, an open look for `aria-expanded="true"`, `interactive={false}` for a static non-button row, a `ref` prop, and the `--lufia-option-row-*` size hooks (minimum height, padding, title and description size) that keep the touch floor. Add `size="xl"` (4rem) and `shape="circle"` to `IconButton`, with the `--lufia-icon-button-size` and `--lufia-icon-button-icon-size` hooks. All defaults and existing rendering are unchanged.
+
+- [#227](https://github.com/luizgabriellf/lufia-design-system/pull/227) [`9774b74`](https://github.com/luizgabriellf/lufia-design-system/commit/9774b7429a21fdac4d68d603d19bfc863ba92957) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `density="compact"` to `OptionRow` for long pick lists in menus, sheets and modals. Add `iconStart` to `Link`, with a touch-sized target for the standalone variant on coarse pointers. Add `tone` to `Chip` and document that a pressable chip forwards `aria-expanded`, `aria-haspopup` and `aria-controls`. Give a pressed `IconButton` or `Button` (`aria-pressed`) a distinct accent style. Add `description` and `meta` to `Disclosure`.
+
 ## 0.64.0
 
 ### Minor Changes
