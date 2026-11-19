@@ -96,6 +96,26 @@ describe("Link", () => {
     expect(link.lastElementChild).toBe(icon.parentElement);
   });
 
+  it("renders iconStart before the text, hidden from assistive technology and out of the name", () => {
+    render(
+      <Link href="/a" iconStart={<svg data-testid="icon" />}>
+        Back
+      </Link>,
+    );
+    const link = screen.getByRole("link", { name: "Back" });
+    const icon = screen.getByTestId("icon").parentElement!;
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+    expect(link.firstElementChild).toBe(icon);
+    expect(link).toHaveTextContent("Back");
+  });
+
+  it("takes a touch-sized target for the standalone variant on coarse pointers", () => {
+    const css = readFileSync("src/components/Link/Link.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(
+      /@media \(pointer: coarse\) \{ \.root\[data-variant="standalone"\] \{ position: relative; \} \.root\[data-variant="standalone"\]::after \{[^}]*block-size: max\(100%, var\(--lufia-target-touch, 2\.75rem\)\)/,
+    );
+  });
+
   it("keeps the external indicator and its label with an iconEnd", () => {
     render(
       <Link
@@ -143,7 +163,7 @@ describe("Link", () => {
         <Link href="https://example.com" externalLabel="(opens in new tab)">
           B
         </Link>{" "}
-        <Link href="/c" variant="standalone" iconEnd={<svg />}>
+        <Link href="/c" variant="standalone" iconStart={<svg />} iconEnd={<svg />}>
           C
         </Link>
       </p>,

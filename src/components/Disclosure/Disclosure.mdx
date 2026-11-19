@@ -79,6 +79,13 @@ props nothing changes.
 <Canvas of={Stories.CustomIndicator} />
 <Canvas of={Stories.NoIndicator} />
 
+### Description and meta
+
+`description` puts a secondary line under the summary in the small muted style; `meta` puts a trailing count or badge in the
+row before the chevron. Both live inside the native `<summary>`, so they are read as part of the control's name: keep them short.
+
+<Canvas of={Stories.DescriptionAndMeta} />
+
 The vertical rhythm has hooks too: `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-min-block-size`
 and `--lufia-disclosure-panel-padding-block`. On touch screens and phones the summary keeps its 44px target.
 

@@ -10,6 +10,8 @@ type RenderedElementProps = {
   onClick?: MouseEventHandler<HTMLElement>;
 };
 
+export type OptionRowDensity = "comfortable" | "compact";
+
 export type OptionRowProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   "title" | "children" | "onClick"
@@ -30,6 +32,13 @@ export type OptionRowProps = Omit<
    * on an element given to `render`, which is usually a link). Leave it out for a row that is not a choice.
    */
   selected?: boolean;
+  /**
+   * `comfortable` (default) is a bordered card row, for a short list of choices. `compact` is for a long pick list inside
+   * a menu, sheet or modal: no border or shadow, tighter block padding, a medium-weight title and a small muted
+   * description. The rows are separated by the parent's gap, or a hairline the parent draws. On a coarse pointer a compact
+   * row is still at least `--lufia-target-touch` tall.
+   */
+  density?: OptionRowDensity;
   onClick?: MouseEventHandler<HTMLElement>;
   disabled?: boolean;
   /**
@@ -51,6 +60,7 @@ export function OptionRow({
   leading,
   trailing,
   selected,
+  density = "comfortable",
   onClick,
   disabled = false,
   render,
@@ -58,7 +68,11 @@ export function OptionRow({
   ...rest
 }: OptionRowProps) {
   const classes = [styles.root, className].filter(Boolean).join(" ");
-  const state = { "data-selected": selected || undefined, "data-disabled": disabled || undefined };
+  const state = {
+    "data-density": density,
+    "data-selected": selected || undefined,
+    "data-disabled": disabled || undefined,
+  };
   const content = (
     <>
       {leading ? (

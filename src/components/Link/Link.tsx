@@ -21,6 +21,8 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "
    * surroundings, not colour alone, show that the text is a link (WCAG 1.4.1).
    */
   variant?: LinkVariant;
+  /** Decorative icon before the text, hidden from assistive technology. It does not move on hover. */
+  iconStart?: ReactNode;
   /**
    * Decorative icon after the text, hidden from assistive technology. It moves 2px along the inline axis on hover, not
    * under reduced motion. The external indicator, when there is one, comes after it.
@@ -35,6 +37,7 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "
 export function Link({
   externalLabel,
   variant = "inline",
+  iconStart,
   iconEnd,
   className,
   children,
@@ -56,6 +59,11 @@ export function Link({
       data-variant={variant}
       data-external={external ? "" : undefined}
     >
+      {iconStart ? (
+        <span className={styles.iconStart} aria-hidden="true">
+          {iconStart}
+        </span>
+      ) : null}
       {children}
       {iconEnd ? (
         <span className={styles.icon} aria-hidden="true">

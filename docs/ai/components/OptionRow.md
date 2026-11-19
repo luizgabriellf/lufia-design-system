@@ -36,6 +36,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 | `leading` | `ReactNode` | no |  | Decorative slot before the text, such as an icon or an avatar; hidden from assistive technology. |
 | `trailing` | `ReactNode` | no |  | Slot after the text, such as a check mark, a price or a count. It is read after the title, so text in it must carry its own context. Mark a purely decorative one `aria-hidden` yourself. |
 | `selected` | `boolean` | no |  | Marks the row as the chosen one: the accent subtle fill and border, and `aria-pressed` on the button (`aria-current` on an element given to `render`, which is usually a link). Leave it out for a row that is not a choice. |
+| `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | `comfortable` (default) is a bordered card row, for a short list of choices. `compact` is for a long pick list inside a menu, sheet or modal: no border or shadow, tighter block padding, a medium-weight title and a small muted description. The rows are separated by the parent's gap, or a hairline the parent draws. On a coarse pointer a compact row is still at least `--lufia-target-touch` tall. |
 | `onClick` | `MouseEventHandler<HTMLElement>` | no |  |  |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. |
 
@@ -72,7 +73,8 @@ Keyboard:
 - The row is a native `<button type="button">`; its name is the title, the description and any text in the trailing slot.
 - `selected` is `aria-pressed`, so the chosen row is announced as pressed and the state is never colour alone: the border and fill change, and the trailing slot can carry a check. Group the rows in a list or a labelled group.
 - The leading slot is decorative and hidden from assistive technology.
-- Rows are at least 3.5rem tall, above the touch target floor. Focus shows the shared ring.
+- The `selected` state is `aria-pressed` on the button and `aria-current` on an element given to `render`; pick the one the element's role fits and do not set both.
+- Comfortable rows are at least 3.5rem tall, above the touch target floor. Compact rows are 2.5rem on a fine pointer and at least `--lufia-target-touch` on a coarse one. Focus shows the shared ring.
 - In forced-colors mode the selected row takes a thicker `Highlight` border.
 - The press scale is off under `prefers-reduced-motion`.
 
@@ -82,7 +84,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -98,6 +100,9 @@ A title of one to four words, and a description that says what picking it means.
 - `components-forms-optionrow--rendered`
 - `components-forms-optionrow--long-text`
 - `components-forms-optionrow--choice-list`
+- `components-forms-optionrow--compact-list`
+- `components-forms-optionrow--compact-as-link`
+- `components-forms-optionrow--compact-disabled`
 - `components-forms-optionrow--phone-320`
 - `components-forms-optionrow--right-to-left`
 - `components-forms-optionrow--all-themes`

@@ -13,24 +13,24 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - ActionIcons (deprecated): <DeleteIcon> size title | also DuplicateIcon EditIcon OpenIcon +2
 - Button: variant size loading fullWidth iconStart iconEnd render href disabled
-- Chip: iconStart size disabled onClick selected onRemove removeLabel
+- Chip: iconStart size tone disabled onClick selected onRemove removeLabel
 - IconButton: aria-label* icon* href title variant size loading render disabled
-- Link: href* externalLabel variant iconEnd
+- Link: href* externalLabel variant iconStart iconEnd
 - MoreActions: label* items* align size variant icon presentation narrowOnlyScope defaultOpen
 - PageActions: moreLabel* primary secondary overflow size collapse hideBelow primaryPlacement
 
 ### Forms
 
 - Checkbox: label* hint error indeterminate size
-- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel maxResults +9
+- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel +10
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid
-- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName endName +6
-- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale preview +4
+- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName +7
+- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale +5
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
-- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength maxTotalLength required +8
-- OptionRow: title* disabled description leading trailing selected onClick render
+- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength maxTotalLength +9
+- OptionRow: title* disabled description leading trailing selected density onClick render
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
-- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue onValueChange name +4
+- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue onValueChange +5
 - SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid
 - SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width size
 - Select: size variant options groups placeholder allowEmpty invalid
@@ -40,17 +40,17 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 ### Overlays
 
-- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading groupOrder bodyOverride +5
-- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement classNames size +2 | also useConfirmDialog
-- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen onOpenChange placement align +1
-- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted renderAs classNames +13
-- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups summary onMarkAllRead +15 | also NotificationPanel NotificationSummary
+- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading groupOrder +6
+- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement classNames +3 | also useConfirmDialog
+- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen onOpenChange placement +2
+- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted renderAs +14
+- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups summary +16 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
-- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus resolveTarget isStandIn +6
+- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus resolveTarget +7
 
 ### Navigation
 
-- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger primaryAction desktopPrimaryFallback +29 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
+- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger primaryAction +30 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
 - FilterLinks: label* items* value layout
 - NavRow: title* description meta badge icon href onClick disabled
 - PageHeader: title* eyebrow headingLevel description actions
@@ -74,16 +74,16 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DetailAttentionCard: tone* title* description meta action toneLabel
 - DetailList: rows*
 - DetailSectionCard: title* description icon action
-- Disclosure: summary* name defaultOpen variant size panelClassName summaryClassName indicator
+- Disclosure: summary* name defaultOpen variant size description meta panelClassName summaryClassName indicator
 - OneWayDisclosure: trigger* open defaultOpen onOpenChange variant label panelClassName
 - ProgressBar: value* label* max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
 - SortableTh: dir* label* active* onSort* abbr wrap
 - Sparkline: values* label* variant tone
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
-- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone hint +6
+- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone +7
 - StatusTimeline: tracks*
-- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns density footer tableClassName | also TableBody TableEmpty TableFoot +4
+- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns density footer +1 | also TableBody TableEmpty TableFoot +4
 - TableToolbar: filters activeFilter onFilterChange search onSearchChange searchPlaceholder clearSearchLabel variant
 
 ### Feedback

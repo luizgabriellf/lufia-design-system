@@ -124,5 +124,7 @@ Name the action, not the picture: "Open settings", not "Cog". Keep it to two or 
 - `components-actions-iconbutton--loading`
 - `components-actions-iconbutton--as-link`
 - `components-actions-iconbutton--custom-title`
+- `components-actions-iconbutton--pressed`
+- `components-actions-iconbutton--pressed-secondary`
 - `components-actions-iconbutton--all-variants-and-sizes`
 - `components-actions-iconbutton--all-themes`

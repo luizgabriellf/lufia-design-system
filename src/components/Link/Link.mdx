@@ -40,6 +40,13 @@ hover (mirrored in right-to-left layouts) and does not move under `prefers-reduc
 
 <Canvas of={Stories.WithIconEnd} />
 
+`iconStart` is the same decorative icon before the text. It stays still on hover. Both can be set together.
+
+<Canvas of={Stories.WithIconStart} />
+
+On a coarse pointer the `standalone` variant takes a touch area of at least `--lufia-target-touch` through a
+pseudo-element, so the line height does not change.
+
 </Section>
 
 <Section id="examples">

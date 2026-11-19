@@ -5,6 +5,7 @@ import { CloseIcon } from "../Icon/icons";
 import styles from "./Chip.module.css";
 
 export type ChipSize = "sm" | "md";
+export type ChipTone = "neutral" | "accent" | "success" | "warning" | "danger";
 
 type ChipBaseProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onClick"> & {
   /** The label. Always required: the selected state and the icon never carry the meaning on their own. */
@@ -13,6 +14,12 @@ type ChipBaseProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onClick"> &
   iconStart?: ReactNode;
   /** `sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only. */
   size?: ChipSize;
+  /**
+   * Colour family from the semantic tokens: `neutral` (default) is the plain look, `accent` the accent subtle fill, and
+   * `success`, `warning` and `danger` the status fills. Colour never carries the meaning alone: the label does. A selected
+   * toggle chip keeps the selected look whatever the tone.
+   */
+  tone?: ChipTone;
   /** Dims the chip and ignores activation. For a removable chip it disables the remove button. */
   disabled?: boolean;
   ref?: Ref<HTMLElement>;
@@ -20,7 +27,10 @@ type ChipBaseProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onClick"> &
 
 /** An action chip or a toggle chip: the whole chip is one button. */
 type ChipPressable = ChipBaseProps & {
-  /** Makes the chip a button that applies a suggestion or a filter. */
+  /**
+   * Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls`
+   * reach the button, so a chip can open a popover or a menu.
+   */
   onClick?: MouseEventHandler<HTMLButtonElement>;
   /**
    * Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent
@@ -52,6 +62,7 @@ export function Chip({
   children,
   iconStart,
   size = "md",
+  tone = "neutral",
   disabled = false,
   onClick,
   selected,
@@ -66,6 +77,7 @@ export function Chip({
     ...rest,
     className: classes,
     "data-size": size,
+    "data-tone": tone === "neutral" ? undefined : tone,
     "data-selected": selected || undefined,
     "data-disabled": disabled || undefined,
   };
