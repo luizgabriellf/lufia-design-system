@@ -35,7 +35,7 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `items` | `readonly MoreActionItem[]` | yes |  |  |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the trigger the menu lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop. |

@@ -3431,17 +3431,17 @@
           "props": [
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"secondary\"",
-              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
+              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet \"show more\"; it keeps no touch-target floor, as it is inline text."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
-              "default": "\"md\"",
-              "description": ""
+              "default": "variant === \"link\" ? undefined : \"md\"",
+              "description": "Default `md`. With `variant=\"link\"` the default is no size: the text inherits the font size around it."
             },
             {
               "name": "loading",
@@ -3658,13 +3658,13 @@
           "name": "ButtonVariant",
           "kind": "type",
           "description": "",
-          "definition": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
+          "definition": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\""
         }
       ],
       "aliases": {
         "ButtonProps": "AsButton | AsLink",
         "ButtonSize": "\"sm\" | \"md\" | \"lg\"",
-        "ButtonVariant": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
+        "ButtonVariant": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\""
       },
       "story": {
         "docsId": "components-actions-button--docs",
@@ -3680,6 +3680,22 @@
           {
             "export": "Ghost",
             "id": "components-actions-button--ghost"
+          },
+          {
+            "export": "LinkInSentence",
+            "id": "components-actions-button--link-in-sentence"
+          },
+          {
+            "export": "LinkShowMore",
+            "id": "components-actions-button--link-show-more"
+          },
+          {
+            "export": "LinkLoading",
+            "id": "components-actions-button--link-loading"
+          },
+          {
+            "export": "LinkDisabled",
+            "id": "components-actions-button--link-disabled"
           },
           {
             "export": "Danger",
@@ -3777,7 +3793,7 @@
           "Native elements, so role, focus and activation come from the browser.",
           "Focus shows a 2px ring with an offset in every variant. In forced-colors mode the border uses `ButtonText`.",
           "Icons are decorative and hidden; the label is the accessible name.",
-          "Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers.",
+          "Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers. The `link` variant is the exception: it is inline text and has no minimum height.",
           "A link used as a button is marked `aria-disabled` when disabled or loading, and its activation is cancelled.",
           "The hover lift applies only where a pointer can hover and is dropped under `prefers-reduced-motion`; the press scale takes over while the button is held.",
           "The spinner is a rotation only and stops under `prefers-reduced-motion`; `aria-busy` and the cursor still say it is busy."
@@ -3821,6 +3837,7 @@
         "--lufia-color-focus-ring",
         "--lufia-color-status-danger-on-solid",
         "--lufia-color-status-danger-solid",
+        "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-on-accent",
         "--lufia-font-family-body",
@@ -3838,6 +3855,7 @@
         "--lufia-radius-control",
         "--lufia-radius-full",
         "--lufia-radius-sm",
+        "--lufia-radius-xs",
         "--lufia-target-touch"
       ]
     },
@@ -10098,17 +10116,17 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
-              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
+              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet \"show more\"; it keeps no touch-target floor, as it is inline text."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Default `md`. With `variant=\"link\"` the default is no size: the text inherits the font size around it."
             },
             {
               "name": "loading",
@@ -11852,7 +11870,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
               "description": ""
@@ -12464,7 +12482,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
               "description": ""
@@ -12974,7 +12992,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"secondary\"",
               "description": "Look of the button. Defaults to `\"secondary\"`."
@@ -14007,7 +14025,7 @@
             },
             {
               "name": "variant",
-              "type": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\"",
+              "type": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\"",
               "required": false,
               "default": "\"primary\"",
               "description": "Look of the underlying `Button`. Default `\"primary\"`. `\"unstyled\"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then."
@@ -14046,12 +14064,12 @@
           "name": "PendingSubmitVariant",
           "kind": "type",
           "description": "A `Button` variant, or `unstyled` for a plain button that takes its whole look from `className`.",
-          "definition": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
+          "definition": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\""
         }
       ],
       "aliases": {
         "PendingProgress": "readonly (readonly [afterMs: number, label: string])[]",
-        "PendingSubmitVariant": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
+        "PendingSubmitVariant": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\""
       },
       "story": {
         "docsId": "components-forms-pendingsubmit--docs",

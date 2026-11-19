@@ -138,6 +138,18 @@
   box-shadow: none;
 }
 
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Sizes */
 .root[data-size="sm"] {
   min-block-size: 2rem;
@@ -157,6 +169,55 @@
   inline-size: 100%;
 }
 
+/* Link: text on a text baseline, for an action inside a sentence or a quiet "show more". No fill, border, shadow,
+   padding or minimum height, and no touch-target floor, because it is inline text and a floor would break the line. The
+   size follows the surrounding text unless `size` is given. It sits after the sizes so it wins at equal specificity. */
+.root[data-variant="link"],
+.root[data-variant="link"][data-size] {
+  display: inline-flex;
+  min-block-size: 0;
+  gap: 0.25em;
+  padding: 0;
+  border-width: 0;
+  border-radius: var(--lufia-radius-xs);
+  background: transparent;
+  box-shadow: none;
+  color: var(--lufia-color-text-accent);
+  font-weight: inherit;
+  line-height: inherit;
+  text-align: start;
+  vertical-align: baseline;
+}
+
+.root[data-variant="link"]:not([data-size]) {
+  font-size: inherit;
+}
+
+.root[data-variant="link"][data-full-width] {
+  display: flex;
+}
+
+/* The underline sits on the label, so an icon is never underlined. */
+.root[data-variant="link"]:focus-visible .label,
+.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) .label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.2em;
+}
+
+/* Text does not lift or compress: no hover lift, no strip under it, no press scale. */
+.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+  translate: none;
+}
+
+.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading])::after {
+  content: none;
+}
+
+.root[data-variant="link"]:active:not(:disabled, [aria-disabled="true"]) {
+  transform: none;
+}
+
 /* Icon-only (IconButton): a square target. */
 .root[data-icon-only] {
   inline-size: 2.5rem;
@@ -169,18 +230,6 @@
 
 .root[data-icon-only][data-size="lg"] {
   inline-size: 3rem;
-}
-
-.icon {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.label {
-  min-inline-size: 0;
-  overflow-wrap: anywhere;
 }
 
 /* Loading: the content stays in the layout (so the width holds and the name is kept) but is not painted. */
@@ -216,6 +265,11 @@
     min-block-size: var(--lufia-target-touch, 2.75rem);
   }
 
+  .root[data-variant="link"],
+  .root[data-variant="link"][data-size] {
+    min-block-size: 0;
+  }
+
   .root[data-icon-only],
   .root[data-icon-only][data-size="sm"] {
     inline-size: var(--lufia-target-touch, 2.75rem);
@@ -231,6 +285,10 @@
 @media (forced-colors: active) {
   .root {
     border-color: ButtonText;
+  }
+
+  .root[data-variant="link"] {
+    color: LinkText;
   }
 
   .root:disabled,

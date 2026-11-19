@@ -237,6 +237,87 @@ describe("Button", () => {
     });
   });
 
+  describe("link variant", () => {
+    it("is a button with no size by default, so the text inherits the font size", () => {
+      render(<Button variant="link">Undo</Button>);
+      const button = screen.getByRole("button", { name: "Undo" });
+      expect(button).toHaveAttribute("type", "button");
+      expect(button).toHaveAttribute("data-variant", "link");
+      expect(button).not.toHaveAttribute("data-size");
+    });
+
+    it("takes a size when one is given, and other variants still default to md", () => {
+      const { rerender } = render(
+        <Button variant="link" size="sm">
+          Undo
+        </Button>,
+      );
+      expect(screen.getByRole("button")).toHaveAttribute("data-size", "sm");
+      rerender(<Button variant="ghost">Undo</Button>);
+      expect(screen.getByRole("button")).toHaveAttribute("data-size", "md");
+    });
+
+    it("activates from the keyboard and not when disabled", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const { rerender } = render(
+        <Button variant="link" onClick={onClick}>
+          Undo
+        </Button>,
+      );
+      await user.tab();
+      expect(screen.getByRole("button")).toHaveFocus();
+      await user.keyboard("{Enter}");
+      expect(onClick).toHaveBeenCalledTimes(1);
+      rerender(
+        <Button variant="link" onClick={onClick} disabled>
+          Undo
+        </Button>,
+      );
+      await user.click(screen.getByRole("button"));
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("hides icons from assistive technology and reports loading", () => {
+      render(
+        <Button variant="link" loading iconStart={<svg data-testid="a" />} iconEnd={<svg data-testid="b" />}>
+          Show more
+        </Button>,
+      );
+      expect(screen.getByTestId("a").parentElement).toHaveAttribute("aria-hidden", "true");
+      expect(screen.getByTestId("b").parentElement).toHaveAttribute("aria-hidden", "true");
+      expect(screen.getByRole("button", { name: "Show more" })).toHaveAttribute("aria-busy", "true");
+    });
+
+    it("renders as a link and through render, with the variant", () => {
+      render(
+        <div>
+          <Button variant="link" href="/more">
+            More
+          </Button>
+          <Button variant="link" render={<RouteLink href="/other" />}>
+            Other
+          </Button>
+        </div>,
+      );
+      expect(screen.getByRole("link", { name: "More" })).toHaveAttribute("data-variant", "link");
+      expect(screen.getByRole("link", { name: "Other" })).toHaveAttribute("data-variant", "link");
+    });
+
+    it("has no axe violations", async () => {
+      const { container } = render(
+        <p>
+          Archived, or{" "}
+          <Button variant="link" iconEnd={<svg />}>
+            undo that
+          </Button>
+          .
+        </p>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
   it("has no axe violations in every state", async () => {
     const { container } = render(
       <div>
@@ -293,5 +374,19 @@ describe("Button surface hooks (stylesheet)", () => {
     expect(css.match(/:hover:not\(:disabled, \[aria-disabled="true"\]\)/g)).toBeNull();
     expect(css.indexOf("--lufia-button-hover-lift")).toBeLessThan(css.indexOf(".root:active"));
     expect(rule('.root:active:not(:disabled, [aria-disabled="true"])')).toContain("translate: none");
+  });
+});
+
+describe("Button link variant (stylesheet)", () => {
+  const css = readFileSync("src/components/Button/Button.module.css", "utf8");
+
+  it("sits on the text baseline and inherits the font size when no size is given", () => {
+    expect(css).toMatch(/\.root\[data-variant="link"\]:not\(\[data-size\]\) \{\s*font-size: inherit;/);
+    expect(css).toMatch(/vertical-align: baseline;/);
+  });
+
+  it("drops the touch-target floor on coarse pointers", () => {
+    const coarse = css.slice(css.indexOf("@media (pointer: coarse)"));
+    expect(coarse).toMatch(/\.root\[data-variant="link"\]\[data-size\] \{\s*min-block-size: 0;/);
   });
 });

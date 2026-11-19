@@ -22,8 +22,10 @@ describe("component manifest", () => {
   });
 
   it("writes out the literals of a union alias", () => {
-    expect(prop("Button", "variant").type).toBe('"primary" | "secondary" | "ghost" | "danger"');
-    expect(component("Button").aliases.ButtonVariant).toBe('"primary" | "secondary" | "ghost" | "danger"');
+    expect(prop("Button", "variant").type).toBe('"primary" | "secondary" | "ghost" | "danger" | "link"');
+    expect(component("Button").aliases.ButtonVariant).toBe(
+      '"primary" | "secondary" | "ghost" | "danger" | "link"',
+    );
   });
 
   it("lists the members of the object a hook returns", () => {

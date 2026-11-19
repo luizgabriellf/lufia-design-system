@@ -63,7 +63,7 @@ no i18n and no data layer.
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default bell icon. |
 | `maxCount` | `number` | no | `99` | Counts above this show as "99+". Default 99. |
 

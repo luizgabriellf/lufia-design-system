@@ -1711,8 +1711,8 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet "show more"; it keeps no touch-target floor, as it is inline text. |
+| `size` | `"sm" \| "md" \| "lg"` | no | `variant === "link" ? undefined : "md"` | Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. |
 | `loading` | `boolean` | no | `false` | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `fullWidth` | `boolean` | no | `false` | Stretches to the full width of its container. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
@@ -1760,7 +1760,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 - `ButtonProps`: `AsButton | AsLink`
 - `ButtonSize`: `"sm" | "md" | "lg"`
-- `ButtonVariant`: `"primary" | "secondary" | "ghost" | "danger"`
+- `ButtonVariant`: `"primary" | "secondary" | "ghost" | "danger" | "link"`
 
 ### Example
 
@@ -1787,7 +1787,7 @@ Keyboard:
 - Native elements, so role, focus and activation come from the browser.
 - Focus shows a 2px ring with an offset in every variant. In forced-colors mode the border uses `ButtonText`.
 - Icons are decorative and hidden; the label is the accessible name.
-- Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers.
+- Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers. The `link` variant is the exception: it is inline text and has no minimum height.
 - A link used as a button is marked `aria-disabled` when disabled or loading, and its activation is cancelled.
 - The hover lift applies only where a pointer can hover and is dropped under `prefers-reduced-motion`; the press scale takes over while the button is held.
 - The spinner is a rotation only and stops under `prefers-reduced-motion`; `aria-busy` and the cursor still say it is busy.
@@ -1798,7 +1798,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-border`, `--lufia-button-danger-fg`, `--lufia-button-danger-shadow`, `--lufia-button-danger-shadow-hover`, `--lufia-button-ghost-shadow`, `--lufia-button-ghost-shadow-hover`, `--lufia-button-hover-lift`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-border`, `--lufia-button-primary-border-hover`, `--lufia-button-primary-fg`, `--lufia-button-primary-shadow`, `--lufia-button-primary-shadow-hover`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-border-hover`, `--lufia-button-secondary-fg`, `--lufia-button-secondary-shadow`, `--lufia-button-secondary-shadow-hover`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-border`, `--lufia-button-danger-fg`, `--lufia-button-danger-shadow`, `--lufia-button-danger-shadow-hover`, `--lufia-button-ghost-shadow`, `--lufia-button-ghost-shadow-hover`, `--lufia-button-hover-lift`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-border`, `--lufia-button-primary-border-hover`, `--lufia-button-primary-fg`, `--lufia-button-primary-shadow`, `--lufia-button-primary-shadow-hover`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-border-hover`, `--lufia-button-secondary-fg`, `--lufia-button-secondary-shadow`, `--lufia-button-secondary-shadow-hover`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-radius-xs`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -1810,6 +1810,10 @@ truncating. Give the destructive action a specific name rather than "Yes".
 - `components-actions-button--default`
 - `components-actions-button--primary`
 - `components-actions-button--ghost`
+- `components-actions-button--link-in-sentence`
+- `components-actions-button--link-show-more`
+- `components-actions-button--link-loading`
+- `components-actions-button--link-disabled`
 - `components-actions-button--danger`
 - `components-actions-button--disabled`
 - `components-actions-button--loading`
@@ -4318,8 +4322,8 @@ A `Button` that shows only an icon. The accessible name is required by the types
 | `href` | `string` | no |  | When present the button renders as a link (through the `LufiaProvider` link component). |
 | `aria-label` | `string` | yes |  | Defines a string value that labels the current element. Accessible name. Required: an icon alone has no name, and the types refuse a button without one. |
 | `title` | `string` | no |  | Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name. |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. |
-| `size` | `"sm" \| "md" \| "lg"` | no |  |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` | Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet "show more"; it keeps no touch-target floor, as it is inline text. |
+| `size` | `"sm" \| "md" \| "lg"` | no |  | Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. |
 | `loading` | `boolean` | no |  | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. Server Components: create the element in a Client Component (an element passed from a Server Component can arrive as a lazy reference and throws); build the button inside a small client component, or pass a plain `<a>`. |
 | `icon` | `ReactNode` | yes |  | The icon. Decorative: the name comes from `aria-label`. |
@@ -5065,7 +5069,7 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | `items` | `readonly MoreActionItem[]` | yes |  |  |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the trigger the menu lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop. |
@@ -5314,7 +5318,7 @@ no i18n and no data layer.
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"ghost"` |  |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
 | `icon` | `ReactNode` | no |  | Replaces the default bell icon. |
 | `maxCount` | `number` | no | `99` | Counts above this show as "99+". Default 99. |
 
@@ -5519,7 +5523,7 @@ A button that reveals a region and leaves once it has. It is a disclosure whose 
 | `open` | `boolean` | no |  | Controlled state. Pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial state when `open` is not given. Start open to render the content with no button. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with `true` when the person activates the button. The component never closes itself. |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"secondary"` | Look of the button. Defaults to `"secondary"`. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"secondary"` | Look of the button. Defaults to `"secondary"`. |
 | `label` | `string` | no |  | Accessible name of the revealed content. When given, the content is exposed as a `region` landmark with this name, which is also what a screen reader announces when focus moves into it. Leave it out for content that is not a landmark. |
 | `panelClassName` | `string` | no |  | Class for the revealed content wrapper. |
 
@@ -6034,7 +6038,7 @@ pending label, and for a long wait moves through further labels.
 | `pendingLabel` | `string` | yes |  | The label while the form is submitting ("Saving…"). It is announced to assistive technology. |
 | `progress` | `PendingProgress` | no | `[]` | Labels that replace `pendingLabel` after a delay, for actions that can take long. |
 | `pending` | `boolean` | no | `false` | Treat the button as pending although the form is not (yet). Use it to drive the button from `useActionState`, a `useTransition` or your own request state. It is combined with the form's own pending state. |
-| `variant` | `"danger" \| "primary" \| "secondary" \| "ghost" \| "unstyled"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. `"unstyled"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then. |
+| `variant` | `"danger" \| "primary" \| "secondary" \| "ghost" \| "link" \| "unstyled"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. `"unstyled"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then. |
 | `size` | `"sm" \| "md" \| "lg"` | no |  | Size of the underlying `Button`. Ignored with `variant="unstyled"`. |
 | `fullWidth` | `boolean` | no |  | Stretches to the full width of its container. Ignored with `variant="unstyled"`. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
@@ -6044,7 +6048,7 @@ Other native element attributes pass through to the root element.
 ### Types
 
 - `PendingProgress`: `readonly (readonly [afterMs: number, label: string])[]`
-- `PendingSubmitVariant`: `"danger" | "primary" | "secondary" | "ghost" | "unstyled"`
+- `PendingSubmitVariant`: `"danger" | "primary" | "secondary" | "ghost" | "link" | "unstyled"`
 
 ### Example
 

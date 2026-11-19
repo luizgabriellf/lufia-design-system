@@ -73,7 +73,7 @@ describe("AI component discovery", () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: "variant",
-          type: '"primary" | "secondary" | "ghost" | "danger"',
+          type: '"primary" | "secondary" | "ghost" | "danger" | "link"',
         }),
       ]),
     );
