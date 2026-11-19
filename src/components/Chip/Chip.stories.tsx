@@ -107,6 +107,48 @@ function Grid() {
   );
 }
 
+function PopoverDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <Chip
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-controls="chip-popover"
+        onClick={() => setOpen(!open)}
+      >
+        Filters
+      </Chip>
+      <div id="chip-popover" hidden={!open}>
+        Filter options
+      </div>
+    </div>
+  );
+}
+
+const tones = ["neutral", "accent", "success", "warning", "danger"] as const;
+
+function Tones() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+      {tones.map((tone) => (
+        <Chip key={tone} tone={tone}>
+          {tone}
+        </Chip>
+      ))}
+      {tones.map((tone) => (
+        <Chip key={`${tone}-action`} tone={tone} onClick={() => {}}>
+          {tone} action
+        </Chip>
+      ))}
+    </div>
+  );
+}
+/** Colour comes from the semantic tokens; the label carries the meaning. */
+export const AllTones: Story = { render: () => <Tones /> };
+export const Danger: Story = { args: { tone: "danger", onClick: () => {}, children: "Overdue" } };
+/** The chip forwards `aria-expanded`, `aria-haspopup` and `aria-controls`, so it can open a popover or a menu. */
+export const PopoverTrigger: Story = { render: () => <PopoverDemo /> };
 export const AllStatesAndSizes: Story = { render: () => <Grid /> };
 export const Phone320: Story = {
   render: () => <Grid />,
@@ -127,6 +169,7 @@ export const AllThemes: Story = {
   render: () => (
     <ThemeMatrix>
       <Grid />
+      <Tones />
     </ThemeMatrix>
   ),
 };

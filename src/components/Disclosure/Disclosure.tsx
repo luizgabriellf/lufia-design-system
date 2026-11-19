@@ -17,6 +17,16 @@ export type DisclosureProps = Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "s
   variant?: "boxed" | "plain";
   /** `default` keeps the regular row height and padding; `compact` tightens the padding and the row, for dense lists and sidebars. */
   size?: "default" | "compact";
+  /**
+   * A secondary line under the summary, in the small muted style. It is inside the `<summary>`, so it is part of the
+   * control's accessible name: keep it short.
+   */
+  description?: ReactNode;
+  /**
+   * Trailing content in the summary row before the indicator, such as a count or a status `Badge`. It is inside the
+   * `<summary>`, so it is read as part of the control's name: give a purely decorative one `aria-hidden` yourself.
+   */
+  meta?: ReactNode;
   /** Class for the content wrapper. */
   panelClassName?: string;
   /** Class for the `<summary>` row, for an app that styles its own header (type size, colour, spacing). */
@@ -48,6 +58,8 @@ export function Disclosure({
   panelClassName,
   summaryClassName,
   indicator,
+  description,
+  meta,
   ...rest
 }: DisclosureProps) {
   return (
@@ -60,7 +72,15 @@ export function Disclosure({
       data-indicator={indicator === undefined ? undefined : indicator === null ? "none" : "custom"}
     >
       <summary className={[styles.summary, summaryClassName].filter(Boolean).join(" ")}>
-        {summary}
+        {description ? (
+          <span className={styles.heading}>
+            <span>{summary}</span>
+            <span className={styles.description}>{description}</span>
+          </span>
+        ) : (
+          summary
+        )}
+        {meta ? <span className={styles.meta}>{meta}</span> : null}
         {indicator !== undefined && indicator !== null ? (
           <span className={styles.indicator} aria-hidden="true">
             {indicator}

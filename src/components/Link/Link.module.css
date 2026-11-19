@@ -27,6 +27,12 @@
   text-decoration-line: underline;
 }
 
+.iconStart {
+  display: inline-block;
+  margin-inline-end: 0.25em;
+  vertical-align: -0.125em;
+}
+
 .icon {
   display: inline-block;
   margin-inline-start: 0.25em;
@@ -41,6 +47,23 @@
 
   .root:dir(rtl):hover .icon {
     translate: -0.125rem;
+  }
+}
+
+/* Finger-sized on touch screens without changing the line: a pseudo-element, centred on the link, takes the touch. Only a
+   standalone link needs it: an inline link sits in running text, where a floor would break the line. */
+@media (pointer: coarse) {
+  .root[data-variant="standalone"] {
+    position: relative;
+  }
+
+  .root[data-variant="standalone"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    block-size: max(100%, var(--lufia-target-touch, 2.75rem));
+    translate: 0 -50%;
   }
 }
 

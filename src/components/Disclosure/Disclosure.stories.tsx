@@ -91,6 +91,16 @@ export const CustomIndicator: Story = {
   args: { indicator: <span style={{ fontVariantNumeric: "tabular-nums" }}>3 items</span>, defaultOpen: true },
 };
 
+/** `description` adds a secondary line under the summary and `meta` a trailing count or badge before the chevron. */
+export const DescriptionAndMeta: Story = {
+  args: {
+    summary: "Notifications",
+    description: "Choose what reaches you and when.",
+    meta: <span>4 on</span>,
+    defaultOpen: true,
+  },
+};
+
 /** `indicator={null}` shows nothing at the end of the row. */
 export const NoIndicator: Story = { args: { indicator: null, defaultOpen: true } };
 

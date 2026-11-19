@@ -45,6 +45,11 @@ export const WithIconEnd: Story = {
   args: { variant: "standalone", children: "View all reports", iconEnd: <ArrowRightIcon size="1em" /> },
   decorators: Standalone.decorators,
 };
+/** `iconStart` sits before the text and does not move on hover. */
+export const WithIconStart: Story = {
+  args: { variant: "standalone", children: "Back to reports", iconStart: <ArrowRightIcon size="1em" /> },
+  decorators: Standalone.decorators,
+};
 export const InlineWithIconEnd: Story = {
   args: { children: "read the guide", iconEnd: <ArrowRightIcon size="1em" /> },
 };

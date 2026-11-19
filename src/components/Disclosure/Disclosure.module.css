@@ -99,6 +99,30 @@
   display: none;
 }
 
+/* With a description the summary text and the description stack in one column; without one the summary is unchanged. */
+.heading {
+  display: grid;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  gap: 0.125rem;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-regular);
+}
+
+/* The meta slot sits before the chevron and pushes it to the end. */
+.meta {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-inline-start: auto;
+  color: var(--lufia-color-text-muted);
+  font-weight: var(--lufia-font-weight-regular);
+}
+
 .indicator {
   display: inline-flex;
   flex: 0 0 auto;

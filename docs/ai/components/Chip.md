@@ -35,9 +35,10 @@ removable chip whose only interactive part is its remove button.
 | `children` | `ReactNode` | yes |  | The label. Always required: the selected state and the icon never carry the meaning on their own. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only. |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"neutral"` | Colour family from the semantic tokens: `neutral` (default) is the plain look, `accent` the accent subtle fill, and `success`, `warning` and `danger` the status fills. Colour never carries the meaning alone: the label does. A selected toggle chip keeps the selected look whatever the tone. |
 | `disabled` | `boolean` | no | `false` | Dims the chip and ignores activation. For a removable chip it disables the remove button. |
 | `ref` | `Ref<HTMLElement>` | no |  |  |
-| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. |
 | `selected` | `boolean` | no |  | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. |
 | `onRemove` | `MouseEventHandler<HTMLButtonElement>` | no |  | Called when the remove button is activated. Makes the chip removable. |
 | `removeLabel` | `string` | no |  | Accessible name of the remove button, such as "Remove Draft". Required with `onRemove`. |
@@ -52,7 +53,7 @@ The props are a union of forms; `onClick` selects the form. Only the props that 
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Makes the chip a button that applies a suggestion or a filter. In every form; only its type differs. |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. In every form; only its type differs. |
 | `onRemove` | `undefined` | no |  |
 | `removeLabel` | `undefined` | no |  |
 | `selected` | `boolean` | no | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. In every form; only its type differs. |
@@ -104,7 +105,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-chip-bg`, `--lufia-chip-bg-hover`, `--lufia-chip-border`, `--lufia-chip-fg`, `--lufia-chip-radius`, `--lufia-chip-selected-bg`, `--lufia-chip-selected-border`, `--lufia-chip-selected-fg`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-chip-bg`, `--lufia-chip-bg-hover`, `--lufia-chip-border`, `--lufia-chip-fg`, `--lufia-chip-radius`, `--lufia-chip-selected-bg`, `--lufia-chip-selected-border`, `--lufia-chip-selected-fg`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -123,6 +124,9 @@ One to three words, sentence case. Give `removeLabel` a verb and the item name s
 - `components-actions-chip--long-label`
 - `components-actions-chip--toggle-group`
 - `components-actions-chip--removable-list`
+- `components-actions-chip--all-tones`
+- `components-actions-chip--danger`
+- `components-actions-chip--popover-trigger`
 - `components-actions-chip--all-states-and-sizes`
 - `components-actions-chip--phone-320`
 - `components-actions-chip--right-to-left`

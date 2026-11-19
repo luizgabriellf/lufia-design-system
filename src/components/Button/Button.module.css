@@ -119,6 +119,20 @@
   box-shadow: var(--lufia-button-ghost-shadow-hover, var(--lufia-button-ghost-shadow, none));
 }
 
+/* Pressed (a toggle: `aria-pressed="true"`, as on an IconButton): the accent subtle fill with the accent border and text,
+   which reads apart from hover (fill only) and from rest. For the quiet variants; a primary or danger toggle keeps its
+   fill. It sits after the hover rules and repeats their selector, so a pressed button stays pressed under the pointer. */
+.root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"],
+.root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"]:hover:not(
+    :disabled,
+    [aria-disabled="true"],
+    [data-loading]
+  ) {
+  border-color: var(--lufia-color-accent-border);
+  background: var(--lufia-color-accent-subtle);
+  color: var(--lufia-color-text-accent);
+}
+
 /* The fill has its own optional hooks, so a theme can tune destructive buttons apart from danger marks in charts. */
 .root[data-variant="danger"] {
   background: var(--lufia-button-danger-bg, var(--lufia-color-status-danger-solid));
@@ -300,6 +314,11 @@
 
   .root[data-variant="link"] {
     color: LinkText;
+  }
+
+  .root[aria-pressed="true"] {
+    border-color: Highlight;
+    border-width: var(--lufia-border-width-thick);
   }
 
   .root:disabled,

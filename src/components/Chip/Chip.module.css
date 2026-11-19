@@ -59,6 +59,48 @@ button.root:active:not(:disabled) {
   transform: scale(var(--lufia-motion-scale-press));
 }
 
+/* Tones reuse the semantic status pairs, which the contrast check covers in every theme and mode. Selected comes after, so
+   a selected toggle keeps the selected look. */
+.root[data-tone="accent"] {
+  border-color: var(--lufia-color-accent-border);
+  background: var(--_tone-bg);
+  color: var(--lufia-color-text-accent);
+
+  --_tone-bg: var(--lufia-color-accent-subtle);
+}
+
+.root[data-tone="success"] {
+  border-color: var(--lufia-color-status-success-border);
+  background: var(--_tone-bg);
+  color: var(--lufia-color-status-success-fg);
+
+  --_tone-bg: var(--lufia-color-status-success-bg);
+}
+
+.root[data-tone="warning"] {
+  border-color: var(--lufia-color-status-warning-border);
+  background: var(--_tone-bg);
+  color: var(--lufia-color-status-warning-fg);
+
+  --_tone-bg: var(--lufia-color-status-warning-bg);
+}
+
+.root[data-tone="danger"] {
+  border-color: var(--lufia-color-status-danger-border);
+  background: var(--_tone-bg);
+  color: var(--lufia-color-status-danger-fg);
+
+  --_tone-bg: var(--lufia-color-status-danger-bg);
+}
+
+/* A toned button keeps its fill on hover; the border takes the text colour instead. */
+@media (hover: hover) {
+  button.root[data-tone]:hover:not(:disabled, [data-selected]) {
+    border-color: currentcolor;
+    background: var(--_tone-bg);
+  }
+}
+
 .root[data-selected] {
   background: var(--lufia-chip-selected-bg, var(--lufia-color-accent-subtle));
   border-color: var(--lufia-chip-selected-border, var(--lufia-color-accent-border));

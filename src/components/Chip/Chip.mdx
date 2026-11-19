@@ -51,6 +51,20 @@ Selected uses the accent subtle fill with the accent border and text, and `aria-
 
 <Canvas of={Stories.ToggleGroup} />
 
+### Tone
+
+`tone` colours the chip from the semantic tokens: `neutral` (default), `accent`, `success`, `warning` and `danger`. The label
+carries the meaning, never the colour alone. A selected toggle chip keeps the selected look whatever the tone.
+
+<Canvas of={Stories.AllTones} />
+
+### Opening a popover
+
+A pressable chip forwards `aria-expanded`, `aria-haspopup` and `aria-controls` to its button, so it can be the trigger of a
+popover or a menu.
+
+<Canvas of={Stories.PopoverTrigger} />
+
 ### Removable
 
 <Canvas of={Stories.RemovableList} />

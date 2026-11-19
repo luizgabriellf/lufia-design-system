@@ -60,11 +60,26 @@ function Grid() {
   );
 }
 
+/** A toggle: `aria-pressed` gives the accent subtle fill, border and text, apart from hover and rest. */
+export const Pressed: Story = {
+  args: { variant: "ghost", "aria-pressed": true, "aria-label": "Bold", icon: <PlusIcon size={18} /> },
+};
+export const PressedSecondary: Story = { args: { ...Pressed.args, variant: "secondary" } };
 export const AllVariantsAndSizes: Story = { render: () => <Grid /> };
 export const AllThemes: Story = {
   render: () => (
     <ThemeMatrix>
       <Grid />
+      <div style={{ display: "flex", gap: "0.5rem", marginBlockStart: "0.75rem" }}>
+        <IconButton icon={<PlusIcon size={18} />} aria-label="Ghost off" aria-pressed={false} />
+        <IconButton icon={<PlusIcon size={18} />} aria-label="Ghost on" aria-pressed />
+        <IconButton
+          icon={<PlusIcon size={18} />}
+          aria-label="Secondary on"
+          variant="secondary"
+          aria-pressed
+        />
+      </div>
     </ThemeMatrix>
   ),
 };

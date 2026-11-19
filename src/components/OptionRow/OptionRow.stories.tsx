@@ -46,10 +46,18 @@ export const LongText: Story = {
   },
 };
 
-function Choice() {
+function Choice({ density }: { density?: "comfortable" | "compact" }) {
   const [picked, setPicked] = useState("team");
   return (
-    <ul style={{ display: "grid", gap: "0.5rem", margin: 0, padding: 0, listStyle: "none" }}>
+    <ul
+      style={{
+        display: "grid",
+        gap: density === "compact" ? "0.125rem" : "0.5rem",
+        margin: 0,
+        padding: 0,
+        listStyle: "none",
+      }}
+    >
       {[
         ["solo", "Solo plan", "One person."],
         ["team", "Team plan", "Up to ten people."],
@@ -60,6 +68,7 @@ function Choice() {
             title={title}
             description={description}
             leading={<UsersIcon size={18} />}
+            density={density}
             selected={picked === id}
             trailing={picked === id ? <CheckIcon size={18} /> : undefined}
             onClick={() => setPicked(id!)}
@@ -70,6 +79,12 @@ function Choice() {
   );
 }
 export const ChoiceList: Story = { render: () => <Choice /> };
+/** `density="compact"` for a long pick list inside a menu, sheet or modal: no card chrome, tighter rows. */
+export const CompactList: Story = { render: () => <Choice density="compact" /> };
+export const CompactAsLink: Story = {
+  args: { density: "compact", render: <DemoLink href="#plan" />, selected: true },
+};
+export const CompactDisabled: Story = { args: { density: "compact", disabled: true } };
 export const Phone320: Story = {
   render: () => <Choice />,
   globals: { viewport: { value: "w320", isRotated: false } },
@@ -103,6 +118,15 @@ export const AllThemes: Story = {
           onClick={() => {}}
         />
         <OptionRow title="Disabled" description="Unavailable" disabled onClick={() => {}} />
+        <OptionRow density="compact" title="Compact" description="Rest" onClick={() => {}} />
+        <OptionRow
+          density="compact"
+          title="Compact selected"
+          description="Chosen"
+          selected
+          trailing={<CheckIcon size={18} />}
+          onClick={() => {}}
+        />
       </div>
     </ThemeMatrix>
   ),

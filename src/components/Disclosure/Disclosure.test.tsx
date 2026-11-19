@@ -13,6 +13,40 @@ describe("Disclosure", () => {
     expect(details(container)).not.toHaveAttribute("open");
   });
 
+  it("adds a description under the summary and a meta slot before the indicator", () => {
+    const { container } = render(
+      <Disclosure
+        summary="Alerts"
+        description="Choose what reaches you"
+        meta={<span data-testid="meta">4</span>}
+      >
+        Body
+      </Disclosure>,
+    );
+    const summary = container.querySelector("summary")!;
+    expect(summary).toHaveTextContent("Alerts");
+    expect(summary).toHaveTextContent("Choose what reaches you");
+    expect(summary.querySelector("[data-testid=meta]")).not.toBeNull();
+    expect(summary.lastElementChild).toBe(screen.getByTestId("meta").parentElement);
+    expect(summary).toHaveAccessibleName(/Alerts.*Choose what reaches you.*4/);
+  });
+
+  it("leaves the summary markup unchanged without description and meta", () => {
+    const { container } = render(<Disclosure summary="More">Body</Disclosure>);
+    expect(container.querySelector("summary")!.children).toHaveLength(0);
+  });
+
+  it("keeps meta before a custom indicator", () => {
+    const { container } = render(
+      <Disclosure summary="More" meta="3" indicator={<i data-testid="ind" />}>
+        Body
+      </Disclosure>,
+    );
+    const summary = container.querySelector("summary")!;
+    expect(summary.children).toHaveLength(2);
+    expect(summary.lastElementChild).toBe(screen.getByTestId("ind").parentElement);
+  });
+
   it("starts open with defaultOpen", () => {
     const { container } = render(
       <Disclosure summary="More" defaultOpen>

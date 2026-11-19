@@ -38,6 +38,14 @@ is a type error.
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.AsLink} />
 
+### Toggle
+
+Pass `aria-pressed` to make it a toggle. A pressed `ghost` or `secondary` button takes the accent subtle fill with the accent
+border and text, which differs from rest and from hover, and a thicker `Highlight` border in forced-colors mode. Keep the
+`aria-label` the same in both states: the state is `aria-pressed`, not a changed name.
+
+<Canvas of={Stories.Pressed} />
+
 ### All themes
 
 <Canvas of={Stories.AllThemes} />

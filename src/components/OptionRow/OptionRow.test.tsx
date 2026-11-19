@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type { ComponentProps } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -94,6 +95,65 @@ describe("OptionRow", () => {
     render(<OptionRow title="A" className="extra" data-testid="row" aria-describedby="hint" />);
     expect(screen.getByTestId("row")).toHaveClass("extra");
     expect(screen.getByTestId("row")).toHaveAttribute("aria-describedby", "hint");
+  });
+
+  it("defaults to comfortable and exposes the density on the button and on a rendered element", () => {
+    const { rerender } = render(<OptionRow title="A" />);
+    expect(screen.getByRole("button")).toHaveAttribute("data-density", "comfortable");
+    rerender(<OptionRow title="A" density="compact" />);
+    expect(screen.getByRole("button")).toHaveAttribute("data-density", "compact");
+    rerender(<OptionRow title="A" density="compact" render={<DemoLink href="#a" />} />);
+    expect(screen.getByRole("link")).toHaveAttribute("data-density", "compact");
+  });
+
+  it("keeps the compact slots, selected state and disabled behaviour", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const { rerender } = render(
+      <OptionRow
+        density="compact"
+        title="Lisbon"
+        description="GMT"
+        leading={<svg data-testid="lead" />}
+        trailing="check"
+        selected
+        onClick={onClick}
+      />,
+    );
+    const row = screen.getByRole("button", { name: "Lisbon GMT check" });
+    expect(row).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("lead").parentElement).toHaveAttribute("aria-hidden", "true");
+    await user.click(row);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    rerender(<OptionRow density="compact" title="Lisbon" disabled onClick={onClick} />);
+    await user.click(screen.getByRole("button"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("styles compact without card chrome and with a touch-sized floor on coarse pointers", () => {
+    const css = readFileSync("src/components/OptionRow/OptionRow.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(/\.root\[data-density="compact"\] \{[^}]*box-shadow: none/);
+    expect(css).toMatch(/\.root\[data-density="compact"\] \{[^}]*border-color: transparent/);
+    expect(css).toMatch(
+      /@media \(pointer: coarse\) \{ \.root\[data-density="compact"\] \{ min-block-size: var\(--lufia-target-touch, 2\.75rem\)/,
+    );
+  });
+
+  it("has no axe violations in a compact list", async () => {
+    const { container } = render(
+      <ul>
+        <li>
+          <OptionRow density="compact" title="A" description="First" selected trailing="check" />
+        </li>
+        <li>
+          <OptionRow density="compact" title="B" disabled />
+        </li>
+        <li>
+          <OptionRow density="compact" title="C" selected render={<DemoLink href="#c" />} />
+        </li>
+      </ul>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("has no axe violations in a list of options", async () => {

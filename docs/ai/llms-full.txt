@@ -1798,7 +1798,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-border`, `--lufia-button-danger-fg`, `--lufia-button-danger-shadow`, `--lufia-button-danger-shadow-hover`, `--lufia-button-ghost-shadow`, `--lufia-button-ghost-shadow-hover`, `--lufia-button-hover-lift`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-border`, `--lufia-button-primary-border-hover`, `--lufia-button-primary-fg`, `--lufia-button-primary-shadow`, `--lufia-button-primary-shadow-hover`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-border-hover`, `--lufia-button-secondary-fg`, `--lufia-button-secondary-shadow`, `--lufia-button-secondary-shadow-hover`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-radius-xs`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-button-danger-bg`, `--lufia-button-danger-border`, `--lufia-button-danger-fg`, `--lufia-button-danger-shadow`, `--lufia-button-danger-shadow-hover`, `--lufia-button-ghost-shadow`, `--lufia-button-ghost-shadow-hover`, `--lufia-button-hover-lift`, `--lufia-button-primary-bg`, `--lufia-button-primary-bg-hover`, `--lufia-button-primary-border`, `--lufia-button-primary-border-hover`, `--lufia-button-primary-fg`, `--lufia-button-primary-shadow`, `--lufia-button-primary-shadow-hover`, `--lufia-button-secondary-bg`, `--lufia-button-secondary-bg-hover`, `--lufia-button-secondary-border`, `--lufia-button-secondary-border-hover`, `--lufia-button-secondary-fg`, `--lufia-button-secondary-shadow`, `--lufia-button-secondary-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-accent-default`, `--lufia-color-accent-hover`, `--lufia-color-accent-subtle`, `--lufia-color-bg-field`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-on-solid`, `--lufia-color-status-danger-solid`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-on-accent`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-duration-slow`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-control`, `--lufia-radius-full`, `--lufia-radius-sm`, `--lufia-radius-xs`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -2274,9 +2274,10 @@ removable chip whose only interactive part is its remove button.
 | `children` | `ReactNode` | yes |  | The label. Always required: the selected state and the icon never carry the meaning on their own. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label; hidden from assistive technology. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only. |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"neutral"` | Colour family from the semantic tokens: `neutral` (default) is the plain look, `accent` the accent subtle fill, and `success`, `warning` and `danger` the status fills. Colour never carries the meaning alone: the label does. A selected toggle chip keeps the selected look whatever the tone. |
 | `disabled` | `boolean` | no | `false` | Dims the chip and ignores activation. For a removable chip it disables the remove button. |
 | `ref` | `Ref<HTMLElement>` | no |  |  |
-| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. |
 | `selected` | `boolean` | no |  | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. |
 | `onRemove` | `MouseEventHandler<HTMLButtonElement>` | no |  | Called when the remove button is activated. Makes the chip removable. |
 | `removeLabel` | `string` | no |  | Accessible name of the remove button, such as "Remove Draft". Required with `onRemove`. |
@@ -2291,7 +2292,7 @@ The props are a union of forms; `onClick` selects the form. Only the props that 
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Makes the chip a button that applies a suggestion or a filter. In every form; only its type differs. |
+| `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. In every form; only its type differs. |
 | `onRemove` | `undefined` | no |  |
 | `removeLabel` | `undefined` | no |  |
 | `selected` | `boolean` | no | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. In every form; only its type differs. |
@@ -2343,7 +2344,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-chip-bg`, `--lufia-chip-bg-hover`, `--lufia-chip-border`, `--lufia-chip-fg`, `--lufia-chip-radius`, `--lufia-chip-selected-bg`, `--lufia-chip-selected-border`, `--lufia-chip-selected-fg`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-chip-bg`, `--lufia-chip-bg-hover`, `--lufia-chip-border`, `--lufia-chip-fg`, `--lufia-chip-radius`, `--lufia-chip-selected-bg`, `--lufia-chip-selected-border`, `--lufia-chip-selected-fg`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-focus-ring`, `--lufia-color-status-danger-bg`, `--lufia-color-status-danger-border`, `--lufia-color-status-danger-fg`, `--lufia-color-status-success-bg`, `--lufia-color-status-success-border`, `--lufia-color-status-success-fg`, `--lufia-color-status-warning-bg`, `--lufia-color-status-warning-border`, `--lufia-color-status-warning-fg`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-font-family-body`, `--lufia-font-line-height-tight`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -2362,6 +2363,9 @@ One to three words, sentence case. Give `removeLabel` a verb and the item name s
 - `components-actions-chip--long-label`
 - `components-actions-chip--toggle-group`
 - `components-actions-chip--removable-list`
+- `components-actions-chip--all-tones`
+- `components-actions-chip--danger`
+- `components-actions-chip--popover-trigger`
 - `components-actions-chip--all-states-and-sizes`
 - `components-actions-chip--phone-320`
 - `components-actions-chip--right-to-left`
@@ -3595,6 +3599,8 @@ turns and, where the browser supports it, a slide.
 | `defaultOpen` | `boolean` | no |  | Start open. The browser owns the state afterwards, so this works without JavaScript. |
 | `variant` | `"boxed" \| "plain"` | no | `"boxed"` | `boxed` (default) draws a bordered surface; `plain` keeps only the summary row and the content. |
 | `size` | `"default" \| "compact"` | no | `"default"` | `default` keeps the regular row height and padding; `compact` tightens the padding and the row, for dense lists and sidebars. |
+| `description` | `ReactNode` | no |  | A secondary line under the summary, in the small muted style. It is inside the `<summary>`, so it is part of the control's accessible name: keep it short. |
+| `meta` | `ReactNode` | no |  | Trailing content in the summary row before the indicator, such as a count or a status `Badge`. It is inside the `<summary>`, so it is read as part of the control's name: give a purely decorative one `aria-hidden` yourself. |
 | `panelClassName` | `string` | no |  | Class for the content wrapper. |
 | `summaryClassName` | `string` | no |  | Class for the `<summary>` row, for an app that styles its own header (type size, colour, spacing). |
 | `indicator` | `ReactNode` | no |  | What sits at the end of the summary row. Omit it for the built-in chevron, which turns with the state; `null` shows nothing; any other node (an icon, a count, text) replaces the chevron. A custom node does not turn: style it from the state the browser exposes, such as `details[open] .your-class`. It is decorative and hidden from assistive technology, so the summary text has to carry the meaning. |
@@ -3630,7 +3636,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-disclosure-panel-padding-block`, `--lufia-disclosure-panel-padding-inline`, `--lufia-disclosure-summary-min-block-size`, `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-padding-inline`, `--lufia-font-size-sm`, `--lufia-font-weight-medium`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-disclosure-bg`, `--lufia-disclosure-border`, `--lufia-disclosure-panel-padding-block`, `--lufia-disclosure-panel-padding-inline`, `--lufia-disclosure-summary-min-block-size`, `--lufia-disclosure-summary-padding-block`, `--lufia-disclosure-summary-padding-inline`, `--lufia-font-size-sm`, `--lufia-font-weight-medium`, `--lufia-font-weight-regular`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-in-out`, `--lufia-motion-easing-out`, `--lufia-radius-card`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -3647,6 +3653,7 @@ one line where you can; it wraps and the chevron stays at the end.
 - `components-data-display-disclosure--compact-plain`
 - `components-data-display-disclosure--summary-class-name`
 - `components-data-display-disclosure--custom-indicator`
+- `components-data-display-disclosure--description-and-meta`
 - `components-data-display-disclosure--no-indicator`
 - `components-data-display-disclosure--exclusive-group`
 - `components-data-display-disclosure--long-content`
@@ -4413,6 +4420,8 @@ Name the action, not the picture: "Open settings", not "Cog". Keep it to two or 
 - `components-actions-iconbutton--loading`
 - `components-actions-iconbutton--as-link`
 - `components-actions-iconbutton--custom-title`
+- `components-actions-iconbutton--pressed`
+- `components-actions-iconbutton--pressed-secondary`
 - `components-actions-iconbutton--all-variants-and-sizes`
 - `components-actions-iconbutton--all-themes`
 
@@ -4452,13 +4461,14 @@ An inline text link. It goes through the app's router link, and an external one 
 | `children` | `ReactNode` | yes |  |  |
 | `externalLabel` | `string` | no |  | Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an indicator. The value is the visually hidden text read after the link text, such as "(opens in new tab)", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | `inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1). |
+| `iconStart` | `ReactNode` | no |  | Decorative icon before the text, hidden from assistive technology. It does not move on hover. |
 | `iconEnd` | `ReactNode` | no |  | Decorative icon after the text, hidden from assistive technology. It moves 2px along the inline axis on hover, not under reduced motion. The external indicator, when there is one, comes after it. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }`
+- `LinkProps`: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconStart?: ReactNode; iconEnd?: ReactNode; }`
 - `LinkVariant`: `"inline" | "standalone"`
 
 ### Example
@@ -4490,7 +4500,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-xs`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-xs`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -4503,6 +4513,7 @@ the text unless the URL is the content.
 - `components-actions-link--external`
 - `components-actions-link--standalone`
 - `components-actions-link--with-icon-end`
+- `components-actions-link--with-icon-start`
 - `components-actions-link--inline-with-icon-end`
 - `components-actions-link--long-text`
 - `components-actions-link--phone-320`
@@ -5620,6 +5631,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 | `leading` | `ReactNode` | no |  | Decorative slot before the text, such as an icon or an avatar; hidden from assistive technology. |
 | `trailing` | `ReactNode` | no |  | Slot after the text, such as a check mark, a price or a count. It is read after the title, so text in it must carry its own context. Mark a purely decorative one `aria-hidden` yourself. |
 | `selected` | `boolean` | no |  | Marks the row as the chosen one: the accent subtle fill and border, and `aria-pressed` on the button (`aria-current` on an element given to `render`, which is usually a link). Leave it out for a row that is not a choice. |
+| `density` | `"compact" \| "comfortable"` | no | `"comfortable"` | `comfortable` (default) is a bordered card row, for a short list of choices. `compact` is for a long pick list inside a menu, sheet or modal: no border or shadow, tighter block padding, a medium-weight title and a small muted description. The rows are separated by the parent's gap, or a hairline the parent draws. On a coarse pointer a compact row is still at least `--lufia-target-touch` tall. |
 | `onClick` | `MouseEventHandler<HTMLElement>` | no |  |  |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. |
 
@@ -5656,7 +5668,8 @@ Keyboard:
 - The row is a native `<button type="button">`; its name is the title, the description and any text in the trailing slot.
 - `selected` is `aria-pressed`, so the chosen row is announced as pressed and the state is never colour alone: the border and fill change, and the trailing slot can carry a check. Group the rows in a list or a labelled group.
 - The leading slot is decorative and hidden from assistive technology.
-- Rows are at least 3.5rem tall, above the touch target floor. Focus shows the shared ring.
+- The `selected` state is `aria-pressed` on the button and `aria-current` on an element given to `render`; pick the one the element's role fits and do not set both.
+- Comfortable rows are at least 3.5rem tall, above the touch target floor. Compact rows are 2.5rem on a fine pointer and at least `--lufia-target-touch` on a coarse one. Focus shows the shared ring.
 - In forced-colors mode the selected row takes a thicker `Highlight` border.
 - The press scale is off under `prefers-reduced-motion`.
 
@@ -5666,7 +5679,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ### Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-accent-subtle`, `--lufia-color-bg-surface`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-target-touch`.
 
 ### Content guidelines
 
@@ -5682,6 +5695,9 @@ A title of one to four words, and a description that says what picking it means.
 - `components-forms-optionrow--rendered`
 - `components-forms-optionrow--long-text`
 - `components-forms-optionrow--choice-list`
+- `components-forms-optionrow--compact-list`
+- `components-forms-optionrow--compact-as-link`
+- `components-forms-optionrow--compact-disabled`
 - `components-forms-optionrow--phone-320`
 - `components-forms-optionrow--right-to-left`
 - `components-forms-optionrow--all-themes`

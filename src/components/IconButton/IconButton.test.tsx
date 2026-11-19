@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -39,6 +40,18 @@ describe("IconButton", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
+  it("exposes a toggle through aria-pressed and styles the pressed state apart from rest and hover", () => {
+    const { rerender } = render(<IconButton icon={icon} aria-label="Bold" aria-pressed={false} />);
+    expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-pressed", "false");
+    rerender(<IconButton icon={icon} aria-label="Bold" aria-pressed />);
+    expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-pressed", "true");
+    const css = readFileSync("src/components/Button/Button.module.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toMatch(
+      /\[aria-pressed="true"\][^{}]*\{ border-color: var\(--lufia-color-accent-border\); background: var\(--lufia-color-accent-subtle\); color: var\(--lufia-color-text-accent\)/,
+    );
+    expect(css).toContain('.root[aria-pressed="true"] { border-color: Highlight');
+  });
+
   it("renders a link with href", () => {
     render(<IconButton icon={icon} aria-label="Settings" href="/settings" />);
     expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute("href", "/settings");
@@ -56,6 +69,7 @@ describe("IconButton", () => {
         <IconButton icon={icon} aria-label="One" />
         <IconButton icon={icon} aria-label="Two" variant="primary" loading />
         <IconButton icon={icon} aria-label="Three" href="/x" />
+        <IconButton icon={icon} aria-label="Four" aria-pressed />
       </div>,
     );
     expect(await axe(container)).toHaveNoViolations();

@@ -49,6 +49,14 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.LongText} />
 
+### Compact density
+
+`density="compact"` is for a long pick list inside a menu, sheet or modal. The row loses its border and shadow, takes tighter
+block padding, a medium-weight title and the small muted description. Separate the rows with the parent's gap, or draw a
+hairline there. On a coarse pointer a compact row is at least `--lufia-target-touch` tall.
+
+<Canvas of={Stories.CompactList} />
+
 ### A link of your own
 
 `render` swaps in an element of your own, such as a router link, and `selected` then reads as `aria-current`. Create it in a
@@ -83,7 +91,10 @@ Client Component.
 - `selected` is `aria-pressed`, so the chosen row is announced as pressed and the state is never colour alone: the border
   and fill change, and the trailing slot can carry a check. Group the rows in a list or a labelled group.
 - The leading slot is decorative and hidden from assistive technology.
-- Rows are at least 3.5rem tall, above the touch target floor. Focus shows the shared ring.
+- The `selected` state is `aria-pressed` on the button and `aria-current` on an element given to `render`; pick the one the
+  element's role fits and do not set both.
+- Comfortable rows are at least 3.5rem tall, above the touch target floor. Compact rows are 2.5rem on a fine pointer and at
+  least `--lufia-target-touch` on a coarse one. Focus shows the shared ring.
 - In forced-colors mode the selected row takes a thicker `Highlight` border.
 - The press scale is off under `prefers-reduced-motion`.
 

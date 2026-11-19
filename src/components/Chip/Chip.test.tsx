@@ -157,6 +157,57 @@ describe("Chip", () => {
     expect(screen.getByRole("button")).toHaveAccessibleName("Summarise");
   });
 
+  it("forwards aria-expanded, aria-haspopup and aria-controls to the button", () => {
+    render(
+      <Chip aria-expanded={false} aria-haspopup="dialog" aria-controls="panel" onClick={() => {}}>
+        Filters
+      </Chip>,
+    );
+    const chip = screen.getByRole("button", { name: "Filters" });
+    expect(chip).toHaveAttribute("aria-expanded", "false");
+    expect(chip).toHaveAttribute("aria-haspopup", "dialog");
+    expect(chip).toHaveAttribute("aria-controls", "panel");
+  });
+
+  it("forwards them on a toggle chip next to aria-pressed", () => {
+    render(
+      <Chip selected aria-expanded aria-haspopup="menu">
+        Sort
+      </Chip>,
+    );
+    const chip = screen.getByRole("button", { name: "Sort" });
+    expect(chip).toHaveAttribute("aria-pressed", "true");
+    expect(chip).toHaveAttribute("aria-expanded", "true");
+    expect(chip).toHaveAttribute("aria-haspopup", "menu");
+  });
+
+  it("exposes the tone, with neutral as the default that adds nothing", () => {
+    const { rerender } = render(<Chip data-testid="c">A</Chip>);
+    expect(screen.getByTestId("c")).not.toHaveAttribute("data-tone");
+    rerender(
+      <Chip data-testid="c" tone="neutral">
+        A
+      </Chip>,
+    );
+    expect(screen.getByTestId("c")).not.toHaveAttribute("data-tone");
+    for (const tone of ["accent", "success", "warning", "danger"] as const) {
+      rerender(
+        <Chip data-testid="c" tone={tone} onClick={() => {}}>
+          A
+        </Chip>,
+      );
+      expect(screen.getByTestId("c")).toHaveAttribute("data-tone", tone);
+    }
+  });
+
+  it("colours every tone from semantic tokens only", () => {
+    const css = readFileSync("src/components/Chip/Chip.module.css", "utf8");
+    for (const tone of ["accent", "success", "warning", "danger"]) {
+      expect(css).toMatch(new RegExp(`\\.root\\[data-tone="${tone}"\\] \\{[^}]*var\\(--lufia-color-`));
+    }
+    expect(css).not.toMatch(/--lufia-(primitive|color-(green|red|amber|blue))/);
+  });
+
   it("defaults to md and exposes the size", () => {
     const { rerender } = render(<Chip data-testid="c">A</Chip>);
     expect(screen.getByTestId("c")).toHaveAttribute("data-size", "md");
@@ -201,6 +252,15 @@ describe("Chip", () => {
         <Chip>Plain</Chip>
         <Chip onClick={() => {}}>Action</Chip>
         <Chip selected>Toggle</Chip>
+        <Chip tone="success">Paid</Chip>
+        <Chip tone="warning" onClick={() => {}}>
+          Pending
+        </Chip>
+        <Chip tone="danger">Overdue</Chip>
+        <Chip tone="accent">New</Chip>
+        <Chip aria-haspopup="dialog" aria-expanded={false} onClick={() => {}}>
+          Filters
+        </Chip>
         <Chip onClick={() => {}} disabled>
           Disabled
         </Chip>
