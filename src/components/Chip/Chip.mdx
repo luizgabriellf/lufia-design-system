@@ -1,0 +1,127 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Chip.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Chip"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A compact pill control with three uses in one API: an action chip the user applies, a toggle chip that is on or off, and a
+removable chip whose only interactive part is its remove button.
+
+<Canvas of={Stories.AllStatesAndSizes} />
+
+### Usage
+
+```tsx
+import { Chip } from "@lufia/design-system/components/Chip";
+
+<Chip onClick={ask}>Summarise this report</Chip>
+<Chip selected={isOpen} onClick={toggleOpen}>Open</Chip>
+<Chip onRemove={drop} removeLabel="Remove Draft">Draft</Chip>
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
+
+### Modes
+
+| Props                                  | Renders                                         | Use for                                  |
+| -------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| `onClick`                              | `<button>`                                      | A suggestion or a quick action to apply  |
+| `selected` (with or without `onClick`) | `<button aria-pressed>`                         | A filter or option that is on or off     |
+| `onRemove` and `removeLabel`           | `<span>` with the label and a remove `<button>` | A value the user added and can take away |
+| none                                   | `<span>`                                        | A read-only tag                          |
+
+`onRemove` cannot be combined with `onClick` or `selected`: the types refuse it, because the chip would need a button inside
+a button.
+
+</Section>
+
+<Section id="examples">
+
+### Selected
+
+Selected uses the accent subtle fill with the accent border and text, and `aria-pressed="true"`.
+
+<Canvas of={Stories.ToggleGroup} />
+
+### Removable
+
+<Canvas of={Stories.RemovableList} />
+
+### States
+
+<Canvas of={Stories.Default} />
+<Canvas of={Stories.WithIcon} />
+<Canvas of={Stories.Small} />
+<Canvas of={Stories.Selected} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.LongLabel} />
+
+### Theming
+
+A theme restyles a chip through `--lufia-chip-*` hooks: `bg`, `fg`, `border`, `bg-hover`, `selected-bg`, `selected-fg`,
+`selected-border` and `radius`. Unset, they fall back to semantic tokens. The table, with defaults, is in Foundations /
+Theming components.
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key               | Behaviour                                                             |
+| ----------------- | --------------------------------------------------------------------- |
+| `Tab`             | Moves to the chip button, or to the remove button of a removable chip |
+| `Enter` / `Space` | Activates the focused button                                          |
+
+A static chip and the label of a removable chip take no focus.
+
+### Accessibility
+
+- The chip is a native `<button type="button">` when it acts. A toggle chip reports its state with `aria-pressed`, so
+  selected is never only a colour.
+- A removable chip never nests buttons: the label is text, and the remove button carries its own name from `removeLabel`
+  ("Remove Draft"), which should name the thing removed.
+- Visual height is 24px (`sm`) or 28px (`md`). Under a coarse pointer the chip keeps its size and a pseudo-element extends
+  the hit area to `--lufia-target-touch` (44px by default), so neighbours do not grow.
+- Focus shows the shared focus ring; the press scale and transitions are off under `prefers-reduced-motion`.
+- In forced-colors mode the selected chip takes a thicker `Highlight` border, so the state stays visible without colour.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- A suggestion the user can apply with one tap.
+- A filter or option that is on or off, in a group.
+- A value the user added and may remove, such as a tag or a recipient.
+
+### When not to use
+
+- A primary action: use a `Button`.
+- A status label that does nothing: use a `Badge`.
+- Navigation to another page: use a `Link` or `FilterLinks`.
+
+### Content guidelines
+
+One to three words, sentence case. Give `removeLabel` a verb and the item name so a screen reader user knows what goes.
+
+</Section>

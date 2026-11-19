@@ -13,6 +13,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - ActionIcons (deprecated): <DeleteIcon> size title | also DuplicateIcon EditIcon OpenIcon +2
 - Button: variant size loading fullWidth iconStart iconEnd render href disabled
+- Chip: iconStart size disabled onClick selected onRemove removeLabel
 - IconButton: aria-label* icon* href title variant size loading render disabled
 - Link: href* externalLabel
 - MoreActions: label* items* align size variant icon presentation narrowOnlyScope defaultOpen

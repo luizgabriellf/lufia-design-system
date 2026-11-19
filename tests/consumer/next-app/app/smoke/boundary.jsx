@@ -6,6 +6,7 @@ import { AppShell as AppShell_AppShell } from "@lufia/design-system/components/A
 import { Banner as Banner_Banner } from "@lufia/design-system/components/Banner";
 import { Button as Button_Button } from "@lufia/design-system/components/Button";
 import { Checkbox as Checkbox_Checkbox } from "@lufia/design-system/components/Checkbox";
+import { Chip as Chip_Chip } from "@lufia/design-system/components/Chip";
 import { ColumnChart as ColumnChart_ColumnChart } from "@lufia/design-system/components/ColumnChart";
 import { Combobox as Combobox_Combobox } from "@lufia/design-system/components/Combobox";
 import { CommandPalette as CommandPalette_CommandPalette } from "@lufia/design-system/components/CommandPalette";
@@ -65,6 +66,7 @@ export default function ClientSmoke() {
       <section data-smoke="Button"><Button_Button /></section>
       <section data-smoke="ChangeHighlight"><ChangeHighlight_ChangeHighlight value={"x"} /></section>
       <section data-smoke="Checkbox"><Checkbox_Checkbox label={"x"} /></section>
+      <section data-smoke="Chip"><Chip_Chip>{"x"}</Chip_Chip></section>
       <section data-smoke="ColumnChart"><ColumnChart_ColumnChart series={[{ key: "s", label: "Series" }]} columns={[{ key: "c", label: "Column", values: [3] }]} title={"x"} /></section>
       <section data-smoke="Combobox"><Combobox_Combobox options={[{ value: "a", label: "A" }]} loadingLabel={"x"} emptyLabel={"x"} /></section>
       <section data-smoke="CommandPalette"><CommandPalette_CommandPalette items={[{ key: "a", label: "Action" }]} labels={{

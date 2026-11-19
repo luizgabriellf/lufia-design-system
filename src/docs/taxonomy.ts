@@ -49,6 +49,12 @@ export const ENTRIES: Entry[] = [
     "A button with only an icon, which therefore requires an accessible name.",
     apg("Button", "button"),
   ),
+  c(
+    "Chip",
+    "Actions",
+    "A compact pill: an action to apply, a toggle that is on or off, or a removable value.",
+    apg("Button", "button"),
+  ),
   c("Link", "Actions", "Navigation inside text, routed through the adapter set on LufiaProvider."),
   c(
     "MoreActions",
