@@ -1,0 +1,116 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ChoiceTile.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ChoiceTile"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A pressable, selectable tile for picking one value out of a short visible set: a day, a time slot, a plan or a size. The
+tiles sit in a row, a wrapping grid or a horizontally scrolling strip. It is larger than a `Chip` and has room for an
+eyebrow and a description.
+
+<Canvas of={Stories.TimeSlotGrid} />
+
+### Usage
+
+```tsx
+import { ChoiceTile } from "@lufia/design-system/components/ChoiceTile";
+
+<div role="group" aria-label="Time">
+  {slots.map((slot) => (
+    <ChoiceTile key={slot} label={slot} selected={slot === picked} onClick={() => setPicked(slot)} />
+  ))}
+</div>
+
+<ChoiceTile eyebrow="Thursday" label="19/11" selected />
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
+
+The tile does not own the group: you lay the tiles out, hold the value and decide the grouping semantics.
+
+</Section>
+
+<Section id="examples">
+
+### Two lines in a scrolling strip
+
+<Canvas of={Stories.DayStripScrolling} />
+
+### Emphasis
+
+`solid` (default) fills the selected tile with the accent and the on-accent text, so it is the strongest element of its set.
+`subtle` uses the accent subtle fill with the accent border and text, for a set inside a surface that is already emphasised.
+
+<Canvas of={Stories.SubtleEmphasis} />
+
+### Sizes
+
+`md` is at least `--lufia-target-touch` tall. `sm` is 36px on a fine pointer and regains the touch floor under a coarse one.
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.AllStates} />
+<Canvas of={Stories.Disabled} />
+<Canvas of={Stories.LongLabel} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key               | Behaviour                  |
+| ----------------- | -------------------------- |
+| `Tab`             | Moves to the next tile     |
+| `Enter` / `Space` | Activates the focused tile |
+
+### Accessibility
+
+- The tile is a native `<button type="button">`. `selected` is exposed as `aria-pressed`, so the state is never only a colour.
+- The accessible name is the eyebrow, the label and the description, in that order.
+- For one choice with arrow-key movement, wrap the tiles in a `role="radiogroup"` and manage it yourself; the package ships no
+  group component. Without it, the tiles are toggle buttons in a labelled `role="group"`.
+- Focus shows the shared focus ring; the press scale and transitions are off under `prefers-reduced-motion`.
+- In forced-colors mode the selected tile takes a thicker `Highlight` border.
+- Label, eyebrow and description wrap instead of overflowing, so 200% text size does not clip them.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- One value from a short, visible set where the values are scannable: dates, times, plans, sizes.
+
+### When not to use
+
+- A small one-line filter or tag: use a `Chip`.
+- A vertical list of choices with descriptions or icons: use an `OptionRow`.
+- Two to four exclusive views that change the content below: use `SegmentedToggle`.
+- A long set: use a `Select` or a `Combobox`.
+
+### Content guidelines
+
+Keep the label short and scannable. Use the eyebrow for the unit that gives it context, such as the weekday.
+
+</Section>
