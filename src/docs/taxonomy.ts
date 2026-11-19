@@ -185,6 +185,11 @@ export const ENTRIES: Entry[] = [
     "A labelled row of links that each apply a filter to one list through the URL, with an optional count.",
   ),
   c(
+    "ChoiceTile",
+    "Forms",
+    "A pressable, selectable tile for one value out of a short visible set: a day, a time slot, a plan or a size.",
+  ),
+  c(
     "OptionRow",
     "Forms",
     "A full-width row that is one button, with leading and trailing slots and a selected state, for a list of choices.",

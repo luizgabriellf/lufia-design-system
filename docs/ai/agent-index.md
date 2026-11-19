@@ -22,6 +22,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 ### Forms
 
 - Checkbox: label* hint error indeterminate size
+- ChoiceTile: label* disabled eyebrow description selected emphasis size fullWidth
 - Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel +10
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName +7

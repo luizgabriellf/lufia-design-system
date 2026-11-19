@@ -11,6 +11,7 @@ export * from "./components/Card";
 export * from "./components/ChartKit";
 export * from "./components/Checkbox";
 export * from "./components/Checklist";
+export * from "./components/ChoiceTile";
 export * from "./components/Chip";
 export * from "./components/CitationList";
 export * from "./components/ColumnChart";

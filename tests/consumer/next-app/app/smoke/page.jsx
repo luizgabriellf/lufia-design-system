@@ -8,6 +8,7 @@ import { BulletBar as BulletBar_BulletBar } from "@lufia/design-system/component
 import { Card as Card_Card } from "@lufia/design-system/components/Card";
 import * as ChartKit from "@lufia/design-system/components/ChartKit";
 import { Checklist as Checklist_Checklist } from "@lufia/design-system/components/Checklist";
+import { ChoiceTile as ChoiceTile_ChoiceTile } from "@lufia/design-system/components/ChoiceTile";
 import { CitationList as CitationList_CitationList } from "@lufia/design-system/components/CitationList";
 import { Collapse as Collapse_Collapse, Skeleton as Skeleton_Skeleton } from "@lufia/design-system/motion";
 import { DetailAttentionCard as DetailAttentionCard_DetailAttentionCard } from "@lufia/design-system/components/DetailAttentionCard";
@@ -59,6 +60,7 @@ export default function SmokePage() {
       <section data-smoke="Card"><Card_Card /></section>
       <section data-smoke="ChartKit" data-exports={Object.keys(ChartKit).length} />
       <section data-smoke="Checklist"><Checklist_Checklist items={[{ key: "a", text: "Item" }]} /></section>
+      <section data-smoke="ChoiceTile"><ChoiceTile_ChoiceTile label={"x"} /></section>
       <section data-smoke="CitationList"><CitationList_CitationList items={[{ key: "a", reference: "Reference" }]} /></section>
       <section data-smoke="Collapse"><Collapse_Collapse open={false} /></section>
       <section data-smoke="DetailAttentionCard"><DetailAttentionCard_DetailAttentionCard tone={"ok"} title={"x"} /></section>
