@@ -96,12 +96,43 @@ describe("ChoiceTile", () => {
     });
 
     it("marks the selected tile with Highlight under forced colors", () => {
-      expect(css).toMatch(/forced-colors: active[\s\S]*\[data-selected\] \{[^}]*Highlight/);
+      expect(css).toMatch(/forced-colors: active[\s\S]*\[data-selected\] \{[^}]*border-color: Highlight/);
+    });
+
+    it("keeps the border width constant and marks selection with an inset outline under forced colors", () => {
+      const forced = css.slice(css.indexOf("forced-colors: active"));
+      expect(forced).not.toMatch(/\bborder-width:/);
+      expect(forced).toMatch(
+        /\[data-selected\] \{[^}]*outline: [^;]*Highlight;[^}]*outline-offset: calc\(-1/,
+      );
+    });
+
+    it("keeps a disabled selected tile distinguishable under forced colors", () => {
+      const forced = css.slice(css.indexOf("forced-colors: active"));
+      expect(forced.indexOf("[data-disabled][data-selected]")).toBeGreaterThan(
+        forced.indexOf("[data-disabled] {"),
+      );
+      expect(forced).toMatch(/\[data-disabled\]\[data-selected\] \{[^}]*border-color: Highlight/);
+    });
+
+    it("transitions color with the fill", () => {
+      expect(css).toMatch(/transition:[^;]*\n\s*color var\(--lufia-motion-duration-fast\)/);
+    });
+
+    it("lets the focus ring win over the selection outline", () => {
+      const forced = css.slice(css.indexOf("forced-colors: active"));
+      expect(forced).toMatch(/\[data-selected\] \{[\s\S]*\.root:focus-visible \{[^}]*outline-offset: 2px/);
     });
 
     it("reads tokens only", () => {
       expect(css).not.toMatch(/--lufia-(primitive|color-(green|red|amber|blue))/);
     });
+  });
+
+  it("does not advise a radiogroup, which is invalid for aria-pressed buttons", () => {
+    for (const file of ["ChoiceTile.tsx", "ChoiceTile.mdx"]) {
+      expect(readFileSync(`src/components/ChoiceTile/${file}`, "utf8")).not.toMatch(/radiogroup/i);
+    }
   });
 
   it("has no axe violations in any state", async () => {

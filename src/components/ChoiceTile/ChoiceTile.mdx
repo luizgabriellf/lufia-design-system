@@ -88,8 +88,8 @@ The tile does not own the group: you lay the tiles out, hold the value and decid
 
 - The tile is a native `<button type="button">`. `selected` is exposed as `aria-pressed`, so the state is never only a colour.
 - The accessible name is the eyebrow, the label and the description, in that order.
-- For one choice with arrow-key movement, wrap the tiles in a `role="radiogroup"` and manage it yourself; the package ships no
-  group component. Without it, the tiles are toggle buttons in a labelled `role="group"`.
+- The tiles are toggle buttons, not radios. Put the set in a labelled `role="group"` and keep exactly one tile `selected`; the
+  package ships no group component.
 - Focus shows the shared focus ring; the press scale and transitions are off under `prefers-reduced-motion`.
 - In forced-colors mode the selected tile takes a thicker `Highlight` border.
 - Label, eyebrow and description wrap instead of overflowing, so 200% text size does not clip them.

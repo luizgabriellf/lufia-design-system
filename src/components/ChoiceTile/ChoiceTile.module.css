@@ -25,6 +25,7 @@
   transition:
     background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
     border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
     transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
@@ -120,9 +121,11 @@
     border-color: ButtonText;
   }
 
+  /* Selection keeps the border width and adds an inset outline, so nothing shifts. */
   .root[data-selected] {
     border-color: Highlight;
-    border-width: var(--lufia-border-width-thick);
+    outline: var(--lufia-border-width-thick) solid Highlight;
+    outline-offset: calc(-1 * var(--lufia-border-width-thick) - var(--lufia-border-width-thin));
   }
 
   .root[data-disabled] {
@@ -130,7 +133,15 @@
     color: GrayText;
   }
 
+  /* After the disabled rule so a disabled selected tile stays distinguishable from a disabled unselected one. */
+  .root[data-disabled][data-selected] {
+    border-color: Highlight;
+    outline-color: GrayText;
+  }
+
+  /* Last, so a focused selected tile shows the outer focus ring instead of the inset selection outline. */
   .root:focus-visible {
     outline-color: Highlight;
+    outline-offset: 2px;
   }
 }

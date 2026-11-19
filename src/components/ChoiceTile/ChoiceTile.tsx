@@ -12,8 +12,8 @@ export type ChoiceTileProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "chi
   /** Small muted line below the label. */
   description?: ReactNode;
   /**
-   * Marks the tile as the chosen one and exposes it as `aria-pressed`. For a single choice, wrap the tiles in a
-   * `role="radiogroup"` of your own and manage it, or keep the toggle-button pattern: both are the caller's decision.
+   * Marks the tile as the chosen one and exposes it as `aria-pressed`. Tiles are toggle buttons: put the set in a
+   * labelled `role="group"` and keep exactly one `selected`.
    */
   selected?: boolean;
   /**
