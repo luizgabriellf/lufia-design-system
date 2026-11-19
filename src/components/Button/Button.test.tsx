@@ -385,8 +385,11 @@ describe("Button link variant (stylesheet)", () => {
     expect(css).toMatch(/vertical-align: baseline;/);
   });
 
-  it("drops the touch-target floor on coarse pointers", () => {
+  it("stays text-sized on coarse pointers and takes the touch through a pseudo-element", () => {
     const coarse = css.slice(css.indexOf("@media (pointer: coarse)"));
     expect(coarse).toMatch(/\.root\[data-variant="link"\]\[data-size\] \{\s*min-block-size: 0;/);
+    expect(coarse).toMatch(
+      /\.root\[data-variant="link"\]::before \{[^}]*block-size: max\(100%, var\(--lufia-target-touch/,
+    );
   });
 });

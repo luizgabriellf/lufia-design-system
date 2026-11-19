@@ -19,7 +19,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 type ButtonOwnProps = {
   /**
    * Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or
-   * padding, for an action inside a sentence or a quiet "show more"; it keeps no touch-target floor, as it is inline text.
+   * padding, for an action inside a sentence or a quiet "show more"; it stays text-sized on touch screens, where a pseudo-element takes the touch.
    */
   variant?: ButtonVariant;
   /** Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. */

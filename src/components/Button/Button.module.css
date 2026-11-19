@@ -170,7 +170,8 @@
 }
 
 /* Link: text on a text baseline, for an action inside a sentence or a quiet "show more". No fill, border, shadow,
-   padding or minimum height, and no touch-target floor, because it is inline text and a floor would break the line. The
+   padding or minimum height: it is inline text and a floor would break the line, so on touch screens a pseudo-element
+   takes the touch instead. The
    size follows the surrounding text unless `size` is given. It sits after the sizes so it wins at equal specificity. */
 .root[data-variant="link"],
 .root[data-variant="link"][data-size] {
@@ -268,6 +269,16 @@
   .root[data-variant="link"],
   .root[data-variant="link"][data-size] {
     min-block-size: 0;
+  }
+
+  /* A link stays text-sized so it never breaks the line; a pseudo-element centred on it takes the touch instead. */
+  .root[data-variant="link"]::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    block-size: max(100%, var(--lufia-target-touch, 2.75rem));
+    translate: 0 -50%;
   }
 
   .root[data-icon-only],

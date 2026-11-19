@@ -30,7 +30,7 @@ The control for an action. It renders a native `<button>`, or a link when `href`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet "show more"; it keeps no touch-target floor, as it is inline text. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"secondary"` | Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet "show more"; it stays text-sized on touch screens, where a pseudo-element takes the touch. |
 | `size` | `"sm" \| "md" \| "lg"` | no | `variant === "link" ? undefined : "md"` | Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. |
 | `loading` | `boolean` | no | `false` | Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and reports `aria-busy`. It is not natively disabled, so keyboard focus is not lost when the work starts. |
 | `fullWidth` | `boolean` | no | `false` | Stretches to the full width of its container. |
