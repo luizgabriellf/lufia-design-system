@@ -36,6 +36,7 @@ pending label, and for a long wait moves through further labels.
 | `variant` | `"danger" \| "primary" \| "secondary" \| "ghost" \| "link" \| "unstyled"` | no | `"primary"` | Look of the underlying `Button`. Default `"primary"`. `"unstyled"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then. |
 | `size` | `"sm" \| "md" \| "lg"` | no |  | Size of the underlying `Button`. Ignored with `variant="unstyled"`. |
 | `fullWidth` | `boolean` | no |  | Stretches to the full width of its container. Ignored with `variant="unstyled"`. |
+| `iconStart` | `ReactNode` | no |  | Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the button is pending the ring replaces it and the button keeps its width. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  |  |
 
 Other native element attributes pass through to the root element.
@@ -87,6 +88,8 @@ button without a pending label.
 - `components-forms-pendingsubmit--pending`
 - `components-forms-pendingsubmit--pending-secondary`
 - `components-forms-pendingsubmit--with-progress`
+- `components-forms-pendingsubmit--with-icon`
+- `components-forms-pendingsubmit--with-icon-pending`
 - `components-forms-pendingsubmit--disabled`
 - `components-forms-pendingsubmit--unstyled`
 - `components-forms-pendingsubmit--in-a-form`

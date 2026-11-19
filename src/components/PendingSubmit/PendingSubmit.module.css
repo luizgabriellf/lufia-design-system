@@ -13,6 +13,21 @@
   min-inline-size: 0;
 }
 
+/* With an icon the label layer lays the icon and the text out in a row, as Button does. */
+.label[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
 .sizer {
   visibility: hidden;
   height: 0;

@@ -14079,6 +14079,13 @@
               "description": "Stretches to the full width of its container. Ignored with `variant=\"unstyled\"`."
             },
             {
+              "name": "iconStart",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the button is pending the ring replaces it and the button keeps its width."
+            },
+            {
               "name": "ref",
               "type": "Ref<HTMLButtonElement>",
               "required": false,
@@ -14127,6 +14134,14 @@
           {
             "export": "WithProgress",
             "id": "components-forms-pendingsubmit--with-progress"
+          },
+          {
+            "export": "WithIcon",
+            "id": "components-forms-pendingsubmit--with-icon"
+          },
+          {
+            "export": "WithIconPending",
+            "id": "components-forms-pendingsubmit--with-icon-pending"
           },
           {
             "export": "Disabled",
