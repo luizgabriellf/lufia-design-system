@@ -13591,10 +13591,10 @@
             },
             {
               "name": "ref",
-              "type": "Ref<HTMLButtonElement>",
+              "type": "Ref<HTMLElement>",
               "required": false,
               "default": null,
-              "description": "The row's button, so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through."
+              "description": "The row's element (the button, or the `render` or static element), so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through."
             },
             {
               "name": "onClick",

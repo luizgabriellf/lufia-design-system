@@ -17,6 +17,8 @@ type RenderedElementProps = {
   onClick?: MouseEventHandler<HTMLElement>;
 };
 
+type ButtonAttributes = ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> };
+
 export type OptionRowDensity = "comfortable" | "compact";
 
 export type OptionRowProps = Omit<
@@ -66,8 +68,8 @@ export type OptionRowProps = Omit<
    * `highlighted` still style it. `disabled` has no effect.
    */
   interactive?: boolean;
-  /** The row's button, so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. */
-  ref?: Ref<HTMLButtonElement>;
+  /** The row's element (the button, or the `render` or static element), so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. */
+  ref?: Ref<HTMLElement>;
   onClick?: MouseEventHandler<HTMLElement>;
   disabled?: boolean;
   /**
@@ -109,7 +111,7 @@ export function OptionRow({
     "data-highlighted": highlighted || undefined,
     "data-truncate": truncate || undefined,
     "data-static": interactive ? undefined : "",
-    "data-disabled": disabled || undefined,
+    "data-disabled": (interactive && disabled) || undefined,
   };
   const content = (
     <>
@@ -203,7 +205,8 @@ export function OptionRow({
   return (
     <button
       type="button"
-      {...rest}
+      // The default element is a button; `ref` is typed for every element the row can land on.
+      {...(rest as ButtonAttributes)}
       className={classes}
       {...state}
       aria-pressed={selected}

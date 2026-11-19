@@ -262,6 +262,11 @@
   block-size: var(--lufia-icon-button-icon-size, 1.75rem);
 }
 
+/* A link has no minimum height at any size: it is inline text, and the touch floor comes from its pseudo-element. */
+.root[data-icon-only][data-variant="link"] {
+  min-block-size: 0;
+}
+
 /* Circle: a round control with equal sides. */
 .root[data-icon-only][data-shape="circle"] {
   border-radius: var(--lufia-radius-full);
@@ -320,6 +325,10 @@
   .root[data-icon-only][data-size="sm"] {
     inline-size: max(var(--lufia-icon-button-size, 0px), var(--lufia-target-touch, 2.75rem));
     min-block-size: max(var(--lufia-icon-button-size, 0px), var(--lufia-target-touch, 2.75rem));
+  }
+
+  .root[data-icon-only][data-variant="link"] {
+    min-block-size: 0;
   }
 }
 

@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import type { ComponentProps } from "react";
+import type { ComponentProps, Ref } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -206,9 +206,11 @@ describe("OptionRow", () => {
     const onClick = vi.fn();
     const onKeyDown = vi.fn();
     const ref = vi.fn();
+    // A ref typed for a button, as a menu trigger's spread provides, must still be accepted.
+    const buttonRef: Ref<HTMLButtonElement> = ref;
     function Trigger() {
       const triggerProps = {
-        ref,
+        ref: buttonRef,
         id: "trigger",
         "aria-haspopup": "menu" as const,
         "aria-controls": "menu-1",
@@ -254,6 +256,13 @@ describe("OptionRow", () => {
     expect(onClick).not.toHaveBeenCalled();
     rerender(<OptionRow title="Fact" interactive={false} render={<section aria-label="Fact" />} />);
     expect(container.firstElementChild?.tagName).toBe("SECTION");
+  });
+
+  it("ignores disabled on a static row, so it is not dimmed", () => {
+    const { container } = render(<OptionRow title="Fact" interactive={false} disabled />);
+    const row = container.firstElementChild as HTMLElement;
+    expect(row).not.toHaveAttribute("data-disabled");
+    expect(row).not.toHaveAttribute("aria-disabled");
   });
 
   it("exposes the size hooks with today's values as fallbacks and keeps the touch floor", () => {
