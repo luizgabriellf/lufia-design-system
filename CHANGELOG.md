@@ -1,5 +1,28 @@
 # @lufia/design-system
 
+## 0.64.0
+
+### Minor Changes
+
+- [#226](https://github.com/luizgabriellf/lufia-design-system/pull/226) [`4a9a0ad`](https://github.com/luizgabriellf/lufia-design-system/commit/4a9a0ad4f566b8d024c60a55bb4068a144c9688b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Button: add `variant="link"`, text-styled for an action inside a sentence or a quiet "show more". It inherits the
+  surrounding font size when `size` is omitted and stays text-sized on touch screens, where a pseudo-element takes the touch.
+
+- [#226](https://github.com/luizgabriellf/lufia-design-system/pull/226) [`4a9a0ad`](https://github.com/luizgabriellf/lufia-design-system/commit/4a9a0ad4f566b8d024c60a55bb4068a144c9688b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Chip: new compact pill control for an action to apply, a toggle (`selected`, `aria-pressed`) or a removable value
+  (`onRemove` with a required `removeLabel`), with `--lufia-chip-*` theme hooks.
+
+- [#226](https://github.com/luizgabriellf/lufia-design-system/pull/226) [`4a9a0ad`](https://github.com/luizgabriellf/lufia-design-system/commit/4a9a0ad4f566b8d024c60a55bb4068a144c9688b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Link: add `variant` (`inline`, the default, or `standalone`) and `iconEnd`, a decorative trailing icon that nudges along
+  the inline axis on hover.
+
+- [#226](https://github.com/luizgabriellf/lufia-design-system/pull/226) [`4a9a0ad`](https://github.com/luizgabriellf/lufia-design-system/commit/4a9a0ad4f566b8d024c60a55bb4068a144c9688b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - OptionRow: new full-width row that is one button, with a leading slot, a title, an optional description, a trailing slot
+  and a selected state (`aria-pressed`), for a list of choices.
+
+- [#226](https://github.com/luizgabriellf/lufia-design-system/pull/226) [`4a9a0ad`](https://github.com/luizgabriellf/lufia-design-system/commit/4a9a0ad4f566b8d024c60a55bb4068a144c9688b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - PendingSubmit: add `iconStart`, a decorative icon before the label that the pending ring replaces without a layout shift.
+
+### Patch Changes
+
+- [#224](https://github.com/luizgabriellf/lufia-design-system/pull/224) [`7e7bb69`](https://github.com/luizgabriellf/lufia-design-system/commit/7e7bb697113c84f3f0c44b88e1e2669515abbc12) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Button: throw a clear error when `render` is not a React element, such as a lazy reference from a Server Component,
+  instead of a `TypeError` about `className`.
+
 ## 0.63.0
 
 ### Minor Changes
