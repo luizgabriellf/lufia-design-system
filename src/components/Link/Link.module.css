@@ -16,6 +16,34 @@
   outline-offset: 2px;
 }
 
+/* Standalone: a link that is not inside running text. No underline at rest; it appears on hover and focus. */
+.root[data-variant="standalone"] {
+  font-weight: var(--lufia-font-weight-medium);
+  text-decoration-line: none;
+}
+
+.root[data-variant="standalone"]:hover,
+.root[data-variant="standalone"]:focus-visible {
+  text-decoration-line: underline;
+}
+
+.icon {
+  display: inline-block;
+  margin-inline-start: 0.25em;
+  vertical-align: -0.125em;
+  transition: translate var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .root:hover .icon {
+    translate: 0.125rem;
+  }
+
+  .root:dir(rtl):hover .icon {
+    translate: -0.125rem;
+  }
+}
+
 .indicator {
   display: inline-block;
   margin-inline-start: 0.25em;

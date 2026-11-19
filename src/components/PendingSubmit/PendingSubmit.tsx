@@ -35,6 +35,11 @@ export type PendingSubmitProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "
   size?: ButtonSize;
   /** Stretches to the full width of its container. Ignored with `variant="unstyled"`. */
   fullWidth?: boolean;
+  /**
+   * Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the
+   * button is pending the ring replaces it and the button keeps its width.
+   */
+  iconStart?: ReactNode;
   ref?: Ref<HTMLButtonElement>;
 };
 
@@ -65,6 +70,7 @@ export function PendingSubmit({
   variant = "primary",
   size,
   fullWidth,
+  iconStart,
   disabled,
   className,
   onClick,
@@ -95,7 +101,14 @@ export function PendingSubmit({
   };
   const content = (
     <span className={styles.cell} data-pending={busy ? "" : undefined}>
-      <span className={styles.label}>{children}</span>
+      <span className={styles.label} data-icon={iconStart ? "" : undefined}>
+        {iconStart ? (
+          <span className={styles.icon} aria-hidden="true">
+            {iconStart}
+          </span>
+        ) : null}
+        {children}
+      </span>
       {/* Invisible copies of every label keep the button as wide as the longest one, so it does not jump. */}
       {steps.map(([, label], index) => (
         <span key={index} className={styles.sizer} aria-hidden="true">

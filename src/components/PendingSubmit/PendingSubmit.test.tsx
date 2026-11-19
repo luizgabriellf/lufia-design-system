@@ -68,6 +68,32 @@ describe("PendingSubmit", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Saving…");
   });
 
+  it("shows iconStart before the label, hidden from assistive technology and out of the name", () => {
+    render(
+      <PendingSubmit pendingLabel="Saving…" iconStart={<svg data-testid="icon" />}>
+        Save changes
+      </PendingSubmit>,
+    );
+    const button = screen.getByRole("button", { name: "Save changes" });
+    const icon = screen.getByTestId("icon");
+    expect(icon.parentElement).toHaveAttribute("aria-hidden", "true");
+    expect(button).toContainElement(icon);
+    expect(icon.parentElement?.nextSibling).toHaveTextContent("Save changes");
+  });
+
+  it("keeps the icon in the idle layer while pending, which the ring replaces without a layout shift", () => {
+    const { container } = render(
+      <PendingSubmit pendingLabel="Saving…" iconStart={<svg data-testid="icon" />} pending>
+        Save changes
+      </PendingSubmit>,
+    );
+    const cell = container.querySelector("[data-pending]") as HTMLElement;
+    // The idle layer (icon and label) stays in the grid cell, so the width holds; the CSS fades it out for the ring.
+    expect(cell).toContainElement(screen.getByTestId("icon"));
+    expect(cell.querySelector("[data-icon]")).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Save changes" })).toHaveAttribute("aria-busy", "true");
+  });
+
   it("when pending, is busy, says so politely and keeps its name and focus", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<PendingSubmit pendingLabel="Saving…">Save changes</PendingSubmit>);

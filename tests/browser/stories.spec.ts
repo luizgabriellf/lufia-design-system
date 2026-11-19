@@ -2195,7 +2195,13 @@ test.describe("phone targets and overflow", () => {
       await minTarget(page, 'button[aria-haspopup="listbox"], button[aria-expanded]');
       await openStory(page, "components-actions-button--all-variants-and-sizes");
       for (const button of await page.getByRole("button").all()) {
-        expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+        // A link variant stays text-sized; its touch area is a pseudo-element.
+        const height = await button.evaluate((node) =>
+          node.getAttribute("data-variant") === "link"
+            ? Number.parseFloat(getComputedStyle(node, "::before").blockSize)
+            : node.getBoundingClientRect().height,
+        );
+        expect(height).toBeGreaterThanOrEqual(44);
       }
       await openStory(page, "components-overlays-commandpalette--open-on-load");
       await minTarget(page, 'input[role="combobox"]');

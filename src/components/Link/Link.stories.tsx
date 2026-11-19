@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { ArrowRightIcon } from "../../docs/demo";
 import { Link } from "./Link";
 
 const meta = {
@@ -27,6 +28,25 @@ export const External: Story = {
     externalLabel: "(opens in new tab)",
     children: "the specification",
   },
+};
+/** No underline at rest and a medium weight; the underline shows on hover and focus. For a link on its own line. */
+export const Standalone: Story = {
+  args: { variant: "standalone", children: "View all reports" },
+  decorators: [
+    (Story) => (
+      <p style={{ margin: 0 }}>
+        <Story />
+      </p>
+    ),
+  ],
+};
+/** The icon moves 2px along the inline axis on hover, and stays still under reduced motion. */
+export const WithIconEnd: Story = {
+  args: { variant: "standalone", children: "View all reports", iconEnd: <ArrowRightIcon size="1em" /> },
+  decorators: Standalone.decorators,
+};
+export const InlineWithIconEnd: Story = {
+  args: { children: "read the guide", iconEnd: <ArrowRightIcon size="1em" /> },
 };
 export const LongText: Story = {
   args: {
@@ -58,6 +78,11 @@ export const AllThemes: Story = {
           external
         </Link>
         .
+      </p>
+      <p style={{ margin: 0 }}>
+        <Link href="#c" variant="standalone" iconEnd={<ArrowRightIcon size="1em" />}>
+          Standalone
+        </Link>
       </p>
     </ThemeMatrix>
   ),

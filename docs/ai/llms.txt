@@ -17,6 +17,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 
 - [ActionIcons](https://luizgabriellf.github.io/lufia-design-system/ai/components/ActionIcons.md): Deprecated aliases of six action icons; use the named icons of Icon instead. (deprecated)
 - [Button](https://luizgabriellf.github.io/lufia-design-system/ai/components/Button.md): The control for an action: a native button, or a link that looks like one. (beta)
+- [Chip](https://luizgabriellf.github.io/lufia-design-system/ai/components/Chip.md): A compact pill: an action to apply, a toggle that is on or off, or a removable value. (beta)
 - [IconButton](https://luizgabriellf.github.io/lufia-design-system/ai/components/IconButton.md): A button with only an icon, which therefore requires an accessible name. (beta)
 - [Link](https://luizgabriellf.github.io/lufia-design-system/ai/components/Link.md): Navigation inside text, routed through the adapter set on LufiaProvider. (beta)
 - [MoreActions](https://luizgabriellf.github.io/lufia-design-system/ai/components/MoreActions.md): An overflow menu that collects the secondary actions of a row or a page. (beta)
@@ -31,6 +32,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [FileField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FileField.md): A file picker with drag and drop, validation and a list of chosen files. (beta)
 - [FormField](https://luizgabriellf.github.io/lufia-design-system/ai/components/FormField.md): Label, hint and error wired to any control, so the control stays accessible by default. (beta)
 - [ListField](https://luizgabriellf.github.io/lufia-design-system/ai/components/ListField.md): A field holding a list of short text entries, each editable in place, with an add row and a remove button. (beta)
+- [OptionRow](https://luizgabriellf.github.io/lufia-design-system/ai/components/OptionRow.md): A full-width row that is one button, with leading and trailing slots and a selected state, for a list of choices. (beta)
 - [PendingSubmit](https://luizgabriellf.github.io/lufia-design-system/ai/components/PendingSubmit.md): A submit button that reads the pending state of its form and prevents double submits. (beta)
 - [RadioGroup](https://luizgabriellf.github.io/lufia-design-system/ai/components/RadioGroup.md): A set of radios where exactly one choice applies. (beta)
 - [SearchInput](https://luizgabriellf.github.io/lufia-design-system/ai/components/SearchInput.md): A search field with a clear button, optional debounce and a shortcut hint. (beta)

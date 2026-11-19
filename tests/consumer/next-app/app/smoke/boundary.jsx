@@ -6,6 +6,7 @@ import { AppShell as AppShell_AppShell } from "@lufia/design-system/components/A
 import { Banner as Banner_Banner } from "@lufia/design-system/components/Banner";
 import { Button as Button_Button } from "@lufia/design-system/components/Button";
 import { Checkbox as Checkbox_Checkbox } from "@lufia/design-system/components/Checkbox";
+import { Chip as Chip_Chip } from "@lufia/design-system/components/Chip";
 import { ColumnChart as ColumnChart_ColumnChart } from "@lufia/design-system/components/ColumnChart";
 import { Combobox as Combobox_Combobox } from "@lufia/design-system/components/Combobox";
 import { CommandPalette as CommandPalette_CommandPalette } from "@lufia/design-system/components/CommandPalette";
@@ -23,6 +24,7 @@ import { MoreActions as MoreActions_MoreActions } from "@lufia/design-system/com
 import { NavRow as NavRow_NavRow } from "@lufia/design-system/components/NavRow";
 import { NotificationCenter as NotificationCenter_NotificationCenter } from "@lufia/design-system/components/NotificationCenter";
 import { OneWayDisclosure as OneWayDisclosure_OneWayDisclosure } from "@lufia/design-system/components/OneWayDisclosure";
+import { OptionRow as OptionRow_OptionRow } from "@lufia/design-system/components/OptionRow";
 import { PageActions as PageActions_PageActions } from "@lufia/design-system/components/PageActions";
 import { Pagination as Pagination_Pagination } from "@lufia/design-system/components/Pagination";
 import { PeerNav as PeerNav_PeerNav } from "@lufia/design-system/components/PeerNav";
@@ -65,6 +67,7 @@ export default function ClientSmoke() {
       <section data-smoke="Button"><Button_Button /></section>
       <section data-smoke="ChangeHighlight"><ChangeHighlight_ChangeHighlight value={"x"} /></section>
       <section data-smoke="Checkbox"><Checkbox_Checkbox label={"x"} /></section>
+      <section data-smoke="Chip"><Chip_Chip>{"x"}</Chip_Chip></section>
       <section data-smoke="ColumnChart"><ColumnChart_ColumnChart series={[{ key: "s", label: "Series" }]} columns={[{ key: "c", label: "Column", values: [3] }]} title={"x"} /></section>
       <section data-smoke="Combobox"><Combobox_Combobox options={[{ value: "a", label: "A" }]} loadingLabel={"x"} emptyLabel={"x"} /></section>
       <section data-smoke="CommandPalette"><CommandPalette_CommandPalette items={[{ key: "a", label: "Action" }]} labels={{
@@ -87,6 +90,7 @@ export default function ClientSmoke() {
       <section data-smoke="NavRow"><NavRow_NavRow title={"x"} /></section>
       <section data-smoke="NotificationCenter"><NotificationCenter_NotificationCenter unreadCountLabel={(count) => String(count)} items={[{ id: "a", title: "Notification" }]} label={"x"} unreadCount={1} unreadLabel={"x"} /></section>
       <section data-smoke="OneWayDisclosure"><OneWayDisclosure_OneWayDisclosure trigger={"Fill in now"}>{"x"}</OneWayDisclosure_OneWayDisclosure></section>
+      <section data-smoke="OptionRow"><OptionRow_OptionRow title={"x"} /></section>
       <section data-smoke="PageActions"><PageActions_PageActions moreLabel={"x"} /></section>
       <section data-smoke="Pagination"><Pagination_Pagination labels={{
       nav: "Pages",

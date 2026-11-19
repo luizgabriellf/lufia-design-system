@@ -49,6 +49,12 @@ export const ENTRIES: Entry[] = [
     "A button with only an icon, which therefore requires an accessible name.",
     apg("Button", "button"),
   ),
+  c(
+    "Chip",
+    "Actions",
+    "A compact pill: an action to apply, a toggle that is on or off, or a removable value.",
+    apg("Button", "button"),
+  ),
   c("Link", "Actions", "Navigation inside text, routed through the adapter set on LufiaProvider."),
   c(
     "MoreActions",
@@ -177,6 +183,11 @@ export const ENTRIES: Entry[] = [
     "FilterLinks",
     "Navigation",
     "A labelled row of links that each apply a filter to one list through the URL, with an optional count.",
+  ),
+  c(
+    "OptionRow",
+    "Forms",
+    "A full-width row that is one button, with leading and trailing slots and a selected state, for a list of choices.",
   ),
   c("NavRow", "Navigation", "A row that links to a destination, for lists of places and settings."),
   c("Pagination", "Navigation", "Previous, next and numbered pages for long lists."),

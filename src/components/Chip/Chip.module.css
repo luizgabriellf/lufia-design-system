@@ -1,0 +1,170 @@
+.root {
+  --chip-height: 1.75rem;
+
+  position: relative;
+  display: inline-flex;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  min-block-size: var(--chip-height);
+  align-items: center;
+  gap: 0.375rem;
+  padding-block: 0.125rem;
+  padding-inline: 0.625rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-chip-border, var(--lufia-color-border-strong));
+  border-radius: var(--lufia-chip-radius, var(--lufia-radius-full));
+  background: var(--lufia-chip-bg, var(--lufia-color-bg-surface));
+  color: var(--lufia-chip-fg, var(--lufia-color-text-default));
+  font-family: var(--lufia-font-family-body);
+  font-size: var(--lufia-font-size-sm);
+  font-weight: var(--lufia-font-weight-medium);
+  line-height: var(--lufia-font-line-height-tight);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.root[data-size="sm"] {
+  --chip-height: 1.5rem;
+
+  padding-inline: 0.5rem;
+  font-size: var(--lufia-font-size-xs);
+}
+
+button.root {
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+button.root:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  button.root:hover:not(:disabled) {
+    background: var(--lufia-chip-bg-hover, var(--lufia-color-bg-surface-raised));
+  }
+}
+
+button.root:disabled {
+  cursor: not-allowed;
+}
+
+/* Press feedback: the chip compresses while held. The token is 1 under reduced motion. */
+button.root:active:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press));
+}
+
+.root[data-selected] {
+  background: var(--lufia-chip-selected-bg, var(--lufia-color-accent-subtle));
+  border-color: var(--lufia-chip-selected-border, var(--lufia-color-accent-border));
+  color: var(--lufia-chip-selected-fg, var(--lufia-color-text-accent));
+}
+
+@media (hover: hover) {
+  button.root[data-selected]:hover:not(:disabled) {
+    background: var(--lufia-chip-selected-bg, var(--lufia-color-accent-subtle));
+  }
+}
+
+.root[data-disabled] {
+  opacity: var(--lufia-opacity-disabled);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.remove {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 1rem;
+  block-size: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-inline-end: -0.125rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--lufia-radius-full);
+  background: transparent;
+  color: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+}
+
+.remove:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.remove:disabled {
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .remove:hover:not(:disabled) {
+    background: var(--lufia-chip-bg-hover, var(--lufia-color-bg-surface-raised));
+  }
+}
+
+.remove:active:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press));
+}
+
+/* Finger-sized on touch screens without growing the chip: a pseudo-element, centred on the control, takes the touch. */
+@media (pointer: coarse) {
+  button.root::after,
+  .remove::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: max(100%, var(--lufia-target-touch, 2.75rem));
+    block-size: max(100%, var(--lufia-target-touch, 2.75rem));
+    translate: -50% -50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.root,
+  .remove {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root {
+    border-color: ButtonText;
+  }
+
+  .root[data-selected] {
+    border-color: Highlight;
+    border-width: var(--lufia-border-width-thick);
+  }
+
+  .root[data-disabled] {
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  .remove:focus-visible,
+  button.root:focus-visible {
+    outline-color: Highlight;
+  }
+}

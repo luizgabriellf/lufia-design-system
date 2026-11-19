@@ -1,0 +1,118 @@
+.root {
+  display: flex;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 3.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
+  border-radius: var(--lufia-radius-card);
+  background: var(--lufia-color-bg-surface);
+  color: var(--lufia-color-text-default);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+.root:focus-visible {
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.root[data-selected] {
+  border-color: var(--lufia-color-accent-border);
+  background: var(--lufia-color-accent-subtle);
+}
+
+.root[data-disabled] {
+  opacity: var(--lufia-opacity-disabled);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .root:hover:not([data-disabled], [data-selected]) {
+    border-color: var(--lufia-color-border-strong);
+    background: var(--lufia-color-bg-surface-raised);
+  }
+}
+
+.root:active:not([data-disabled]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
+}
+
+.leading {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--lufia-color-text-muted);
+}
+
+.copy {
+  display: grid;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  gap: 0.18rem;
+}
+
+.title {
+  min-inline-size: 0;
+  font-weight: var(--lufia-font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.description {
+  color: var(--lufia-color-text-muted);
+  font-size: var(--lufia-font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.trailing {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--lufia-color-text-muted);
+}
+
+/* On the accent subtle fill the muted text colour is not a checked pair, so selected text uses the pairs that are. */
+.root[data-selected] .description {
+  color: var(--lufia-color-text-default);
+}
+
+.root[data-selected] .leading,
+.root[data-selected] .trailing {
+  color: var(--lufia-color-text-accent);
+}
+
+@media (width < 40rem) {
+  .root {
+    min-block-size: 3.625rem;
+    border-radius: var(--lufia-radius-control);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .root[data-selected] {
+    border-color: Highlight;
+    border-width: var(--lufia-border-width-thick);
+  }
+
+  .root[data-disabled] {
+    border-color: GrayText;
+    color: GrayText;
+  }
+}

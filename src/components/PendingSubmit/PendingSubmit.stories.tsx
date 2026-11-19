@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useActionState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
+import { PlusIcon } from "../../docs/demo";
 import { PendingSubmit } from "./PendingSubmit";
 
 const meta = {
@@ -28,6 +29,9 @@ export const WithProgress: Story = {
     ],
   },
 };
+/** `iconStart` sits before the label; while pending the ring replaces it and the button keeps its width. */
+export const WithIcon: Story = { args: { iconStart: <PlusIcon size={16} /> } };
+export const WithIconPending: Story = { args: { iconStart: <PlusIcon size={16} />, pending: true } };
 export const Disabled: Story = { args: { disabled: true } };
 
 /**

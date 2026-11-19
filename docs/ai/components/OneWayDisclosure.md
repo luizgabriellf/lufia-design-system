@@ -35,7 +35,7 @@ A button that reveals a region and leaves once it has. It is a disclosure whose 
 | `open` | `boolean` | no |  | Controlled state. Pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial state when `open` is not given. Start open to render the content with no button. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with `true` when the person activates the button. The component never closes itself. |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` | no | `"secondary"` | Look of the button. Defaults to `"secondary"`. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"secondary"` | Look of the button. Defaults to `"secondary"`. |
 | `label` | `string` | no |  | Accessible name of the revealed content. When given, the content is exposed as a `region` landmark with this name, which is also what a screen reader announces when focus moves into it. Leave it out for content that is not a landmark. |
 | `panelClassName` | `string` | no |  | Class for the revealed content wrapper. |
 

@@ -3431,17 +3431,17 @@
           "props": [
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"secondary\"",
-              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
+              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet \"show more\"; it stays text-sized on touch screens, where a pseudo-element takes the touch."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
-              "default": "\"md\"",
-              "description": ""
+              "default": "variant === \"link\" ? undefined : \"md\"",
+              "description": "Default `md`. With `variant=\"link\"` the default is no size: the text inherits the font size around it."
             },
             {
               "name": "loading",
@@ -3658,13 +3658,13 @@
           "name": "ButtonVariant",
           "kind": "type",
           "description": "",
-          "definition": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
+          "definition": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\""
         }
       ],
       "aliases": {
         "ButtonProps": "AsButton | AsLink",
         "ButtonSize": "\"sm\" | \"md\" | \"lg\"",
-        "ButtonVariant": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\""
+        "ButtonVariant": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\""
       },
       "story": {
         "docsId": "components-actions-button--docs",
@@ -3680,6 +3680,22 @@
           {
             "export": "Ghost",
             "id": "components-actions-button--ghost"
+          },
+          {
+            "export": "LinkInSentence",
+            "id": "components-actions-button--link-in-sentence"
+          },
+          {
+            "export": "LinkShowMore",
+            "id": "components-actions-button--link-show-more"
+          },
+          {
+            "export": "LinkLoading",
+            "id": "components-actions-button--link-loading"
+          },
+          {
+            "export": "LinkDisabled",
+            "id": "components-actions-button--link-disabled"
           },
           {
             "export": "Danger",
@@ -3777,7 +3793,7 @@
           "Native elements, so role, focus and activation come from the browser.",
           "Focus shows a 2px ring with an offset in every variant. In forced-colors mode the border uses `ButtonText`.",
           "Icons are decorative and hidden; the label is the accessible name.",
-          "Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers.",
+          "Targets are at least 2rem tall (`sm`), and 2.75rem on coarse pointers. The `link` variant is the exception: it is inline text and has no minimum height.",
           "A link used as a button is marked `aria-disabled` when disabled or loading, and its activation is cancelled.",
           "The hover lift applies only where a pointer can hover and is dropped under `prefers-reduced-motion`; the press scale takes over while the button is held.",
           "The spinner is a rotation only and stops under `prefers-reduced-motion`; `aria-busy` and the cursor still say it is busy."
@@ -3821,6 +3837,7 @@
         "--lufia-color-focus-ring",
         "--lufia-color-status-danger-on-solid",
         "--lufia-color-status-danger-solid",
+        "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-on-accent",
         "--lufia-font-family-body",
@@ -3838,6 +3855,7 @@
         "--lufia-radius-control",
         "--lufia-radius-full",
         "--lufia-radius-sm",
+        "--lufia-radius-xs",
         "--lufia-target-touch"
       ]
     },
@@ -4563,6 +4581,318 @@
         "--lufia-space-1",
         "--lufia-space-2",
         "--lufia-space-3"
+      ]
+    },
+    {
+      "name": "Chip",
+      "category": "Actions",
+      "summary": "A compact pill: an action to apply, a toggle that is on or off, or a removable value.",
+      "status": "beta",
+      "source": "src/components/Chip",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Chip",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Chip",
+          "kind": "component",
+          "description": "A compact pill control. With `onClick` it is an action chip (a suggestion the user applies), with `selected` a toggle chip (`aria-pressed`), and with `onRemove` a removable chip whose label is static text next to a remove button. With none of them it is a plain `<span>`. A button is never nested in another button.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The label. Always required: the selected state and the icon never carry the meaning on their own."
+            },
+            {
+              "name": "iconStart",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon before the label; hidden from assistive technology."
+            },
+            {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only."
+            },
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Dims the chip and ignores activation. For a removable chip it disables the remove button."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "onClick",
+              "type": "MouseEventHandler<HTMLButtonElement>",
+              "required": false,
+              "default": null,
+              "description": "Makes the chip a button that applies a suggestion or a filter."
+            },
+            {
+              "name": "selected",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state."
+            },
+            {
+              "name": "onRemove",
+              "type": "MouseEventHandler<HTMLButtonElement>",
+              "required": false,
+              "default": null,
+              "description": "Called when the remove button is activated. Makes the chip removable."
+            },
+            {
+              "name": "removeLabel",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "description": "Accessible name of the remove button, such as \"Remove Draft\". Required with `onRemove`."
+            }
+          ],
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "onClick",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "ChipPressable",
+                "props": [
+                  {
+                    "name": "onClick",
+                    "type": "MouseEventHandler<HTMLButtonElement>",
+                    "required": false,
+                    "description": "Makes the chip a button that applies a suggestion or a filter.",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "onRemove",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "removeLabel",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "selected",
+                    "type": "boolean",
+                    "required": false,
+                    "description": "Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state.",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              },
+              {
+                "name": "ChipRemovable",
+                "props": [
+                  {
+                    "name": "onClick",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  },
+                  {
+                    "name": "onRemove",
+                    "type": "MouseEventHandler<HTMLButtonElement>",
+                    "required": true,
+                    "description": "Called when the remove button is activated. Makes the chip removable."
+                  },
+                  {
+                    "name": "removeLabel",
+                    "type": "string",
+                    "required": true,
+                    "description": "Accessible name of the remove button, such as \"Remove Draft\". Required with `onRemove`."
+                  },
+                  {
+                    "name": "selected",
+                    "type": "undefined",
+                    "required": false,
+                    "description": "",
+                    "onlyTypeDiffers": true
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ChipProps",
+          "kind": "type",
+          "description": "",
+          "definition": "ChipPressable | ChipRemovable"
+        },
+        {
+          "name": "ChipSize",
+          "kind": "type",
+          "description": "",
+          "definition": "\"sm\" | \"md\""
+        }
+      ],
+      "aliases": {
+        "ChipProps": "ChipPressable | ChipRemovable",
+        "ChipSize": "\"sm\" | \"md\""
+      },
+      "story": {
+        "docsId": "components-actions-chip--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-actions-chip--default"
+          },
+          {
+            "export": "WithIcon",
+            "id": "components-actions-chip--with-icon"
+          },
+          {
+            "export": "Small",
+            "id": "components-actions-chip--small"
+          },
+          {
+            "export": "Selected",
+            "id": "components-actions-chip--selected"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-actions-chip--disabled"
+          },
+          {
+            "export": "Static",
+            "id": "components-actions-chip--static"
+          },
+          {
+            "export": "Removable",
+            "id": "components-actions-chip--removable"
+          },
+          {
+            "export": "RemovableDisabled",
+            "id": "components-actions-chip--removable-disabled"
+          },
+          {
+            "export": "LongLabel",
+            "id": "components-actions-chip--long-label"
+          },
+          {
+            "export": "ToggleGroup",
+            "id": "components-actions-chip--toggle-group"
+          },
+          {
+            "export": "RemovableList",
+            "id": "components-actions-chip--removable-list"
+          },
+          {
+            "export": "AllStatesAndSizes",
+            "id": "components-actions-chip--all-states-and-sizes"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-actions-chip--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-actions-chip--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-actions-chip--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Chip/Chip.mdx",
+        "overview": "A compact pill control with three uses in one API: an action chip the user applies, a toggle chip that is on or off, and a\nremovable chip whose only interactive part is its remove button.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Chip } from \"@lufia/design-system/components/Chip\";\n\n<Chip onClick={ask}>Summarise this report</Chip>\n<Chip selected={isOpen} onClick={toggleOpen}>Open</Chip>\n<Chip onRemove={drop} removeLabel=\"Remove Draft\">Draft</Chip>"
+        },
+        "whenToUse": [
+          "A suggestion the user can apply with one tap.",
+          "A filter or option that is on or off, in a group.",
+          "A value the user added and may remove, such as a tag or a recipient."
+        ],
+        "whenNotToUse": [
+          "A primary action: use a `Button`.",
+          "A status label that does nothing: use a `Badge`.",
+          "Navigation to another page: use a `Link` or `FilterLinks`."
+        ],
+        "contentGuidelines": "One to three words, sentence case. Give `removeLabel` a verb and the item name so a screen reader user knows what goes."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Button",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/button/"
+        },
+        "keyboard": [
+          {
+            "keys": "`Tab`",
+            "action": "Moves to the chip button, or to the remove button of a removable chip"
+          },
+          {
+            "keys": "`Enter` / `Space`",
+            "action": "Activates the focused button"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The chip is a native `<button type=\"button\">` when it acts. A toggle chip reports its state with `aria-pressed`, so selected is never only a colour.",
+          "A removable chip never nests buttons: the label is text, and the remove button carries its own name from `removeLabel` (\"Remove Draft\"), which should name the thing removed.",
+          "Visual height is 24px (`sm`) or 28px (`md`). Under a coarse pointer the chip keeps its size and a pseudo-element extends the hit area to `--lufia-target-touch` (44px by default), so neighbours do not grow.",
+          "Focus shows the shared focus ring; the press scale and transitions are off under `prefers-reduced-motion`.",
+          "In forced-colors mode the selected chip takes a thicker `Highlight` border, so the state stays visible without colour."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-chip-bg",
+        "--lufia-chip-bg-hover",
+        "--lufia-chip-border",
+        "--lufia-chip-fg",
+        "--lufia-chip-radius",
+        "--lufia-chip-selected-bg",
+        "--lufia-chip-selected-border",
+        "--lufia-chip-selected-fg",
+        "--lufia-color-accent-border",
+        "--lufia-color-accent-subtle",
+        "--lufia-color-bg-surface",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-border-strong",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-accent",
+        "--lufia-color-text-default",
+        "--lufia-font-family-body",
+        "--lufia-font-line-height-tight",
+        "--lufia-font-size-sm",
+        "--lufia-font-size-xs",
+        "--lufia-font-weight-medium",
+        "--lufia-motion-duration-fast",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-motion-scale-press",
+        "--lufia-opacity-disabled",
+        "--lufia-radius-full",
+        "--lufia-target-touch"
       ]
     },
     {
@@ -9786,17 +10116,17 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
-              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions."
+              "description": "Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or padding, for an action inside a sentence or a quiet \"show more\"; it stays text-sized on touch screens, where a pseudo-element takes the touch."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Default `md`. With `variant=\"link\"` the default is no size: the text inherits the font size around it."
             },
             {
               "name": "loading",
@@ -10081,7 +10411,7 @@
         {
           "name": "Link",
           "kind": "component",
-          "description": "An inline text link. It renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works. An external link opens in a new tab, shows an indicator, and announces that through a visually hidden label.",
+          "description": "A text link, inline in running text by default or `standalone` on its own line. It renders through the `linkComponent` set on `LufiaProvider`, so client-side routing works. An external link opens in a new tab, shows an indicator, and announces that through a visually hidden label.",
           "props": [
             {
               "name": "href",
@@ -10103,6 +10433,20 @@
               "required": false,
               "default": null,
               "description": "Marks the link as external: it opens in a new tab (`target=\"_blank\"`, `rel=\"noopener noreferrer\"`) and shows an indicator. The value is the visually hidden text read after the link text, such as \"(opens in new tab)\", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it."
+            },
+            {
+              "name": "variant",
+              "type": "\"inline\" | \"standalone\"",
+              "required": false,
+              "default": "\"inline\"",
+              "description": "`inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1)."
+            },
+            {
+              "name": "iconEnd",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon after the text, hidden from assistive technology. It moves 2px along the inline axis on hover, not under reduced motion. The external indicator, when there is one, comes after it."
             }
           ],
           "nativeProps": true
@@ -10111,11 +10455,18 @@
           "name": "LinkProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
+          "definition": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }"
+        },
+        {
+          "name": "LinkVariant",
+          "kind": "type",
+          "description": "",
+          "definition": "\"inline\" | \"standalone\""
         }
       ],
       "aliases": {
-        "LinkProps": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; }"
+        "LinkProps": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"children\" | \"href\"> & { href: string; children: ReactNode; externalLabel?: string | undefined; variant?: LinkVariant | undefined; iconEnd?: ReactNode; }",
+        "LinkVariant": "\"inline\" | \"standalone\""
       },
       "story": {
         "docsId": "components-actions-link--docs",
@@ -10127,6 +10478,18 @@
           {
             "export": "External",
             "id": "components-actions-link--external"
+          },
+          {
+            "export": "Standalone",
+            "id": "components-actions-link--standalone"
+          },
+          {
+            "export": "WithIconEnd",
+            "id": "components-actions-link--with-icon-end"
+          },
+          {
+            "export": "InlineWithIconEnd",
+            "id": "components-actions-link--inline-with-icon-end"
           },
           {
             "export": "LongText",
@@ -10178,20 +10541,21 @@
         ],
         "keyboardNotes": null,
         "notes": [
-          "Links are underlined, so colour is not the only cue (WCAG 1.4.1).",
+          "Inline links are underlined, so colour is not the only cue (WCAG 1.4.1). A `standalone` link is not underlined at rest, so use it only where its place or its neighbours show that it is a link, never inside running text.",
           "`externalLabel` makes a link external, so an external link cannot go without the announcement. It is read after the link text, so people using a screen reader know a new tab opens before they activate it. The visible icon is decorative and mirrored in right-to-left layouts.",
           "External links get `rel=\"noopener noreferrer\"`.",
           "Focus shows a 2px ring. In forced-colors mode the link uses `LinkText`."
         ]
       },
       "motion": {
-        "respectsReducedMotion": false,
+        "respectsReducedMotion": true,
         "notes": null
       },
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-color-focus-ring",
         "--lufia-color-text-accent",
+        "--lufia-font-weight-medium",
         "--lufia-motion-duration-fast",
         "--lufia-motion-easing-out",
         "--lufia-radius-xs"
@@ -11540,7 +11904,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
               "description": ""
@@ -12152,7 +12516,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
               "description": ""
@@ -12662,7 +13026,7 @@
             },
             {
               "name": "variant",
-              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\"",
+              "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"secondary\"",
               "description": "Look of the button. Defaults to `\"secondary\"`."
@@ -12768,6 +13132,204 @@
       "tokens": [
         "--lufia-border-width-thick",
         "--lufia-color-focus-ring"
+      ]
+    },
+    {
+      "name": "OptionRow",
+      "category": "Forms",
+      "summary": "A full-width row that is one button, with leading and trailing slots and a selected state, for a list of choices.",
+      "status": "beta",
+      "source": "src/components/OptionRow",
+      "entry": {
+        "subpath": "@lufia/design-system/components/OptionRow",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "OptionRow",
+          "kind": "component",
+          "description": "A full-width row that is one button: a leading slot, a title, an optional description, a trailing slot and a selected state. For a list of choices the user picks from (a plan, a template, an address), where `NavRow` would suggest navigating. Several rows belong in a list the caller marks up.",
+          "props": [
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": ""
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The option's name. It is the row's accessible name together with the description."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Supporting line under the title."
+            },
+            {
+              "name": "leading",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative slot before the text, such as an icon or an avatar; hidden from assistive technology."
+            },
+            {
+              "name": "trailing",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Slot after the text, such as a check mark, a price or a count. It is read after the title, so text in it must carry its own context. Mark a purely decorative one `aria-hidden` yourself."
+            },
+            {
+              "name": "selected",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Marks the row as the chosen one: the accent subtle fill and border, and `aria-pressed` on the button (`aria-current` on an element given to `render`, which is usually a link). Leave it out for a row that is not a choice."
+            },
+            {
+              "name": "onClick",
+              "type": "MouseEventHandler<HTMLElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "render",
+              "type": "ReactElement<RenderedElementProps, string | JSXElementConstructor<any>>",
+              "required": false,
+              "default": null,
+              "description": "The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "OptionRowProps",
+          "kind": "type",
+          "description": "",
+          "definition": null
+        }
+      ],
+      "aliases": {},
+      "story": {
+        "docsId": "components-forms-optionrow--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-forms-optionrow--default"
+          },
+          {
+            "export": "Selected",
+            "id": "components-forms-optionrow--selected"
+          },
+          {
+            "export": "WithTrailingText",
+            "id": "components-forms-optionrow--with-trailing-text"
+          },
+          {
+            "export": "TitleOnly",
+            "id": "components-forms-optionrow--title-only"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-forms-optionrow--disabled"
+          },
+          {
+            "export": "Rendered",
+            "id": "components-forms-optionrow--rendered"
+          },
+          {
+            "export": "LongText",
+            "id": "components-forms-optionrow--long-text"
+          },
+          {
+            "export": "ChoiceList",
+            "id": "components-forms-optionrow--choice-list"
+          },
+          {
+            "export": "Phone320",
+            "id": "components-forms-optionrow--phone-320"
+          },
+          {
+            "export": "RightToLeft",
+            "id": "components-forms-optionrow--right-to-left"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-forms-optionrow--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/OptionRow/OptionRow.mdx",
+        "overview": "A full-width row that is one button: a leading slot, a title, an optional description, a trailing slot and a selected state.\nIt is for a list of choices the user picks from. `NavRow` is the sibling for a row that goes somewhere.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { OptionRow } from \"@lufia/design-system/components/OptionRow\";\n\n<ul>\n  <li>\n    <OptionRow\n      title=\"Team plan\"\n      description=\"Up to ten people.\"\n      leading={<UsersIcon />}\n      selected={picked === \"team\"}\n      trailing={picked === \"team\" ? <CheckIcon /> : undefined}\n      onClick={() => setPicked(\"team\")}\n    />\n  </li>\n</ul>;"
+        },
+        "whenToUse": [
+          "A short list of options, each with a name and a line of detail: a plan, a template, a delivery address."
+        ],
+        "whenNotToUse": [
+          "A row that navigates to another page: use `NavRow`.",
+          "A set where exactly one choice applies and the options are one word: use `RadioGroup`.",
+          "A choice among a few short labels in a bar: use `SegmentedToggle`."
+        ],
+        "contentGuidelines": "A title of one to four words, and a description that says what picking it means."
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [
+          {
+            "keys": "`Tab`",
+            "action": "Moves focus to the row (a disabled one is skipped)"
+          },
+          {
+            "keys": "`Enter` / `Space`",
+            "action": "Activates the row"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "The row is a native `<button type=\"button\">`; its name is the title, the description and any text in the trailing slot.",
+          "`selected` is `aria-pressed`, so the chosen row is announced as pressed and the state is never colour alone: the border and fill change, and the trailing slot can carry a check. Group the rows in a list or a labelled group.",
+          "The leading slot is decorative and hidden from assistive technology.",
+          "Rows are at least 3.5rem tall, above the touch target floor. Focus shows the shared ring.",
+          "In forced-colors mode the selected row takes a thicker `Highlight` border.",
+          "The press scale is off under `prefers-reduced-motion`."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thick",
+        "--lufia-border-width-thin",
+        "--lufia-color-accent-border",
+        "--lufia-color-accent-subtle",
+        "--lufia-color-bg-surface",
+        "--lufia-color-bg-surface-raised",
+        "--lufia-color-border-strong",
+        "--lufia-color-border-subtle",
+        "--lufia-color-focus-ring",
+        "--lufia-color-text-accent",
+        "--lufia-color-text-default",
+        "--lufia-color-text-muted",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-bold",
+        "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-out",
+        "--lufia-motion-scale-press-subtle",
+        "--lufia-opacity-disabled",
+        "--lufia-radius-card",
+        "--lufia-radius-control"
       ]
     },
     {
@@ -13695,7 +14257,7 @@
             },
             {
               "name": "variant",
-              "type": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\"",
+              "type": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\"",
               "required": false,
               "default": "\"primary\"",
               "description": "Look of the underlying `Button`. Default `\"primary\"`. `\"unstyled\"` drops the package look and renders a plain `<button>` that carries only `className` (and the pending ring and labels): for an app that keeps its own button classes while it moves to `Button`. `size` and `fullWidth` do nothing then."
@@ -13713,6 +14275,13 @@
               "required": false,
               "default": null,
               "description": "Stretches to the full width of its container. Ignored with `variant=\"unstyled\"`."
+            },
+            {
+              "name": "iconStart",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the button is pending the ring replaces it and the button keeps its width."
             },
             {
               "name": "ref",
@@ -13734,12 +14303,12 @@
           "name": "PendingSubmitVariant",
           "kind": "type",
           "description": "A `Button` variant, or `unstyled` for a plain button that takes its whole look from `className`.",
-          "definition": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
+          "definition": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\""
         }
       ],
       "aliases": {
         "PendingProgress": "readonly (readonly [afterMs: number, label: string])[]",
-        "PendingSubmitVariant": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"unstyled\""
+        "PendingSubmitVariant": "\"danger\" | \"primary\" | \"secondary\" | \"ghost\" | \"link\" | \"unstyled\""
       },
       "story": {
         "docsId": "components-forms-pendingsubmit--docs",
@@ -13763,6 +14332,14 @@
           {
             "export": "WithProgress",
             "id": "components-forms-pendingsubmit--with-progress"
+          },
+          {
+            "export": "WithIcon",
+            "id": "components-forms-pendingsubmit--with-icon"
+          },
+          {
+            "export": "WithIconPending",
+            "id": "components-forms-pendingsubmit--with-icon-pending"
           },
           {
             "export": "Disabled",

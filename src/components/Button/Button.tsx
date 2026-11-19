@@ -13,12 +13,16 @@ import type {
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Button.module.css";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
 export type ButtonSize = "sm" | "md" | "lg";
 
 type ButtonOwnProps = {
-  /** Visual weight. One `primary` per view; `danger` only for destructive actions. */
+  /**
+   * Visual weight. One `primary` per view; `danger` only for destructive actions. `link` is text with no fill, border or
+   * padding, for an action inside a sentence or a quiet "show more"; it stays text-sized on touch screens, where a pseudo-element takes the touch.
+   */
   variant?: ButtonVariant;
+  /** Default `md`. With `variant="link"` the default is no size: the text inherits the font size around it. */
   size?: ButtonSize;
   /**
    * Shows a spinner in place of the content and ignores activation. The button keeps its width, stays focusable and
@@ -74,7 +78,7 @@ export type ButtonProps = AsButton | AsLink;
 export function Button(props: ButtonProps) {
   const {
     variant = "secondary",
-    size = "md",
+    size = variant === "link" ? undefined : "md",
     loading = false,
     fullWidth = false,
     iconStart,

@@ -4,7 +4,7 @@ import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { ArrowRightIcon, PlusIcon } from "../../docs/demo";
 import { Button, type ButtonVariant } from "./Button";
 
-const VARIANTS: ButtonVariant[] = ["primary", "secondary", "ghost", "danger"];
+const VARIANTS: ButtonVariant[] = ["primary", "secondary", "ghost", "danger", "link"];
 
 const meta = {
   title: "Components/Actions/Button",
@@ -23,6 +23,23 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = { args: { variant: "secondary" } };
 export const Primary: Story = { args: { variant: "primary" } };
 export const Ghost: Story = { args: { variant: "ghost" } };
+/** `link` is text with no fill or padding, for an action inside a sentence. It inherits the font size around it. */
+export const LinkInSentence: Story = {
+  args: { variant: "link", children: "undo that" },
+  decorators: [
+    (Story) => (
+      <p style={{ maxInlineSize: "32rem", margin: 0, fontSize: "1.125rem" }}>
+        The report was archived, or you can <Story /> and bring it back.
+      </p>
+    ),
+  ],
+};
+/** A quiet "show more" with an icon and the loading state; the width holds while it loads. */
+export const LinkShowMore: Story = {
+  args: { variant: "link", children: "Show more", iconEnd: <ArrowRightIcon size="1em" /> },
+};
+export const LinkLoading: Story = { args: { variant: "link", loading: true, children: "Show more" } };
+export const LinkDisabled: Story = { args: { variant: "link", disabled: true, children: "Show more" } };
 export const Danger: Story = { args: { variant: "danger", children: "Delete record" } };
 export const Disabled: Story = { args: { variant: "primary", disabled: true } };
 /** The width of the idle button is kept, so nothing around it shifts when the work starts. */
