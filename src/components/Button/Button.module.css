@@ -233,18 +233,44 @@
   transform: none;
 }
 
-/* Icon-only (IconButton): a square target. */
+/* Icon-only (IconButton): a square target. --lufia-icon-button-size overrides the box of every size; unset, each size
+   keeps its own. */
 .root[data-icon-only] {
-  inline-size: 2.5rem;
+  inline-size: var(--lufia-icon-button-size, 2.5rem);
+  min-block-size: var(--lufia-icon-button-size, 2.5rem);
   padding-inline: 0;
 }
 
 .root[data-icon-only][data-size="sm"] {
-  inline-size: 2rem;
+  inline-size: var(--lufia-icon-button-size, 2rem);
+  min-block-size: var(--lufia-icon-button-size, 2rem);
 }
 
 .root[data-icon-only][data-size="lg"] {
-  inline-size: 3rem;
+  inline-size: var(--lufia-icon-button-size, 3rem);
+  min-block-size: var(--lufia-icon-button-size, 3rem);
+}
+
+/* xl is for a large media control, such as a play button over a poster; it is icon-only and above the touch floor. */
+.root[data-icon-only][data-size="xl"] {
+  inline-size: var(--lufia-icon-button-size, 4rem);
+  min-block-size: var(--lufia-icon-button-size, 4rem);
+}
+
+.root[data-icon-only][data-size="xl"] .icon > svg {
+  inline-size: var(--lufia-icon-button-icon-size, 1.75rem);
+  block-size: var(--lufia-icon-button-icon-size, 1.75rem);
+}
+
+/* A link has no minimum height at any size: it is inline text, and the touch floor comes from its pseudo-element. */
+.root[data-icon-only][data-variant="link"] {
+  min-block-size: 0;
+}
+
+/* Circle: a round control with equal sides. */
+.root[data-icon-only][data-shape="circle"] {
+  border-radius: var(--lufia-radius-full);
+  aspect-ratio: 1;
 }
 
 /* Loading: the content stays in the layout (so the width holds and the name is kept) but is not painted. */
@@ -297,7 +323,12 @@
 
   .root[data-icon-only],
   .root[data-icon-only][data-size="sm"] {
-    inline-size: var(--lufia-target-touch, 2.75rem);
+    inline-size: max(var(--lufia-icon-button-size, 0px), var(--lufia-target-touch, 2.75rem));
+    min-block-size: max(var(--lufia-icon-button-size, 0px), var(--lufia-target-touch, 2.75rem));
+  }
+
+  .root[data-icon-only][data-variant="link"] {
+    min-block-size: 0;
   }
 }
 

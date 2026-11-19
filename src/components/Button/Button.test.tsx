@@ -392,4 +392,16 @@ describe("Button link variant (stylesheet)", () => {
       /\.root\[data-variant="link"\]::before \{[^}]*block-size: max\(100%, var\(--lufia-target-touch/,
     );
   });
+
+  it("keeps a link icon button free of a minimum height at every size, after the icon-only floors", () => {
+    const linkRule = /\.root\[data-icon-only\]\[data-variant="link"\] \{\s*min-block-size: 0;/;
+    const base = css.slice(0, css.indexOf("@media (pointer: coarse)"));
+    const coarse = css.slice(css.indexOf("@media (pointer: coarse)"));
+    expect(base).toMatch(linkRule);
+    expect(coarse).toMatch(linkRule);
+    expect(base.search(linkRule)).toBeGreaterThan(
+      base.lastIndexOf('.root[data-icon-only][data-size="xl"] {'),
+    );
+    expect(coarse.search(linkRule)).toBeGreaterThan(coarse.indexOf("--lufia-icon-button-size, 0px"));
+  });
 });

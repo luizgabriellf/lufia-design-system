@@ -122,3 +122,10 @@ export const GitHubIcon = /* @__PURE__ */ createIcon(
     <path d="M9 18c-4.51 2-5-2-7-2" />
   </>,
 );
+
+export const PlayIcon = /* @__PURE__ */ createIcon(
+  "play",
+  <>
+    <path d="M6 3 20 12 6 21Z" />
+  </>,
+);
