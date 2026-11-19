@@ -224,6 +224,17 @@ describe("Button", () => {
       expect(own).not.toHaveBeenCalled();
       expect(onClick).not.toHaveBeenCalled();
     });
+
+    it("throws a clear error for a lazy reference, which is what a Server Component's element can arrive as", () => {
+      const lazy = { $$typeof: Symbol.for("react.lazy") } as unknown as ComponentProps<
+        typeof Button
+      >["render"];
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      expect(() => render(<Button render={lazy}>Go</Button>)).toThrow(
+        /`render` must be a React element created in a Client Component/,
+      );
+      error.mockRestore();
+    });
   });
 
   it("has no axe violations in every state", async () => {

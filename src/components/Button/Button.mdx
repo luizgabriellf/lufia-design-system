@@ -59,6 +59,25 @@ button's class, state, content and remaining props, and keeps its own props. Put
 The element must render one anchor or button and pass `className`, `data-*`, `aria-*`, `onClick` and `children` through to
 it. `disabled` and `loading` mark it `aria-disabled` and ignore activation, as they do for `href`.
 
+#### Server Components
+
+A `render` element must be created in a Client Component. When a Server Component passes an element whose component
+suspends on the server, it can reach the button as a lazy reference, and `Button` throws an error that says so. In
+consuming apps, build the button inside a small client component and use that from the server instead (or pass a plain
+`<a>`).
+
+```tsx
+"use client";
+
+export function ReportsButton({ children }: { children: ReactNode }) {
+  return (
+    <Button variant="primary" render={<RouterLink href={{ pathname: "/reports" }} />}>
+      {children}
+    </Button>
+  );
+}
+```
+
 ### Variants
 
 | Variant     | Use for                                                       |
