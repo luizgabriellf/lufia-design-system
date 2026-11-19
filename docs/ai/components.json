@@ -3476,7 +3476,7 @@
               "type": "ReactElement<RenderedElementProps, string | JSXElementConstructor<any>>",
               "required": false,
               "default": null,
-              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation."
+              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. Server Components: create the element in a Client Component (an element passed from a Server Component can arrive as a lazy reference and throws); build the button inside a small client component, or pass a plain `<a>`."
             },
             {
               "name": "href",
@@ -9810,7 +9810,7 @@
               "type": "ReactElement<RenderedElementProps, string | JSXElementConstructor<any>>",
               "required": false,
               "default": null,
-              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation."
+              "description": "The element to render instead of the default `<button>` or link, for a link the `LufiaProvider` link component cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. Server Components: create the element in a Client Component (an element passed from a Server Component can arrive as a lazy reference and throws); build the button inside a small client component, or pass a plain `<a>`."
             },
             {
               "name": "icon",

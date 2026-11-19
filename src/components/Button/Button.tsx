@@ -1,6 +1,6 @@
 "use client";
 
-import { cloneElement } from "react";
+import { cloneElement, isValidElement } from "react";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -36,7 +36,9 @@ type ButtonOwnProps = {
    * cannot express: a router link with a route object or a locale, or a plain `<a>` that must skip the router. It
    * receives the button's class, state attributes, content and remaining props, and keeps its own props and `ref`; put
    * `href` on the element itself. It must render one anchor or button and pass what it receives through to it. It is
-   * not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation.
+   * not natively disabled: `disabled` and `loading` mark it `aria-disabled` and ignore activation. Server Components: create
+   * the element in a Client Component (an element passed from a Server Component can arrive as a lazy reference and
+   * throws); build the button inside a small client component, or pass a plain `<a>`.
    */
   render?: ReactElement<RenderedElementProps>;
 };
@@ -108,6 +110,13 @@ export function Button(props: ButtonProps) {
   );
 
   if (render !== undefined) {
+    // An element a Server Component passes can arrive as a lazy reference, which has no `props`.
+    if (!isValidElement(render)) {
+      throw new Error(
+        "Button: `render` must be a React element created in a Client Component. An element passed from a Server " +
+          "Component can arrive as a lazy reference. Build the button inside a small client component, or pass a plain `<a>`.",
+      );
+    }
     // `href` belongs on the element and `type` is a button-only default. A `ref` given here replaces the element's own.
     const { disabled, onClick, ...passed } = rest as Record<string, unknown> & {
       disabled?: boolean;
