@@ -15382,14 +15382,21 @@
         {
           "name": "ProgressBar",
           "kind": "component",
-          "description": "A determinate progress bar: a native `progressbar` role with its value, drawn as a track and a fill. It states a fraction, so print the figure beside it as text. The fill draws in once on mount and is removed under reduced motion. Later changes of `value` apply at once, unless `animateChanges` is set: then the fill is scaled with a `transform` transition (never width), and reduced motion applies the new value at once.",
+          "description": "A progress bar: a native `progressbar` role with its value, drawn as a track and a fill. With `indeterminate` it has no value and shows that work is under way. It states a fraction, so print the figure beside it as text. The fill draws in once on mount and is removed under reduced motion. Later changes of `value` apply at once, unless `animateChanges` is set: then the fill is scaled with a `transform` transition (never width), and reduced motion applies the new value at once.",
           "props": [
             {
               "name": "value",
               "type": "number",
-              "required": true,
+              "required": false,
               "default": null,
-              "description": "Current value, from 0 to `max`. Values outside the range are clamped."
+              "description": "Current value, from 0 to `max`. Values outside the range are clamped. Left out only with `indeterminate`."
+            },
+            {
+              "name": "indeterminate",
+              "type": "false | true",
+              "required": false,
+              "default": "false",
+              "description": "The work has started and its length is not known: a short fill travels along the track and the bar states no value (`aria-valuenow` is absent, which is how assistive technology reads \"busy\"). Use it for a wait of a few seconds inside a panel; switch to `value` as soon as a fraction is known. Under reduced motion the fill stays in place and fades gently instead of travelling."
             },
             {
               "name": "max",
@@ -15434,17 +15441,57 @@
               "description": "Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion."
             }
           ],
-          "nativeProps": true
+          "nativeProps": true,
+          "variants": {
+            "discriminant": "indeterminate",
+            "nativeTypesDiffer": false,
+            "branches": [
+              {
+                "name": "indeterminate: false",
+                "props": [
+                  {
+                    "name": "indeterminate",
+                    "type": "false",
+                    "required": false,
+                    "description": ""
+                  },
+                  {
+                    "name": "value",
+                    "type": "number",
+                    "required": true,
+                    "description": "Current value, from 0 to `max`. Values outside the range are clamped. Left out only with `indeterminate`."
+                  }
+                ]
+              },
+              {
+                "name": "indeterminate: true",
+                "props": [
+                  {
+                    "name": "indeterminate",
+                    "type": "true",
+                    "required": true,
+                    "description": "The work has started and its length is not known: a short fill travels along the track and the bar states no value (`aria-valuenow` is absent, which is how assistive technology reads \"busy\"). Use it for a wait of a few seconds inside a panel; switch to `value` as soon as a fraction is known. Under reduced motion the fill stays in place and fades gently instead of travelling."
+                  },
+                  {
+                    "name": "value",
+                    "type": "undefined",
+                    "required": false,
+                    "description": ""
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "ProgressBarProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & (ProgressBarValue & { max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; })"
         }
       ],
       "aliases": {
-        "ProgressBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & { value: number; max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; }"
+        "ProgressBarProps": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\"> & (ProgressBarValue & { max?: number | undefined; label: string; valueText?: string | undefined; tone?: ChartTone | undefined; size?: \"sm\" | \"md\" | undefined; animateChanges?: boolean | undefined; })"
       },
       "story": {
         "docsId": "components-data-display-progressbar--docs",
@@ -15490,6 +15537,14 @@
             "id": "components-data-display-progressbar--animated-at-rest"
           },
           {
+            "export": "Indeterminate",
+            "id": "components-data-display-progressbar--indeterminate"
+          },
+          {
+            "export": "IndeterminateSmall",
+            "id": "components-data-display-progressbar--indeterminate-small"
+          },
+          {
             "export": "RightToLeft",
             "id": "components-data-display-progressbar--right-to-left"
           },
@@ -15507,10 +15562,11 @@
           "code": "import { ProgressBar } from \"@lufia/design-system/components/ProgressBar\";\n\n<ProgressBar value={45} label=\"Storage used\" />\n<ProgressBar value={12} max={40} label=\"Steps done\" valueText=\"12 of 40 steps\" />"
         },
         "whenToUse": [
-          "A known fraction of a whole: storage used, steps done, a quota."
+          "A known fraction of a whole: storage used, steps done, a quota.",
+          "With `indeterminate`: a wait of a few seconds inside a panel or a step whose length is not known yet, where a bar fits the layout better than a ring."
         ],
         "whenNotToUse": [
-          "Work of unknown length: use a spinner or a `Skeleton`.",
+          "A wait inside a button or beside a line of text: use `Spinner`. Content that is about to appear in a known shape: use a `Skeleton`.",
           "A value against a target tick: use `BulletBar`."
         ],
         "contentGuidelines": null
@@ -15524,6 +15580,7 @@
           "Use `valueText` when the percentage alone says too little (\"12 of 40 steps\").",
           "It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.",
           "The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.",
+          "With `indeterminate` the bar has no `aria-valuenow`, which assistive technology reads as busy with no known value; the name still says what is loading. A short fill travels along the track with a `transform` animation and mirrors in right-to-left. Under `prefers-reduced-motion` nothing travels: the fill covers the track and fades gently, so it still reads as work under way and not as done.",
           "In `forced-colors` mode the track gets a border and the fill is `Highlight`."
         ]
       },
@@ -15541,6 +15598,7 @@
         "--lufia-color-text-subtle",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-medium",
+        "--lufia-motion-easing-in-out",
         "--lufia-motion-easing-out",
         "--lufia-radius-full"
       ]

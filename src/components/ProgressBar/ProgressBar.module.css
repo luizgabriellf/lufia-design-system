@@ -52,9 +52,58 @@
   transform-origin: right center;
 }
 
+/*
+ * Indeterminate: a fill of 40% of the track travels from before the start to past the end, so the track clips it. The
+ * distance is in the fill's own widths (100% / 40% = 250%), which keeps it a transform-only animation.
+ */
+.root[data-indeterminate] {
+  overflow: hidden;
+}
+
+.fill[data-indeterminate] {
+  inline-size: 40%;
+  min-inline-size: 0;
+  animation: progress-travel 1.4s var(--lufia-motion-easing-in-out) infinite;
+}
+
+.fill[data-indeterminate]:dir(rtl) {
+  animation-name: progress-travel-rtl;
+}
+
 @keyframes progress-grow {
   from {
     transform: scaleX(0);
+  }
+}
+
+@keyframes progress-travel {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes progress-travel-rtl {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(-250%);
+  }
+}
+
+/* Reduced motion: nothing travels. The fill covers the track and fades, which still reads as "busy", not "done". */
+@keyframes progress-breathe {
+  from {
+    opacity: 0.35;
+  }
+
+  to {
+    opacity: 0.8;
   }
 }
 
@@ -65,6 +114,12 @@
 
   .fill[data-animate] {
     transition: none;
+  }
+
+  .fill[data-indeterminate],
+  .fill[data-indeterminate]:dir(rtl) {
+    inline-size: 100%;
+    animation: progress-breathe 1.6s var(--lufia-motion-easing-in-out) infinite alternate;
   }
 }
 
