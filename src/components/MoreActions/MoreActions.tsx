@@ -57,10 +57,13 @@ export type MoreActionItem = {
 export type MoreActionsProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /** Accessible name of the trigger and of the menu, such as "More actions". */
   label: string;
+  /** The menu entries, in order. Each is a button, or a link when it has an `href`. */
   items: readonly MoreActionItem[];
   /** Which edge of the trigger the menu lines up with. Defaults to the end. */
   align?: "start" | "end";
+  /** Size of the trigger button. Default `md`. */
   size?: "sm" | "md" | "lg";
+  /** Visual variant of the trigger button. Default `ghost`. */
   variant?: ButtonVariant;
   /** Replaces the default three-dot icon. */
   icon?: ReactNode;

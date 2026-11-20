@@ -72,6 +72,7 @@ export type FileFieldProps = Omit<
   invalid?: boolean;
   /** Goes on the root element. */
   className?: string;
+  /** Ref to the native file input. */
   ref?: Ref<HTMLInputElement>;
 };
 

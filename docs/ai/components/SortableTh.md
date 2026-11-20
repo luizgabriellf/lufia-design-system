@@ -28,11 +28,11 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `dir` | `"asc" \| "desc"` | yes |  |  |
+| `dir` | `"asc" \| "desc"` | yes |  | Sort direction, `asc` or `desc`. Drawn as an arrow and set as `aria-sort` only while `active` is true. |
 | `abbr` | `string` | no |  | A short visible text for a long `label`, as `Th abbr` does inside a `Table`. The full `label` stays the button's accessible name, and the short text carries it as a `title` tooltip. Also set natively on the `<th>`. |
-| `label` | `string` | yes |  |  |
+| `label` | `string` | yes |  | Column name: the text of the sort button, and its accessible name. |
 | `active` | `boolean` | yes |  | Whether the table is currently sorted by this column. |
-| `onSort` | `() => void` | yes |  |  |
+| `onSort` | `() => void` | yes |  | Called when the user activates the header button. Change the sort in it; the header keeps no state. |
 | `wrap` | `boolean` | no |  | Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`. |
 
 Other native element attributes pass through to the root element.

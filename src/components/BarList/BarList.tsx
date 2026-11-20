@@ -22,6 +22,7 @@ export type BarListProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   title: ReactNode;
   /** A written summary of what the bars show. Shown above them. */
   summary?: ReactNode;
+  /** The bars, in order. Each row is drawn against the largest `amount` in the list. */
   rows: readonly BarListRow[];
   /** Closes the list with a total line. */
   total?: { label: ReactNode; value: ReactNode };

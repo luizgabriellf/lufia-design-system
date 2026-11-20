@@ -26,6 +26,7 @@ export type RadioOption = {
    * limits as `meta`: phrasing content only, no lists, no interactive elements.
    */
   content?: ReactNode;
+  /** Disables this option: it cannot be chosen and is skipped by the arrow keys. */
   disabled?: boolean;
 };
 
@@ -59,14 +60,32 @@ export type RadioGroupProps = Omit<
   "onChange" | "defaultValue" | "children" | "aria-label" | "aria-labelledby"
 > &
   RadioGroupName & {
+    /** The choices, in display order. Each has a unique `value` and a `label`; the user picks exactly one. */
     options: readonly RadioOption[];
+    /** Help text under the group, linked to it with `aria-describedby`. */
     hint?: ReactNode;
+    /**
+     * Error message under the group. Marks the group invalid (`aria-invalid`) and is linked with `aria-describedby`; it
+     * takes precedence over the message of a refused required submission.
+     */
     error?: ReactNode;
+    /**
+     * Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form
+     * refuse to submit while nothing is chosen. Default `false`.
+     */
     required?: boolean;
+    /**
+     * Disables every option; an option can also be disabled on its own with `disabled` on the option. Default `false`.
+     */
     disabled?: boolean;
     /** Controlled value. `""` means nothing chosen. */
     value?: string;
+    /** Initial value when `value` is not given. Default `""` (nothing chosen); a form reset restores it. */
     defaultValue?: string;
+    /**
+     * Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled
+     * or not.
+     */
     onValueChange?: (value: string) => void;
     /** Submitted with the form as `name=value`. */
     name?: string;
@@ -82,6 +101,7 @@ export type RadioGroupProps = Omit<
     requiredLabel?: string;
     /** Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. */
     requiredMessage?: string;
+    /** Ref to the `radiogroup` element. */
     ref?: Ref<HTMLDivElement>;
   };
 

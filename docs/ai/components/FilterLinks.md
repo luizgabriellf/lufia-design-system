@@ -31,10 +31,10 @@ count. The filter lives in the URL, so every chip is a real link and the current
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the group ("Filter by status"). Required: a page can have more than one navigation. |
-| `items` | `readonly FilterLinksItem[]` | yes |  |  |
+| `items` | `readonly FilterLinksItem[]` | yes |  | The filters, in order. Each is a link to the same list with that filter applied. |
 | `value` | `string` | no |  | Key of the current filter. Its link gets `aria-current="true"`. Leave it out when none is current. |
 | `layout` | `"wrap" \| "grid"` | no | `"wrap"` | `"wrap"` (default) keeps each chip as wide as its text. `"grid"` lays the chips out in equal columns, each chip filling its cell with the label at the start and the count at the end: use it for many filters with counts, where ragged widths are hard to scan. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`). |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the `<nav>` element. |
 
 Other native element attributes pass through to the root element.
 

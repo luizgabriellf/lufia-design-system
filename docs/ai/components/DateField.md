@@ -34,7 +34,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | --- | --- | --- | --- | --- |
 | `type` | `"date" \| "time" \| "datetime-local" \| "month"` | no | `"date"` | Which native control to render. `date` (default), `time`, `datetime-local` or `month`. |
 | `value` | `string` | no |  | Controlled value, as the native control emits it: `2030-01-31`, `14:30`, `2030-01-31T14:30` or `2030-01`. `""` is empty. |
-| `defaultValue` | `string` | no | `""` |  |
+| `defaultValue` | `string` | no | `""` | Initial value when `value` is not given, in the same format as `value`. A form reset restores it. |
 | `onValueChange` | `(value: string) => void` | no |  | Called with the value the native control emits, or `""` when it is emptied or cleared. |
 | `min` | `string` | no |  | The earliest value, in the same format as `value`. |
 | `max` | `string` | no |  | The latest value, in the same format as `value`. |
@@ -42,7 +42,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
 Other native element attributes pass through to the root element.
 

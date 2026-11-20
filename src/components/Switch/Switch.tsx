@@ -12,18 +12,23 @@ export type SwitchProps = Omit<
 > & {
   /** The visible label. Clicking it toggles the switch. */
   label: ReactNode;
+  /** Help text under the switch, linked to it with `aria-describedby`. */
   hint?: ReactNode;
+  /** Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. */
   error?: ReactNode;
   /** Controlled state. */
   checked?: boolean;
   /** Initial state when `checked` is not given. */
   defaultChecked?: boolean;
+  /** Called with the new state when the user toggles the switch, whether it is controlled or not. */
   onCheckedChange?: (checked: boolean) => void;
   /** Submitted as `name=value` while on, like a checkbox. Without `name` nothing is submitted. */
   name?: string;
+  /** Value submitted with `name` while the switch is on. Default `"on"`. */
   value?: string;
   /** Goes on the root element. */
   className?: string;
+  /** Ref to the `role="switch"` button. */
   ref?: Ref<HTMLButtonElement>;
 };
 

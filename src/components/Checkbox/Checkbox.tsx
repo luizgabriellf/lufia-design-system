@@ -31,6 +31,7 @@ export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" |
   size?: "md" | "sm";
   /** Goes on the root element. */
   className?: string;
+  /** Ref to the native checkbox input. */
   ref?: Ref<HTMLInputElement>;
 };
 

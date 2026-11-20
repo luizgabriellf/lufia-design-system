@@ -33,20 +33,20 @@ and arrow-key navigation.
 | `label` | `ReactNode` | no |  | Names the group, like a `<legend>`. |
 | `aria-label` | `string` | no |  | Names the group without a visible legend. |
 | `aria-labelledby` | `string` | no |  | Names the group by the id of an element the host already shows, without a visible legend. |
-| `options` | `readonly RadioOption[]` | yes |  |  |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
-| `required` | `boolean` | no |  |  |
-| `disabled` | `boolean` | no |  |  |
+| `options` | `readonly RadioOption[]` | yes |  | The choices, in display order. Each has a unique `value` and a `label`; the user picks exactly one. |
+| `hint` | `ReactNode` | no |  | Help text under the group, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the group. Marks the group invalid (`aria-invalid`) and is linked with `aria-describedby`; it takes precedence over the message of a refused required submission. |
+| `required` | `boolean` | no |  | Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form refuse to submit while nothing is chosen. Default `false`. |
+| `disabled` | `boolean` | no |  | Disables every option; an option can also be disabled on its own with `disabled` on the option. Default `false`. |
 | `value` | `string` | no |  | Controlled value. `""` means nothing chosen. |
-| `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `(value: string) => void` | no |  |  |
+| `defaultValue` | `string` | no | `""` | Initial value when `value` is not given. Default `""` (nothing chosen); a form reset restores it. |
+| `onValueChange` | `(value: string) => void` | no |  | Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
 | `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. |
 | `requiredMessage` | `string` | no |  | Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the `radiogroup` element. |
 
 Other native element attributes pass through to the root element.
 

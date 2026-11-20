@@ -31,17 +31,17 @@ segment.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the group ("Display mode"). Required: the visible segments do not say what they choose. |
-| `options` | `readonly SegmentedToggleOption[]` | yes |  |  |
+| `options` | `readonly SegmentedToggleOption[]` | yes |  | The segments, in order. Each has a unique `value` and a `label`; exactly one can be chosen. |
 | `value` | `string \| null` | no |  | Controlled value. `null` is controlled with nothing chosen: no segment is checked and the indicator is hidden. The first enabled segment is still the tab stop, and an arrow key chooses (selection follows focus) as it does with a value. |
 | `defaultValue` | `string \| null` | no |  | Initial value when `value` is not given; `null` starts with nothing chosen. Defaults to the first enabled option. A form reset goes back to it (to `null` when a controlled `value` started as `null`). |
 | `onValueChange` | `(value: string) => void` | no |  | Called with the value the user chose. Never `null`: a deselect is reported by `onDeselect`. |
 | `allowDeselect` | `boolean` | no |  | When true, activating the chosen segment again clears the choice and calls `onDeselect`. With a controlled `value`, set it to `null` there; an uncontrolled toggle clears itself. |
 | `onDeselect` | `() => void` | no |  | Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen. |
-| `disabled` | `boolean` | no |  |  |
+| `disabled` | `boolean` | no |  | Disables every segment; one segment can also be disabled on its own with `disabled` on the option. Default `false`. |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `width` | `"fill" \| "fit"` | no | `"fit"` | `"fit"` (default) shrinks to its content; `"fill"` shares the full width between the segments. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `"md"` (default) or the denser `"sm"` for rows in a list or a table. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the `radiogroup` element. |
 
 Other native element attributes pass through to the root element.
 

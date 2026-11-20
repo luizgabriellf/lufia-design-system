@@ -27,7 +27,11 @@ import styles from "./NavSheet.module.css";
 export type NavSheetLayerProps = { className?: string } & ShellDataAttributes;
 
 export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "title"> & {
+  /** Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. */
   open: boolean;
+  /**
+   * Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down.
+   */
   onOpenChange: (open: boolean) => void;
   /** Accessible name of the dialog. */
   label: string;
@@ -86,6 +90,7 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
    * (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock.
    */
   dock?: ReactNode;
+  /** The scrolling body: the navigation. */
   children: ReactNode;
 };
 

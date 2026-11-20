@@ -45,6 +45,7 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "size" |
   invalid?: boolean;
   /** Goes on the box that draws the border; the native select gets the rest props. */
   className?: string;
+  /** Ref to the native `<select>`. */
   ref?: Ref<HTMLSelectElement>;
 };
 

@@ -39,7 +39,7 @@ dot on by default.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` | Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning. |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 | `wrap` | `boolean` | no | `false` | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
@@ -51,7 +51,7 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  | Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning. |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 | `wrap` | `boolean` | no |  | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |

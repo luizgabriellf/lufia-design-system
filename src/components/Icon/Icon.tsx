@@ -15,6 +15,7 @@ export type IconProps = Omit<SVGProps<SVGSVGElement>, "width" | "height" | "view
    * is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead.
    */
   title?: string;
+  /** Ref to the `<svg>` element. */
   ref?: Ref<SVGSVGElement>;
 };
 
@@ -48,7 +49,10 @@ export function Icon({
   "aria-label": ariaLabel,
   "aria-hidden": ariaHidden,
   ...rest
-}: IconProps & { children?: ReactNode }) {
+}: IconProps & {
+  /** The drawing: SVG elements (`<path>`, `<circle>`, `<rect>`...) on the 24-unit grid. */
+  children?: ReactNode;
+}) {
   const named = Boolean(title) || (typeof ariaLabel === "string" && ariaLabel.length > 0);
   const px = typeof size === "number" ? size : size === "1em" ? undefined : PX[size];
   const dataSize = typeof size === "number" ? "custom" : size === "1em" ? "em" : size;

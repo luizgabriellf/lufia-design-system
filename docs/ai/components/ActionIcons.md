@@ -56,7 +56,7 @@ The aliases draw on the set's 24-unit grid and default to the `md` size (20px). 
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 
 Other native element attributes pass through to the root element.
 

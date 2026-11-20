@@ -27,7 +27,7 @@ A compact list of references or sources, drawn as chips that wrap. A reference w
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly CitationItem[]` | yes |  |  |
+| `items` | `readonly CitationItem[]` | yes |  | The references, in order. Renders nothing when empty. |
 | `title` | `ReactNode` | no |  | A visible title above the list ("Sources"). It also names the list for screen readers. |
 
 Other native element attributes pass through to the root element.

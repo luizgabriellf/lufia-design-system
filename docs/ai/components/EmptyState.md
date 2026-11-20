@@ -29,8 +29,8 @@ step.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
-| `title` | `string` | yes |  |  |
-| `body` | `string` | no |  |  |
+| `title` | `string` | yes |  | The headline: says what is empty. |
+| `body` | `string` | no |  | A sentence under the title that explains why, or what to do next. |
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 
 Other native element attributes pass through to the root element.

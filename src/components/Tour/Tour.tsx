@@ -109,6 +109,7 @@ export type TourLabels = {
 export type TourCloseReason = "skip" | "close" | "escape";
 
 export type TourProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "title"> & {
+  /** The steps, in order. Each has a `title` and a `body`, and may point at a `target` on the page. */
   steps: readonly TourStep[];
   /** Whether the tour is showing. The app decides when it starts and remembers that it was seen. */
   open: boolean;
@@ -122,6 +123,7 @@ export type TourProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "role"
   onClose?: (reason: TourCloseReason) => void;
   /** Called when the person finishes the last step. Set `open` to `false` here. */
   onFinish?: () => void;
+  /** Every user-facing string of the card, in the app's language. */
   labels: TourLabels;
   /** Space between the target and the edge of the spotlight, in pixels. Default `6`. */
   spotlightPadding?: number;

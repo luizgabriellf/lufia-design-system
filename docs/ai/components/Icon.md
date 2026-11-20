@@ -94,7 +94,7 @@ status icons and the rules, is the [Icons foundation](https://luizgabriellf.gith
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -104,8 +104,8 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no | `"md"` | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
-| `children` | `ReactNode` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
+| `children` | `ReactNode` | no |  | The drawing: SVG elements (`<path>`, `<circle>`, `<rect>`...) on the 24-unit grid. |
 
 Other native element attributes pass through to the root element.
 

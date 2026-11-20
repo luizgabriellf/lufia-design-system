@@ -28,12 +28,12 @@ open-ended filter) go in as children.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `filters` | `FilterOption[]` | no |  |  |
-| `activeFilter` | `string` | no |  |  |
-| `onFilterChange` | `(key: string) => void` | no |  |  |
-| `search` | `string` | no |  |  |
+| `filters` | `FilterOption[]` | no |  | The filter chips, in order. Each is a toggle button; the one whose `key` equals `activeFilter` is pressed. |
+| `activeFilter` | `string` | no |  | `key` of the pressed filter chip. Controlled: the toolbar keeps no state, so update it from `onFilterChange`. |
+| `onFilterChange` | `(key: string) => void` | no |  | Called with the `key` of the chip the user clicks. |
+| `search` | `string` | no |  | Current text of the search field. Controlled: update it from `onSearchChange`. Default `""`. |
 | `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
-| `searchPlaceholder` | `string` | no |  |  |
+| `searchPlaceholder` | `string` | no |  | Placeholder of the search field. Default none. |
 | `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |
 | `children` | `ReactNode` | no |  | Extra controls, such as dropdowns for open-ended lists, rendered before the search box. |

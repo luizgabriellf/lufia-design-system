@@ -20,9 +20,11 @@ export type PaginationLabels = {
 export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   /** Current page, starting at 1. Controlled. */
   page: number;
+  /** How many pages there are. The numbered controls and the next control stop here. */
   totalPages: number;
   /** Total item count, handed to `labels.summary`. */
   total?: number;
+  /** Called with the page the user chose (a number, previous or next). Update `page` from it. */
   onPageChange: (page: number) => void;
   /**
    * Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and
@@ -31,6 +33,7 @@ export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   hrefFor?: (page: number) => string;
   /** Page numbers shown on each side of the current one. Default 1. */
   siblingCount?: number;
+  /** Every user-facing string of the control, in the app's language. */
   labels: PaginationLabels;
   /**
    * `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is

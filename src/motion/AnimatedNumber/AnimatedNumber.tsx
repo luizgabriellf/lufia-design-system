@@ -5,6 +5,7 @@ import { usePrefersReducedMotion } from "../usePrefersReducedMotion";
 import styles from "./AnimatedNumber.module.css";
 
 export type AnimatedNumberProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+  /** The number to show. The first render shows it as is; later changes count from the shown number to the new one. */
   value: number;
   /** Turns the running number into text. Pass a locale-aware formatter; the default is `String`. */
   format?: (value: number) => string;

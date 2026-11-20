@@ -28,6 +28,7 @@ export type ChoiceTileProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "chi
   fullWidth?: boolean;
   /** Dims the tile, removes it from the tab order and ignores activation. */
   disabled?: boolean;
+  /** Ref to the tile's `<button>`. */
   ref?: Ref<HTMLButtonElement>;
 };
 

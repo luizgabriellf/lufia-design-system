@@ -27,7 +27,7 @@ The overview of many work queues on one screen. Queues with something in them le
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly QueueSummaryItem[]` | yes |  |  |
+| `items` | `readonly QueueSummaryItem[]` | yes |  | The queues, in order given. A queue with a `count` of `0` folds into the `clearLabel` line; the rest are rows sorted by tone. Renders nothing when empty. |
 | `clearLabel` | `(count: number) => ReactNode` | yes |  | The line that folds the empty queues ("6 queues are clear"). |
 | `allClearTitle` | `ReactNode` | yes |  | Heading of the all-clear state, shown only when every count is exactly `0`. |
 | `allClearBody` | `ReactNode` | no |  | A short line under the all-clear heading. |

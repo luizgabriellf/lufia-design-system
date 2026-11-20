@@ -67,13 +67,24 @@ type FloatButtonBase = FloatBarDataAttributes & {
   label: string;
   /** `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. */
   variant?: "search" | "primary" | "icon";
+  /**
+   * Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the
+   * accessible name.
+   */
   icon?: ReactNode;
 };
 
 export type MobileFloatBarButtonProps = FloatButtonBase &
   (
-    | ({ href?: undefined } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">)
-    | ({ href: string } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "type" | "onClick"> & {
+    | ({
+        /** Not set: the control is a `<button>`. */
+        href?: undefined;
+      } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">)
+    | ({
+        /** Makes the control a link, rendered through the configured `linkComponent`. */
+        href: string;
+      } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "type" | "onClick"> & {
+          /** Called on click. It receives no event: the link navigates through the router. */
           onClick?: () => void;
         })
   );

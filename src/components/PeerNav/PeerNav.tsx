@@ -39,6 +39,7 @@ export type PeerNavProps<Href = string> = Omit<
 > & {
   /** Accessible name of the navigation or the tablist. Required: there is usually more than one on a page. */
   label: string;
+  /** The destinations, in order. When every item has an `href` the nav is a list of links, otherwise a tablist. */
   items: readonly PeerNavItem<Href>[];
   /** Key of the current item. Controlled. For links it is the page being shown. */
   value?: string;

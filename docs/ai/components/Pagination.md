@@ -29,12 +29,12 @@ It is the view for `usePagination`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `page` | `number` | yes |  | Current page, starting at 1. Controlled. |
-| `totalPages` | `number` | yes |  |  |
+| `totalPages` | `number` | yes |  | How many pages there are. The numbered controls and the next control stop here. |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
-| `onPageChange` | `(page: number) => void` | yes |  |  |
+| `onPageChange` | `(page: number) => void` | yes |  | Called with the page the user chose (a number, previous or next). Update `page` from it. |
 | `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
 | `siblingCount` | `number` | no | `1` | Page numbers shown on each side of the current one. Default 1. |
-| `labels` | `PaginationLabels` | yes |  |  |
+| `labels` | `PaginationLabels` | yes |  | Every user-facing string of the control, in the app's language. |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
 | `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |

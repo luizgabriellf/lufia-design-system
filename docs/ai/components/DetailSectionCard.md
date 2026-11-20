@@ -28,9 +28,9 @@ content area.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  |  |
-| `title` | `string` | yes |  |  |
-| `description` | `string` | no |  |  |
+| `children` | `ReactNode` | yes |  | The section's content, under the header. |
+| `title` | `string` | yes |  | The section heading, an `<h3>`. |
+| `description` | `string` | no |  | A sentence under the title that says what the section holds. |
 | `icon` | `ReactNode` | no |  | Decorative icon shown before the title (hidden from assistive technology). |
 | `action` | `ReactNode` | no |  | Control aligned to the end of the header, such as an "Edit" button. |
 

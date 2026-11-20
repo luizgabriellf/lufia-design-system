@@ -73,6 +73,7 @@ export type ListFieldProps = Omit<
   name?: string;
   /** Controlled entries. A value that differs from what the field holds replaces its rows. */
   items?: readonly string[];
+  /** Initial entries when `items` is not given. A form reset restores them. */
   defaultItems?: readonly string[];
   /** Called with the entries (sanitized, empty ones left out) after every add, edit and removal. */
   onChange?: (items: string[]) => void;
@@ -104,6 +105,7 @@ export type ListFieldProps = Omit<
   includeDraft?: boolean;
   /** Placeholder of the add input. */
   placeholder?: string;
+  /** Help text under the group, linked to it with `aria-describedby`. */
   hint?: ReactNode;
   /**
    * Renders a counter, such as "2 of 30 entries" or "34 of 200 characters", as secondary text under the hint and tied to
@@ -111,9 +113,11 @@ export type ListFieldProps = Omit<
    * Keep it phrasing content (text and inline elements).
    */
   renderCount?: (count: ListFieldCount) => ReactNode;
+  /** Error message under the group, linked to it with `aria-describedby`. */
   error?: ReactNode;
   /** Content next to the label, such as a `Badge`. */
   badge?: ReactNode;
+  /** Disables the add input, the add button, and every entry and its remove button. Default `false`. */
   disabled?: boolean;
   /** Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. */
   requiredLabel?: string;

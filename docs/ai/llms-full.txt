@@ -406,7 +406,7 @@ The aliases draw on the set's 24-unit grid and default to the `md` size (20px). 
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -483,7 +483,7 @@ A feed of what happened, newest first: a title, a line of context, the time and 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly ActivityItem[]` | yes |  |  |
+| `items` | `readonly ActivityItem[]` | yes |  | The entries, newest first. The list renders nothing when it is empty. |
 | `timeline` | `boolean` | no | `false` | Draws a rail with a marker per entry, for a feed read as a sequence. Plain rows by default. |
 
 Other native element attributes pass through to the root element.
@@ -573,7 +573,7 @@ A number that counts to its new value when `value` changes. It uses `requestAnim
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `number` | yes |  |  |
+| `value` | `number` | yes |  | The number to show. The first render shows it as is; later changes count from the shown number to the new one. |
 | `format` | `(value: number) => string` | no | `String` | Turns the running number into text. Pass a locale-aware formatter; the default is `String`. |
 | `duration` | `number` | no |  | Milliseconds. Defaults to the `--lufia-motion-duration-medium` token, which is ~0 under reduced motion. |
 
@@ -681,7 +681,7 @@ navigation is data, so both layouts always agree.
 | `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation, as data. It renders in the sidebar and again in the phone sheet. |
 | `currentPath` | `string` | no |  | The path being shown: the matching item is current (`aria-current="page"`). |
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
-| `labels` | `AppShellLabels` | yes |  |  |
+| `labels` | `AppShellLabels` | yes |  | The shell's accessible names (skip link, navigation, menu, floating bar, sidebar rail button), in the app's language. |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
 | `context` | `Slot` | no |  | Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
@@ -698,14 +698,14 @@ navigation is data, so both layouts always agree.
 | `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
 | `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
-| `onMenuOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, or when the shell closes it itself (a link was chosen, or the window grew to the wide layout). |
 | `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
-| `defaultCollapsed` | `boolean` | no | `false` |  |
-| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  |  |
+| `defaultCollapsed` | `boolean` | no | `false` | Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with `parseShellState` to avoid a flash on first paint. |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  | Called with the next collapsed state when the user toggles the rail button. |
 | `openGroups` | `readonly string[]` | no |  | Keys of the open collapsible groups. Controlled; the owner then also decides what arriving on a page opens. |
-| `defaultOpenGroups` | `readonly string[]` | no |  |  |
-| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  |  |
+| `defaultOpenGroups` | `readonly string[]` | no |  | Keys of the collapsible groups that start open when `openGroups` is not given. Leave it out and the groups marked `defaultOpen` start open. The group holding the current page is always opened too. |
+| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  | Called with the keys of all open collapsible groups after the user opens or closes one. |
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `routeKey` | `string` | no |  | Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`. |
 | `routePending` | `boolean` | no |  | A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself. |
@@ -740,9 +740,9 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | The accessible name. Shown as text on `search` and `primary`, hidden on `icon`. |
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
-| `icon` | `ReactNode` | no |  |  |
-| `href` | `string` | no |  |  |
-| `onClick` | `() => void` | no |  |  |
+| `icon` | `ReactNode` | no |  | Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the accessible name. |
+| `href` | `string` | no |  | Not set: the control is a `<button>`. |
+| `onClick` | `() => void` | no |  | Called on click. It receives no event: the link navigates through the router. |
 
 Other native element attributes pass through to the root element.
 
@@ -754,7 +754,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `href` | `undefined` | no |  |
+| `href` | `undefined` | no | Not set: the control is a `<button>`. |
 | `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
 | `type` | `"button" \| "submit" \| "reset"` | no | Native attribute in this form. |
 
@@ -762,8 +762,8 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `href` | `string` | yes |  |
-| `onClick` | `() => void` | no | In every form; only its type differs. |
+| `href` | `string` | yes | Makes the control a link, rendered through the configured `linkComponent`. |
+| `onClick` | `() => void` | no | Called on click. It receives no event: the link navigates through the router. In every form; only its type differs. |
 
 #### `MobileFloatBarSeparator`, `ShellPrimaryActionOwner`
 
@@ -773,8 +773,8 @@ No props of its own.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `open` | `boolean` | yes |  |  |
-| `onOpenChange` | `(open: boolean) => void` | yes |  |  |
+| `open` | `boolean` | yes |  | Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. |
 | `label` | `string` | yes |  | Accessible name of the dialog. |
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
@@ -788,7 +788,7 @@ No props of its own.
 | `inheritThemeFrom` | `RefObject<HTMLElement \| null>` | no |  | An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`, which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet. Attributes given in `layerProps` win. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both. |
 | `dock` | `ReactNode` | no |  | A control bar kept in place at the bottom of the screen, above the sheet, while it is shown: `AppShell` passes its floating bar, with the menu button turned into the close button. It is part of the dialog (inside the focus trap, after the sheet's own content), it does not move with a drag, and the end of the sheet keeps clear of it (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock. |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The scrolling body: the navigation. |
 
 Other native element attributes pass through to the root element.
 
@@ -802,7 +802,7 @@ Other native element attributes pass through to the root element.
 | `timeout` | `number` | no | `ROUTE_PROGRESS_TIMEOUT_MS` | Milliseconds a run started by `pending` or from code may show before it ends by itself, for a navigation nothing ever finishes. Default 10 000. `Infinity` (or any value that is not a finite positive number) never cuts it short: use it for pages that can take long and whose `pending` always settles. A run started only by a link click is still capped at 10 seconds (or `timeout`, when shorter), because nothing else tells the bar it was cancelled. |
 | `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
 | `events` | `RouteProgressEvents` | no | `DEFAULT_EVENTS` | The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and `trackLinks`: the bar shows while any of them is in progress. |
-| `className` | `string` | no |  |  |
+| `className` | `string` | no |  | Class added to the bar's own. |
 
 #### `ShellFooter`
 
@@ -822,28 +822,28 @@ Other native element attributes pass through to the root element.
 | `href` | `string` | no |  | Makes the item a link, rendered through the configured `linkComponent`. Without it the item is a button. |
 | `external` | `boolean` | no | `false` | Render a plain `<a>` that leaves the app (another site), not the router's link. Needs `href`. |
 | `target` | `string` | no |  | Link target, with `href`. `_blank` also sets `rel="noopener noreferrer"` unless `rel` is given. |
-| `rel` | `string` | no |  |  |
+| `rel` | `string` | no |  | Link `rel`, with `href`. Defaults to `noopener noreferrer` for `target="_blank"` on an external link. |
 | `type` | `"button" \| "submit"` | no | `"button"` | Button type. Use `submit` inside a form (a sign-out form). Default `button`. |
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `pending` | `boolean` | no | `false` | The action is running (signing out): dimmed, `aria-busy`, and further clicks are ignored. Focus stays put. |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`. |
 | `count` | `number` | no |  | A number after the label (unread replies). Hidden at 0, "99+" above 99, on the icon in the rail. |
-| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` |  |
+| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `count`. Default `neutral`. |
 | `ariaLabel` | `string` | no |  | Accessible name when it should add to the label ("Help, 2 unread"). Keep the visible label in it. |
 | `pressed` | `boolean` | no |  | `pressed` makes it a toggle button (`aria-pressed`): theme, density. Buttons only. |
 | `tone` | `"warning" \| "default"` | no | `"default"` | `warning` colours it as a caution (an admin area). |
-| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
-| `className` | `string` | no |  |  |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called on click, except while `pending`. Calling `preventDefault` on a link stops the navigation. |
+| `className` | `string` | no |  | Class added to the item's own, on the link or button. |
 
 #### `ShellNavigation`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `groups` | `readonly ShellNavGroup[]` | yes |  |  |
+| `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation as data: groups of items. |
 | `currentPath` | `string` | no |  | The path being shown. Items whose `href` it equals or sits under are current. |
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
 | `openGroups` | `readonly string[]` | yes |  | Keys of the open collapsible groups. |
-| `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  |  |
+| `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  | Called with a collapsible group's key and its next open state when the user toggles it. |
 | `pendingKey` | `string` | no |  | Key of the item a click is heading to: it looks active before the page arrives, `aria-current` stays put. |
 | `onItemChoose` | `(item: ShellNavItem) => void` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
 
@@ -881,7 +881,7 @@ Other native element attributes pass through to the root element.
 | `collapsible` | `boolean` | no | `false` | Turns the heading into a button that shows and hides the items. Needs a `label`. |
 | `open` | `boolean` | no |  | Controlled open state of a collapsible group. |
 | `defaultOpen` | `boolean` | no | `true` | Initial open state when uncontrolled. Default `true`. |
-| `onOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the user toggles a collapsible group's button. |
 | `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it: the active look and `aria-current="true"`. |
 | `children` | `ReactNode` | yes |  | `SidebarItem`s. |
 
@@ -891,10 +891,10 @@ Other native element attributes pass through to the root element.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `label` | `string` | yes |  |  |
+| `label` | `string` | yes |  | The destination's name. Visible beside the icon; in the rail it stays as the accessible name and the tooltip. |
 | `ariaLabel` | `string` | no |  | Accessible name when it should differ from the visible label. Keep the visible label in it (WCAG 2.5.3). |
 | `href` | `string` | no |  | Makes the item a link, rendered through the configured `linkComponent`. |
-| `icon` | `ReactNode` | no |  |  |
+| `icon` | `ReactNode` | no |  | Decorative icon before the label. Shown alone in the rail. |
 | `badge` | `ReactNode` | no |  | A short mark after the label, such as "New". For a number use `count`. |
 | `badgeTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"warning"` | Colour of `badge`. Default `warning`. |
 | `count` | `number` | no |  | A number after the label. Hidden at 0, and capped at `maxCount` ("99+"). In the rail it sits on the icon. |
@@ -903,9 +903,9 @@ Other native element attributes pass through to the root element.
 | `data` | `ShellDataAttributes` | no |  | `data-*` attributes on the link or button (analytics, guided tours, test ids). |
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `highlighted` | `boolean` | no |  | Draw the active style without claiming the page: the item a click is heading to, before the page arrives. |
-| `disabled` | `boolean` | no | `false` |  |
-| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
-| `className` | `string` | no |  |  |
+| `disabled` | `boolean` | no | `false` | Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`. |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called on click of the link or button. |
+| `className` | `string` | no |  | Class added to the item's own, on the link or button. |
 | `children` | `ReactNode` | no |  | Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never in the rail, where this item stands in for them. |
 | `expanded` | `boolean` | no | `false` | Show the sub-items (`children`). They open and close with the `Collapse` motion. Default `false`. |
 | `currentBranch` | `boolean` | no | `false` | One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and `aria-current="true"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current="page"`. |
@@ -1297,7 +1297,7 @@ dot on by default.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no | `"neutral"` | Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning. |
 | `dot` | `boolean` | no | `false` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no | `false` | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 | `wrap` | `boolean` | no | `false` | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
@@ -1309,7 +1309,7 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `children` | `ReactNode` | yes |  | The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). |
-| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  |  |
+| `tone` | `"neutral" \| "info" \| "success" \| "warning" \| "danger" \| "ai"` | no |  | Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning. |
 | `dot` | `boolean` | no | `true` | A small dot before the text, for statuses that read as a state rather than a label. Decorative. |
 | `truncate` | `boolean` | no |  | Keeps the badge on one line and ends long text with an ellipsis instead of wrapping into a tall oval. The full text stays in the DOM for assistive technology and, when the children are a string, becomes the native tooltip. For other children, pass `title` yourself. |
 | `wrap` | `boolean` | no |  | Lets a long label wrap onto several lines and shrink inside a flex row or table cell. By default a badge keeps its text on one line and does not shrink. Ignored with `truncate`. |
@@ -1539,7 +1539,7 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | --- | --- | --- | --- | --- |
 | `title` | `ReactNode` | yes |  | Caption of the figure, and its accessible name. |
 | `summary` | `ReactNode` | no |  | A written summary of what the bars show. Shown above them. |
-| `rows` | `readonly BarListRow[]` | yes |  |  |
+| `rows` | `readonly BarListRow[]` | yes |  | The bars, in order. Each row is drawn against the largest `amount` in the list. |
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
 | `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
 | `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |
@@ -1634,10 +1634,10 @@ A value as a bar against a target tick. The scale is the target, so the tick sit
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `number` | yes |  |  |
+| `value` | `number` | yes |  | The measured amount, drawn as the fill. Clamped to the scale; zero or less draws no fill. |
 | `target` | `number` | yes |  | Where the tick sits. The scale is the target, so bars of different rows share one "percent of target" axis. |
 | `headroom` | `number` | no | `1.25` | Room past the target, as a multiple of it. Defaults to 1.25. |
-| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` | Colour of the fill. Default `accent`. It only reinforces: print the numbers as text too. |
 | `label` | `string \| null` | yes |  | Accessible name stating the value, the target and what they mean ("Delivered 80 of 100"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.
@@ -2087,7 +2087,7 @@ A native checkbox with a drawn box, a label that is part of the click target, an
 | `indeterminate` | `boolean` | no | `false` | The mixed state of a parent whose children are partly checked. It is a display state: the native `checked` stays what it was, and the person's click sets it to a plain checked or unchecked value, so the next render should clear this prop. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `md` (default) is the 16px label in a 44px row. `sm` is for dense panels: a 14px label in a shorter row, so it sits next to 13px helper text. The drawn box and its 24px target are the same in both. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native checkbox input. |
 
 Other native element attributes pass through to the root element.
 
@@ -2171,7 +2171,7 @@ A read-only list of items, each with a status icon and text. It reports where th
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly ChecklistItem[]` | yes |  |  |
+| `items` | `readonly ChecklistItem[]` | yes |  | The entries, in order. Each has a `text` and a `status`. Renders nothing when empty. |
 | `title` | `ReactNode` | no |  | A visible title above the list. It also names the list for screen readers. |
 | `statusLabels` | `Partial<Record<ChecklistStatus, string>>` | no |  | The status in words, read before the item text ("Done", "Needs attention"). Strings come from the app. A status without a label is conveyed by its icon alone, so give one for every status the list uses. |
 | `density` | `"sm" \| "md"` | no | `"md"` | `md` (default) or `sm`, a tighter row for dense panels. |
@@ -2277,7 +2277,7 @@ removable chip whose only interactive part is its remove button.
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only. |
 | `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"neutral"` | Colour family from the semantic tokens: `neutral` (default) is the plain look, `accent` the accent subtle fill, and `success`, `warning` and `danger` the status fills. Colour never carries the meaning alone: the label does. A selected toggle chip keeps the selected look whatever the tone. |
 | `disabled` | `boolean` | no | `false` | Dims the chip and ignores activation. For a removable chip it disables the remove button. |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the chip's element: the `<button>` when it can be activated, otherwise a `<span>`. |
 | `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. |
 | `selected` | `boolean` | no |  | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. |
 | `onRemove` | `MouseEventHandler<HTMLButtonElement>` | no |  | Called when the remove button is activated. Makes the chip removable. |
@@ -2414,7 +2414,7 @@ eyebrow and a description.
 | `emphasis` | `"solid" \| "subtle"` | no | `"solid"` | How the selected tile reads. `solid` (default) is the accent fill with the on-accent text, the strongest element of its set. `subtle` is the accent subtle fill with the accent border and text, for a set that sits inside an already emphasised surface. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `md` (default) is at least `--lufia-target-touch` tall. `sm` is 36px on a fine pointer and regains the touch floor on a coarse one. |
 | `fullWidth` | `boolean` | no | `false` | Stretches the tile to the width of its container, for a grid column or a stacked list. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the tile's `<button>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -2514,7 +2514,7 @@ A compact list of references or sources, drawn as chips that wrap. A reference w
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly CitationItem[]` | yes |  |  |
+| `items` | `readonly CitationItem[]` | yes |  | The references, in order. Renders nothing when empty. |
 | `title` | `ReactNode` | no |  | A visible title above the list ("Sources"). It also names the list for screen readers. |
 
 Other native element attributes pass through to the root element.
@@ -2821,7 +2821,7 @@ the empty and loading states are part of the component.
 | `options` | `readonly ComboboxOption[]` | yes |  | The options to offer. For async data, replace them as results arrive and set `filter={false}`. |
 | `value` | `string \| null` | no |  | Chosen option value, or `null` for none. Controlled. |
 | `defaultValue` | `string \| null` | no | `null` | Initial value when `value` is not given. |
-| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  |  |
+| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  | Called when the chosen value changes, with the option's `value` and the option itself, or `null` and `null` when the choice is cleared. With `freeText` it receives the typed text and `null` as the option. |
 | `onQueryChange` | `(query: string) => void` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
 | `filter` | `false \| ((option: ComboboxOption, query: string) => boolean)` | no |  | How typed text narrows the list. Default: the label contains the text, ignoring case and diacritics. Pass a function to match your own way, or `false` to show `options` as given (the server already filtered them). |
 | `loading` | `boolean` | no | `false` | Options are being loaded. Shows a ring and `loadingLabel`, and sets `aria-busy`. |
@@ -2839,7 +2839,7 @@ the empty and loading states are part of the component.
 | `requiredMessage` | `string` | no |  | Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own "please fill out this field" in the person's language. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the text input. |
 
 Other native element attributes pass through to the root element.
 
@@ -2957,10 +2957,10 @@ arrow keys, run with Enter.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `className` | `string` | no |  | Added to the outermost layer, the fixed root that holds the backdrop and the dialog. The palette is portalled out of the app's tree, so a palette or theme an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here (`data-*` attributes go to the same layer; `data-lufia-theme` and `data-lufia-mode` work too). |
-| `open` | `boolean` | yes |  |  |
-| `onOpenChange` | `(open: boolean) => void` | yes |  |  |
-| `items` | `readonly CommandItem[]` | yes |  |  |
-| `labels` | `CommandPaletteLabels` | yes |  |  |
+| `open` | `boolean` | yes |  | Whether the palette is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with the next open state: `true` on the keyboard shortcut (when `shortcut` is on), `false` on Escape, a press on the backdrop, the close button, or after a command runs (unless it has `keepOpen`). |
+| `items` | `readonly CommandItem[]` | yes |  | The commands, before filtering by the query. Each has a unique `key`, a `label` and an `onSelect`. |
+| `labels` | `CommandPaletteLabels` | yes |  | Every user-facing string of the palette, in the app's language. |
 | `hint` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | A tip about what can be searched. A node is shown while the field is empty. A function is called with the current query on every render and decides for itself (return `null` to show nothing), so a hint can show for a short query ("Type at least 2 characters"). It is not shown while `bodyOverride` is set. |
 | `hintPlacement` | `"top" \| "bottom"` | no | `"bottom"` | Where the hint sits: `bottom` (default) under the results, `top` above them so it stays in view in a long list. |
 | `notice` | `ReactNode` | no |  | Content above the results that does not replace them (an error from the server search, a warning about stale results). It sits in a region outside the listbox, so it is not an option, and the arrows and Enter keep working on the commands. The palette gives it no role: wrap an error in `role="alert"` and a plain note in nothing. |
@@ -3111,7 +3111,7 @@ with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 | `message` | `ReactNode` | yes |  | The consequence, in a sentence or two. Read out when the dialog opens. |
 | `confirmLabel` | `string` | yes |  | Text of the confirming button. Name the action ("Delete invoice"), not "OK". |
 | `cancelLabel` | `string` | yes |  | Text of the cancelling button. |
-| `onConfirm` | `() => void` | yes |  |  |
+| `onConfirm` | `() => void` | yes |  | Called when the user presses the confirm button. Not called while `busy`. |
 | `onCancel` | `() => void` | yes |  | Cancel button, Escape and a click on the backdrop. Not called while `busy`. |
 | `destructive` | `boolean` | no | `false` | The action cannot be undone: the confirm button is styled as dangerous and focus starts on Cancel. |
 | `busy` | `boolean` | no | `false` | The confirmed action is running. The dialog refuses to close (no Escape, outside click or Cancel), keeps focus where it is and marks the confirm button `aria-busy`. Clear it when the action settles. |
@@ -3228,7 +3228,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | --- | --- | --- | --- | --- |
 | `type` | `"date" \| "time" \| "datetime-local" \| "month"` | no | `"date"` | Which native control to render. `date` (default), `time`, `datetime-local` or `month`. |
 | `value` | `string` | no |  | Controlled value, as the native control emits it: `2030-01-31`, `14:30`, `2030-01-31T14:30` or `2030-01`. `""` is empty. |
-| `defaultValue` | `string` | no | `""` |  |
+| `defaultValue` | `string` | no | `""` | Initial value when `value` is not given, in the same format as `value`. A form reset restores it. |
 | `onValueChange` | `(value: string) => void` | no |  | Called with the value the native control emits, or `""` when it is emptied or cleared. |
 | `min` | `string` | no |  | The earliest value, in the same format as `value`. |
 | `max` | `string` | no |  | The latest value, in the same format as `value`. |
@@ -3236,7 +3236,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
 Other native element attributes pass through to the root element.
 
@@ -3339,13 +3339,13 @@ room is narrow.
 | `endLabel` | `ReactNode` | yes |  | The label of the second field ("To"). |
 | `type` | `"date" \| "time" \| "datetime-local" \| "month"` | no | `"date"` | Which native control both ends use. `date` (default), `time`, `datetime-local` or `month`. |
 | `value` | `DateRange` | no |  | Controlled range. |
-| `defaultValue` | `DateRange` | no | `EMPTY` |  |
+| `defaultValue` | `DateRange` | no | `EMPTY` | Initial range when `value` is not given. A form reset restores it. Default both ends empty. |
 | `onValueChange` | `(value: DateRange) => void` | no |  | Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range reported here is already corrected. |
 | `min` | `string` | no | `""` | The earliest value of the range. The end also cannot go below the start. |
 | `max` | `string` | no | `""` | The latest value of the range. The start also cannot go above the end. |
 | `step` | `string \| number` | no |  | The step of both native controls. |
 | `startName` | `string` | no |  | Names the form entries of the two ends, so they submit as `startName=…&endName=…`. |
-| `endName` | `string` | no |  |  |
+| `endName` | `string` | no |  | Form name of the end field, submitted as `endName=…`. |
 | `hint` | `ReactNode` | no |  | Help shown under the group, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text for the group. It marks both ends invalid and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks both ends required; each label shows the mark and the text for assistive technology. |
@@ -3353,7 +3353,7 @@ room is narrow.
 | `requiredLabel` | `string` | no |  | Text read after a label when `required`. Defaults to the `required` label of `LufiaProvider`. |
 | `clearLabel` | `string` | no |  | The accessible name of the clear buttons, in your language. See `DateField`. |
 | `className` | `string` | no |  | Goes on the fieldset. |
-| `ref` | `Ref<HTMLFieldSetElement>` | no |  |  |
+| `ref` | `Ref<HTMLFieldSetElement>` | no |  | Ref to the `<fieldset>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -3451,10 +3451,10 @@ and meta line, and an optional call to action.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  |  |
-| `title` | `string` | yes |  |  |
-| `description` | `string` | no |  |  |
-| `meta` | `string` | no |  |  |
+| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  | The severity of the state: sets the colour and the status glyph. `critical` draws like `danger`. Pass `toneLabel` too when the tone carries meaning. |
+| `title` | `string` | yes |  | The card heading, an `<h3>`. |
+| `description` | `string` | no |  | A sentence under the title that says what the state means. |
+| `meta` | `string` | no |  | A quieter line under the description, for a date or other detail. |
 | `action` | `ReactNode` | no |  | Call-to-action rendered under the copy (a button or link). |
 | `toneLabel` | `string` | no |  | Text that names the tone for assistive technology (for example "Overdue"). The tone is otherwise conveyed by colour and a glyph only, so pass it whenever the tone carries meaning. |
 
@@ -3538,7 +3538,7 @@ Key-value rows for detail panels and modals, rendered as a native description li
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `rows` | `DetailListRow[]` | yes |  |  |
+| `rows` | `DetailListRow[]` | yes |  | The label and value pairs, in order. |
 
 Other native element attributes pass through to the root element.
 
@@ -3617,9 +3617,9 @@ content area.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  |  |
-| `title` | `string` | yes |  |  |
-| `description` | `string` | no |  |  |
+| `children` | `ReactNode` | yes |  | The section's content, under the header. |
+| `title` | `string` | yes |  | The section heading, an `<h3>`. |
+| `description` | `string` | no |  | A sentence under the title that says what the section holds. |
 | `icon` | `ReactNode` | no |  | Decorative icon shown before the title (hidden from assistive technology). |
 | `action` | `ReactNode` | no |  | Control aligned to the end of the header, such as an "Edit" button. |
 
@@ -3806,8 +3806,8 @@ step.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
-| `title` | `string` | yes |  |  |
-| `body` | `string` | no |  |  |
+| `title` | `string` | yes |  | The headline: says what is empty. |
+| `body` | `string` | no |  | A sentence under the title that explains why, or what to do next. |
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 
 Other native element attributes pass through to the root element.
@@ -3912,7 +3912,7 @@ with messages you provide, and the chosen files are listed with a remove button 
 | `onReject` | `(rejections: FileRejection[]) => void` | no |  | Called with files that were refused, after the message is shown. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native file input. |
 
 Other native element attributes pass through to the root element.
 
@@ -4033,10 +4033,10 @@ count. The filter lives in the URL, so every chip is a real link and the current
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the group ("Filter by status"). Required: a page can have more than one navigation. |
-| `items` | `readonly FilterLinksItem[]` | yes |  |  |
+| `items` | `readonly FilterLinksItem[]` | yes |  | The filters, in order. Each is a link to the same list with that filter applied. |
 | `value` | `string` | no |  | Key of the current filter. Its link gets `aria-current="true"`. Leave it out when none is current. |
 | `layout` | `"wrap" \| "grid"` | no | `"wrap"` | `"wrap"` (default) keeps each chip as wide as its text. `"grid"` lays the chips out in equal columns, each chip filling its cell with the label at the start and the count at the end: use it for many filters with counts, where ragged widths are hard to scan. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`). |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the `<nav>` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -4148,7 +4148,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped. |
 | `nativeRequired` | `boolean` | no | `true` | Whether `required` also puts the native `required` attribute on the control. Defaults to `true`. Set `false` when the form validates on its own and shows its own messages: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text. |
-| `disabled` | `boolean` | no |  |  |
+| `disabled` | `boolean` | no |  | Disables the control and dims the field. Passed to the control as `disabled`. Default `false`. |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider` ("required"), so an app sets the word once; this prop wins when given. |
 | `children` | `ReactNode \| ((control: FormFieldControlProps) => ReactNode)` | yes |  | The control. A node reaches the controls of this package through context; a function receives the props to spread on any other control (a third-party input, a native element). |
 
@@ -4335,7 +4335,7 @@ status icons and the rules, is the [Icons foundation](https://luizgabriellf.gith
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -4345,8 +4345,8 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `size` | `IconSize` | no | `"md"` | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
-| `children` | `ReactNode` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
+| `children` | `ReactNode` | no |  | The drawing: SVG elements (`<path>`, `<circle>`, `<rect>`...) on the 24-unit grid. |
 
 Other native element attributes pass through to the root element.
 
@@ -4581,8 +4581,8 @@ An inline text link. It goes through the app's router link, and an external one 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `href` | `string` | yes |  |  |
-| `children` | `ReactNode` | yes |  |  |
+| `href` | `string` | yes |  | Where the link goes. Rendered through the `linkComponent` of `LufiaProvider`. |
+| `children` | `ReactNode` | yes |  | The link text. |
 | `externalLabel` | `string` | no |  | Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an indicator. The value is the visually hidden text read after the link text, such as "(opens in new tab)", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | `inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1). |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the text, hidden from assistive technology. It does not move on hover. |
@@ -4681,7 +4681,7 @@ button on each entry. The entries are submitted as one hidden text value.
 | `labels` | `ListFieldLabels` | yes |  | Every user-facing string of the field. The package has no built-in language. |
 | `name` | `string` | no |  | Submitted with the form as ONE hidden text value under this name: `serialize(items)`. |
 | `items` | `readonly string[]` | no |  | Controlled entries. A value that differs from what the field holds replaces its rows. |
-| `defaultItems` | `readonly string[]` | no |  |  |
+| `defaultItems` | `readonly string[]` | no |  | Initial entries when `items` is not given. A form reset restores them. |
 | `onChange` | `(items: string[]) => void` | no |  | Called with the entries (sanitized, empty ones left out) after every add, edit and removal. |
 | `serialize` | `(items: readonly string[]) => string` | no | `joinLines` | Turns the entries into the submitted value. Defaults to joining them with a line feed. |
 | `sanitizeItem` | `(text: string) => string` | no |  | Cleans one entry when it is added and whenever the entries are read (trimming, collapsing spaces). Must be idempotent. |
@@ -4691,11 +4691,11 @@ button on each entry. The entries are submitted as one hidden text value.
 | `required` | `boolean` | no |  | At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity until there is one. Text waiting in the add input does not count unless `includeDraft` is on. |
 | `includeDraft` | `boolean` | no |  | Puts the text waiting in the add input in the submitted value, as if the add button had been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and `maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it, and the add input keeps its text. With `required`, a valid draft also satisfies the rule. Off by default: the draft is then only added by the add button, Enter or `commitDraft()`. |
 | `placeholder` | `string` | no |  | Placeholder of the add input. |
-| `hint` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the group, linked to it with `aria-describedby`. |
 | `renderCount` | `(count: ListFieldCount) => ReactNode` | no |  | Renders a counter, such as "2 of 30 entries" or "34 of 200 characters", as secondary text under the hint and tied to the group with `aria-describedby`. The package has no built-in language: phrase it here. Nothing is rendered without it. Keep it phrasing content (text and inline elements). |
-| `error` | `ReactNode` | no |  |  |
+| `error` | `ReactNode` | no |  | Error message under the group, linked to it with `aria-describedby`. |
 | `badge` | `ReactNode` | no |  | Content next to the label, such as a `Badge`. |
-| `disabled` | `boolean` | no |  |  |
+| `disabled` | `boolean` | no |  | Disables the add input, the add button, and every entry and its remove button. Default `false`. |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. |
 | `ref` | `Ref<ListFieldHandle>` | no |  | Imperative handle: `commitDraft()`. |
 
@@ -4889,7 +4889,7 @@ components fall back on. The package imports no router and no i18n library; this
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `href` | `string` | yes |  |  |
+| `href` | `string` | yes |  | Where the link goes. |
 | `ref` | `Ref<HTMLAnchorElement>` | no |  | React 19 passes `ref` as a prop; a link component should forward it to the anchor. |
 
 Other native element attributes pass through to the root element.
@@ -4900,7 +4900,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `linkComponent` | `LinkComponent` | no |  | Renders every navigating element of the package. Defaults to a plain `<a>`. |
 | `labels` | `Partial<LufiaLabels>` | no |  | Aria-only text, merged over the defaults (and over an outer provider). |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The app. Every component below it reads the link component and labels. |
 
 #### `useLufia`
 
@@ -5120,7 +5120,7 @@ Three bars that turn into a cross. It is the icon of the button that opens and c
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `open` | `boolean` | yes |  | `true` draws the cross, `false` the three bars. The bars morph between the two when the value changes. |
 
@@ -5364,10 +5364,10 @@ An overflow menu: a button that opens a list of less frequent actions. It follow
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the trigger and of the menu, such as "More actions". |
-| `items` | `readonly MoreActionItem[]` | yes |  |  |
+| `items` | `readonly MoreActionItem[]` | yes |  | The menu entries, in order. Each is a button, or a link when it has an `href`. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the trigger the menu lines up with. Defaults to the end. |
-| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | Size of the trigger button. Default `md`. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` | Visual variant of the trigger button. Default `ghost`. |
 | `icon` | `ReactNode` | no |  | Replaces the default three-dot icon. |
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"popover"` | How the open menu is shown. `"popover"` (default) hangs it from the button. `"sheet"` shows it as a full-width sheet anchored to the bottom of the viewport, over a backdrop that covers the whole page, with the page behind made inert. `"auto"` is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `narrowOnlyScope` | `"container" \| "viewport"` | no | `"viewport"` | What decides when a `narrowOnly` item shows. `"viewport"` (default) is the page width: below 48rem. `"container"` is the width of the nearest ancestor that declares `container-type: inline-size`: below 50rem. A sheet is portalled to the body and leaves that container, so in `"container"` scope a sheet always shows `narrowOnly` items. A popover is portalled too: it reads the container's width when it opens (and on resize) instead. `PageActions` sets this from its `collapse` prop. |
@@ -5483,14 +5483,14 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `title` | `string` | yes |  |  |
+| `title` | `string` | yes |  | The row's main text. With `href` or `onClick` it is the link or button's name. |
 | `description` | `string` | no |  | Supporting line under the title. |
 | `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own context ("3 items", "Due 12 Nov"), not a bare "3". |
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
 | `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Makes the row a button when there is no `href`. |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | Dims the row and stops it being activated: a link gets `aria-disabled` and leaves the tab order, a button is natively disabled. Default `false`. |
 
 Other native element attributes pass through to the root element.
 
@@ -5612,11 +5612,11 @@ no i18n and no data layer.
 | `error` | `ReactNode` | no |  | Replaces the list when loading failed. It is announced as an alert; include the way to retry. |
 | `open` | `boolean` | no |  | Open state. Controlled: pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial open state when `open` is not given. For documentation and tests; people open it themselves. |
-| `onOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the user opens or closes the panel (the bell, Escape, a press outside or on the backdrop), whether it is controlled or not. |
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
-| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | Size of the bell button. Default `md`. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` | Visual variant of the bell button. Default `ghost`. |
 | `icon` | `ReactNode` | no |  | Replaces the default bell icon. |
 | `maxCount` | `number` | no | `99` | Counts above this show as "99+". Default 99. |
 
@@ -5649,7 +5649,7 @@ Other native element attributes pass through to the root element.
 | `titleId` | `string` | no |  | Id of the heading, for a host that names its dialog with it. Generated when omitted. |
 | `landmark` | `boolean` | no | `true` | Whether the root is a labelled region (`<section>`). Default `true`. A host that already names the panel, such as the dialog of `NotificationCenter`, sets `false` to get a plain element. |
 | `announce` | `boolean` | no | `true` | Renders the polite live region that announces changes of `unreadCount`. Default `true`; a host that has its own turns it off. |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the root element: a `<section>`, or a `<div>` when `landmark` is `false`. |
 
 Other native element attributes pass through to the root element.
 
@@ -5906,7 +5906,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | The row cannot be chosen: a native `disabled` on the button, or `aria-disabled` on an element given to `render`. No effect with `interactive={false}`. Default `false`. |
 | `title` | `ReactNode` | yes |  | The option's name. It is the row's accessible name together with the description. |
 | `eyebrow` | `ReactNode` | no |  | Small accent line above the title, such as a category or a step. It is read before the title. |
 | `description` | `ReactNode` | no |  | Supporting line under the title. |
@@ -5919,7 +5919,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 | `highlighted` | `boolean` | no | `false` | A purely visual emphasis: the accent subtle fill and border of `selected`, with no `aria-pressed` or `aria-current`. For a suggested or recommended option. Exposed as `data-highlighted`. |
 | `interactive` | `boolean` | no | `true` | Default `true`. `false` renders the same layout as a plain `<div>` (or the element given to `render`) with no button semantics, no hover, press or focus affordance and no `onClick`, for a row that only displays. `selected` and `highlighted` still style it. `disabled` has no effect. |
 | `ref` | `Ref<HTMLElement>` | no |  | The row's element (the button, or the `render` or static element), so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. |
-| `onClick` | `MouseEventHandler<HTMLElement>` | no |  |  |
+| `onClick` | `MouseEventHandler<HTMLElement>` | no |  | Called when the row is activated. Not called while `disabled`; not available with `interactive={false}`. |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. With `interactive={false}` it is the static container instead. |
 
 Other native element attributes pass through to the root element.
@@ -6132,9 +6132,9 @@ The top of a page: an optional eyebrow, the title as a heading, a description, a
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `eyebrow` | `ReactNode` | no |  | Small line above the title: the section or the parent record. |
-| `title` | `ReactNode` | yes |  |  |
+| `title` | `ReactNode` | yes |  | The page heading, rendered at `headingLevel`. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6 \| 1` | no | `1` | Heading level of `title`. Defaults to 1: a page has one. |
-| `description` | `ReactNode` | no |  |  |
+| `description` | `ReactNode` | no |  | A sentence under the title that says what the page is for. |
 | `actions` | `ReactNode` | no |  | Page-level actions, usually a `PageActions`. They wrap under the text on narrow screens. |
 
 Other native element attributes pass through to the root element.
@@ -6224,12 +6224,12 @@ It is the view for `usePagination`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `page` | `number` | yes |  | Current page, starting at 1. Controlled. |
-| `totalPages` | `number` | yes |  |  |
+| `totalPages` | `number` | yes |  | How many pages there are. The numbered controls and the next control stop here. |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
-| `onPageChange` | `(page: number) => void` | yes |  |  |
+| `onPageChange` | `(page: number) => void` | yes |  | Called with the page the user chose (a number, previous or next). Update `page` from it. |
 | `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
 | `siblingCount` | `number` | no | `1` | Page numbers shown on each side of the current one. Default 1. |
-| `labels` | `PaginationLabels` | yes |  |  |
+| `labels` | `PaginationLabels` | yes |  | Every user-facing string of the control, in the app's language. |
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
 | `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |
@@ -6334,7 +6334,7 @@ a description and an icon. An indicator slides to the chosen one.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the navigation or the tablist. Required: there is usually more than one on a page. |
-| `items` | `readonly PeerNavItem<Href>[]` | yes |  |  |
+| `items` | `readonly PeerNavItem<Href>[]` | yes |  | The destinations, in order. When every item has an `href` the nav is a list of links, otherwise a tablist. |
 | `value` | `string` | no |  | Key of the current item. Controlled. For links it is the page being shown. |
 | `defaultValue` | `string` | no |  | Initial key when `value` is not given (tabs only; links follow the page). |
 | `onValueChange` | `(key: string, event?: MouseEvent<HTMLElement, MouseEvent> \| undefined) => void` | no |  | Called when the person chooses another item. For links it fires on an unmodified primary click, before the browser navigates; call `event.preventDefault()` to take over (it is `undefined` for keyboard-selected tabs). |
@@ -6462,7 +6462,7 @@ pending label, and for a long wait moves through further labels.
 | `size` | `"sm" \| "md" \| "lg"` | no |  | Size of the underlying `Button`. Ignored with `variant="unstyled"`. |
 | `fullWidth` | `boolean` | no |  | Stretches to the full width of its container. Ignored with `variant="unstyled"`. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the button is pending the ring replaces it and the button keeps its width. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `<button>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -6668,8 +6668,8 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `max` | `number` | no | `100` | The value that means done. Defaults to 100. |
 | `label` | `string` | yes |  | Accessible name of the bar ("Storage used"). Required: a progress bar without a name is announced as a bare number. |
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
-| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
-| `size` | `"sm" \| "md"` | no | `"md"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` | Colour of the fill. Default `accent`. It only reinforces: the label and the percentage carry the meaning. |
+| `size` | `"sm" \| "md"` | no | `"md"` | Thickness of the track: `md` (default, 10px) or the thinner `sm` (6px). |
 | `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion. |
 
 Other native element attributes pass through to the root element.
@@ -6768,7 +6768,7 @@ The overview of many work queues on one screen. Queues with something in them le
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly QueueSummaryItem[]` | yes |  |  |
+| `items` | `readonly QueueSummaryItem[]` | yes |  | The queues, in order given. A queue with a `count` of `0` folds into the `clearLabel` line; the rest are rows sorted by tone. Renders nothing when empty. |
 | `clearLabel` | `(count: number) => ReactNode` | yes |  | The line that folds the empty queues ("6 queues are clear"). |
 | `allClearTitle` | `ReactNode` | yes |  | Heading of the all-clear state, shown only when every count is exactly `0`. |
 | `allClearBody` | `ReactNode` | no |  | A short line under the all-clear heading. |
@@ -6854,20 +6854,20 @@ and arrow-key navigation.
 | `label` | `ReactNode` | no |  | Names the group, like a `<legend>`. |
 | `aria-label` | `string` | no |  | Names the group without a visible legend. |
 | `aria-labelledby` | `string` | no |  | Names the group by the id of an element the host already shows, without a visible legend. |
-| `options` | `readonly RadioOption[]` | yes |  |  |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
-| `required` | `boolean` | no |  |  |
-| `disabled` | `boolean` | no |  |  |
+| `options` | `readonly RadioOption[]` | yes |  | The choices, in display order. Each has a unique `value` and a `label`; the user picks exactly one. |
+| `hint` | `ReactNode` | no |  | Help text under the group, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the group. Marks the group invalid (`aria-invalid`) and is linked with `aria-describedby`; it takes precedence over the message of a refused required submission. |
+| `required` | `boolean` | no |  | Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form refuse to submit while nothing is chosen. Default `false`. |
+| `disabled` | `boolean` | no |  | Disables every option; an option can also be disabled on its own with `disabled` on the option. Default `false`. |
 | `value` | `string` | no |  | Controlled value. `""` means nothing chosen. |
-| `defaultValue` | `string` | no | `""` |  |
-| `onValueChange` | `(value: string) => void` | no |  |  |
+| `defaultValue` | `string` | no | `""` | Initial value when `value` is not given. Default `""` (nothing chosen); a form reset restores it. |
+| `onValueChange` | `(value: string) => void` | no |  | Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
 | `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. |
 | `requiredMessage` | `string` | no |  | Shown when a required group is submitted with nothing chosen. Defaults to the browser's own message. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the `radiogroup` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -7153,7 +7153,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | --- | --- | --- | --- | --- |
 | `onChange` | `ChangeEventHandler<HTMLInputElement, HTMLInputElement> & ChangeEventHandler<HTMLInputElement>` | no |  | The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input. |
 | `value` | `string` | no |  | Controlled text. |
-| `defaultValue` | `string` | no | `""` |  |
+| `defaultValue` | `string` | no | `""` | Initial text when `value` is not given. A form reset restores it. Default `""`. |
 | `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
 | `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
@@ -7163,7 +7163,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | `loadingLabel` | `string` | no | `"Searching"` | Text announced while `loading`. Aria-only. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
 Other native element attributes pass through to the root element.
 
@@ -7256,7 +7256,7 @@ The title row of one section of a page: a heading, an optional description and t
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `title` | `ReactNode` | yes |  |  |
+| `title` | `ReactNode` | yes |  | The section heading, rendered at `headingLevel`. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `2` | Heading level of `title` (2 to 6). Defaults to 2: pick the one that keeps the page outline in order. |
 | `description` | `ReactNode` | no |  | One short line under the title. |
 | `actions` | `ReactNode` | no |  | Links or controls at the end of the row ("View all"). They wrap under the text on narrow screens. |
@@ -7342,17 +7342,17 @@ segment.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | Accessible name of the group ("Display mode"). Required: the visible segments do not say what they choose. |
-| `options` | `readonly SegmentedToggleOption[]` | yes |  |  |
+| `options` | `readonly SegmentedToggleOption[]` | yes |  | The segments, in order. Each has a unique `value` and a `label`; exactly one can be chosen. |
 | `value` | `string \| null` | no |  | Controlled value. `null` is controlled with nothing chosen: no segment is checked and the indicator is hidden. The first enabled segment is still the tab stop, and an arrow key chooses (selection follows focus) as it does with a value. |
 | `defaultValue` | `string \| null` | no |  | Initial value when `value` is not given; `null` starts with nothing chosen. Defaults to the first enabled option. A form reset goes back to it (to `null` when a controlled `value` started as `null`). |
 | `onValueChange` | `(value: string) => void` | no |  | Called with the value the user chose. Never `null`: a deselect is reported by `onDeselect`. |
 | `allowDeselect` | `boolean` | no |  | When true, activating the chosen segment again clears the choice and calls `onDeselect`. With a controlled `value`, set it to `null` there; an uncontrolled toggle clears itself. |
 | `onDeselect` | `() => void` | no |  | Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen. |
-| `disabled` | `boolean` | no |  |  |
+| `disabled` | `boolean` | no |  | Disables every segment; one segment can also be disabled on its own with `disabled` on the option. Default `false`. |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `width` | `"fill" \| "fit"` | no | `"fit"` | `"fit"` (default) shrinks to its content; `"fill"` shares the full width between the segments. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `"md"` (default) or the denser `"sm"` for rows in a list or a table. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the `radiogroup` element. |
 
 Other native element attributes pass through to the root element.
 
@@ -7457,7 +7457,7 @@ typeahead and mobile picker.
 | `allowEmpty` | `boolean` | no | `false` | Keeps the placeholder choosable after a value is picked, for optional fields. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native select gets the rest props. |
-| `ref` | `Ref<HTMLSelectElement>` | no |  |  |
+| `ref` | `Ref<HTMLSelectElement>` | no |  | Ref to the native `<select>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -7870,11 +7870,11 @@ keyboard, and keeps `aria-sort` on the `<th>`.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `dir` | `"asc" \| "desc"` | yes |  |  |
+| `dir` | `"asc" \| "desc"` | yes |  | Sort direction, `asc` or `desc`. Drawn as an arrow and set as `aria-sort` only while `active` is true. |
 | `abbr` | `string` | no |  | A short visible text for a long `label`, as `Th abbr` does inside a `Table`. The full `label` stays the button's accessible name, and the short text carries it as a `title` tooltip. Also set natively on the `<th>`. |
-| `label` | `string` | yes |  |  |
+| `label` | `string` | yes |  | Column name: the text of the sort button, and its accessible name. |
 | `active` | `boolean` | yes |  | Whether the table is currently sorted by this column. |
-| `onSort` | `() => void` | yes |  |  |
+| `onSort` | `() => void` | yes |  | Called when the user activates the header button. Change the sort in it; the header keeps no state. |
 | `wrap` | `boolean` | no |  | Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`. |
 
 Other native element attributes pass through to the root element.
@@ -7954,7 +7954,7 @@ A word-sized chart with no axes: the trend that sits next to a figure. Drawn in 
 | --- | --- | --- | --- | --- |
 | `values` | `readonly number[]` | yes |  | The series, oldest first. Non-finite numbers count as 0. |
 | `variant` | `"columns" \| "line"` | no | `"columns"` | `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. |
-| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` | Colour of the drawing. Default `accent`. It only reinforces: print the numbers as text too. |
 | `label` | `string \| null` | yes |  | Accessible name: a sentence that carries the numbers ("Deliveries per week: 3, 5, 4, 8"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.
@@ -8535,7 +8535,7 @@ A vertical, connected timeline of obligations or steps grouped into tracks. Each
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tracks` | `StatusTimelineTrack[]` | yes |  |  |
+| `tracks` | `StatusTimelineTrack[]` | yes |  | The tracks, in order. Each lists its nodes; a track with no nodes is left out. |
 
 Other native element attributes pass through to the root element.
 
@@ -8631,7 +8631,7 @@ expands into a numbered row with connectors that fill as the user progresses.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `steps` | `StepDef[]` | yes |  |  |
+| `steps` | `StepDef[]` | yes |  | The steps, in order. The step at `current` is active, the ones before it are done. |
 | `current` | `number` | yes |  | Index of the active step (0-based). |
 | `onStepClick` | `(index: number) => void` | no |  | Optional: jump to an already-visited step. |
 
@@ -8711,7 +8711,7 @@ A check mark whose stroke draws in once as it appears. The shared "it worked" ma
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
 | `size` | `IconSize` | no | `16` | Rendered size: a number of px, or a size token of `Icon` (`sm`, `md`, `lg`, `1em`). Default 16. |
 
@@ -8791,13 +8791,13 @@ error, and a thumb that slides.
 | `name` | `string` | no |  | Submitted as `name=value` while on, like a checkbox. Without `name` nothing is submitted. |
 | `defaultChecked` | `boolean` | no | `false` | Initial state when `checked` is not given. |
 | `label` | `ReactNode` | yes |  | The visible label. Clicking it toggles the switch. |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `(checked: boolean) => void` | no |  |  |
-| `value` | `string` | no | `"on"` |  |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. |
+| `value` | `string` | no | `"on"` | Value submitted with `name` while the switch is on. Default `"on"`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `role="switch"` button. |
 
 Other native element attributes pass through to the root element.
 
@@ -8806,12 +8806,12 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `ReactNode` | yes |  | The visible label. Clicking it toggles the switch. |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `value` | `string` | no | `"on"` | Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. |
 | `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the `<input type="checkbox" role="switch">`. |
 
 Other native element attributes pass through to the root element.
 
@@ -8966,7 +8966,7 @@ No props of its own. Native element attributes pass through.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
-| `body` | `string` | no |  |  |
+| `body` | `string` | no |  | A sentence under the title that explains why, or what to do next. |
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 | `colSpan` | `number` | yes |  | The number of columns, so the message spans the whole row. |
 | `title` | `string` | no |  | Headline of the titled empty state. Leave it out to render `children` as one muted, centred line instead (`icon`, `body` and `action` are then ignored). |
@@ -9220,12 +9220,12 @@ open-ended filter) go in as children.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `filters` | `FilterOption[]` | no |  |  |
-| `activeFilter` | `string` | no |  |  |
-| `onFilterChange` | `(key: string) => void` | no |  |  |
-| `search` | `string` | no |  |  |
+| `filters` | `FilterOption[]` | no |  | The filter chips, in order. Each is a toggle button; the one whose `key` equals `activeFilter` is pressed. |
+| `activeFilter` | `string` | no |  | `key` of the pressed filter chip. Controlled: the toolbar keeps no state, so update it from `onFilterChange`. |
+| `onFilterChange` | `(key: string) => void` | no |  | Called with the `key` of the chip the user clicks. |
+| `search` | `string` | no |  | Current text of the search field. Controlled: update it from `onSearchChange`. Default `""`. |
 | `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
-| `searchPlaceholder` | `string` | no |  |  |
+| `searchPlaceholder` | `string` | no |  | Placeholder of the search field. Default none. |
 | `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |
 | `children` | `ReactNode` | no |  | Extra controls, such as dropdowns for open-ended lists, rendered before the search box. |
@@ -9329,7 +9329,7 @@ Views of one page where one is shown at a time. It follows the WAI-ARIA tabs pat
 | `orientation` | `"vertical" \| "horizontal"` | no | `"horizontal"` | `"horizontal"` (default): a row with Left and Right arrows, scrolling sideways when it does not fit. `"vertical"`: a column with Up and Down arrows. |
 | `activation` | `"manual" \| "automatic"` | no | `"automatic"` | `"automatic"` (default): moving focus with an arrow key also chooses the tab, which suits panels that render at once. `"manual"`: arrow keys only move focus; Enter or Space chooses, which suits panels that load data. |
 | `keepMounted` | `boolean` | no | `false` | Keep the panels of tabs that are not chosen in the DOM (hidden) so their state survives. Default `false`: only the chosen panel is rendered. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the root `<div>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -9439,7 +9439,7 @@ icons.
 | `suffix` | `ReactNode` | no |  | Content after the text: a unit, a button. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native `<input>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -9537,7 +9537,7 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | `maxRows` | `number` | no |  | With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
 | `rootClassName` | `string` | no |  | Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. |
-| `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
+| `ref` | `Ref<HTMLTextAreaElement>` | no |  | Ref to the native `<textarea>`. |
 
 Other native element attributes pass through to the root element.
 
@@ -9637,7 +9637,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The app. Components below it can show toasts. |
 | `placement` | `"bottom-end" \| "bottom-start" \| "top-end" \| "top-start"` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
 | `limit` | `number` | no | `5` | The most toasts shown at once; older ones leave first. Default 5. |
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |
@@ -9896,14 +9896,14 @@ other, while the card stays on screen. Nothing is made inert and page scroll is 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `steps` | `readonly TourStep[]` | yes |  |  |
+| `steps` | `readonly TourStep[]` | yes |  | The steps, in order. Each has a `title` and a `body`, and may point at a `target` on the page. |
 | `open` | `boolean` | yes |  | Whether the tour is showing. The app decides when it starts and remembers that it was seen. |
 | `stepIndex` | `number` | no |  | The current step, zero-based. Controlled; pair it with `onStepChange`. |
 | `defaultStepIndex` | `number` | no | `0` | The step a tour that manages its own state starts on each time it opens. Default `0`. |
 | `onStepChange` | `(index: number) => void` | no |  | Called with the next step when the buttons or the arrow keys move. |
 | `onClose` | `(reason: TourCloseReason) => void` | no |  | Called when the person leaves early. The tour does not close itself: set `open` to `false`. |
 | `onFinish` | `() => void` | no |  | Called when the person finishes the last step. Set `open` to `false` here. |
-| `labels` | `TourLabels` | yes |  |  |
+| `labels` | `TourLabels` | yes |  | Every user-facing string of the card, in the app's language. |
 | `spotlightPadding` | `number` | no | `6` | Space between the target and the edge of the spotlight, in pixels. Default `6`. |
 | `targetStatus` | `"ready" \| "seeking" \| "missing" \| "blocked"` | no | `"ready"` | The status of the current step's target, supplied by the host. Default `ready`. |
 | `resolveTarget` | `(step: TourStep) => Element \| null` | no |  | Finds a step's target in place of (and before) `target`. Return `null` to fall back to `target`. Called on every frame while the tour shows, so keep it cheap. It receives the current step. |

@@ -36,7 +36,7 @@ A multi-line text control with the same box as `TextInput`, vertical resizing an
 | `maxRows` | `number` | no |  | With `autoSize`, the number of rows after which the box stops growing and scrolls. Never below `rows`. Unset means no limit. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native textarea gets the rest props. |
 | `rootClassName` | `string` | no |  | Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. |
-| `ref` | `Ref<HTMLTextAreaElement>` | no |  |  |
+| `ref` | `Ref<HTMLTextAreaElement>` | no |  | Ref to the native `<textarea>`. |
 
 Other native element attributes pass through to the root element.
 

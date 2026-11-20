@@ -53,6 +53,10 @@ export type ComboboxProps = Omit<
   value?: string | null;
   /** Initial value when `value` is not given. */
   defaultValue?: string | null;
+  /**
+   * Called when the chosen value changes, with the option's `value` and the option itself, or `null` and `null` when the
+   * choice is cleared. With `freeText` it receives the typed text and `null` as the option.
+   */
   onValueChange?: (value: string | null, option: ComboboxOption | null) => void;
   /** Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. */
   onQueryChange?: (query: string) => void;
@@ -114,6 +118,7 @@ export type ComboboxProps = Omit<
   invalid?: boolean;
   /** Goes on the root element. */
   className?: string;
+  /** Ref to the text input. */
   ref?: Ref<HTMLInputElement>;
 };
 

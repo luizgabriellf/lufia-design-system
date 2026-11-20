@@ -9,12 +9,17 @@ export type FilterOption = {
 };
 
 export type TableToolbarProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
+  /** The filter chips, in order. Each is a toggle button; the one whose `key` equals `activeFilter` is pressed. */
   filters?: FilterOption[];
+  /** `key` of the pressed filter chip. Controlled: the toolbar keeps no state, so update it from `onFilterChange`. */
   activeFilter?: string;
+  /** Called with the `key` of the chip the user clicks. */
   onFilterChange?: (key: string) => void;
+  /** Current text of the search field. Controlled: update it from `onSearchChange`. Default `""`. */
   search?: string;
   /** The search field renders only when this handler is provided. */
   onSearchChange?: (value: string) => void;
+  /** Placeholder of the search field. Default none. */
   searchPlaceholder?: string;
   /** Accessible name of the search field's clear button. Required whenever search is shown. */
   clearSearchLabel?: string;

@@ -38,6 +38,7 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
   className?: string;
   /** Goes on the root element that wraps the box and the count. Use it to size the field in a row or grid. */
   rootClassName?: string;
+  /** Ref to the native `<textarea>`. */
   ref?: Ref<HTMLTextAreaElement>;
 };
 

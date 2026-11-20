@@ -2,6 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import styles from "./SectionHeader.module.css";
 
 export type SectionHeaderProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+  /** The section heading, rendered at `headingLevel`. */
   title: ReactNode;
   /** Heading level of `title` (2 to 6). Defaults to 2: pick the one that keeps the page outline in order. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;

@@ -3,11 +3,13 @@ import type { ChartTone } from "../ChartKit";
 import styles from "./BulletBar.module.css";
 
 export type BulletBarProps = Omit<HTMLAttributes<HTMLSpanElement>, "children" | "role" | "aria-label"> & {
+  /** The measured amount, drawn as the fill. Clamped to the scale; zero or less draws no fill. */
   value: number;
   /** Where the tick sits. The scale is the target, so bars of different rows share one "percent of target" axis. */
   target: number;
   /** Room past the target, as a multiple of it. Defaults to 1.25. */
   headroom?: number;
+  /** Colour of the fill. Default `accent`. It only reinforces: print the numbers as text too. */
   tone?: ChartTone;
   /**
    * Accessible name stating the value, the target and what they mean ("Delivered 80 of 100"). Pass `null` to hide the

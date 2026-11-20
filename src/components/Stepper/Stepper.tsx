@@ -10,6 +10,7 @@ export type StepDef = {
 };
 
 export type StepperProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
+  /** The steps, in order. The step at `current` is active, the ones before it are done. */
   steps: StepDef[];
   /** Index of the active step (0-based). */
   current: number;

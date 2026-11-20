@@ -30,6 +30,7 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
    * so the browser shows no native bubble and the form needs no `noValidate`. The label still shows the mark and text.
    */
   nativeRequired?: boolean;
+  /** Disables the control and dims the field. Passed to the control as `disabled`. Default `false`. */
   disabled?: boolean;
   /**
    * Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of

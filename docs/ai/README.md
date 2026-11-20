@@ -85,6 +85,7 @@ npm run verify:ai-docs    # the drift gate
 - a generated file (the agent index included) differs from a fresh regeneration, is missing, or is stale (a spec for a
   removed component), or the agent index cannot be rendered within its 8 KB cap;
 - a component exported from `src/index.ts` is missing from `components.json` or has no spec;
+- a prop of an exported component has no JSDoc description in `components.json` (the failure lists each `Export.prop`);
 - `AGENTS.md`, this file, `CONSUMING.md` or the Copilot file reference a path or an `npm run` script that does not exist;
 - `CLAUDE.md` is not exactly `@AGENTS.md`, or the Cursor rule or Copilot file does not point to `AGENTS.md`;
 - the leak gate (`scripts/ai/verify-leaks.mjs`) finds a denylisted identifier in a tracked file or in `dist/`. The denylist

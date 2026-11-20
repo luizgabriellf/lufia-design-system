@@ -6,6 +6,7 @@ import { ChevronRightIcon } from "../Icon/icons";
 import styles from "./NavRow.module.css";
 
 export type NavRowProps = Omit<HTMLAttributes<HTMLElement>, "title" | "onClick"> & {
+  /** The row's main text. With `href` or `onClick` it is the link or button's name. */
   title: string;
   /** Supporting line under the title. */
   description?: string;
@@ -22,6 +23,10 @@ export type NavRowProps = Omit<HTMLAttributes<HTMLElement>, "title" | "onClick">
   href?: string;
   /** Makes the row a button when there is no `href`. */
   onClick?: (event: MouseEvent<HTMLElement>) => void;
+  /**
+   * Dims the row and stops it being activated: a link gets `aria-disabled` and leaves the tab order, a button is
+   * natively disabled. Default `false`.
+   */
   disabled?: boolean;
 };
 

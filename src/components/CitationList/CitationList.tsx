@@ -14,6 +14,7 @@ export type CitationItem = {
 };
 
 export type CitationListProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+  /** The references, in order. Renders nothing when empty. */
   items: readonly CitationItem[];
   /** A visible title above the list ("Sources"). It also names the list for screen readers. */
   title?: ReactNode;

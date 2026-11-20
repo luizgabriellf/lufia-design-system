@@ -30,7 +30,7 @@ A feed of what happened, newest first: a title, a line of context, the time and 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly ActivityItem[]` | yes |  |  |
+| `items` | `readonly ActivityItem[]` | yes |  | The entries, newest first. The list renders nothing when it is empty. |
 | `timeline` | `boolean` | no | `false` | Draws a rail with a marker per entry, for a feed read as a sequence. Plain rows by default. |
 
 Other native element attributes pass through to the root element.

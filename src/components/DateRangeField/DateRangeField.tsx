@@ -31,6 +31,7 @@ export type DateRangeFieldProps = Omit<
   type?: DateFieldType;
   /** Controlled range. */
   value?: DateRange;
+  /** Initial range when `value` is not given. A form reset restores it. Default both ends empty. */
   defaultValue?: DateRange;
   /**
    * Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start
@@ -46,6 +47,7 @@ export type DateRangeFieldProps = Omit<
   step?: number | string;
   /** Names the form entries of the two ends, so they submit as `startName=…&endName=…`. */
   startName?: string;
+  /** Form name of the end field, submitted as `endName=…`. */
   endName?: string;
   /** Help shown under the group, linked to it with `aria-describedby`. */
   hint?: ReactNode;
@@ -61,6 +63,7 @@ export type DateRangeFieldProps = Omit<
   clearLabel?: string;
   /** Goes on the fieldset. */
   className?: string;
+  /** Ref to the `<fieldset>`. */
   ref?: Ref<HTMLFieldSetElement>;
 };
 

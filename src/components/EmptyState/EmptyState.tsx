@@ -4,7 +4,9 @@ import styles from "./EmptyState.module.css";
 export type EmptyStateProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   /** Decorative illustration or icon (hidden from assistive technology). */
   icon?: ReactNode;
+  /** The headline: says what is empty. */
   title: string;
+  /** A sentence under the title that explains why, or what to do next. */
   body?: string;
   /** Next step, usually a button or link. */
   action?: ReactNode;

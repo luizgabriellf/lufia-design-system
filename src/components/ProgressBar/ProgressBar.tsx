@@ -27,7 +27,9 @@ export type ProgressBarProps = Omit<HTMLAttributes<HTMLDivElement>, "children" |
     label: string;
     /** Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). */
     valueText?: string;
+    /** Colour of the fill. Default `accent`. It only reinforces: the label and the percentage carry the meaning. */
     tone?: ChartTone;
+    /** Thickness of the track: `md` (default, 10px) or the thinner `sm` (6px). */
     size?: "sm" | "md";
     /**
      * Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once.

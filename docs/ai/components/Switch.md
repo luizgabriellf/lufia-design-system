@@ -39,13 +39,13 @@ error, and a thumb that slides.
 | `name` | `string` | no |  | Submitted as `name=value` while on, like a checkbox. Without `name` nothing is submitted. |
 | `defaultChecked` | `boolean` | no | `false` | Initial state when `checked` is not given. |
 | `label` | `ReactNode` | yes |  | The visible label. Clicking it toggles the switch. |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `(checked: boolean) => void` | no |  |  |
-| `value` | `string` | no | `"on"` |  |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. |
+| `value` | `string` | no | `"on"` | Value submitted with `name` while the switch is on. Default `"on"`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `role="switch"` button. |
 
 Other native element attributes pass through to the root element.
 
@@ -54,12 +54,12 @@ Other native element attributes pass through to the root element.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `label` | `ReactNode` | yes |  | The visible label. Clicking it toggles the switch. |
-| `hint` | `ReactNode` | no |  |  |
-| `error` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
+| `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `value` | `string` | no | `"on"` | Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. |
 | `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state. A plain `onChange` also works; both fire. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the `<input type="checkbox" role="switch">`. |
 
 Other native element attributes pass through to the root element.
 

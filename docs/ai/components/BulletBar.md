@@ -29,10 +29,10 @@ A value as a bar against a target tick. The scale is the target, so the tick sit
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `number` | yes |  |  |
+| `value` | `number` | yes |  | The measured amount, drawn as the fill. Clamped to the scale; zero or less draws no fill. |
 | `target` | `number` | yes |  | Where the tick sits. The scale is the target, so bars of different rows share one "percent of target" axis. |
 | `headroom` | `number` | no | `1.25` | Room past the target, as a multiple of it. Defaults to 1.25. |
-| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` | Colour of the fill. Default `accent`. It only reinforces: print the numbers as text too. |
 | `label` | `string \| null` | yes |  | Accessible name stating the value, the target and what they mean ("Delivered 80 of 100"). Pass `null` to hide the drawing from assistive technology, only when the numbers are printed as text next to it. |
 
 Other native element attributes pass through to the root element.

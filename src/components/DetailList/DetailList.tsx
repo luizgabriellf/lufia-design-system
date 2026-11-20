@@ -8,7 +8,10 @@ export type DetailListRow = {
   mono?: boolean;
 };
 
-export type DetailListProps = HTMLAttributes<HTMLDListElement> & { rows: DetailListRow[] };
+export type DetailListProps = HTMLAttributes<HTMLDListElement> & {
+  /** The label and value pairs, in order. */
+  rows: DetailListRow[];
+};
 
 /**
  * Key-value rows ("label: value") for detail panels and modals.

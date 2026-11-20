@@ -13,6 +13,7 @@ export type SegmentedToggleOption = {
   label: ReactNode;
   /** Decorative icon before the label; hidden from assistive technology. */
   icon?: ReactNode;
+  /** Disables this segment: it cannot be chosen and is skipped by the arrow keys. */
   disabled?: boolean;
   /**
    * Colours the segment while it is chosen with the matching status tokens (fill, border and text). The chosen segment also
@@ -29,6 +30,7 @@ export type SegmentedToggleProps = Omit<
 > & {
   /** Accessible name of the group ("Display mode"). Required: the visible segments do not say what they choose. */
   label: string;
+  /** The segments, in order. Each has a unique `value` and a `label`; exactly one can be chosen. */
   options: readonly SegmentedToggleOption[];
   /**
    * Controlled value. `null` is controlled with nothing chosen: no segment is checked and the indicator is hidden. The first
@@ -49,6 +51,9 @@ export type SegmentedToggleProps = Omit<
   allowDeselect?: boolean;
   /** Called when `allowDeselect` is on and the user clears the choice, or when a form reset returns to nothing chosen. */
   onDeselect?: () => void;
+  /**
+   * Disables every segment; one segment can also be disabled on its own with `disabled` on the option. Default `false`.
+   */
   disabled?: boolean;
   /** Submitted with the form as `name=value`. */
   name?: string;
@@ -56,6 +61,7 @@ export type SegmentedToggleProps = Omit<
   width?: "fit" | "fill";
   /** `"md"` (default) or the denser `"sm"` for rows in a list or a table. */
   size?: "sm" | "md";
+  /** Ref to the `radiogroup` element. */
   ref?: Ref<HTMLDivElement>;
 };
 

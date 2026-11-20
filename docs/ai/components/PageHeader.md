@@ -30,9 +30,9 @@ The top of a page: an optional eyebrow, the title as a heading, a description, a
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `eyebrow` | `ReactNode` | no |  | Small line above the title: the section or the parent record. |
-| `title` | `ReactNode` | yes |  |  |
+| `title` | `ReactNode` | yes |  | The page heading, rendered at `headingLevel`. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6 \| 1` | no | `1` | Heading level of `title`. Defaults to 1: a page has one. |
-| `description` | `ReactNode` | no |  |  |
+| `description` | `ReactNode` | no |  | A sentence under the title that says what the page is for. |
 | `actions` | `ReactNode` | no |  | Page-level actions, usually a `PageActions`. They wrap under the text on narrow screens. |
 
 Other native element attributes pass through to the root element.

@@ -31,6 +31,10 @@ export type NotificationCenterProps = Omit<HTMLAttributes<HTMLDivElement>, "chil
     open?: boolean;
     /** Initial open state when `open` is not given. For documentation and tests; people open it themselves. */
     defaultOpen?: boolean;
+    /**
+     * Called with the next open state when the user opens or closes the panel (the bell, Escape, a press outside or on
+     * the backdrop), whether it is controlled or not.
+     */
     onOpenChange?: (open: boolean) => void;
     /**
      * How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal
@@ -40,7 +44,9 @@ export type NotificationCenterProps = Omit<HTMLAttributes<HTMLDivElement>, "chil
     presentation?: "auto" | "popover" | "sheet";
     /** Which edge of the bell the popover lines up with. Defaults to the end. */
     align?: "start" | "end";
+    /** Size of the bell button. Default `md`. */
     size?: "sm" | "md" | "lg";
+    /** Visual variant of the bell button. Default `ghost`. */
     variant?: ButtonVariant;
     /** Replaces the default bell icon. */
     icon?: ReactNode;

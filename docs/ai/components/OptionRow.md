@@ -30,7 +30,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | The row cannot be chosen: a native `disabled` on the button, or `aria-disabled` on an element given to `render`. No effect with `interactive={false}`. Default `false`. |
 | `title` | `ReactNode` | yes |  | The option's name. It is the row's accessible name together with the description. |
 | `eyebrow` | `ReactNode` | no |  | Small accent line above the title, such as a category or a step. It is read before the title. |
 | `description` | `ReactNode` | no |  | Supporting line under the title. |
@@ -43,7 +43,7 @@ It is for a list of choices the user picks from. `NavRow` is the sibling for a r
 | `highlighted` | `boolean` | no | `false` | A purely visual emphasis: the accent subtle fill and border of `selected`, with no `aria-pressed` or `aria-current`. For a suggested or recommended option. Exposed as `data-highlighted`. |
 | `interactive` | `boolean` | no | `true` | Default `true`. `false` renders the same layout as a plain `<div>` (or the element given to `render`) with no button semantics, no hover, press or focus affordance and no `onClick`, for a row that only displays. `selected` and `highlighted` still style it. `disabled` has no effect. |
 | `ref` | `Ref<HTMLElement>` | no |  | The row's element (the button, or the `render` or static element), so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. |
-| `onClick` | `MouseEventHandler<HTMLElement>` | no |  |  |
+| `onClick` | `MouseEventHandler<HTMLElement>` | no |  | Called when the row is activated. Not called while `disabled`; not available with `interactive={false}`. |
 | `render` | `ReactElement<RenderedElementProps, string \| JSXElementConstructor<any>>` | no |  | The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state, content and `onClick`, and keeps its own props. It is not natively disabled: `disabled` marks it `aria-disabled` and ignores activation. Create it in a Client Component. With `interactive={false}` it is the static container instead. |
 
 Other native element attributes pass through to the root element.

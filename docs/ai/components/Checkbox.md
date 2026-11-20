@@ -37,7 +37,7 @@ A native checkbox with a drawn box, a label that is part of the click target, an
 | `indeterminate` | `boolean` | no | `false` | The mixed state of a parent whose children are partly checked. It is a display state: the native `checked` stays what it was, and the person's click sets it to a plain checked or unchecked value, so the next render should clear this prop. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `md` (default) is the 16px label in a 44px row. `sm` is for dense panels: a 14px label in a shorter row, so it sits next to 13px helper text. The drawn box and its 24px target are the same in both. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native checkbox input. |
 
 Other native element attributes pass through to the root element.
 

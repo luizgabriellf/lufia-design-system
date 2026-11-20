@@ -40,7 +40,7 @@ eyebrow and a description.
 | `emphasis` | `"solid" \| "subtle"` | no | `"solid"` | How the selected tile reads. `solid` (default) is the accent fill with the on-accent text, the strongest element of its set. `subtle` is the accent subtle fill with the accent border and text, for a set that sits inside an already emphasised surface. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `md` (default) is at least `--lufia-target-touch` tall. `sm` is 36px on a fine pointer and regains the touch floor on a coarse one. |
 | `fullWidth` | `boolean` | no | `false` | Stretches the tile to the width of its container, for a grid column or a stacked list. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the tile's `<button>`. |
 
 Other native element attributes pass through to the root element.
 
