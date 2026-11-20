@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.71.0
+
+### Minor Changes
+
+- [#247](https://github.com/luizgabriellf/lufia-design-system/pull/247) [`6dff178`](https://github.com/luizgabriellf/lufia-design-system/commit/6dff1789bf103c6a6bbab27a00ba5eb4dfa3ec12) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Reveal` takes `as` (`"div"`, `"section"`, `"article"`, `"p"` or `"li"`), so a notice, a paragraph or a list item can be the revealed element itself instead of sitting in a wrapper `div`.
+
 ## 0.70.0
 
 ### Minor Changes
