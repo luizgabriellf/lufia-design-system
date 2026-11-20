@@ -1,5 +1,19 @@
 # @lufia/design-system
 
+## 0.70.0
+
+### Minor Changes
+
+- [#246](https://github.com/luizgabriellf/lufia-design-system/pull/246) [`027016d`](https://github.com/luizgabriellf/lufia-design-system/commit/027016df98fae6031af943fae270d63f94cf9379) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Three motion tokens name the scale a surface arrives from and leaves to: `--lufia-motion-scale-enter` (0.96, anchored panels), `--lufia-motion-scale-enter-subtle` (0.98, dialogs and palettes) and `--lufia-motion-scale-exit` (0.98). `Menu`, `Popover`, `NotificationCenter`, `Modal` and `CommandPalette` read them instead of repeating the numbers, so an app's own panels can match. The values are unchanged, and like the press tokens they reset to `1` under reduced motion.
+
+- [#242](https://github.com/luizgabriellf/lufia-design-system/pull/242) [`d02d5c3`](https://github.com/luizgabriellf/lufia-design-system/commit/d02d5c33cf87e8a591364088d5887cc6e058b616) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `ProgressBar` gets `indeterminate`, for work whose length is not known yet. The bar states no value (`aria-valuenow` is absent), a short fill travels along the track with a transform-only animation that mirrors in right-to-left, and under reduced motion the fill stays in place and fades gently. `value` is left out with `indeterminate`; every existing use is unchanged.
+
+### Patch Changes
+
+- [#243](https://github.com/luizgabriellf/lufia-design-system/pull/243) [`ea20a71`](https://github.com/luizgabriellf/lufia-design-system/commit/ea20a714c905d9f2ba840574855c1e7a3eef84db) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Menu items ease their hover fill and answer a press with the subtle press scale, and the `Disclosure` summary eases its hover fill, so both match the rows, tabs and cards around them. Nothing changes under reduced motion beyond the fill, since the press token is `1` there.
+
+- [#245](https://github.com/luizgabriellf/lufia-design-system/pull/245) [`01f84da`](https://github.com/luizgabriellf/lufia-design-system/commit/01f84dafcd771bafa3abe85a351727996d4f6e5e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Every prop of every exported component now has a description in its JSDoc, so editors and the generated AI docs explain what each prop does; no runtime or type change.
+
 ## 0.69.0
 
 ### Minor Changes
