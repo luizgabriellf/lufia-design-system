@@ -51,6 +51,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [Modal](https://luizgabriellf.github.io/lufia-design-system/ai/components/Modal.md): A dialog that interrupts the page and traps focus until it is dismissed. (beta)
 - [NotificationCenter](https://luizgabriellf.github.io/lufia-design-system/ai/components/NotificationCenter.md): A bell with an unread count that opens a panel of notifications: a popover on wide pages, a sheet on narrow ones. (beta)
 - [Popover](https://luizgabriellf.github.io/lufia-design-system/ai/components/Popover.md): A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog. (beta)
+- [Tooltip](https://luizgabriellf.github.io/lufia-design-system/ai/components/Tooltip.md): A short, non-interactive text that names or explains a control on hover and keyboard focus. (beta)
 - [Tour](https://luizgabriellf.github.io/lufia-design-system/ai/components/Tour.md): A non-modal guided tour: a card that walks through steps with a spotlight on each target, while the page stays usable. (beta)
 
 ## Components: Navigation
@@ -118,6 +119,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [ChartKit](https://luizgabriellf.github.io/lufia-design-system/ai/components/ChartKit.md): Colour of a chart mark. The tone only reinforces: the value is always printed as text next to the drawing, so a tone is never the only carrier of meaning (WCAG 1.4.1). (beta)
 - [Icon](https://luizgabriellf.github.io/lufia-design-system/ai/components/Icon.md): The icon set: named stroke icons on one 24-unit grid, the Icon primitive and createIcon for an app's own glyphs. (beta)
 - [LufiaProvider](https://luizgabriellf.github.io/lufia-design-system/ai/components/LufiaProvider.md): Sets the link adapter and the aria-only labels once, at the root of an app. (beta)
+- [MenuToggleIcon](https://luizgabriellf.github.io/lufia-design-system/ai/components/MenuToggleIcon.md): Three bars that morph into a cross, for the button that opens and closes a menu or a navigation sheet. (beta)
 - [VisuallyHidden](https://luizgabriellf.github.io/lufia-design-system/ai/components/VisuallyHidden.md): Hides text visually and keeps it for assistive technology. (beta)
 
 ## Components: Hooks

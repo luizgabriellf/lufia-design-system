@@ -1,6 +1,8 @@
-/* Fixed to the viewport at the measured position of the control; the portal keeps it clear of any clipping ancestor. */
+/* Fixed to the viewport; `left`, `top` and `data-side` are written inline from the measured position of the control, and
+   the portal keeps it clear of any clipping ancestor. */
 .tooltip {
   position: fixed;
+  inset: auto;
   z-index: var(--lufia-z-tooltip);
   max-inline-size: 16rem;
   padding: var(--lufia-space-1) var(--lufia-space-3);
@@ -12,7 +14,7 @@
   font-size: var(--lufia-font-size-sm);
   font-weight: var(--lufia-font-weight-medium);
   line-height: 1.4;
-  transform: translateY(-50%);
+  overflow-wrap: anywhere;
   animation: tooltip-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 

@@ -136,6 +136,12 @@ export const ENTRIES: Entry[] = [
     "A non-modal panel anchored to a trigger, for content that needs more room than a menu and less ceremony than a dialog.",
   ),
   c(
+    "Tooltip",
+    "Overlays",
+    "A short, non-interactive text that names or explains a control on hover and keyboard focus.",
+    apg("Tooltip", "tooltip"),
+  ),
+  c(
     "Menu",
     "Overlays",
     "A list of actions, links or choices that hangs from a trigger, as a menu or a listbox, with arrow-key navigation and type-ahead.",
@@ -361,6 +367,11 @@ export const ENTRIES: Entry[] = [
     "Icon",
     "Utilities",
     "The icon set: named stroke icons on one 24-unit grid, the Icon primitive and createIcon for an app's own glyphs.",
+  ),
+  c(
+    "MenuToggleIcon",
+    "Utilities",
+    "Three bars that morph into a cross, for the button that opens and closes a menu or a navigation sheet.",
   ),
   c("VisuallyHidden", "Utilities", "Hides text visually and keeps it for assistive technology."),
 

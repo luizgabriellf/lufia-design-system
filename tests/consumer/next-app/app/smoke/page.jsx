@@ -19,6 +19,7 @@ import { EmptyState as EmptyState_EmptyState } from "@lufia/design-system/compon
 import { FilterLinks as FilterLinks_FilterLinks } from "@lufia/design-system/components/FilterLinks";
 import { Icon as Icon_Icon, ArrowDownIcon as Icon_ArrowDownIcon, ArrowLeftIcon as Icon_ArrowLeftIcon, ArrowRightIcon as Icon_ArrowRightIcon, ArrowUpIcon as Icon_ArrowUpIcon, BellIcon as Icon_BellIcon, CalendarIcon as Icon_CalendarIcon, ChartIcon as Icon_ChartIcon, CheckCheckIcon as Icon_CheckCheckIcon, CheckIcon as Icon_CheckIcon, ChevronDownIcon as Icon_ChevronDownIcon, ChevronLeftIcon as Icon_ChevronLeftIcon, ChevronRightIcon as Icon_ChevronRightIcon, ChevronUpIcon as Icon_ChevronUpIcon, ClockIcon as Icon_ClockIcon, CloseIcon as Icon_CloseIcon, CopyIcon as Icon_CopyIcon, DownloadIcon as Icon_DownloadIcon, EditIcon as Icon_EditIcon, EnterIcon as Icon_EnterIcon, ErrorIcon as Icon_ErrorIcon, ExternalLinkIcon as Icon_ExternalLinkIcon, EyeIcon as Icon_EyeIcon, EyeOffIcon as Icon_EyeOffIcon, FileIcon as Icon_FileIcon, FileTextIcon as Icon_FileTextIcon, FilterIcon as Icon_FilterIcon, GridIcon as Icon_GridIcon, HelpIcon as Icon_HelpIcon, HomeIcon as Icon_HomeIcon, InboxIcon as Icon_InboxIcon, InfoIcon as Icon_InfoIcon, MenuIcon as Icon_MenuIcon, MinusIcon as Icon_MinusIcon, MoonIcon as Icon_MoonIcon, MoreIcon as Icon_MoreIcon, MoreVerticalIcon as Icon_MoreVerticalIcon, PlusIcon as Icon_PlusIcon, RotateCcwIcon as Icon_RotateCcwIcon, SearchIcon as Icon_SearchIcon, SettingsIcon as Icon_SettingsIcon, SidebarIcon as Icon_SidebarIcon, SignOutIcon as Icon_SignOutIcon, SortIcon as Icon_SortIcon, SparkleIcon as Icon_SparkleIcon, SuccessIcon as Icon_SuccessIcon, SunIcon as Icon_SunIcon, TrashIcon as Icon_TrashIcon, UploadIcon as Icon_UploadIcon, UserIcon as Icon_UserIcon, UsersIcon as Icon_UsersIcon, WarningIcon as Icon_WarningIcon } from "@lufia/design-system/components/Icon";
 import { Link as Link_Link } from "@lufia/design-system/components/Link";
+import { MenuToggleIcon as MenuToggleIcon_MenuToggleIcon } from "@lufia/design-system/components/MenuToggleIcon";
 import { PageHeader as PageHeader_PageHeader } from "@lufia/design-system/components/PageHeader";
 import { ProgressBar as ProgressBar_ProgressBar } from "@lufia/design-system/components/ProgressBar";
 import { SectionHeader as SectionHeader_SectionHeader } from "@lufia/design-system/components/SectionHeader";
@@ -122,6 +123,7 @@ export default function SmokePage() {
       <section data-smoke="Icon/UsersIcon"><Icon_UsersIcon /></section>
       <section data-smoke="Icon/WarningIcon"><Icon_WarningIcon /></section>
       <section data-smoke="Link"><Link_Link href={"x"}>{"x"}</Link_Link></section>
+      <section data-smoke="MenuToggleIcon"><MenuToggleIcon_MenuToggleIcon open={false} /></section>
       <section data-smoke="PageHeader"><PageHeader_PageHeader title={"x"} /></section>
       <section data-smoke="ProgressBar"><ProgressBar_ProgressBar value={1} label={"x"} /></section>
       <section data-smoke="SectionHeader"><SectionHeader_SectionHeader title={"x"} /></section>

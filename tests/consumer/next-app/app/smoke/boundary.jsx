@@ -41,6 +41,7 @@ import { Tabs as Tabs_Tabs } from "@lufia/design-system/components/Tabs";
 import { TextInput as TextInput_TextInput } from "@lufia/design-system/components/TextInput";
 import { Textarea as Textarea_Textarea } from "@lufia/design-system/components/Textarea";
 import { ToastProvider as Toast_ToastProvider } from "@lufia/design-system/components/Toast";
+import { Tooltip as Tooltip_Tooltip } from "@lufia/design-system/components/Tooltip";
 import { Tour as Tour_Tour } from "@lufia/design-system/components/Tour";
 import * as useBodyScrollLock from "@lufia/design-system/components/useBodyScrollLock";
 import * as useDismiss from "@lufia/design-system/components/useDismiss";
@@ -116,6 +117,7 @@ export default function ClientSmoke() {
       <section data-smoke="TextInput"><TextInput_TextInput /></section>
       <section data-smoke="Textarea"><Textarea_Textarea /></section>
       <section data-smoke="Toast/ToastProvider"><Toast_ToastProvider>{"x"}</Toast_ToastProvider></section>
+      <section data-smoke="Tooltip"><Tooltip_Tooltip content={"x"}>{(props) => <button type="button" {...props}>Hint</button>}</Tooltip_Tooltip></section>
       <section data-smoke="Tour"><Tour_Tour steps={[{ title: "Step", body: "Body" }]} labels={{
       next: "Next",
       back: "Back",

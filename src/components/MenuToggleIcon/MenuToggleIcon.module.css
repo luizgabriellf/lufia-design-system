@@ -1,0 +1,32 @@
+/* Each bar rotates and slides about its own centre: `fill-box` makes the origin the bar's box, not the viewBox. The cross
+   is the top and bottom bars moved onto the middle line (6 units of the 24 grid) and turned a quarter either way. */
+.top,
+.middle,
+.bottom {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-in-out),
+    opacity var(--lufia-motion-duration-fast) var(--lufia-motion-easing-in-out);
+}
+
+.root[data-state="open"] .top {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.root[data-state="open"] .middle {
+  opacity: 0;
+}
+
+.root[data-state="open"] .bottom {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* The state still changes, with no movement in between. */
+@media (prefers-reduced-motion: reduce) {
+  .top,
+  .middle,
+  .bottom {
+    transition: none;
+  }
+}

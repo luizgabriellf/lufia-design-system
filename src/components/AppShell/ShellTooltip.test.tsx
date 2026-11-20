@@ -16,7 +16,7 @@ function Rail({ collapsed = true }: { collapsed?: boolean }) {
   );
 }
 
-const css = readFileSync("src/components/AppShell/ShellTooltip.module.css", "utf8");
+const css = readFileSync("src/components/Tooltip/Tooltip.module.css", "utf8");
 
 describe("rail tooltip", () => {
   it("sits on the tooltip layer, above toasts and sheets", () => {
