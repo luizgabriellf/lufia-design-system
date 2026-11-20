@@ -83,7 +83,7 @@
  * clear button shrinks to fit inside the border so the box never grows past 2rem.
  */
 .box[data-size="sm"] {
-  min-block-size: 2rem;
+  min-block-size: var(--lufia-control-height-sm);
 }
 
 .box[data-size="sm"] > .native {

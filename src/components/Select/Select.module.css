@@ -33,7 +33,7 @@
 .box[data-size="sm"] {
   display: inline-flex;
   inline-size: auto;
-  min-block-size: 2rem;
+  min-block-size: var(--lufia-control-height-sm);
 }
 
 .box[data-size="sm"] .native {

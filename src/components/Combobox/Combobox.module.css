@@ -100,7 +100,7 @@
 .box[data-wrapped] .button,
 .box[data-wrapped] .spinner {
   position: relative;
-  margin-block-start: calc((2.75rem - 2 * var(--lufia-border-width-thin) - 2rem) / 2);
+  margin-block-start: calc((var(--lufia-control-height) - 2 * var(--lufia-border-width-thin) - 2rem) / 2);
 }
 
 .box[data-wrapped] .spinner {
@@ -115,7 +115,11 @@
 
   .box[data-wrapped] .button {
     margin-block-start: calc(
-      (2.75rem - 2 * var(--lufia-border-width-thin) - var(--lufia-target-touch, 2.75rem)) / 2
+      (
+          var(--lufia-target-touch, 2.75rem) - 2 * var(--lufia-border-width-thin) -
+            var(--lufia-target-touch, 2.75rem)
+        ) /
+        2
     );
   }
 }
@@ -266,7 +270,7 @@
  * buttons shrink to fit inside the border; the touch rule below restores the touch target on coarse pointers and phones.
  */
 .box[data-size="sm"] {
-  min-block-size: 2rem;
+  min-block-size: var(--lufia-control-height-sm);
 }
 
 .box[data-size="sm"] > .native {
@@ -288,7 +292,9 @@
 
 .box[data-size="sm"][data-wrapped] .button,
 .box[data-size="sm"][data-wrapped] .spinner {
-  margin-block-start: calc((2rem - 2 * var(--lufia-border-width-thin) - 1.5rem) / 2);
+  margin-block-start: calc(
+    (var(--lufia-control-height-sm) - 2 * var(--lufia-border-width-thin) - 1.5rem) / 2
+  );
 }
 
 .box[data-size="sm"][data-wrapped] .spinner {
@@ -312,7 +318,11 @@
 
   .box[data-size="sm"][data-wrapped] .button {
     margin-block-start: calc(
-      (2.75rem - 2 * var(--lufia-border-width-thin) - var(--lufia-target-touch, 2.75rem)) / 2
+      (
+          var(--lufia-target-touch, 2.75rem) - 2 * var(--lufia-border-width-thin) -
+            var(--lufia-target-touch, 2.75rem)
+        ) /
+        2
     );
   }
 

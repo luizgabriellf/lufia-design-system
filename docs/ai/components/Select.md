@@ -80,7 +80,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-text-default`, `--lufia-font-size-sm`, `--lufia-icon-size-sm`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-color-bg-surface-solid`, `--lufia-color-text-default`, `--lufia-control-height-sm`, `--lufia-font-size-sm`, `--lufia-icon-size-sm`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-target-touch`.
 
 ## Content guidelines
 

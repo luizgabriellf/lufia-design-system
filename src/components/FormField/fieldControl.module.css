@@ -9,7 +9,7 @@
   box-sizing: border-box;
   inline-size: 100%;
   min-inline-size: 0;
-  min-block-size: 2.75rem;
+  min-block-size: var(--lufia-control-height);
   color: var(--lufia-color-text-default);
   background: var(--lufia-color-bg-field);
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-strong);

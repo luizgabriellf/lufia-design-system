@@ -109,7 +109,7 @@
  * native control's own touch-height floor is lifted, and the clear button shrinks to fit inside the border.
  */
 .box[data-size="sm"] {
-  min-block-size: 2rem;
+  min-block-size: var(--lufia-control-height-sm);
 }
 
 .box[data-size="sm"] > .native {

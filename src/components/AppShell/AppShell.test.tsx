@@ -674,7 +674,9 @@ describe("AppShell slots", () => {
         else expect(slot()).not.toHaveAttribute("data-touch");
         view.unmount();
       }
-      expect(css).toMatch(/\.primarySlot\[data-touch\] \{\s*min-block-size: 2\.75rem;/);
+      expect(css).toMatch(
+        /\.primarySlot\[data-touch\] \{\s*min-block-size: var\(--lufia-target-touch, 2\.75rem\);/,
+      );
     });
 
     it("forwards the action's data attributes in the desktop slot, as a button and as a link", () => {

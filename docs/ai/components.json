@@ -2286,6 +2286,7 @@
         "--lufia-space-3",
         "--lufia-space-4",
         "--lufia-space-8",
+        "--lufia-target-touch",
         "--lufia-z-sticky",
         "--lufia-z-toast"
       ]
@@ -4416,6 +4417,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-on-accent",
+        "--lufia-control-height",
         "--lufia-font-line-height-normal",
         "--lufia-font-size-md",
         "--lufia-font-size-sm",
@@ -6084,6 +6086,8 @@
         "--lufia-color-text-accent",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-control-height",
+        "--lufia-control-height-sm",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
         "--lufia-font-size-md",
@@ -6956,6 +6960,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
+        "--lufia-control-height-sm",
         "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-motion-duration-instant",
@@ -8291,6 +8296,7 @@
         "--lufia-color-status-danger-fg",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-control-height",
         "--lufia-font-numeric-tabular",
         "--lufia-font-size-sm",
         "--lufia-font-size-xs",
@@ -11938,6 +11944,7 @@
         "--lufia-shadow-lg",
         "--lufia-space-1",
         "--lufia-space-2",
+        "--lufia-target-touch",
         "--lufia-z-dropdown"
       ]
     },
@@ -16144,6 +16151,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-on-accent",
+        "--lufia-control-height",
         "--lufia-font-line-height-normal",
         "--lufia-font-line-height-tight",
         "--lufia-font-numeric-tabular",
@@ -16661,6 +16669,7 @@
         "--lufia-color-focus-ring",
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
+        "--lufia-control-height-sm",
         "--lufia-font-family-mono",
         "--lufia-font-line-height-normal",
         "--lufia-font-size-sm",
@@ -17292,6 +17301,7 @@
       "tokens": [
         "--lufia-color-bg-surface-solid",
         "--lufia-color-text-default",
+        "--lufia-control-height-sm",
         "--lufia-font-size-sm",
         "--lufia-icon-size-sm",
         "--lufia-opacity-disabled",
@@ -19777,6 +19787,7 @@
         "--lufia-color-text-default",
         "--lufia-color-text-muted",
         "--lufia-color-text-on-accent",
+        "--lufia-control-height",
         "--lufia-font-line-height-normal",
         "--lufia-font-size-md",
         "--lufia-motion-duration-fast",
@@ -21293,7 +21304,8 @@
         "--lufia-tabs-selected-color",
         "--lufia-tabs-tab-min-block-size",
         "--lufia-tabs-tab-padding-block",
-        "--lufia-tabs-tab-padding-inline"
+        "--lufia-tabs-tab-padding-inline",
+        "--lufia-target-touch"
       ]
     },
     {
@@ -21481,6 +21493,7 @@
         "notes": null
       },
       "tokens": [
+        "--lufia-control-height-sm",
         "--lufia-font-size-sm",
         "--lufia-space-2",
         "--lufia-target-touch"

@@ -197,7 +197,7 @@
 /* Coarse pointers get a 44px target. */
 @media (pointer: coarse) {
   .item {
-    min-block-size: max(var(--lufia-menu-item-min-block-size, 2.25rem), 2.75rem);
+    min-block-size: max(var(--lufia-menu-item-min-block-size, 2.25rem), var(--lufia-target-touch, 2.75rem));
   }
 }
 
