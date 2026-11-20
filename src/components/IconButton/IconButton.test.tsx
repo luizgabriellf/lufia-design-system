@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { IconButton } from "./IconButton";
@@ -7,16 +7,77 @@ import { IconButton } from "./IconButton";
 const icon = <svg data-testid="icon" />;
 
 describe("IconButton", () => {
-  it("is named by aria-label and uses it as the tooltip", () => {
+  it("is named by aria-label and renders no native title", () => {
     render(<IconButton icon={icon} aria-label="Open settings" />);
     const button = screen.getByRole("button", { name: "Open settings" });
-    expect(button).toHaveAttribute("title", "Open settings");
+    expect(button).not.toHaveAttribute("title");
     expect(button).toHaveAttribute("data-icon-only");
   });
 
-  it("lets title differ from the name", () => {
+  it("shows the package tooltip on keyboard focus, aria-hidden, with the label", async () => {
+    const user = userEvent.setup();
+    render(<IconButton icon={icon} aria-label="Open settings" />);
+    expect(screen.queryByText("Open settings")).toBeNull();
+    await user.tab();
+    const tip = await screen.findByText("Open settings");
+    expect(tip).toHaveAttribute("role", "tooltip");
+    expect(tip).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("button", { name: "Open settings" })).not.toHaveAttribute("aria-describedby");
+    await user.keyboard("{Escape}");
+    await act(async () => {});
+    expect(screen.getByRole("button")).toHaveFocus();
+  });
+
+  it("shows the tooltip on hover", async () => {
+    const user = userEvent.setup();
+    render(<IconButton icon={icon} aria-label="Open settings" />);
+    await user.hover(screen.getByRole("button"));
+    expect(await screen.findByRole("tooltip", { hidden: true })).toHaveTextContent("Open settings");
+  });
+
+  it("lets title override the tooltip text without changing the name", async () => {
+    const user = userEvent.setup();
     render(<IconButton icon={icon} aria-label="Settings" title="Settings (S)" />);
-    expect(screen.getByRole("button", { name: "Settings" })).toHaveAttribute("title", "Settings (S)");
+    await user.tab();
+    expect(await screen.findByText("Settings (S)")).toHaveAttribute("role", "tooltip");
+    expect(screen.getByRole("button", { name: "Settings" })).not.toHaveAttribute("title");
+  });
+
+  it("renders no tooltip with tooltip={false}, when disabled or when loading", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<IconButton icon={icon} aria-label="Go" tooltip={false} />);
+    await user.tab();
+    expect(screen.queryByRole("tooltip", { hidden: true })).toBeNull();
+    rerender(<IconButton icon={icon} aria-label="Go" loading />);
+    await user.tab();
+    await user.hover(screen.getByRole("button"));
+    expect(screen.queryByRole("tooltip", { hidden: true })).toBeNull();
+  });
+
+  it("still runs the consumer's focus, blur and key handlers beside the tooltip's", async () => {
+    const user = userEvent.setup();
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
+    const onKeyDown = vi.fn();
+    render(
+      <IconButton icon={icon} aria-label="Go" onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} />,
+    );
+    await user.tab();
+    expect(onFocus).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole("tooltip", { hidden: true })).toBeInTheDocument();
+    await user.keyboard("a");
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
+    await user.tab();
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the tooltip on a link too and forwards the ref", async () => {
+    const user = userEvent.setup();
+    const ref = { current: null as HTMLAnchorElement | null };
+    render(<IconButton icon={icon} aria-label="Settings" href="/settings" ref={ref} />);
+    await user.tab();
+    expect(await screen.findByRole("tooltip", { hidden: true })).toHaveTextContent("Settings");
+    expect(ref.current).toBe(screen.getByRole("link"));
   });
 
   it("hides the icon from assistive technology and defaults to the ghost variant", () => {

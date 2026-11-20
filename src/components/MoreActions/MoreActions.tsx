@@ -523,6 +523,7 @@ export function MoreActions({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
+        tooltip={!open}
         variant={variant}
         size={size}
         onClick={() => (open ? close() : openAt("first"))}
