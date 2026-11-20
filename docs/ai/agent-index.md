@@ -78,7 +78,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DetailSectionCard: title* description icon action
 - Disclosure: summary* name defaultOpen variant size description meta panelClassName summaryClassName indicator
 - OneWayDisclosure: trigger* open defaultOpen onOpenChange variant label panelClassName
-- ProgressBar: value* label* max valueText tone size animateChanges
+- ProgressBar: label* value indeterminate max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
 - SortableTh: dir* label* active* onSort* abbr wrap
 - Sparkline: values* label* variant tone

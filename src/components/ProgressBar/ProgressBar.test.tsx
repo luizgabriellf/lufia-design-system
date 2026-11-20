@@ -84,6 +84,45 @@ describe("ProgressBar", () => {
     expect(reduced?.[1]).toMatch(/\.fill\[data-animate\] \{\s*transition:\s*none/);
   });
 
+  it("indeterminate states no value and is still a named progressbar", async () => {
+    const { container } = render(<ProgressBar indeterminate label="Loading options" />);
+    const bar = screen.getByRole("progressbar", { name: "Loading options" });
+    expect(bar).not.toHaveAttribute("aria-valuenow");
+    expect(bar).toHaveAttribute("data-indeterminate");
+    const fill = bar.firstElementChild as HTMLElement;
+    expect(fill).toHaveAttribute("data-indeterminate");
+    expect(fill.style.inlineSize).toBe("");
+    expect(fill.style.transform).toBe("");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("goes from indeterminate to a value once the fraction is known", () => {
+    const { rerender } = render(<ProgressBar indeterminate label="Upload" />);
+    rerender(<ProgressBar value={60} label="Upload" />);
+    const bar = screen.getByRole("progressbar");
+    expect(bar).toHaveAttribute("aria-valuenow", "60");
+    expect(bar).not.toHaveAttribute("data-indeterminate");
+    expect(bar.firstElementChild).toHaveStyle({ inlineSize: "60%" });
+  });
+
+  it("indeterminate travels with transform only, mirrors in rtl and only fades under reduced motion", () => {
+    expect(css).toMatch(/\.root\[data-indeterminate\] \{\s*overflow:\s*hidden/);
+    expect(css).toMatch(
+      /\.fill\[data-indeterminate\] \{[^}]*animation:\s*progress-travel 1\.4s var\(--lufia-motion-easing-in-out\) infinite/,
+    );
+    expect(css).toMatch(/\.fill\[data-indeterminate\]:dir\(rtl\) \{\s*animation-name:\s*progress-travel-rtl/);
+    for (const name of ["progress-travel", "progress-travel-rtl"]) {
+      const frames = css.match(new RegExp(`@keyframes ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? "";
+      expect(frames).toMatch(/transform:\s*translateX/);
+      expect(frames).not.toMatch(/inline-size|width|left|inset/);
+    }
+    const reduced = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
+    expect(reduced?.[1]).toMatch(
+      /\.fill\[data-indeterminate\]:dir\(rtl\) \{[^}]*animation:\s*progress-breathe/,
+    );
+    expect(css.match(/@keyframes progress-breathe \{([\s\S]*?)\n\}/)?.[1]).not.toMatch(/transform/);
+  });
+
   it("draws in with motion tokens and stops under reduced motion", () => {
     expect(css).toMatch(
       /animation:\s*progress-grow var\(--lufia-motion-duration-medium\) var\(--lufia-motion-easing-out\)/,

@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar, type ProgressBarProps } from "./ProgressBar";
+
+/** The controls drive the determinate form; the indeterminate stories render the component themselves. */
+type DeterminateProgressBar = (
+  props: Extract<ProgressBarProps, { value: number }>,
+) => ReturnType<typeof ProgressBar>;
 
 const meta = {
   title: "Components/Data display/ProgressBar",
@@ -19,7 +24,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ProgressBar>;
+} satisfies Meta<DeterminateProgressBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -64,6 +69,12 @@ export const AnimatedChanges: Story = {
   },
 };
 export const AnimatedAtRest: Story = { args: { animateChanges: true, value: 60 } };
+export const Indeterminate: Story = {
+  render: () => <ProgressBar indeterminate label="Loading options" />,
+};
+export const IndeterminateSmall: Story = {
+  render: () => <ProgressBar indeterminate size="sm" tone="neutral" label="Syncing" />,
+};
 export const RightToLeft: Story = {
   decorators: [
     (Story) => (

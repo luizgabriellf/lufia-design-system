@@ -31,6 +31,18 @@ Pass `animateChanges` to animate later changes of `value`. It is off by default.
 <ProgressBar value={uploaded} label="Upload" animateChanges />
 ```
 
+Pass `indeterminate` instead of `value` while the length of the work is not known yet, then switch to `value`.
+
+```tsx
+{
+  total === null ? (
+    <ProgressBar indeterminate label="Upload" />
+  ) : (
+    <ProgressBar value={sent} max={total} label="Upload" />
+  );
+}
+```
+
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
 
 </Section>
@@ -47,6 +59,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.CustomRange} />
 <Canvas of={Stories.AnimatedChanges} />
 <Canvas of={Stories.RightToLeft} />
+<Canvas of={Stories.Indeterminate} />
+<Canvas of={Stories.IndeterminateSmall} />
 
 ### All themes
 
@@ -68,6 +82,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 - Use `valueText` when the percentage alone says too little ("12 of 40 steps").
 - It states a fraction, so print the figure beside it as text; colour alone must not carry a warning.
 - The fill draws in once on mount and is removed under `prefers-reduced-motion`. Later changes of `value` apply at once by default. With `animateChanges` the fill keeps its full width and is scaled with a `transform` transition (`--lufia-motion-duration-enter`), never width; reduced motion applies the new value at once.
+- With `indeterminate` the bar has no `aria-valuenow`, which assistive technology reads as busy with no known value; the name still says what is loading. A short fill travels along the track with a `transform` animation and mirrors in right-to-left. Under `prefers-reduced-motion` nothing travels: the fill covers the track and fades gently, so it still reads as work under way and not as done.
 - In `forced-colors` mode the track gets a border and the fill is `Highlight`.
 
 </Section>
@@ -77,10 +92,11 @@ Strings in the snippet are plain literals. In your app they arrive through props
 ### When to use
 
 - A known fraction of a whole: storage used, steps done, a quota.
+- With `indeterminate`: a wait of a few seconds inside a panel or a step whose length is not known yet, where a bar fits the layout better than a ring.
 
 ### When not to use
 
-- Work of unknown length: use a spinner or a `Skeleton`.
+- A wait inside a button or beside a line of text: use `Spinner`. Content that is about to appear in a known shape: use a `Skeleton`.
 - A value against a target tick: use `BulletBar`.
 
 </Section>
