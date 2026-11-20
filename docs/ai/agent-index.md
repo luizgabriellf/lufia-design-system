@@ -23,8 +23,8 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - Checkbox: label* hint error indeterminate size
 - ChoiceTile: label* disabled eyebrow description selected emphasis size fullWidth
-- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading +11
-- DateField: type value defaultValue onValueChange min max step clearLabel invalid
+- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading +12
+- DateField: type value defaultValue onValueChange min max step clearLabel invalid size
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step +8
 - FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles +6
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
@@ -32,7 +32,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - OptionRow: title* disabled eyebrow description meta leading trailing selected density truncate +4
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
 - RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue +6
-- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel +1
+- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel +2
 - SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width +1
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput

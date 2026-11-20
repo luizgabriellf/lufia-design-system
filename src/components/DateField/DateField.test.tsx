@@ -297,3 +297,29 @@ describe("DateField", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("DateField compact (size sm)", () => {
+  it("marks the box, leaving the default unmarked", () => {
+    const { rerender } = render(<DateField aria-label="When" />);
+    const box = screen.getByLabelText("When").parentElement as HTMLElement;
+    expect(box).not.toHaveAttribute("data-size");
+    rerender(<DateField aria-label="When" size="sm" />);
+    expect(box).toHaveAttribute("data-size", "sm");
+    rerender(<DateField aria-label="When" size="md" />);
+    expect(box).not.toHaveAttribute("data-size");
+  });
+
+  it("does not pass size to the native input, which would set its character width", () => {
+    render(<DateField aria-label="When" size="sm" />);
+    expect(screen.getByLabelText("When")).not.toHaveAttribute("size");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(
+      <FormField label="Field">
+        <DateField aria-label="When" size="sm" defaultValue="2030-01-31" clearLabel="Clear" />
+      </FormField>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

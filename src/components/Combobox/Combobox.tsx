@@ -43,6 +43,8 @@ type PopupView = {
   loading: boolean | undefined;
 };
 
+export type ComboboxSize = "md" | "sm";
+
 export type ComboboxProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type" | "size" | "value" | "defaultValue" | "onChange" | "role" | "className" | "list"
@@ -116,6 +118,12 @@ export type ComboboxProps = Omit<
   requiredMessage?: string;
   /** Marks the control invalid without a `FormField`. */
   invalid?: boolean;
+  /**
+   * `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`:
+   * a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`.
+   * Give it an `aria-label` or a visually hidden label. Default `md`.
+   */
+  size?: ComboboxSize;
   /** Goes on the root element. */
   className?: string;
   /** Ref to the text input. */
@@ -183,6 +191,7 @@ function measure(element: HTMLElement): Placement {
  * Inside a `FormField` the field's id, description, label and states apply.
  */
 export function Combobox({
+  size = "md",
   options,
   value: valueProp,
   defaultValue = null,
@@ -521,6 +530,7 @@ export function Combobox({
     >
       <span
         className={[fieldStyles.box, styles.box].join(" ")}
+        data-size={size === "md" ? undefined : size}
         data-open={open ? "" : undefined}
         data-invalid={control["aria-invalid"] ? "" : undefined}
         data-disabled={control.disabled ? "" : undefined}

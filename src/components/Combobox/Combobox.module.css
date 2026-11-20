@@ -260,3 +260,63 @@
     background: Highlight;
   }
 }
+
+/*
+ * Compact (size="sm"): the metrics of `TextInput size="sm"`, a 2rem box, 0.25rem block padding, the small font size. The
+ * buttons shrink to fit inside the border; the touch rule below restores the touch target on coarse pointers and phones.
+ */
+.box[data-size="sm"] {
+  min-block-size: 2rem;
+}
+
+.box[data-size="sm"] > .native {
+  padding-block: 0.25rem;
+  padding-inline-start: var(--lufia-space-2);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.box[data-size="sm"] .button {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+}
+
+.box[data-size="sm"][data-wrapped] .wrappedValue {
+  padding-block: 0.25rem;
+  padding-inline-start: var(--lufia-space-2);
+  font-size: var(--lufia-font-size-sm);
+}
+
+.box[data-size="sm"][data-wrapped] .button,
+.box[data-size="sm"][data-wrapped] .spinner {
+  margin-block-start: calc((2rem - 2 * var(--lufia-border-width-thin) - 1.5rem) / 2);
+}
+
+.box[data-size="sm"][data-wrapped] .spinner {
+  margin-block-start: 0.25rem;
+}
+
+/* Finger-sized on phones and touch screens, as Button and the compact Select; desktop keeps its density. */
+@media (pointer: coarse), (width < 40rem) {
+  .box[data-size="sm"] {
+    min-block-size: var(--lufia-target-touch, 2.75rem);
+  }
+
+  .box[data-size="sm"] .button {
+    inline-size: var(--lufia-target-touch, 2.75rem);
+    block-size: var(--lufia-target-touch, 2.75rem);
+  }
+
+  .box[data-size="sm"][data-wrapped] .wrappedValue {
+    padding-block: 0.625rem;
+  }
+
+  .box[data-size="sm"][data-wrapped] .button {
+    margin-block-start: calc(
+      (2.75rem - 2 * var(--lufia-border-width-thin) - var(--lufia-target-touch, 2.75rem)) / 2
+    );
+  }
+
+  .box[data-size="sm"][data-wrapped] .spinner {
+    margin-block-start: 0.75rem;
+  }
+}

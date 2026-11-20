@@ -40,6 +40,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | `loading` | `boolean` | no | `false` | A search is running. Shows a ring, sets `aria-busy` and announces `loadingLabel`. |
 | `loadingLabel` | `string` | no | `"Searching"` | Text announced while `loading`. Aria-only. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
+| `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
 | `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
@@ -72,7 +73,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-xs`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-radius-xs`, `--lufia-space-2`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-mono`, `--lufia-font-line-height-normal`, `--lufia-font-size-sm`, `--lufia-font-size-xs`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-radius-xs`, `--lufia-space-2`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -83,6 +84,7 @@ search on a page. `clearLabel` and `loadingLabel` are read aloud: "Clear search"
 
 - `components-forms-searchinput--default`
 - `components-forms-searchinput--with-value`
+- `components-forms-searchinput--small`
 - `components-forms-searchinput--with-shortcut`
 - `components-forms-searchinput--inside-form-field`
 - `components-forms-searchinput--invalid`

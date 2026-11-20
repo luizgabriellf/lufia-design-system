@@ -1161,3 +1161,29 @@ describe("Combobox popup exit", () => {
     expect(css).toMatch(/@keyframes popup-out-top \{\s*to \{\s*opacity: 0;\s*transform: translateY\(var\(/);
   });
 });
+
+describe("Combobox compact (size sm)", () => {
+  it("marks the box, leaving the default unmarked", () => {
+    const { rerender } = render(<Combobox aria-label="City" options={options} {...texts} />);
+    const box = screen.getByRole("combobox").parentElement as HTMLElement;
+    expect(box).not.toHaveAttribute("data-size");
+    rerender(<Combobox aria-label="City" options={options} {...texts} size="sm" />);
+    expect(box).toHaveAttribute("data-size", "sm");
+    rerender(<Combobox aria-label="City" options={options} {...texts} size="md" />);
+    expect(box).not.toHaveAttribute("data-size");
+  });
+
+  it("does not pass size to the native input, which would set its character width", () => {
+    render(<Combobox aria-label="City" options={options} {...texts} size="sm" />);
+    expect(screen.getByRole("combobox")).not.toHaveAttribute("size");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(
+      <FormField label="Field">
+        <Combobox aria-label="City" options={options} {...texts} size="sm" />
+      </FormField>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

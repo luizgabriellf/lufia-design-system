@@ -53,6 +53,7 @@ the empty and loading states are part of the component.
 | `toggleLabel` | `string` | no | `"Show options"` | Accessible name of the button that opens the list. Aria-only. |
 | `requiredMessage` | `string` | no |  | Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own "please fill out this field" in the person's language. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
+| `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the text input. |
 
@@ -111,6 +112,7 @@ unique to tell options apart.
 ## Stories
 
 - `components-forms-combobox--default`
+- `components-forms-combobox--small`
 - `components-forms-combobox--open`
 - `components-forms-combobox--with-value`
 - `components-forms-combobox--with-hint`

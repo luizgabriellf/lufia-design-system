@@ -11,6 +11,8 @@ import styles from "./DateField.module.css";
 /** The native control a `DateField` wraps. */
 export type DateFieldType = "date" | "time" | "datetime-local" | "month";
 
+export type DateFieldSize = "md" | "sm";
+
 export type DateFieldProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type" | "size" | "value" | "defaultValue" | "className" | "min" | "max" | "step" | "prefix"
@@ -37,6 +39,12 @@ export type DateFieldProps = Omit<
   clearLabel?: string;
   /** Marks the control invalid without a `FormField`. Inside a field the error does it. */
   invalid?: boolean;
+  /**
+   * `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`:
+   * a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`.
+   * Give it an `aria-label` or a visually hidden label. Default `md`.
+   */
+  size?: DateFieldSize;
   /** Goes on the box that draws the border; the native input gets the rest props. */
   className?: string;
   /** Ref to the native input. */
@@ -62,6 +70,7 @@ function canReplacePickerIndicator(input: HTMLInputElement | null, type: DateFie
  * emits them; there is no `Date` conversion and no time zone.
  */
 export function DateField({
+  size = "md",
   type = "date",
   value: valueProp,
   defaultValue = "",
@@ -116,6 +125,7 @@ export function DateField({
   return (
     <span
       className={[fieldStyles.box, styles.box, className].filter(Boolean).join(" ")}
+      data-size={size === "md" ? undefined : size}
       data-invalid={control["aria-invalid"] ? "" : undefined}
       data-disabled={control.disabled ? "" : undefined}
       data-readonly={readOnly ? "" : undefined}

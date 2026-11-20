@@ -41,6 +41,7 @@ not replace it: editing, the keyboard and the mobile picker are the platform's.
 | `step` | `string \| number` | no |  | The step of the native control: days for `date`, seconds for `time` and `datetime-local`, months for `month`. |
 | `clearLabel` | `string` | no |  | The accessible name of a clear button, in your language. Giving it adds the button, which shows only while the field has a value and is neither required, disabled nor read-only. Clearing dispatches bubbling `input` and `change` events, as an edit would. Aria-only: the package has no copy. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
+| `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
 | `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
@@ -81,7 +82,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-numeric-tabular`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-surface-raised`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-color-text-subtle`, `--lufia-font-numeric-tabular`, `--lufia-font-size-sm`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-full`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-target-touch`.
 
 ## Content guidelines
 
@@ -91,6 +92,7 @@ the hint.
 ## Stories
 
 - `components-forms-datefield--default`
+- `components-forms-datefield--small`
 - `components-forms-datefield--all-types`
 - `components-forms-datefield--all-types-empty`
 - `components-forms-datefield--with-hint`

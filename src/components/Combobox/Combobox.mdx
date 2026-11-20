@@ -43,6 +43,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 `emptyLabel` and `loadingLabel` are required because a list without them fails silently. Each option has a `value`, a `label`
 and optionally a `description` and `disabled`. With `name`, the chosen **value** is submitted (not the text).
 
+Pass `size="sm"` for dense toolbars and filter bars: a 2 rem box with the small font size, level with `TextInput` and `Select` `size="sm"`; it grows to the touch target on touch screens and below 40 rem.
+
 ### Filtering
 
 By default the label must contain the typed text, ignoring case and diacritics ("sao" finds "São Paulo"), and options keep
