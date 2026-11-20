@@ -61,7 +61,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  min-block-size: 2.75rem;
+  min-block-size: var(--lufia-target-touch, 2.75rem);
   padding: 0;
   border: 0;
   background: none;
@@ -92,7 +92,7 @@
 /* The quiet search entry gives way first when the bar is crowded. */
 .button[data-variant="search"] {
   flex: 0 4 auto;
-  min-inline-size: 2.75rem;
+  min-inline-size: var(--lufia-target-touch, 2.75rem);
   padding-inline: 0.125rem;
   overflow: hidden;
 }
@@ -103,7 +103,7 @@
 
 .button[data-variant="primary"] {
   flex: 0 1 auto;
-  min-inline-size: 2.75rem;
+  min-inline-size: var(--lufia-target-touch, 2.75rem);
   max-inline-size: 62vw;
   margin-inline-end: var(--lufia-space-1);
   padding-inline: var(--lufia-space-3);
@@ -116,7 +116,7 @@
 .button[data-variant="icon"] {
   flex: none;
   justify-content: center;
-  inline-size: 2.75rem;
+  inline-size: var(--lufia-target-touch, 2.75rem);
   border-radius: var(--lufia-radius-full);
   background: color-mix(in srgb, var(--lufia-color-text-default) 9%, transparent);
   color: var(--lufia-color-text-default);
@@ -150,7 +150,7 @@
 /* Very narrow phones: the main action keeps its name for assistive technology and shows only its icon. */
 @media (width < 22.5rem) {
   .button[data-variant="primary"] {
-    inline-size: 2.75rem;
+    inline-size: var(--lufia-target-touch, 2.75rem);
     padding: 0;
     justify-content: center;
   }

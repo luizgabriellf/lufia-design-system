@@ -4,7 +4,7 @@
  * filling its row. The selectors out-weigh the shared field rules, whatever the stylesheet order.
  */
 .box[data-size="sm"] {
-  min-block-size: 2rem;
+  min-block-size: var(--lufia-control-height-sm);
 }
 
 .box[data-size="sm"] > input {

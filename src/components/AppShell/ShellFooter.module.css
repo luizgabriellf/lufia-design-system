@@ -17,7 +17,7 @@
   align-items: center;
   gap: 0.7rem;
   min-inline-size: 0;
-  min-block-size: 2.75rem;
+  min-block-size: var(--lufia-control-height);
   padding: 0.5rem 0.75rem;
   border: 0;
   border-radius: var(--lufia-radius-control);

@@ -151,8 +151,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  inline-size: 2.75rem;
-  block-size: 2.75rem;
+  inline-size: var(--lufia-target-touch, 2.75rem);
+  block-size: var(--lufia-target-touch, 2.75rem);
   padding: 0;
   border: 0;
   border-radius: var(--lufia-radius-control);

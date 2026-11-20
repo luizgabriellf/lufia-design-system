@@ -33,7 +33,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--lufia-space-3);
-  min-block-size: 2.75rem;
+  min-block-size: var(--lufia-control-height);
   margin: 0;
   padding-block: 0.625rem;
   padding-inline: 0;

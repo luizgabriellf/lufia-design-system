@@ -67,7 +67,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-font-size-sm`, `--lufia-space-2`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-control-height-sm`, `--lufia-font-size-sm`, `--lufia-space-2`, `--lufia-target-touch`.
 
 ## Content guidelines
 

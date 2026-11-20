@@ -134,7 +134,7 @@
 
 @media (pointer: coarse) {
   .tab {
-    min-block-size: max(var(--lufia-tabs-tab-min-block-size, 2.5rem), 2.75rem);
+    min-block-size: max(var(--lufia-tabs-tab-min-block-size, 2.5rem), var(--lufia-target-touch, 2.75rem));
   }
 }
 
