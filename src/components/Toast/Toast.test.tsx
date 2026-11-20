@@ -345,6 +345,31 @@ describe("swiping a toast away", () => {
     expect(gone()).toBe(true);
   });
 
+  it("does not treat a quick pull back toward rest as a flick", () => {
+    const toast = swipeSetup();
+    down(toast);
+    advance(10);
+    move(toast, 170, 100);
+    advance(10);
+    move(toast, 135, 100);
+    up(toast, 135);
+    expect(toast).not.toHaveAttribute("data-swipe");
+    expect(gone()).toBe(false);
+  });
+
+  it("does not treat a held finger as a flick", () => {
+    const toast = swipeSetup();
+    down(toast);
+    advance(10);
+    move(toast, 110, 100);
+    advance(10);
+    move(toast, 140, 100);
+    advance(400);
+    up(toast, 140);
+    expect(toast).not.toHaveAttribute("data-swipe");
+    expect(gone()).toBe(false);
+  });
+
   it("returns to rest after a short, slow drag", () => {
     const toast = swipeSetup();
     down(toast);

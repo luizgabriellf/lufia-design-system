@@ -100,6 +100,8 @@ const SWIPE_MIN_OPACITY = 0.3;
 /** A quick flick (px per ms) dismisses from a shorter distance. */
 const SWIPE_FLICK_VELOCITY = 0.5;
 const SWIPE_FLICK_MIN_PX = 24;
+/** A release this long after the last move is a held finger, not a flick. */
+const SWIPE_FLICK_STALE_MS = 100;
 const noSubscription = () => () => {};
 let counter = 0;
 
@@ -489,7 +491,14 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
     if (!current || event.pointerId !== current.id) return;
     const dx = event.clientX - current.startX;
     const far = Math.abs(dx) >= current.width * SWIPE_DISMISS_RATIO;
-    const flick = Math.abs(current.velocity) >= SWIPE_FLICK_VELOCITY && Math.abs(dx) >= SWIPE_FLICK_MIN_PX;
+    // A flick counts only while the finger is still moving, and only in the direction the toast already travelled:
+    // a finger that paused, or that was pulling the toast back, is not asking to dismiss it.
+    const moving = performance.now() - current.lastTime <= SWIPE_FLICK_STALE_MS;
+    const flick =
+      moving &&
+      Math.sign(current.velocity) === Math.sign(dx) &&
+      Math.abs(current.velocity) >= SWIPE_FLICK_VELOCITY &&
+      Math.abs(dx) >= SWIPE_FLICK_MIN_PX;
     endSwipe(event.currentTarget, dx, far || flick);
   };
 
