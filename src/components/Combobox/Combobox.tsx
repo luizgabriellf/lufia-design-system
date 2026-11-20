@@ -146,8 +146,8 @@ const defaultFilter = (option: ComboboxOption, query: string) =>
 const FLIP_BELOW = 260;
 /** The list's own `max-block-size`, in rem. Rooms above this need no clamp. */
 const LIST_MAX_REM = 15;
-/** Under this much room (in rem), flipping stops helping and the list is only clamped. */
-const LIST_MIN_REM = 6;
+/** The least a clamped list is ever given, in rem: one option row (the control height). Below it the room is too small to use. */
+const LIST_FLOOR_REM = 2.75;
 /** Room kept for the popup's border and the gap to the box. */
 const POPUP_CHROME = 12;
 
@@ -169,6 +169,13 @@ function measure(element: HTMLElement): Placement {
   const rect = element.getBoundingClientRect();
   let top = 0;
   let bottom = window.innerHeight;
+  // An on-screen keyboard shrinks the visual viewport without resizing the window; unless the page is pinch-zoomed, that
+  // rectangle is what the person can see.
+  const view = window.visualViewport;
+  if (view && Math.abs(view.scale - 1) < 0.01) {
+    top = Math.max(top, view.offsetTop);
+    bottom = Math.min(bottom, view.offsetTop + view.height);
+  }
   for (const clipper of clippingAncestors(element)) {
     const box = clipper.getBoundingClientRect();
     top = Math.max(top, box.top);
@@ -179,7 +186,9 @@ function measure(element: HTMLElement): Placement {
   const side = below < FLIP_BELOW && above > below ? "top" : "bottom";
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   const room = (side === "top" ? above : below) - POPUP_CHROME;
-  return { side, maxHeight: room < LIST_MAX_REM * rem ? Math.max(LIST_MIN_REM * rem, room) : undefined };
+  // Never taller than the room there is, so the list is not clipped by the container or hidden under a sticky header; only
+  // one option row is guaranteed. `side` already is the larger side whenever the room below is short.
+  return { side, maxHeight: room < LIST_MAX_REM * rem ? Math.max(LIST_FLOOR_REM * rem, room) : undefined };
 }
 
 /**
@@ -347,10 +356,16 @@ export function Combobox({
     // Capture phase: scroll does not bubble, and any container above the field may be the one that moves it.
     document.addEventListener("scroll", schedule, { capture: true, passive: true });
     window.addEventListener("resize", schedule);
+    // The on-screen keyboard resizes the visual viewport, not the window.
+    const view = window.visualViewport;
+    view?.addEventListener("resize", schedule);
+    view?.addEventListener("scroll", schedule);
     return () => {
       if (frame !== 0) cancelAnimationFrame(frame);
       document.removeEventListener("scroll", schedule, { capture: true });
       window.removeEventListener("resize", schedule);
+      view?.removeEventListener("resize", schedule);
+      view?.removeEventListener("scroll", schedule);
     };
   }, [open]);
 
