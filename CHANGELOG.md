@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.69.0
+
+### Minor Changes
+
+- [#240](https://github.com/luizgabriellf/lufia-design-system/pull/240) [`ef166d8`](https://github.com/luizgabriellf/lufia-design-system/commit/ef166d8883ac4270a171904bd1bcc744b3284c0e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Stagger` renders as a description list with `as="dl"` and takes a `ref` to its root element.
+
 ## 0.68.0
 
 ### Minor Changes
