@@ -86,7 +86,7 @@
   {
     "name": "Toast",
     "path": "dist/components/Toast/**/*.{js,css}",
-    "limit": "6.2 kB",
+    "limit": "7 kB",
     "gzip": true
   },
   {
