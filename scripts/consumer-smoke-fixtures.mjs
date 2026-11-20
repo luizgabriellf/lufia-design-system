@@ -75,6 +75,8 @@ export const FIXTURES = {
   OneWayDisclosure: { trigger: `"Fill in now"` },
   FilterLinks: { label: `"Filter"`, items: `[{ key: "a", label: "A", href: "/" }]` },
   Tabs: { items: `[{ key: "a", label: "A", panel: "Panel" }]` },
+  // `value` is one arm of a union (the other is `indeterminate`), so the manifest does not mark it required.
+  ProgressBar: { value: `1` },
   PeerNav: { items: `[{ key: "a", label: "A", href: "/" }]` },
   QueueSummary: {
     items: `[{ id: "a", label: "Open", count: 1 }]`,
