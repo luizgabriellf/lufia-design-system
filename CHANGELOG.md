@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.67.1
+
+### Patch Changes
+
+- [#236](https://github.com/luizgabriellf/lufia-design-system/pull/236) [`9e4498b`](https://github.com/luizgabriellf/lufia-design-system/commit/9e4498b1270ca5aa77d1c2b6c38c0a431c297084) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `ListTransition`: form controls inside a leaving item are disabled, so they no longer take part in form submission or validation during the exit, and a leaving item under a non-rendered ancestor unmounts at once. The item content wrapper is now a `fieldset` with `role="none"` instead of a `div`: it is listed in `form.elements`, and selectors that targeted the inner `div` need updating.
+
 ## 0.67.0
 
 ### Minor Changes
