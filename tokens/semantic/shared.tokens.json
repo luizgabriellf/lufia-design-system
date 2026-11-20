@@ -227,9 +227,18 @@
     },
     "scale": {
       "$type": "number",
-      "$description": "Press feedback. Resets to 1 under prefers-reduced-motion.",
+      "$description": "Press feedback, and the scale a surface arrives from or leaves to. Resets to 1 under prefers-reduced-motion.",
       "press": { "$value": "{core.scale.97}", "$description": "Buttons and small controls while pressed" },
-      "press-subtle": { "$value": "{core.scale.985}", "$description": "Rows, cards and tabs while pressed" }
+      "press-subtle": { "$value": "{core.scale.985}", "$description": "Rows, cards and tabs while pressed" },
+      "enter": { "$value": "{core.scale.96}", "$description": "Anchored panels (menus, popovers) arriving" },
+      "enter-subtle": {
+        "$value": "{core.scale.98}",
+        "$description": "Large surfaces (dialogs, palettes) arriving"
+      },
+      "exit": {
+        "$value": "{core.scale.98}",
+        "$description": "Any surface leaving: a smaller move than its arrival"
+      }
     }
   }
 }

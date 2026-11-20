@@ -370,14 +370,14 @@
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: translateY(var(--lufia-motion-distance-rise)) scale(0.98);
+    transform: translateY(var(--lufia-motion-distance-rise)) scale(var(--lufia-motion-scale-enter-subtle));
   }
 }
 
 @keyframes modal-out {
   to {
     opacity: 0;
-    transform: translateY(var(--lufia-motion-distance-rise)) scale(0.98);
+    transform: translateY(var(--lufia-motion-distance-rise)) scale(var(--lufia-motion-scale-enter-subtle));
   }
 }
 

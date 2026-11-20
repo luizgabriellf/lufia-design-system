@@ -1079,7 +1079,9 @@ describe("Modal", () => {
       );
       const keyframes = (name: string) =>
         css.match(new RegExp(`@keyframes ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? "";
-      expect(keyframes("modal-in")).toContain("translateY(var(--lufia-motion-distance-rise)) scale(0.98)");
+      expect(keyframes("modal-in")).toContain(
+        "translateY(var(--lufia-motion-distance-rise)) scale(var(--lufia-motion-scale-enter-subtle))",
+      );
       expect(keyframes("modal-out")).toBe(keyframes("modal-in").replace("from", "to"));
     });
   });
