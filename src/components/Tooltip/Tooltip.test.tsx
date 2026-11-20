@@ -134,6 +134,18 @@ describe("Tooltip", () => {
     expect(button).toHaveAccessibleName("Search");
   });
 
+  it("with relation label, keeps the name while disabled", async () => {
+    const user = userEvent.setup();
+    render(
+      <Tooltip content="Search" relation="label" disabled>
+        {(trigger) => <button type="button" {...trigger} />}
+      </Tooltip>,
+    );
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Search" })).toHaveFocus();
+    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+  });
+
   describe("placement", () => {
     /** jsdom has no layout: the trigger sits at `anchor`, the tooltip is 80 by 24, the viewport is 1024 by 768. */
     const withBoxes = (anchor: DOMRect) => {

@@ -46,7 +46,7 @@ export type TooltipTrigger = TooltipHandlers & {
 
 export type UseTooltipOptions = {
   content: ReactNode;
-  /** When false the tooltip never shows and nothing is rendered. */
+  /** When false the tooltip never shows; with `labelledby` the hidden name stays, so the control keeps its name. */
   enabled?: boolean;
   /** The side of the trigger it opens on; it flips to the opposite side when it does not fit. */
   side?: Side;
@@ -151,13 +151,12 @@ export function useTooltip({
   };
   const trigger: TooltipTrigger = { ...handlers };
   if (enabled && relation === "describedby" && host) trigger["aria-describedby"] = id;
-  if (enabled && relation === "labelledby") trigger["aria-labelledby"] = `${id}-label`;
+  // The name outlives `enabled`: turning the tooltip off must not leave the control nameless.
+  if (relation === "labelledby") trigger["aria-labelledby"] = `${id}-label`;
 
   const tooltip: ReactNode = (
     <>
-      {enabled && relation === "labelledby" ? (
-        <VisuallyHidden id={`${id}-label`}>{content}</VisuallyHidden>
-      ) : null}
+      {relation === "labelledby" ? <VisuallyHidden id={`${id}-label`}>{content}</VisuallyHidden> : null}
       {host
         ? createPortal(
             <span

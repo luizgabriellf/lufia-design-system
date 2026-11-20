@@ -28,7 +28,10 @@ export type TooltipProps = {
   relation?: "description" | "label";
   /** Milliseconds a hovering pointer waits before the tooltip shows. Keyboard focus shows it at once. Default 250. */
   delay?: number;
-  /** Turns the tooltip off without changing the tree, for example while a menu the control opens is showing. */
+  /**
+   * Turns the tooltip off without changing the tree, for example while a menu the control opens is showing. With
+   * `relation="label"` the control keeps its name.
+   */
   disabled?: boolean;
 };
 

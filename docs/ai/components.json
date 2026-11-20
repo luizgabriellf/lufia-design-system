@@ -21819,7 +21819,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": "Turns the tooltip off without changing the tree, for example while a menu the control opens is showing."
+              "description": "Turns the tooltip off without changing the tree, for example while a menu the control opens is showing. With `relation=\"label\"` the control keeps its name."
             }
           ],
           "nativeProps": false
