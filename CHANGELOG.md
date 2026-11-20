@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.66.0
+
+### Minor Changes
+
+- [#233](https://github.com/luizgabriellf/lufia-design-system/pull/233) [`84d0086`](https://github.com/luizgabriellf/lufia-design-system/commit/84d00860c9796d31a029398426199bc19822e0a6) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `ListTransition` (beta), a motion primitive that animates the items of a list as they are added and removed, keeping `ul > li` valid and honouring reduced motion.
+
+- [#231](https://github.com/luizgabriellf/lufia-design-system/pull/231) [`312e0db`](https://github.com/luizgabriellf/lufia-design-system/commit/312e0dbb431333a6f6a00fc10dda3fee547e5d9b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `Tooltip` (hover and focus, flips to fit, `aria-describedby` or `aria-labelledby`) and `MenuToggleIcon` (three bars that morph into a cross). The `AppShell` rail tooltip now runs on the same behaviour.
+
 ## 0.65.0
 
 ### Minor Changes
