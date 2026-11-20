@@ -69,6 +69,21 @@ export const AsList: Story = {
     </Stagger>
   ),
 };
+/** `as="ul"` (or `"ol"`) renders a real list: the `li` children are its direct children, so list semantics are intact. */
+export const SemanticList: Story = {
+  render: (args) => (
+    <Stagger
+      {...args}
+      as="ul"
+      aria-label="Tasks"
+      style={{ display: "grid", gap: "0.5rem", margin: 0, padding: 0, listStyle: "none" }}
+    >
+      <li style={tile}>First</li>
+      <li style={tile}>Second</li>
+      <li style={tile}>Third</li>
+    </Stagger>
+  ),
+};
 export const AllThemes: Story = {
   render: (args) => (
     <ThemeMatrix>

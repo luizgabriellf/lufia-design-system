@@ -39,6 +39,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 <Canvas of={Stories.LongList} />
 <Canvas of={Stories.LowLimit} />
 <Canvas of={Stories.AsList} />
+<Canvas of={Stories.SemanticList} />
 
 ### All themes
 
@@ -63,6 +64,7 @@ Strings in the snippet are plain literals. In your app they arrive through props
 
 ### Notes
 
+- For a real list, pass `as="ul"` or `as="ol"` and `li` children: they stay the direct children of the list, so the list and list item roles are intact. The default is a `div`.
 - Children must be React elements that accept `style` (every DOM element does). Text nodes are left alone.
 - It runs when the group mounts. Re-renders never replay it. To replay, change the `key`.
 - Use it for the first paint of a group, not for every data refresh.

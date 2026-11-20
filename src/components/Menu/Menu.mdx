@@ -56,7 +56,9 @@ A link item normally goes through the `LufiaProvider` link adapter, so a router 
 Set `native` on the item to render a plain `<a>` instead: the browser follows it, nothing is prefetched, and `download`,
 `target` and `rel` are passed to the anchor as they are. Use it for a file download or a server route (an export, a
 generated PDF) that must be requested for real. `download` is `true` or the suggested file name; `target`, `rel` and
-`download` apply only with `native`. Keyboard navigation, type-ahead, `aria-current` and closing on activation are the same as for
+`download` apply only with `native`. With `target="_blank"` and no `rel`, `rel="noopener noreferrer"` is added. A disabled native item is
+rendered without `href` and with `aria-disabled`. There is no router: for client-side routing leave `native` off and use the
+link adapter, or run the navigation from `onSelect`. Keyboard navigation, type-ahead, `aria-current` and closing on activation are the same as for
 every other item.
 
 <Canvas of={Stories.NativeLinkItems} />

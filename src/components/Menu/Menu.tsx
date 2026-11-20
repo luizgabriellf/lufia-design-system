@@ -46,7 +46,7 @@ export type MenuItem = {
   download?: boolean | string;
   /** With `native`: where to open the target (`_blank` for a new tab), passed to the anchor as is. Ignored otherwise. */
   target?: string;
-  /** With `native`: the anchor's `rel` (for example `noopener noreferrer` with `target="_blank"`), passed as is. Ignored otherwise. */
+  /** With `native`: the anchor's `rel`, passed as is. Without it, `target="_blank"` gets `noopener noreferrer`. Ignored otherwise. */
   rel?: string;
   /** Runs when the item is activated, after the menu has closed (`closeOnSelect`) and focus is back on the trigger. */
   onSelect?: () => void;
@@ -258,10 +258,11 @@ function MenuList({ ref, label, role, items, onActivate, onTab, onKeyDown, class
         {item.href !== undefined && item.native ? (
           <a
             {...props}
-            href={item.href}
+            // A disabled link has no destination, so nothing can follow it (middle click, context menu, drag).
+            href={item.disabled ? undefined : item.href}
             download={item.download}
             target={item.target}
-            rel={item.rel}
+            rel={item.rel ?? (item.target === "_blank" ? "noopener noreferrer" : undefined)}
             onClick={(event) => {
               if (item.disabled) return event.preventDefault();
               onActivate(item);
