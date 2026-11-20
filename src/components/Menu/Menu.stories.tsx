@@ -92,14 +92,23 @@ const downloads: MenuEntry[] = [
     href: "https://example.com/report.pdf",
     native: true,
     target: "_blank",
-    rel: "noopener noreferrer",
     icon: <FileTextIcon />,
+  },
+  {
+    key: "archive",
+    label: "Download the archive",
+    href: "/files/archive.zip",
+    native: true,
+    download: true,
+    disabled: true,
+    icon: <DownloadIcon />,
   },
   { key: "copy", label: "Copy link", icon: <CopyIcon /> },
 ];
 
 /**
- * `native` renders a plain `<a>` with `download`, `target` and `rel` passed through: never prefetched and never a client
+ * `native` renders a plain `<a>` with `download`, `target` and `rel` passed through (`target="_blank"` adds
+ * `rel="noopener noreferrer"` when none is given; a disabled item has no `href`): never prefetched and never a client
  * transition, for file downloads and server routes. It behaves like any other item and the list closes on activation.
  */
 export const NativeLinkItems: Story = {

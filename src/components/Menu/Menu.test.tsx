@@ -437,6 +437,30 @@ describe("Menu", () => {
       expect(screen.getByRole("menu")).toBeInTheDocument();
     });
 
+    it("adds rel noopener noreferrer for target _blank when no rel is given, and keeps an explicit rel", async () => {
+      const { user, trigger } = setup({
+        items: [
+          { key: "a", label: "Alpha", href: "https://example.com/a", native: true, target: "_blank" },
+          { key: "b", label: "Beta", href: "/b", native: true, target: "_blank", rel: "noreferrer" },
+          { key: "c", label: "Gamma", href: "/c", native: true, target: "_self" },
+        ],
+      });
+      await user.click(trigger);
+      expect(screen.getByRole("menuitem", { name: "Alpha" })).toHaveAttribute("rel", "noopener noreferrer");
+      expect(screen.getByRole("menuitem", { name: "Beta" })).toHaveAttribute("rel", "noreferrer");
+      expect(screen.getByRole("menuitem", { name: "Gamma" })).not.toHaveAttribute("rel");
+    });
+
+    it("renders a disabled native item without href", async () => {
+      const { user, trigger } = setup({
+        items: [{ key: "a", label: "Alpha", href: "/a", native: true, disabled: true }],
+      });
+      await user.click(trigger);
+      const alpha = screen.getByRole("menuitem", { name: "Alpha" });
+      expect(alpha).not.toHaveAttribute("href");
+      expect(alpha).toHaveAttribute("aria-disabled", "true");
+    });
+
     it("works in the inline presentation and has no axe violations", async () => {
       withLayout();
       const onSelect = vi.fn();
