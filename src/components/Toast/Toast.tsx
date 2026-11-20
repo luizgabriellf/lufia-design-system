@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -90,6 +91,15 @@ const ToastContext = createContext<ToastApi | null>(null);
 /** After a pause the toast stays at least this long, so it cannot vanish the instant the pointer leaves. */
 const MIN_RESUME_MS = 1500;
 const DEFAULT_DURATION_MS = 5000;
+/** Travel before the gesture picks its axis: past it, a mostly vertical move is the page scrolling and is left alone. */
+const SWIPE_LOCK_PX = 8;
+/** Share of the toast's width that dismisses it on release. */
+const SWIPE_DISMISS_RATIO = 0.4;
+/** The opacity a toast has reached at the dismiss distance. */
+const SWIPE_MIN_OPACITY = 0.3;
+/** A quick flick (px per ms) dismisses from a shorter distance. */
+const SWIPE_FLICK_VELOCITY = 0.5;
+const SWIPE_FLICK_MIN_PX = 24;
 const noSubscription = () => () => {};
 let counter = 0;
 
@@ -394,9 +404,98 @@ type ToastItemProps = {
   onRelease: (id: string, source: string) => void;
 };
 
+type Swipe = {
+  id: number;
+  startX: number;
+  startY: number;
+  lastX: number;
+  lastTime: number;
+  velocity: number;
+  width: number;
+  /** Set once the horizontal axis won: from then on the toast follows the finger and owns the pointer. */
+  locked: boolean;
+};
+
 function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease }: ToastItemProps) {
   const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLLIElement>(null);
+  const swipe = useRef<Swipe | null>(null);
+
+  /** Writes the drag offset and the matching opacity; the CSS turns them into `transform` and `opacity`. */
+  const follow = (element: HTMLElement, dx: number, width: number) => {
+    const progress = Math.min(1, Math.abs(dx) / Math.max(1, width * SWIPE_DISMISS_RATIO));
+    element.style.setProperty("--toast-drag-x", `${dx}px`);
+    element.style.setProperty("--toast-drag-opacity", String(1 - (1 - SWIPE_MIN_OPACITY) * progress));
+  };
+
+  const endSwipe = (element: HTMLElement, dx: number, dismiss: boolean) => {
+    const current = swipe.current;
+    swipe.current = null;
+    if (!current?.locked) return;
+    delete element.dataset.dragging;
+    onRelease(item.id, "drag");
+    if (!dismiss) {
+      follow(element, 0, current.width);
+      return;
+    }
+    // Leave the way it was going: "start" is toward the inline-start edge, whatever the writing direction.
+    const rtl = getComputedStyle(element).direction === "rtl";
+    element.dataset.swipe = dx < 0 !== rtl ? "start" : "end";
+    onDismiss(item.id);
+  };
+
+  // Touch and pen only (a mouse has the close button and needs to select text), the primary pointer only. Pointer capture
+  // and `preventDefault` wait until the horizontal axis is locked, so a tap on the close button or an action is a plain click.
+  const onSwipeDown = (event: ReactPointerEvent<HTMLLIElement>) => {
+    if (event.pointerType === "mouse" || !event.isPrimary || swipe.current || item.leaving) return;
+    swipe.current = {
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastX: event.clientX,
+      lastTime: performance.now(),
+      velocity: 0,
+      width: event.currentTarget.getBoundingClientRect().width,
+      locked: false,
+    };
+  };
+
+  const onSwipeMove = (event: ReactPointerEvent<HTMLLIElement>) => {
+    const current = swipe.current;
+    if (!current || event.pointerId !== current.id) return;
+    const element = event.currentTarget;
+    const dx = event.clientX - current.startX;
+    if (!current.locked) {
+      const dy = event.clientY - current.startY;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_LOCK_PX) return;
+      if (Math.abs(dy) > Math.abs(dx)) {
+        swipe.current = null; // the page is scrolling
+        return;
+      }
+      current.locked = true;
+      element.setPointerCapture?.(event.pointerId);
+      element.dataset.dragging = "true";
+      onHold(item.id, "drag");
+    }
+    const elapsed = performance.now() - current.lastTime;
+    if (elapsed > 0) current.velocity = (event.clientX - current.lastX) / elapsed;
+    current.lastX = event.clientX;
+    current.lastTime = performance.now();
+    follow(element, dx, current.width);
+  };
+
+  const onSwipeUp = (event: ReactPointerEvent<HTMLLIElement>) => {
+    const current = swipe.current;
+    if (!current || event.pointerId !== current.id) return;
+    const dx = event.clientX - current.startX;
+    const far = Math.abs(dx) >= current.width * SWIPE_DISMISS_RATIO;
+    const flick = Math.abs(current.velocity) >= SWIPE_FLICK_VELOCITY && Math.abs(dx) >= SWIPE_FLICK_MIN_PX;
+    endSwipe(event.currentTarget, dx, far || flick);
+  };
+
+  const onSwipeCancel = (event: ReactPointerEvent<HTMLLIElement>) => {
+    if (swipe.current && event.pointerId === swipe.current.id) endSwipe(event.currentTarget, 0, false);
+  };
 
   // Remove after the exit animation. Without one (reduced motion, or a stylesheet that defines none) remove at once.
   useEffect(() => {
@@ -423,6 +522,10 @@ function ToastItem({ item, dismissLabel, onDismiss, onExited, onHold, onRelease 
       onAnimationEnd={(event) => {
         if (item.leaving && event.target === event.currentTarget) onExited(item.uid);
       }}
+      onPointerDown={onSwipeDown}
+      onPointerMove={onSwipeMove}
+      onPointerUp={onSwipeUp}
+      onPointerCancel={onSwipeCancel}
       onPointerEnter={() => onHold(item.id, "pointer")}
       onPointerLeave={() => onRelease(item.id, "pointer")}
       onFocus={() => onHold(item.id, "focus")}

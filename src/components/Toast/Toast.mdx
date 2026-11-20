@@ -108,6 +108,10 @@ the current value, so nothing changes until you set it.
   focused toast dismisses it. While a toast has focus its timer is paused.
 - The notification region stays live while a [Modal](?path=/docs/components-overlays-modal--docs) is open (the modal marks the rest
   of the page `inert`, except `data-lufia-inert-exempt`), though Tab cycles only inside the modal while it is open.
+- Swipe: on touch screens a toast can be swiped sideways to dismiss; the close button remains the accessible path. It
+  follows the finger, leaves in the direction of the swipe past 40% of its width or on a quick flick, and returns
+  otherwise. Mouse input is not affected. Vertical page scrolling is untouched (`touch-action: pan-y`), and the timer is
+  held while the toast is dragged.
 - Targets: the dismiss button and action are at least 28 px tall (WCAG 2.5.8 asks for 24 px).
 - Motion: enter 240 ms and exit 160 ms, `transform` and `opacity` only, direction follows the placement. Under
   `prefers-reduced-motion` toasts appear and disappear at once. The success check (`SuccessCheck`) stops drawing.

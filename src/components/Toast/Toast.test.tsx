@@ -272,6 +272,163 @@ describe("ToastProvider", () => {
   });
 });
 
+describe("swiping a toast away", () => {
+  const touch = { pointerId: 1, pointerType: "touch", isPrimary: true, button: 0 };
+
+  function swipeSetup() {
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      width: 300,
+      height: 48,
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      right: 300,
+      bottom: 48,
+      toJSON: () => ({}),
+    });
+    setup();
+    act(() => void api().success("Saved"));
+    return list().getByText("Saved").closest("li")!;
+  }
+  const move = (toast: Element, x: number, y = 0, init: object = touch) =>
+    fireEvent.pointerMove(toast, { ...init, clientX: x, clientY: y });
+  const down = (toast: Element, init: object = touch) =>
+    fireEvent.pointerDown(toast, { ...init, clientX: 100, clientY: 100 });
+  const up = (toast: Element, x: number, y = 100, init: object = touch) =>
+    fireEvent.pointerUp(toast, { ...init, clientX: x, clientY: y });
+  const gone = () => {
+    advance(50);
+    return list().queryByText("Saved") === null;
+  };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("follows the finger and fades while it is dragged", () => {
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 160, 100);
+    expect(toast).toHaveAttribute("data-dragging", "true");
+    expect(toast.style.getPropertyValue("--toast-drag-x")).toBe("60px");
+    expect(Number(toast.style.getPropertyValue("--toast-drag-opacity"))).toBeCloseTo(0.65);
+  });
+
+  it("dismisses past 40% of the width and leaves in the direction of the swipe", () => {
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 20, 100);
+    advance(500);
+    up(toast, -20);
+    expect(toast).toHaveAttribute("data-swipe", "start");
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(gone()).toBe(true);
+  });
+
+  it("leaves toward the end when swiped that way", () => {
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 240, 100);
+    advance(500);
+    up(toast, 240);
+    expect(toast).toHaveAttribute("data-swipe", "end");
+    expect(gone()).toBe(true);
+  });
+
+  it("dismisses on a fast short flick", () => {
+    const toast = swipeSetup();
+    down(toast);
+    advance(10);
+    move(toast, 110, 100);
+    advance(10);
+    move(toast, 140, 100);
+    up(toast, 140);
+    expect(gone()).toBe(true);
+  });
+
+  it("returns to rest after a short, slow drag", () => {
+    const toast = swipeSetup();
+    down(toast);
+    advance(300);
+    move(toast, 130, 100);
+    advance(300);
+    move(toast, 140, 100);
+    advance(300);
+    up(toast, 140);
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(toast).not.toHaveAttribute("data-swipe");
+    expect(toast.style.getPropertyValue("--toast-drag-x")).toBe("0px");
+    expect(gone()).toBe(false);
+  });
+
+  it("ignores a mostly vertical drag", () => {
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 105, 160);
+    move(toast, 300, 170);
+    up(toast, 300, 170);
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(toast.style.getPropertyValue("--toast-drag-x")).toBe("");
+    expect(gone()).toBe(false);
+  });
+
+  it("ignores a mouse drag", () => {
+    const toast = swipeSetup();
+    const mouse = { ...touch, pointerType: "mouse" };
+    down(toast, mouse);
+    move(toast, 300, 100, mouse);
+    up(toast, 300, 100, mouse);
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(gone()).toBe(false);
+  });
+
+  it("returns to rest when the browser cancels the gesture", () => {
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 250, 100);
+    fireEvent.pointerCancel(toast, touch);
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(toast.style.getPropertyValue("--toast-drag-x")).toBe("0px");
+    expect(gone()).toBe(false);
+  });
+
+  it("holds the timer during the drag and gives the person time to read after a return", () => {
+    const toast = swipeSetup();
+    advance(3000);
+    down(toast);
+    move(toast, 140, 100);
+    advanceAndSettle(30_000);
+    expect(list().getByText("Saved")).toBeInTheDocument();
+    up(toast, 100);
+    advance(1900); // the 2 s that were left when the drag started
+    expect(list().getByText("Saved")).toBeInTheDocument();
+    advanceAndSettle(200);
+    expect(list().queryByText("Saved")).not.toBeInTheDocument();
+  });
+
+  it("keeps a tap on the close button a single click, with no drag", () => {
+    const toast = swipeSetup();
+    const close = within(toast).getByRole("button", { name: "Dismiss" });
+    down(close);
+    move(close, 103, 102);
+    up(close, 103, 102);
+    expect(toast).not.toHaveAttribute("data-dragging");
+    expect(list().getByText("Saved")).toBeInTheDocument();
+    fireEvent.click(close);
+    expect(gone()).toBe(true);
+  });
+
+  it("still dismisses on a swipe under reduced motion, and removes it at once", () => {
+    mockReducedMotion(true);
+    const toast = swipeSetup();
+    down(toast);
+    move(toast, 260, 100);
+    advance(500);
+    up(toast, 260);
+    advance(20);
+    expect(list().queryByText("Saved")).not.toBeInTheDocument();
+  });
+});
+
 describe("useToast", () => {
   it("throws outside a provider, and useOptionalToast returns null", () => {
     const quiet = vi.spyOn(console, "error").mockImplementation(() => {});
