@@ -192,4 +192,65 @@ describe("ListTransition", () => {
     rerender(<List items={[task("a")]} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  describe("forms", () => {
+    function Form({ items }: { items: Task[] }) {
+      return (
+        <form aria-label="Form">
+          <ListTransition items={items} getKey={(t) => t.id} aria-label="Tasks">
+            {(t) => <input aria-label={t.label} name={`task-${t.id}`} defaultValue={t.id} required />}
+          </ListTransition>
+        </form>
+      );
+    }
+
+    it("leaves a leaving item's controls out of FormData while it is still mounted", () => {
+      stubExitAnimation();
+      const { rerender } = render(<Form items={[task("a"), task("b")]} />);
+      const form = screen.getByRole("form") as HTMLFormElement;
+      expect([...new FormData(form).keys()]).toEqual(["task-a", "task-b"]);
+      rerender(<Form items={[task("a")]} />);
+      expect(screen.getByLabelText("Task b", { selector: "input" })).toBeInTheDocument();
+      expect([...new FormData(form).keys()]).toEqual(["task-a"]);
+    });
+
+    it("does not let an empty required control in a leaving item fail validation", () => {
+      stubExitAnimation();
+      const { rerender } = render(<Form items={[task("a"), task("b")]} />);
+      const form = screen.getByRole("form") as HTMLFormElement;
+      const b = screen.getByLabelText("Task b") as HTMLInputElement;
+      b.value = "";
+      expect(form.checkValidity()).toBe(false);
+      rerender(<Form items={[task("a")]} />);
+      expect(b).toBeDisabled();
+      expect(form.checkValidity()).toBe(true);
+    });
+
+    it("re-enables the controls when the key returns during the exit", () => {
+      stubExitAnimation();
+      const { rerender } = render(<Form items={[task("a"), task("b")]} />);
+      const b = screen.getByLabelText("Task b");
+      rerender(<Form items={[task("a")]} />);
+      rerender(<Form items={[task("a"), task("b")]} />);
+      expect(screen.getByLabelText("Task b")).toBe(b);
+      expect(b).toBeEnabled();
+    });
+  });
+
+  it("unmounts a leaving item without waiting for its exit when it is not rendered", async () => {
+    stubExitAnimation();
+    const original = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "checkVisibility");
+    Object.defineProperty(HTMLElement.prototype, "checkVisibility", {
+      value: () => false,
+      configurable: true,
+    });
+    try {
+      const { rerender } = render(<List items={[task("a"), task("b")]} />);
+      rerender(<List items={[task("a")]} />);
+      await waitFor(() => expect(screen.queryByText("Task b")).not.toBeInTheDocument(), { timeout: 100 });
+    } finally {
+      if (original) Object.defineProperty(HTMLElement.prototype, "checkVisibility", original);
+      else delete (HTMLElement.prototype as Partial<HTMLElement>).checkVisibility;
+    }
+  });
 });

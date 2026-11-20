@@ -22,8 +22,17 @@ function toMs(value: string | undefined): number {
  * stylesheet defines no animation, it unmounts at once. If `animationend` never arrives (the element is under a
  * `display: none` ancestor, or the animation is cancelled) a timeout finishes the exit. Same approach as `Reveal`, for
  * overlays that need their own structure.
+ *
+ * With `skipWhenNotRendered`, an exit that nobody can see (the element has no layout boxes, for example under a `hidden`
+ * ancestor) unmounts on the next frame instead of waiting for the timeout. It is off by default because overlays may be measured
+ * before layout; it also does nothing where `checkVisibility` is missing (jsdom has no layout, so every element looks
+ * unrendered there).
  */
-export function usePresence(open: boolean, animated: RefObject<HTMLElement | null>) {
+export function usePresence(
+  open: boolean,
+  animated: RefObject<HTMLElement | null>,
+  { skipWhenNotRendered = false }: { skipWhenNotRendered?: boolean } = {},
+) {
   const reduced = usePrefersReducedMotion();
   const [phase, setPhase] = useState<Phase>(open ? "open" : "unmounted");
   // Derive the phase while rendering: React re-renders at once, with no extra effect pass.
@@ -32,6 +41,18 @@ export function usePresence(open: boolean, animated: RefObject<HTMLElement | nul
 
   useEffect(() => {
     if (phase !== "closed") return;
+    const element = animated.current;
+    if (
+      skipWhenNotRendered &&
+      element &&
+      element.isConnected &&
+      typeof element.checkVisibility === "function" &&
+      element.getClientRects().length === 0
+    ) {
+      // Next frame, like the no-animation path: no exit can be seen, so there is nothing to wait for.
+      const frame = requestAnimationFrame(() => setPhase("unmounted"));
+      return () => cancelAnimationFrame(frame);
+    }
     const style = animated.current ? getComputedStyle(animated.current) : null;
     if (style && style.animationName !== "none" && parseFloat(style.animationDuration) > 0) {
       const timeout = setTimeout(
@@ -42,7 +63,7 @@ export function usePresence(open: boolean, animated: RefObject<HTMLElement | nul
     }
     const frame = requestAnimationFrame(() => setPhase("unmounted"));
     return () => cancelAnimationFrame(frame);
-  }, [phase, animated]);
+  }, [phase, animated, skipWhenNotRendered]);
 
   return { phase, finish: () => setPhase((current) => (current === "closed" ? "unmounted" : current)) };
 }

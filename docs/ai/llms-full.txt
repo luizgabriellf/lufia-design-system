@@ -4803,7 +4803,7 @@ render do not animate.
 | `as` | `"div" \| "ol" \| "ul"` | no | `"ul"` | The list element. `ul` and `ol` render each item as an `li`; `div` renders each item as a `div`. Default `ul`. The item element is rendered by this component, so `ul > li` stays valid. |
 | `items` | `readonly T[]` | yes |  | The items, in display order. Items present on the first render do not animate. |
 | `getKey` | `(item: T) => string \| number` | yes |  | A stable, unique key of an item. A new key enters; a key that disappears leaves. Never use the index. |
-| `children` | `(item: T) => ReactNode` | yes |  | Renders the content of one item. Do not return an `li`: the component renders it, with the item's classes, `data-state` and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`. |
+| `children` | `(item: T) => ReactNode` | yes |  | Renders the content of one item. Do not return an `li`: the component renders it, with the item's classes, `data-state` and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`, and its form controls are disabled, so they drop out of form submission and constraint validation. |
 | `itemClassName` | `string` | no |  | Class name for every item element (the `li`). |
 | `ref` | `Ref<HTMLElement>` | no |  | Ref to the list element. |
 
@@ -4827,6 +4827,8 @@ import { ListTransition } from "@lufia/design-system/motion";
 
 - `ul > li` (or `ol > li`) stays valid: the item is the `li`, with the animated content inside it, so no element sits between the list and its items.
 - A leaving item stays in the DOM until its exit ends, but it is `inert` and `aria-hidden`: it cannot be focused or read.
+- Form controls in a leaving item are disabled (the content sits in a `fieldset` with `role="none"`, `disabled` while the item leaves), so they are left out of form submission and constraint validation. The item stays in the DOM until its exit ends: in tests, query `:enabled` controls or wait for `[data-state="closed"]` to be gone.
+- A leaving item whose list is not rendered (under a `hidden` ancestor) unmounts at once, because no exit can be seen.
 - Focus: an item that leaves cannot keep focus. When the list element has a `tabIndex` (for example `-1`), focus moves to the list. Without one, the browser falls back to the document and placing focus (the next item, or the control that adds items) is the consumer's job, in the handler that removes the item.
 - Items render as `display: grid`, so the native bullet or number is not drawn; style markers yourself.
 - Items and exits are instant under `prefers-reduced-motion`: a removed item unmounts at once.

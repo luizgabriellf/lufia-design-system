@@ -26,7 +26,8 @@ export type ListTransitionProps<T> = Omit<HTMLAttributes<HTMLElement>, "children
   getKey: (item: T) => string | number;
   /**
    * Renders the content of one item. Do not return an `li`: the component renders it, with the item's classes, `data-state`
-   * and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`.
+   * and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`, and its
+   * form controls are disabled, so they drop out of form submission and constraint validation.
    */
   children: (item: T) => ReactNode;
   /** Class name for every item element (the `li`). */
@@ -91,7 +92,7 @@ type RowProps<T> = {
 
 function Row<T>({ entry, as: Tag, className, onGone, children }: RowProps<T>) {
   const ref = useRef<HTMLElement>(null);
-  const { phase, finish } = usePresence(entry.present, ref);
+  const { phase, finish } = usePresence(entry.present, ref, { skipWhenNotRendered: true });
 
   // The item is inert from the commit on, which makes the browser drop focus inside it at the next rendering step. Before
   // that, hand focus to the list when the list can take it (`tabIndex`); otherwise it is the consumer's to place.
@@ -122,7 +123,9 @@ function Row<T>({ entry, as: Tag, className, onGone, children }: RowProps<T>) {
         if (event.target === event.currentTarget) finish();
       }}
     >
-      <div className={styles.inner}>{children(entry.item)}</div>
+      <fieldset className={styles.inner} role="none" disabled={leaving}>
+        {children(entry.item)}
+      </fieldset>
     </Tag>
   );
 }
@@ -133,7 +136,12 @@ function Row<T>({ entry, as: Tag, className, onGone, children }: RowProps<T>) {
  * The component renders the list and every item element (`ul > li`), so the list semantics hold while the height animates
  * (the `0fr` to `1fr` technique of `Collapse`, plus opacity). A removed item stays mounted, `inert` and `aria-hidden`,
  * until its exit ends (it still renders its last data), then unmounts. Adding a key that is still leaving brings the same
- * item back. Under `prefers-reduced-motion` items appear and disappear at once.
+ * item back. Under `prefers-reduced-motion` items appear and disappear at once. A leaving item that is not rendered (the
+ * list sits under a `hidden` ancestor) unmounts at once.
+ *
+ * Forms: the content of every item sits in a `fieldset` (`role="none"`) that is `disabled` while the item leaves, so its
+ * named controls are left out of `FormData` and an empty `required` control in it cannot block submit. Tests: a leaving
+ * item stays in the DOM until its exit ends, so query `:enabled` controls or wait for `[data-state="closed"]` to be gone.
  *
  * Focus: a leaving item cannot keep focus, because it is `inert`. When the list element has a `tabIndex`, focus moves to it;
  * otherwise the browser falls back to the document, so move focus yourself (for example to the next item or an add button)

@@ -4571,3 +4571,22 @@ test.describe("button surface hooks", () => {
     });
   });
 });
+
+test.describe("list transition", () => {
+  test("a removed item collapses and unmounts with its fieldset wrapper, and axe stays clean", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openStory(page, "components-motion-listtransition--default");
+    const items = page.getByRole("list", { name: "Tasks" }).locator("> li");
+    await expect(items).toHaveCount(3);
+    expect(await items.first().locator("> fieldset[role=none]").count()).toBe(1);
+    await items.nth(2).getByRole("button", { name: "Remove" }).click();
+    await expect(items).toHaveCount(2, { timeout: 2000 });
+    const leaving = await items.evaluateAll(
+      (all) => all.filter((li) => li.matches("[data-state=closed]")).length,
+    );
+    expect(leaving).toBe(0);
+    expect(await runAxe(page, "[aria-label=Tasks]")).toEqual([]);
+  });
+});
