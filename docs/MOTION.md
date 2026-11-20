@@ -103,6 +103,7 @@ leave, not when it ends; a native `<dialog>` is the one exception, because it ca
 | ------------------------- | ------------------------------------------ | ---------------------------- |
 | `Reveal`                  | Content that appears or disappears         | Appears and unmounts at once |
 | `Collapse`                | Content that expands to its natural height | Snaps open and closed        |
+| `ListTransition`          | Items added to and removed from a list     | Added and removed at once    |
 | `Skeleton`                | Placeholder for content that is loading    | Shimmer stops, shape stays   |
 | `AnimatedNumber`          | A figure that changes while visible        | New value at once            |
 | `ChangeHighlight`         | Pointing at a value that updated by itself | No flash                     |

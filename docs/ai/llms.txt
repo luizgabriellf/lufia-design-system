@@ -109,6 +109,7 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 - [AnimatedNumber](https://luizgabriellf.github.io/lufia-design-system/ai/components/AnimatedNumber.md): Counts a number to its new value and respects reduced motion. (beta)
 - [ChangeHighlight](https://luizgabriellf.github.io/lufia-design-system/ai/components/ChangeHighlight.md): Briefly highlights content that changed, so the change is noticed. (beta)
 - [Collapse](https://luizgabriellf.github.io/lufia-design-system/ai/components/Collapse.md): Animates the height of content that opens and closes. (beta)
+- [ListTransition](https://luizgabriellf.github.io/lufia-design-system/ai/components/ListTransition.md): Animates the items of a list as they are added and removed. (beta)
 - [Reveal](https://luizgabriellf.github.io/lufia-design-system/ai/components/Reveal.md): Fades and lifts content in as it enters, once. (beta)
 - [RouteTransition](https://luizgabriellf.github.io/lufia-design-system/ai/components/RouteTransition.md): Fades the content region in when the page changes, with no router dependency. (beta)
 - [Skeleton](https://luizgabriellf.github.io/lufia-design-system/ai/components/Skeleton.md): A placeholder with the shape of the content that is loading. (beta)

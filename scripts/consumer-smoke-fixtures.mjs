@@ -36,6 +36,11 @@ export const FIXTURES = {
   CitationList: { items: `[{ key: "a", reference: "Reference" }]` },
   DetailList: { rows: `[{ label: "Label", value: "Value" }]` },
   FileField: { formatRejection: `() => "Rejected"` },
+  ListTransition: {
+    items: `[{ id: "a", label: "Item" }]`,
+    getKey: `(item) => item.id`,
+    children: `(item) => item.label`,
+  },
   MoreActions: { items: `[{ key: "a", label: "Action" }]` },
   NotificationCenter: {
     unreadCountLabel: `(count) => String(count)`,

@@ -1,0 +1,43 @@
+/* The item is the grid and the element the consumer's list expects (`li` in a `ul`), so no wrapper breaks the list
+   semantics. Height goes through the same `0fr` to `1fr` technique as Collapse; both keyframes animate one end only, so
+   the resting state is the end state. */
+.item {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.item[data-animate][data-state="open"] {
+  animation: list-transition-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+}
+
+.item[data-animate][data-state="closed"] {
+  animation: list-transition-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  pointer-events: none;
+}
+
+@keyframes list-transition-in {
+  from {
+    /* lufia-motion-allow layout */
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+@keyframes list-transition-out {
+  to {
+    /* lufia-motion-allow layout */
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item[data-animate][data-state] {
+    animation: none;
+  }
+}

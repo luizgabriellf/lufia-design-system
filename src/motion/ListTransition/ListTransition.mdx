@@ -1,0 +1,84 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./ListTransition.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="ListTransition"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Animates the items of a list as they are added and removed. A new key grows in (height through the `0fr` to `1fr`
+technique of `Collapse`, plus opacity) and a removed key shrinks and fades out, then unmounts. Items present on the first
+render do not animate.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { ListTransition } from "@lufia/design-system/motion";
+
+<ListTransition as="ul" items={tasks} getKey={(task) => task.id} aria-label="Tasks">
+  {(task) => <span>{task.label}</span>}
+</ListTransition>;
+```
+
+The component renders the list and each item element itself (`ul` renders `li`), so the render function returns the
+content of an item and never an `li`. Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use; the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+### Starting empty
+
+<Canvas of={Stories.Empty} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- `ul > li` (or `ol > li`) stays valid: the item is the `li`, with the animated content inside it, so no element sits
+  between the list and its items.
+- A leaving item stays in the DOM until its exit ends, but it is `inert` and `aria-hidden`: it cannot be focused or read.
+- Focus: an item that leaves cannot keep focus. When the list element has a `tabIndex` (for example `-1`), focus moves to
+  the list. Without one, the browser falls back to the document and placing focus (the next item, or the control that
+  adds items) is the consumer's job, in the handler that removes the item.
+- Items render as `display: grid`, so the native bullet or number is not drawn; style markers yourself.
+- Items and exits are instant under `prefers-reduced-motion`: a removed item unmounts at once.
+- The inner wrapper clips overflow while animating and at rest; leave room for focus rings of controls at its edge.
+- Keys must be unique and stable. Adding a key that is still leaving brings the same item back.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Lists where the user adds or removes items: tasks, attachments, notifications, filter chips in a column.
+
+### When not to use
+
+- A list that is replaced wholesale by a fetch or a sort: only real adds and removals should animate.
+- A single block that shows or hides: use [Collapse](?path=/docs/components-motion-collapse--docs) or
+  [Reveal](?path=/docs/components-motion-reveal--docs).
+- Very long lists: every item is a grid with its own wrapper.
+
+</Section>
