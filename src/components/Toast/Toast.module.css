@@ -85,6 +85,15 @@
   line-height: var(--lufia-toast-line-height, var(--lufia-font-line-height-normal));
   pointer-events: auto;
 
+  /* A sideways swipe dismisses on touch: the browser keeps vertical scrolling, the component takes the horizontal axis.
+     While dragging, the script writes the offset and opacity; at rest they are 0 and 1. */
+  touch-action: pan-y;
+  transform: translateX(var(--toast-drag-x, 0));
+  opacity: var(--toast-drag-opacity, 1);
+  transition:
+    transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    opacity var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+
   /* Animates `from` only: the resting state is the end state, and a disabled animation leaves the toast visible. */
   animation: toast-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
 }
@@ -112,6 +121,32 @@
 .item[data-state="leaving"] {
   animation: toast-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
   pointer-events: none;
+}
+
+/* The finger is directly on it: no transition while it follows. */
+.item[data-dragging] {
+  transition: none;
+}
+
+/* A swiped-away toast carries on the way it was going, from where the finger let go. */
+.item[data-state="leaving"][data-swipe] {
+  animation-name: toast-swipe-out;
+}
+
+.item[data-swipe="start"] {
+  --toast-swipe-to: -100%;
+}
+
+.item[data-swipe="end"] {
+  --toast-swipe-to: 100%;
+}
+
+.item[data-swipe="start"]:dir(rtl) {
+  --toast-swipe-to: 100%;
+}
+
+.item[data-swipe="end"]:dir(rtl) {
+  --toast-swipe-to: -100%;
 }
 
 /* The tone ring is a StatusIcon; the toast only sets its diameter. */
@@ -177,6 +212,18 @@
   to {
     opacity: 0;
     transform: translateY(var(--toast-enter-y));
+  }
+}
+
+@keyframes toast-swipe-out {
+  from {
+    opacity: var(--toast-drag-opacity, 1);
+    transform: translateX(var(--toast-drag-x, 0));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(var(--toast-swipe-to));
   }
 }
 
