@@ -7003,6 +7003,7 @@ shorter `--lufia-motion-duration-exit`.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `as` | `"article" \| "div" \| "li" \| "p" \| "section"` | no | `"div"` | The element the content renders as. `"div"` (default), or `"section"`, `"article"`, `"p"` or `"li"` when the revealed content is that element, so an entrance does not cost a wrapper or the element's meaning. All of them are block-level, which the `rise` and `scale` variants need: a transform does nothing on an inline box. |
 | `show` | `boolean` | yes |  | Whether the content is shown. Toggling it plays the enter or exit animation. |
 | `variant` | `"scale" \| "fade" \| "rise"` | no | `"fade"` | `fade` changes opacity only, `rise` also moves the content up, `scale` grows it slightly. |
 | `appear` | `boolean` | no | `false` | Play the enter animation when the component mounts already shown. Off by default: only real changes animate. |
@@ -7012,7 +7013,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `RevealProps`: `HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }`
+- `RevealProps`: `HTMLAttributes<HTMLElement> & { as?: "article" | "div" | "li" | "p" | "section" | undefined; show: boolean; variant?: "scale" | "fade" | "rise" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }`
 
 ### Example
 
@@ -7046,6 +7047,7 @@ Reads these semantic tokens: `--lufia-motion-distance-rise`, `--lufia-motion-dur
 - `components-motion-reveal--scale`
 - `components-motion-reveal--starts-hidden`
 - `components-motion-reveal--appears-on-mount`
+- `components-motion-reveal--as-paragraph`
 - `components-motion-reveal--all-themes`
 
 ## RouteTransition

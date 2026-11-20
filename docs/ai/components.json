@@ -16161,6 +16161,13 @@
           "description": "Mounts and unmounts its children with an enter and an exit animation. Exits are shorter than entrances. The children stay mounted until the exit animation ends, so keep side effects out of them while `show` is false. Under `prefers-reduced-motion` (or when the stylesheet defines no animation) the content appears and disappears at once.",
           "props": [
             {
+              "name": "as",
+              "type": "\"article\" | \"div\" | \"li\" | \"p\" | \"section\"",
+              "required": false,
+              "default": "\"div\"",
+              "description": "The element the content renders as. `\"div\"` (default), or `\"section\"`, `\"article\"`, `\"p\"` or `\"li\"` when the revealed content is that element, so an entrance does not cost a wrapper or the element's meaning. All of them are block-level, which the `rise` and `scale` variants need: a transform does nothing on an inline box."
+            },
+            {
               "name": "show",
               "type": "boolean",
               "required": true,
@@ -16195,11 +16202,11 @@
           "name": "RevealProps",
           "kind": "type",
           "description": "",
-          "definition": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
+          "definition": "HTMLAttributes<HTMLElement> & { as?: \"article\" | \"div\" | \"li\" | \"p\" | \"section\" | undefined; show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
         }
       ],
       "aliases": {
-        "RevealProps": "HTMLAttributes<HTMLDivElement> & { show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
+        "RevealProps": "HTMLAttributes<HTMLElement> & { as?: \"article\" | \"div\" | \"li\" | \"p\" | \"section\" | undefined; show: boolean; variant?: \"scale\" | \"fade\" | \"rise\" | undefined; appear?: boolean | undefined; onExited?: (() => void) | undefined; }"
       },
       "story": {
         "docsId": "components-motion-reveal--docs",
@@ -16223,6 +16230,10 @@
           {
             "export": "AppearsOnMount",
             "id": "components-motion-reveal--appears-on-mount"
+          },
+          {
+            "export": "AsParagraph",
+            "id": "components-motion-reveal--as-paragraph"
           },
           {
             "export": "AllThemes",

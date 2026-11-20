@@ -44,6 +44,14 @@ export const Fade: Story = { args: { variant: "fade" } };
 export const Scale: Story = { args: { variant: "scale" } };
 export const StartsHidden: Story = { args: { show: false } };
 export const AppearsOnMount: Story = { args: { appear: true } };
+/** The revealed content is the paragraph itself: no wrapper `div` around it. */
+export const AsParagraph: Story = {
+  render: (args) => (
+    <Reveal {...args} as="p" show appear role="status" style={{ margin: 0 }}>
+      Draft restored from your last visit.
+    </Reveal>
+  ),
+};
 export const AllThemes: Story = {
   render: (args) => (
     <ThemeMatrix>
