@@ -3,9 +3,9 @@ import { useRef } from "react";
 import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { usePresence } from "./usePresence";
 
-function Probe({ open }: { open: boolean }) {
+function Probe({ open, skip = false }: { open: boolean; skip?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { phase, finish } = usePresence(open, ref);
+  const { phase, finish } = usePresence(open, ref, { skipWhenNotRendered: skip });
   return (
     <>
       <output>{phase}</output>
@@ -73,5 +73,25 @@ describe("usePresence", () => {
     const { rerender } = render(<Probe open />);
     rerender(<Probe open={false} />);
     expect(phase()).toBe("unmounted");
+  });
+
+  it("skips the exit of an element that is not rendered only when asked to", async () => {
+    mockReducedMotion(false);
+    stubExitAnimation();
+    Object.defineProperty(HTMLElement.prototype, "checkVisibility", {
+      value: () => false,
+      configurable: true,
+    });
+    try {
+      const plain = render(<Probe open />);
+      plain.rerender(<Probe open={false} />);
+      expect(phase()).toBe("closed");
+      plain.unmount();
+      const skipping = render(<Probe open skip />);
+      skipping.rerender(<Probe open={false} skip />);
+      await waitFor(() => expect(phase()).toBe("unmounted"), { timeout: 100 });
+    } finally {
+      delete (HTMLElement.prototype as Partial<HTMLElement>).checkVisibility;
+    }
   });
 });

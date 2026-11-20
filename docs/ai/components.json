@@ -11269,7 +11269,7 @@
         {
           "name": "ListTransition",
           "kind": "component",
-          "description": "A list whose items animate in and out as they are added to and removed from `items`. The component renders the list and every item element (`ul > li`), so the list semantics hold while the height animates (the `0fr` to `1fr` technique of `Collapse`, plus opacity). A removed item stays mounted, `inert` and `aria-hidden`, until its exit ends (it still renders its last data), then unmounts. Adding a key that is still leaving brings the same item back. Under `prefers-reduced-motion` items appear and disappear at once. Focus: a leaving item cannot keep focus, because it is `inert`. When the list element has a `tabIndex`, focus moves to it; otherwise the browser falls back to the document, so move focus yourself (for example to the next item or an add button) in the handler that removes the item. Items render as `display: grid`, so the native list marker is not drawn: style markers yourself.",
+          "description": "A list whose items animate in and out as they are added to and removed from `items`. The component renders the list and every item element (`ul > li`), so the list semantics hold while the height animates (the `0fr` to `1fr` technique of `Collapse`, plus opacity). A removed item stays mounted, `inert` and `aria-hidden`, until its exit ends (it still renders its last data), then unmounts. Adding a key that is still leaving brings the same item back. Under `prefers-reduced-motion` items appear and disappear at once. A leaving item that is not rendered (the list sits under a `hidden` ancestor) unmounts at once. Forms: the content of every item sits in a `fieldset` (`role=\"none\"`) that is `disabled` while the item leaves, so its named controls are left out of `FormData` and an empty `required` control in it cannot block submit. Tests: a leaving item stays in the DOM until its exit ends, so query `:enabled` controls or wait for `[data-state=\"closed\"]` to be gone. Focus: a leaving item cannot keep focus, because it is `inert`. When the list element has a `tabIndex`, focus moves to it; otherwise the browser falls back to the document, so move focus yourself (for example to the next item or an add button) in the handler that removes the item. Items render as `display: grid`, so the native list marker is not drawn: style markers yourself.",
           "props": [
             {
               "name": "as",
@@ -11297,7 +11297,7 @@
               "type": "(item: T) => ReactNode",
               "required": true,
               "default": null,
-              "description": "Renders the content of one item. Do not return an `li`: the component renders it, with the item's classes, `data-state` and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`."
+              "description": "Renders the content of one item. Do not return an `li`: the component renders it, with the item's classes, `data-state` and the `inert` and `aria-hidden` of a leaving item. While an item leaves, it keeps rendering its last `item`, and its form controls are disabled, so they drop out of form submission and constraint validation."
             },
             {
               "name": "itemClassName",
@@ -11367,6 +11367,8 @@
         "notes": [
           "`ul > li` (or `ol > li`) stays valid: the item is the `li`, with the animated content inside it, so no element sits between the list and its items.",
           "A leaving item stays in the DOM until its exit ends, but it is `inert` and `aria-hidden`: it cannot be focused or read.",
+          "Form controls in a leaving item are disabled (the content sits in a `fieldset` with `role=\"none\"`, `disabled` while the item leaves), so they are left out of form submission and constraint validation. The item stays in the DOM until its exit ends: in tests, query `:enabled` controls or wait for `[data-state=\"closed\"]` to be gone.",
+          "A leaving item whose list is not rendered (under a `hidden` ancestor) unmounts at once, because no exit can be seen.",
           "Focus: an item that leaves cannot keep focus. When the list element has a `tabIndex` (for example `-1`), focus moves to the list. Without one, the browser falls back to the document and placing focus (the next item, or the control that adds items) is the consumer's job, in the handler that removes the item.",
           "Items render as `display: grid`, so the native bullet or number is not drawn; style markers yourself.",
           "Items and exits are instant under `prefers-reduced-motion`: a removed item unmounts at once.",

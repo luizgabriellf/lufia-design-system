@@ -58,6 +58,10 @@ content of an item and never an `li`. Strings in the snippet are plain literals.
 - `ul > li` (or `ol > li`) stays valid: the item is the `li`, with the animated content inside it, so no element sits
   between the list and its items.
 - A leaving item stays in the DOM until its exit ends, but it is `inert` and `aria-hidden`: it cannot be focused or read.
+- Form controls in a leaving item are disabled (the content sits in a `fieldset` with `role="none"`, `disabled` while the
+  item leaves), so they are left out of form submission and constraint validation. The item stays in the DOM until its exit
+  ends: in tests, query `:enabled` controls or wait for `[data-state="closed"]` to be gone.
+- A leaving item whose list is not rendered (under a `hidden` ancestor) unmounts at once, because no exit can be seen.
 - Focus: an item that leaves cannot keep focus. When the list element has a `tabIndex` (for example `-1`), focus moves to
   the list. Without one, the browser falls back to the document and placing focus (the next item, or the control that
   adds items) is the consumer's job, in the handler that removes the item.
