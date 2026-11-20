@@ -60,6 +60,7 @@
   );
   border-radius: inherit;
   font-weight: var(--lufia-font-weight-medium);
+  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
   cursor: pointer;
   list-style: none;
   touch-action: manipulation;
