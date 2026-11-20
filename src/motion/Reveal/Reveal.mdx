@@ -35,6 +35,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
   `false`.
 - Showing it again during the exit re-enters immediately.
 - Only `opacity` and `transform` animate, with distances from `--lufia-motion-distance-*`.
+- It renders a `div`. Set `as` to `"section"`, `"article"`, `"p"` or `"li"` when the revealed content is that element, so
+  the entrance needs no wrapper: `<Reveal as="p" show appear role="status">Draft restored</Reveal>`.
 
 </Section>
 

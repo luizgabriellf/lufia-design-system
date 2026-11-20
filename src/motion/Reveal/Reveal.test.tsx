@@ -88,6 +88,23 @@ describe("Reveal", () => {
     expect(screen.getByText("content")).toHaveAttribute("data-state", "open");
   });
 
+  it("renders as a div by default and as the element named in `as`", () => {
+    const { rerender } = render(
+      <Reveal show data-testid="r">
+        c
+      </Reveal>,
+    );
+    expect(screen.getByTestId("r").tagName).toBe("DIV");
+    rerender(
+      <Reveal as="section" show aria-label="Saved" data-testid="r">
+        c
+      </Reveal>,
+    );
+    const root = screen.getByTestId("r");
+    expect(root.tagName).toBe("SECTION");
+    expect(root).toHaveAttribute("data-state", "open");
+  });
+
   it("passes variant, className and rest props to the root", () => {
     render(
       <Reveal show variant="rise" className="x" data-testid="r">

@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type HTMLAttributes } from "react";
+import { useEffect, useRef, useState, type HTMLAttributes, type Ref } from "react";
 import { usePrefersReducedMotion } from "../usePrefersReducedMotion";
 import styles from "./Reveal.module.css";
 
-export type RevealProps = HTMLAttributes<HTMLDivElement> & {
+export type RevealProps = HTMLAttributes<HTMLElement> & {
+  /**
+   * The element the content renders as. `"div"` (default), or `"section"`, `"article"`, `"p"` or `"li"` when the revealed
+   * content is that element, so an entrance does not cost a wrapper or the element's meaning. All of them are block-level,
+   * which the `rise` and `scale` variants need: a transform does nothing on an inline box.
+   */
+  as?: "div" | "section" | "article" | "p" | "li";
   /** Whether the content is shown. Toggling it plays the enter or exit animation. */
   show: boolean;
   /** `fade` changes opacity only, `rise` also moves the content up, `scale` grows it slightly. */
@@ -36,6 +42,7 @@ type Phase = "open" | "closed" | "unmounted";
  * appears and disappears at once.
  */
 export function Reveal({
+  as: Tag = "div",
   show,
   variant = "fade",
   appear = false,
@@ -46,7 +53,7 @@ export function Reveal({
   ...rest
 }: RevealProps) {
   const reduced = usePrefersReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const [phase, setPhase] = useState<Phase>(show ? "open" : "unmounted");
   // Until the first real change, a component that mounted shown stays still unless `appear` is set.
   const [armed, setArmed] = useState(appear || !show);
@@ -95,9 +102,9 @@ export function Reveal({
   if (phase === "unmounted") return null;
 
   return (
-    <div
+    <Tag
       {...rest}
-      ref={ref}
+      ref={ref as Ref<never>}
       className={[styles.root, className].filter(Boolean).join(" ")}
       data-state={phase}
       data-variant={variant}
@@ -108,6 +115,6 @@ export function Reveal({
       }}
     >
       {children}
-    </div>
+    </Tag>
   );
 }
