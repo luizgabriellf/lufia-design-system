@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.72.0
+
+### Minor Changes
+
+- [#250](https://github.com/luizgabriellf/lufia-design-system/pull/250) [`aa3e587`](https://github.com/luizgabriellf/lufia-design-system/commit/aa3e587f0d92ee43a7c2cdda674e519583cfb322) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Combobox`, `SearchInput` and `DateField` take `size="sm"`, the same compact height `TextInput` and `Select` already offer, so a dense filter bar lines up.
+
 ## 0.71.0
 
 ### Minor Changes
