@@ -40,7 +40,7 @@ typeahead and mobile picker.
 | `allowEmpty` | `boolean` | no | `false` | Keeps the placeholder choosable after a value is picked, for optional fields. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native select gets the rest props. |
-| `ref` | `Ref<HTMLSelectElement>` | no |  |  |
+| `ref` | `Ref<HTMLSelectElement>` | no |  | Ref to the native `<select>`. |
 
 Other native element attributes pass through to the root element.
 

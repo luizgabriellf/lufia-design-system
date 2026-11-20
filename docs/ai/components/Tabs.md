@@ -41,7 +41,7 @@ Views of one page where one is shown at a time. It follows the WAI-ARIA tabs pat
 | `orientation` | `"vertical" \| "horizontal"` | no | `"horizontal"` | `"horizontal"` (default): a row with Left and Right arrows, scrolling sideways when it does not fit. `"vertical"`: a column with Up and Down arrows. |
 | `activation` | `"manual" \| "automatic"` | no | `"automatic"` | `"automatic"` (default): moving focus with an arrow key also chooses the tab, which suits panels that render at once. `"manual"`: arrow keys only move focus; Enter or Space chooses, which suits panels that load data. |
 | `keepMounted` | `boolean` | no | `false` | Keep the panels of tabs that are not chosen in the DOM (hidden) so their state survives. Default `false`: only the chosen panel is rendered. |
-| `ref` | `Ref<HTMLDivElement>` | no |  |  |
+| `ref` | `Ref<HTMLDivElement>` | no |  | Ref to the root `<div>`. |
 
 Other native element attributes pass through to the root element.
 

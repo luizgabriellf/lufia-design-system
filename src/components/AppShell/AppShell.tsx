@@ -144,6 +144,10 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   currentPath?: string;
   /** Takes over from `currentPath`. Return true for the current item. */
   isActive?: (item: ShellNavItem) => boolean;
+  /**
+   * The shell's accessible names (skip link, navigation, menu, floating bar, sidebar rail button), in the app's
+   * language.
+   */
   labels: AppShellLabels;
   /** Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. */
   brand?: Slot;
@@ -204,6 +208,11 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    * hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it.
    */
   menuOpen?: boolean;
+  /**
+   * Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it
+   * after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide
+   * layout, so the parent's state does not stay open.
+   */
   onMenuOpenChange?: (open: boolean) => void;
   /**
    * Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the
@@ -212,11 +221,21 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   hideSheetNavigation?: boolean;
   /** Sidebar as a rail. Controlled. */
   collapsed?: boolean;
+  /**
+   * Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with
+   * `parseShellState` to avoid a flash on first paint.
+   */
   defaultCollapsed?: boolean;
+  /** Called with the next collapsed state when the user toggles the rail button. */
   onCollapsedChange?: (collapsed: boolean) => void;
   /** Keys of the open collapsible groups. Controlled; the owner then also decides what arriving on a page opens. */
   openGroups?: readonly string[];
+  /**
+   * Keys of the collapsible groups that start open when `openGroups` is not given. Leave it out and the groups marked
+   * `defaultOpen` start open. The group holding the current page is always opened too.
+   */
   defaultOpenGroups?: readonly string[];
+  /** Called with the keys of all open collapsible groups after the user opens or closes one. */
   onOpenGroupsChange?: (keys: readonly string[]) => void;
   /** Hide the rail button. Default `false`. */
   fixedSidebar?: boolean;

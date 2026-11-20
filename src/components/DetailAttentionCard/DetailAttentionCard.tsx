@@ -5,9 +5,16 @@ import styles from "../DetailSurface/DetailSurface.module.css";
 export type DetailAttentionTone = "ok" | "warn" | "danger" | "critical" | "neutral";
 
 export type DetailAttentionCardProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
+  /**
+   * The severity of the state: sets the colour and the status glyph. `critical` draws like `danger`. Pass `toneLabel`
+   * too when the tone carries meaning.
+   */
   tone: DetailAttentionTone;
+  /** The card heading, an `<h3>`. */
   title: string;
+  /** A sentence under the title that says what the state means. */
   description?: string;
+  /** A quieter line under the description, for a date or other detail. */
   meta?: string;
   /** Call-to-action rendered under the copy (a button or link). */
   action?: ReactNode;

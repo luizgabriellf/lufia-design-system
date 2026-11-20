@@ -28,14 +28,14 @@ trailing chevron. It is the row used to open a detail, a sub-page or a modal fro
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `title` | `string` | yes |  |  |
+| `title` | `string` | yes |  | The row's main text. With `href` or `onClick` it is the link or button's name. |
 | `description` | `string` | no |  | Supporting line under the title. |
 | `meta` | `string` | no |  | Quiet last line: a date, a count, a status in words. It is read in order after the title, so it must carry its own context ("3 items", "Due 12 Nov"), not a bare "3". |
 | `badge` | `ReactNode` | no |  | Short trailing mark beside the title, such as a count. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text; hidden from assistive technology. |
 | `href` | `string` | no |  | Makes the row a link, rendered through the configured `linkComponent`. |
 | `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Makes the row a button when there is no `href`. |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | Dims the row and stops it being activated: a link gets `aria-disabled` and leaves the tab order, a button is natively disabled. Default `false`. |
 
 Other native element attributes pass through to the root element.
 

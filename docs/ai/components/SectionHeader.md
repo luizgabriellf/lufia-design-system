@@ -29,7 +29,7 @@ The title row of one section of a page: a heading, an optional description and t
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `title` | `ReactNode` | yes |  |  |
+| `title` | `ReactNode` | yes |  | The section heading, rendered at `headingLevel`. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `2` | Heading level of `title` (2 to 6). Defaults to 2: pick the one that keeps the page outline in order. |
 | `description` | `ReactNode` | no |  | One short line under the title. |
 | `actions` | `ReactNode` | no |  | Links or controls at the end of the row ("View all"). They wrap under the text on narrow screens. |

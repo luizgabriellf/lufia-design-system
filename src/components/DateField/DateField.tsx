@@ -19,6 +19,7 @@ export type DateFieldProps = Omit<
   type?: DateFieldType;
   /** Controlled value, as the native control emits it: `2030-01-31`, `14:30`, `2030-01-31T14:30` or `2030-01`. `""` is empty. */
   value?: string;
+  /** Initial value when `value` is not given, in the same format as `value`. A form reset restores it. */
   defaultValue?: string;
   /** Called with the value the native control emits, or `""` when it is emptied or cleared. */
   onValueChange?: (value: string) => void;
@@ -38,6 +39,7 @@ export type DateFieldProps = Omit<
   invalid?: boolean;
   /** Goes on the box that draws the border; the native input gets the rest props. */
   className?: string;
+  /** Ref to the native input. */
   ref?: Ref<HTMLInputElement>;
 };
 

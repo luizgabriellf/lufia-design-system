@@ -35,7 +35,7 @@ button on each entry. The entries are submitted as one hidden text value.
 | `labels` | `ListFieldLabels` | yes |  | Every user-facing string of the field. The package has no built-in language. |
 | `name` | `string` | no |  | Submitted with the form as ONE hidden text value under this name: `serialize(items)`. |
 | `items` | `readonly string[]` | no |  | Controlled entries. A value that differs from what the field holds replaces its rows. |
-| `defaultItems` | `readonly string[]` | no |  |  |
+| `defaultItems` | `readonly string[]` | no |  | Initial entries when `items` is not given. A form reset restores them. |
 | `onChange` | `(items: string[]) => void` | no |  | Called with the entries (sanitized, empty ones left out) after every add, edit and removal. |
 | `serialize` | `(items: readonly string[]) => string` | no | `joinLines` | Turns the entries into the submitted value. Defaults to joining them with a line feed. |
 | `sanitizeItem` | `(text: string) => string` | no |  | Cleans one entry when it is added and whenever the entries are read (trimming, collapsing spaces). Must be idempotent. |
@@ -45,11 +45,11 @@ button on each entry. The entries are submitted as one hidden text value.
 | `required` | `boolean` | no |  | At least one entry is needed. The add input then carries `labels.requiredMessage` as its custom validity until there is one. Text waiting in the add input does not count unless `includeDraft` is on. |
 | `includeDraft` | `boolean` | no |  | Puts the text waiting in the add input in the submitted value, as if the add button had been pressed: the hidden value is `serialize([...items, draft])` while the draft is not empty after `sanitizeItem` and `maxItems` and `maxTotalLength` leave room for it. `onChange` is not called for it, and the add input keeps its text. With `required`, a valid draft also satisfies the rule. Off by default: the draft is then only added by the add button, Enter or `commitDraft()`. |
 | `placeholder` | `string` | no |  | Placeholder of the add input. |
-| `hint` | `ReactNode` | no |  |  |
+| `hint` | `ReactNode` | no |  | Help text under the group, linked to it with `aria-describedby`. |
 | `renderCount` | `(count: ListFieldCount) => ReactNode` | no |  | Renders a counter, such as "2 of 30 entries" or "34 of 200 characters", as secondary text under the hint and tied to the group with `aria-describedby`. The package has no built-in language: phrase it here. Nothing is rendered without it. Keep it phrasing content (text and inline elements). |
-| `error` | `ReactNode` | no |  |  |
+| `error` | `ReactNode` | no |  | Error message under the group, linked to it with `aria-describedby`. |
 | `badge` | `ReactNode` | no |  | Content next to the label, such as a `Badge`. |
-| `disabled` | `boolean` | no |  |  |
+| `disabled` | `boolean` | no |  | Disables the add input, the add button, and every entry and its remove button. Default `false`. |
 | `requiredLabel` | `string` | no |  | Text read after the label when `required`. Aria-only: the visible mark is a glyph. Defaults to the `required` label of `LufiaProvider`. |
 | `ref` | `Ref<ListFieldHandle>` | no |  | Imperative handle: `commitDraft()`. |
 

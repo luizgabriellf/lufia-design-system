@@ -36,7 +36,7 @@ the empty and loading states are part of the component.
 | `options` | `readonly ComboboxOption[]` | yes |  | The options to offer. For async data, replace them as results arrive and set `filter={false}`. |
 | `value` | `string \| null` | no |  | Chosen option value, or `null` for none. Controlled. |
 | `defaultValue` | `string \| null` | no | `null` | Initial value when `value` is not given. |
-| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  |  |
+| `onValueChange` | `(value: string \| null, option: ComboboxOption \| null) => void` | no |  | Called when the chosen value changes, with the option's `value` and the option itself, or `null` and `null` when the choice is cleared. With `freeText` it receives the typed text and `null` as the option. |
 | `onQueryChange` | `(query: string) => void` | no |  | Called on every keystroke with the typed text, and with `""` once the box is cleared. Use it to load options. |
 | `filter` | `false \| ((option: ComboboxOption, query: string) => boolean)` | no |  | How typed text narrows the list. Default: the label contains the text, ignoring case and diacritics. Pass a function to match your own way, or `false` to show `options` as given (the server already filtered them). |
 | `loading` | `boolean` | no | `false` | Options are being loaded. Shows a ring and `loadingLabel`, and sets `aria-busy`. |
@@ -54,7 +54,7 @@ the empty and loading states are part of the component.
 | `requiredMessage` | `string` | no |  | Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own "please fill out this field" in the person's language. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the text input. |
 
 Other native element attributes pass through to the root element.
 

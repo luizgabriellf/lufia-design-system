@@ -30,8 +30,8 @@ An inline text link. It goes through the app's router link, and an external one 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `href` | `string` | yes |  |  |
-| `children` | `ReactNode` | yes |  |  |
+| `href` | `string` | yes |  | Where the link goes. Rendered through the `linkComponent` of `LufiaProvider`. |
+| `children` | `ReactNode` | yes |  | The link text. |
 | `externalLabel` | `string` | no |  | Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an indicator. The value is the visually hidden text read after the link text, such as "(opens in new tab)", so the new tab is announced. Giving the text is what makes a link external, so there is no external link without it. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | `inline` (default) is a link inside running text: underlined at rest. `standalone` is a link on its own line or in a list or footer: no underline at rest, an underline on hover and focus, and a medium weight. Use it only where the surroundings, not colour alone, show that the text is a link (WCAG 1.4.1). |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the text, hidden from assistive technology. It does not move on hover. |

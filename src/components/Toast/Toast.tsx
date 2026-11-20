@@ -104,6 +104,7 @@ const announcerKey = (host: Element) => {
 const TONES: readonly string[] = ["info", "success", "warning", "error"];
 
 export type ToastProviderProps = {
+  /** The app. Components below it can show toasts. */
   children: ReactNode;
   /** Corner of the viewport the stack sits in. Default `bottom-end`. */
   placement?: ToastPlacement;

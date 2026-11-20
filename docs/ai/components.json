@@ -42,7 +42,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -71,7 +71,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -100,7 +100,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -135,7 +135,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -164,7 +164,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -193,7 +193,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -287,7 +287,7 @@
               "type": "readonly ActivityItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The entries, newest first. The list renders nothing when it is empty."
             },
             {
               "name": "timeline",
@@ -432,7 +432,7 @@
               "type": "number",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The number to show. The first render shows it as is; later changes count from the shown number to the new one."
             },
             {
               "name": "format",
@@ -563,7 +563,7 @@
               "type": "AppShellLabels",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The shell's accessible names (skip link, navigation, menu, floating bar, sidebar rail button), in the app's language."
             },
             {
               "name": "brand",
@@ -682,7 +682,7 @@
               "type": "(open: boolean) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide layout, so the parent's state does not stay open."
             },
             {
               "name": "hideSheetNavigation",
@@ -703,14 +703,14 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": ""
+              "description": "Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with `parseShellState` to avoid a flash on first paint."
             },
             {
               "name": "onCollapsedChange",
               "type": "(collapsed: boolean) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the next collapsed state when the user toggles the rail button."
             },
             {
               "name": "openGroups",
@@ -724,14 +724,14 @@
               "type": "readonly string[]",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Keys of the collapsible groups that start open when `openGroups` is not given. Leave it out and the groups marked `defaultOpen` start open. The group holding the current page is always opened too."
             },
             {
               "name": "onOpenGroupsChange",
               "type": "(keys: readonly string[]) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the keys of all open collapsible groups after the user opens or closes one."
             },
             {
               "name": "fixedSidebar",
@@ -948,21 +948,21 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the accessible name."
             },
             {
               "name": "href",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Not set: the control is a `<button>`."
             },
             {
               "name": "onClick",
               "type": "() => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called on click, before the link navigates. Typed without a parameter: do not rely on an event."
             }
           ],
           "nativeProps": true,
@@ -977,7 +977,7 @@
                     "name": "href",
                     "type": "undefined",
                     "required": false,
-                    "description": ""
+                    "description": "Not set: the control is a `<button>`."
                   },
                   {
                     "name": "onClick",
@@ -1003,13 +1003,13 @@
                     "name": "href",
                     "type": "string",
                     "required": true,
-                    "description": ""
+                    "description": "Makes the control a link, rendered through the configured `linkComponent`."
                   },
                   {
                     "name": "onClick",
                     "type": "() => void",
                     "required": false,
-                    "description": "",
+                    "description": "Called on click, before the link navigates. Typed without a parameter: do not rely on an event.",
                     "onlyTypeDiffers": true
                   }
                 ]
@@ -1046,14 +1046,14 @@
               "type": "boolean",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`."
             },
             {
               "name": "onOpenChange",
               "type": "(open: boolean) => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With `closeOnNavigate` it is also called when a link inside the sheet is chosen."
             },
             {
               "name": "label",
@@ -1151,7 +1151,7 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The scrolling body: the navigation."
             }
           ],
           "nativeProps": true
@@ -1230,7 +1230,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Class added to the bar's own."
             }
           ],
           "nativeProps": false
@@ -1342,7 +1342,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Link `rel`, with `href`. Defaults to `noopener noreferrer` for `target=\"_blank\"` on an external link."
             },
             {
               "name": "type",
@@ -1370,7 +1370,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": ""
+              "description": "Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`."
             },
             {
               "name": "count",
@@ -1384,7 +1384,7 @@
               "type": "\"neutral\" | \"success\" | \"warning\" | \"danger\"",
               "required": false,
               "default": "\"neutral\"",
-              "description": ""
+              "description": "Colour of `count`. Default `neutral`."
             },
             {
               "name": "ariaLabel",
@@ -1412,14 +1412,14 @@
               "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called on click, except while `pending`. Calling `preventDefault` on a link stops the navigation."
             },
             {
               "name": "className",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Class added to the item's own, on the link or button."
             }
           ],
           "nativeProps": false
@@ -1464,7 +1464,7 @@
               "type": "readonly ShellNavGroup[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The navigation as data: groups of items."
             },
             {
               "name": "currentPath",
@@ -1492,7 +1492,7 @@
               "type": "(key: string, open: boolean) => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called with a collapsible group's key and its next open state when the user toggles it."
             },
             {
               "name": "pendingKey",
@@ -1700,7 +1700,7 @@
               "type": "(open: boolean) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the next open state when the user toggles a collapsible group's button."
             },
             {
               "name": "current",
@@ -1735,7 +1735,7 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The destination's name. Visible beside the icon; in the rail it stays as the accessible name and the tooltip."
             },
             {
               "name": "ariaLabel",
@@ -1756,7 +1756,7 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Decorative icon before the label. Shown alone in the rail."
             },
             {
               "name": "badge",
@@ -1819,21 +1819,21 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": ""
+              "description": "Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`."
             },
             {
               "name": "onClick",
               "type": "(event: MouseEvent<HTMLElement, MouseEvent>) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called on click of the link or button."
             },
             {
               "name": "className",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Class added to the item's own, on the link or button."
             },
             {
               "name": "children",
@@ -2537,7 +2537,7 @@
               "type": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\"",
               "required": false,
               "default": "\"neutral\"",
-              "description": ""
+              "description": "Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning."
             },
             {
               "name": "dot",
@@ -2592,7 +2592,7 @@
               "type": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"ai\"",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning."
             },
             {
               "name": "dot",
@@ -3090,7 +3090,7 @@
               "type": "readonly BarListRow[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The bars, in order. Each row is drawn against the largest `amount`, counting the `reference` when there is one."
             },
             {
               "name": "total",
@@ -3286,7 +3286,7 @@
               "type": "number",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The measured amount, drawn as the fill. Clamped to the scale; zero or less draws no fill."
             },
             {
               "name": "target",
@@ -3307,7 +3307,7 @@
               "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
-              "description": ""
+              "description": "Colour of the fill. Default `accent`. It only reinforces: print the numbers as text too."
             },
             {
               "name": "label",
@@ -4294,7 +4294,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native checkbox input."
             }
           ],
           "nativeProps": true
@@ -4450,7 +4450,7 @@
               "type": "readonly ChecklistItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The entries, in order. Each has a `text` and a `status`. Renders nothing when empty."
             },
             {
               "name": "title",
@@ -4642,7 +4642,7 @@
               "type": "Ref<HTMLElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the chip's element: the `<button>` when it can be activated, otherwise a `<span>`."
             },
             {
               "name": "onClick",
@@ -5003,7 +5003,7 @@
               "type": "Ref<HTMLButtonElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the tile's `<button>`."
             }
           ],
           "nativeProps": true
@@ -5205,7 +5205,7 @@
               "type": "readonly CitationItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The references, in order. Renders nothing when empty."
             },
             {
               "name": "title",
@@ -5776,7 +5776,7 @@
               "type": "(value: string | null, option: ComboboxOption | null) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called when the chosen value changes, with the option's `value` and the option itself, or `null` and `null` when the choice is cleared. With `freeText` it receives the typed text and `null` as the option."
             },
             {
               "name": "onQueryChange",
@@ -5902,7 +5902,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the text input."
             }
           ],
           "nativeProps": true
@@ -6138,28 +6138,28 @@
               "type": "boolean",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Whether the palette is shown. Controlled: the parent owns it and updates it from `onOpenChange`."
             },
             {
               "name": "onOpenChange",
               "type": "(open: boolean) => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called with the next open state: `true` on the keyboard shortcut (when `shortcut` is on), `false` on Escape, a press on the backdrop, the close button, or after a command runs (unless it has `keepOpen`)."
             },
             {
               "name": "items",
               "type": "readonly CommandItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The commands, before filtering by the query. Each has a unique `key`, a `label` and an `onSelect`."
             },
             {
               "name": "labels",
               "type": "CommandPaletteLabels",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Every user-facing string of the palette, in the app's language."
             },
             {
               "name": "hint",
@@ -6535,7 +6535,7 @@
               "type": "() => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called when the user presses the confirm button. Not called while `busy`."
             },
             {
               "name": "onCancel",
@@ -6747,7 +6747,7 @@
               "type": "string",
               "required": false,
               "default": "\"\"",
-              "description": ""
+              "description": "Initial value when `value` is not given, in the same format as `value`. A form reset restores it."
             },
             {
               "name": "onValueChange",
@@ -6803,7 +6803,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native input."
             }
           ],
           "nativeProps": true
@@ -7003,7 +7003,7 @@
               "type": "DateRange",
               "required": false,
               "default": "EMPTY",
-              "description": ""
+              "description": "Initial range when `value` is not given. A form reset restores it. Default both ends empty."
             },
             {
               "name": "onValueChange",
@@ -7045,7 +7045,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Form name of the end field, submitted as `endName=…`."
             },
             {
               "name": "hint",
@@ -7101,7 +7101,7 @@
               "type": "Ref<HTMLFieldSetElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<fieldset>`."
             }
           ],
           "nativeProps": true
@@ -7241,28 +7241,28 @@
               "type": "\"ok\" | \"warn\" | \"danger\" | \"critical\" | \"neutral\"",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The severity of the state: sets the colour and the status glyph. `critical` draws like `danger`. Pass `toneLabel` too when the tone carries meaning."
             },
             {
               "name": "title",
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The card heading, an `<h3>`."
             },
             {
               "name": "description",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A sentence under the title that says what the state means."
             },
             {
               "name": "meta",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A quieter line under the description, for a date or other detail."
             },
             {
               "name": "action",
@@ -7393,7 +7393,7 @@
               "type": "DetailListRow[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The label and value pairs, in order."
             }
           ],
           "nativeProps": true
@@ -7498,21 +7498,21 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The section's content, under the header."
             },
             {
               "name": "title",
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The section heading, an `<h3>`."
             },
             {
               "name": "description",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A sentence under the title that says what the section holds."
             },
             {
               "name": "icon",
@@ -7872,14 +7872,14 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The headline: says what is empty."
             },
             {
               "name": "body",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A sentence under the title that explains why, or what to do next."
             },
             {
               "name": "action",
@@ -8111,7 +8111,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native file input."
             }
           ],
           "nativeProps": true
@@ -8313,7 +8313,7 @@
               "type": "readonly FilterLinksItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The filters, in order. Each is a link to the same list with that filter applied."
             },
             {
               "name": "value",
@@ -8334,7 +8334,7 @@
               "type": "Ref<HTMLElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<nav>` element."
             }
           ],
           "nativeProps": true
@@ -8539,7 +8539,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Disables the control and dims the field. Passed to the control as `disabled`. Default `false`."
             },
             {
               "name": "requiredLabel",
@@ -8766,7 +8766,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8795,7 +8795,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8824,7 +8824,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8853,7 +8853,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8882,7 +8882,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8911,7 +8911,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8940,7 +8940,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8969,7 +8969,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -8998,7 +8998,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9027,7 +9027,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9056,7 +9056,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9085,7 +9085,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9114,7 +9114,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9143,7 +9143,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9172,7 +9172,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9201,7 +9201,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9230,7 +9230,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9259,7 +9259,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9288,7 +9288,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9317,7 +9317,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9346,7 +9346,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9375,7 +9375,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9404,7 +9404,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9433,7 +9433,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9462,7 +9462,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9491,7 +9491,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9520,7 +9520,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9549,7 +9549,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9578,7 +9578,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9612,14 +9612,14 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             },
             {
               "name": "children",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "The drawing: SVG elements (`<path>`, `<circle>`, `<rect>`...) on the 24-unit grid."
             }
           ],
           "nativeProps": true
@@ -9672,7 +9672,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9701,7 +9701,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9730,7 +9730,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9759,7 +9759,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9788,7 +9788,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9817,7 +9817,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9846,7 +9846,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9875,7 +9875,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9904,7 +9904,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9933,7 +9933,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9962,7 +9962,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -9991,7 +9991,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10020,7 +10020,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10049,7 +10049,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10078,7 +10078,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10107,7 +10107,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10136,7 +10136,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10165,7 +10165,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10194,7 +10194,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10223,7 +10223,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10252,7 +10252,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10281,7 +10281,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             }
           ],
           "nativeProps": true
@@ -10787,14 +10787,14 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Where the link goes. Rendered through the `linkComponent` of `LufiaProvider`."
             },
             {
               "name": "children",
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The link text."
             },
             {
               "name": "externalLabel",
@@ -10991,7 +10991,7 @@
               "type": "readonly string[]",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Initial entries when `items` is not given. A form reset restores them."
             },
             {
               "name": "onChange",
@@ -11061,7 +11061,7 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Help text under the group, linked to it with `aria-describedby`."
             },
             {
               "name": "renderCount",
@@ -11075,7 +11075,7 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Error message under the group, linked to it with `aria-describedby`."
             },
             {
               "name": "badge",
@@ -11089,7 +11089,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Disables the add input, the add button, and every entry and its remove button. Default `false`."
             },
             {
               "name": "requiredLabel",
@@ -11438,7 +11438,7 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Where the link goes."
             },
             {
               "name": "ref",
@@ -11474,7 +11474,7 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The app. Every component below it reads the link component and labels."
             }
           ],
           "nativeProps": false
@@ -11935,7 +11935,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             },
             {
               "name": "size",
@@ -12510,7 +12510,7 @@
               "type": "readonly MoreActionItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The menu entries, in order. Each is a button, or a link when it has an `href`."
             },
             {
               "name": "align",
@@ -12524,14 +12524,14 @@
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": "\"md\"",
-              "description": ""
+              "description": "Size of the trigger button. Default `md`."
             },
             {
               "name": "variant",
               "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
-              "description": ""
+              "description": "Visual variant of the trigger button. Default `ghost`."
             },
             {
               "name": "icon",
@@ -12791,7 +12791,7 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The row's main text. With `href` or `onClick` it is the link or button's name."
             },
             {
               "name": "description",
@@ -12840,7 +12840,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": ""
+              "description": "Dims the row and stops it being activated: a link gets `aria-disabled` and leaves the tab order, a button is natively disabled. Default `false`."
             }
           ],
           "nativeProps": true
@@ -13115,7 +13115,7 @@
               "type": "(open: boolean) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the next open state when the user opens or closes the panel (the bell, Escape, a press outside or on the backdrop), whether it is controlled or not."
             },
             {
               "name": "presentation",
@@ -13136,14 +13136,14 @@
               "type": "\"sm\" | \"md\" | \"lg\"",
               "required": false,
               "default": "\"md\"",
-              "description": ""
+              "description": "Size of the bell button. Default `md`."
             },
             {
               "name": "variant",
               "type": "\"primary\" | \"secondary\" | \"ghost\" | \"danger\" | \"link\"",
               "required": false,
               "default": "\"ghost\"",
-              "description": ""
+              "description": "Visual variant of the bell button. Default `ghost`."
             },
             {
               "name": "icon",
@@ -13369,7 +13369,7 @@
               "type": "Ref<HTMLElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the root element: a `<section>`, or a `<div>` when `landmark` is `false`."
             }
           ],
           "nativeProps": true
@@ -13779,7 +13779,7 @@
               "type": "boolean",
               "required": false,
               "default": "false",
-              "description": ""
+              "description": "The row cannot be chosen: a native `disabled` on the button, or `aria-disabled` on an element given to `render`. No effect with `interactive={false}`. Default `false`."
             },
             {
               "name": "title",
@@ -13870,7 +13870,7 @@
               "type": "MouseEventHandler<HTMLElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called when the row is activated. Not called while `disabled`; not available with `interactive={false}`."
             },
             {
               "name": "render",
@@ -14282,7 +14282,7 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The page heading, rendered at `headingLevel`."
             },
             {
               "name": "headingLevel",
@@ -14296,7 +14296,7 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A sentence under the title that says what the page is for."
             },
             {
               "name": "actions",
@@ -14452,7 +14452,7 @@
               "type": "number",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "How many pages there are. The numbered controls and the next control stop here."
             },
             {
               "name": "total",
@@ -14466,7 +14466,7 @@
               "type": "(page: number) => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called with the page the user chose (a number, previous or next). Update `page` from it."
             },
             {
               "name": "hrefFor",
@@ -14487,7 +14487,7 @@
               "type": "PaginationLabels",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Every user-facing string of the control, in the app's language."
             },
             {
               "name": "variant",
@@ -14686,7 +14686,7 @@
               "type": "readonly PeerNavItem<Href>[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The destinations, in order. When every item has an `href` the nav is a list of links, otherwise a tablist."
             },
             {
               "name": "value",
@@ -15008,7 +15008,7 @@
               "type": "Ref<HTMLButtonElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<button>`."
             }
           ],
           "nativeProps": true
@@ -15427,14 +15427,14 @@
               "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
-              "description": ""
+              "description": "Colour of the fill. Default `accent`. It only reinforces: the label and the percentage carry the meaning."
             },
             {
               "name": "size",
               "type": "\"sm\" | \"md\"",
               "required": false,
               "default": "\"md\"",
-              "description": ""
+              "description": "Thickness of the track: `md` (default, 10px) or the thinner `sm` (6px)."
             },
             {
               "name": "animateChanges",
@@ -15627,7 +15627,7 @@
               "type": "readonly QueueSummaryItem[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The queues. A queue with a `count` of `0` folds into the `clearLabel` line. The rest are rows: counted queues first, sorted by tone, then the ones with an unknown (`null`) count. Renders nothing when empty."
             },
             {
               "name": "clearLabel",
@@ -15797,35 +15797,35 @@
               "type": "readonly RadioOption[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The choices, in display order. Each has a unique `value` and a `label`; the user picks exactly one."
             },
             {
               "name": "hint",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Help text under the group, linked to it with `aria-describedby`."
             },
             {
               "name": "error",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Error message under the group. Marks the group invalid (`aria-invalid`) and is linked with `aria-describedby`; it takes precedence over the message of a refused required submission."
             },
             {
               "name": "required",
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Marks the group as required: shows a required glyph beside the label (when there is one), sets `aria-required`, and makes a form refuse to submit while nothing is chosen, unless the group is disabled. Default `false`."
             },
             {
               "name": "disabled",
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Disables every option; an option can also be disabled on its own with `disabled` on the option. Default `false`."
             },
             {
               "name": "value",
@@ -15839,14 +15839,14 @@
               "type": "string",
               "required": false,
               "default": "\"\"",
-              "description": ""
+              "description": "Initial value when `value` is not given. Default `\"\"` (nothing chosen); a form reset restores it."
             },
             {
               "name": "onValueChange",
               "type": "(value: string) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. A form reset also calls it, with `defaultValue`."
             },
             {
               "name": "name",
@@ -15888,7 +15888,7 @@
               "type": "Ref<HTMLDivElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `radiogroup` element."
             }
           ],
           "nativeProps": true,
@@ -16396,7 +16396,7 @@
               "type": "string",
               "required": false,
               "default": "\"\"",
-              "description": ""
+              "description": "Initial text when `value` is not given. A form reset restores it. Default `\"\"`."
             },
             {
               "name": "onValueChange",
@@ -16466,7 +16466,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native input."
             }
           ],
           "nativeProps": true
@@ -16638,7 +16638,7 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The section heading, rendered at `headingLevel`."
             },
             {
               "name": "headingLevel",
@@ -16789,7 +16789,7 @@
               "type": "readonly SegmentedToggleOption[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The segments, in order. Each has a unique `value` and a `label`; exactly one can be chosen."
             },
             {
               "name": "value",
@@ -16831,7 +16831,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Disables every segment; one segment can also be disabled on its own with `disabled` on the option. Default `false`."
             },
             {
               "name": "name",
@@ -16859,7 +16859,7 @@
               "type": "Ref<HTMLDivElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `radiogroup` element."
             }
           ],
           "nativeProps": true
@@ -17096,7 +17096,7 @@
               "type": "Ref<HTMLSelectElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native `<select>`."
             }
           ],
           "nativeProps": true
@@ -17786,7 +17786,7 @@
               "type": "\"asc\" | \"desc\"",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Sort direction, `asc` or `desc`. Drawn as an arrow and set as `aria-sort` only while `active` is true."
             },
             {
               "name": "abbr",
@@ -17800,7 +17800,7 @@
               "type": "string",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Column name: the text of the sort button, and its accessible name."
             },
             {
               "name": "active",
@@ -17814,7 +17814,7 @@
               "type": "() => void",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Called when the user activates the header button. Change the sort in it; the header keeps no state."
             },
             {
               "name": "wrap",
@@ -17936,7 +17936,7 @@
               "type": "\"accent\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"",
               "required": false,
               "default": "\"accent\"",
-              "description": ""
+              "description": "Colour of the drawing. Default `accent`. It only reinforces: print the numbers as text too."
             },
             {
               "name": "label",
@@ -19097,7 +19097,7 @@
               "type": "StatusTimelineTrack[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The tracks, in order. Each lists its nodes; a track with no nodes is left out."
             }
           ],
           "nativeProps": true
@@ -19237,7 +19237,7 @@
               "type": "StepDef[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The steps, in order. The step at `current` is active, the ones before it are done."
             },
             {
               "name": "current",
@@ -19377,7 +19377,7 @@
               "type": "Ref<SVGSVGElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<svg>` element."
             },
             {
               "name": "title",
@@ -19498,14 +19498,14 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Help text under the switch, linked to it with `aria-describedby`."
             },
             {
               "name": "error",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`."
             },
             {
               "name": "checked",
@@ -19519,14 +19519,14 @@
               "type": "(checked: boolean) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the new state when the user toggles the switch, whether it is controlled or not. A form reset also calls it, with `defaultChecked`."
             },
             {
               "name": "value",
               "type": "string",
               "required": false,
               "default": "\"on\"",
-              "description": ""
+              "description": "Value submitted with `name` while the switch is on. Default `\"on\"`."
             },
             {
               "name": "className",
@@ -19540,7 +19540,7 @@
               "type": "Ref<HTMLButtonElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `role=\"switch\"` button."
             }
           ],
           "nativeProps": true
@@ -19562,14 +19562,14 @@
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Help text under the switch, linked to it with `aria-describedby`."
             },
             {
               "name": "error",
               "type": "ReactNode",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`."
             },
             {
               "name": "value",
@@ -19597,7 +19597,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the `<input type=\"checkbox\" role=\"switch\">`."
             }
           ],
           "nativeProps": true
@@ -19991,7 +19991,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "A sentence under the title that explains why, or what to do next."
             },
             {
               "name": "action",
@@ -20827,28 +20827,28 @@
               "type": "FilterOption[]",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "The filter chips, in order. Each is a toggle button; the one whose `key` equals `activeFilter` is pressed."
             },
             {
               "name": "activeFilter",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "`key` of the pressed filter chip. Controlled: the toolbar keeps no state, so update it from `onFilterChange`."
             },
             {
               "name": "onFilterChange",
               "type": "(key: string) => void",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Called with the `key` of the chip the user clicks."
             },
             {
               "name": "search",
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Current text of the search field. Controlled: update it from `onSearchChange`. Default `\"\"`."
             },
             {
               "name": "onSearchChange",
@@ -20862,7 +20862,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Placeholder of the search field. Default none."
             },
             {
               "name": "clearSearchLabel",
@@ -21074,7 +21074,7 @@
               "type": "Ref<HTMLDivElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the root `<div>`."
             }
           ],
           "nativeProps": true
@@ -21296,7 +21296,7 @@
               "type": "Ref<HTMLInputElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native `<input>`."
             }
           ],
           "nativeProps": true
@@ -21507,7 +21507,7 @@
               "type": "Ref<HTMLTextAreaElement>",
               "required": false,
               "default": null,
-              "description": ""
+              "description": "Ref to the native `<textarea>`."
             }
           ],
           "nativeProps": true
@@ -21690,7 +21690,7 @@
               "type": "ReactNode",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The app. Components below it can show toasts."
             },
             {
               "name": "placement",
@@ -22214,7 +22214,7 @@
               "type": "readonly TourStep[]",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "The steps, in order. Each has a `title` and a `body`, and may point at a `target` on the page."
             },
             {
               "name": "open",
@@ -22263,7 +22263,7 @@
               "type": "TourLabels",
               "required": true,
               "default": null,
-              "description": ""
+              "description": "Every user-facing string of the card, in the app's language."
             },
             {
               "name": "spotlightPadding",

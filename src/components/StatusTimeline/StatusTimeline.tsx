@@ -38,7 +38,10 @@ export type StatusTimelineTrack = {
   nodes: StatusTimelineNode[];
 };
 
-export type StatusTimelineProps = HTMLAttributes<HTMLDivElement> & { tracks: StatusTimelineTrack[] };
+export type StatusTimelineProps = HTMLAttributes<HTMLDivElement> & {
+  /** The tracks, in order. Each lists its nodes; a track with no nodes is left out. */
+  tracks: StatusTimelineTrack[];
+};
 
 const NODE_TONE: Record<StatusTimelineNodeState, BadgeTone> = {
   needsTimestamp: "neutral",

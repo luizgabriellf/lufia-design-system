@@ -23,6 +23,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "prefix
   invalid?: boolean;
   /** Goes on the box that draws the border; the native input gets the rest props. */
   className?: string;
+  /** Ref to the native `<input>`. */
   ref?: Ref<HTMLInputElement>;
 };
 

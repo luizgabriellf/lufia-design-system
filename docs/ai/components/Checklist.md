@@ -27,7 +27,7 @@ A read-only list of items, each with a status icon and text. It reports where th
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly ChecklistItem[]` | yes |  |  |
+| `items` | `readonly ChecklistItem[]` | yes |  | The entries, in order. Each has a `text` and a `status`. Renders nothing when empty. |
 | `title` | `ReactNode` | no |  | A visible title above the list. It also names the list for screen readers. |
 | `statusLabels` | `Partial<Record<ChecklistStatus, string>>` | no |  | The status in words, read before the item text ("Done", "Needs attention"). Strings come from the app. A status without a label is conveyed by its icon alone, so give one for every status the list uses. |
 | `density` | `"sm" \| "md"` | no | `"md"` | `md` (default) or `sm`, a tighter row for dense panels. |

@@ -25,6 +25,7 @@ export type FilterLinksItem = {
 export type FilterLinksProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   /** Accessible name of the group ("Filter by status"). Required: a page can have more than one navigation. */
   label: string;
+  /** The filters, in order. Each is a link to the same list with that filter applied. */
   items: readonly FilterLinksItem[];
   /** Key of the current filter. Its link gets `aria-current="true"`. Leave it out when none is current. */
   value?: string;
@@ -34,6 +35,7 @@ export type FilterLinksProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
    * widths are hard to scan. The narrowest column is `--lufia-filter-links-column-min` (default `9rem`).
    */
   layout?: "wrap" | "grid";
+  /** Ref to the `<nav>` element. */
   ref?: Ref<HTMLElement>;
 };
 

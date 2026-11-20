@@ -28,7 +28,7 @@ A vertical, connected timeline of obligations or steps grouped into tracks. Each
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tracks` | `StatusTimelineTrack[]` | yes |  |  |
+| `tracks` | `StatusTimelineTrack[]` | yes |  | The tracks, in order. Each lists its nodes; a track with no nodes is left out. |
 
 Other native element attributes pass through to the root element.
 

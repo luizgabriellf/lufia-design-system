@@ -29,10 +29,10 @@ and meta line, and an optional call to action.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  |  |
-| `title` | `string` | yes |  |  |
-| `description` | `string` | no |  |  |
-| `meta` | `string` | no |  |  |
+| `tone` | `"ok" \| "warn" \| "danger" \| "critical" \| "neutral"` | yes |  | The severity of the state: sets the colour and the status glyph. `critical` draws like `danger`. Pass `toneLabel` too when the tone carries meaning. |
+| `title` | `string` | yes |  | The card heading, an `<h3>`. |
+| `description` | `string` | no |  | A sentence under the title that says what the state means. |
+| `meta` | `string` | no |  | A quieter line under the description, for a date or other detail. |
 | `action` | `ReactNode` | no |  | Call-to-action rendered under the copy (a button or link). |
 | `toneLabel` | `string` | no |  | Text that names the tone for assistive technology (for example "Overdue"). The tone is otherwise conveyed by colour and a glyph only, so pass it whenever the tone carries meaning. |
 

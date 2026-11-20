@@ -4,9 +4,11 @@ import styles from "./PageHeader.module.css";
 export type PageHeaderProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   /** Small line above the title: the section or the parent record. */
   eyebrow?: ReactNode;
+  /** The page heading, rendered at `headingLevel`. */
   title: ReactNode;
   /** Heading level of `title`. Defaults to 1: a page has one. */
   headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** A sentence under the title that says what the page is for. */
   description?: ReactNode;
   /** Page-level actions, usually a `PageActions`. They wrap under the text on narrow screens. */
   actions?: ReactNode;

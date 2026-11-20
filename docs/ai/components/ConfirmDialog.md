@@ -46,7 +46,7 @@ with `role="alertdialog"`, two buttons, a destructive variant and a busy state.
 | `message` | `ReactNode` | yes |  | The consequence, in a sentence or two. Read out when the dialog opens. |
 | `confirmLabel` | `string` | yes |  | Text of the confirming button. Name the action ("Delete invoice"), not "OK". |
 | `cancelLabel` | `string` | yes |  | Text of the cancelling button. |
-| `onConfirm` | `() => void` | yes |  |  |
+| `onConfirm` | `() => void` | yes |  | Called when the user presses the confirm button. Not called while `busy`. |
 | `onCancel` | `() => void` | yes |  | Cancel button, Escape and a click on the backdrop. Not called while `busy`. |
 | `destructive` | `boolean` | no | `false` | The action cannot be undone: the confirm button is styled as dangerous and focus starts on Cancel. |
 | `busy` | `boolean` | no | `false` | The confirmed action is running. The dialog refuses to close (no Escape, outside click or Cancel), keeps focus where it is and marks the confirm button `aria-busy`. Clear it when the action settles. |

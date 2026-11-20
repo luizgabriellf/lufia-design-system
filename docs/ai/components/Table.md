@@ -102,7 +102,7 @@ No props of its own. Native element attributes pass through.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `icon` | `ReactNode` | no |  | Decorative illustration or icon (hidden from assistive technology). |
-| `body` | `string` | no |  |  |
+| `body` | `string` | no |  | A sentence under the title that explains why, or what to do next. |
 | `action` | `ReactNode` | no |  | Next step, usually a button or link. |
 | `colSpan` | `number` | yes |  | The number of columns, so the message spans the whole row. |
 | `title` | `string` | no |  | Headline of the titled empty state. Leave it out to render `children` as one muted, centred line instead (`icon`, `body` and `action` are then ignored). |

@@ -40,6 +40,7 @@ export type PendingSubmitProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "
    * button is pending the ring replaces it and the button keeps its width.
    */
   iconStart?: ReactNode;
+  /** Ref to the `<button>`. */
   ref?: Ref<HTMLButtonElement>;
 };
 

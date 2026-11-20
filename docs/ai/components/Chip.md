@@ -37,7 +37,7 @@ removable chip whose only interactive part is its remove button.
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is 24px high and `md` 28px on a fine pointer. A coarse pointer keeps the look and widens the hit area only. |
 | `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"neutral"` | Colour family from the semantic tokens: `neutral` (default) is the plain look, `accent` the accent subtle fill, and `success`, `warning` and `danger` the status fills. Colour never carries the meaning alone: the label does. A selected toggle chip keeps the selected look whatever the tone. |
 | `disabled` | `boolean` | no | `false` | Dims the chip and ignores activation. For a removable chip it disables the remove button. |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the chip's element: the `<button>` when it can be activated, otherwise a `<span>`. |
 | `onClick` | `MouseEventHandler<HTMLButtonElement>` | no |  | Makes the chip a button that applies a suggestion or a filter. `aria-expanded`, `aria-haspopup` and `aria-controls` reach the button, so a chip can open a popover or a menu. |
 | `selected` | `boolean` | no |  | Makes the chip a toggle: `true` or `false` is exposed as `aria-pressed`, and selected looks like the accent subtle fill with the accent border and text. Leave it out for an action chip, which has no pressed state. |
 | `onRemove` | `MouseEventHandler<HTMLButtonElement>` | no |  | Called when the remove button is activated. Makes the chip removable. |

@@ -72,7 +72,7 @@ Run in this order and stop at the first failure. `npm run check` runs 1 to 7 and
 6. `npm run contrast` (WCAG 2.2 AA for every text and UI pair, every theme and mode)
 7. `npm run verify:motion` (motion rules over `src`)
 8. `npm run build` (tsup plus type declarations)
-9. `npm run verify:ai-docs` (AI layer is not stale and leaks no denylisted identifier when a denylist is configured; see `docs/ai/README.md`), then `npm run verify:consumer-smoke` (the generated consumer smoke page matches the manifest)
+9. `npm run verify:ai-docs` (AI layer is not stale, every exported prop has a JSDoc description, and leaks no denylisted identifier when a denylist is configured; see `docs/ai/README.md`), then `npm run verify:consumer-smoke` (the generated consumer smoke page matches the manifest)
 10. `npm run build-storybook` (also publishes the llms files and the agent index into `storybook-static`)
 11. `npm run test:coverage` (floor enforced in `vitest.config.ts`)
 12. `npm run test:consumer:next` (after `build`; the `consumer` CI job; packed package in a Next.js 16 App Router app that renders every manifest component: those without `"use client"` in a Server Component, the rest through a client boundary)
@@ -107,7 +107,7 @@ still `Verify`.
 - **RSC safety.** Static components carry no `"use client"`. Add it only to components that use state, effects, refs to the
   DOM or event handlers they own. The consumer smoke renders every component in a real Next.js app, so a missing directive fails CI.
 - **API conventions.** `className` and rest props go to the root element, `ref` is a prop (React 19), state is exposed as
-  `data-*` attributes, no boolean-prop explosion. Props carry JSDoc: it feeds the manifest.
+  `data-*` attributes, no boolean-prop explosion. Props carry JSDoc: it feeds the manifest, and `npm run verify:ai-docs` fails on an exported prop without a description.
 - **Accessibility is a gate.** Every component has a vitest-axe test, keyboard behaviour that follows the WAI-ARIA pattern,
   visible focus, and works at 320 / 390 / 768 / 1440 px, at 200% zoom, in light and dark, and under `forced-colors`.
 - **Reduced motion.** Honour `prefers-reduced-motion`; animate only `transform` and `opacity`; nothing over 300 ms. Rules in

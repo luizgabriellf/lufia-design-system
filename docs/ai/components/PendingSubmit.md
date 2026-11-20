@@ -37,7 +37,7 @@ pending label, and for a long wait moves through further labels.
 | `size` | `"sm" \| "md" \| "lg"` | no |  | Size of the underlying `Button`. Ignored with `variant="unstyled"`. |
 | `fullWidth` | `boolean` | no |  | Stretches to the full width of its container. Ignored with `variant="unstyled"`. |
 | `iconStart` | `ReactNode` | no |  | Decorative icon before the label, hidden from assistive technology. It sits in the idle label layer, so while the button is pending the ring replaces it and the button keeps its width. |
-| `ref` | `Ref<HTMLButtonElement>` | no |  |  |
+| `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `<button>`. |
 
 Other native element attributes pass through to the root element.
 

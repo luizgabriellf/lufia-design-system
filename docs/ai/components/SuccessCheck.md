@@ -27,7 +27,7 @@ A check mark whose stroke draws in once as it appears. The shared "it worked" ma
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 | `title` | `string` | no |  | Makes the icon meaningful: rendered as an SVG `<title>`, with `role="img"`. Without `title` or `aria-label` the icon is decorative and hidden from assistive technology. Prefer naming the button or link that holds the icon instead. |
 | `size` | `IconSize` | no | `16` | Rendered size: a number of px, or a size token of `Icon` (`sm`, `md`, `lg`, `1em`). Default 16. |
 

@@ -34,8 +34,8 @@ A determinate progress bar: a native `progressbar` role with its value, drawn as
 | `max` | `number` | no | `100` | The value that means done. Defaults to 100. |
 | `label` | `string` | yes |  | Accessible name of the bar ("Storage used"). Required: a progress bar without a name is announced as a bare number. |
 | `valueText` | `string` | no |  | Spoken instead of the percentage when the number alone is not enough ("12 of 40 steps"). |
-| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` |  |
-| `size` | `"sm" \| "md"` | no | `"md"` |  |
+| `tone` | `"accent" \| "success" \| "warning" \| "danger" \| "neutral"` | no | `"accent"` | Colour of the fill. Default `accent`. It only reinforces: the label and the percentage carry the meaning. |
+| `size` | `"sm" \| "md"` | no | `"md"` | Thickness of the track: `md` (default, 10px) or the thinner `sm` (6px). |
 | `animateChanges` | `boolean` | no | `false` | Animate later changes of `value` with a `transform: scaleX` transition. Off by default: `value` then applies at once. The fill keeps its full width and is scaled, so no layout property animates. A non-zero value never draws thinner than 2% of the track. The end cap is scaled with the fill, so it flattens slightly for small values. Removed under reduced motion. |
 
 Other native element attributes pass through to the root element.

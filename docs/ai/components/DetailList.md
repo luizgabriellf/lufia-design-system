@@ -27,7 +27,7 @@ Key-value rows for detail panels and modals, rendered as a native description li
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `rows` | `DetailListRow[]` | yes |  |  |
+| `rows` | `DetailListRow[]` | yes |  | The label and value pairs, in order. |
 
 Other native element attributes pass through to the root element.
 

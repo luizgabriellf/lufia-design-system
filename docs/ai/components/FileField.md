@@ -54,7 +54,7 @@ with messages you provide, and the chosen files are listed with a remove button 
 | `onReject` | `(rejections: FileRejection[]) => void` | no |  | Called with files that were refused, after the message is shown. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the root element. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native file input. |
 
 Other native element attributes pass through to the root element.
 

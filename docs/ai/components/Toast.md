@@ -40,7 +40,7 @@ themselves and wait while they are hovered or focused. Mount `ToastProvider` onc
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The app. Components below it can show toasts. |
 | `placement` | `"bottom-end" \| "bottom-start" \| "top-end" \| "top-start"` | no | `"bottom-end"` | Corner of the viewport the stack sits in. Default `bottom-end`. |
 | `limit` | `number` | no | `5` | The most toasts shown at once; older ones leave first. Default 5. |
 | `duration` | `number` | no | `DEFAULT_DURATION_MS` | Default time before a toast closes, in ms. Default 5000. Errors and toasts with an action stay until dismissed. |

@@ -13,6 +13,15 @@ describe("component manifest", () => {
       .exports.find((e) => e.name === name)
       .props.find((p) => p.name === propName);
 
+  it("describes every prop of every exported component", () => {
+    const undescribed = manifest.components.flatMap((c) =>
+      c.exports.flatMap((e) =>
+        (e.props ?? []).filter((p) => !p.description).map((p) => `${e.name}.${p.name}`),
+      ),
+    );
+    expect(undescribed).toEqual([]);
+  });
+
   it("joins a hard-wrapped bullet of an MDX section instead of cutting it at the first line", () => {
     const notes = component("StackedBar").a11y.notes;
     expect(notes[0]).toMatch(/^The root is a `role="group"`.*its share \("Active 48 \(62%\)"\)\.$/);

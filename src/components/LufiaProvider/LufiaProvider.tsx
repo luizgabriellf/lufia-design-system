@@ -11,6 +11,7 @@ import {
 } from "react";
 
 export type LinkComponentProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  /** Where the link goes. */
   href: string;
   /** React 19 passes `ref` as a prop; a link component should forward it to the anchor. */
   ref?: Ref<HTMLAnchorElement>;
@@ -57,6 +58,7 @@ export type LufiaProviderProps = {
   linkComponent?: LinkComponent;
   /** Aria-only text, merged over the defaults (and over an outer provider). */
   labels?: Partial<LufiaLabels>;
+  /** The app. Every component below it reads the link component and labels. */
   children: ReactNode;
 };
 

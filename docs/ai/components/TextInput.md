@@ -36,7 +36,7 @@ icons.
 | `suffix` | `ReactNode` | no |  | Content after the text: a unit, a button. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. Inside a field the error does it. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native `<input>`. |
 
 Other native element attributes pass through to the root element.
 
