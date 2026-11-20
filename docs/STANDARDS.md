@@ -1,6 +1,6 @@
 # Standards checklist
 
-This file lists what `lufia-design-system` needs in order to meet the bar set by mature public design systems (Shopify Polaris, GitHub Primer, Atlassian, IBM Carbon, Adobe Spectrum, GOV.UK). Every item has a status: `[ ]` todo, `[~]` partial, `[x]` done (a tick means the repository contains the work and a gate or a file proves it; last audited against v0.33.0). Items that need a decision before work starts are marked **DECISION**.
+This file lists what `lufia-design-system` needs in order to meet the bar set by mature public design systems (Shopify Polaris, GitHub Primer, Atlassian, IBM Carbon, Adobe Spectrum, GOV.UK). Every item has a status: `[ ]` todo, `[~]` partial, `[x]` done (a tick means the repository contains the work and a gate or a file proves it; last audited against v0.71.0). Items that need a decision before work starts are marked **DECISION**.
 
 ---
 
@@ -25,7 +25,7 @@ This file lists what `lufia-design-system` needs in order to meet the bar set by
 - [x] One status family: `StatusIcon` (`success`, `warning`, `danger`, `info`, `pending`, `neutral`, `needsInput`), each tone a distinct shape so it reads without colour. Every status marker in the package uses it.
 
 ## 3. Components: API conventions
-- [ ] One API style guide (`docs/API_CONVENTIONS.md`):
+- [x] One API style guide ([API_CONVENTIONS.md](API_CONVENTIONS.md)):
   - prop naming (`variant`, `size`, `tone`, `disabled`, `onOpenChange`);
   - controlled and uncontrolled modes;
   - `className` passthrough and rest props spread onto the root element;

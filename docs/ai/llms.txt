@@ -138,10 +138,11 @@ The package is pre-1.0 and not on npm yet: consuming apps install from a git tag
 ## Docs
 
 - [Standards checklist](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/STANDARDS.md): What every component must meet: tokens, a11y, API conventions, status labels.
-- [Motion rules](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/MOTION.md): Motion principles, tokens, reduced-motion policy and the lufia-verify-motion CLI.
+- [API conventions](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/API_CONVENTIONS.md): How props, callbacks and states are named and shaped across components.
 
 ## Optional
 
+- [Motion rules](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/MOTION.md): Motion principles, tokens, reduced-motion policy and the lufia-verify-motion CLI.
 - [Roadmap](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/ROADMAP.md): Rules for every component and the delivery phases.
 - [Contributing](https://github.com/luizgabriellf/lufia-design-system/blob/main/CONTRIBUTING.md): Workflow, definition of done, changesets, versioning.
 - [Architecture decisions](https://github.com/luizgabriellf/lufia-design-system/blob/main/docs/adr/README.md): Why tokens are DTCG, how it is distributed, why widgets are custom.
