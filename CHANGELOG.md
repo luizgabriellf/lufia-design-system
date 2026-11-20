@@ -1,5 +1,13 @@
 # @lufia/design-system
 
+## 0.73.0
+
+### Minor Changes
+
+- [#252](https://github.com/luizgabriellf/lufia-design-system/pull/252) [`360e436`](https://github.com/luizgabriellf/lufia-design-system/commit/360e4366bf5034755f1bc070524a08abcf591209) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - New tokens `--lufia-control-height` (2.75rem) and `--lufia-control-height-sm` (2rem). Form controls and the rows that hold them read their height from them, so a theme can set density in one place. No visual change at the default values.
+
+- [#253](https://github.com/luizgabriellf/lufia-design-system/pull/253) [`96ac616`](https://github.com/luizgabriellf/lufia-design-system/commit/96ac6167f06487ece5cc61e9f3b8b867c78bdc78) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Toast`: on touch screens a toast can be swiped sideways to dismiss it. It follows the finger, leaves in the direction of the swipe past 40% of its width or on a quick flick, and returns otherwise. The close button and the timer are unchanged.
+
 ## 0.72.0
 
 ### Minor Changes
