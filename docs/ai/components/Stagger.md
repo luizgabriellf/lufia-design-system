@@ -30,13 +30,14 @@ Children that enter in sequence on mount: each fades in and rises a few pixels, 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `as` | `"div" \| "ol" \| "ul"` | no | `"div"` | The element the group renders as. `"div"` (default), or `"ul"` / `"ol"` so the group is a real list: pass `li` elements as children and they are the direct children of the list, with no wrapper in between. |
 | `limit` | `number` | no | `5` | How many children get their own step. Children after the limit enter together with the last one, so the whole sequence is at most `limit - 1` steps long (about 120 ms of delay at the default). Defaults to 5, and values above 8 are treated as 8, so the total delay stays short whatever is passed. |
 
 Other native element attributes pass through to the root element.
 
 ## Types
 
-- `StaggerProps`: `HTMLAttributes<HTMLDivElement> & { limit?: number | undefined; }`
+- `StaggerProps`: `HTMLAttributes<HTMLElement> & { as?: "div" | "ol" | "ul" | undefined; limit?: number | undefined; }`
 
 ## Example
 
@@ -71,4 +72,5 @@ Reads these semantic tokens: `--lufia-motion-distance-rise`, `--lufia-motion-dur
 - `components-motion-stagger--long-list`
 - `components-motion-stagger--low-limit`
 - `components-motion-stagger--as-list`
+- `components-motion-stagger--semantic-list`
 - `components-motion-stagger--all-themes`

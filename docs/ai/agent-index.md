@@ -109,7 +109,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Reveal [motion]: show* variant appear onExited
 - RouteTransition [motion]: transitionKey* variant
 - Skeleton [motion]: variant width height still label
-- Stagger [motion]: limit
+- Stagger [motion]: as limit
 
 ### Utilities
 

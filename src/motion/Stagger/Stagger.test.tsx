@@ -104,6 +104,50 @@ describe("Stagger", () => {
     expect(screen.getByTestId("s")).toHaveClass("extra");
   });
 
+  it("renders a div by default", () => {
+    render(
+      <Stagger data-testid="s">
+        <p>one</p>
+      </Stagger>,
+    );
+    expect(screen.getByTestId("s").tagName).toBe("DIV");
+  });
+
+  it.each(["ul", "ol"] as const)("renders as a semantic %s with li children as direct children", (as) => {
+    render(
+      <Stagger as={as} limit={2} aria-label="Items">
+        <li>one</li>
+        <li>two</li>
+        <li>three</li>
+      </Stagger>,
+    );
+    const list = screen.getByRole("list", { name: "Items" });
+    expect(list.tagName).toBe(as.toUpperCase());
+    expect(Array.from(list.children).map((child) => child.tagName)).toEqual(["LI", "LI", "LI"]);
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(["one", "two", "three"].map((text) => index(screen.getByText(text)))).toEqual(["0", "1", "1"]);
+  });
+
+  it("marks a list root under reduced motion", () => {
+    mockReducedMotion(true);
+    render(
+      <Stagger as="ul" data-testid="s">
+        <li>one</li>
+      </Stagger>,
+    );
+    expect(screen.getByTestId("s")).toHaveAttribute("data-reduced");
+  });
+
+  it("has no axe violations as a list", async () => {
+    const { container } = render(
+      <Stagger as="ul">
+        <li>one</li>
+        <li>two</li>
+      </Stagger>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <Stagger>
