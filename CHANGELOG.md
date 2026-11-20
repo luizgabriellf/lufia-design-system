@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.68.0
+
+### Minor Changes
+
+- [#238](https://github.com/luizgabriellf/lufia-design-system/pull/238) [`e586539`](https://github.com/luizgabriellf/lufia-design-system/commit/e586539dffb9c9a39bc3a9e23835720ef3bb4787) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Stagger` can now render as a real list: pass `as="ul"` or `as="ol"` with `li` children and they stay the direct children of the list, so list semantics are intact (the default is still a `div`). In `Menu`, native link items (`native` with `href`, `download`, `target`, `rel`) now add `rel="noopener noreferrer"` automatically for `target="_blank"` when no `rel` is given, and a disabled native item is rendered without `href`.
+
 ## 0.67.1
 
 ### Patch Changes
