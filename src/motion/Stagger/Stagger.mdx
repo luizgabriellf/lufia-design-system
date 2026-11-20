@@ -65,6 +65,8 @@ Strings in the snippet are plain literals. In your app they arrive through props
 ### Notes
 
 - For a real list, pass `as="ul"` or `as="ol"` and `li` children: they stay the direct children of the list, so the list and list item roles are intact. The default is a `div`.
+- For a description list, pass `as="dl"` and `div` children that each wrap a `dt` and its `dd`.
+- `ref` reaches the root element, whatever `as` is, for measuring it or observing its size.
 - Children must be React elements that accept `style` (every DOM element does). Text nodes are left alone.
 - It runs when the group mounts. Re-renders never replay it. To replay, change the `key`.
 - Use it for the first paint of a group, not for every data refresh.
