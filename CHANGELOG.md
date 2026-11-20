@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.67.0
+
+### Minor Changes
+
+- [#234](https://github.com/luizgabriellf/lufia-design-system/pull/234) [`fb078ff`](https://github.com/luizgabriellf/lufia-design-system/commit/fb078ffd9ae0e00c6be39381eebb9db86efe7222) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `IconButton` now shows the package tooltip instead of a native `title` attribute: it appears on mouse hover and keyboard focus, is `aria-hidden` (the `aria-label` stays the name) and no `title` attribute is rendered. Consuming apps that query an icon button by title should query by accessible name. New props: `tooltipPlacement` (default `top`) and `tooltip` (default `true`; pass `false` when you wrap the button in your own `Tooltip`). `MoreActions` and `NotificationCenter` hide the tooltip while their popup is open.
+
 ## 0.66.0
 
 ### Minor Changes
