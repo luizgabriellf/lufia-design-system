@@ -42,6 +42,9 @@ All defined in `tokens/` (DTCG) and built to `--lufia-motion-*` in `tokens.css`.
 | `--lufia-motion-easing-spring`             | `cubic-bezier(0.34, 1.26, 0.64, 1)`, or a `linear()` spring where supported | Small elements travelling under about 2 rem                                   |
 | `--lufia-motion-scale-press`               | 0.97                                                                        | Buttons, icon buttons, switch thumbs, checkbox and radio marks, while pressed |
 | `--lufia-motion-scale-press-subtle`        | 0.985                                                                       | Rows, cards, tabs, chips, menu items, pagination and segments, while pressed  |
+| `--lufia-motion-scale-enter`               | 0.96                                                                        | Anchored panels (menus, popovers) arriving                                    |
+| `--lufia-motion-scale-enter-subtle`        | 0.98                                                                        | Large surfaces (dialogs, command palettes) arriving                           |
+| `--lufia-motion-scale-exit`                | 0.98                                                                        | Any surface leaving: a smaller move than its arrival                          |
 | `--lufia-motion-distance-nudge`            | 0.25 rem                                                                    | Small controls and indicators                                                 |
 | `--lufia-motion-distance-rise`             | 0.375 rem                                                                   | Content and page entrances                                                    |
 | `--lufia-motion-distance-slide`            | 0.5 rem                                                                     | List rows and panels                                                          |
@@ -68,7 +71,7 @@ deterministic). Rules:
 ## Reduced motion
 
 Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufia-motion-duration-*` to `0.01ms` and every
-`--lufia-motion-distance-*` to `0rem`, and both `--lufia-motion-scale-press*` tokens to `1`. So:
+`--lufia-motion-distance-*` to `0rem`, and every `--lufia-motion-scale-*` token to `1`. So:
 
 - **Token-driven CSS needs no extra work.** The end state is reached at once. The duration is `0.01ms` and not `0` so that
   `transitionend` and `animationend` still fire.

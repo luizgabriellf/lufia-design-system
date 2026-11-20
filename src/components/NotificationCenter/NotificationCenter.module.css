@@ -101,14 +101,15 @@
 @keyframes popover-in {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+    transform: scale(var(--lufia-motion-scale-enter))
+      translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
   }
 }
 
 @keyframes popover-out {
   to {
     opacity: 0;
-    transform: scale(0.98);
+    transform: scale(var(--lufia-motion-scale-exit));
   }
 }
 

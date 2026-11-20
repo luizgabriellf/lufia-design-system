@@ -60,14 +60,14 @@
 @keyframes popover-in {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: scale(var(--lufia-motion-scale-enter));
   }
 }
 
 @keyframes popover-out {
   to {
     opacity: 0;
-    transform: scale(0.98);
+    transform: scale(var(--lufia-motion-scale-exit));
   }
 }
 
