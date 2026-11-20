@@ -105,6 +105,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - AnimatedNumber [motion]: value* format duration
 - ChangeHighlight [motion]: value*
 - Collapse [motion]: open*
+- ListTransition [motion]: items* getKey* as itemClassName
 - Reveal [motion]: show* variant appear onExited
 - RouteTransition [motion]: transitionKey* variant
 - Skeleton [motion]: variant width height still label

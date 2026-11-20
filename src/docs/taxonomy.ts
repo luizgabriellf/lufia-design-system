@@ -335,6 +335,13 @@ export const ENTRIES: Entry[] = [
     "motion",
   ),
   c("Collapse", "Motion", "Animates the height of content that opens and closes.", undefined, "motion"),
+  c(
+    "ListTransition",
+    "Motion",
+    "Animates the items of a list as they are added and removed.",
+    undefined,
+    "motion",
+  ),
   c("Reveal", "Motion", "Fades and lifts content in as it enters, once.", undefined, "motion"),
   c(
     "RouteTransition",
