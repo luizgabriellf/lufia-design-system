@@ -846,7 +846,129 @@ describe("Combobox placement", () => {
     await user.click(box());
     const root = box().closest("[data-placement]") as HTMLElement;
     expect(root).toHaveAttribute("data-placement", "bottom");
-    expect(root.style.getPropertyValue("--combobox-list-max")).toBe("96px");
+    // Room below is 80 - 12 = 68px: the cap follows it (it used to be raised to a 6rem floor, 96px).
+    expect(root.style.getPropertyValue("--combobox-list-max")).toBe("68px");
+  });
+
+  it("never caps the list above the room left, down to one option row", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(2000);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      if (this.dataset.clip) return rect(400, 490);
+      return rect(400, 440);
+    });
+    render(
+      <div data-clip="true" style={{ overflowY: "auto" }}>
+        <Combobox aria-label="City" options={options} {...texts} />
+      </div>,
+    );
+    await user.click(box());
+    const root = box().closest("[data-placement]") as HTMLElement;
+    expect(root).toHaveAttribute("data-placement", "bottom");
+    // 50 - 12 = 38px, under one 44px option row: the floor applies.
+    expect(root.style.getPropertyValue("--combobox-list-max")).toBe("44px");
+  });
+
+  it("opens on the larger side when neither reaches the comfortable height", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(2000);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      if (this.dataset.clip) return rect(300, 500);
+      return rect(400, 440);
+    });
+    render(
+      <div data-clip="true" style={{ overflowY: "auto" }}>
+        <Combobox aria-label="City" options={options} {...texts} />
+      </div>,
+    );
+    await user.click(box());
+    const root = box().closest("[data-placement]") as HTMLElement;
+    // Above 100px, below 60px: the list goes up and takes 100 - 12 = 88px.
+    expect(root).toHaveAttribute("data-placement", "top");
+    expect(root.style.getPropertyValue("--combobox-list-max")).toBe("88px");
+  });
+
+  describe("with a visual viewport", () => {
+    type Listener = () => void;
+    const fakeViewport = (init: { height: number; offsetTop?: number; scale?: number }) => {
+      const listeners = new Map<string, Set<Listener>>();
+      const view = {
+        height: init.height,
+        offsetTop: init.offsetTop ?? 0,
+        scale: init.scale ?? 1,
+        addEventListener: vi.fn((type: string, listener: Listener) => {
+          listeners.set(type, (listeners.get(type) ?? new Set()).add(listener));
+        }),
+        removeEventListener: vi.fn((type: string, listener: Listener) => {
+          listeners.get(type)?.delete(listener);
+        }),
+      };
+      const fire = (type: string) => listeners.get(type)?.forEach((listener) => listener());
+      Object.defineProperty(window, "visualViewport", { value: view, configurable: true });
+      return { view, fire, listeners };
+    };
+
+    afterEach(() => {
+      Object.defineProperty(window, "visualViewport", { value: undefined, configurable: true });
+    });
+
+    it("bounds the list by the visible rectangle, not the window", async () => {
+      const user = userEvent.setup();
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(30, 70));
+      fakeViewport({ height: 130 });
+      renderCombobox();
+      await user.click(box());
+      const root = box().closest("[data-placement]") as HTMLElement;
+      // Below: 130 - 70 = 60, minus 12 (above is only 30, so the list stays below).
+      expect(root.style.getPropertyValue("--combobox-list-max")).toBe("48px");
+    });
+
+    it("ignores the visual viewport while the page is pinch-zoomed", async () => {
+      const user = userEvent.setup();
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(30, 70));
+      fakeViewport({ height: 130, scale: 2 });
+      renderCombobox();
+      await user.click(box());
+      const root = box().closest("[data-placement]") as HTMLElement;
+      expect(root.style.getPropertyValue("--combobox-list-max")).toBe("");
+    });
+
+    it("re-measures on a visual viewport resize and stops listening when closed", async () => {
+      const user = userEvent.setup();
+      const frames: FrameRequestCallback[] = [];
+      vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => frames.push(callback));
+      vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(30, 70));
+      const { view, fire, listeners } = fakeViewport({ height: 800 });
+      renderCombobox();
+      await user.click(box());
+      const root = box().closest("[data-placement]") as HTMLElement;
+      expect(root.style.getPropertyValue("--combobox-list-max")).toBe("");
+      view.height = 130;
+      act(() => {
+        fire("resize");
+        fire("scroll");
+      });
+      expect(frames).toHaveLength(1);
+      act(() => frames.shift()!(0));
+      expect(root.style.getPropertyValue("--combobox-list-max")).toBe("48px");
+      await user.keyboard("{Escape}");
+      expect(listeners.get("resize")?.size).toBe(0);
+      expect(listeners.get("scroll")?.size).toBe(0);
+    });
+  });
+
+  it("works without a visual viewport", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(800);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(rect(100, 140));
+    expect(window.visualViewport ?? undefined).toBeUndefined();
+    renderCombobox();
+    await user.click(box());
+    expect(box().closest("[data-placement]")).toHaveAttribute("data-placement", "bottom");
+    await user.keyboard("{Escape}");
   });
 
   it("measures against the intersection of every clipping ancestor", async () => {
