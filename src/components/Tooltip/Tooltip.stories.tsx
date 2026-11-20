@@ -76,7 +76,7 @@ export const OnlyName: Story = {
 export const OnIconButton: Story = {
   render: () => (
     <Tooltip content="Opens the workspace settings">
-      {(trigger) => <IconButton {...trigger} title="" icon={<SettingsIcon />} aria-label="Settings" />}
+      {(trigger) => <IconButton {...trigger} tooltip={false} icon={<SettingsIcon />} aria-label="Settings" />}
     </Tooltip>
   ),
 };

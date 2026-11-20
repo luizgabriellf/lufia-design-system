@@ -10386,7 +10386,7 @@
         {
           "name": "IconButton",
           "kind": "component",
-          "description": "A button that shows only an icon. It shares `Button`'s variants, sizes, loading state and link rendering, and adds a required `aria-label` and a `title` tooltip. A theme sets `--lufia-icon-button-size` to change the box of every size.",
+          "description": "A button that shows only an icon. It shares `Button`'s variants, sizes, loading state and link rendering, and adds a required `aria-label` and the package tooltip (`aria-hidden`: the name is not announced twice). A theme sets `--lufia-icon-button-size` to change the box of every size.",
           "props": [
             {
               "name": "ref",
@@ -10414,7 +10414,7 @@
               "type": "string",
               "required": false,
               "default": null,
-              "description": "Tooltip text. Defaults to `aria-label`, so sighted mouse users get the same name."
+              "description": "The tooltip text. Defaults to `aria-label`, so sighted users get the same name. It is the package tooltip, not a native `title` attribute: none is rendered."
             },
             {
               "name": "variant",
@@ -10457,6 +10457,20 @@
               "required": true,
               "default": null,
               "description": "The icon. Decorative: the name comes from `aria-label`."
+            },
+            {
+              "name": "tooltipPlacement",
+              "type": "\"end\" | \"top\" | \"bottom\" | \"start\"",
+              "required": false,
+              "default": "\"top\"",
+              "description": "The side of the button the tooltip opens on; it flips when it does not fit. Default `top`."
+            },
+            {
+              "name": "tooltip",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Shows the tooltip on hover and keyboard focus. Default `true`. Turn it off when you wrap the button in your own `Tooltip`, or while a menu or popover it opens is showing. A `disabled` or `loading` button never shows one."
             },
             {
               "name": "disabled",
@@ -10612,7 +10626,7 @@
           "name": "IconButtonProps",
           "kind": "type",
           "description": "",
-          "definition": "(Omit<AsButton, \"children\" | \"size\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\"> | Omit<AsLink, \"children\" | \"size\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\">) & { size?: IconButtonSize | undefined; shape?: IconButtonShape | undefined; \"aria-label\": string; icon: ReactNode; title?: string | undefined; }"
+          "definition": null
         },
         {
           "name": "IconButtonShape",
@@ -10628,7 +10642,6 @@
         }
       ],
       "aliases": {
-        "IconButtonProps": "(Omit<AsButton, \"children\" | \"size\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\"> | Omit<AsLink, \"children\" | \"size\" | \"fullWidth\" | \"iconStart\" | \"iconEnd\">) & { size?: IconButtonSize | undefined; shape?: IconButtonShape | undefined; \"aria-label\": string; icon: ReactNode; title?: string | undefined; }",
         "IconButtonShape": "\"default\" | \"circle\"",
         "IconButtonSize": "\"sm\" | \"md\" | \"lg\" | \"xl\""
       },
@@ -10662,6 +10675,14 @@
           {
             "export": "CustomTitle",
             "id": "components-actions-iconbutton--custom-title"
+          },
+          {
+            "export": "TooltipBelow",
+            "id": "components-actions-iconbutton--tooltip-below"
+          },
+          {
+            "export": "NoTooltip",
+            "id": "components-actions-iconbutton--no-tooltip"
           },
           {
             "export": "MediaPlay",
@@ -10718,7 +10739,11 @@
         "keyboard": [
           {
             "keys": "Tab",
-            "action": "Moves focus to the button (a disabled one is skipped)"
+            "action": "Moves focus to the button and shows its tooltip (a disabled one is skipped)"
+          },
+          {
+            "keys": "Escape",
+            "action": "Hides the tooltip; focus stays"
           },
           {
             "keys": "Enter / Space",
@@ -10727,8 +10752,8 @@
         ],
         "keyboardNotes": null,
         "notes": [
-          "`aria-label` is the accessible name. `title` shows the same text as a tooltip for mouse users; it is not relied on as the name.",
-          "The title tooltip is not shown on touch or to keyboard users, which is why the name must not depend on it.",
+          "`aria-label` is the accessible name. The tooltip shows the same text, is `aria-hidden` and is never the name, so nothing is announced twice.",
+          "The tooltip shows on keyboard focus and mouse hover, not on touch, which is why the name must not depend on it.",
           "The icon is hidden from assistive technology.",
           "The target is 2.5rem square at the default size (2rem at `sm`, 2.75rem on coarse pointers), above the WCAG 2.5.8 minimum.",
           "Focus ring, loading and forced-colors behaviour are those of `Button`."

@@ -254,6 +254,7 @@ export function NotificationCenter({
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={open ? dialogId : undefined}
+        tooltip={!open}
         variant={variant}
         size={size}
         onClick={() => {

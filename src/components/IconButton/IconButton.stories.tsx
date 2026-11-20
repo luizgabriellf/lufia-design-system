@@ -14,13 +14,14 @@ const meta = {
     variant: { control: "inline-radio", options: VARIANTS },
     size: { control: "inline-radio", options: ["sm", "md", "lg", "xl"] },
     shape: { control: "inline-radio", options: ["default", "circle"] },
+    tooltipPlacement: { control: "inline-radio", options: ["top", "bottom", "start", "end"] },
   },
 } satisfies Meta<typeof IconButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Hover it: the tooltip is the `title`, which defaults to the accessible name. */
+/** Hover or focus it with the keyboard: the package tooltip shows the `title`, which defaults to the accessible name. */
 export const Default: Story = {};
 export const Secondary: Story = {
   args: { variant: "secondary", icon: <SearchIcon size={18} />, "aria-label": "Search" },
@@ -32,6 +33,8 @@ export const Disabled: Story = { args: { disabled: true } };
 export const Loading: Story = { args: { variant: "primary", loading: true } };
 export const AsLink: Story = { args: { href: "#settings", variant: "secondary" } };
 export const CustomTitle: Story = { args: { title: "Settings (S)" } };
+export const TooltipBelow: Story = { args: { tooltipPlacement: "bottom" } };
+export const NoTooltip: Story = { args: { tooltip: false } };
 
 function Poster() {
   return (

@@ -55,6 +55,8 @@ By default the text is a description (`aria-describedby`): the control already h
 name of an icon-only control, use `relation="label"`: `aria-labelledby` then points at a visually hidden copy of the text
 that is always in the page. Prefer a real `aria-label` when you can.
 
+`IconButton` already shows this tooltip for its own name. When you wrap one in `Tooltip` to say more, pass `tooltip={false}` to it so two do not show.
+
 <Canvas of={Stories.OnIconButton} />
 <Canvas of={Stories.OnlyName} />
 

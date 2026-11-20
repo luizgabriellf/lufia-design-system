@@ -46,6 +46,19 @@ border and text, which differs from rest and from hover, and a thicker `Highligh
 
 <Canvas of={Stories.Pressed} />
 
+### Tooltip
+
+The tooltip is the package `Tooltip` behaviour, not a native `title` attribute: no `title` is rendered, so a browser tooltip
+never shows a second time. It shows on mouse hover after a short delay and on keyboard focus, and goes away on Escape, blur and
+scroll. Its text is `aria-label`; `title` overrides it (for a shortcut hint, say). `tooltipPlacement` picks the side (`top` by
+default). `tooltip={false}` turns it off, for a button you wrap in your own `Tooltip`, or while a menu it opens is showing.
+Your own `onPointerEnter`, `onPointerLeave`, `onFocus`, `onBlur` and `onKeyDown` still run. Tests that looked a button up by its
+title should query by accessible name (`getByRole("button", { name })`).
+
+<Canvas of={Stories.CustomTitle} />
+<Canvas of={Stories.TooltipBelow} />
+<Canvas of={Stories.NoTooltip} />
+
 ### Large circular media control
 
 `size="xl"` is 4rem and `shape="circle"` makes the box round with equal sides. Together they make a control over a poster or a
@@ -71,15 +84,16 @@ player. The icon is 1.75rem at `xl`; `--lufia-icon-button-icon-size` changes it.
 
 ### Keyboard
 
-| Key           | Action                                                |
-| ------------- | ----------------------------------------------------- |
-| Tab           | Moves focus to the button (a disabled one is skipped) |
-| Enter / Space | Activates a button; Enter activates a link            |
+| Key           | Action                                                                      |
+| ------------- | --------------------------------------------------------------------------- |
+| Tab           | Moves focus to the button and shows its tooltip (a disabled one is skipped) |
+| Escape        | Hides the tooltip; focus stays                                              |
+| Enter / Space | Activates a button; Enter activates a link                                  |
 
 ### Accessibility
 
-- `aria-label` is the accessible name. `title` shows the same text as a tooltip for mouse users; it is not relied on as the name.
-- The title tooltip is not shown on touch or to keyboard users, which is why the name must not depend on it.
+- `aria-label` is the accessible name. The tooltip shows the same text, is `aria-hidden` and is never the name, so nothing is announced twice.
+- The tooltip shows on keyboard focus and mouse hover, not on touch, which is why the name must not depend on it.
 - The icon is hidden from assistive technology.
 - The target is 2.5rem square at the default size (2rem at `sm`, 2.75rem on coarse pointers), above the WCAG 2.5.8 minimum.
 - Focus ring, loading and forced-colors behaviour are those of `Button`.
