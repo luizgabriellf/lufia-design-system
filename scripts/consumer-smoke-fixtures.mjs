@@ -46,6 +46,7 @@ export const FIXTURES = {
     trigger: `(props) => <button type="button" {...props}>Open</button>`,
   },
   Popover: { trigger: `(props) => <button type="button" {...props}>Open</button>` },
+  Tooltip: { children: `(props) => <button type="button" {...props}>Hint</button>` },
   Tour: {
     steps: `[{ title: "Step", body: "Body" }]`,
     labels: `{

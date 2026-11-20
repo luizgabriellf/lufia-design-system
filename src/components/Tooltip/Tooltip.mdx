@@ -1,0 +1,128 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./Tooltip.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="Tooltip"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+A short text that names or explains one control. It appears when the pointer rests on the control or when it gets keyboard
+focus, and goes away when either leaves.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+`children` is a function that receives the props the control needs (the pointer, focus and key handlers, plus the
+`aria-describedby` or `aria-labelledby` link) and returns the one focusable element, so any button or link component works.
+
+```tsx
+import { Tooltip } from "@lufia/design-system/components/Tooltip";
+
+<Tooltip content="Export the table as CSV">
+  {(props) => (
+    <Button variant="secondary" {...props}>
+      Export
+    </Button>
+  )}
+</Tooltip>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer. Put your own
+handlers before the spread, or call the given ones from yours: the spread replaces a handler of the same name.
+
+</Section>
+
+<Section id="examples">
+
+### Placement
+
+`placement` is the side of the control (`top` by default, `bottom`, `start`, `end`; the last two follow the writing
+direction). It flips to the opposite side when it does not fit, and stays inside the viewport.
+
+<Canvas of={Stories.Below} />
+<Canvas of={Stories.AtEnd} />
+
+### Name or description
+
+By default the text is a description (`aria-describedby`): the control already has a name. When the tooltip is the only
+name of an icon-only control, use `relation="label"`: `aria-labelledby` then points at a visually hidden copy of the text
+that is always in the page. Prefer a real `aria-label` when you can.
+
+<Canvas of={Stories.OnIconButton} />
+<Canvas of={Stories.OnlyName} />
+
+### Delay, off and long text
+
+Hover waits 250 ms (`delay`) so sweeping across a toolbar does not flicker; keyboard focus shows it at once. `disabled`
+turns it off. Long text wraps at a readable width.
+
+<Canvas of={Stories.NoDelay} />
+<Canvas of={Stories.LongText} />
+
+### Portal and clipping
+
+The tooltip is portalled to `document.body` (or into the open modal the control sits in) and placed with
+`position: fixed`, so an ancestor with `overflow: hidden` cannot clip it. It stacks at `--lufia-z-tooltip`. What the
+control's subtree sets that the body does not (a nested theme scope, direction, language, inline `--lufia-*` properties)
+is copied onto it. It is not rendered on the server or during hydration.
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Keyboard
+
+| Key      | Where    | Action                                         |
+| -------- | -------- | ---------------------------------------------- |
+| Tab      | Anywhere | Focus on the control shows the tooltip at once |
+| Escape   | Anywhere | Hides the tooltip; focus stays where it is     |
+| Tab away | Control  | Blur hides it                                  |
+
+### Accessibility
+
+- It follows the WAI-ARIA tooltip pattern: `role="tooltip"`, linked from the control by `aria-describedby` (or
+  `aria-labelledby` with `relation="label"`), never focusable and never holding interactive content.
+- It meets WCAG 1.4.13: dismissible with Escape without moving the pointer or focus, hoverable (the pointer can move onto
+  it and it stays), and persistent until the pointer or focus leaves, Escape is pressed or the page scrolls.
+- A touch hover never shows it (a tap would leave it stuck); keyboard focus does. Touch users do not see it, so never put
+  information in it that is not available another way.
+- Enter and exit are a fade with the motion tokens; under `prefers-reduced-motion` it appears and disappears at once. In
+  forced-colors mode its border is `CanvasText`.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Naming an icon-only control, or adding a few words of context to a control whose label is short.
+- A collapsed rail or toolbar where the label is hidden.
+
+### When not to use
+
+- Content with a link, a button or a form: use `Popover`.
+- Help that every user needs, including on touch: use visible help text or a `FormField` hint.
+- Errors and status: use `Banner`, `Toast` or the field's error text.
+
+### Content guidelines
+
+One short phrase, no full stop for a fragment, no markup. Do not repeat the control's visible label.
+
+</Section>

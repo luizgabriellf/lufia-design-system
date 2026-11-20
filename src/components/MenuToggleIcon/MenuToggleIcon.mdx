@@ -1,0 +1,82 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./MenuToggleIcon.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="MenuToggleIcon"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+Three bars that turn into a cross. It is the icon of the button that opens and closes a menu or a navigation sheet.
+
+<Canvas of={Stories.InIconButton} />
+
+### Usage
+
+```tsx
+import { IconButton } from "@lufia/design-system/components/IconButton";
+import { MenuToggleIcon } from "@lufia/design-system/components/MenuToggleIcon";
+
+<IconButton
+  aria-label={open ? "Close menu" : "Open menu"}
+  aria-expanded={open}
+  onClick={() => setOpen(!open)}
+  icon={<MenuToggleIcon open={open} />}
+/>;
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from your copy layer.
+
+</Section>
+
+<Section id="examples">
+
+### States and sizes
+
+<Canvas of={Stories.Closed} />
+<Canvas of={Stories.Open} />
+<Canvas of={Stories.Sizes} />
+
+`size` is the same as every icon: `sm`, `md`, `lg` (the `--lufia-icon-size-*` tokens), `1em` or a number of px. The bars
+take the text colour.
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Closed} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- It is decorative and always `aria-hidden`; it cannot take a `title` or an `aria-label`. The button that holds it carries
+  the name and `aria-expanded`, and the name should say what the press will do.
+- The bars move with `transform` and `opacity` only, using the fast motion duration and the in-out easing. Under
+  `prefers-reduced-motion` the icon swaps between the two shapes with no movement.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- The trigger of a menu, drawer or navigation sheet, so the same control shows that it is open.
+
+### When not to use
+
+- A disclosure or an accordion: those turn a chevron, as `Disclosure` does.
+- A control whose icon must say something else when open: use two named icons.
+
+</Section>

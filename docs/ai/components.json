@@ -11755,6 +11755,115 @@
       ]
     },
     {
+      "name": "MenuToggleIcon",
+      "category": "Utilities",
+      "summary": "Three bars that morph into a cross, for the button that opens and closes a menu or a navigation sheet.",
+      "status": "beta",
+      "source": "src/components/MenuToggleIcon",
+      "entry": {
+        "subpath": "@lufia/design-system/components/MenuToggleIcon",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "MenuToggleIcon",
+          "kind": "component",
+          "description": "Three bars that turn into a cross when `open`, for the button that opens and closes a menu or a navigation sheet. It is decorative and always `aria-hidden`: the button that holds it carries the name and `aria-expanded`. It is sized like every icon (`size`: `sm`, `md`, `lg`, `1em` or a number of px) and draws with `currentColor`. The bars move with `transform` and `opacity` only, using the motion tokens, and swap without movement under `prefers-reduced-motion`.",
+          "props": [
+            {
+              "name": "ref",
+              "type": "Ref<SVGSVGElement>",
+              "required": false,
+              "default": null,
+              "description": ""
+            },
+            {
+              "name": "size",
+              "type": "IconSize",
+              "required": false,
+              "default": null,
+              "description": "Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`."
+            },
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": true,
+              "default": null,
+              "description": "`true` draws the cross, `false` the three bars. The bars morph between the two when the value changes."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "MenuToggleIconProps",
+          "kind": "type",
+          "description": "",
+          "definition": "Omit<IconProps, \"children\" | \"aria-hidden\" | \"aria-label\" | \"aria-labelledby\" | \"title\"> & { open: boolean; }"
+        }
+      ],
+      "aliases": {
+        "MenuToggleIconProps": "Omit<IconProps, \"children\" | \"aria-hidden\" | \"aria-label\" | \"aria-labelledby\" | \"title\"> & { open: boolean; }"
+      },
+      "story": {
+        "docsId": "components-utilities-menutoggleicon--docs",
+        "stories": [
+          {
+            "export": "Closed",
+            "id": "components-utilities-menutoggleicon--closed"
+          },
+          {
+            "export": "Open",
+            "id": "components-utilities-menutoggleicon--open"
+          },
+          {
+            "export": "InIconButton",
+            "id": "components-utilities-menutoggleicon--in-icon-button"
+          },
+          {
+            "export": "Sizes",
+            "id": "components-utilities-menutoggleicon--sizes"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-utilities-menutoggleicon--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/MenuToggleIcon/MenuToggleIcon.mdx",
+        "overview": "Three bars that turn into a cross. It is the icon of the button that opens and closes a menu or a navigation sheet.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { IconButton } from \"@lufia/design-system/components/IconButton\";\nimport { MenuToggleIcon } from \"@lufia/design-system/components/MenuToggleIcon\";\n\n<IconButton\n  aria-label={open ? \"Close menu\" : \"Open menu\"}\n  aria-expanded={open}\n  onClick={() => setOpen(!open)}\n  icon={<MenuToggleIcon open={open} />}\n/>;"
+        },
+        "whenToUse": [
+          "The trigger of a menu, drawer or navigation sheet, so the same control shows that it is open."
+        ],
+        "whenNotToUse": [
+          "A disclosure or an accordion: those turn a chevron, as `Disclosure` does.",
+          "A control whose icon must say something else when open: use two named icons."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "It is decorative and always `aria-hidden`; it cannot take a `title` or an `aria-label`. The button that holds it carries the name and `aria-expanded`, and the name should say what the press will do.",
+          "The bars move with `transform` and `opacity` only, using the fast motion duration and the in-out easing. Under `prefers-reduced-motion` the icon swaps between the two shapes with no movement."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": true,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-motion-duration-fast",
+        "--lufia-motion-easing-in-out"
+      ]
+    },
+    {
       "name": "Modal",
       "category": "Overlays",
       "summary": "A dialog that interrupts the page and traps focus until it is dismissed.",
@@ -21652,6 +21761,200 @@
         "--lufia-toast-radius",
         "--lufia-toast-width",
         "--lufia-z-toast"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "category": "Overlays",
+      "summary": "A short, non-interactive text that names or explains a control on hover and keyboard focus.",
+      "status": "beta",
+      "source": "src/components/Tooltip",
+      "entry": {
+        "subpath": "@lufia/design-system/components/Tooltip",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "Tooltip",
+          "kind": "component",
+          "description": "A short text that names or explains a control on hover and keyboard focus. It shows on mouse and pen hover after a short delay and on focus-visible, never on a touch hover, and goes away on Escape, blur, leaving and scroll; it stays while the pointer is over it (WCAG 1.4.13). It is portalled to the body, flips to the opposite side when it does not fit, fades in and out, and shows no motion under `prefers-reduced-motion`. Never put interactive content in it, and never put information in it that is not available another way: touch users do not see it. For richer content use `Popover`.",
+          "props": [
+            {
+              "name": "children",
+              "type": "(props: TooltipTrigger) => ReactNode",
+              "required": true,
+              "default": null,
+              "description": "Renders the one focusable element the tooltip belongs to and spreads the given props onto it: `{(props) => <IconButton {...props} icon={...} aria-label=\"Save\" />}`. Put your own handlers before the spread, or call the given ones from them: the spread replaces a handler of the same name."
+            },
+            {
+              "name": "content",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "The text of the tooltip. Short and non-interactive: a hovering person can move onto it, but it never takes focus."
+            },
+            {
+              "name": "placement",
+              "type": "\"end\" | \"top\" | \"bottom\" | \"start\"",
+              "required": false,
+              "default": "\"top\"",
+              "description": "Which side of the trigger it opens on (`start` and `end` follow the writing direction). It flips to the opposite side when it does not fit. Default `top`."
+            },
+            {
+              "name": "relation",
+              "type": "\"description\" | \"label\"",
+              "required": false,
+              "default": "\"description\"",
+              "description": "How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can."
+            },
+            {
+              "name": "delay",
+              "type": "number",
+              "required": false,
+              "default": "TOOLTIP_DELAY_MS",
+              "description": "Milliseconds a hovering pointer waits before the tooltip shows. Keyboard focus shows it at once. Default 250."
+            },
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Turns the tooltip off without changing the tree, for example while a menu the control opens is showing."
+            }
+          ],
+          "nativeProps": false
+        },
+        {
+          "name": "TooltipProps",
+          "kind": "type",
+          "description": "",
+          "definition": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"description\" | \"label\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }"
+        },
+        {
+          "name": "TooltipTriggerProps",
+          "kind": "type",
+          "description": "",
+          "definition": "TooltipHandlers & { \"aria-describedby\"?: string | undefined; \"aria-labelledby\"?: string | undefined; }"
+        }
+      ],
+      "aliases": {
+        "TooltipProps": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"description\" | \"label\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }",
+        "TooltipTriggerProps": "TooltipHandlers & { \"aria-describedby\"?: string | undefined; \"aria-labelledby\"?: string | undefined; }"
+      },
+      "story": {
+        "docsId": "components-overlays-tooltip--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-overlays-tooltip--default"
+          },
+          {
+            "export": "Below",
+            "id": "components-overlays-tooltip--below"
+          },
+          {
+            "export": "AtStart",
+            "id": "components-overlays-tooltip--at-start"
+          },
+          {
+            "export": "AtEnd",
+            "id": "components-overlays-tooltip--at-end"
+          },
+          {
+            "export": "NoDelay",
+            "id": "components-overlays-tooltip--no-delay"
+          },
+          {
+            "export": "Disabled",
+            "id": "components-overlays-tooltip--disabled"
+          },
+          {
+            "export": "OnlyName",
+            "id": "components-overlays-tooltip--only-name"
+          },
+          {
+            "export": "OnIconButton",
+            "id": "components-overlays-tooltip--on-icon-button"
+          },
+          {
+            "export": "FlipsNearTheEdge",
+            "id": "components-overlays-tooltip--flips-near-the-edge"
+          },
+          {
+            "export": "LongText",
+            "id": "components-overlays-tooltip--long-text"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-overlays-tooltip--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/Tooltip/Tooltip.mdx",
+        "overview": "A short text that names or explains one control. It appears when the pointer rests on the control or when it gets keyboard\nfocus, and goes away when either leaves.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { Tooltip } from \"@lufia/design-system/components/Tooltip\";\n\n<Tooltip content=\"Export the table as CSV\">\n  {(props) => (\n    <Button variant=\"secondary\" {...props}>\n      Export\n    </Button>\n  )}\n</Tooltip>;"
+        },
+        "whenToUse": [
+          "Naming an icon-only control, or adding a few words of context to a control whose label is short.",
+          "A collapsed rail or toolbar where the label is hidden."
+        ],
+        "whenNotToUse": [
+          "Content with a link, a button or a form: use `Popover`.",
+          "Help that every user needs, including on touch: use visible help text or a `FormField` hint.",
+          "Errors and status: use `Banner`, `Toast` or the field's error text."
+        ],
+        "contentGuidelines": "One short phrase, no full stop for a fragment, no markup. Do not repeat the control's visible label."
+      },
+      "a11y": {
+        "pattern": {
+          "label": "Tooltip",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/"
+        },
+        "keyboard": [
+          {
+            "keys": "Tab",
+            "action": "Anywhere | Focus on the control shows the tooltip at once"
+          },
+          {
+            "keys": "Escape",
+            "action": "Anywhere | Hides the tooltip; focus stays where it is"
+          },
+          {
+            "keys": "Tab away",
+            "action": "Control | Blur hides it"
+          }
+        ],
+        "keyboardNotes": null,
+        "notes": [
+          "It follows the WAI-ARIA tooltip pattern: `role=\"tooltip\"`, linked from the control by `aria-describedby` (or `aria-labelledby` with `relation=\"label\"`), never focusable and never holding interactive content.",
+          "It meets WCAG 1.4.13: dismissible with Escape without moving the pointer or focus, hoverable (the pointer can move onto it and it stays), and persistent until the pointer or focus leaves, Escape is pressed or the page scrolls.",
+          "A touch hover never shows it (a tap would leave it stuck); keyboard focus does. Touch users do not see it, so never put information in it that is not available another way.",
+          "Enter and exit are a fade with the motion tokens; under `prefers-reduced-motion` it appears and disappears at once. In forced-colors mode its border is `CanvasText`."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": [
+        "--lufia-border-width-thin",
+        "--lufia-color-bg-surface-solid",
+        "--lufia-color-border-subtle",
+        "--lufia-color-text-default",
+        "--lufia-font-size-sm",
+        "--lufia-font-weight-medium",
+        "--lufia-motion-duration-exit",
+        "--lufia-motion-duration-fast",
+        "--lufia-motion-easing-in",
+        "--lufia-motion-easing-out",
+        "--lufia-radius-control",
+        "--lufia-shadow-md",
+        "--lufia-space-1",
+        "--lufia-space-3",
+        "--lufia-z-tooltip"
       ]
     },
     {

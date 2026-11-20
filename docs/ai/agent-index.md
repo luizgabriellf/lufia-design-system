@@ -23,17 +23,17 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - Checkbox: label* hint error indeterminate size
 - ChoiceTile: label* disabled eyebrow description selected emphasis size fullWidth
-- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading resultsLabel +10
+- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading +11
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid
-- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step startName +7
-- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles locale +5
+- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step +8
+- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles +6
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
-- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength maxTotalLength +9
-- OptionRow: title* disabled eyebrow description meta leading trailing selected density truncate highlighted +3
+- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength +10
+- OptionRow: title* disabled eyebrow description meta leading trailing selected density truncate +4
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
-- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue onValueChange +5
-- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel invalid
-- SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width size
+- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue +6
+- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel +1
+- SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width +1
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
 - TextInput: size prefix suffix invalid
@@ -41,17 +41,18 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 ### Overlays
 
-- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading groupOrder +6
-- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement classNames +3 | also useConfirmDialog
-- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen onOpenChange placement +2
-- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted renderAs +14
-- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups summary +16 | also NotificationPanel NotificationSummary
+- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading +7
+- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement +4 | also useConfirmDialog
+- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen onOpenChange +3
+- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted +15
+- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups +17 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
-- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus resolveTarget +7
+- Tooltip: content* placement relation delay disabled
+- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus +8
 
 ### Navigation
 
-- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger primaryAction +30 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
+- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger +31 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
 - FilterLinks: label* items* value layout
 - NavRow: title* description meta badge icon href onClick disabled
 - PageHeader: title* eyebrow headingLevel description actions
@@ -71,7 +72,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Card: title headingLevel description headerAction footer href padding flush divider
 - Checklist: items* title statusLabels density
 - CitationList: items* title
-- ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues bandLabel columnLabel
+- ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues bandLabel +1
 - DetailAttentionCard: tone* title* description meta action toneLabel
 - DetailList: rows*
 - DetailSectionCard: title* description icon action
@@ -82,14 +83,14 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - SortableTh: dir* label* active* onSort* abbr wrap
 - Sparkline: values* label* variant tone
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
-- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel deltaTone +7
+- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel +8
 - StatusTimeline: tracks*
-- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns density footer +1 | also TableBody TableEmpty TableFoot +4
+- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns density +2 | also TableBody TableEmpty TableFoot +4
 - TableToolbar: filters activeFilter onFilterChange search onSearchChange searchPlaceholder clearSearchLabel variant
 
 ### Feedback
 
-- Banner: variant title icon action onDismiss dismissLabel size lead live focusOnMount animateIn
+- Banner: variant title icon action onDismiss dismissLabel size lead live focusOnMount +1
 - EmptyState: title* icon body action
 - SkeletonCard: padding header lines block still
 - SkeletonPageHeader: eyebrow description actions still
@@ -114,6 +115,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - ChartKit: types only
 - Icon: size title | also ArrowDownIcon ArrowLeftIcon ArrowRightIcon +48
 - LufiaProvider: linkComponent labels | also LufiaLink useLufia
+- MenuToggleIcon: open* size
 - VisuallyHidden
 
 ### Hooks
