@@ -28,7 +28,7 @@ expands into a numbered row with connectors that fill as the user progresses.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `steps` | `StepDef[]` | yes |  |  |
+| `steps` | `StepDef[]` | yes |  | The steps, in order. The step at `current` is active, the ones before it are done. |
 | `current` | `number` | yes |  | Index of the active step (0-based). |
 | `onStepClick` | `(index: number) => void` | no |  | Optional: jump to an already-visited step. |
 

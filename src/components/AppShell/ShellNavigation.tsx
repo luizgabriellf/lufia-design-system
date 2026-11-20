@@ -5,6 +5,7 @@ import { SidebarGroup, SidebarItem } from "./Sidebar";
 import { findActiveNavKey, navItemHolds, type ShellNavGroup, type ShellNavItem } from "./navigation";
 
 export type ShellNavigationProps = {
+  /** The navigation as data: groups of items. */
   groups: readonly ShellNavGroup[];
   /** The path being shown. Items whose `href` it equals or sits under are current. */
   currentPath?: string;
@@ -12,6 +13,7 @@ export type ShellNavigationProps = {
   isActive?: (item: ShellNavItem) => boolean;
   /** Keys of the open collapsible groups. */
   openGroups: readonly string[];
+  /** Called with a collapsible group's key and its next open state when the user toggles it. */
   onToggleGroup: (key: string, open: boolean) => void;
   /** Key of the item a click is heading to: it looks active before the page arrives, `aria-current` stays put. */
   pendingKey?: string;

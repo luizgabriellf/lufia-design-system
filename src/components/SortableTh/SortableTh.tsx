@@ -5,10 +5,13 @@ import styles from "./SortableTh.module.css";
 export type SortDirection = "asc" | "desc";
 
 export type SortableThProps = Omit<ThHTMLAttributes<HTMLTableCellElement>, "onClick" | "children"> & {
+  /** Column name: the text of the sort button, and its accessible name. */
   label: string;
   /** Whether the table is currently sorted by this column. */
   active: boolean;
+  /** Sort direction, `asc` or `desc`. Drawn as an arrow and set as `aria-sort` only while `active` is true. */
   dir: SortDirection;
+  /** Called when the user activates the header button. Change the sort in it; the header keeps no state. */
   onSort: () => void;
   /** Lets the label wrap onto a second line (balanced, bottom-aligned in the header row), as `Th wrap` does inside a `Table`. */
   wrap?: boolean;

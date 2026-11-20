@@ -59,11 +59,11 @@ no i18n and no data layer.
 | `error` | `ReactNode` | no |  | Replaces the list when loading failed. It is announced as an alert; include the way to retry. |
 | `open` | `boolean` | no |  | Open state. Controlled: pair it with `onOpenChange`. |
 | `defaultOpen` | `boolean` | no | `false` | Initial open state when `open` is not given. For documentation and tests; people open it themselves. |
-| `onOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the user opens or closes the panel (the bell, Escape, a press outside or on the backdrop), whether it is controlled or not. |
 | `presentation` | `"popover" \| "sheet" \| "auto"` | no | `"auto"` | How the open panel is shown. `"popover"` hangs it from the bell as a non-modal dialog. `"sheet"` shows it as a modal bottom sheet over a backdrop that covers the page. `"auto"` (default) is a sheet below 60rem (the `medium` breakpoint) and a popover from there up. |
 | `align` | `"end" \| "start"` | no | `"end"` | Which edge of the bell the popover lines up with. Defaults to the end. |
-| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` |  |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` |  |
+| `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | Size of the bell button. Default `md`. |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger" \| "link"` | no | `"ghost"` | Visual variant of the bell button. Default `ghost`. |
 | `icon` | `ReactNode` | no |  | Replaces the default bell icon. |
 | `maxCount` | `number` | no | `99` | Counts above this show as "99+". Default 99. |
 
@@ -96,7 +96,7 @@ Other native element attributes pass through to the root element.
 | `titleId` | `string` | no |  | Id of the heading, for a host that names its dialog with it. Generated when omitted. |
 | `landmark` | `boolean` | no | `true` | Whether the root is a labelled region (`<section>`). Default `true`. A host that already names the panel, such as the dialog of `NotificationCenter`, sets `false` to get a plain element. |
 | `announce` | `boolean` | no | `true` | Renders the polite live region that announces changes of `unreadCount`. Default `true`; a host that has its own turns it off. |
-| `ref` | `Ref<HTMLElement>` | no |  |  |
+| `ref` | `Ref<HTMLElement>` | no |  | Ref to the root element: a `<section>`, or a `<div>` when `landmark` is `false`. |
 
 Other native element attributes pass through to the root element.
 

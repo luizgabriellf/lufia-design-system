@@ -28,7 +28,7 @@ A number that counts to its new value when `value` changes. It uses `requestAnim
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `number` | yes |  |  |
+| `value` | `number` | yes |  | The number to show. The first render shows it as is; later changes count from the shown number to the new one. |
 | `format` | `(value: number) => string` | no | `String` | Turns the running number into text. Pass a locale-aware formatter; the default is `String`. |
 | `duration` | `number` | no |  | Milliseconds. Defaults to the `--lufia-motion-duration-medium` token, which is ~0 under reduced motion. |
 

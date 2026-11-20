@@ -33,14 +33,14 @@ other, while the card stays on screen. Nothing is made inert and page scroll is 
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `steps` | `readonly TourStep[]` | yes |  |  |
+| `steps` | `readonly TourStep[]` | yes |  | The steps, in order. Each has a `title` and a `body`, and may point at a `target` on the page. |
 | `open` | `boolean` | yes |  | Whether the tour is showing. The app decides when it starts and remembers that it was seen. |
 | `stepIndex` | `number` | no |  | The current step, zero-based. Controlled; pair it with `onStepChange`. |
 | `defaultStepIndex` | `number` | no | `0` | The step a tour that manages its own state starts on each time it opens. Default `0`. |
 | `onStepChange` | `(index: number) => void` | no |  | Called with the next step when the buttons or the arrow keys move. |
 | `onClose` | `(reason: TourCloseReason) => void` | no |  | Called when the person leaves early. The tour does not close itself: set `open` to `false`. |
 | `onFinish` | `() => void` | no |  | Called when the person finishes the last step. Set `open` to `false` here. |
-| `labels` | `TourLabels` | yes |  |  |
+| `labels` | `TourLabels` | yes |  | Every user-facing string of the card, in the app's language. |
 | `spotlightPadding` | `number` | no | `6` | Space between the target and the edge of the spotlight, in pixels. Default `6`. |
 | `targetStatus` | `"ready" \| "seeking" \| "missing" \| "blocked"` | no | `"ready"` | The status of the current step's target, supplied by the host. Default `ready`. |
 | `resolveTarget` | `(step: TourStep) => Element \| null` | no |  | Finds a step's target in place of (and before) `target`. Return `null` to fall back to `target`. Called on every frame while the tour shows, so keep it cheap. It receives the current step. |

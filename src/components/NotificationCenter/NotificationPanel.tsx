@@ -89,6 +89,7 @@ export type NotificationPanelProps = Omit<HTMLAttributes<HTMLElement>, "children
     landmark?: boolean;
     /** Renders the polite live region that announces changes of `unreadCount`. Default `true`; a host that has its own turns it off. */
     announce?: boolean;
+    /** Ref to the root element: a `<section>`, or a `<div>` when `landmark` is `false`. */
     ref?: Ref<HTMLElement>;
   };
 

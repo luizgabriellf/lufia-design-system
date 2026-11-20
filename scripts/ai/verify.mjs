@@ -2,6 +2,7 @@
  * Drift gate for the AI layer (`npm run verify:ai-docs`). Fails when:
  *  - a generated file under docs/ai differs from a fresh regeneration, or is missing, or is stale;
  *  - a component exported from src/index.ts is missing from the committed manifest or has no spec;
+ *  - an exported component has a prop with no JSDoc description in the committed manifest;
  *  - the agent entry files reference a path or an npm script that does not exist.
  */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -37,15 +38,30 @@ for (const m of read("src/index.ts").matchAll(/export \* from "\.\/(components|m
       exportedNames.push(inner[1]);
   }
 }
-const committed = exists(`${OUT}/components.json`)
-  ? JSON.parse(read(`${OUT}/components.json`)).components.map((c) => c.name)
-  : [];
+const committedManifest = exists(`${OUT}/components.json`)
+  ? JSON.parse(read(`${OUT}/components.json`))
+  : null;
+const committed = committedManifest ? committedManifest.components.map((c) => c.name) : [];
 for (const name of exportedNames) {
   if (!committed.includes(name))
     fail(`${name} is exported from src/index.ts but missing from ${OUT}/components.json`);
   if (!exists(`${OUT}/components/${name}.md`))
     fail(`${name} is exported from src/index.ts but has no ${OUT}/components/${name}.md`);
 }
+
+// 2b. Every prop of an exported component carries a JSDoc description: the manifest is how an agent learns what a prop does.
+const undescribed = [];
+for (const component of committedManifest?.components ?? []) {
+  for (const entry of component.exports) {
+    for (const prop of entry.props ?? []) {
+      if (!prop.description) undescribed.push(`${entry.name}.${prop.name}`);
+    }
+  }
+}
+if (undescribed.length > 0)
+  fail(
+    `${undescribed.length} prop(s) have no JSDoc description (add a comment on the prop in its props type, then run \`npm run build:ai-docs\`): ${undescribed.join(", ")}`,
+  );
 
 // 3. Agent entry files: pointers, paths and scripts.
 const scripts = JSON.parse(read("package.json")).scripts;

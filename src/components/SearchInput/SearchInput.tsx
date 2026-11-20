@@ -25,6 +25,7 @@ export type SearchInputProps = Omit<
 > & {
   /** Controlled text. */
   value?: string;
+  /** Initial text when `value` is not given. A form reset restores it. Default `""`. */
   defaultValue?: string;
   /** The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input. */
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -49,6 +50,7 @@ export type SearchInputProps = Omit<
   invalid?: boolean;
   /** Goes on the box that draws the border; the native input gets the rest props. */
   className?: string;
+  /** Ref to the native input. */
   ref?: Ref<HTMLInputElement>;
 };
 

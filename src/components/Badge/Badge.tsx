@@ -6,6 +6,7 @@ export type BadgeTone = "neutral" | "info" | "success" | "warning" | "danger" | 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
   /** The text. Always required: the tone never carries the meaning on its own (WCAG 1.4.1). */
   children: ReactNode;
+  /** Colour family of the badge. Default `neutral`. It only reinforces: the text carries the meaning. */
   tone?: BadgeTone;
   /** A small dot before the text, for statuses that read as a state rather than a label. Decorative. */
   dot?: boolean;

@@ -70,7 +70,12 @@ export type OptionRowProps = Omit<
   interactive?: boolean;
   /** The row's element (the button, or the `render` or static element), so a menu or popover can anchor to it. A trigger's spread props (`aria-expanded` and the rest) pass through. */
   ref?: Ref<HTMLElement>;
+  /** Called when the row is activated. Not called while `disabled`; not available with `interactive={false}`. */
   onClick?: MouseEventHandler<HTMLElement>;
+  /**
+   * The row cannot be chosen: a native `disabled` on the button, or `aria-disabled` on an element given to `render`. No
+   * effect with `interactive={false}`. Default `false`.
+   */
   disabled?: boolean;
   /**
    * The element to render instead of the default `<button>`, such as a router link. It receives the row's class, state,

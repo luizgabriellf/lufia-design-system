@@ -12,6 +12,7 @@ export type SparklineProps = Omit<
   values: readonly number[];
   /** `columns` draws one bar per value from a zero baseline, `line` a trend line scaled to the range. */
   variant?: SparklineVariant;
+  /** Colour of the drawing. Default `accent`. It only reinforces: print the numbers as text too. */
   tone?: ChartTone;
   /**
    * Accessible name: a sentence that carries the numbers ("Deliveries per week: 3, 5, 4, 8"). Pass `null` to hide the

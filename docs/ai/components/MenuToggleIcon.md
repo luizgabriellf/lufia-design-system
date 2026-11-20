@@ -28,7 +28,7 @@ Three bars that turn into a cross. It is the icon of the button that opens and c
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `ref` | `Ref<SVGSVGElement>` | no |  |  |
+| `ref` | `Ref<SVGSVGElement>` | no |  | Ref to the `<svg>` element. |
 | `size` | `IconSize` | no |  | Rendered size: `sm`, `md` or `lg` read `--lufia-icon-size-*` (16, 20 and 24px by default), `1em` follows the font size of the text around it, and a number is a size in px. Default `md`. |
 | `open` | `boolean` | yes |  | `true` draws the cross, `false` the three bars. The bars morph between the two when the value changes. |
 

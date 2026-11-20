@@ -65,7 +65,7 @@ navigation is data, so both layouts always agree.
 | `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation, as data. It renders in the sidebar and again in the phone sheet. |
 | `currentPath` | `string` | no |  | The path being shown: the matching item is current (`aria-current="page"`). |
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`. Return true for the current item. |
-| `labels` | `AppShellLabels` | yes |  |  |
+| `labels` | `AppShellLabels` | yes |  | The shell's accessible names (skip link, navigation, menu, floating bar, sidebar rail button), in the app's language. |
 | `brand` | `Slot` | no |  | Brand or workspace switcher, at the top of the sidebar, the sheet and the phone top bar. A function gets the rail state. |
 | `context` | `Slot` | no |  | Between the brand and the search, in the sidebar, and in the sheet's fixed part under its header (it stays in view while the navigation scrolls; with `hideSheetNavigation` it fills the scrolling body instead): the workspace, company or account the person is in, and a switcher for it. A function gets the surface (see `AppShellSlotState`), so a switcher can open as a dropdown in the sidebar and inline in the sheet. Rendered once per surface, so do not give its parts a fixed `id`. |
 | `footer` | `Slot` | no |  | Bottom of the sidebar, and of the sheet: account, help and sign-out links. |
@@ -82,14 +82,14 @@ navigation is data, so both layouts always agree.
 | `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
 | `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
-| `onMenuOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide layout, so the parent's state does not stay open. |
 | `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
-| `defaultCollapsed` | `boolean` | no | `false` |  |
-| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  |  |
+| `defaultCollapsed` | `boolean` | no | `false` | Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with `parseShellState` to avoid a flash on first paint. |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | no |  | Called with the next collapsed state when the user toggles the rail button. |
 | `openGroups` | `readonly string[]` | no |  | Keys of the open collapsible groups. Controlled; the owner then also decides what arriving on a page opens. |
-| `defaultOpenGroups` | `readonly string[]` | no |  |  |
-| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  |  |
+| `defaultOpenGroups` | `readonly string[]` | no |  | Keys of the collapsible groups that start open when `openGroups` is not given. Leave it out and the groups marked `defaultOpen` start open. The group holding the current page is always opened too. |
+| `onOpenGroupsChange` | `(keys: readonly string[]) => void` | no |  | Called with the keys of all open collapsible groups after the user opens or closes one. |
 | `fixedSidebar` | `boolean` | no | `false` | Hide the rail button. Default `false`. |
 | `routeKey` | `string` | no |  | Identifies the page being shown, usually the pathname. When it changes, the page inside `<main>` enters with a short fade and rise (`RouteTransition`), the route progress bar finishes, and the navigation skeleton gives way. A search-param change or a refresh keeps the key and plays nothing; neither does the first load. Nothing remounts for it. Pass the pathname, not the query string. Wrapping the page adds one element around `children`. |
 | `routePending` | `boolean` | no |  | A navigation to another route has started and the page is not there yet: drives a thin progress bar at the top of the window. Needs `routeKey`. The bar appears only when the wait outlasts 150 ms, so fast navigations do not flash, and, unless you pass this prop, a plain click on a link to another path starts it by itself. |
@@ -124,9 +124,9 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `label` | `string` | yes |  | The accessible name. Shown as text on `search` and `primary`, hidden on `icon`. |
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
-| `icon` | `ReactNode` | no |  |  |
-| `href` | `string` | no |  |  |
-| `onClick` | `() => void` | no |  |  |
+| `icon` | `ReactNode` | no |  | Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the accessible name. |
+| `href` | `string` | no |  | Not set: the control is a `<button>`. |
+| `onClick` | `() => void` | no |  | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. |
 
 Other native element attributes pass through to the root element.
 
@@ -138,7 +138,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `href` | `undefined` | no |  |
+| `href` | `undefined` | no | Not set: the control is a `<button>`. |
 | `onClick` | `MouseEventHandler<HTMLButtonElement>` | no | Native attribute in this form. In every form; only its type differs. |
 | `type` | `"button" \| "submit" \| "reset"` | no | Native attribute in this form. |
 
@@ -146,8 +146,8 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
-| `href` | `string` | yes |  |
-| `onClick` | `() => void` | no | In every form; only its type differs. |
+| `href` | `string` | yes | Makes the control a link, rendered through the configured `linkComponent`. |
+| `onClick` | `() => void` | no | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. In every form; only its type differs. |
 
 ### `MobileFloatBarSeparator`, `ShellPrimaryActionOwner`
 
@@ -157,8 +157,8 @@ No props of its own.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `open` | `boolean` | yes |  |  |
-| `onOpenChange` | `(open: boolean) => void` | yes |  |  |
+| `open` | `boolean` | yes |  | Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With `closeOnNavigate` it is also called when a link inside the sheet is chosen. |
 | `label` | `string` | yes |  | Accessible name of the dialog. |
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
@@ -172,7 +172,7 @@ No props of its own.
 | `inheritThemeFrom` | `RefObject<HTMLElement \| null>` | no |  | An element inside the app's tree (`AppShell` passes its `<main>`). While the sheet is shown, its layer copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of that element that sets them (not from `<html>`, which already applies everywhere), so a theme or mode scoped to part of the page reaches the portalled sheet. Attributes given in `layerProps` win. |
 | `renderAs` | `"portal" \| "dialog"` | no | `"portal"` | `portal` (default) renders a fixed-position layer in a portal, with an animated exit. `dialog` renders a native `<dialog>` opened with `showModal()`, so the sheet sits in the browser's top layer; the page behind is made inert by the browser, the backdrop is the native `::backdrop` and the exit is immediate. Focus trap, Escape, scroll lock, swipe to dismiss and the layer stack work the same in both. |
 | `dock` | `ReactNode` | no |  | A control bar kept in place at the bottom of the screen, above the sheet, while it is shown: `AppShell` passes its floating bar, with the menu button turned into the close button. It is part of the dialog (inside the focus trap, after the sheet's own content), it does not move with a drag, and the end of the sheet keeps clear of it (`--lufia-nav-sheet-dock-clearance`). With a dock the header has no close button of its own: put one in the dock. |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The scrolling body: the navigation. |
 
 Other native element attributes pass through to the root element.
 
@@ -186,7 +186,7 @@ Other native element attributes pass through to the root element.
 | `timeout` | `number` | no | `ROUTE_PROGRESS_TIMEOUT_MS` | Milliseconds a run started by `pending` or from code may show before it ends by itself, for a navigation nothing ever finishes. Default 10 000. `Infinity` (or any value that is not a finite positive number) never cuts it short: use it for pages that can take long and whose `pending` always settles. A run started only by a link click is still capped at 10 seconds (or `timeout`, when shorter), because nothing else tells the bar it was cancelled. |
 | `revealDelay` | `number` | no | `ROUTE_PROGRESS_REVEAL_DELAY_MS` | Milliseconds to wait before showing the bar. Default 150. |
 | `events` | `RouteProgressEvents` | no | `DEFAULT_EVENTS` | The window events that start and end a run from code. Default `ROUTE_PROGRESS_START_EVENT` and `ROUTE_PROGRESS_DONE_EVENT`, which `startRouteProgress()` and `doneRouteProgress()` dispatch. Pass your own names when existing code (or an end-to-end test) already raises events of its own. A started run combines with `pending` and `trackLinks`: the bar shows while any of them is in progress. |
-| `className` | `string` | no |  |  |
+| `className` | `string` | no |  | Class added to the bar's own. |
 
 ### `ShellFooter`
 
@@ -206,28 +206,28 @@ Other native element attributes pass through to the root element.
 | `href` | `string` | no |  | Makes the item a link, rendered through the configured `linkComponent`. Without it the item is a button. |
 | `external` | `boolean` | no | `false` | Render a plain `<a>` that leaves the app (another site), not the router's link. Needs `href`. |
 | `target` | `string` | no |  | Link target, with `href`. `_blank` also sets `rel="noopener noreferrer"` unless `rel` is given. |
-| `rel` | `string` | no |  |  |
+| `rel` | `string` | no |  | Link `rel`, with `href`. Defaults to `noopener noreferrer` for `target="_blank"` on an external link. |
 | `type` | `"button" \| "submit"` | no | `"button"` | Button type. Use `submit` inside a form (a sign-out form). Default `button`. |
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `pending` | `boolean` | no | `false` | The action is running (signing out): dimmed, `aria-busy`, and further clicks are ignored. Focus stays put. |
-| `disabled` | `boolean` | no | `false` |  |
+| `disabled` | `boolean` | no | `false` | Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`. |
 | `count` | `number` | no |  | A number after the label (unread replies). Hidden at 0, "99+" above 99, on the icon in the rail. |
-| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` |  |
+| `countTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"neutral"` | Colour of `count`. Default `neutral`. |
 | `ariaLabel` | `string` | no |  | Accessible name when it should add to the label ("Help, 2 unread"). Keep the visible label in it. |
 | `pressed` | `boolean` | no |  | `pressed` makes it a toggle button (`aria-pressed`): theme, density. Buttons only. |
 | `tone` | `"warning" \| "default"` | no | `"default"` | `warning` colours it as a caution (an admin area). |
-| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
-| `className` | `string` | no |  |  |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called on click, except while `pending`. Calling `preventDefault` on a link stops the navigation. |
+| `className` | `string` | no |  | Class added to the item's own, on the link or button. |
 
 ### `ShellNavigation`
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `groups` | `readonly ShellNavGroup[]` | yes |  |  |
+| `groups` | `readonly ShellNavGroup[]` | yes |  | The navigation as data: groups of items. |
 | `currentPath` | `string` | no |  | The path being shown. Items whose `href` it equals or sits under are current. |
 | `isActive` | `(item: ShellNavItem) => boolean` | no |  | Takes over from `currentPath`: return true for the current item. The first match wins. |
 | `openGroups` | `readonly string[]` | yes |  | Keys of the open collapsible groups. |
-| `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  |  |
+| `onToggleGroup` | `(key: string, open: boolean) => void` | yes |  | Called with a collapsible group's key and its next open state when the user toggles it. |
 | `pendingKey` | `string` | no |  | Key of the item a click is heading to: it looks active before the page arrives, `aria-current` stays put. |
 | `onItemChoose` | `(item: ShellNavItem) => void` | no |  | An item was chosen by a plain click or by keyboard (not an open-in-new-tab click). |
 
@@ -265,7 +265,7 @@ Other native element attributes pass through to the root element.
 | `collapsible` | `boolean` | no | `false` | Turns the heading into a button that shows and hides the items. Needs a `label`. |
 | `open` | `boolean` | no |  | Controlled open state of a collapsible group. |
 | `defaultOpen` | `boolean` | no | `true` | Initial open state when uncontrolled. Default `true`. |
-| `onOpenChange` | `(open: boolean) => void` | no |  |  |
+| `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the user toggles a collapsible group's button. |
 | `current` | `boolean` | no | `false` | The current page is inside this group. While the group is closed its button stands in for it: the active look and `aria-current="true"`. |
 | `children` | `ReactNode` | yes |  | `SidebarItem`s. |
 
@@ -275,10 +275,10 @@ Other native element attributes pass through to the root element.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `label` | `string` | yes |  |  |
+| `label` | `string` | yes |  | The destination's name. Visible beside the icon; in the rail it stays as the accessible name and the tooltip. |
 | `ariaLabel` | `string` | no |  | Accessible name when it should differ from the visible label. Keep the visible label in it (WCAG 2.5.3). |
 | `href` | `string` | no |  | Makes the item a link, rendered through the configured `linkComponent`. |
-| `icon` | `ReactNode` | no |  |  |
+| `icon` | `ReactNode` | no |  | Decorative icon before the label. Shown alone in the rail. |
 | `badge` | `ReactNode` | no |  | A short mark after the label, such as "New". For a number use `count`. |
 | `badgeTone` | `"neutral" \| "success" \| "warning" \| "danger"` | no | `"warning"` | Colour of `badge`. Default `warning`. |
 | `count` | `number` | no |  | A number after the label. Hidden at 0, and capped at `maxCount` ("99+"). In the rail it sits on the icon. |
@@ -287,9 +287,9 @@ Other native element attributes pass through to the root element.
 | `data` | `ShellDataAttributes` | no |  | `data-*` attributes on the link or button (analytics, guided tours, test ids). |
 | `active` | `boolean` | no | `false` | This is the current page: `aria-current="page"` and the active style. |
 | `highlighted` | `boolean` | no |  | Draw the active style without claiming the page: the item a click is heading to, before the page arrives. |
-| `disabled` | `boolean` | no | `false` |  |
-| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  |  |
-| `className` | `string` | no |  |  |
+| `disabled` | `boolean` | no | `false` | Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`. |
+| `onClick` | `(event: MouseEvent<HTMLElement, MouseEvent>) => void` | no |  | Called on click of the link or button. |
+| `className` | `string` | no |  | Class added to the item's own, on the link or button. |
 | `children` | `ReactNode` | no |  | Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never in the rail, where this item stands in for them. |
 | `expanded` | `boolean` | no | `false` | Show the sub-items (`children`). They open and close with the `Collapse` motion. Default `false`. |
 | `currentBranch` | `boolean` | no | `false` | One of the sub-items is the current page. In the rail, where they are hidden, this item takes the active style and `aria-current="true"`; elsewhere it is drawn as the open branch and the sub-item carries `aria-current="page"`. |

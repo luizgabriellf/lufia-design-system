@@ -7,7 +7,9 @@ import styles from "./Link.module.css";
 export type LinkVariant = "inline" | "standalone";
 
 export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children"> & {
+  /** Where the link goes. Rendered through the `linkComponent` of `LufiaProvider`. */
   href: string;
+  /** The link text. */
   children: ReactNode;
   /**
    * Marks the link as external: it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and shows an

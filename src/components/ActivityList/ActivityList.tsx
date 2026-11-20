@@ -22,6 +22,7 @@ export type ActivityItem = {
 };
 
 export type ActivityListProps = Omit<HTMLAttributes<HTMLOListElement>, "children"> & {
+  /** The entries, newest first. The list renders nothing when it is empty. */
   items: readonly ActivityItem[];
   /** Draws a rail with a marker per entry, for a feed read as a sequence. Plain rows by default. */
   timeline?: boolean;

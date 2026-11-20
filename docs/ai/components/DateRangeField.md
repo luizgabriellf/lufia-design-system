@@ -37,13 +37,13 @@ room is narrow.
 | `endLabel` | `ReactNode` | yes |  | The label of the second field ("To"). |
 | `type` | `"date" \| "time" \| "datetime-local" \| "month"` | no | `"date"` | Which native control both ends use. `date` (default), `time`, `datetime-local` or `month`. |
 | `value` | `DateRange` | no |  | Controlled range. |
-| `defaultValue` | `DateRange` | no | `EMPTY` |  |
+| `defaultValue` | `DateRange` | no | `EMPTY` | Initial range when `value` is not given. A form reset restores it. Default both ends empty. |
 | `onValueChange` | `(value: DateRange) => void` | no |  | Called once with the whole range whenever either end changes. The order is enforced: when an edit would put the start after the end, the end just edited is kept and the other end moves to the same value (both ends equal), and the range reported here is already corrected. |
 | `min` | `string` | no | `""` | The earliest value of the range. The end also cannot go below the start. |
 | `max` | `string` | no | `""` | The latest value of the range. The start also cannot go above the end. |
 | `step` | `string \| number` | no |  | The step of both native controls. |
 | `startName` | `string` | no |  | Names the form entries of the two ends, so they submit as `startName=…&endName=…`. |
-| `endName` | `string` | no |  |  |
+| `endName` | `string` | no |  | Form name of the end field, submitted as `endName=…`. |
 | `hint` | `ReactNode` | no |  | Help shown under the group, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text for the group. It marks both ends invalid and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks both ends required; each label shows the mark and the text for assistive technology. |
@@ -51,7 +51,7 @@ room is narrow.
 | `requiredLabel` | `string` | no |  | Text read after a label when `required`. Defaults to the `required` label of `LufiaProvider`. |
 | `clearLabel` | `string` | no |  | The accessible name of the clear buttons, in your language. See `DateField`. |
 | `className` | `string` | no |  | Goes on the fieldset. |
-| `ref` | `Ref<HTMLFieldSetElement>` | no |  |  |
+| `ref` | `Ref<HTMLFieldSetElement>` | no |  | Ref to the `<fieldset>`. |
 
 Other native element attributes pass through to the root element.
 

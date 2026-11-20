@@ -31,6 +31,7 @@ export type ConfirmDialogProps = Pick<
   confirmLabel: string;
   /** Text of the cancelling button. */
   cancelLabel: string;
+  /** Called when the user presses the confirm button. Not called while `busy`. */
   onConfirm: () => void;
   /** Cancel button, Escape and a click on the backdrop. Not called while `busy`. */
   onCancel: () => void;

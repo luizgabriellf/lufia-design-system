@@ -103,6 +103,7 @@ export type SidebarGroupProps = Omit<HTMLAttributes<HTMLDivElement>, "children">
   open?: boolean;
   /** Initial open state when uncontrolled. Default `true`. */
   defaultOpen?: boolean;
+  /** Called with the next open state when the user toggles a collapsible group's button. */
   onOpenChange?: (open: boolean) => void;
   /**
    * The current page is inside this group. While the group is closed its button stands in for it: the active look and
@@ -179,11 +180,13 @@ export function SidebarGroup({
 }
 
 export type SidebarItemProps = {
+  /** The destination's name. Visible beside the icon; in the rail it stays as the accessible name and the tooltip. */
   label: string;
   /** Accessible name when it should differ from the visible label. Keep the visible label in it (WCAG 2.5.3). */
   ariaLabel?: string;
   /** Makes the item a link, rendered through the configured `linkComponent`. */
   href?: string;
+  /** Decorative icon before the label. Shown alone in the rail. */
   icon?: ReactNode;
   /** A short mark after the label, such as "New". For a number use `count`. */
   badge?: ReactNode;
@@ -201,8 +204,13 @@ export type SidebarItemProps = {
   active?: boolean;
   /** Draw the active style without claiming the page: the item a click is heading to, before the page arrives. */
   highlighted?: boolean;
+  /**
+   * Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`.
+   */
   disabled?: boolean;
+  /** Called on click of the link or button. */
   onClick?: (event: MouseEvent<HTMLElement>) => void;
+  /** Class added to the item's own, on the link or button. */
   className?: string;
   /**
    * Sub-items: `SidebarItem`s listed under this one, indented, one level deep. They are shown while `expanded` and never

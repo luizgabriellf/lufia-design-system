@@ -73,9 +73,16 @@ export type CommandPaletteProps = CommandPaletteDataAttributes & {
    * `data-lufia-mode` work too).
    */
   className?: string;
+  /** Whether the palette is shown. Controlled: the parent owns it and updates it from `onOpenChange`. */
   open: boolean;
+  /**
+   * Called with the next open state: `true` on the keyboard shortcut (when `shortcut` is on), `false` on Escape, a press
+   * on the backdrop, the close button, or after a command runs (unless it has `keepOpen`).
+   */
   onOpenChange: (open: boolean) => void;
+  /** The commands, before filtering by the query. Each has a unique `key`, a `label` and an `onSelect`. */
   items: readonly CommandItem[];
+  /** Every user-facing string of the palette, in the app's language. */
   labels: CommandPaletteLabels;
   /**
    * A tip about what can be searched. A node is shown while the field is empty. A function is called with the current

@@ -31,7 +31,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | --- | --- | --- | --- | --- |
 | `onChange` | `ChangeEventHandler<HTMLInputElement, HTMLInputElement> & ChangeEventHandler<HTMLInputElement>` | no |  | The native change event, called on every keystroke before `onValueChange`. Pair it with `value` as with any input. |
 | `value` | `string` | no |  | Controlled text. |
-| `defaultValue` | `string` | no | `""` |  |
+| `defaultValue` | `string` | no | `""` | Initial text when `value` is not given. A form reset restores it. Default `""`. |
 | `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
 | `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
@@ -41,7 +41,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | `loadingLabel` | `string` | no | `"Searching"` | Text announced while `loading`. Aria-only. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `className` | `string` | no |  | Goes on the box that draws the border; the native input gets the rest props. |
-| `ref` | `Ref<HTMLInputElement>` | no |  |  |
+| `ref` | `Ref<HTMLInputElement>` | no |  | Ref to the native input. |
 
 Other native element attributes pass through to the root element.
 

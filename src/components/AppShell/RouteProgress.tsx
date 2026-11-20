@@ -84,6 +84,7 @@ export type RouteProgressProps = {
    * `trackLinks`: the bar shows while any of them is in progress.
    */
   events?: RouteProgressEvents;
+  /** Class added to the bar's own. */
   className?: string;
 };
 

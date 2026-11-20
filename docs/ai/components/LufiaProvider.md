@@ -38,7 +38,7 @@ components fall back on. The package imports no router and no i18n library; this
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `href` | `string` | yes |  |  |
+| `href` | `string` | yes |  | Where the link goes. |
 | `ref` | `Ref<HTMLAnchorElement>` | no |  | React 19 passes `ref` as a prop; a link component should forward it to the anchor. |
 
 Other native element attributes pass through to the root element.
@@ -49,7 +49,7 @@ Other native element attributes pass through to the root element.
 | --- | --- | --- | --- | --- |
 | `linkComponent` | `LinkComponent` | no |  | Renders every navigating element of the package. Defaults to a plain `<a>`. |
 | `labels` | `Partial<LufiaLabels>` | no |  | Aria-only text, merged over the defaults (and over an outer provider). |
-| `children` | `ReactNode` | yes |  |  |
+| `children` | `ReactNode` | yes |  | The app. Every component below it reads the link component and labels. |
 
 ### `useLufia`
 

@@ -26,7 +26,9 @@ export type SwitchInputProps = Omit<
 > & {
   /** The visible label. Clicking it toggles the switch. */
   label: ReactNode;
+  /** Help text under the switch, linked to it with `aria-describedby`. */
   hint?: ReactNode;
+  /** Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. */
   error?: ReactNode;
   /** Submitted as `name=value` while on. Defaults to `"on"`, like a checkbox. */
   value?: string;
@@ -34,6 +36,7 @@ export type SwitchInputProps = Omit<
   onCheckedChange?: (checked: boolean) => void;
   /** Goes on the root element. */
   className?: string;
+  /** Ref to the `<input type="checkbox" role="switch">`. */
   ref?: Ref<HTMLInputElement>;
 };
 

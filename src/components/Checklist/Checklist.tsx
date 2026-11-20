@@ -17,6 +17,7 @@ export type ChecklistItem = {
 };
 
 export type ChecklistProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+  /** The entries, in order. Each has a `text` and a `status`. Renders nothing when empty. */
   items: readonly ChecklistItem[];
   /** A visible title above the list. It also names the list for screen readers. */
   title?: ReactNode;

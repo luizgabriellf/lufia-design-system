@@ -22,6 +22,7 @@ type ChipBaseProps = Omit<HTMLAttributes<HTMLElement>, "children" | "onClick"> &
   tone?: ChipTone;
   /** Dims the chip and ignores activation. For a removable chip it disables the remove button. */
   disabled?: boolean;
+  /** Ref to the chip's element: the `<button>` when it can be activated, otherwise a `<span>`. */
   ref?: Ref<HTMLElement>;
 };
 

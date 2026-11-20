@@ -54,6 +54,7 @@ export type TabsProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "defau
   activation?: "automatic" | "manual";
   /** Keep the panels of tabs that are not chosen in the DOM (hidden) so their state survives. Default `false`: only the chosen panel is rendered. */
   keepMounted?: boolean;
+  /** Ref to the root `<div>`. */
   ref?: Ref<HTMLDivElement>;
 };
 

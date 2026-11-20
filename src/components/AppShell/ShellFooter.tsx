@@ -44,6 +44,7 @@ export type ShellFooterItemProps = ShellDataAttributes & {
   external?: boolean;
   /** Link target, with `href`. `_blank` also sets `rel="noopener noreferrer"` unless `rel` is given. */
   target?: string;
+  /** Link `rel`, with `href`. Defaults to `noopener noreferrer` for `target="_blank"` on an external link. */
   rel?: string;
   /** Button type. Use `submit` inside a form (a sign-out form). Default `button`. */
   type?: "button" | "submit";
@@ -51,9 +52,13 @@ export type ShellFooterItemProps = ShellDataAttributes & {
   active?: boolean;
   /** The action is running (signing out): dimmed, `aria-busy`, and further clicks are ignored. Focus stays put. */
   pending?: boolean;
+  /**
+   * Disables the item. A disabled item with an `href` renders as a disabled button instead of a link. Default `false`.
+   */
   disabled?: boolean;
   /** A number after the label (unread replies). Hidden at 0, "99+" above 99, on the icon in the rail. */
   count?: number;
+  /** Colour of `count`. Default `neutral`. */
   countTone?: ShellBadgeTone;
   /** Accessible name when it should add to the label ("Help, 2 unread"). Keep the visible label in it. */
   ariaLabel?: string;
@@ -61,7 +66,9 @@ export type ShellFooterItemProps = ShellDataAttributes & {
   pressed?: boolean;
   /** `warning` colours it as a caution (an admin area). */
   tone?: "default" | "warning";
+  /** Called on click, except while `pending`. Calling `preventDefault` on a link stops the navigation. */
   onClick?: (event: MouseEvent<HTMLElement>) => void;
+  /** Class added to the item's own, on the link or button. */
   className?: string;
 };
 

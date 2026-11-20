@@ -36,10 +36,10 @@ arrow keys, run with Enter.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `className` | `string` | no |  | Added to the outermost layer, the fixed root that holds the backdrop and the dialog. The palette is portalled out of the app's tree, so a palette or theme an app scopes to a class or a `data-*` attribute on its own wrapper does not reach it: put the same class or attribute here (`data-*` attributes go to the same layer; `data-lufia-theme` and `data-lufia-mode` work too). |
-| `open` | `boolean` | yes |  |  |
-| `onOpenChange` | `(open: boolean) => void` | yes |  |  |
-| `items` | `readonly CommandItem[]` | yes |  |  |
-| `labels` | `CommandPaletteLabels` | yes |  |  |
+| `open` | `boolean` | yes |  | Whether the palette is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with the next open state: `true` on the keyboard shortcut (when `shortcut` is on), `false` on Escape, a press on the backdrop, the close button, or after a command runs (unless it has `keepOpen`). |
+| `items` | `readonly CommandItem[]` | yes |  | The commands, before filtering by the query. Each has a unique `key`, a `label` and an `onSelect`. |
+| `labels` | `CommandPaletteLabels` | yes |  | Every user-facing string of the palette, in the app's language. |
 | `hint` | `ReactNode \| ((state: { query: string; }) => ReactNode)` | no |  | A tip about what can be searched. A node is shown while the field is empty. A function is called with the current query on every render and decides for itself (return `null` to show nothing), so a hint can show for a short query ("Type at least 2 characters"). It is not shown while `bodyOverride` is set. |
 | `hintPlacement` | `"top" \| "bottom"` | no | `"bottom"` | Where the hint sits: `bottom` (default) under the results, `top` above them so it stays in view in a long list. |
 | `notice` | `ReactNode` | no |  | Content above the results that does not replace them (an error from the server search, a warning about stale results). It sits in a region outside the listbox, so it is not an option, and the arrows and Enter keep working on the commands. The palette gives it no role: wrap an error in `role="alert"` and a plain note in nothing. |
