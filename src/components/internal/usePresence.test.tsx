@@ -85,6 +85,9 @@ describe("usePresence", () => {
     try {
       const plain = render(<Probe open />);
       plain.rerender(<Probe open={false} />);
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
       expect(phase()).toBe("closed");
       plain.unmount();
       const skipping = render(<Probe open skip />);
