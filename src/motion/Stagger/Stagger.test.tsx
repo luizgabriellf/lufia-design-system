@@ -128,6 +128,40 @@ describe("Stagger", () => {
     expect(["one", "two", "three"].map((text) => index(screen.getByText(text)))).toEqual(["0", "1", "1"]);
   });
 
+  it("renders as a description list with div groups as direct children", async () => {
+    const { container } = render(
+      <Stagger as="dl" data-testid="s">
+        <div>
+          <dt>Name</dt>
+          <dd>First</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd>Open</dd>
+        </div>
+      </Stagger>,
+    );
+    const list = screen.getByTestId("s");
+    expect(list.tagName).toBe("DL");
+    expect(Array.from(list.children).map((child) => index(child as HTMLElement))).toEqual(["0", "1"]);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("passes ref to the root element", () => {
+    let root: HTMLElement | null = null;
+    render(
+      <Stagger
+        as="ul"
+        ref={(node) => {
+          root = node;
+        }}
+      >
+        <li>one</li>
+      </Stagger>,
+    );
+    expect(root).toBe(screen.getByRole("list"));
+  });
+
   it("marks a list root under reduced motion", () => {
     mockReducedMotion(true);
     render(

@@ -18316,14 +18316,21 @@
         {
           "name": "Stagger",
           "kind": "component",
-          "description": "Children that enter in sequence on mount: each fades in and rises a few pixels, one step after the previous. With `as=\"ul\"` or `as=\"ol\"` it is a semantic list; the children should then be `li` elements. Only the children that are React elements take part (text nodes and Fragments are left as they are: a Fragment has no element to style, so wrap its children in an element). It is CSS: animations play when a node is created, so a re-render never replays them, and only `opacity` and `transform` move, so the layout is final from the first frame and nothing shifts. Under `prefers-reduced-motion` the children are simply there. Children added later enter on their own, with the step they are given at that moment.",
+          "description": "Children that enter in sequence on mount: each fades in and rises a few pixels, one step after the previous. With `as=\"ul\"` or `as=\"ol\"` it is a semantic list; the children should then be `li` elements. With `as=\"dl\"` the children should be `div` groups of `dt` and `dd`. Only the children that are React elements take part (text nodes and Fragments are left as they are: a Fragment has no element to style, so wrap its children in an element). It is CSS: animations play when a node is created, so a re-render never replays them, and only `opacity` and `transform` move, so the layout is final from the first frame and nothing shifts. Under `prefers-reduced-motion` the children are simply there. Children added later enter on their own, with the step they are given at that moment.",
           "props": [
             {
               "name": "as",
-              "type": "\"div\" | \"ol\" | \"ul\"",
+              "type": "\"div\" | \"dl\" | \"ol\" | \"ul\"",
               "required": false,
               "default": "\"div\"",
-              "description": "The element the group renders as. `\"div\"` (default), or `\"ul\"` / `\"ol\"` so the group is a real list: pass `li` elements as children and they are the direct children of the list, with no wrapper in between."
+              "description": "The element the group renders as. `\"div\"` (default), or `\"ul\"` / `\"ol\"` so the group is a real list: pass `li` elements as children and they are the direct children of the list, with no wrapper in between. `\"dl\"` makes it a description list: pass `div` elements that each wrap a `dt` and its `dd`, the grouping HTML allows inside a `dl`."
+            },
+            {
+              "name": "ref",
+              "type": "Ref<HTMLElement>",
+              "required": false,
+              "default": null,
+              "description": "The root element, for measuring it or observing its size."
             },
             {
               "name": "limit",
@@ -18339,11 +18346,11 @@
           "name": "StaggerProps",
           "kind": "type",
           "description": "",
-          "definition": "HTMLAttributes<HTMLElement> & { as?: \"div\" | \"ol\" | \"ul\" | undefined; limit?: number | undefined; }"
+          "definition": "HTMLAttributes<HTMLElement> & { as?: \"div\" | \"dl\" | \"ol\" | \"ul\" | undefined; ref?: Ref<HTMLElement> | undefined; limit?: number | undefined; }"
         }
       ],
       "aliases": {
-        "StaggerProps": "HTMLAttributes<HTMLElement> & { as?: \"div\" | \"ol\" | \"ul\" | undefined; limit?: number | undefined; }"
+        "StaggerProps": "HTMLAttributes<HTMLElement> & { as?: \"div\" | \"dl\" | \"ol\" | \"ul\" | undefined; ref?: Ref<HTMLElement> | undefined; limit?: number | undefined; }"
       },
       "story": {
         "docsId": "components-motion-stagger--docs",
