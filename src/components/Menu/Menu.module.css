@@ -92,6 +92,9 @@
   border: 0;
   border-radius: var(--lufia-radius-sm);
   background: transparent;
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
   color: var(--lufia-color-text-default);
   font: inherit;
   text-align: start;
@@ -107,6 +110,11 @@
 .item:focus-visible {
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: -2px;
+}
+
+/* The press answers before the list closes; the token is 1 under reduced motion. */
+.item:active:not(:disabled, [aria-disabled="true"]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .item[data-current] {

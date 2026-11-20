@@ -41,7 +41,7 @@ All defined in `tokens/` (DTCG) and built to `--lufia-motion-*` in `tokens.css`.
 | `--lufia-motion-easing-drawer`             | `cubic-bezier(0.32, 0.72, 0, 1)`                                            | Large travel such as sheets                                                   |
 | `--lufia-motion-easing-spring`             | `cubic-bezier(0.34, 1.26, 0.64, 1)`, or a `linear()` spring where supported | Small elements travelling under about 2 rem                                   |
 | `--lufia-motion-scale-press`               | 0.97                                                                        | Buttons, icon buttons, switch thumbs, checkbox and radio marks, while pressed |
-| `--lufia-motion-scale-press-subtle`        | 0.985                                                                       | Rows, cards, tabs, chips, pagination and segments, while pressed              |
+| `--lufia-motion-scale-press-subtle`        | 0.985                                                                       | Rows, cards, tabs, chips, menu items, pagination and segments, while pressed  |
 | `--lufia-motion-distance-nudge`            | 0.25 rem                                                                    | Small controls and indicators                                                 |
 | `--lufia-motion-distance-rise`             | 0.375 rem                                                                   | Content and page entrances                                                    |
 | `--lufia-motion-distance-slide`            | 0.5 rem                                                                     | List rows and panels                                                          |

@@ -25,7 +25,7 @@ accessibility note.
 - **Components** in React 19, styled with CSS Modules that read only semantic tokens, safe for Server Components. Every
   user-facing string is a prop, so the package carries no i18n of its own.
 - **Motion**: duration, easing and distance tokens (`--lufia-motion-*`) that collapse under `prefers-reduced-motion`,
-  seven small primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight, Stagger, RouteTransition) and a `lufia-verify-motion` CLI
+  eight small primitives (Reveal, Collapse, Skeleton, AnimatedNumber, ChangeHighlight, Stagger, ListTransition, RouteTransition) and a `lufia-verify-motion` CLI
   that checks your own source against the [motion rules](docs/MOTION.md).
 - **Accessibility as a gate**: WCAG 2.2 AA contrast checked in CI for every theme and mode, `vitest-axe` on every component,
   keyboard behaviour documented per component.
@@ -45,7 +45,7 @@ from the [tags list](https://github.com/luizgabriellf/lufia-design-system/tags) 
 [changelog](CHANGELOG.md) before upgrading:
 
 ```bash
-npm install github:luizgabriellf/lufia-design-system#<latest-tag>   # for example v0.33.0
+npm install github:luizgabriellf/lufia-design-system#<latest-tag>   # for example v0.69.0
 ```
 
 Avoid `#main`: it moves with every merge and is not a released version.
