@@ -34,6 +34,8 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use.
 Use `value` with `onValueChange` (the text) or `onChange` (the native event, as on any input) to control the text, or `defaultValue` to leave it to the component.
 
+Pass `size="sm"` for dense toolbars and filter bars: a 2 rem box with the small font size, level with `TextInput` and `Select` `size="sm"`; it grows to the touch target on touch screens and below 40 rem.
+
 ### Shortcut hint
 
 `shortcut` draws a `<kbd>` hint while the box is empty and idle. It is **display only**: bind the key in your app (and

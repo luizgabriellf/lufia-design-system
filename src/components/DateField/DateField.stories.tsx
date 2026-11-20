@@ -44,6 +44,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+/** `size="sm"`: the compact control for dense toolbars and filter bars, level with `TextInput` and `Select` `size="sm"`. */
+export const Small: Story = { args: { size: "sm", clearLabel: "Clear date", defaultValue: "2030-01-31" } };
+
 /** Every native control, with a value, in the same box. */
 export const AllTypes: Story = {
   render: () => (

@@ -5891,6 +5891,13 @@
               "description": "Marks the control invalid without a `FormField`."
             },
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size=\"sm\"` and `Select size=\"sm\"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -5929,6 +5936,10 @@
           {
             "export": "Default",
             "id": "components-forms-combobox--default"
+          },
+          {
+            "export": "Small",
+            "id": "components-forms-combobox--small"
           },
           {
             "export": "Open",
@@ -6794,6 +6805,13 @@
               "description": "Marks the control invalid without a `FormField`. Inside a field the error does it."
             },
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size=\"sm\"` and `Select size=\"sm\"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -6832,6 +6850,10 @@
           {
             "export": "Default",
             "id": "components-forms-datefield--default"
+          },
+          {
+            "export": "Small",
+            "id": "components-forms-datefield--small"
           },
           {
             "export": "AllTypes",
@@ -6935,6 +6957,7 @@
         "--lufia-color-text-muted",
         "--lufia-color-text-subtle",
         "--lufia-font-numeric-tabular",
+        "--lufia-font-size-sm",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-radius-full",
@@ -16475,6 +16498,13 @@
               "description": "Marks the control invalid without a `FormField`."
             },
             {
+              "name": "size",
+              "type": "\"sm\" | \"md\"",
+              "required": false,
+              "default": "\"md\"",
+              "description": "`sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size=\"sm\"` and `Select size=\"sm\"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`."
+            },
+            {
               "name": "className",
               "type": "string",
               "required": false,
@@ -16509,6 +16539,10 @@
           {
             "export": "WithValue",
             "id": "components-forms-searchinput--with-value"
+          },
+          {
+            "export": "Small",
+            "id": "components-forms-searchinput--small"
           },
           {
             "export": "WithShortcut",
@@ -16629,12 +16663,14 @@
         "--lufia-color-text-muted",
         "--lufia-font-family-mono",
         "--lufia-font-line-height-normal",
+        "--lufia-font-size-sm",
         "--lufia-font-size-xs",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-radius-full",
         "--lufia-radius-xs",
-        "--lufia-space-2"
+        "--lufia-space-2",
+        "--lufia-target-touch"
       ]
     },
     {

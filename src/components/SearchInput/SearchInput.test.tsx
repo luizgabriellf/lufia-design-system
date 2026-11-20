@@ -267,3 +267,29 @@ describe("SearchInput", () => {
     });
   });
 });
+
+describe("SearchInput compact (size sm)", () => {
+  it("marks the box, leaving the default unmarked", () => {
+    const { rerender } = render(<SearchInput aria-label="Find" />);
+    const box = screen.getByRole("searchbox").parentElement as HTMLElement;
+    expect(box).not.toHaveAttribute("data-size");
+    rerender(<SearchInput aria-label="Find" size="sm" />);
+    expect(box).toHaveAttribute("data-size", "sm");
+    rerender(<SearchInput aria-label="Find" size="md" />);
+    expect(box).not.toHaveAttribute("data-size");
+  });
+
+  it("does not pass size to the native input, which would set its character width", () => {
+    render(<SearchInput aria-label="Find" size="sm" />);
+    expect(screen.getByRole("searchbox")).not.toHaveAttribute("size");
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(
+      <FormField label="Field">
+        <SearchInput aria-label="Find" size="sm" defaultValue="pump" />
+      </FormField>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

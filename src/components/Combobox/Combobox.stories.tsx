@@ -64,6 +64,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 /** The list is open: options with a description, a disabled option, and the first enabled one highlighted by the arrow key. */
+/** `size="sm"`: the compact control for dense toolbars and filter bars, level with `TextInput` and `Select` `size="sm"`. */
+export const Small: Story = {
+  args: { size: "sm", clearable: true, clearLabel: "Clear city", defaultValue: "par" },
+};
 export const Open: Story = { play: openAndHighlight };
 export const WithValue: Story = { args: { defaultValue: "lis" }, play: openList };
 export const WithHint: Story = { args: { hint: "Start typing to narrow the list." } };

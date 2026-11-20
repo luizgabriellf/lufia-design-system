@@ -25,6 +25,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const WithValue: Story = { args: { defaultValue: "pressure pump" } };
+/** `size="sm"`: the compact control for dense toolbars and filter bars, level with `TextInput` and `Select` `size="sm"`. */
+export const Small: Story = { args: { size: "sm", defaultValue: "pressure pump" } };
 export const WithShortcut: Story = { args: { shortcut: "/" } };
 export const InsideFormField: Story = {
   render: (args) => (
