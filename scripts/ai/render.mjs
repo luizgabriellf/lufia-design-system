@@ -262,6 +262,11 @@ const KEY_DOCS = [
     "What every component must meet: tokens, a11y, API conventions, status labels.",
   ],
   [
+    "API conventions",
+    "docs/API_CONVENTIONS.md",
+    "How props, callbacks and states are named and shaped across components.",
+  ],
+  [
     "Motion rules",
     "docs/MOTION.md",
     "Motion principles, tokens, reduced-motion policy and the lufia-verify-motion CLI.",
