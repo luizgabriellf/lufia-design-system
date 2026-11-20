@@ -20,7 +20,10 @@ export type SwitchProps = Omit<
   checked?: boolean;
   /** Initial state when `checked` is not given. */
   defaultChecked?: boolean;
-  /** Called with the new state when the user toggles the switch, whether it is controlled or not. */
+  /**
+   * Called with the new state when the user toggles the switch, whether it is controlled or not. A form reset also calls
+   * it, with `defaultChecked`.
+   */
   onCheckedChange?: (checked: boolean) => void;
   /** Submitted as `name=value` while on, like a checkbox. Without `name` nothing is submitted. */
   name?: string;

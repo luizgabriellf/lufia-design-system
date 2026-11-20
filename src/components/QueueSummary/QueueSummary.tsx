@@ -31,8 +31,8 @@ export type QueueSummaryItem = {
 
 export type QueueSummaryProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /**
-   * The queues, in order given. A queue with a `count` of `0` folds into the `clearLabel` line; the rest are rows sorted
-   * by tone. Renders nothing when empty.
+   * The queues. A queue with a `count` of `0` folds into the `clearLabel` line. The rest are rows: counted queues first,
+   * sorted by tone, then the ones with an unknown (`null`) count. Renders nothing when empty.
    */
   items: readonly QueueSummaryItem[];
   /** The line that folds the empty queues ("6 queues are clear"). */

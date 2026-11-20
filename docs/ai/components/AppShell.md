@@ -82,7 +82,7 @@ navigation is data, so both layouts always agree.
 | `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
 | `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
-| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, or when the shell closes it itself (a link was chosen, or the window grew to the wide layout). |
+| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide layout, so the parent's state does not stay open. |
 | `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
 | `defaultCollapsed` | `boolean` | no | `false` | Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with `parseShellState` to avoid a flash on first paint. |
@@ -126,7 +126,7 @@ Other native element attributes pass through to the root element.
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the accessible name. |
 | `href` | `string` | no |  | Not set: the control is a `<button>`. |
-| `onClick` | `() => void` | no |  | Called on click. It receives no event: the link navigates through the router. |
+| `onClick` | `() => void` | no |  | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. |
 
 Other native element attributes pass through to the root element.
 
@@ -147,7 +147,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
 | `href` | `string` | yes | Makes the control a link, rendered through the configured `linkComponent`. |
-| `onClick` | `() => void` | no | Called on click. It receives no event: the link navigates through the router. In every form; only its type differs. |
+| `onClick` | `() => void` | no | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. In every form; only its type differs. |
 
 ### `MobileFloatBarSeparator`, `ShellPrimaryActionOwner`
 
@@ -158,7 +158,7 @@ No props of its own.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `open` | `boolean` | yes |  | Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
-| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With `closeOnNavigate` it is also called when a link inside the sheet is chosen. |
 | `label` | `string` | yes |  | Accessible name of the dialog. |
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |

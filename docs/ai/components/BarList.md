@@ -33,7 +33,7 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | --- | --- | --- | --- | --- |
 | `title` | `ReactNode` | yes |  | Caption of the figure, and its accessible name. |
 | `summary` | `ReactNode` | no |  | A written summary of what the bars show. Shown above them. |
-| `rows` | `readonly BarListRow[]` | yes |  | The bars, in order. Each row is drawn against the largest `amount` in the list. |
+| `rows` | `readonly BarListRow[]` | yes |  | The bars, in order. Each row is drawn against the largest `amount`, counting the `reference` when there is one. |
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
 | `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
 | `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |

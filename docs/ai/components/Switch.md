@@ -42,7 +42,7 @@ error, and a thumb that slides.
 | `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. A form reset also calls it, with `defaultChecked`. |
 | `value` | `string` | no | `"on"` | Value submitted with `name` while the switch is on. Default `"on"`. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `role="switch"` button. |

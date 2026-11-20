@@ -84,7 +84,7 @@ export type MobileFloatBarButtonProps = FloatButtonBase &
         /** Makes the control a link, rendered through the configured `linkComponent`. */
         href: string;
       } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "type" | "onClick"> & {
-          /** Called on click. It receives no event: the link navigates through the router. */
+          /** Called on click, before the link navigates. Typed without a parameter: do not rely on an event. */
           onClick?: () => void;
         })
   );

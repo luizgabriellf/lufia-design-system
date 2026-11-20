@@ -698,7 +698,7 @@ navigation is data, so both layouts always agree.
 | `sheetDragThreshold` | `SheetDragThreshold` | no |  | When a released drag dismisses the phone navigation sheet (`NavSheet` `dragThreshold`). Defaults unchanged. |
 | `sheetProps` | `AppShellSheetProps` | no |  | A class and `data-*` attributes for the phone sheet's outermost layer (`NavSheet` `layerProps`), and where it mounts (`container`, default `document.body`). The sheet is portalled out of the shell, so a palette scoped to an app wrapper does not reach it: repeat the class or attribute here. Without them the sheet copies `data-lufia-theme` and `data-lufia-mode` from the closest ancestor of the shell that sets them. |
 | `menuOpen` | `boolean` | no |  | The phone navigation sheet is open. Controlled: open it from your own control (a context chip in the top bar) and hear it close through `onMenuOpenChange`. Leave it out and the menu button drives it. |
-| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, or when the shell closes it itself (a link was chosen, or the window grew to the wide layout). |
+| `onMenuOpenChange` | `(open: boolean) => void` | no |  | Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide layout, so the parent's state does not stay open. |
 | `hideSheetNavigation` | `boolean` | no | `false` | Hide the navigation inside the phone sheet and leave the `context` slot and footer: a switcher that takes over the sheet while it is open. The sidebar is not affected. |
 | `collapsed` | `boolean` | no |  | Sidebar as a rail. Controlled. |
 | `defaultCollapsed` | `boolean` | no | `false` | Whether the sidebar starts as a rail when `collapsed` is not given. Default `false`. Read the saved state with `parseShellState` to avoid a flash on first paint. |
@@ -742,7 +742,7 @@ Other native element attributes pass through to the root element.
 | `variant` | `"search" \| "primary" \| "icon"` | no | `"search"` | `search` is a wide, quiet button; `primary` is the filled pill for the page's main action; `icon` is round. |
 | `icon` | `ReactNode` | no |  | Decorative icon before the text. It is the only thing drawn on the `icon` variant, where `label` stays as the accessible name. |
 | `href` | `string` | no |  | Not set: the control is a `<button>`. |
-| `onClick` | `() => void` | no |  | Called on click. It receives no event: the link navigates through the router. |
+| `onClick` | `() => void` | no |  | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. |
 
 Other native element attributes pass through to the root element.
 
@@ -763,7 +763,7 @@ The props are a union of forms; `href` selects the form. Only the props that dif
 | Prop | Type | Required | Description |
 | --- | --- | --- | --- |
 | `href` | `string` | yes | Makes the control a link, rendered through the configured `linkComponent`. |
-| `onClick` | `() => void` | no | Called on click. It receives no event: the link navigates through the router. In every form; only its type differs. |
+| `onClick` | `() => void` | no | Called on click, before the link navigates. Typed without a parameter: do not rely on an event. In every form; only its type differs. |
 
 #### `MobileFloatBarSeparator`, `ShellPrimaryActionOwner`
 
@@ -774,7 +774,7 @@ No props of its own.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `open` | `boolean` | yes |  | Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. |
-| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. |
+| `onOpenChange` | `(open: boolean) => void` | yes |  | Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With `closeOnNavigate` it is also called when a link inside the sheet is chosen. |
 | `label` | `string` | yes |  | Accessible name of the dialog. |
 | `header` | `ReactNode` | no |  | Next to the close button: a brand or a title. |
 | `footer` | `ReactNode` | no |  | Below the scrolling body, pinned to the bottom: account and help links. |
@@ -1539,7 +1539,7 @@ Horizontal bars with the name and the value as text above each track. One scale 
 | --- | --- | --- | --- | --- |
 | `title` | `ReactNode` | yes |  | Caption of the figure, and its accessible name. |
 | `summary` | `ReactNode` | no |  | A written summary of what the bars show. Shown above them. |
-| `rows` | `readonly BarListRow[]` | yes |  | The bars, in order. Each row is drawn against the largest `amount` in the list. |
+| `rows` | `readonly BarListRow[]` | yes |  | The bars, in order. Each row is drawn against the largest `amount`, counting the `reference` when there is one. |
 | `total` | `{ label: ReactNode; value: ReactNode; }` | no |  | Closes the list with a total line. |
 | `reference` | `{ amount: number; label: ReactNode; }` | no |  | A shared reference ("Target 500"), drawn as a dashed tick on every track, on the same scale as the bars. The `label` is printed as a legend under the list and describes the figure, so it should say what the tick means and its value. The reference counts towards the scale, so a reference above every bar still fits. Off by default. |
 | `titleVisibility` | `"hidden" \| "visible"` | no | `"visible"` | `"hidden"` keeps the title as the figure's accessible name but removes it from the visual layout (screen readers only), for a list that sits under a heading of its own. Defaults to `"visible"`. |
@@ -6768,7 +6768,7 @@ The overview of many work queues on one screen. Queues with something in them le
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `items` | `readonly QueueSummaryItem[]` | yes |  | The queues, in order given. A queue with a `count` of `0` folds into the `clearLabel` line; the rest are rows sorted by tone. Renders nothing when empty. |
+| `items` | `readonly QueueSummaryItem[]` | yes |  | The queues. A queue with a `count` of `0` folds into the `clearLabel` line. The rest are rows: counted queues first, sorted by tone, then the ones with an unknown (`null`) count. Renders nothing when empty. |
 | `clearLabel` | `(count: number) => ReactNode` | yes |  | The line that folds the empty queues ("6 queues are clear"). |
 | `allClearTitle` | `ReactNode` | yes |  | Heading of the all-clear state, shown only when every count is exactly `0`. |
 | `allClearBody` | `ReactNode` | no |  | A short line under the all-clear heading. |
@@ -6857,11 +6857,11 @@ and arrow-key navigation.
 | `options` | `readonly RadioOption[]` | yes |  | The choices, in display order. Each has a unique `value` and a `label`; the user picks exactly one. |
 | `hint` | `ReactNode` | no |  | Help text under the group, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error message under the group. Marks the group invalid (`aria-invalid`) and is linked with `aria-describedby`; it takes precedence over the message of a refused required submission. |
-| `required` | `boolean` | no |  | Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form refuse to submit while nothing is chosen. Default `false`. |
+| `required` | `boolean` | no |  | Marks the group as required: shows a required glyph beside the label (when there is one), sets `aria-required`, and makes a form refuse to submit while nothing is chosen, unless the group is disabled. Default `false`. |
 | `disabled` | `boolean` | no |  | Disables every option; an option can also be disabled on its own with `disabled` on the option. Default `false`. |
 | `value` | `string` | no |  | Controlled value. `""` means nothing chosen. |
 | `defaultValue` | `string` | no | `""` | Initial value when `value` is not given. Default `""` (nothing chosen); a form reset restores it. |
-| `onValueChange` | `(value: string) => void` | no |  | Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. |
+| `onValueChange` | `(value: string) => void` | no |  | Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. A form reset also calls it, with `defaultValue`. |
 | `name` | `string` | no |  | Submitted with the form as `name=value`. |
 | `orientation` | `"vertical" \| "horizontal"` | no | `"vertical"` | `"vertical"` (default) stacks the options; `"horizontal"` wraps them in a row. |
 | `variant` | `"default" \| "card"` | no | `"default"` | `"default"` draws the options as plain rows. `"card"` draws each as a bordered, selectable row (a card when it carries `meta` or `content`), with the chosen one outlined in the accent colour. The radio semantics and the keyboard are the same. Defaults to `"default"`. |
@@ -8794,7 +8794,7 @@ error, and a thumb that slides.
 | `hint` | `ReactNode` | no |  | Help text under the switch, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error message under the switch. Marks it invalid (`aria-invalid`) and is linked with `aria-describedby`. |
 | `checked` | `boolean` | no |  | Controlled state. |
-| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. |
+| `onCheckedChange` | `(checked: boolean) => void` | no |  | Called with the new state when the user toggles the switch, whether it is controlled or not. A form reset also calls it, with `defaultChecked`. |
 | `value` | `string` | no | `"on"` | Value submitted with `name` while the switch is on. Default `"on"`. |
 | `className` | `string` | no |  | Goes on the root element. |
 | `ref` | `Ref<HTMLButtonElement>` | no |  | Ref to the `role="switch"` button. |

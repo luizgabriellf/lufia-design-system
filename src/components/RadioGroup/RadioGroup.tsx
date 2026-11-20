@@ -70,8 +70,8 @@ export type RadioGroupProps = Omit<
      */
     error?: ReactNode;
     /**
-     * Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form
-     * refuse to submit while nothing is chosen. Default `false`.
+     * Marks the group as required: shows a required glyph beside the label (when there is one), sets `aria-required`,
+     * and makes a form refuse to submit while nothing is chosen, unless the group is disabled. Default `false`.
      */
     required?: boolean;
     /**
@@ -84,7 +84,7 @@ export type RadioGroupProps = Omit<
     defaultValue?: string;
     /**
      * Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled
-     * or not.
+     * or not. A form reset also calls it, with `defaultValue`.
      */
     onValueChange?: (value: string) => void;
     /** Submitted with the form as `name=value`. */

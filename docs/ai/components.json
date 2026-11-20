@@ -682,7 +682,7 @@
               "type": "(open: boolean) => void",
               "required": false,
               "default": null,
-              "description": "Called with the next open state when the phone navigation sheet opens or closes, or when the shell closes it itself (a link was chosen, or the window grew to the wide layout)."
+              "description": "Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide layout, so the parent's state does not stay open."
             },
             {
               "name": "hideSheetNavigation",
@@ -962,7 +962,7 @@
               "type": "() => void",
               "required": false,
               "default": null,
-              "description": "Called on click. It receives no event: the link navigates through the router."
+              "description": "Called on click, before the link navigates. Typed without a parameter: do not rely on an event."
             }
           ],
           "nativeProps": true,
@@ -1009,7 +1009,7 @@
                     "name": "onClick",
                     "type": "() => void",
                     "required": false,
-                    "description": "Called on click. It receives no event: the link navigates through the router.",
+                    "description": "Called on click, before the link navigates. Typed without a parameter: do not rely on an event.",
                     "onlyTypeDiffers": true
                   }
                 ]
@@ -1053,7 +1053,7 @@
               "type": "(open: boolean) => void",
               "required": true,
               "default": null,
-              "description": "Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down."
+              "description": "Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With `closeOnNavigate` it is also called when a link inside the sheet is chosen."
             },
             {
               "name": "label",
@@ -3090,7 +3090,7 @@
               "type": "readonly BarListRow[]",
               "required": true,
               "default": null,
-              "description": "The bars, in order. Each row is drawn against the largest `amount` in the list."
+              "description": "The bars, in order. Each row is drawn against the largest `amount`, counting the `reference` when there is one."
             },
             {
               "name": "total",
@@ -15627,7 +15627,7 @@
               "type": "readonly QueueSummaryItem[]",
               "required": true,
               "default": null,
-              "description": "The queues, in order given. A queue with a `count` of `0` folds into the `clearLabel` line; the rest are rows sorted by tone. Renders nothing when empty."
+              "description": "The queues. A queue with a `count` of `0` folds into the `clearLabel` line. The rest are rows: counted queues first, sorted by tone, then the ones with an unknown (`null`) count. Renders nothing when empty."
             },
             {
               "name": "clearLabel",
@@ -15818,7 +15818,7 @@
               "type": "boolean",
               "required": false,
               "default": null,
-              "description": "Marks the group as required: shows a required glyph beside the label, sets `aria-required`, and makes a form refuse to submit while nothing is chosen. Default `false`."
+              "description": "Marks the group as required: shows a required glyph beside the label (when there is one), sets `aria-required`, and makes a form refuse to submit while nothing is chosen, unless the group is disabled. Default `false`."
             },
             {
               "name": "disabled",
@@ -15846,7 +15846,7 @@
               "type": "(value: string) => void",
               "required": false,
               "default": null,
-              "description": "Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not."
+              "description": "Called with the `value` of the option the user chooses (a click or an arrow key), whether the group is controlled or not. A form reset also calls it, with `defaultValue`."
             },
             {
               "name": "name",
@@ -19519,7 +19519,7 @@
               "type": "(checked: boolean) => void",
               "required": false,
               "default": null,
-              "description": "Called with the new state when the user toggles the switch, whether it is controlled or not."
+              "description": "Called with the new state when the user toggles the switch, whether it is controlled or not. A form reset also calls it, with `defaultChecked`."
             },
             {
               "name": "value",

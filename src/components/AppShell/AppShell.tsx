@@ -209,8 +209,9 @@ export type AppShellProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
    */
   menuOpen?: boolean;
   /**
-   * Called with the next open state when the phone navigation sheet opens or closes, or when the shell closes it itself
-   * (a link was chosen, or the window grew to the wide layout).
+   * Called with the next open state when the phone navigation sheet opens or closes, including when the shell closes it
+   * after a link was chosen. With `menuOpen` given it is also called with `false` when the window grows to the wide
+   * layout, so the parent's state does not stay open.
    */
   onMenuOpenChange?: (open: boolean) => void;
   /**

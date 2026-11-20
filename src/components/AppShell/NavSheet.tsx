@@ -30,7 +30,8 @@ export type NavSheetProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "t
   /** Whether the sheet is shown. Controlled: the parent owns it and updates it from `onOpenChange`. */
   open: boolean;
   /**
-   * Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down.
+   * Called with `false` when the user dismisses the sheet: the close button, Escape, a tap outside, or a swipe down. With
+   * `closeOnNavigate` it is also called when a link inside the sheet is chosen.
    */
   onOpenChange: (open: boolean) => void;
   /** Accessible name of the dialog. */
