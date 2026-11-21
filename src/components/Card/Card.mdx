@@ -67,7 +67,7 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 
 ### A named region
 
-A card is a `div` by default. `as="section"` makes it a region once it has a name: pass `titleId` and point the card's own `aria-labelledby` at it, so the region is named by its visible `title`. `as="article"` suits a self-contained item of a feed. Keep the default for a card that only groups content inside an already named area: a page with a dozen regions is harder to navigate, not easier.
+A card is a `div` by default. `as="section"` makes it a region once it has a name: pass `titleId` and point the card's own `aria-labelledby` at it, so the region is named by its visible `title`. `as="article"` suits a self-contained item of a feed. `as="li"` makes the card an item of a list: the app renders the `ul` or `ol` around it (the parent must be a list, otherwise the markup is invalid) and the card adds no region semantics, so each item is announced as "list item" in a list of N. Keep the default for a card that only groups content inside an already named area: a page with a dozen regions is harder to navigate, not easier.
 
 <Canvas of={Stories.NamedRegion} />
 

@@ -4,12 +4,14 @@ import styles from "./Card.module.css";
 
 export type CardPadding = "none" | "sm" | "md" | "lg";
 
-export type CardElement = "div" | "section" | "article";
+export type CardElement = "div" | "section" | "article" | "li";
 
 export type CardProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   /**
    * Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region;
-   * `article` suits a self-contained item of a feed. Defaults to `div`.
+   * `article` suits a self-contained item of a feed.
+   * `li` makes the card an item of a list: its parent must be a `ul` or `ol` that the app renders, and it gets no
+   * region semantics of its own. Defaults to `div`.
    */
   as?: CardElement;
   /** Heading of the card. With `href` it is also the text of the card's single link. */

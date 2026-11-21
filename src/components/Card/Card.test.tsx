@@ -145,6 +145,25 @@ describe("Card", () => {
     expect(screen.getByRole("heading", { name: "Plain" })).not.toHaveAttribute("id");
   });
 
+  it("as li: is a list item of the list the app renders, with no region semantics", async () => {
+    const { container } = render(
+      <ul>
+        <Card as="li" title="First" titleId="first-title">
+          Body
+        </Card>
+        <Card as="li" title="Second">
+          Body
+        </Card>
+      </ul>,
+    );
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(screen.getAllByRole("listitem")[0]?.tagName).toBe("LI");
+    expect(screen.getAllByRole("listitem")[0]).toHaveAttribute("data-lufia-part", "card");
+    expect(screen.queryByRole("region")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "First" })).toHaveAttribute("id", "first-title");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("flush: exposes the flag so the body can span the card", () => {
     const { container, rerender } = render(<Card title="List">Body</Card>);
     expect(container.firstElementChild).not.toHaveAttribute("data-flush");

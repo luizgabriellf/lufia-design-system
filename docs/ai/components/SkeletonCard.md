@@ -29,7 +29,7 @@ loaded card takes exactly its place.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `as` | `"div" \| "section" \| "article"` | no |  | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
+| `as` | `"div" \| "section" \| "article" \| "li"` | no |  | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. `li` makes the card an item of a list: its parent must be a `ul` or `ol` that the app renders, and it gets no region semantics of its own. Defaults to `div`. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
 | `titleRef` | `Ref<HTMLHeadingElement>` | no |  | Ref to the heading element, for code that scrolls to it or moves focus to it. |
 | `titleFocusable` | `boolean` | no |  | Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target. |

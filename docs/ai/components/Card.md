@@ -32,7 +32,7 @@ is clickable through one link.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `as` | `"div" \| "section" \| "article"` | no | `"div"` | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
+| `as` | `"div" \| "section" \| "article" \| "li"` | no | `"div"` | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. `li` makes the card an item of a list: its parent must be a `ul` or `ol` that the app renders, and it gets no region semantics of its own. Defaults to `div`. |
 | `title` | `ReactNode` | no |  | Heading of the card. With `href` it is also the text of the card's single link. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `3` | Heading level of `title` (2 to 6). Pick the one that fits the page outline. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
@@ -50,7 +50,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `CardElement`: `"div" | "section" | "article"`
+- `CardElement`: `"div" | "section" | "article" | "li"`
 - `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ## Example
@@ -102,6 +102,7 @@ body.
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--named-region`
+- `components-data-display-card--list-item`
 - `components-data-display-card--wrapping-header-action`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
