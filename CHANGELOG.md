@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.75.0
+
+### Minor Changes
+
+- [#260](https://github.com/luizgabriellf/lufia-design-system/pull/260) [`c127d6e`](https://github.com/luizgabriellf/lufia-design-system/commit/c127d6efbc32f8a52ea425d66655f87b6cc0b92e) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Card` takes `as` (`div`, `section`, `article`) and `titleId`, so a card can be a region named by its own title. Its root carries `data-lufia-part="card"`. New component tokens, each falling back to today's value: `--lufia-card-radius`, `--lufia-card-overflow`, `--lufia-card-body-color`, `--lufia-card-body-font-size` and `--lufia-card-body-line-height`.
+
 ## 0.74.0
 
 ### Minor Changes
