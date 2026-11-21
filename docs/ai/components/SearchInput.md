@@ -35,7 +35,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
 | `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
-| `clearLabel` | `string` | no | `"Clear search"` | Accessible name of the clear button. Aria-only. |
+| `clearLabel` | `string` | no |  | Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clearSearch`. |
 | `shortcut` | `string` | no |  | A hint for the key that focuses the field, such as "/" or "Ctrl K". Display only: the app binds the key. |
 | `loading` | `boolean` | no | `false` | A search is running. Shows a ring, sets `aria-busy` and announces `loadingLabel`. |
 | `loadingLabel` | `string` | no | `"Searching"` | Text announced while `loading`. Aria-only. |
@@ -63,7 +63,7 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 ## Accessibility
 
 - Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.
-- The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.
+- The clear button has its own accessible name (`clearLabel`, defaulting to the provider's `labels.clearSearch`) and is 32px square inside a 44px box.
 - While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under `prefers-reduced-motion`.
 - Results are not announced by this component: the list you update should announce its own count (a live region).
 

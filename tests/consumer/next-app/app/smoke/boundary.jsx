@@ -37,6 +37,7 @@ import { SegmentedToggle as SegmentedToggle_SegmentedToggle } from "@lufia/desig
 import { Select as Select_Select } from "@lufia/design-system/components/Select";
 import { SortableTh as SortableTh_SortableTh } from "@lufia/design-system/components/SortableTh";
 import { Switch as Switch_Switch } from "@lufia/design-system/components/Switch";
+import { TableToolbar as TableToolbar_TableToolbar } from "@lufia/design-system/components/TableToolbar";
 import { Tabs as Tabs_Tabs } from "@lufia/design-system/components/Tabs";
 import { TextInput as TextInput_TextInput } from "@lufia/design-system/components/TextInput";
 import { Textarea as Textarea_Textarea } from "@lufia/design-system/components/Textarea";
@@ -114,6 +115,7 @@ export default function ClientSmoke() {
       <section data-smoke="SortableTh"><SortableTh_SortableTh dir={"asc"} label={"x"} active={false} onSort={() => {}} /></section>
       <section data-smoke="Stagger"><Stagger_Stagger /></section>
       <section data-smoke="Switch"><Switch_Switch label={"x"} /></section>
+      <section data-smoke="TableToolbar"><TableToolbar_TableToolbar /></section>
       <section data-smoke="Tabs"><Tabs_Tabs items={[{ key: "a", label: "A", panel: "Panel" }]} /></section>
       <section data-smoke="TextInput"><TextInput_TextInput /></section>
       <section data-smoke="Textarea"><Textarea_Textarea /></section>

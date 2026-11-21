@@ -34,7 +34,7 @@ open-ended filter) go in as children.
 | `search` | `string` | no |  | Current text of the search field. Controlled: update it from `onSearchChange`. Default `""`. |
 | `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
 | `searchPlaceholder` | `string` | no |  | Placeholder of the search field. Default none. |
-| `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
+| `clearSearchLabel` | `string` | no |  | Accessible name of the search field's clear button. Defaults to the provider's `labels.clearSearch`. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |
 | `children` | `ReactNode` | no |  | Extra controls, such as dropdowns for open-ended lists, rendered before the search box. |
 
@@ -66,7 +66,7 @@ import { TableToolbar } from "@lufia/design-system/components/TableToolbar";
 ## Accessibility
 
 - Chips are toggle buttons with `aria-pressed`; the group has `role="group"` (add `aria-label` through props to name it).
-- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.
+- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button takes `clearSearchLabel`, which defaults to the provider's `labels.clearSearch` (English without a provider).
 - The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.
 - Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px.
 

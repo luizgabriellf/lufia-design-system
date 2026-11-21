@@ -20,6 +20,7 @@ import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
 import { usePresence } from "../internal/usePresence";
+import { useLufia } from "../LufiaProvider";
 import { useDismiss } from "../useDismiss";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./Combobox.module.css";
@@ -105,9 +106,9 @@ export type ComboboxProps = Omit<
   maxValueLines?: number;
   /** Shows a clear button while something is chosen. Escape clears too, when the list is closed. */
   clearable?: boolean;
-  /** Accessible name of the clear button. Aria-only. */
+  /** Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clear`. */
   clearLabel?: string;
-  /** Accessible name of the button that opens the list. Aria-only. */
+  /** Accessible name of the button that opens the list. Aria-only. Defaults to the provider's `labels.showOptions`. */
   toggleLabel?: string;
   /** Submitted with the form as `name=value` (empty when nothing is chosen). The visible text is not submitted. */
   name?: string;
@@ -217,8 +218,8 @@ export function Combobox({
   wrapValue = false,
   maxValueLines = 2,
   clearable = false,
-  clearLabel = "Clear",
-  toggleLabel = "Show options",
+  clearLabel,
+  toggleLabel,
   name,
   requiredMessage,
   invalid,
@@ -230,6 +231,7 @@ export function Combobox({
   ref,
   ...rest
 }: ComboboxProps) {
+  const { labels } = useLufia();
   const control = useFormFieldControl({
     id: rest.id,
     "aria-describedby": rest["aria-describedby"],
@@ -606,7 +608,7 @@ export function Combobox({
           <button
             type="button"
             className={styles.button}
-            aria-label={clearLabel}
+            aria-label={clearLabel ?? labels.clear}
             onClick={() => {
               choose(null);
               input.current?.focus();
@@ -619,7 +621,7 @@ export function Combobox({
           type="button"
           tabIndex={-1}
           className={styles.button}
-          aria-label={toggleLabel}
+          aria-label={toggleLabel ?? labels.showOptions}
           aria-expanded={expanded}
           aria-controls={expanded ? listId : undefined}
           disabled={control.disabled || readOnly}

@@ -5903,15 +5903,15 @@
               "name": "clearLabel",
               "type": "string",
               "required": false,
-              "default": "\"Clear\"",
-              "description": "Accessible name of the clear button. Aria-only."
+              "default": null,
+              "description": "Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clear`."
             },
             {
               "name": "toggleLabel",
               "type": "string",
               "required": false,
-              "default": "\"Show options\"",
-              "description": "Accessible name of the button that opens the list. Aria-only."
+              "default": null,
+              "description": "Accessible name of the button that opens the list. Aria-only. Defaults to the provider's `labels.showOptions`."
             },
             {
               "name": "requiredMessage",
@@ -11492,7 +11492,7 @@
           "name": "LufiaLabels",
           "kind": "type",
           "description": "Text that only assistive technology reads. Visible copy never lives here: it arrives through each component's props. Every key has a neutral English default, so a missing provider is harmless; override them for the app's language.",
-          "definition": "{ close: string; dismiss: string; notifications: string; required: string; }"
+          "definition": "{ clear: string; clearSearch: string; close: string; dismiss: string; notifications: string; required: string; showOptions: string; }"
         },
         {
           "name": "LufiaLink",
@@ -11578,7 +11578,7 @@
         "LinkComponent": "ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>",
         "LinkComponentProps": "AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }",
         "LufiaContextValue": "{ linkComponent: LinkComponent; labels: LufiaLabels; }",
-        "LufiaLabels": "{ close: string; dismiss: string; notifications: string; required: string; }",
+        "LufiaLabels": "{ clear: string; clearSearch: string; close: string; dismiss: string; notifications: string; required: string; showOptions: string; }",
         "LufiaProviderProps": "{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }"
       },
       "story": {
@@ -16509,8 +16509,8 @@
               "name": "clearLabel",
               "type": "string",
               "required": false,
-              "default": "\"Clear search\"",
-              "description": "Accessible name of the clear button. Aria-only."
+              "default": null,
+              "description": "Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clearSearch`."
             },
             {
               "name": "shortcut",
@@ -16687,7 +16687,7 @@
         "keyboardNotes": null,
         "notes": [
           "Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.",
-          "The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.",
+          "The clear button has its own accessible name (`clearLabel`, defaulting to the provider's `labels.clearSearch`) and is 32px square inside a 44px box.",
           "While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under `prefers-reduced-motion`.",
           "Results are not announced by this component: the list you update should announce its own count (a live region)."
         ]
@@ -21079,8 +21079,8 @@
               "name": "clearSearchLabel",
               "type": "string",
               "required": false,
-              "default": "\"Clear search\"",
-              "description": "Accessible name of the search field's clear button. Required whenever search is shown."
+              "default": null,
+              "description": "Accessible name of the search field's clear button. Defaults to the provider's `labels.clearSearch`."
             },
             {
               "name": "variant",
@@ -21171,7 +21171,7 @@
         "keyboardNotes": null,
         "notes": [
           "Chips are toggle buttons with `aria-pressed`; the group has `role=\"group\"` (add `aria-label` through props to name it).",
-          "The search input is `type=\"search\"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.",
+          "The search input is `type=\"search\"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button takes `clearSearchLabel`, which defaults to the provider's `labels.clearSearch` (English without a provider).",
           "The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.",
           "Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px."
         ]

@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { axe } from "../../test/axe";
 import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { FormField } from "../FormField";
+import { LufiaProvider } from "../LufiaProvider";
 import { useDismiss } from "../useDismiss";
 import { Combobox, type ComboboxOption } from "./Combobox";
 
@@ -30,6 +31,38 @@ const box = () => screen.getByRole("combobox", { name: "City" });
 function renderCombobox(props: Partial<React.ComponentProps<typeof Combobox>> = {}) {
   return render(<Combobox aria-label="City" options={options} {...texts} {...props} />);
 }
+
+describe("Combobox provider labels", () => {
+  const labels = { clear: "Limpar", showOptions: "Mostrar opcoes" };
+
+  it("names the clear and toggle buttons from the provider", () => {
+    render(
+      <LufiaProvider labels={labels}>
+        <Combobox aria-label="City" options={options} {...texts} clearable defaultValue="lis" />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Limpar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Mostrar opcoes" })).toBeInTheDocument();
+  });
+
+  it("lets an explicit prop win over the provider", () => {
+    render(
+      <LufiaProvider labels={labels}>
+        <Combobox
+          aria-label="City"
+          options={options}
+          {...texts}
+          clearable
+          defaultValue="lis"
+          clearLabel="Clear city"
+          toggleLabel="Toggle"
+        />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Clear city" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Toggle" })).toBeInTheDocument();
+  });
+});
 
 describe("Combobox ARIA", () => {
   it("is a closed combobox with list autocomplete and no active descendant", () => {

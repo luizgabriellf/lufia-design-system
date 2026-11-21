@@ -128,6 +128,9 @@ Follows the WAI-ARIA APG [Combobox](https://www.w3.org/WAI/ARIA/apg/patterns/com
 list autocomplete: `role="combobox"` on the input with `aria-autocomplete="list"`, `aria-expanded`, `aria-controls` and
 `aria-activedescendant`. DOM focus stays in the input; the highlight is virtual.
 
+The clear and open buttons are named by `clearLabel` and `toggleLabel`, which default to the provider's `labels.clear` and
+`labels.showOptions`.
+
 | Key / action    | Behaviour                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------------ |
 | Typing          | Opens the list and narrows it by the text. The first enabled match is highlighted.               |

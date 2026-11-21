@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
+import { LufiaProvider } from "../LufiaProvider";
 import { TableToolbar } from "./TableToolbar";
 
 const filters = [
@@ -9,6 +10,31 @@ const filters = [
 ];
 
 describe("TableToolbar", () => {
+  it("names the clear button from the provider, and lets the prop win", () => {
+    const { rerender } = render(
+      <LufiaProvider labels={{ clearSearch: "Limpar pesquisa" }}>
+        <TableToolbar search="abc" onSearchChange={() => {}} searchPlaceholder="Search" />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Limpar pesquisa" })).toBeInTheDocument();
+    rerender(
+      <LufiaProvider labels={{ clearSearch: "Limpar pesquisa" }}>
+        <TableToolbar
+          search="abc"
+          onSearchChange={() => {}}
+          searchPlaceholder="Search"
+          clearSearchLabel="Apagar"
+        />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Apagar" })).toBeInTheDocument();
+  });
+
+  it("keeps the English clear label without a provider", () => {
+    render(<TableToolbar search="abc" onSearchChange={() => {}} searchPlaceholder="Search" />);
+    expect(screen.getByRole("button", { name: "Clear search" })).toBeInTheDocument();
+  });
+
   it("exposes filters as toggle buttons and reports changes", async () => {
     const onFilterChange = vi.fn();
     const user = userEvent.setup();

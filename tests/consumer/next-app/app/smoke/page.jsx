@@ -36,7 +36,6 @@ import { StatusTimeline as StatusTimeline_StatusTimeline } from "@lufia/design-s
 import { Stepper as Stepper_Stepper } from "@lufia/design-system/components/Stepper";
 import { SuccessCheck as SuccessCheck_SuccessCheck } from "@lufia/design-system/components/SuccessCheck";
 import { Table as Table_Table, TableBody as Table_TableBody, TableEmpty as Table_TableEmpty, TableFoot as Table_TableFoot, TableHead as Table_TableHead, TableRow as Table_TableRow, Td as Table_Td, Th as Table_Th } from "@lufia/design-system/components/Table";
-import { TableToolbar as TableToolbar_TableToolbar } from "@lufia/design-system/components/TableToolbar";
 import { VisuallyHidden as VisuallyHidden_VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
 import ClientSmoke from "./boundary";
 
@@ -149,7 +148,6 @@ export default function SmokePage() {
       <section data-smoke="Table/TableRow"><Table_TableRow /></section>
       <section data-smoke="Table/Td"><Table_Td /></section>
       <section data-smoke="Table/Th"><Table_Th /></section>
-      <section data-smoke="TableToolbar"><TableToolbar_TableToolbar /></section>
       <section data-smoke="VisuallyHidden"><VisuallyHidden_VisuallyHidden /></section>
       <ClientSmoke />
     </main>
