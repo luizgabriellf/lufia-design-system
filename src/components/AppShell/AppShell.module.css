@@ -5,6 +5,11 @@
   grid-template-columns: var(--lufia-shell-sidebar-width) minmax(0, 1fr);
   min-block-size: 100vh;
   min-block-size: 100dvh;
+
+  /* Room for a banner the app fixes above the shell: the page starts below it, and the sidebar and the top bar stick
+     under it instead of sliding behind it. */
+  padding-block-start: var(--lufia-app-shell-inset-block-start, 0);
+  box-sizing: border-box;
   background: var(--lufia-color-bg-canvas);
   color: var(--lufia-color-text-default);
 }
@@ -17,9 +22,9 @@
   grid-column: 1;
   grid-row: 1 / span 3;
   position: sticky;
-  inset-block-start: 0;
+  inset-block-start: var(--lufia-app-shell-inset-block-start, 0);
   align-self: start;
-  block-size: 100dvh;
+  block-size: calc(100dvh - var(--lufia-app-shell-inset-block-start, 0px));
   min-inline-size: 0;
   border-inline-end: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
 }
@@ -169,7 +174,7 @@
   .topBar {
     position: sticky;
     z-index: var(--lufia-z-sticky);
-    inset-block-start: 0;
+    inset-block-start: var(--lufia-app-shell-inset-block-start, 0);
     display: flex;
     align-items: center;
     gap: var(--lufia-space-3);

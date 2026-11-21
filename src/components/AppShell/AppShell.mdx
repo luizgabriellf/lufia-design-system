@@ -397,6 +397,12 @@ instead of the document needs the same padding at its end.
 
 <Canvas of={Stories.Phone} />
 
+### A banner above the shell
+
+When the app fixes a banner to the top of the viewport (a connection notice, an announcement), set
+`--lufia-app-shell-inset-block-start` to its height, as a length with a unit, on the shell or any ancestor. The page starts below the banner, and
+the sidebar and the phone top bar stick under it instead of sliding behind it. Leave it unset when there is no banner.
+
 #### Floating bar
 
 <Canvas of={FloatBarStories.Default} />
