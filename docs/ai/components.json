@@ -4018,6 +4018,10 @@
             "id": "components-data-display-card--named-region"
           },
           {
+            "export": "WrappingHeaderAction",
+            "id": "components-data-display-card--wrapping-header-action"
+          },
+          {
             "export": "BodyOnly",
             "id": "components-data-display-card--body-only"
           },
@@ -4117,6 +4121,7 @@
         "--lufia-card-body-padding-inline",
         "--lufia-card-divider-color",
         "--lufia-card-header-padding",
+        "--lufia-card-heading-min-inline-size",
         "--lufia-card-overflow",
         "--lufia-card-radius",
         "--lufia-card-shadow",

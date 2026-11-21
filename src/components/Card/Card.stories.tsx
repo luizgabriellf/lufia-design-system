@@ -95,6 +95,24 @@ export const ThemedByTokens: Story = {
 export const NamedRegion: Story = {
   args: { as: "section", titleId: "card-named-region-title", "aria-labelledby": "card-named-region-title" },
 };
+/** On a narrow card the action drops under the title once the title side would be narrower than the token allows. */
+export const WrappingHeaderAction: Story = {
+  args: {
+    description: "The last ninety days, grouped by team",
+    headerAction: (
+      <Button size="sm" variant="secondary">
+        Export as spreadsheet
+      </Button>
+    ),
+  },
+  decorators: [
+    (StoryFn) => (
+      <div style={{ inlineSize: "17rem", ["--lufia-card-heading-min-inline-size" as string]: "9rem" }}>
+        <StoryFn />
+      </div>
+    ),
+  ],
+};
 export const BodyOnly: Story = { args: { title: undefined } };
 /** The whole card is the hit area of one link, the title. The ring shows on the card. */
 export const Interactive: Story = { args: { href: "#report", headerAction: <Badge tone="info">New</Badge> } };
