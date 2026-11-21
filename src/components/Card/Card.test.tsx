@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
@@ -100,6 +101,33 @@ describe("Card", () => {
     );
     expect(screen.getByRole("heading", { name: "Report" })).toContainElement(screen.getByRole("link"));
     expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  it("lets code move focus to the title without adding a tab stop", () => {
+    const ref = createRef<HTMLHeadingElement>();
+    render(
+      <Card title="Register" titleRef={ref} titleFocusable>
+        Body
+      </Card>,
+    );
+    const heading = screen.getByRole("heading", { name: "Register" });
+    expect(ref.current).toBe(heading);
+    expect(heading).toHaveAttribute("tabindex", "-1");
+    heading.focus();
+    expect(heading).toHaveFocus();
+  });
+
+  it("keeps the title out of programmatic focus by default and when the card is a link", () => {
+    render(
+      <>
+        <Card title="Plain">Body</Card>
+        <Card title="Linked" href="/somewhere" titleFocusable>
+          Body
+        </Card>
+      </>,
+    );
+    expect(screen.getByRole("heading", { name: "Plain" })).not.toHaveAttribute("tabindex");
+    expect(screen.getByRole("heading", { name: "Linked" })).not.toHaveAttribute("tabindex");
   });
 
   it("renders the chosen element and names it by its title through titleId", () => {

@@ -31,6 +31,8 @@ loaded card takes exactly its place.
 | --- | --- | --- | --- | --- |
 | `as` | `"div" \| "section" \| "article"` | no |  | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
+| `titleRef` | `Ref<HTMLHeadingElement>` | no |  | Ref to the heading element, for code that scrolls to it or moves focus to it. |
+| `titleFocusable` | `boolean` | no |  | Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target. |
 | `padding` | `"none" \| "sm" \| "md" \| "lg"` | no |  | Inner spacing of every slot. Defaults to `md`. |
 | `header` | `boolean` | no | `true` | Draws a title bar on the line box of the card's title, spaced from the body like the card's header. Default `true`. |
 | `lines` | `number` | no | `3` | Number of body text lines. The last one is shorter, like the end of a paragraph. Default 3. |
