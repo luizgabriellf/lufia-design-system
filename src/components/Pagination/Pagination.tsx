@@ -13,15 +13,29 @@ export type PaginationLabels = {
   next: string;
   /** Accessible name of the button that goes to a page, such as "Page 3". The current page also gets `aria-current`. */
   page: (page: number) => string;
-  /** The status line, announced politely when the page changes: "Page 2 of 5, 43 results". */
+  /** The status line, announced politely when the page changes: "Page 2 of 5, 43 results". Not called without `totalPages`. */
   summary: (page: number, totalPages: number, total?: number) => string;
+  /**
+   * The status line when `totalPages` is omitted (open-ended mode), where "of N" cannot be said: "Page 2". Falls back to
+   * `page(page)`.
+   */
+  position?: (page: number) => string;
 };
 
 export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   /** Current page, starting at 1. Controlled. */
   page: number;
-  /** How many pages there are. The numbered controls and the next control stop here. */
-  totalPages: number;
+  /**
+   * How many pages there are. The numbered controls and the next control stop here. Omit it for an open-ended list that only
+   * knows whether another page exists (see `hasNext`): no numbered pages and no ellipsis are rendered, as in
+   * `variant="compact"`, and the status line comes from `labels.position`.
+   */
+  totalPages?: number;
+  /**
+   * Open-ended mode only (`totalPages` omitted): whether a page after the current one exists, which makes next available.
+   * Ignored when `totalPages` is given.
+   */
+  hasNext?: boolean;
   /** Total item count, handed to `labels.summary`. */
   total?: number;
   /** Called with the page the user chose (a number, previous or next). Update `page` from it. */
@@ -52,6 +66,18 @@ export type PaginationProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
    * `aria-disabled`, since a link cannot be disabled.
    */
   disabledMode?: "aria" | "native";
+  /**
+   * An icon shown before the text of the previous control, such as a chevron. It is hidden from assistive technology (the
+   * text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the
+   * start in left-to-right text, or one that is symmetrical.
+   */
+  previousIcon?: ReactNode;
+  /**
+   * An icon shown after the text of the next control, such as a chevron. It is hidden from assistive technology (the text
+   * stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the end
+   * in left-to-right text, or one that is symmetrical.
+   */
+  nextIcon?: ReactNode;
 };
 
 type Entry = number | "start-gap" | "end-gap";
@@ -82,6 +108,7 @@ const isPlainClick = (event: MouseEvent) =>
 export function Pagination({
   page,
   totalPages,
+  hasNext = false,
   total,
   onPageChange,
   hrefFor,
@@ -90,14 +117,20 @@ export function Pagination({
   variant = "default",
   buttonClassName,
   disabledMode = "aria",
+  previousIcon,
+  nextIcon,
   className,
   ...rest
 }: PaginationProps) {
   const { linkComponent: Link } = useLufia();
-  const last = Math.max(1, Math.floor(totalPages));
-  const current = Math.min(Math.max(1, Math.floor(page)), last);
-  const compact = variant === "compact";
-  const entries = compact ? [] : pageEntries(current, last, Math.max(0, Math.floor(siblingCount)));
+  const openEnded = totalPages === undefined;
+  const last = openEnded ? undefined : Math.max(1, Math.floor(totalPages));
+  const current = Math.max(1, Math.floor(page));
+  const clamped = last === undefined ? current : Math.min(current, last);
+  const hasNextPage = last === undefined ? hasNext : clamped < last;
+  const compact = variant === "compact" || openEnded;
+  const entries =
+    compact || last === undefined ? [] : pageEntries(clamped, last, Math.max(0, Math.floor(siblingCount)));
   const controlClass = (extra: string) =>
     [buttonClassName ? styles.bare : styles.control, extra, buttonClassName].filter(Boolean).join(" ");
 
@@ -105,8 +138,38 @@ export function Pagination({
     target: number,
     enabled: boolean,
     text: ReactNode,
-    props: { "aria-label"?: string; current?: boolean; className: string },
+    props: {
+      "aria-label"?: string;
+      current?: boolean;
+      className: string;
+      icon?: ReactNode;
+      iconEnd?: boolean;
+    },
   ) => {
+    const icon =
+      props.icon === undefined || props.icon === null || props.icon === false ? null : (
+        <span
+          className={`${styles.icon} ${props.iconEnd ? styles.iconEnd : styles.iconStart}`}
+          aria-hidden="true"
+        >
+          {props.icon}
+        </span>
+      );
+    const content = icon ? (
+      props.iconEnd ? (
+        <>
+          {text}
+          {icon}
+        </>
+      ) : (
+        <>
+          {icon}
+          {text}
+        </>
+      )
+    ) : (
+      text
+    );
     const common = {
       className: props.className,
       "aria-label": props["aria-label"],
@@ -123,7 +186,7 @@ export function Pagination({
     };
     return hrefFor ? (
       <Link {...common} href={hrefFor(target)} tabIndex={enabled ? undefined : -1} onClick={choose}>
-        {text}
+        {content}
       </Link>
     ) : (
       <button
@@ -133,7 +196,7 @@ export function Pagination({
         disabled={!enabled && disabledMode === "native" ? true : undefined}
         onClick={choose}
       >
-        {text}
+        {content}
       </button>
     );
   };
@@ -143,15 +206,18 @@ export function Pagination({
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
       aria-label={labels.nav}
-      data-variant={variant}
+      data-variant={compact ? "compact" : "default"}
     >
       <p className={styles.summary} aria-live="polite" aria-atomic="true">
-        {labels.summary(current, last, total)}
+        {last === undefined
+          ? (labels.position ?? labels.page)(clamped)
+          : labels.summary(clamped, last, total)}
       </p>
       <ul className={styles.list}>
         <li>
-          {control(current - 1, current > 1, labels.previous, {
+          {control(clamped - 1, clamped > 1, labels.previous, {
             className: controlClass(styles.step!),
+            icon: previousIcon,
           })}
         </li>
         {entries.map((entry) =>
@@ -159,7 +225,7 @@ export function Pagination({
             <li key={entry} className={styles.number}>
               {control(entry, true, entry, {
                 "aria-label": labels.page(entry),
-                current: entry === current,
+                current: entry === clamped,
                 className: controlClass(styles.page!),
               })}
             </li>
@@ -170,8 +236,10 @@ export function Pagination({
           ),
         )}
         <li>
-          {control(current + 1, current < last, labels.next, {
+          {control(clamped + 1, hasNextPage, labels.next, {
             className: controlClass(styles.step!),
+            icon: nextIcon,
+            iconEnd: true,
           })}
         </li>
       </ul>

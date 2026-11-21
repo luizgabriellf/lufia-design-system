@@ -90,6 +90,27 @@
   transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
+/* A decorative icon beside the text; the margin sits on the side facing the text, so it also works with `buttonClassName`. */
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.iconStart {
+  margin-inline-end: var(--lufia-space-1);
+}
+
+.iconEnd {
+  margin-inline-start: var(--lufia-space-1);
+}
+
+/* A chevron points to the start in right-to-left text. */
+.icon:dir(rtl) {
+  transform: scaleX(-1);
+}
+
 .gap {
   display: inline-flex;
   min-inline-size: 1.5rem;
