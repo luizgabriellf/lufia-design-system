@@ -749,7 +749,8 @@ export const ClosedGroupHoldsCurrentPage: Story = {
 
 /**
  * Touch-sized controls: `ShellPrimaryActionSlot size="touch"` (44px) beside a 44px control, and
- * `--lufia-shell-item-min-block-size` raising the top-level items to 3rem.
+ * `--lufia-shell-item-min-block-size` raising the top-level items to 3rem. `--lufia-shell-subitem-min-block-size` does the same
+ * for sub-items (default 2.5rem).
  */
 export const TouchSizes: Story = {
   render: (args) => (
