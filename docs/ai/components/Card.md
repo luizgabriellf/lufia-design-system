@@ -36,6 +36,8 @@ is clickable through one link.
 | `title` | `ReactNode` | no |  | Heading of the card. With `href` it is also the text of the card's single link. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `3` | Heading level of `title` (2 to 6). Pick the one that fits the page outline. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
+| `titleRef` | `Ref<HTMLHeadingElement>` | no |  | Ref to the heading element, for code that scrolls to it or moves focus to it. |
+| `titleFocusable` | `boolean` | no | `false` | Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target. |
 | `description` | `ReactNode` | no |  | One short line under the `title` (or on its own, when there is no title). |
 | `headerAction` | `ReactNode` | no |  | Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. |
 | `footer` | `ReactNode` | no |  | Pinned to the bottom of the card, separated from the body. |
@@ -83,7 +85,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-color`, `--lufia-card-body-font-size`, `--lufia-card-body-line-height`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-heading-min-inline-size`, `--lufia-card-overflow`, `--lufia-card-radius`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-color`, `--lufia-card-body-font-size`, `--lufia-card-body-line-height`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-heading-min-inline-size`, `--lufia-card-overflow`, `--lufia-card-radius`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-radius-control`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ## Content guidelines
 

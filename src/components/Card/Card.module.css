@@ -55,6 +55,14 @@
 
 /* The heading side takes the room the action leaves. Its minimum is a token: 0 by default, so the action only wraps
    when it fills the row by itself; a theme sets a length to make it wrap earlier on narrow cards. */
+
+/* Only reachable from code (`titleFocusable`), so the ring shows when a keyboard user is driving. */
+.title:focus-visible {
+  border-radius: var(--lufia-radius-control);
+  outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
+  outline-offset: 2px;
+}
+
 .header > .title,
 .header > .heading {
   flex: 1 1 0;

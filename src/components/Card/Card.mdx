@@ -71,6 +71,19 @@ A card is a `div` by default. `as="section"` makes it a region once it has a nam
 
 <Canvas of={Stories.NamedRegion} />
 
+### Moving focus to the title
+
+When a view changes under the reader (a row was deleted, a detail panel swapped its subject, an in-page link jumped to a card), move focus to the title of the card that now matters, so a keyboard or screen-reader user continues from there. `titleFocusable` puts `tabIndex={-1}` on the heading: code can focus it, and it stays out of the tab order. Reach it with `titleRef`, or by `titleId` when the code that moves focus lives elsewhere. A card with `href` ignores it, since its title link is already the focus target.
+
+```tsx
+const titleRef = useRef<HTMLHeadingElement>(null);
+useEffect(() => titleRef.current?.focus(), [selectedId]);
+
+<Card as="section" title={selected.name} titleRef={titleRef} titleFocusable>
+  …
+</Card>;
+```
+
 The root also carries `data-lufia-part="card"`, a stable hook for layout rules such as the space between stacked cards.
 
 ### Header divider and tokens

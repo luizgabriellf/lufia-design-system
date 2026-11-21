@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLAttributes, ReactNode, Ref } from "react";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Card.module.css";
 
@@ -18,6 +18,14 @@ export type CardProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
   headingLevel?: 2 | 3 | 4 | 5 | 6;
   /** `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. */
   titleId?: string;
+  /** Ref to the heading element, for code that scrolls to it or moves focus to it. */
+  titleRef?: Ref<HTMLHeadingElement>;
+  /**
+   * Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus
+   * lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`,
+   * where the title link is already the focus target.
+   */
+  titleFocusable?: boolean;
   /** One short line under the `title` (or on its own, when there is no title). */
   description?: ReactNode;
   /** Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. */
@@ -52,6 +60,8 @@ export function Card({
   as: Root = "div",
   title,
   titleId,
+  titleRef,
+  titleFocusable = false,
   description,
   headingLevel = 3,
   headerAction,
@@ -83,7 +93,12 @@ export function Card({
           {title !== undefined || hasDescription ? (
             <HeadingBlock hasDescription={hasDescription} description={description}>
               {title !== undefined ? (
-                <Heading id={titleId} className={styles.title}>
+                <Heading
+                  id={titleId}
+                  ref={titleRef}
+                  tabIndex={titleFocusable && !interactive ? -1 : undefined}
+                  className={styles.title}
+                >
                   {interactive ? (
                     <LufiaLink href={href} className={styles.link}>
                       {title}

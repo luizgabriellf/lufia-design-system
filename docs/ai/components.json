@@ -3909,6 +3909,20 @@
               "description": "`id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`."
             },
             {
+              "name": "titleRef",
+              "type": "Ref<HTMLHeadingElement>",
+              "required": false,
+              "default": null,
+              "description": "Ref to the heading element, for code that scrolls to it or moves focus to it."
+            },
+            {
+              "name": "titleFocusable",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target."
+            },
+            {
               "name": "description",
               "type": "ReactNode",
               "required": false,
@@ -4144,6 +4158,7 @@
         "--lufia-motion-easing-out",
         "--lufia-motion-scale-press-subtle",
         "--lufia-radius-card",
+        "--lufia-radius-control",
         "--lufia-shadow-md",
         "--lufia-shadow-sm"
       ]
@@ -17513,6 +17528,20 @@
               "required": false,
               "default": null,
               "description": "`id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`."
+            },
+            {
+              "name": "titleRef",
+              "type": "Ref<HTMLHeadingElement>",
+              "required": false,
+              "default": null,
+              "description": "Ref to the heading element, for code that scrolls to it or moves focus to it."
+            },
+            {
+              "name": "titleFocusable",
+              "type": "boolean",
+              "required": false,
+              "default": null,
+              "description": "Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target."
             },
             {
               "name": "padding",
