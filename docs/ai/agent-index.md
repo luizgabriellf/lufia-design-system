@@ -27,7 +27,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - DateField: type value defaultValue onValueChange min max step clearLabel invalid +1
 - DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max +9
 - FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText +7
-- FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
+- FormField: label* id labelHidden hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
 - ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems +11
 - OptionRow: title* disabled eyebrow description meta leading trailing selected density +5
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
@@ -56,7 +56,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - FilterLinks: label* items* value layout
 - NavRow: title* description meta badge icon href onClick disabled
 - PageHeader: title* eyebrow headingLevel description actions
-- Pagination: page* totalPages* onPageChange* labels* total hrefFor siblingCount variant buttonClassName +1
+- Pagination: page* onPageChange* labels* totalPages hasNext total hrefFor siblingCount variant +4
 - PeerNav: label* items* value defaultValue onValueChange layout onItemClick phoneGrid
 - SectionHeader: title* headingLevel description actions titleId
 - Stepper: steps* current* onStepClick

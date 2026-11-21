@@ -100,6 +100,13 @@ describe("Sidebar", () => {
     expect(css).toMatch(/min-block-size: var\(--lufia-shell-item-min-block-size, 2\.75rem\);/);
   });
 
+  it("lets the sub-item height be themed, defaulting to the compact 2.5rem", () => {
+    const css = readFileSync("src/components/AppShell/Sidebar.module.css", "utf8");
+    expect(css).toMatch(
+      /\.subItems \.item \{\s*min-block-size: var\(--lufia-shell-subitem-min-block-size, 2\.5rem\);/,
+    );
+  });
+
   it("reports the rail button and names it for the state it will move to", async () => {
     const user = userEvent.setup();
     const onCollapsedChange = vi.fn();

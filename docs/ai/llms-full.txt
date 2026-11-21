@@ -1874,7 +1874,7 @@ is clickable through one link.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `as` | `"div" \| "section" \| "article"` | no | `"div"` | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
+| `as` | `"div" \| "section" \| "article" \| "li"` | no | `"div"` | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. `li` makes the card an item of a list: its parent must be a `ul` or `ol` that the app renders, and it gets no region semantics of its own. Defaults to `div`. |
 | `title` | `ReactNode` | no |  | Heading of the card. With `href` it is also the text of the card's single link. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `3` | Heading level of `title` (2 to 6). Pick the one that fits the page outline. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
@@ -1896,7 +1896,7 @@ No props of its own. Native element attributes pass through.
 
 ### Types
 
-- `CardElement`: `"div" | "section" | "article"`
+- `CardElement`: `"div" | "section" | "article" | "li"`
 - `CardInsetProps`: `ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>`
 - `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
@@ -1950,6 +1950,7 @@ body.
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--named-region`
+- `components-data-display-card--list-item`
 - `components-data-display-card--wrapping-header-action`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
@@ -4171,6 +4172,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | --- | --- | --- | --- | --- |
 | `id` | `string` | no |  | Base id of the control; the hint and error ids derive from it. Generated when omitted. |
 | `label` | `ReactNode` | yes |  | The visible label. Every control needs one. |
+| `labelHidden` | `boolean` | no | `false` | Hides the label visually with the package's visually-hidden technique. It stays in the DOM, still names the control and still carries the required text for assistive technology; it takes no space, so no gap is left. Use it when the surrounding context already shows what the control is (a search box under a heading, a column of inline editors). Default `false`. |
 | `hint` | `ReactNode` | no |  | Help shown under the control, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped. |
@@ -4259,6 +4261,7 @@ for assistive technology.
 - `components-forms-formfield--with-hint`
 - `components-forms-formfield--required`
 - `components-forms-formfield--invalid`
+- `components-forms-formfield--label-hidden`
 - `components-forms-formfield--disabled`
 - `components-forms-formfield--required-from-provider`
 - `components-forms-formfield--long-text`
@@ -6251,7 +6254,8 @@ It is the view for `usePagination`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `page` | `number` | yes |  | Current page, starting at 1. Controlled. |
-| `totalPages` | `number` | yes |  | How many pages there are. The numbered controls and the next control stop here. |
+| `totalPages` | `number` | no |  | How many pages there are. The numbered controls and the next control stop here. Omit it for an open-ended list that only knows whether another page exists (see `hasNext`): no numbered pages and no ellipsis are rendered, as in `variant="compact"`, and the status line comes from `labels.position`. |
+| `hasNext` | `boolean` | no | `false` | Open-ended mode only (`totalPages` omitted): whether a page after the current one exists, which makes next available. Ignored when `totalPages` is given. |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
 | `onPageChange` | `(page: number) => void` | yes |  | Called with the page the user chose (a number, previous or next). Update `page` from it. |
 | `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
@@ -6260,12 +6264,14 @@ It is the view for `usePagination`.
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
 | `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |
+| `previousIcon` | `ReactNode` | no |  | An icon shown before the text of the previous control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the start in left-to-right text, or one that is symmetrical. |
+| `nextIcon` | `ReactNode` | no |  | An icon shown after the text of the next control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the end in left-to-right text, or one that is symmetrical. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }`
+- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; position?: ((page: number) => string) | undefined; }`
 
 ### Example
 
@@ -6324,6 +6330,8 @@ Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
 - `components-navigation-pagination--compact`
 - `components-navigation-pagination--compact-links`
 - `components-navigation-pagination--custom-button-class`
+- `components-navigation-pagination--with-icons`
+- `components-navigation-pagination--open-ended`
 - `components-navigation-pagination--as-links`
 - `components-navigation-pagination--phone-320`
 - `components-navigation-pagination--phone-390`
@@ -7671,7 +7679,7 @@ loaded card takes exactly its place.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `as` | `"div" \| "section" \| "article"` | no |  | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
+| `as` | `"div" \| "section" \| "article" \| "li"` | no |  | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. `li` makes the card an item of a list: its parent must be a `ul` or `ol` that the app renders, and it gets no region semantics of its own. Defaults to `div`. |
 | `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
 | `titleRef` | `Ref<HTMLHeadingElement>` | no |  | Ref to the heading element, for code that scrolls to it or moves focus to it. |
 | `titleFocusable` | `boolean` | no |  | Lets code move focus to the heading (`tabIndex={-1}`): after a view change, a deletion or an in-page jump, focus lands on the title of the card that now matters. The heading stays out of the tab order. Ignored with `href`, where the title link is already the focus target. |

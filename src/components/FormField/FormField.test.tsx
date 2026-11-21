@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "../../test/axe";
+import hiddenStyles from "../VisuallyHidden/VisuallyHidden.module.css";
 import { LufiaProvider } from "../LufiaProvider";
 import { FormField } from "./FormField";
 import { TextInput } from "../TextInput";
@@ -89,6 +90,30 @@ describe("FormField", () => {
     const label = screen.getByText("Name").closest("label")!;
     expect(label.children).toHaveLength(1);
     expect(label.firstElementChild).toContainElement(label.querySelector("[aria-hidden]"));
+  });
+
+  it("labelHidden: keeps the label in the DOM and on the control, hidden with the visually-hidden class", async () => {
+    const { container } = render(
+      <FormField label="Search" labelHidden required>
+        <TextInput />
+      </FormField>,
+    );
+    const input = screen.getByLabelText(/Search/);
+    expect(input).toBe(screen.getByRole("textbox"));
+    expect(input).toHaveAccessibleName(/Search.*required/);
+    const label = screen.getByText("Search").closest("label")!;
+    expect(label).toHaveClass(hiddenStyles.root!);
+    expect(label).toHaveAttribute("for", input.id);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("shows the label by default", () => {
+    render(
+      <FormField label="Search">
+        <TextInput />
+      </FormField>,
+    );
+    expect(screen.getByText("Search").closest("label")).not.toHaveClass(hiddenStyles.root!);
   });
 
   it("passes disabled to the control", () => {

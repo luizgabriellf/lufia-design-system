@@ -189,9 +189,14 @@
     color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.items .item,
-.subItems .item {
+.items .item {
   min-block-size: 2.5rem;
+  font-size: var(--lufia-font-size-sm);
+}
+
+/* `--lufia-shell-subitem-min-block-size` sets the height of a sub-item; it must stay after `.items .item`. */
+.subItems .item {
+  min-block-size: var(--lufia-shell-subitem-min-block-size, 2.5rem);
   font-size: var(--lufia-font-size-sm);
 }
 

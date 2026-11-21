@@ -560,7 +560,7 @@ its scrim, `data-menu-open` on the shell's floating bar while the sheet (and the
 - **The floating bar is a labelled group**, not an ARIA toolbar: a toolbar promises arrow-key movement and every control
   here is a plain tab stop.
 - **Targets** are at least 2.75rem (44px); `--lufia-shell-item-min-block-size` sets the height of a top-level item (items of a
-  group and sub-items stay at 2.5rem). Focus is a 2px ring. The active item has a bar on its inline-start edge besides the
+  group stay at 2.5rem), and `--lufia-shell-subitem-min-block-size` sets the height of a sub-item (default 2.5rem). Focus is a 2px ring. The active item has a bar on its inline-start edge besides the
   colour, and a `Highlight` border in forced-colors mode.
 - **Motion.** The sheet rises and the backdrop fades with the `--lufia-motion-*` tokens; exits are shorter than entrances.
   Groups use `Collapse`. Under `prefers-reduced-motion` the sheet appears and disappears at once. The sidebar width changes

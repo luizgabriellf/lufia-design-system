@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "../Icon/icons";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { usePagination } from "../usePagination";
 import { Pagination, type PaginationLabels, type PaginationProps } from "./Pagination";
@@ -22,6 +23,23 @@ function Stateful(props: PaginationProps) {
         setPage(next);
         props.onPageChange(next);
       }}
+    />
+  );
+}
+
+const openLabels: PaginationLabels = { ...labels, position: (page) => `Page ${page}` };
+
+function OpenEndedDemo(props: PaginationProps) {
+  const [page, setPage] = useState(props.page);
+  return (
+    <Pagination
+      {...props}
+      labels={openLabels}
+      page={page}
+      hasNext={page < 5}
+      onPageChange={setPage}
+      previousIcon={<ChevronLeftIcon size={16} />}
+      nextIcon={<ChevronRightIcon size={16} />}
     />
   );
 }
@@ -71,6 +89,15 @@ export const CustomButtonClass: Story = {
       </>
     ),
   ],
+};
+/** `previousIcon` and `nextIcon` add a decorative icon beside the text; the text stays the accessible name. */
+export const WithIcons: Story = {
+  args: { previousIcon: <ChevronLeftIcon size={16} />, nextIcon: <ChevronRightIcon size={16} /> },
+};
+/** Without `totalPages` the list only knows whether another page exists (`hasNext`): previous and next, and a `labels.position` status line. */
+export const OpenEnded: Story = {
+  args: { page: 1, totalPages: undefined, total: undefined, hasNext: true },
+  render: (args) => <OpenEndedDemo {...args} />,
 };
 /** Real links: pages can be opened in a new tab. `onPageChange` still fires on a plain click. */
 export const AsLinks: Story = {

@@ -101,7 +101,7 @@ export default function ClientSmoke() {
       next: "Next",
       page: (page) => String(page),
       summary: (page, totalPages) => page + " of " + totalPages,
-    }} page={1} totalPages={1} onPageChange={() => {}} /></section>
+    }} page={1} onPageChange={() => {}} /></section>
       <section data-smoke="PeerNav"><PeerNav_PeerNav items={[{ key: "a", label: "A", href: "/" }]} label={"x"} /></section>
       <section data-smoke="PendingSubmit"><PendingSubmit_PendingSubmit pendingLabel={"x"}>{"x"}</PendingSubmit_PendingSubmit></section>
       <section data-smoke="Popover"><Popover_Popover trigger={(props) => <button type="button" {...props}>Open</button>} label={"x"}>{"x"}</Popover_Popover></section>

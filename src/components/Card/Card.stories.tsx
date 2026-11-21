@@ -126,6 +126,17 @@ export const ThemedByTokens: Story = {
 export const NamedRegion: Story = {
   args: { as: "section", titleId: "card-named-region-title", "aria-labelledby": "card-named-region-title" },
 };
+/** `as="li"` makes the card an item of a list the app renders; the parent must be a `ul` or `ol`. */
+export const ListItem: Story = {
+  args: { as: "li" },
+  decorators: [
+    (StoryFn) => (
+      <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+        <StoryFn />
+      </ul>
+    ),
+  ],
+};
 /** On a narrow card the action drops under the title once the title side would be narrower than the token allows. */
 export const WrappingHeaderAction: Story = {
   args: {

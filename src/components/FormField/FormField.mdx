@@ -66,6 +66,12 @@ Building your own control? `useFormFieldControl(props)` merges a control's own p
 <Canvas of={Stories.Required} />
 <Canvas of={Stories.Invalid} />
 <Canvas of={Stories.Disabled} />
+
+### Hidden label
+
+`labelHidden` hides the label visually and keeps it for assistive technology: it is still in the DOM, still names the control, and still carries the required text. It uses the same technique as `VisuallyHidden` and takes no space, so no gap is left where the label was. Use it when the context shows what the control is (a search box under a heading, a column of inline editors), never to drop a label that people need.
+
+<Canvas of={Stories.LabelHidden} />
 <Canvas of={Stories.RequiredFromProvider} />
 
 An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears.
