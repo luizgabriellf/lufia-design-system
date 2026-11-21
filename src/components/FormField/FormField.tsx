@@ -10,11 +10,19 @@ import {
   type FormFieldClaim,
   type FormFieldControlProps,
 } from "./FormFieldContext";
+import hiddenStyles from "../VisuallyHidden/VisuallyHidden.module.css";
 import styles from "./FormField.module.css";
 
 export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   /** The visible label. Every control needs one. */
   label: ReactNode;
+  /**
+   * Hides the label visually with the package's visually-hidden technique. It stays in the DOM, still names the control and
+   * still carries the required text for assistive technology; it takes no space, so no gap is left. Use it when the
+   * surrounding context already shows what the control is (a search box under a heading, a column of inline editors).
+   * Default `false`.
+   */
+  labelHidden?: boolean;
   /** Help shown under the control, linked to it with `aria-describedby`. */
   hint?: ReactNode;
   /** Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. */
@@ -60,6 +68,7 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & 
  */
 export function FormField({
   label,
+  labelHidden = false,
   hint,
   error,
   required,
@@ -114,7 +123,8 @@ export function FormField({
       <label
         id={`${baseId}-label`}
         htmlFor={labelTarget ?? baseId}
-        className={styles.label}
+        className={[styles.label, labelHidden ? hiddenStyles.root : undefined].filter(Boolean).join(" ")}
+        data-label-hidden={labelHidden ? "" : undefined}
         data-lufia-part="label"
       >
         <span className={styles.text}>

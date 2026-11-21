@@ -4159,6 +4159,7 @@ them. It generates the ids, points the label at the control, links the hint and 
 | --- | --- | --- | --- | --- |
 | `id` | `string` | no |  | Base id of the control; the hint and error ids derive from it. Generated when omitted. |
 | `label` | `ReactNode` | yes |  | The visible label. Every control needs one. |
+| `labelHidden` | `boolean` | no | `false` | Hides the label visually with the package's visually-hidden technique. It stays in the DOM, still names the control and still carries the required text for assistive technology; it takes no space, so no gap is left. Use it when the surrounding context already shows what the control is (a search box under a heading, a column of inline editors). Default `false`. |
 | `hint` | `ReactNode` | no |  | Help shown under the control, linked to it with `aria-describedby`. |
 | `error` | `ReactNode` | no |  | Error text. Its presence marks the control `aria-invalid` and shows the message with an icon. |
 | `required` | `boolean` | no |  | Marks the control required and shows an asterisk plus text for assistive technology. A read-only control inside the field is not required from the person's point of view: the mark, the text and `aria-required` are dropped. |
@@ -4247,6 +4248,7 @@ for assistive technology.
 - `components-forms-formfield--with-hint`
 - `components-forms-formfield--required`
 - `components-forms-formfield--invalid`
+- `components-forms-formfield--label-hidden`
 - `components-forms-formfield--disabled`
 - `components-forms-formfield--required-from-provider`
 - `components-forms-formfield--long-text`

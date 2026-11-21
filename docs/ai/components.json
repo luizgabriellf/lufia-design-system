@@ -8593,6 +8593,13 @@
               "description": "The visible label. Every control needs one."
             },
             {
+              "name": "labelHidden",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Hides the label visually with the package's visually-hidden technique. It stays in the DOM, still names the control and still carries the required text for assistive technology; it takes no space, so no gap is left. Use it when the surrounding context already shows what the control is (a search box under a heading, a column of inline editors). Default `false`."
+            },
+            {
               "name": "hint",
               "type": "ReactNode",
               "required": false,
@@ -8747,6 +8754,10 @@
           {
             "export": "Invalid",
             "id": "components-forms-formfield--invalid"
+          },
+          {
+            "export": "LabelHidden",
+            "id": "components-forms-formfield--label-hidden"
           },
           {
             "export": "Disabled",
