@@ -1,5 +1,19 @@
 # @lufia/design-system
 
+## 0.79.0
+
+### Minor Changes
+
+- [#272](https://github.com/luizgabriellf/lufia-design-system/pull/272) [`ac19df3`](https://github.com/luizgabriellf/lufia-design-system/commit/ac19df32cb60f99b1d64fc71a0b99162efd21d58) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - New `CardInset` export: content inside a `flush` `Card` that keeps the card's own body padding, so a paragraph or toolbar beside a table or list lines up with the header and footer and follows the card's `padding` and the `--lufia-card-body-padding*` tokens.
+
+- [#271](https://github.com/luizgabriellf/lufia-design-system/pull/271) [`b83028c`](https://github.com/luizgabriellf/lufia-design-system/commit/b83028cc5157b5b4e8e01bc9726082aa88f89358) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Card` accepts `as="li"`, so a card can be an item of a `ul` or `ol` that your app renders. It carries no region semantics; the parent must be a list.
+
+- [#273](https://github.com/luizgabriellf/lufia-design-system/pull/273) [`3df9cbd`](https://github.com/luizgabriellf/lufia-design-system/commit/3df9cbd69d40c9b8a817481a07d49f6c266d189b) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `FormField` accepts `labelHidden`: the label is hidden visually but stays in the DOM, names the control and keeps the required text for assistive technology, and takes no space in the layout.
+
+- [#275](https://github.com/luizgabriellf/lufia-design-system/pull/275) [`304f8fa`](https://github.com/luizgabriellf/lufia-design-system/commit/304f8fa4d91b4a8171d545d6adc967d0b8ea89f8) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Pagination` accepts `previousIcon` and `nextIcon` for decorative icons beside the previous and next text, and an open-ended mode: omit `totalPages` and pass `hasNext` for lists that only know whether another page exists, with the status line from the new optional `labels.position`.
+
+- [#274](https://github.com/luizgabriellf/lufia-design-system/pull/274) [`fdacb0e`](https://github.com/luizgabriellf/lufia-design-system/commit/fdacb0e60e817d25e76201bee02f419bccb47903) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - New token `--lufia-shell-subitem-min-block-size` sets the minimum height of sidebar sub-items. The default stays 2.5rem, so nothing changes until a theme or app sets it.
+
 ## 0.78.0
 
 ### Minor Changes
