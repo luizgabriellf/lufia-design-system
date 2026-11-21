@@ -2259,6 +2259,7 @@
       },
       "tokens": [
         "--lufia-app-shell-float-clearance",
+        "--lufia-app-shell-inset-block-start",
         "--lufia-border-width-thick",
         "--lufia-border-width-thin",
         "--lufia-color-bg-canvas",

@@ -401,6 +401,12 @@ describe("AppShell", () => {
     );
   });
 
+  it("keeps the page, the sidebar and the top bar below a banner fixed above the shell", () => {
+    expect(css).toMatch(/padding-block-start: var\(--lufia-app-shell-inset-block-start, 0\);/);
+    expect(css).toMatch(/block-size: calc\(100dvh - var\(--lufia-app-shell-inset-block-start, 0px\)\);/);
+    expect(css.match(/inset-block-start: var\(--lufia-app-shell-inset-block-start, 0\);/g)).toHaveLength(2);
+  });
+
   it("has no axe violations, closed and with the sheet open", async () => {
     const user = userEvent.setup();
     const { container } = setup();
