@@ -45,18 +45,17 @@ Other native element attributes pass through to the root element.
 
 ```tsx
 import { SkeletonTable } from "@lufia/design-system/components/SkeletonTable";
-import { VisuallyHidden } from "@lufia/design-system/components/VisuallyHidden";
+import { SkeletonRegion } from "@lufia/design-system/components/SkeletonRegion";
 
-<div aria-busy={loading}>
-  {loading ? (
-    <>
-      <VisuallyHidden role="status">Loading invoices</VisuallyHidden>
+{
+  loading ? (
+    <SkeletonRegion label="Loading invoices">
       <SkeletonTable rows={10} columns={4} />
-    </>
+    </SkeletonRegion>
   ) : (
     <InvoiceTable />
-  )}
-</div>;
+  );
+}
 ```
 
 ## Accessibility

@@ -25,6 +25,7 @@ import { ProgressBar as ProgressBar_ProgressBar } from "@lufia/design-system/com
 import { SectionHeader as SectionHeader_SectionHeader } from "@lufia/design-system/components/SectionHeader";
 import { SkeletonCard as SkeletonCard_SkeletonCard } from "@lufia/design-system/components/SkeletonCard";
 import { SkeletonPageHeader as SkeletonPageHeader_SkeletonPageHeader } from "@lufia/design-system/components/SkeletonPageHeader";
+import { SkeletonRegion as SkeletonRegion_SkeletonRegion } from "@lufia/design-system/components/SkeletonRegion";
 import { SkeletonTable as SkeletonTable_SkeletonTable } from "@lufia/design-system/components/SkeletonTable";
 import { Sparkline as Sparkline_Sparkline } from "@lufia/design-system/components/Sparkline";
 import { Spinner as Spinner_Spinner } from "@lufia/design-system/components/Spinner";
@@ -130,6 +131,7 @@ export default function SmokePage() {
       <section data-smoke="Skeleton"><Skeleton_Skeleton /></section>
       <section data-smoke="SkeletonCard"><SkeletonCard_SkeletonCard /></section>
       <section data-smoke="SkeletonPageHeader"><SkeletonPageHeader_SkeletonPageHeader /></section>
+      <section data-smoke="SkeletonRegion"><SkeletonRegion_SkeletonRegion label={"x"} /></section>
       <section data-smoke="SkeletonTable"><SkeletonTable_SkeletonTable /></section>
       <section data-smoke="Sparkline"><Sparkline_Sparkline values={[1, 3, 2]} label={"x"} /></section>
       <section data-smoke="Spinner"><Spinner_Spinner /></section>

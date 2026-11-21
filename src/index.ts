@@ -56,6 +56,7 @@ export * from "./components/SegmentedToggle";
 export * from "./components/Select";
 export * from "./components/SkeletonCard";
 export * from "./components/SkeletonPageHeader";
+export * from "./components/SkeletonRegion";
 export * from "./components/SkeletonTable";
 export * from "./components/SortableTh";
 export * from "./components/Sparkline";

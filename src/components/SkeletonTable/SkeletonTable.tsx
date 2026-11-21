@@ -25,7 +25,7 @@ const count = (value: number, fallback: number) =>
 /**
  * Placeholder rows for a table or a list that is loading. The columns share the width equally and every bar is a share
  * of its own cell, so nothing overflows at any width; below `stackBelow` each row stacks its cells. Decorative
- * (`aria-hidden`): mark the region `aria-busy` and name the loading state once, for example with a labelled `Skeleton`.
+ * (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the loading state once.
  */
 export function SkeletonTable({
   rows = 5,

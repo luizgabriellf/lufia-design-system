@@ -17462,7 +17462,7 @@
         {
           "name": "SkeletonCard",
           "kind": "component",
-          "description": "A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the loaded card takes exactly its place. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once, for example with a labelled `Skeleton`.",
+          "description": "A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so the loaded card takes exactly its place. Decorative (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the loading state once.",
           "props": [
             {
               "name": "padding",
@@ -17594,7 +17594,7 @@
         {
           "name": "SkeletonPageHeader",
           "kind": "component",
-          "description": "The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description lines take the same line boxes, the title grows at the same breakpoint and the actions wrap under the text the same way. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once.",
+          "description": "The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description lines take the same line boxes, the title grows at the same breakpoint and the actions wrap under the text the same way. Decorative (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the loading state once.",
           "props": [
             {
               "name": "eyebrow",
@@ -17699,6 +17699,101 @@
       ]
     },
     {
+      "name": "SkeletonRegion",
+      "category": "Feedback",
+      "summary": "The named, busy wrapper of a loading shape: announces what is loading once, around decorative placeholders.",
+      "status": "beta",
+      "source": "src/components/SkeletonRegion",
+      "entry": {
+        "subpath": "@lufia/design-system/components/SkeletonRegion",
+        "root": "@lufia/design-system"
+      },
+      "exports": [
+        {
+          "name": "SkeletonRegion",
+          "kind": "component",
+          "description": "The one named part of a loading shape. It marks its content busy and announces `label` once from a polite status, so the decorative placeholders inside it can stay hidden from assistive technology. Render it while the content loads and replace it with the content.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "The placeholders: `Skeleton`, `SkeletonTable`, `SkeletonCard`, `SkeletonPageHeader` or a shape of your own."
+            },
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "default": null,
+              "description": "What is loading, for example \"Loading invoices\". Read by assistive technology, never drawn."
+            }
+          ],
+          "nativeProps": true
+        },
+        {
+          "name": "SkeletonRegionProps",
+          "kind": "type",
+          "description": "",
+          "definition": "HTMLAttributes<HTMLDivElement> & { label: ReactNode; children?: ReactNode; }"
+        }
+      ],
+      "aliases": {
+        "SkeletonRegionProps": "HTMLAttributes<HTMLDivElement> & { label: ReactNode; children?: ReactNode; }"
+      },
+      "story": {
+        "docsId": "components-feedback-skeletonregion--docs",
+        "stories": [
+          {
+            "export": "Default",
+            "id": "components-feedback-skeletonregion--default"
+          },
+          {
+            "export": "WholePage",
+            "id": "components-feedback-skeletonregion--whole-page"
+          },
+          {
+            "export": "AllThemes",
+            "id": "components-feedback-skeletonregion--all-themes"
+          }
+        ]
+      },
+      "docs": {
+        "mdx": "src/components/SkeletonRegion/SkeletonRegion.mdx",
+        "overview": "The named wrapper of a loading shape. The skeleton pieces are decorative and hidden from assistive technology;\n`SkeletonRegion` is the one place that says what is loading. It has no styles of its own.",
+        "usage": {
+          "language": "tsx",
+          "code": "import { SkeletonRegion } from \"@lufia/design-system/components/SkeletonRegion\";\nimport { SkeletonTable } from \"@lufia/design-system/components/SkeletonTable\";\n\n{\n  loading ? (\n    <SkeletonRegion label=\"Loading invoices\">\n      <SkeletonTable rows={10} columns={4} />\n    </SkeletonRegion>\n  ) : (\n    <InvoiceTable />\n  );\n}"
+        },
+        "whenToUse": [
+          "Around every skeleton shape that stands in for content: a table, a card grid, a page.",
+          "Once per wait. Several placeholders that load together share one region."
+        ],
+        "whenNotToUse": [
+          "For a short inline wait in a button or a field: use `Spinner` with a label or `PendingSubmit`.",
+          "Around content that is already on screen and only refreshing: set `aria-busy` on that content instead.",
+          "Nested inside another `SkeletonRegion`: one announcement is enough."
+        ],
+        "contentGuidelines": null
+      },
+      "a11y": {
+        "pattern": null,
+        "keyboard": [],
+        "keyboardNotes": null,
+        "notes": [
+          "The root carries `aria-busy=\"true\"` for as long as it is rendered. Unmount it when the content arrives; the component owns the attribute, so a passed `aria-busy` is ignored.",
+          "`label` sits in a visually hidden `role=\"status\"` element (a polite live region), so it is announced without moving focus. The status is a child of the busy root, not the root itself.",
+          "WCAG 4.1.3 (Status Messages): the loading state is exposed to assistive technology without receiving focus.",
+          "Layout props (`className`, `style`) go to the root, which is a plain `div`: give it the grid or the gap the placeholders need."
+        ]
+      },
+      "motion": {
+        "respectsReducedMotion": false,
+        "notes": null
+      },
+      "tokens": []
+    },
+    {
       "name": "SkeletonTable",
       "category": "Feedback",
       "summary": "Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths.",
@@ -17712,7 +17807,7 @@
         {
           "name": "SkeletonTable",
           "kind": "component",
-          "description": "Placeholder rows for a table or a list that is loading. The columns share the width equally and every bar is a share of its own cell, so nothing overflows at any width; below `stackBelow` each row stacks its cells. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once, for example with a labelled `Skeleton`.",
+          "description": "Placeholder rows for a table or a list that is loading. The columns share the width equally and every bar is a share of its own cell, so nothing overflows at any width; below `stackBelow` each row stacks its cells. Decorative (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the loading state once.",
           "props": [
             {
               "name": "rows",
@@ -17789,7 +17884,7 @@
         "overview": "Placeholder rows for a table or a list that is loading. The columns share the width equally, every bar is a share of its\nown cell, and below `stackBelow` (45rem by default) each row stacks its cells in one column, so nothing overflows at any\nwidth.",
         "usage": {
           "language": "tsx",
-          "code": "import { SkeletonTable } from \"@lufia/design-system/components/SkeletonTable\";\nimport { VisuallyHidden } from \"@lufia/design-system/components/VisuallyHidden\";\n\n<div aria-busy={loading}>\n  {loading ? (\n    <>\n      <VisuallyHidden role=\"status\">Loading invoices</VisuallyHidden>\n      <SkeletonTable rows={10} columns={4} />\n    </>\n  ) : (\n    <InvoiceTable />\n  )}\n</div>;"
+          "code": "import { SkeletonTable } from \"@lufia/design-system/components/SkeletonTable\";\nimport { SkeletonRegion } from \"@lufia/design-system/components/SkeletonRegion\";\n\n{\n  loading ? (\n    <SkeletonRegion label=\"Loading invoices\">\n      <SkeletonTable rows={10} columns={4} />\n    </SkeletonRegion>\n  ) : (\n    <InvoiceTable />\n  );\n}"
         },
         "whenToUse": [
           "A table or a list whose columns are known while its rows load."
