@@ -12,6 +12,8 @@ const labels: PaginationLabels = {
   summary: (page, totalPages, total) => `Page ${page} of ${totalPages}${total ? `, ${total} results` : ""}`,
 };
 
+const openLabels: PaginationLabels = { ...labels, position: (page) => `Showing page ${page}` };
+
 const numbers = () =>
   Array.from(screen.getByRole("navigation").querySelectorAll("li"), (li) => li.textContent);
 
@@ -283,5 +285,144 @@ describe("Pagination", () => {
       />,
     );
     expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute("aria-disabled", "true");
+  });
+
+  describe("icons", () => {
+    const icons = {
+      previousIcon: <svg data-testid="prev-icon" />,
+      nextIcon: <svg data-testid="next-icon" />,
+    };
+
+    it("puts the icons around the text, hidden from assistive technology, with the names unchanged", () => {
+      render(<Pagination page={2} totalPages={4} onPageChange={() => {}} labels={labels} {...icons} />);
+      const previous = screen.getByRole("button", { name: "Previous" });
+      const next = screen.getByRole("button", { name: "Next" });
+      const prevIcon = screen.getByTestId("prev-icon").parentElement!;
+      const nextIcon = screen.getByTestId("next-icon").parentElement!;
+      expect(prevIcon).toHaveAttribute("aria-hidden", "true");
+      expect(nextIcon).toHaveAttribute("aria-hidden", "true");
+      expect(previous.firstElementChild).toBe(prevIcon);
+      expect(previous.lastChild?.textContent).toBe("Previous");
+      expect(next.lastElementChild).toBe(nextIcon);
+      expect(next.firstChild?.textContent).toBe("Next");
+    });
+
+    it("works for links and with buttonClassName", () => {
+      render(
+        <Pagination
+          page={2}
+          totalPages={4}
+          variant="compact"
+          buttonClassName="app-btn"
+          hrefFor={(n) => `/p/${n}`}
+          onPageChange={() => {}}
+          labels={labels}
+          {...icons}
+        />,
+      );
+      expect(screen.getByRole("link", { name: "Previous" })).toContainElement(
+        screen.getByTestId("prev-icon"),
+      );
+      expect(screen.getByRole("link", { name: "Next" })).toContainElement(screen.getByTestId("next-icon"));
+      expect(screen.getByRole("link", { name: "Next" })).toHaveClass("app-btn");
+    });
+
+    it("renders no wrapper without icons and has no axe violations with them", async () => {
+      const { container, rerender } = render(
+        <Pagination page={2} totalPages={4} onPageChange={() => {}} labels={labels} />,
+      );
+      expect(container.querySelector("[aria-hidden='true'] svg")).toBeNull();
+      expect(screen.getByRole("button", { name: "Next" }).children).toHaveLength(0);
+      rerender(<Pagination page={2} totalPages={4} onPageChange={() => {}} labels={labels} {...icons} />);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  describe("open-ended mode", () => {
+    it("on the first page has previous unavailable and no numbers", async () => {
+      const user = userEvent.setup();
+      const onPageChange = vi.fn();
+      render(<Pagination page={1} hasNext onPageChange={onPageChange} labels={openLabels} />);
+      expect(numbers()).toEqual(["Previous", "Next"]);
+      expect(screen.getByRole("navigation")).toHaveAttribute("data-variant", "compact");
+      expect(screen.getByRole("button", { name: "Previous" })).toHaveAttribute("aria-disabled", "true");
+      await user.click(screen.getByRole("button", { name: "Previous" }));
+      expect(onPageChange).not.toHaveBeenCalled();
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(onPageChange).toHaveBeenCalledWith(2);
+    });
+
+    it("on a middle page with hasNext has both controls available", async () => {
+      const user = userEvent.setup();
+      const onPageChange = vi.fn();
+      render(<Pagination page={3} hasNext onPageChange={onPageChange} labels={openLabels} />);
+      expect(screen.getByRole("button", { name: "Previous" })).not.toHaveAttribute("aria-disabled");
+      expect(screen.getByRole("button", { name: "Next" })).not.toHaveAttribute("aria-disabled");
+      await user.click(screen.getByRole("button", { name: "Previous" }));
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(onPageChange.mock.calls).toEqual([[2], [4]]);
+    });
+
+    it("on the last page has next unavailable, natively when asked", async () => {
+      const onPageChange = vi.fn();
+      const { rerender } = render(
+        <Pagination page={4} hasNext={false} onPageChange={onPageChange} labels={openLabels} />,
+      );
+      const next = screen.getByRole("button", { name: "Next" });
+      expect(next).toHaveAttribute("aria-disabled", "true");
+      await userEvent.setup().click(next);
+      expect(onPageChange).not.toHaveBeenCalled();
+      rerender(<Pagination page={4} disabledMode="native" onPageChange={onPageChange} labels={openLabels} />);
+      expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+    });
+
+    it("renders hrefs for previous and next", () => {
+      render(
+        <Pagination
+          page={3}
+          hasNext
+          hrefFor={(n) => `/list?page=${n}`}
+          onPageChange={() => {}}
+          labels={openLabels}
+        />,
+      );
+      expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute("href", "/list?page=2");
+      expect(screen.getByRole("link", { name: "Next" })).toHaveAttribute("href", "/list?page=4");
+    });
+
+    it("says the position from labels.position, falling back to labels.page, never calling summary", () => {
+      const summary = vi.fn(() => "SUMMARY");
+      const { rerender } = render(
+        <Pagination page={2} hasNext onPageChange={() => {}} labels={{ ...openLabels, summary }} />,
+      );
+      const status = screen.getByText("Showing page 2");
+      expect(status).toHaveAttribute("aria-live", "polite");
+      rerender(<Pagination page={2} hasNext onPageChange={() => {}} labels={{ ...labels, summary }} />);
+      expect(screen.getByText("Page 2")).toHaveAttribute("aria-live", "polite");
+      expect(summary).not.toHaveBeenCalled();
+    });
+
+    it("ignores hasNext when totalPages is given", () => {
+      render(<Pagination page={3} totalPages={3} hasNext onPageChange={() => {}} labels={labels} />);
+      expect(screen.getByRole("button", { name: "Next" })).toHaveAttribute("aria-disabled", "true");
+      expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
+    });
+
+    it("has no axe violations as buttons or links", async () => {
+      const { container, rerender } = render(
+        <Pagination page={2} hasNext onPageChange={() => {}} labels={openLabels} />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+      rerender(
+        <Pagination
+          page={2}
+          hasNext
+          hrefFor={(n) => `/p/${n}`}
+          onPageChange={() => {}}
+          labels={openLabels}
+        />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

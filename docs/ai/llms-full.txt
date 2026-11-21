@@ -6241,7 +6241,8 @@ It is the view for `usePagination`.
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `page` | `number` | yes |  | Current page, starting at 1. Controlled. |
-| `totalPages` | `number` | yes |  | How many pages there are. The numbered controls and the next control stop here. |
+| `totalPages` | `number` | no |  | How many pages there are. The numbered controls and the next control stop here. Omit it for an open-ended list that only knows whether another page exists (see `hasNext`): no numbered pages and no ellipsis are rendered, as in `variant="compact"`, and the status line comes from `labels.position`. |
+| `hasNext` | `boolean` | no | `false` | Open-ended mode only (`totalPages` omitted): whether a page after the current one exists, which makes next available. Ignored when `totalPages` is given. |
 | `total` | `number` | no |  | Total item count, handed to `labels.summary`. |
 | `onPageChange` | `(page: number) => void` | yes |  | Called with the page the user chose (a number, previous or next). Update `page` from it. |
 | `hrefFor` | `(page: number) => string` | no |  | Makes every control a real link (through the configured `linkComponent`) so pages can be opened in a new tab and crawled. `onPageChange` still fires on a plain click; call `event.preventDefault()` there to handle it in place. |
@@ -6250,12 +6251,14 @@ It is the view for `usePagination`.
 | `variant` | `"default" \| "compact"` | no | `"default"` | `default` shows the numbered pages (they give way to previous and next in containers under 40rem). `compact` is previous and next only, with the status line; the status line then carries the position at every width. |
 | `buttonClassName` | `string` | no |  | A class for every control (previous, next and the page numbers), for an app that already has a button look. When set, the built-in control look is left out (layout, the current-page and disabled states stay), so your class is not fighting it. |
 | `disabledMode` | `"aria" \| "native"` | no | `"aria"` | How an unavailable previous or next control is marked. `"aria"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `"native"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled. |
+| `previousIcon` | `ReactNode` | no |  | An icon shown before the text of the previous control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the start in left-to-right text, or one that is symmetrical. |
+| `nextIcon` | `ReactNode` | no |  | An icon shown after the text of the next control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the end in left-to-right text, or one that is symmetrical. |
 
 Other native element attributes pass through to the root element.
 
 ### Types
 
-- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }`
+- `PaginationLabels`: `{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; position?: ((page: number) => string) | undefined; }`
 
 ### Example
 
@@ -6314,6 +6317,8 @@ Keep the status line short and say what is paged: "Page 3 of 12, 118 results".
 - `components-navigation-pagination--compact`
 - `components-navigation-pagination--compact-links`
 - `components-navigation-pagination--custom-button-class`
+- `components-navigation-pagination--with-icons`
+- `components-navigation-pagination--open-ended`
 - `components-navigation-pagination--as-links`
 - `components-navigation-pagination--phone-320`
 - `components-navigation-pagination--phone-390`

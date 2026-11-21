@@ -14553,9 +14553,16 @@
             {
               "name": "totalPages",
               "type": "number",
-              "required": true,
+              "required": false,
               "default": null,
-              "description": "How many pages there are. The numbered controls and the next control stop here."
+              "description": "How many pages there are. The numbered controls and the next control stop here. Omit it for an open-ended list that only knows whether another page exists (see `hasNext`): no numbered pages and no ellipsis are rendered, as in `variant=\"compact\"`, and the status line comes from `labels.position`."
+            },
+            {
+              "name": "hasNext",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Open-ended mode only (`totalPages` omitted): whether a page after the current one exists, which makes next available. Ignored when `totalPages` is given."
             },
             {
               "name": "total",
@@ -14612,6 +14619,20 @@
               "required": false,
               "default": "\"aria\"",
               "description": "How an unavailable previous or next control is marked. `\"aria\"` (default) sets `aria-disabled` only, so the control keeps keyboard focus and the person is not thrown off it. `\"native\"` renders a real `disabled` attribute on the button (out of the tab order, and matched by `:disabled` selectors and test queries). Controls that are links (`hrefFor`) always use `aria-disabled`, since a link cannot be disabled."
+            },
+            {
+              "name": "previousIcon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "An icon shown before the text of the previous control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the start in left-to-right text, or one that is symmetrical."
+            },
+            {
+              "name": "nextIcon",
+              "type": "ReactNode",
+              "required": false,
+              "default": null,
+              "description": "An icon shown after the text of the next control, such as a chevron. It is hidden from assistive technology (the text stays the accessible name) and does not shrink. It is mirrored in right-to-left text, so pass one that points to the end in left-to-right text, or one that is symmetrical."
             }
           ],
           "nativeProps": true
@@ -14620,7 +14641,7 @@
           "name": "PaginationLabels",
           "kind": "type",
           "description": "",
-          "definition": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }"
+          "definition": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; position?: ((page: number) => string) | undefined; }"
         },
         {
           "name": "PaginationProps",
@@ -14630,7 +14651,7 @@
         }
       ],
       "aliases": {
-        "PaginationLabels": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; }"
+        "PaginationLabels": "{ nav: string; previous: string; next: string; page: (page: number) => string; summary: (page: number, totalPages: number, total?: number | undefined) => string; position?: ((page: number) => string) | undefined; }"
       },
       "story": {
         "docsId": "components-navigation-pagination--docs",
@@ -14678,6 +14699,14 @@
           {
             "export": "CustomButtonClass",
             "id": "components-navigation-pagination--custom-button-class"
+          },
+          {
+            "export": "WithIcons",
+            "id": "components-navigation-pagination--with-icons"
+          },
+          {
+            "export": "OpenEnded",
+            "id": "components-navigation-pagination--open-ended"
           },
           {
             "export": "AsLinks",
