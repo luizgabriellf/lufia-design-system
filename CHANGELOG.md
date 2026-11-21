@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.78.0
+
+### Minor Changes
+
+- [#269](https://github.com/luizgabriellf/lufia-design-system/pull/269) [`d86cd48`](https://github.com/luizgabriellf/lufia-design-system/commit/d86cd4814c33dd47ff24902b25b976839eea2103) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Card` accepts `titleRef` and `titleFocusable`, so code can move focus to a card's title after a view change without adding a tab stop.
+
 ## 0.77.0
 
 ### Minor Changes
