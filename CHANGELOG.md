@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.73.1
+
+### Patch Changes
+
+- [#255](https://github.com/luizgabriellf/lufia-design-system/pull/255) [`af8b1bb`](https://github.com/luizgabriellf/lufia-design-system/commit/af8b1bb5b15b4731e8e8380af535c845cd7912b5) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Fix `Combobox` list height in short spaces: the list is never taller than the room left on its side (it was raised to about six rem and clipped), opens on the side with more room when both are short, and re-measures against the visual viewport so an on-screen keyboard that shrinks a dialog is accounted for.
+
 ## 0.73.0
 
 ### Minor Changes
