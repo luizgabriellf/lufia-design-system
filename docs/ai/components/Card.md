@@ -83,7 +83,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-color`, `--lufia-card-body-font-size`, `--lufia-card-body-line-height`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-overflow`, `--lufia-card-radius`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-color`, `--lufia-card-body-font-size`, `--lufia-card-body-line-height`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-heading-min-inline-size`, `--lufia-card-overflow`, `--lufia-card-radius`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ## Content guidelines
 
@@ -100,6 +100,7 @@ body.
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--named-region`
+- `components-data-display-card--wrapping-header-action`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
 - `components-data-display-card--interactive-with-footer-button`
