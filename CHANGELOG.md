@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.76.0
+
+### Minor Changes
+
+- [#264](https://github.com/luizgabriellf/lufia-design-system/pull/264) [`a28242e`](https://github.com/luizgabriellf/lufia-design-system/commit/a28242e87d26cfa82022d830c05d2f2cefc41b32) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `LufiaProvider` labels gain `clearSearch`, `clear` and `showOptions`; `SearchInput`, `TableToolbar` and `Combobox` fall back to them when `clearLabel`, `clearSearchLabel` or `toggleLabel` is not passed. Without a provider the English text is unchanged.
+
 ## 0.75.1
 
 ### Patch Changes
