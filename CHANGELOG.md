@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.74.0
+
+### Minor Changes
+
+- [#257](https://github.com/luizgabriellf/lufia-design-system/pull/257) [`effd929`](https://github.com/luizgabriellf/lufia-design-system/commit/effd929cfd5d90c7c56f673144c57ff650e6e749) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Add `SkeletonRegion`: the named, busy wrapper of a loading shape. It announces what is loading once from a polite status, so `Skeleton`, `SkeletonTable`, `SkeletonCard` and `SkeletonPageHeader` can stay decorative.
+
 ## 0.73.1
 
 ### Patch Changes
