@@ -1,5 +1,12 @@
 # @lufia/design-system
 
+## 0.77.0
+
+### Minor Changes
+
+- [#267](https://github.com/luizgabriellf/lufia-design-system/pull/267) [`3b69f35`](https://github.com/luizgabriellf/lufia-design-system/commit/3b69f35b3b9360100cc240b3828cac1ef4cfe7a2) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `AppShell` reads `--lufia-app-shell-inset-block-start` (default `0px`): the height, as a length with a unit, of a banner the app fixes above the
+  shell. The page starts below it, and the sidebar and the phone top bar stick under it instead of sliding behind it.
+
 ## 0.76.0
 
 ### Minor Changes
