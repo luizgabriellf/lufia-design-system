@@ -16,6 +16,7 @@ import { CloseIcon, SearchIcon } from "../Icon/icons";
 import fieldStyles from "../FormField/fieldControl.module.css";
 import { useControllableState } from "../FormField/useControllableState";
 import { useFormReset } from "../FormField/useFormReset";
+import { useLufia } from "../LufiaProvider";
 import { VisuallyHidden } from "../VisuallyHidden";
 import styles from "./SearchInput.module.css";
 
@@ -40,7 +41,7 @@ export type SearchInputProps = Omit<
   onSearch?: (value: string) => void;
   /** Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. */
   debounceMs?: number;
-  /** Accessible name of the clear button. Aria-only. */
+  /** Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clearSearch`. */
   clearLabel?: string;
   /** A hint for the key that focuses the field, such as "/" or "Ctrl K". Display only: the app binds the key. */
   shortcut?: string;
@@ -74,7 +75,7 @@ export function SearchInput({
   onValueChange,
   onSearch,
   debounceMs = 300,
-  clearLabel = "Clear search",
+  clearLabel,
   shortcut,
   loading = false,
   loadingLabel = "Searching",
@@ -87,6 +88,7 @@ export function SearchInput({
   ref,
   ...rest
 }: SearchInputProps) {
+  const { labels } = useLufia();
   const [value, setValue] = useControllableState(valueProp, defaultValue, onValueChange);
   const control = useFormFieldControl({
     id: rest.id,
@@ -185,7 +187,12 @@ export function SearchInput({
         </span>
       ) : null}
       {showClear ? (
-        <button type="button" className={styles.clear} aria-label={clearLabel} onClick={clear}>
+        <button
+          type="button"
+          className={styles.clear}
+          aria-label={clearLabel ?? labels.clearSearch}
+          onClick={clear}
+        >
           <CloseIcon size="sm" />
         </button>
       ) : null}

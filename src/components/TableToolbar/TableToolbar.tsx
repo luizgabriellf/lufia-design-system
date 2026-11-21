@@ -21,7 +21,7 @@ export type TableToolbarProps = Omit<HTMLAttributes<HTMLDivElement>, "children">
   onSearchChange?: (value: string) => void;
   /** Placeholder of the search field. Default none. */
   searchPlaceholder?: string;
-  /** Accessible name of the search field's clear button. Required whenever search is shown. */
+  /** Accessible name of the search field's clear button. Defaults to the provider's `labels.clearSearch`. */
   clearSearchLabel?: string;
   /** Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. */
   variant?: "inline" | "standalone";
@@ -37,7 +37,7 @@ export function TableToolbar({
   search,
   onSearchChange,
   searchPlaceholder,
-  clearSearchLabel = "Clear search",
+  clearSearchLabel,
   variant = "inline",
   className,
   children,

@@ -4,9 +4,30 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { axe } from "../../test/axe";
 import { FormField } from "../FormField";
+import { LufiaProvider } from "../LufiaProvider";
 import { SearchInput } from "./SearchInput";
 
 describe("SearchInput", () => {
+  it("names the clear button from the provider, and lets the prop win", () => {
+    const { rerender } = render(
+      <LufiaProvider labels={{ clearSearch: "Limpar pesquisa" }}>
+        <SearchInput defaultValue="abc" aria-label="Find" />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Limpar pesquisa" })).toBeInTheDocument();
+    rerender(
+      <LufiaProvider labels={{ clearSearch: "Limpar pesquisa" }}>
+        <SearchInput defaultValue="abc" aria-label="Find" clearLabel="Apagar" />
+      </LufiaProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Apagar" })).toBeInTheDocument();
+  });
+
+  it("keeps the English clear label without a provider", () => {
+    render(<SearchInput defaultValue="abc" aria-label="Find" />);
+    expect(screen.getByRole("button", { name: "Clear search" })).toBeInTheDocument();
+  });
+
   it("is a search box named by aria-label, or by its placeholder", () => {
     const { rerender } = render(<SearchInput aria-label="Find a customer" />);
     expect(screen.getByRole("searchbox", { name: "Find a customer" })).toBeInTheDocument();

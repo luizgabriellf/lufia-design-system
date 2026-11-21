@@ -49,8 +49,8 @@ the empty and loading states are part of the component.
 | `wrapValue` | `boolean` | no | `false` | Lets the chosen label wrap onto up to `maxValueLines` lines while the list is closed, instead of being cut with an ellipsis, so a long label stays readable on a narrow screen. The box grows with it; the clear and toggle buttons stay level with the first line. Opening the list or typing returns the box to a single editable line. Default: off. |
 | `maxValueLines` | `number` | no | `2` | The most lines the wrapped label may take (`wrapValue`); a longer label is cut with an ellipsis. Default: 2. |
 | `clearable` | `boolean` | no | `false` | Shows a clear button while something is chosen. Escape clears too, when the list is closed. |
-| `clearLabel` | `string` | no | `"Clear"` | Accessible name of the clear button. Aria-only. |
-| `toggleLabel` | `string` | no | `"Show options"` | Accessible name of the button that opens the list. Aria-only. |
+| `clearLabel` | `string` | no |  | Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clear`. |
+| `toggleLabel` | `string` | no |  | Accessible name of the button that opens the list. Aria-only. Defaults to the provider's `labels.showOptions`. |
 | `requiredMessage` | `string` | no |  | Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own "please fill out this field" in the person's language. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |

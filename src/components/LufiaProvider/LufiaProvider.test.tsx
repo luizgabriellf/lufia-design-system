@@ -4,13 +4,17 @@ import { LufiaLink, LufiaProvider, useLufia, type LinkComponent } from "./LufiaP
 
 function Labels() {
   const { labels } = useLufia();
-  return <p>{`${labels.close}|${labels.dismiss}|${labels.notifications}`}</p>;
+  return (
+    <p>{`${labels.close}|${labels.dismiss}|${labels.notifications}|${labels.clearSearch}|${labels.clear}|${labels.showOptions}`}</p>
+  );
 }
 
 describe("LufiaProvider", () => {
   it("works without a provider, with English aria-only defaults", () => {
     render(<Labels />);
-    expect(screen.getByText("Close|Dismiss|Notifications")).toBeInTheDocument();
+    expect(
+      screen.getByText("Close|Dismiss|Notifications|Clear search|Clear|Show options"),
+    ).toBeInTheDocument();
   });
 
   it("renders a plain anchor by default", () => {
@@ -40,7 +44,22 @@ describe("LufiaProvider", () => {
         </LufiaProvider>
       </LufiaProvider>,
     );
-    expect(screen.getByText("Fechar|Ignorar|Notifications")).toBeInTheDocument();
+    expect(
+      screen.getByText("Fechar|Ignorar|Notifications|Clear search|Clear|Show options"),
+    ).toBeInTheDocument();
+  });
+
+  it("overrides the search and combobox labels", () => {
+    render(
+      <LufiaProvider
+        labels={{ clearSearch: "Limpar pesquisa", clear: "Limpar", showOptions: "Mostrar opcoes" }}
+      >
+        <Labels />
+      </LufiaProvider>,
+    );
+    expect(
+      screen.getByText("Close|Dismiss|Notifications|Limpar pesquisa|Limpar|Mostrar opcoes"),
+    ).toBeInTheDocument();
   });
 
   it("inherits the link component of an outer provider", () => {

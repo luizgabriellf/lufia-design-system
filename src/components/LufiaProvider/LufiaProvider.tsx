@@ -25,6 +25,10 @@ export type LinkComponent = ComponentType<LinkComponentProps>;
  * Every key has a neutral English default, so a missing provider is harmless; override them for the app's language.
  */
 export type LufiaLabels = {
+  /** Accessible name of the clear button of a combobox. */
+  clear: string;
+  /** Accessible name of the clear button of a search field. */
+  clearSearch: string;
   /** Accessible name of the close button of a dialog. */
   close: string;
   /** Accessible name of the dismiss button of a notification. */
@@ -33,13 +37,18 @@ export type LufiaLabels = {
   notifications: string;
   /** Text read after the label of a required field ("required"). Set it once for the app's language. */
   required: string;
+  /** Accessible name of the button that opens a combobox's list. */
+  showOptions: string;
 };
 
 export const DEFAULT_LABELS: LufiaLabels = {
+  clear: "Clear",
+  clearSearch: "Clear search",
   close: "Close",
   dismiss: "Dismiss",
   notifications: "Notifications",
   required: "required",
+  showOptions: "Show options",
 };
 
 const DefaultLink: LinkComponent = ({ children, ...rest }) => <a {...rest}>{children}</a>;

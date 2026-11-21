@@ -2842,8 +2842,8 @@ the empty and loading states are part of the component.
 | `wrapValue` | `boolean` | no | `false` | Lets the chosen label wrap onto up to `maxValueLines` lines while the list is closed, instead of being cut with an ellipsis, so a long label stays readable on a narrow screen. The box grows with it; the clear and toggle buttons stay level with the first line. Opening the list or typing returns the box to a single editable line. Default: off. |
 | `maxValueLines` | `number` | no | `2` | The most lines the wrapped label may take (`wrapValue`); a longer label is cut with an ellipsis. Default: 2. |
 | `clearable` | `boolean` | no | `false` | Shows a clear button while something is chosen. Escape clears too, when the list is closed. |
-| `clearLabel` | `string` | no | `"Clear"` | Accessible name of the clear button. Aria-only. |
-| `toggleLabel` | `string` | no | `"Show options"` | Accessible name of the button that opens the list. Aria-only. |
+| `clearLabel` | `string` | no |  | Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clear`. |
+| `toggleLabel` | `string` | no |  | Accessible name of the button that opens the list. Aria-only. Defaults to the provider's `labels.showOptions`. |
 | `requiredMessage` | `string` | no |  | Message the browser shows when a `required` combobox is submitted with nothing chosen. Defaults to the browser's own "please fill out this field" in the person's language. |
 | `invalid` | `boolean` | no |  | Marks the control invalid without a `FormField`. |
 | `size` | `"sm" \| "md"` | no | `"md"` | `sm` is the compact control for toolbars and filter rows, with the metrics of `TextInput size="sm"` and `Select size="sm"`: a 2rem box with the small font size. On touch screens and phone widths it grows to the touch target, like `Button`. Give it an `aria-label` or a visually hidden label. Default `md`. |
@@ -4934,7 +4934,7 @@ Returned members:
 - `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`
 - `LinkComponentProps`: `AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }`
 - `LufiaContextValue`: `{ linkComponent: LinkComponent; labels: LufiaLabels; }`
-- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; required: string; }`
+- `LufiaLabels`: `{ clear: string; clearSearch: string; close: string; dismiss: string; notifications: string; required: string; showOptions: string; }`
 - `LufiaProviderProps`: `{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }`
 
 ### Example
@@ -7171,7 +7171,7 @@ A search box: a magnifier, a native `type="search"` input, a clear button, an op
 | `onValueChange` | `(value: string) => void` | no |  | Called on every keystroke with the current text. |
 | `onSearch` | `(value: string) => void` | no |  | Called with the text once the person stops typing for `debounceMs`, at once on Enter, and at once when the text is cleared. It does not fire for the initial value, or twice for the same text in a row. |
 | `debounceMs` | `number` | no | `300` | Quiet time before `onSearch` fires while typing, in milliseconds. Default 300. |
-| `clearLabel` | `string` | no | `"Clear search"` | Accessible name of the clear button. Aria-only. |
+| `clearLabel` | `string` | no |  | Accessible name of the clear button. Aria-only. Defaults to the provider's `labels.clearSearch`. |
 | `shortcut` | `string` | no |  | A hint for the key that focuses the field, such as "/" or "Ctrl K". Display only: the app binds the key. |
 | `loading` | `boolean` | no | `false` | A search is running. Shows a ring, sets `aria-busy` and announces `loadingLabel`. |
 | `loadingLabel` | `string` | no | `"Searching"` | Text announced while `loading`. Aria-only. |
@@ -7199,7 +7199,7 @@ import { SearchInput } from "@lufia/design-system/components/SearchInput";
 ### Accessibility
 
 - Needs a name: put it in a `FormField`, pass `aria-label`, or the placeholder is used as a last resort.
-- The clear button has its own accessible name (`clearLabel`) and is 32px square inside a 44px box.
+- The clear button has its own accessible name (`clearLabel`, defaulting to the provider's `labels.clearSearch`) and is 32px square inside a 44px box.
 - While `loading`, the input has `aria-busy` and a status region announces `loadingLabel`. The ring stops under `prefers-reduced-motion`.
 - Results are not announced by this component: the list you update should announce its own count (a live region).
 
@@ -9323,7 +9323,7 @@ open-ended filter) go in as children.
 | `search` | `string` | no |  | Current text of the search field. Controlled: update it from `onSearchChange`. Default `""`. |
 | `onSearchChange` | `(value: string) => void` | no |  | The search field renders only when this handler is provided. |
 | `searchPlaceholder` | `string` | no |  | Placeholder of the search field. Default none. |
-| `clearSearchLabel` | `string` | no | `"Clear search"` | Accessible name of the search field's clear button. Required whenever search is shown. |
+| `clearSearchLabel` | `string` | no |  | Accessible name of the search field's clear button. Defaults to the provider's `labels.clearSearch`. |
 | `variant` | `"inline" \| "standalone"` | no | `"inline"` | Layout variant: "inline" sits inside a surface (bottom border); "standalone" has outer spacing. |
 | `children` | `ReactNode` | no |  | Extra controls, such as dropdowns for open-ended lists, rendered before the search box. |
 
@@ -9355,7 +9355,7 @@ import { TableToolbar } from "@lufia/design-system/components/TableToolbar";
 ### Accessibility
 
 - Chips are toggle buttons with `aria-pressed`; the group has `role="group"` (add `aria-label` through props to name it).
-- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button needs `clearSearchLabel`; the default is English.
+- The search input is `type="search"` and named by its placeholder text. **Always pass `searchPlaceholder`** (localised); it doubles as the accessible name. The clear button takes `clearSearchLabel`, which defaults to the provider's `labels.clearSearch` (English without a provider).
 - The search wrapper shows the focus ring through `:focus-within`, so the native outline is replaced, never removed.
 - Chips are at least 44px tall on coarse pointers and narrow screens; the row wraps instead of scrolling at 320px.
 

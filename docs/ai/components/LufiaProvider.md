@@ -71,7 +71,7 @@ Returned members:
 - `LinkComponent`: `ComponentClass<LinkComponentProps, any> | FunctionComponent<LinkComponentProps>`
 - `LinkComponentProps`: `AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: Ref<HTMLAnchorElement> | undefined; }`
 - `LufiaContextValue`: `{ linkComponent: LinkComponent; labels: LufiaLabels; }`
-- `LufiaLabels`: `{ close: string; dismiss: string; notifications: string; required: string; }`
+- `LufiaLabels`: `{ clear: string; clearSearch: string; close: string; dismiss: string; notifications: string; required: string; showOptions: string; }`
 - `LufiaProviderProps`: `{ linkComponent?: LinkComponent | undefined; labels?: Partial<LufiaLabels> | undefined; children: ReactNode; }`
 
 ## Example
