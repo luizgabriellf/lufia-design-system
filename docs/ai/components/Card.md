@@ -4,7 +4,7 @@
 
 - Status: beta
 - Category: Data display
-- Import: `import { Card } from "@lufia/design-system/components/Card"`
+- Import: `import { Card, CardInset } from "@lufia/design-system/components/Card"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/Card](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Card)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-card--docs)
@@ -25,6 +25,13 @@ is clickable through one link.
 - Page layout or grouping that has no visual boundary: use spacing.
 - A card with several equal destinations inside: link them separately, and leave the card plain.
 - A card whose only content is a button: use `Button`.
+
+## Exports
+
+| Name | Kind |
+| --- | --- |
+| `Card` | component |
+| `CardInset` | component |
 
 ## API
 
@@ -48,9 +55,14 @@ is clickable through one link.
 
 Other native element attributes pass through to the root element.
 
+### `CardInset`
+
+No props of its own. Native element attributes pass through.
+
 ## Types
 
 - `CardElement`: `"div" | "section" | "article" | "li"`
+- `CardInsetProps`: `ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>`
 - `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ## Example
@@ -99,6 +111,7 @@ body.
 - `components-data-display-card--with-footer`
 - `components-data-display-card--with-description`
 - `components-data-display-card--flush`
+- `components-data-display-card--flush-with-inset`
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--named-region`

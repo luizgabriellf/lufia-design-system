@@ -69,7 +69,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Badge: tone dot truncate wrap | also StatusBadge
 - BarList: title* rows* summary total reference titleVisibility valueWrap
 - BulletBar: value* target* label* headroom tone
-- Card: as title headingLevel titleId titleRef titleFocusable description headerAction footer +4
+- Card: as title headingLevel titleId titleRef titleFocusable description headerAction footer +4 | also CardInset
 - Checklist: items* title statusLabels density
 - CitationList: items* title
 - ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues +2

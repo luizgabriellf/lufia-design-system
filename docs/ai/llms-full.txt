@@ -1839,7 +1839,7 @@ truncating. Give the destructive action a specific name rather than "Yes".
 
 - Status: beta
 - Category: Data display
-- Import: `import { Card } from "@lufia/design-system/components/Card"`
+- Import: `import { Card, CardInset } from "@lufia/design-system/components/Card"`
 - Also from: `@lufia/design-system`
 - Source: [src/components/Card](https://github.com/luizgabriellf/lufia-design-system/blob/main/src/components/Card)
 - Storybook: [docs](https://luizgabriellf.github.io/lufia-design-system/?path=/docs/components-data-display-card--docs)
@@ -1860,6 +1860,13 @@ is clickable through one link.
 - Page layout or grouping that has no visual boundary: use spacing.
 - A card with several equal destinations inside: link them separately, and leave the card plain.
 - A card whose only content is a button: use `Button`.
+
+### Exports
+
+| Name | Kind |
+| --- | --- |
+| `Card` | component |
+| `CardInset` | component |
 
 ### API
 
@@ -1883,9 +1890,14 @@ is clickable through one link.
 
 Other native element attributes pass through to the root element.
 
+#### `CardInset`
+
+No props of its own. Native element attributes pass through.
+
 ### Types
 
 - `CardElement`: `"div" | "section" | "article" | "li"`
+- `CardInsetProps`: `ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>`
 - `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ### Example
@@ -1934,6 +1946,7 @@ body.
 - `components-data-display-card--with-footer`
 - `components-data-display-card--with-description`
 - `components-data-display-card--flush`
+- `components-data-display-card--flush-with-inset`
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
 - `components-data-display-card--named-region`
@@ -5017,7 +5030,7 @@ the keyboard model of a list (arrow keys, Home, End, type-ahead), which `Popover
 | `defaultOpen` | `boolean` | no |  | Whether the list starts open when `open` is not given. For documentation and tests; focus is not moved on first paint. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next state when the trigger, Escape, Tab, a press outside or a selection asks to change it. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no |  | Which side of the trigger the list opens on. `start` and `end` follow the writing direction. It flips to the opposite side when it does not fit. Default `bottom`. |
-| `align` | `"end" \| "start" \| "center"` | no |  | How the list lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
+| `align` | `"end" \| "center" \| "start"` | no |  | How the list lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
 | `matchTriggerWidth` | `boolean` | no |  | Makes the list at least as wide as the trigger (it grows for longer labels). Default `false`. |
 
 Other native element attributes pass through to the root element.
@@ -6586,7 +6599,7 @@ set or an explanation, and it never blocks the page: no focus trap, no scroll lo
 | `defaultOpen` | `boolean` | no | `false` | Whether the panel starts open when `open` is not given. For documentation and tests; focus is not moved on first paint. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next state when the trigger, Escape or a press outside asks to change it. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no | `"bottom"` | Which side of the trigger the panel opens on. `start` and `end` follow the writing direction. It flips to the opposite side when it does not fit. Default `bottom`. |
-| `align` | `"end" \| "start" \| "center"` | no | `"start"` | How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
+| `align` | `"end" \| "center" \| "start"` | no | `"start"` | How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
 | `initialFocus` | `"first" \| "panel"` | no | `"first"` | Where focus goes when the panel opens: the first focusable element inside (`"first"`, default; the panel itself when there is none) or the panel. |
 
 Other native element attributes pass through to the root element.
@@ -7680,7 +7693,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `SkeletonCardProps`: `Omit<CardProps, "children" | "href" | "title" | "headingLevel" | "description" | "headerAction" | "footer" | "flush" | "divider"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }`
+- `SkeletonCardProps`: `Omit<CardProps, "children" | "href" | "title" | "footer" | "headingLevel" | "description" | "headerAction" | "flush" | "divider"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }`
 
 ### Example
 
@@ -8569,7 +8582,7 @@ One family of status markers. Each tone has its own shape, so the status reads w
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `tone` | `"success" \| "warning" \| "danger" \| "info" \| "pending" \| "neutral" \| "needsInput"` | yes |  | The status. Each tone has its own shape, so it reads without colour (WCAG 1.4.1). |
-| `variant` | `"bare" \| "ring" \| "mark"` | no | `"bare"` | `bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot). |
+| `variant` | `"mark" \| "bare" \| "ring"` | no | `"bare"` | `bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot). |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | `sm`, `md` (default) or `lg`. A bare glyph or a mark is 16, 20 or 24px (`--lufia-icon-size-*`); a ring is 20, 24 or 32px, and `--lufia-status-icon-size` overrides its diameter. |
 | `label` | `string` | no |  | Names the status for assistive technology (`role="img"`). Leave it out when visible text next to the icon already names the status: the icon is then decorative. |
 | `drawOn` | `boolean` | no | `false` | Draw the glyph's strokes in once when it mounts, the motion of `SuccessCheck` (for a toast or a confirmation that has just appeared). Under `prefers-reduced-motion` the glyph is simply drawn. Default `false`. |
@@ -8578,7 +8591,7 @@ Other native element attributes pass through to the root element.
 
 ### Types
 
-- `StatusIconProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { tone: StatusTone; variant?: "bare" | "ring" | "mark" | undefined; size?: "sm" | "md" | "lg" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }`
+- `StatusIconProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { tone: StatusTone; variant?: "mark" | "bare" | "ring" | undefined; size?: "sm" | "md" | "lg" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }`
 - `StatusTone`: `"success" | "warning" | "danger" | "info" | "pending" | "neutral" | "needsInput"`
 
 ### Example
@@ -9905,13 +9918,13 @@ focus, and goes away when either leaves.
 | `children` | `(props: TooltipTrigger) => ReactNode` | yes |  | Renders the one focusable element the tooltip belongs to and spreads the given props onto it: `{(props) => <IconButton {...props} icon={...} aria-label="Save" />}`. Put your own handlers before the spread, or call the given ones from them: the spread replaces a handler of the same name. |
 | `content` | `ReactNode` | yes |  | The text of the tooltip. Short and non-interactive: a hovering person can move onto it, but it never takes focus. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no | `"top"` | Which side of the trigger it opens on (`start` and `end` follow the writing direction). It flips to the opposite side when it does not fit. Default `top`. |
-| `relation` | `"description" \| "label"` | no | `"description"` | How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can. |
+| `relation` | `"label" \| "description"` | no | `"description"` | How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can. |
 | `delay` | `number` | no | `TOOLTIP_DELAY_MS` | Milliseconds a hovering pointer waits before the tooltip shows. Keyboard focus shows it at once. Default 250. |
 | `disabled` | `boolean` | no | `false` | Turns the tooltip off without changing the tree, for example while a menu the control opens is showing. With `relation="label"` the control keeps its name. |
 
 ### Types
 
-- `TooltipProps`: `{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: "description" | "label" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }`
+- `TooltipProps`: `{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: "label" | "description" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }`
 - `TooltipTriggerProps`: `TooltipHandlers & { "aria-describedby"?: string | undefined; "aria-labelledby"?: string | undefined; }`
 
 ### Example

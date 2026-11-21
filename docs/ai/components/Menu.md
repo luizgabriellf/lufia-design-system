@@ -43,7 +43,7 @@ the keyboard model of a list (arrow keys, Home, End, type-ahead), which `Popover
 | `defaultOpen` | `boolean` | no |  | Whether the list starts open when `open` is not given. For documentation and tests; focus is not moved on first paint. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next state when the trigger, Escape, Tab, a press outside or a selection asks to change it. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no |  | Which side of the trigger the list opens on. `start` and `end` follow the writing direction. It flips to the opposite side when it does not fit. Default `bottom`. |
-| `align` | `"end" \| "start" \| "center"` | no |  | How the list lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
+| `align` | `"end" \| "center" \| "start"` | no |  | How the list lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
 | `matchTriggerWidth` | `boolean` | no |  | Makes the list at least as wide as the trigger (it grows for longer labels). Default `false`. |
 
 Other native element attributes pass through to the root element.

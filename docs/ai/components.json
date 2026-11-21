@@ -3981,6 +3981,19 @@
           "definition": "\"div\" | \"section\" | \"article\" | \"li\""
         },
         {
+          "name": "CardInset",
+          "kind": "component",
+          "description": "Content inside a `flush` card that keeps the card's own body padding: a paragraph or a toolbar beside a table or list that spans edge to edge. It reads the same spacing as the card body (the `padding` prop of the surrounding `Card` and the `--lufia-card-body-padding*` tokens), so it lines up with the header and footer. Render it inside the `Card` children.",
+          "props": [],
+          "nativeProps": true
+        },
+        {
+          "name": "CardInsetProps",
+          "kind": "type",
+          "description": "",
+          "definition": "ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>"
+        },
+        {
           "name": "CardPadding",
           "kind": "type",
           "description": "",
@@ -3995,6 +4008,7 @@
       ],
       "aliases": {
         "CardElement": "\"div\" | \"section\" | \"article\" | \"li\"",
+        "CardInsetProps": "ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>",
         "CardPadding": "\"none\" | \"sm\" | \"md\" | \"lg\""
       },
       "story": {
@@ -4019,6 +4033,10 @@
           {
             "export": "Flush",
             "id": "components-data-display-card--flush"
+          },
+          {
+            "export": "FlushWithInset",
+            "id": "components-data-display-card--flush-with-inset"
           },
           {
             "export": "Divider",
@@ -11755,7 +11773,7 @@
             },
             {
               "name": "align",
-              "type": "\"end\" | \"start\" | \"center\"",
+              "type": "\"end\" | \"center\" | \"start\"",
               "required": false,
               "default": null,
               "description": "How the list lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`."
@@ -15330,7 +15348,7 @@
             },
             {
               "name": "align",
-              "type": "\"end\" | \"start\" | \"center\"",
+              "type": "\"end\" | \"center\" | \"start\"",
               "required": false,
               "default": "\"start\"",
               "description": "How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`."
@@ -17629,11 +17647,11 @@
           "name": "SkeletonCardProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"footer\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
+          "definition": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"footer\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
         }
       ],
       "aliases": {
-        "SkeletonCardProps": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"footer\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
+        "SkeletonCardProps": "Omit<CardProps, \"children\" | \"href\" | \"title\" | \"footer\" | \"headingLevel\" | \"description\" | \"headerAction\" | \"flush\" | \"divider\"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }"
       },
       "story": {
         "docsId": "components-feedback-skeletoncard--docs",
@@ -19233,7 +19251,7 @@
             },
             {
               "name": "variant",
-              "type": "\"bare\" | \"ring\" | \"mark\"",
+              "type": "\"mark\" | \"bare\" | \"ring\"",
               "required": false,
               "default": "\"bare\"",
               "description": "`bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot)."
@@ -19266,7 +19284,7 @@
           "name": "StatusIconProps",
           "kind": "type",
           "description": "",
-          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"bare\" | \"ring\" | \"mark\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }"
+          "definition": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"mark\" | \"bare\" | \"ring\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }"
         },
         {
           "name": "StatusTone",
@@ -19276,7 +19294,7 @@
         }
       ],
       "aliases": {
-        "StatusIconProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"bare\" | \"ring\" | \"mark\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }",
+        "StatusIconProps": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\"> & { tone: StatusTone; variant?: \"mark\" | \"bare\" | \"ring\" | undefined; size?: \"sm\" | \"md\" | \"lg\" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }",
         "StatusTone": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"pending\" | \"neutral\" | \"needsInput\""
       },
       "story": {
@@ -22327,7 +22345,7 @@
             },
             {
               "name": "relation",
-              "type": "\"description\" | \"label\"",
+              "type": "\"label\" | \"description\"",
               "required": false,
               "default": "\"description\"",
               "description": "How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can."
@@ -22353,7 +22371,7 @@
           "name": "TooltipProps",
           "kind": "type",
           "description": "",
-          "definition": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"description\" | \"label\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }"
+          "definition": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"label\" | \"description\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }"
         },
         {
           "name": "TooltipTriggerProps",
@@ -22363,7 +22381,7 @@
         }
       ],
       "aliases": {
-        "TooltipProps": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"description\" | \"label\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }",
+        "TooltipProps": "{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: \"label\" | \"description\" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }",
         "TooltipTriggerProps": "TooltipHandlers & { \"aria-describedby\"?: string | undefined; \"aria-labelledby\"?: string | undefined; }"
       },
       "story": {

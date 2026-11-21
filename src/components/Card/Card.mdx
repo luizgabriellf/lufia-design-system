@@ -63,6 +63,19 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 `description` adds one short line under the `title`. `flush` lets the body span the full width of the card while the header and footer keep their padding, for lists and tables that draw their own rows (`AttentionList`, `ActivityList`). Together with `title` and `headerAction` this covers the "surface with a header" of a dashboard: a section title, a "View all" link at the end, and a list below. The header wraps: an action too wide to sit beside the title drops under it, and a theme can set `--lufia-card-heading-min-inline-size` so that happens before the title gets narrower than that length.
 
 <Canvas of={Stories.Flush} />
+
+A paragraph or toolbar that sits beside flush content still wants the card's spacing. Wrap it in `CardInset`: a `div` whose padding is the card's body padding, so it follows the `padding` prop of the surrounding card and the `--lufia-card-body-padding*` tokens, and lines up with the header and footer.
+
+```tsx
+import { Card, CardInset } from "@lufia/design-system/components/Card";
+
+<Card title="Regions" flush>
+  <CardInset>Totals are in euros.</CardInset>
+  <Table caption="Regions">{/* rows */}</Table>
+</Card>;
+```
+
+<Canvas of={Stories.FlushWithInset} />
 <Canvas of={Stories.WithDescription} />
 
 ### A named region

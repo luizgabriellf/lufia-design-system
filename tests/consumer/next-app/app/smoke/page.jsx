@@ -5,7 +5,7 @@ import { AttentionList as AttentionList_AttentionList } from "@lufia/design-syst
 import { Badge as Badge_Badge, StatusBadge as Badge_StatusBadge } from "@lufia/design-system/components/Badge";
 import { BarList as BarList_BarList } from "@lufia/design-system/components/BarList";
 import { BulletBar as BulletBar_BulletBar } from "@lufia/design-system/components/BulletBar";
-import { Card as Card_Card } from "@lufia/design-system/components/Card";
+import { Card as Card_Card, CardInset as Card_CardInset } from "@lufia/design-system/components/Card";
 import * as ChartKit from "@lufia/design-system/components/ChartKit";
 import { Checklist as Checklist_Checklist } from "@lufia/design-system/components/Checklist";
 import { ChoiceTile as ChoiceTile_ChoiceTile } from "@lufia/design-system/components/ChoiceTile";
@@ -59,6 +59,7 @@ export default function SmokePage() {
       <section data-smoke="BarList"><BarList_BarList rows={[{ key: "a", name: "A", value: "10", amount: 10 }]} title={"x"} /></section>
       <section data-smoke="BulletBar"><BulletBar_BulletBar value={1} target={1} label={"x"} /></section>
       <section data-smoke="Card"><Card_Card /></section>
+      <section data-smoke="Card/CardInset"><Card_CardInset /></section>
       <section data-smoke="ChartKit" data-exports={Object.keys(ChartKit).length} />
       <section data-smoke="Checklist"><Checklist_Checklist items={[{ key: "a", text: "Item" }]} /></section>
       <section data-smoke="ChoiceTile"><ChoiceTile_ChoiceTile label={"x"} /></section>
