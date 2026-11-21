@@ -69,7 +69,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Badge: tone dot truncate wrap | also StatusBadge
 - BarList: title* rows* summary total reference titleVisibility valueWrap
 - BulletBar: value* target* label* headroom tone
-- Card: title headingLevel description headerAction footer href padding flush divider
+- Card: as title headingLevel titleId description headerAction footer href padding +2
 - Checklist: items* title statusLabels density
 - CitationList: items* title
 - ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues +2
@@ -92,7 +92,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - Banner: variant title icon action onDismiss dismissLabel size lead live +2
 - EmptyState: title* icon body action
-- SkeletonCard: padding header lines block still
+- SkeletonCard: as titleId padding header lines block still
 - SkeletonPageHeader: eyebrow description actions still
 - SkeletonRegion: label*
 - SkeletonTable: rows columns stackBelow still

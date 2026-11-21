@@ -91,6 +91,10 @@ export const ThemedByTokens: Story = {
     ),
   ],
 };
+/** A `section` named by its own title: assistive technology lists it as a region. */
+export const NamedRegion: Story = {
+  args: { as: "section", titleId: "card-named-region-title", "aria-labelledby": "card-named-region-title" },
+};
 export const BodyOnly: Story = { args: { title: undefined } };
 /** The whole card is the hit area of one link, the title. The ring shows on the card. */
 export const Interactive: Story = { args: { href: "#report", headerAction: <Badge tone="info">New</Badge> } };
