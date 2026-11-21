@@ -102,6 +102,21 @@ describe("Card", () => {
     expect(screen.getAllByRole("link")).toHaveLength(1);
   });
 
+  it("renders the chosen element and names it by its title through titleId", () => {
+    const { container, rerender } = render(
+      <Card as="section" title="Pending" titleId="pending-title" aria-labelledby="pending-title">
+        Body
+      </Card>,
+    );
+    expect(screen.getByRole("region", { name: "Pending" }).tagName).toBe("SECTION");
+    expect(screen.getByRole("heading", { name: "Pending" })).toHaveAttribute("id", "pending-title");
+    rerender(<Card as="article">Body</Card>);
+    expect(screen.getByRole("article")).toHaveAttribute("data-lufia-part", "card");
+    rerender(<Card title="Plain">Body</Card>);
+    expect(container.firstElementChild?.tagName).toBe("DIV");
+    expect(screen.getByRole("heading", { name: "Plain" })).not.toHaveAttribute("id");
+  });
+
   it("flush: exposes the flag so the body can span the card", () => {
     const { container, rerender } = render(<Card title="List">Body</Card>);
     expect(container.firstElementChild).not.toHaveAttribute("data-flush");

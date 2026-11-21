@@ -32,8 +32,10 @@ is clickable through one link.
 
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
+| `as` | `"div" \| "section" \| "article"` | no | `"div"` | Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region; `article` suits a self-contained item of a feed. Defaults to `div`. |
 | `title` | `ReactNode` | no |  | Heading of the card. With `href` it is also the text of the card's single link. |
 | `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | no | `3` | Heading level of `title` (2 to 6). Pick the one that fits the page outline. |
+| `titleId` | `string` | no |  | `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. |
 | `description` | `ReactNode` | no |  | One short line under the `title` (or on its own, when there is no title). |
 | `headerAction` | `ReactNode` | no |  | Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. |
 | `footer` | `ReactNode` | no |  | Pinned to the bottom of the card, separated from the body. |
@@ -46,6 +48,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
+- `CardElement`: `"div" | "section" | "article"`
 - `CardPadding`: `"none" | "sm" | "md" | "lg"`
 
 ## Example
@@ -80,7 +83,7 @@ Its stylesheet has no `prefers-reduced-motion` branch of its own; any motion com
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-card-body-color`, `--lufia-card-body-font-size`, `--lufia-card-body-line-height`, `--lufia-card-body-padding`, `--lufia-card-body-padding-block`, `--lufia-card-body-padding-inline`, `--lufia-card-divider-color`, `--lufia-card-header-padding`, `--lufia-card-overflow`, `--lufia-card-radius`, `--lufia-card-shadow`, `--lufia-card-shadow-hover`, `--lufia-color-accent-border`, `--lufia-color-bg-surface`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-size-sm`, `--lufia-font-weight-semibold`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-radius-card`, `--lufia-shadow-md`, `--lufia-shadow-sm`.
 
 ## Content guidelines
 
@@ -96,6 +99,7 @@ body.
 - `components-data-display-card--flush`
 - `components-data-display-card--divider`
 - `components-data-display-card--themed-by-tokens`
+- `components-data-display-card--named-region`
 - `components-data-display-card--body-only`
 - `components-data-display-card--interactive`
 - `components-data-display-card--interactive-with-footer-button`

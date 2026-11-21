@@ -65,9 +65,17 @@ If people need to select or copy text from the card, use a plain `Card` and put 
 <Canvas of={Stories.Flush} />
 <Canvas of={Stories.WithDescription} />
 
+### A named region
+
+A card is a `div` by default. `as="section"` makes it a region once it has a name: pass `titleId` and point the card's own `aria-labelledby` at it, so the region is named by its visible `title`. `as="article"` suits a self-contained item of a feed. Keep the default for a card that only groups content inside an already named area: a page with a dozen regions is harder to navigate, not easier.
+
+<Canvas of={Stories.NamedRegion} />
+
+The root also carries `data-lufia-part="card"`, a stable hook for layout rules such as the space between stacked cards.
+
 ### Header divider and tokens
 
-`divider` draws a rule under the header. Spacing, shadow and the rule's colour are component tokens, listed in [Theming components](?path=/docs/foundations-theming-components--docs).
+`divider` draws a rule under the header. Spacing, corner radius, body text, shadow and the rule's colour are component tokens, listed in [Theming components](?path=/docs/foundations-theming-components--docs).
 
 <Canvas of={Stories.Divider} />
 <Canvas of={Stories.ThemedByTokens} />

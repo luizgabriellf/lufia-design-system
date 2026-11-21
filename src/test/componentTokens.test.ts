@@ -41,6 +41,11 @@ const CONTRACT: [string, string][] = [
     "padding-block-start: var(--lufia-card-body-padding, var(--lufia-card-body-padding-block, var(--card-padding)))",
   ],
   ["Card", "box-shadow: var(--lufia-card-shadow, var(--lufia-shadow-sm))"],
+  ["Card", "border-radius: var(--lufia-card-radius, var(--lufia-radius-card))"],
+  ["Card", "overflow: var(--lufia-card-overflow, visible)"],
+  ["Card", "color: var(--lufia-card-body-color, var(--lufia-color-text-muted))"],
+  ["Card", "font-size: var(--lufia-card-body-font-size, var(--lufia-font-size-sm))"],
+  ["Card", "line-height: var(--lufia-card-body-line-height, var(--lufia-font-line-height-normal))"],
   ["Card", "box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md))"],
   [
     "AttentionList",

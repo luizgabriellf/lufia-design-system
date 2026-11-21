@@ -7,10 +7,13 @@
   min-inline-size: 0;
   flex-direction: column;
   border: var(--lufia-border-width-thin) solid var(--lufia-color-border-subtle);
-  border-radius: var(--lufia-radius-card);
+  border-radius: var(--lufia-card-radius, var(--lufia-radius-card));
   background: var(--lufia-color-bg-surface);
   color: var(--lufia-color-text-default);
   box-shadow: var(--lufia-card-shadow, var(--lufia-shadow-sm));
+
+  /* `clip` makes a flush body (a table, a list with its own row backgrounds) follow the corners. */
+  overflow: var(--lufia-card-overflow, visible);
 }
 
 .root[data-padding="none"] {
@@ -69,9 +72,9 @@
   );
   min-inline-size: 0;
   flex: 1;
-  color: var(--lufia-color-text-muted);
-  font-size: var(--lufia-font-size-sm);
-  line-height: var(--lufia-font-line-height-normal);
+  color: var(--lufia-card-body-color, var(--lufia-color-text-muted));
+  font-size: var(--lufia-card-body-font-size, var(--lufia-font-size-sm));
+  line-height: var(--lufia-card-body-line-height, var(--lufia-font-line-height-normal));
 }
 
 .header + .body {

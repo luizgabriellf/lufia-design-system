@@ -4,11 +4,20 @@ import styles from "./Card.module.css";
 
 export type CardPadding = "none" | "sm" | "md" | "lg";
 
-export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+export type CardElement = "div" | "section" | "article";
+
+export type CardProps = Omit<HTMLAttributes<HTMLElement>, "title"> & {
+  /**
+   * Element of the card. `section` with `aria-labelledby` (see `titleId`) or `aria-label` makes it a named region;
+   * `article` suits a self-contained item of a feed. Defaults to `div`.
+   */
+  as?: CardElement;
   /** Heading of the card. With `href` it is also the text of the card's single link. */
   title?: ReactNode;
   /** Heading level of `title` (2 to 6). Pick the one that fits the page outline. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** `id` of the heading, so `aria-labelledby` on the card (or anywhere else) can point at the `title`. */
+  titleId?: string;
   /** One short line under the `title` (or on its own, when there is no title). */
   description?: ReactNode;
   /** Control or badge at the end of the header row. Not available together with `href` unless it is non-interactive. */
@@ -40,7 +49,9 @@ export type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
  * The trade-off is that the covered text cannot be selected with the mouse; use a plain Card where people need to select.
  */
 export function Card({
+  as: Root = "div",
   title,
+  titleId,
   description,
   headingLevel = 3,
   headerAction,
@@ -58,9 +69,10 @@ export function Card({
   const hasDescription = description !== undefined && description !== null && description !== false;
   const hasHeader = title !== undefined || headerAction !== undefined || hasDescription;
   return (
-    <div
+    <Root
       {...rest}
       className={[styles.root, className].filter(Boolean).join(" ")}
+      data-lufia-part="card"
       data-padding={padding}
       data-interactive={interactive || undefined}
       data-flush={flush || undefined}
@@ -71,7 +83,7 @@ export function Card({
           {title !== undefined || hasDescription ? (
             <HeadingBlock hasDescription={hasDescription} description={description}>
               {title !== undefined ? (
-                <Heading className={styles.title}>
+                <Heading id={titleId} className={styles.title}>
                   {interactive ? (
                     <LufiaLink href={href} className={styles.link}>
                       {title}
@@ -88,7 +100,7 @@ export function Card({
       ) : null}
       {children !== undefined && children !== null ? <div className={styles.body}>{children}</div> : null}
       {footer ? <div className={styles.footer}>{footer}</div> : null}
-    </div>
+    </Root>
   );
 }
 
