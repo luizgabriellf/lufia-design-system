@@ -1,5 +1,12 @@
 # @lufia/design-system
 
+## 0.75.1
+
+### Patch Changes
+
+- [#262](https://github.com/luizgabriellf/lufia-design-system/pull/262) [`9a69863`](https://github.com/luizgabriellf/lufia-design-system/commit/9a6986353c1ed0ed891d7f000d402b423048ae0c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Card: the header wraps. An action too wide for the row now drops under the title instead of squeezing it to nothing, and
+  `--lufia-card-heading-min-inline-size` sets how narrow the title side may get before that happens (default `0`).
+
 ## 0.75.0
 
 ### Minor Changes
