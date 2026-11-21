@@ -45,6 +45,8 @@ export const Required: Story = {
 export const Invalid: Story = {
   args: { required: true, hint: "Up to 40 characters.", error: "Enter a project name to continue." },
 };
+/** The label stays in the DOM and names the control, but takes no space. For controls the surrounding context already explains. */
+export const LabelHidden: Story = { args: { labelHidden: true, required: true } };
 export const Disabled: Story = { args: { disabled: true, hint: "Only an owner can rename the project." } };
 /** The word read after the label comes from `LufiaProvider` `labels.required`; `requiredLabel` overrides it per field. */
 export const RequiredFromProvider: Story = {
