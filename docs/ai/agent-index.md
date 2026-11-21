@@ -14,7 +14,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - ActionIcons (deprecated): <DeleteIcon> size title | also DuplicateIcon EditIcon OpenIcon +2
 - Button: variant size loading fullWidth iconStart iconEnd render href disabled
 - Chip: iconStart size tone disabled onClick selected onRemove removeLabel
-- IconButton: aria-label* icon* href title variant loading render size shape tooltipPlacement +2
+- IconButton: aria-label* icon* href title variant loading render size shape +3
 - Link: href* externalLabel variant iconStart iconEnd
 - MoreActions: label* items* align size variant icon presentation narrowOnlyScope defaultOpen
 - PageActions: moreLabel* primary secondary overflow size collapse hideBelow primaryPlacement
@@ -23,17 +23,17 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 - Checkbox: label* hint error indeterminate size
 - ChoiceTile: label* disabled eyebrow description selected emphasis size fullWidth
-- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter loading +12
-- DateField: type value defaultValue onValueChange min max step clearLabel invalid size
-- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max step +8
-- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText describeFiles +6
+- Combobox: options* loadingLabel* emptyLabel* name value defaultValue onValueChange onQueryChange filter +13
+- DateField: type value defaultValue onValueChange min max step clearLabel invalid +1
+- DateRangeField: legend* startLabel* endLabel* type value defaultValue onValueChange min max +9
+- FileField: chooseLabel* formatRejection* replaceLabel dropLabel emptyLabel maxSize maxFiles removeLabel removeText +7
 - FormField: label* id hint error required nativeRequired disabled requiredLabel | also FormFieldContext useFormFieldControl useFormFieldLabelId
-- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems itemMaxLength +10
-- OptionRow: title* disabled eyebrow description meta leading trailing selected density truncate +4
+- ListField: label* labels* name items defaultItems onChange serialize sanitizeItem maxItems +11
+- OptionRow: title* disabled eyebrow description meta leading trailing selected density +5
 - PendingSubmit: pendingLabel* progress pending variant size fullWidth iconStart
-- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value defaultValue +6
-- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading loadingLabel +2
-- SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name width +1
+- RadioGroup: options* label aria-label aria-labelledby hint error required disabled value +7
+- SearchInput: onChange value defaultValue onValueChange onSearch debounceMs clearLabel shortcut loading +3
+- SegmentedToggle: label* options* value defaultValue onValueChange allowDeselect onDeselect disabled name +2
 - Select: size variant options groups placeholder allowEmpty invalid
 - Switch: label* name defaultChecked hint error checked onCheckedChange value | also SwitchInput
 - TextInput: size prefix suffix invalid
@@ -41,22 +41,22 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 
 ### Overlays
 
-- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange loading +7
-- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container sheetPlacement +4 | also useConfirmDialog
-- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen onOpenChange +3
-- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow keepMounted +15
-- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange groups +17 | also NotificationPanel NotificationSummary
+- CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange +8
+- ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container +5 | also useConfirmDialog
+- Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen +4
+- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow +16
+- NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange +18 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
 - Tooltip: content* placement relation delay disabled
-- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding targetStatus +8
+- Tour: steps* open* labels* stepIndex defaultStepIndex onStepChange onClose onFinish spotlightPadding +9
 
 ### Navigation
 
-- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search searchTrigger +31 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
+- AppShell: groups* labels* currentPath isActive brand context footer topBarEnd search +32 | also MobileFloatBar MobileFloatBarButton MobileFloatBarSeparator +13
 - FilterLinks: label* items* value layout
 - NavRow: title* description meta badge icon href onClick disabled
 - PageHeader: title* eyebrow headingLevel description actions
-- Pagination: page* totalPages* onPageChange* labels* total hrefFor siblingCount variant buttonClassName disabledMode
+- Pagination: page* totalPages* onPageChange* labels* total hrefFor siblingCount variant buttonClassName +1
 - PeerNav: label* items* value defaultValue onValueChange layout onItemClick phoneGrid
 - SectionHeader: title* headingLevel description actions titleId
 - Stepper: steps* current* onStepClick
@@ -72,28 +72,29 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - Card: title headingLevel description headerAction footer href padding flush divider
 - Checklist: items* title statusLabels density
 - CitationList: items* title
-- ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues bandLabel +1
+- ColumnChart: title* series* columns* titleVisibility summary formatValue legend interactive printValues +2
 - DetailAttentionCard: tone* title* description meta action toneLabel
 - DetailList: rows*
 - DetailSectionCard: title* description icon action
-- Disclosure: summary* name defaultOpen variant size description meta panelClassName summaryClassName indicator
+- Disclosure: summary* name defaultOpen variant size description meta panelClassName summaryClassName +1
 - OneWayDisclosure: trigger* open defaultOpen onOpenChange variant label panelClassName
 - ProgressBar: label* value indeterminate max valueText tone size animateChanges
 - QueueSummary: items* clearLabel* allClearTitle* allClearBody unknownValue
 - SortableTh: dir* label* active* onSort* abbr wrap
 - Sparkline: values* label* variant tone
 - StackedBar: segments* label* formatValue formatPercent legend showPercent
-- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend trendLabel +8
+- StatTile: label* value* tone toneSurface layout labelLines quiet delta trend +9
 - StatusTimeline: tracks*
-- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns density +2 | also TableBody TableEmpty TableFoot +4
+- Table: caption showCaption captionTone aria-label aria-labelledby responsive frame cardLayout cardColumns +3 | also TableBody TableEmpty TableFoot +4
 - TableToolbar: filters activeFilter onFilterChange search onSearchChange searchPlaceholder clearSearchLabel variant
 
 ### Feedback
 
-- Banner: variant title icon action onDismiss dismissLabel size lead live focusOnMount +1
+- Banner: variant title icon action onDismiss dismissLabel size lead live +2
 - EmptyState: title* icon body action
 - SkeletonCard: padding header lines block still
 - SkeletonPageHeader: eyebrow description actions still
+- SkeletonRegion: label*
 - SkeletonTable: rows columns stackBelow still
 - Spinner: size label
 - StatusIcon: tone* variant size label drawOn

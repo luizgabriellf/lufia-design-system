@@ -1,0 +1,89 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import { DocHeader, Section } from "../../docs/blocks/page";
+import * as Stories from "./SkeletonRegion.stories";
+
+<Meta of={Stories} />
+
+<DocHeader
+  name="SkeletonRegion"
+  status="beta"
+  sections={["overview", "examples", "props", "accessibility", "guidelines"]}
+/>
+
+<Section id="overview">
+
+The named wrapper of a loading shape. The skeleton pieces are decorative and hidden from assistive technology;
+`SkeletonRegion` is the one place that says what is loading. It has no styles of its own.
+
+<Canvas of={Stories.Default} />
+
+### Usage
+
+```tsx
+import { SkeletonRegion } from "@lufia/design-system/components/SkeletonRegion";
+import { SkeletonTable } from "@lufia/design-system/components/SkeletonTable";
+
+{
+  loading ? (
+    <SkeletonRegion label="Loading invoices">
+      <SkeletonTable rows={10} columns={4} />
+    </SkeletonRegion>
+  ) : (
+    <InvoiceTable />
+  );
+}
+```
+
+Strings in the snippet are plain literals. In your app they arrive through props from whatever copy or i18n layer you use;
+the package has none.
+
+</Section>
+
+<Section id="examples">
+
+### A whole page
+
+One region around the header and the cards: the wait is announced once, not once per card.
+
+<Canvas of={Stories.WholePage} />
+
+### All themes
+
+<Canvas of={Stories.AllThemes} />
+
+</Section>
+
+<Section id="props">
+
+<Controls of={Stories.Default} />
+
+</Section>
+
+<Section id="accessibility">
+
+### Accessibility
+
+- The root carries `aria-busy="true"` for as long as it is rendered. Unmount it when the content arrives; the component
+  owns the attribute, so a passed `aria-busy` is ignored.
+- `label` sits in a visually hidden `role="status"` element (a polite live region), so it is announced without moving
+  focus. The status is a child of the busy root, not the root itself.
+- WCAG 4.1.3 (Status Messages): the loading state is exposed to assistive technology without receiving focus.
+- Layout props (`className`, `style`) go to the root, which is a plain `div`: give it the grid or the gap the
+  placeholders need.
+
+</Section>
+
+<Section id="guidelines">
+
+### When to use
+
+- Around every skeleton shape that stands in for content: a table, a card grid, a page.
+- Once per wait. Several placeholders that load together share one region.
+
+### When not to use
+
+- For a short inline wait in a button or a field: use `Spinner` with a label or `PendingSubmit`.
+- Around content that is already on screen and only refreshing: set `aria-busy` on that content instead.
+- Nested inside another `SkeletonRegion`: one announcement is enough.
+
+</Section>

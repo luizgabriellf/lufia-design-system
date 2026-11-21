@@ -28,8 +28,8 @@ const LINE_SHARES = ["92%", "84%", "88%", "76%"];
 
 /**
  * A `Card` that is loading: a title bar, text lines and an optional block, drawn inside the card's own padding box, so
- * the loaded card takes exactly its place. Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading
- * state once, for example with a labelled `Skeleton`.
+ * the loaded card takes exactly its place. Decorative (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the
+ * loading state once.
  */
 export function SkeletonCard({
   header = true,

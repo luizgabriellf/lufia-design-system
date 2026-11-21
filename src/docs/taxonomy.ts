@@ -305,6 +305,11 @@ export const ENTRIES: Entry[] = [
   ),
   c("EmptyState", "Feedback", "What to show when a list or panel has nothing yet, with the one next step."),
   c(
+    "SkeletonRegion",
+    "Feedback",
+    "The named, busy wrapper of a loading shape: announces what is loading once, around decorative placeholders.",
+  ),
+  c(
     "SkeletonTable",
     "Feedback",
     "Placeholder rows for a loading table: equal columns, bars inside their cells, stacked on narrow widths.",

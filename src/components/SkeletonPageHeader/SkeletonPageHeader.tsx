@@ -17,7 +17,7 @@ export type SkeletonPageHeaderProps = Omit<HTMLAttributes<HTMLDivElement>, "chil
 /**
  * The top of a page that is loading. It uses `PageHeader`'s own layout classes, so the eyebrow, title and description
  * lines take the same line boxes, the title grows at the same breakpoint and the actions wrap under the text the same way.
- * Decorative (`aria-hidden`): mark the region `aria-busy` and name the loading state once.
+ * Decorative (`aria-hidden`): wrap it in a `SkeletonRegion`, which names the loading state once.
  */
 export function SkeletonPageHeader({
   eyebrow = false,
