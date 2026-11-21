@@ -43,7 +43,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `SkeletonCardProps`: `Omit<CardProps, "children" | "href" | "title" | "headingLevel" | "description" | "headerAction" | "footer" | "flush" | "divider"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }`
+- `SkeletonCardProps`: `Omit<CardProps, "children" | "href" | "title" | "footer" | "headingLevel" | "description" | "headerAction" | "flush" | "divider"> & { header?: boolean | undefined; lines?: number | undefined; block?: string | boolean | undefined; still?: boolean | undefined; }`
 
 ## Example
 

@@ -34,13 +34,13 @@ focus, and goes away when either leaves.
 | `children` | `(props: TooltipTrigger) => ReactNode` | yes |  | Renders the one focusable element the tooltip belongs to and spreads the given props onto it: `{(props) => <IconButton {...props} icon={...} aria-label="Save" />}`. Put your own handlers before the spread, or call the given ones from them: the spread replaces a handler of the same name. |
 | `content` | `ReactNode` | yes |  | The text of the tooltip. Short and non-interactive: a hovering person can move onto it, but it never takes focus. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no | `"top"` | Which side of the trigger it opens on (`start` and `end` follow the writing direction). It flips to the opposite side when it does not fit. Default `top`. |
-| `relation` | `"description" \| "label"` | no | `"description"` | How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can. |
+| `relation` | `"label" \| "description"` | no | `"description"` | How the control relates to the text. `description` (default): `aria-describedby`, for a control that already has a name. `label`: the tooltip is the control's only name, so `aria-labelledby` points at a visually hidden copy of `content` that is always in the DOM; prefer a real `aria-label` when you can. |
 | `delay` | `number` | no | `TOOLTIP_DELAY_MS` | Milliseconds a hovering pointer waits before the tooltip shows. Keyboard focus shows it at once. Default 250. |
 | `disabled` | `boolean` | no | `false` | Turns the tooltip off without changing the tree, for example while a menu the control opens is showing. With `relation="label"` the control keeps its name. |
 
 ## Types
 
-- `TooltipProps`: `{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: "description" | "label" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }`
+- `TooltipProps`: `{ children: (props: TooltipTrigger) => ReactNode; content: ReactNode; placement?: Side | undefined; relation?: "label" | "description" | undefined; delay?: number | undefined; disabled?: boolean | undefined; }`
 - `TooltipTriggerProps`: `TooltipHandlers & { "aria-describedby"?: string | undefined; "aria-labelledby"?: string | undefined; }`
 
 ## Example

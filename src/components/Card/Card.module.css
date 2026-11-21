@@ -97,6 +97,16 @@
   line-height: var(--lufia-card-body-line-height, var(--lufia-font-line-height-normal));
 }
 
+/* The body spacing for content inside a flush body. It reads the same properties as `.body`, so the two cannot drift. */
+.inset {
+  padding: var(
+    --lufia-card-body-padding,
+    var(--lufia-card-body-padding-block, var(--card-padding))
+      var(--lufia-card-body-padding-inline, var(--card-padding))
+  );
+  min-inline-size: 0;
+}
+
 .header + .body {
   padding-block-start: 0;
 }

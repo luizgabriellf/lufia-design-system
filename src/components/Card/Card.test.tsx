@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../../test/axe";
 import { LufiaProvider, type LinkComponent } from "../LufiaProvider";
-import { Card } from "./Card";
+import { Card, CardInset } from "./Card";
 
 const css = readFileSync("src/components/Card/Card.module.css", "utf8");
 
@@ -216,5 +216,29 @@ describe("Card", () => {
 
   it("takes the hover shadow from a token", () => {
     expect(css).toMatch(/box-shadow: var\(--lufia-card-shadow-hover, var\(--lufia-shadow-md\)\)/);
+  });
+
+  it("CardInset: a div that forwards className, style and rest props and carries the part marker", async () => {
+    const { container } = render(
+      <Card title="List" flush>
+        <CardInset className="mine" style={{ color: "red" }} id="note">
+          Note
+        </CardInset>
+      </Card>,
+    );
+    const inset = screen.getByText("Note");
+    expect(inset.tagName).toBe("DIV");
+    expect(inset).toHaveAttribute("data-lufia-part", "card-inset");
+    expect(inset).toHaveAttribute("id", "note");
+    expect(inset).toHaveStyle({ color: "rgb(255, 0, 0)" });
+    expect(inset.className).toContain("mine");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("CardInset reads the same body padding properties as the card body", () => {
+    const body = /\.body \{\s*[^}]*?padding: (var\([^;]*\));/s.exec(css)?.[1];
+    const inset = /\.inset \{\s*padding: (var\([^;]*\));/s.exec(css)?.[1];
+    expect(inset).toBeDefined();
+    expect(inset).toBe(body);
   });
 });

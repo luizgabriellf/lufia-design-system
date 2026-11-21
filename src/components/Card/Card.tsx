@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode, Ref } from "react";
+import type { ComponentProps, HTMLAttributes, ReactNode, Ref } from "react";
 import { LufiaLink } from "../LufiaProvider";
 import styles from "./Card.module.css";
 
@@ -135,5 +135,22 @@ function HeadingBlock({
       {children}
       <p className={styles.description}>{description}</p>
     </div>
+  );
+}
+
+export type CardInsetProps = ComponentProps<"div">;
+
+/**
+ * Content inside a `flush` card that keeps the card's own body padding: a paragraph or a toolbar beside a table or list
+ * that spans edge to edge. It reads the same spacing as the card body (the `padding` prop of the surrounding `Card` and the
+ * `--lufia-card-body-padding*` tokens), so it lines up with the header and footer. Render it inside the `Card` children.
+ */
+export function CardInset({ className, ...rest }: CardInsetProps) {
+  return (
+    <div
+      {...rest}
+      className={[styles.inset, className].filter(Boolean).join(" ")}
+      data-lufia-part="card-inset"
+    />
   );
 }

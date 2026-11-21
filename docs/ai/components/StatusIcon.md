@@ -37,7 +37,7 @@ One family of status markers. Each tone has its own shape, so the status reads w
 | Prop | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 | `tone` | `"success" \| "warning" \| "danger" \| "info" \| "pending" \| "neutral" \| "needsInput"` | yes |  | The status. Each tone has its own shape, so it reads without colour (WCAG 1.4.1). |
-| `variant` | `"bare" \| "ring" \| "mark"` | no | `"bare"` | `bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot). |
+| `variant` | `"mark" \| "bare" \| "ring"` | no | `"bare"` | `bare` (default): the outlined glyph alone, in the tone colour; for inline messages. `ring`: the inner mark on a tinted disc with a tone border; for toasts, cards and timelines. `mark`: the inner mark alone in `currentColor`, for a host that draws its own container (a stepper dot). |
 | `size` | `"sm" \| "md" \| "lg"` | no | `"md"` | `sm`, `md` (default) or `lg`. A bare glyph or a mark is 16, 20 or 24px (`--lufia-icon-size-*`); a ring is 20, 24 or 32px, and `--lufia-status-icon-size` overrides its diameter. |
 | `label` | `string` | no |  | Names the status for assistive technology (`role="img"`). Leave it out when visible text next to the icon already names the status: the icon is then decorative. |
 | `drawOn` | `boolean` | no | `false` | Draw the glyph's strokes in once when it mounts, the motion of `SuccessCheck` (for a toast or a confirmation that has just appeared). Under `prefers-reduced-motion` the glyph is simply drawn. Default `false`. |
@@ -46,7 +46,7 @@ Other native element attributes pass through to the root element.
 
 ## Types
 
-- `StatusIconProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { tone: StatusTone; variant?: "bare" | "ring" | "mark" | undefined; size?: "sm" | "md" | "lg" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }`
+- `StatusIconProps`: `Omit<HTMLAttributes<HTMLSpanElement>, "children"> & { tone: StatusTone; variant?: "mark" | "bare" | "ring" | undefined; size?: "sm" | "md" | "lg" | undefined; label?: string | undefined; drawOn?: boolean | undefined; }`
 - `StatusTone`: `"success" | "warning" | "danger" | "info" | "pending" | "neutral" | "needsInput"`
 
 ## Example

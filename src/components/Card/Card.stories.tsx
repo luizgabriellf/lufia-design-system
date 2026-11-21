@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ThemeMatrix } from "../../docs/ThemeMatrix";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
-import { Card } from "./Card";
+import { Table, TableBody, TableHead, TableRow, Td, Th } from "../Table";
+import { Card, CardInset } from "./Card";
 
 const meta = {
   title: "Components/Data display/Card",
@@ -66,6 +67,36 @@ export const Flush: Story = {
       </ul>
     ),
     flush: true,
+  },
+};
+/** `CardInset` gives a paragraph beside flush content the card's body padding, and follows the `padding` prop. */
+export const FlushWithInset: Story = {
+  args: {
+    description: "Updated every night at 02:00.",
+    flush: true,
+    children: (
+      <>
+        <CardInset>Totals are in euros and exclude pending invoices.</CardInset>
+        <Table caption="Regions">
+          <TableHead>
+            <TableRow>
+              <Th>Region</Th>
+              <Th>Total</Th>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <Td>North</Td>
+              <Td>120</Td>
+            </TableRow>
+            <TableRow>
+              <Td>South</Td>
+              <Td>95</Td>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </>
+    ),
   },
 };
 /** `divider` draws a rule under the header. Its colour is `--lufia-card-divider-color`. */

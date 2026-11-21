@@ -39,7 +39,7 @@ set or an explanation, and it never blocks the page: no focus trap, no scroll lo
 | `defaultOpen` | `boolean` | no | `false` | Whether the panel starts open when `open` is not given. For documentation and tests; focus is not moved on first paint. |
 | `onOpenChange` | `(open: boolean) => void` | no |  | Called with the next state when the trigger, Escape or a press outside asks to change it. |
 | `placement` | `"end" \| "top" \| "bottom" \| "start"` | no | `"bottom"` | Which side of the trigger the panel opens on. `start` and `end` follow the writing direction. It flips to the opposite side when it does not fit. Default `bottom`. |
-| `align` | `"end" \| "start" \| "center"` | no | `"start"` | How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
+| `align` | `"end" \| "center" \| "start"` | no | `"start"` | How the panel lines up with the trigger along the other axis. It shifts to stay in the viewport. Default `start`. |
 | `initialFocus` | `"first" \| "panel"` | no | `"first"` | Where focus goes when the panel opens: the first focusable element inside (`"first"`, default; the panel itself when there is none) or the panel. |
 
 Other native element attributes pass through to the root element.
