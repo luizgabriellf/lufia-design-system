@@ -4590,3 +4590,15 @@ test.describe("list transition", () => {
     expect(await runAxe(page, "[aria-label=Tasks]")).toEqual([]);
   });
 });
+
+test.describe("column chart", () => {
+  test("at 320px the data table for assistive technology does not widen the page", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-data-display-columnchart--twelve-columns");
+    await expect(page.getByRole("table", { name: "Entregas por mês" })).toBeAttached();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});

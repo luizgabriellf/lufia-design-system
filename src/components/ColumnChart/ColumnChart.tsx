@@ -281,36 +281,38 @@ export function ColumnChart({
           ))}
         </ul>
       ) : null}
-      <table className={styles.table} aria-labelledby={captionId}>
-        <thead>
-          <tr>
-            <td />
-            {columns.map((column) => (
-              <th key={column.key} scope="col">
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {series.map((entry, index) => (
-            <tr key={entry.key}>
-              <th scope="row">{entry.label}</th>
-              {columns.map((column) => (
-                <td key={column.key}>{formatValue(column.values[index] ?? 0)}</td>
-              ))}
-            </tr>
-          ))}
-          {hasBands ? (
+      <div className={styles.table}>
+        <table aria-labelledby={captionId}>
+          <thead>
             <tr>
-              <th scope="row">{bandLabel}</th>
-              {columns.map((column, index) => (
-                <td key={column.key}>{bandText(index)}</td>
+              <td />
+              {columns.map((column) => (
+                <th key={column.key} scope="col">
+                  {column.label}
+                </th>
               ))}
             </tr>
-          ) : null}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {series.map((entry, index) => (
+              <tr key={entry.key}>
+                <th scope="row">{entry.label}</th>
+                {columns.map((column) => (
+                  <td key={column.key}>{formatValue(column.values[index] ?? 0)}</td>
+                ))}
+              </tr>
+            ))}
+            {hasBands ? (
+              <tr>
+                <th scope="row">{bandLabel}</th>
+                {columns.map((column, index) => (
+                  <td key={column.key}>{bandText(index)}</td>
+                ))}
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
