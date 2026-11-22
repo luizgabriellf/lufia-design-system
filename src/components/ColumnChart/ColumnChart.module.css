@@ -260,7 +260,8 @@
   background: var(--chart-color);
 }
 
-/* The data table is for assistive technology only. */
+/* The data table is for assistive technology only. The rule sits on a wrapper: a table grows to its content whatever its
+   inline-size, and would widen the page on a narrow screen. */
 .table {
   position: absolute;
   overflow: hidden;
