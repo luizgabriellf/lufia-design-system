@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.79.1
+
+### Patch Changes
+
+- [#278](https://github.com/luizgabriellf/lufia-design-system/pull/278) [`c5aca24`](https://github.com/luizgabriellf/lufia-design-system/commit/c5aca2447215886a5204d206b69050e717750b23) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `ColumnChart` no longer widens the page on a narrow screen: the data table kept for assistive technology is now clipped by a wrapper, since a table grows to its content whatever its own size. The table and its accessible name are unchanged.
+
 ## 0.79.0
 
 ### Minor Changes
