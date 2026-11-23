@@ -23,6 +23,7 @@ import type { ButtonVariant } from "../Button";
 import { MoreIcon } from "../Icon/icons";
 import { portalHost } from "../internal/portalContext";
 import { usePresence } from "../internal/usePresence";
+import { useSheetDrag } from "../AppShell/useSheetDrag";
 import styles from "./MoreActions.module.css";
 
 export type MoreActionItem = {
@@ -222,6 +223,7 @@ export function MoreActions({
   const sheet = presentation === "sheet" || (presentation === "auto" && narrow);
 
   const close = () => setOpen(false);
+  const sheetDrag = useSheetDrag(close);
   // A popover is portalled out of the root once mounted, so a press on the menu must count as inside.
   const floating = open && !sheet && mounted;
   // A sheet lives outside `rootRef`, so an outside-press listener would treat its own items as outside: the sheet has its
@@ -554,14 +556,18 @@ export function MoreActions({
               <div
                 ref={sheetRef}
                 className={styles.sheet}
+                data-sheet-panel=""
                 tabIndex={-1}
                 data-lufia-part="sheet"
                 onAnimationEnd={(event) => {
                   if (event.target === event.currentTarget) presence.finish();
                 }}
               >
-                <div className={styles.heading} aria-hidden="true">
-                  {label}
+                <div className={styles.dragZone} data-swipe="" {...sheetDrag}>
+                  <span className={styles.grabber} aria-hidden="true" />
+                  <div className={styles.heading} aria-hidden="true">
+                    {label}
+                  </div>
                 </div>
                 {list(styles.sheetList)}
               </div>

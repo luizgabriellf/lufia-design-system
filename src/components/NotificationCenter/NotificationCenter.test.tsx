@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { Modal } from "../Modal";
@@ -479,6 +479,43 @@ describe("NotificationCenter", () => {
         document.querySelector('[data-lufia-part="notification-layer"] > [aria-hidden="true"]')!,
       );
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    });
+
+    describe("swipe to dismiss", () => {
+      const zone = () =>
+        document.querySelector<HTMLElement>('[data-lufia-part="notification-sheet"] [data-swipe]')!;
+      const sheet = () => document.querySelector<HTMLElement>('[data-lufia-part="notification-sheet"]');
+      const drag = (to: number) => {
+        fireEvent.pointerDown(zone(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(zone(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+        return () => fireEvent.pointerUp(zone(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+      };
+
+      it("closes after a long drag on the grabber", async () => {
+        mockReducedMotion(true);
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        const release = drag(200);
+        expect(sheet()).toHaveAttribute("data-dragging", "true");
+        expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("200px");
+        act(() => release());
+        expect(trigger).toHaveFocus();
+        await waitFor(() => expect(sheet()).toBeNull());
+      });
+
+      it("springs back after a short drag and ignores a tap", async () => {
+        const { user, trigger } = setup({ presentation: "sheet" });
+        await user.click(trigger);
+        act(() => drag(20)());
+        expect(sheet()).not.toBeNull();
+        expect(sheet()).not.toHaveAttribute("data-dragging");
+        expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
+        fireEvent.pointerDown(zone(), { pointerId: 2, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerUp(zone(), { pointerId: 2, clientY: 100, pointerType: "touch" });
+        expect(sheet()).not.toBeNull();
+        expect(sheet()).not.toHaveAttribute("data-dragging");
+        expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
+      });
     });
 
     describe("exit", () => {

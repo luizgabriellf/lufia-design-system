@@ -389,6 +389,60 @@
   }
 }
 
+/* Phone sheets slide from the edge they are anchored to: no scale, no fade, the drawer easing in and `in` out. The selectors
+   carry one more attribute than the enter and exit rules above and than `Reveal`'s own, so they win on a phone only. They
+   sit under `no-preference` because they would otherwise outrank the reduced-motion rules that switch the animation off.
+   Reveal (the default path) animates the frame, which fills the viewport, so the panel travels the whole way in. */
+@media (width <= 37.5rem) and (prefers-reduced-motion: no-preference) {
+  .frame[data-animate]:not([data-sheet="none"])[data-state="open"],
+  .panel[data-kept]:not([data-sheet="none"])[data-state="open"],
+  .native[open]:not([data-sheet="none"]) {
+    animation: modal-sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) backwards;
+  }
+
+  .frame[data-animate]:not([data-sheet="none"])[data-state="closed"],
+  .panel[data-kept]:not([data-sheet="none"])[data-state="closed"],
+  .native[open]:not([data-sheet="none"])[data-state="closed"] {
+    animation: modal-sheet-out var(--lufia-motion-duration-exit) var(--lufia-motion-easing-in) both;
+  }
+
+  .frame[data-sheet="top"][data-animate][data-state="open"],
+  .panel[data-kept][data-sheet="top"][data-state="open"],
+  .native[open][data-sheet="top"] {
+    animation-name: modal-sheet-top-in;
+  }
+
+  .frame[data-sheet="top"][data-animate][data-state="closed"],
+  .panel[data-kept][data-sheet="top"][data-state="closed"],
+  .native[open][data-sheet="top"][data-state="closed"] {
+    animation-name: modal-sheet-top-out;
+  }
+}
+
+@keyframes modal-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes modal-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes modal-sheet-top-in {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes modal-sheet-top-out {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
 @keyframes modal-backdrop-in {
   from {
     opacity: 0;

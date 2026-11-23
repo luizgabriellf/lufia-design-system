@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
@@ -755,6 +755,48 @@ describe("MoreActions", () => {
       await user.click(backdrop);
       await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
       expect(trigger).toHaveFocus();
+    });
+
+    describe("swipe to dismiss", () => {
+      const zone = () => document.body.querySelector<HTMLElement>('[data-lufia-part="sheet"] [data-swipe]')!;
+      const sheet = () => document.body.querySelector<HTMLElement>('[data-lufia-part="sheet"]');
+      const drag = (to: number) => {
+        fireEvent.pointerDown(zone(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(zone(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+        return () => fireEvent.pointerUp(zone(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+      };
+
+      it("marks the sheet as the drag panel and puts the heading in the drag zone", async () => {
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        expect(sheet()).toHaveAttribute("data-sheet-panel");
+        expect(zone()).toHaveTextContent("More actions");
+        expect(zone().contains(screen.getByRole("menu"))).toBe(false);
+      });
+
+      it("closes like a backdrop tap, with focus back on the trigger, after a long drag", async () => {
+        mockReducedMotion(true);
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        const release = drag(200);
+        expect(sheet()).toHaveAttribute("data-dragging", "true");
+        expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("200px");
+        act(() => release());
+        expect(trigger).toHaveFocus();
+        await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+      });
+
+      it("springs back after a short drag and ignores a tap", async () => {
+        const { user, trigger } = setupSheet();
+        await user.click(trigger);
+        act(() => drag(20)());
+        expect(screen.getByRole("menu")).toBeInTheDocument();
+        expect(sheet()).not.toHaveAttribute("data-dragging");
+        expect(sheet()!.style.getPropertyValue("--lufia-sheet-drag")).toBe("0px");
+        fireEvent.pointerDown(zone(), { pointerId: 2, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerUp(zone(), { pointerId: 2, clientY: 100, pointerType: "touch" });
+        expect(screen.getByRole("menu")).toBeInTheDocument();
+      });
     });
 
     it("keeps Tab inside the sheet", async () => {

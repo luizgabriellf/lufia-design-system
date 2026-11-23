@@ -13,6 +13,7 @@ import {
 import { createPortal } from "react-dom";
 import { AnimatedNumber } from "../../motion";
 import { usePresence } from "../internal/usePresence";
+import { useSheetDrag } from "../AppShell/useSheetDrag";
 import { IconButton } from "../IconButton";
 import type { ButtonVariant } from "../Button";
 import { useBodyScrollLock } from "../useBodyScrollLock";
@@ -126,6 +127,7 @@ export function NotificationCenter({
     onOpenChange?.(next);
   };
   const close = () => setOpen(false);
+  const sheetDrag = useSheetDrag(close);
   const pendingAction = useRef<(() => void) | undefined>(undefined);
 
   // The sheet lives outside `rootRef`, so an outside-press listener would treat its own rows as outside: it has a backdrop
@@ -323,7 +325,9 @@ export function NotificationCenter({
                   if (event.target === event.currentTarget) sheetPresence.finish();
                 }}
               >
-                <span className={styles.grabber} aria-hidden="true" />
+                <div className={styles.dragZone} data-swipe="" {...sheetDrag}>
+                  <span className={styles.grabber} aria-hidden="true" />
+                </div>
                 {panel}
               </div>
             </div>,
