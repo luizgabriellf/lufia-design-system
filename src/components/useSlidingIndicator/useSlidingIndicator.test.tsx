@@ -42,7 +42,7 @@ describe("useSlidingIndicator", () => {
     expect(mark.hidden).toBe(false);
     expect(mark.style.width).toBe("80px");
     expect(mark.style.height).toBe("32px");
-    expect(mark.style.transform).toBe("translate3d(40px, 0px, 0)");
+    expect(mark.style.transform).toMatch(/^translate3d\(40px, 0px, 0(px)?\)$/);
   });
 
   it("hides the indicator when nothing matches", async () => {
@@ -109,7 +109,7 @@ describe("useSlidingIndicator resizing", () => {
     mark.dataset.ready = "true";
     vi.spyOn(HTMLElement.prototype, "offsetLeft", "get").mockReturnValue(120);
     FakeObserver.instances[0]!.callback();
-    expect(mark.style.transform).toBe("translate3d(120px, 0px, 0)");
+    expect(mark.style.transform).toMatch(/^translate3d\(120px, 0px, 0(px)?\)$/);
     expect(mark.dataset.ready).toBeUndefined();
   });
 
