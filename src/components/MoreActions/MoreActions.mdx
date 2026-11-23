@@ -157,7 +157,7 @@ keeping which action was chosen in the caller's state.
 A press outside closes the menu. Escape and outside presses go through `useDismiss` and the shared layer stack, so inside a
 dialog Escape closes the menu first and the dialog on the next press. The component adds no document listeners of its own.
 
-In a sheet, Escape and a tap on the backdrop close it and focus returns to the button. The chosen action runs after the sheet
+In a sheet, Escape, a tap on the backdrop and a swipe down on the grabber or heading close it and focus returns to the button. The chosen action runs after the sheet
 has closed, so a dialog it opens returns focus to the button when it closes.
 
 ### Accessibility

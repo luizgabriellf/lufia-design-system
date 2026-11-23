@@ -148,19 +148,36 @@
   border-start-end-radius: var(--lufia-radius-panel);
   background: var(--lufia-color-bg-surface-solid);
   box-shadow: var(--lufia-shadow-lg);
-  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-out) backwards;
+  transform: translateY(var(--lufia-sheet-drag, 0));
+
+  /* Springs back after a short drag. A drag in progress follows the finger without easing. */
+  transition: transform var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+  animation: sheet-in var(--lufia-motion-duration-enter) var(--lufia-motion-easing-drawer) backwards;
+}
+
+.sheet[data-dragging] {
+  transition: none;
+  will-change: transform;
 }
 
 .sheet:focus {
   outline: var(--lufia-border-width-thick) solid transparent;
 }
 
-.grabber {
+/* The grabber's touch target: tall enough to hold with a thumb, and the only part of the sheet that drags. */
+.dragZone {
   flex: none;
-  align-self: center;
+  display: flex;
+  justify-content: center;
+  padding-block: 0.625rem;
+  touch-action: none;
+  user-select: none;
+}
+
+.grabber {
+  display: block;
   inline-size: 2.5rem;
   block-size: 0.25rem;
-  margin-block-start: 0.5rem;
   border-radius: var(--lufia-radius-full);
   background: var(--lufia-color-border-strong);
 }
@@ -211,6 +228,7 @@
   .layer[data-state="closed"] .sheet,
   .badge[data-pop] {
     animation: none;
+    transition: none;
   }
 }
 

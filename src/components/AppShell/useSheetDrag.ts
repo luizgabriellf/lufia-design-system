@@ -95,8 +95,8 @@ type Gesture = {
  * grabber and the header), never on the scrolling body: that keeps the list scrollable without any gesture arbitration.
  * The zone needs `touch-action: none` so the browser does not claim the gesture for scrolling or pull-to-refresh.
  *
- * While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing `[role="dialog"]` (or native `dialog`) and
- * `data-dragging` is set on it;
+ * While dragging, the offset is written to the `--lufia-sheet-drag` custom property on the enclosing panel: the nearest
+ * ancestor marked `data-sheet-panel`, else the nearest `[role="dialog"]` (or native `dialog`). `data-dragging` is set on it;
  * the panel's CSS turns that into a `transform`. A release past the threshold, or a quick flick, calls `onDismiss` (the
  * sheet then slides the rest of the way out); anything shorter springs back. Escape and the close button remain the
  * keyboard route, so the gesture is never the only way out.
@@ -117,7 +117,7 @@ export function useSheetDrag(onDismiss: () => void, enabled = true, threshold?: 
   };
 
   const panelOf = (event: ReactPointerEvent<HTMLElement>) =>
-    event.currentTarget.closest<HTMLElement>('[role="dialog"], dialog');
+    event.currentTarget.closest<HTMLElement>('[data-sheet-panel], [role="dialog"], dialog');
 
   const finish = (element: HTMLElement | null, dismiss: boolean) => {
     gesture.current = null;
