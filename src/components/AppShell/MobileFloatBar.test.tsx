@@ -239,8 +239,8 @@ describe("MobileFloatBar visual viewport", () => {
       /transform: translateY\(calc\(-1 \* var\(--lufia-float-bar-viewport-offset, 0px\)\)\)/,
     );
     // Only the bar itself must not ease; the buttons inside it ease their press.
-    const bar = /^\.bar \{[^}]*\}/m.exec(css)?.[0] ?? "";
-    expect(bar).not.toBe("");
-    expect(bar).not.toMatch(/transition/);
+    const barRules = css.match(/^\s*\.bar\b[^{]*\{[^}]*\}/gm) ?? [];
+    expect(barRules.length).toBeGreaterThan(0);
+    for (const rule of barRules) expect(rule).not.toMatch(/transition/);
   });
 });
