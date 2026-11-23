@@ -151,6 +151,8 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
 
 const noSubscription = () => () => {};
 const PHONE = "(max-width: 37.5rem)";
+/** Longer than any spring back (motion is capped at 300 ms): when a released sheet drops its drag transform regardless. */
+const SWIPE_SETTLE_MS = 400;
 
 /**
  * A modal dialog in a portal. Traps focus, locks page scroll, makes the page behind inert, restores focus to the trigger on
@@ -258,34 +260,52 @@ export function Modal({
   useEffect(() => {
     if (open) clearSwipe();
   }, [open]);
-  const headerDrag = swipe
-    ? {
-        ...sheetDrag,
-        // The panel rests with no transform (it would contain `position: fixed` descendants); it takes the drag transform
-        // only once a drag has begun.
-        onPointerMove(event: ReactPointerEvent<HTMLElement>) {
-          sheetDrag.onPointerMove(event);
-          const panel = panelRef.current;
-          if (panel && panel.dataset.dragging !== undefined) panel.dataset.swipeActive = "";
-        },
-        onPointerUp(event: ReactPointerEvent<HTMLElement>) {
-          sheetDrag.onPointerUp(event);
-          releaseSwipe();
-        },
-        onPointerCancel(event: ReactPointerEvent<HTMLElement>) {
-          sheetDrag.onPointerCancel(event);
-          releaseSwipe();
-        },
-      }
-    : {};
-  // A spring back that has no transition (reduced motion) never ends one: drop the transform at once.
+  // Always attached: a gesture that began while swipe was on must still end if `busy` or the viewport changes under it. The
+  // hook itself starts a gesture only while enabled.
+  const headerDrag = {
+    ...sheetDrag,
+    // The panel rests with no transform (it would contain `position: fixed` descendants); it takes the drag transform
+    // only once a drag has begun.
+    onPointerMove(event: ReactPointerEvent<HTMLElement>) {
+      sheetDrag.onPointerMove(event);
+      const panel = panelRef.current;
+      if (panel && panel.dataset.dragging !== undefined) panel.dataset.swipeActive = "";
+    },
+    onPointerUp(event: ReactPointerEvent<HTMLElement>) {
+      sheetDrag.onPointerUp(event);
+      releaseSwipe();
+    },
+    onPointerCancel(event: ReactPointerEvent<HTMLElement>) {
+      sheetDrag.onPointerCancel(event);
+      releaseSwipe();
+    },
+  };
+  // A spring back does not always end a transition: there is none under reduced motion, and none starts when the sheet was
+  // already back at rest on release. The transform is then dropped at once, or after the longest a spring back can take.
+  const swipeSettle = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => clearTimeout(swipeSettle.current ?? undefined), []);
   function releaseSwipe() {
     queueMicrotask(() => {
+      const atRest = () => {
+        const panel = panelRef.current;
+        return (
+          panel !== null &&
+          panel.dataset.dragging === undefined &&
+          panel.dataset.swipeActive !== undefined &&
+          panel.style.getPropertyValue("--lufia-sheet-drag") === "0px"
+        );
+      };
       const panel = panelRef.current;
-      if (!panel || panel.dataset.dragging !== undefined || panel.dataset.swipeActive === undefined) return;
-      if (panel.style.getPropertyValue("--lufia-sheet-drag") !== "0px") return;
+      if (!panel || !atRest()) return;
       const durations = getComputedStyle(panel).transitionDuration.split(",").map(parseFloat);
-      if (durations.every((value) => value === 0)) clearSwipe();
+      if (durations.every((value) => value === 0)) {
+        clearSwipe();
+        return;
+      }
+      clearTimeout(swipeSettle.current ?? undefined);
+      swipeSettle.current = setTimeout(() => {
+        if (atRest()) clearSwipe();
+      }, SWIPE_SETTLE_MS);
     });
   }
   const onSwipeTransitionEnd = (event: TransitionEvent<HTMLElement>) => {

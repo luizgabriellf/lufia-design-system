@@ -464,6 +464,41 @@ describe("Modal", () => {
           expect(offset()).toBe("");
         });
 
+        it("drops the transform when a release at rest starts no transition", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          transition("0.15s");
+          fireEvent.pointerDown(header(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+          fireEvent.pointerMove(header(), { pointerId: 1, clientY: 120, pointerType: "touch" });
+          fireEvent.pointerMove(header(), { pointerId: 1, clientY: 100, pointerType: "touch" });
+          act(() => {
+            fireEvent.pointerUp(header(), { pointerId: 1, clientY: 100, pointerType: "touch" });
+          });
+          expect(panel()).toHaveAttribute("data-swipe-active");
+          await waitFor(() => expect(panel()).not.toHaveAttribute("data-swipe-active"), { timeout: 1500 });
+          expect(offset()).toBe("");
+        });
+
+        it("ends a drag that was under way when the modal became busy", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          const view = (busy: boolean) => (
+            <Modal open onClose={onClose} title="Edit" busy={busy}>
+              body
+            </Modal>
+          );
+          const { rerender } = render(view(false));
+          transition("0s");
+          const release = drag(200);
+          rerender(view(true));
+          act(() => release());
+          await act(async () => {});
+          expect(onClose).not.toHaveBeenCalled();
+          expect(panel()).not.toHaveAttribute("data-dragging");
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+        });
+
         it("keeps the marker while dragging, and for a transition of a descendant", async () => {
           stubPhone();
           const onTransitionEnd = vi.fn();
