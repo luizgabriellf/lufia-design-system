@@ -393,6 +393,222 @@ describe("Modal", () => {
         await openModal();
         expect(await axe(document.body)).toHaveNoViolations();
       });
+
+      describe("swipe to close", () => {
+        const header = () => document.querySelector<HTMLElement>('[data-lufia-part="header"]')!;
+        const panel = () => screen.queryByRole("dialog") ?? screen.queryByRole("alertdialog");
+        const drag = (to: number) => {
+          fireEvent.pointerDown(header(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+          fireEvent.pointerMove(header(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+          return () =>
+            fireEvent.pointerUp(header(), { pointerId: 1, clientY: 100 + to, pointerType: "touch" });
+        };
+        const offset = () => panel()!.style.getPropertyValue("--lufia-sheet-drag");
+        // jsdom has no stylesheet: stand in for the transition the CSS gives the panel (none under reduced motion).
+        const transition = (duration: string) => {
+          panel()!.style.transitionDuration = duration;
+        };
+
+        it("marks the header and follows the finger without a transform at rest", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          expect(header()).toHaveAttribute("data-swipe");
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+          drag(60);
+          expect(panel()).toHaveAttribute("data-dragging", "true");
+          expect(panel()).toHaveAttribute("data-swipe-active");
+          expect(offset()).toBe("60px");
+        });
+
+        it("closes after a long drag", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(<Harness onClose={onClose} />);
+          await openModal();
+          act(() => drag(200)());
+          expect(onClose).toHaveBeenCalledTimes(1);
+        });
+
+        it("springs back after a short drag and does not close", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(<Harness onClose={onClose} />);
+          await openModal();
+          act(() => drag(20)());
+          expect(onClose).not.toHaveBeenCalled();
+          expect(panel()).not.toHaveAttribute("data-dragging");
+          expect(offset()).toBe("0px");
+        });
+
+        it("clears the active marker when the spring back ends", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          transition("0.15s");
+          act(() => drag(20)());
+          expect(panel()).toHaveAttribute("data-swipe-active");
+          fireEvent.transitionEnd(panel()!, { propertyName: "transform" });
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+          expect(offset()).toBe("");
+        });
+
+        it("drops the transform at once when the spring back has no transition", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          transition("0s");
+          act(() => drag(20)());
+          await act(async () => {});
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+          expect(offset()).toBe("");
+        });
+
+        it("drops the transform when a release at rest starts no transition", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          transition("0.15s");
+          fireEvent.pointerDown(header(), { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+          fireEvent.pointerMove(header(), { pointerId: 1, clientY: 120, pointerType: "touch" });
+          fireEvent.pointerMove(header(), { pointerId: 1, clientY: 100, pointerType: "touch" });
+          act(() => {
+            fireEvent.pointerUp(header(), { pointerId: 1, clientY: 100, pointerType: "touch" });
+          });
+          expect(panel()).toHaveAttribute("data-swipe-active");
+          await waitFor(() => expect(panel()).not.toHaveAttribute("data-swipe-active"), { timeout: 1500 });
+          expect(offset()).toBe("");
+        });
+
+        it("ends a drag that was under way when the modal became busy", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          const view = (busy: boolean) => (
+            <Modal open onClose={onClose} title="Edit" busy={busy}>
+              body
+            </Modal>
+          );
+          const { rerender } = render(view(false));
+          transition("0s");
+          const release = drag(200);
+          rerender(view(true));
+          act(() => release());
+          await act(async () => {});
+          expect(onClose).not.toHaveBeenCalled();
+          expect(panel()).not.toHaveAttribute("data-dragging");
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+        });
+
+        it("keeps the marker while dragging, and for a transition of a descendant", async () => {
+          stubPhone();
+          const onTransitionEnd = vi.fn();
+          render(<Harness onTransitionEnd={onTransitionEnd} />);
+          await openModal();
+          drag(20);
+          fireEvent.transitionEnd(panel()!, { propertyName: "transform" });
+          expect(panel()).toHaveAttribute("data-swipe-active");
+          expect(onTransitionEnd).toHaveBeenCalledTimes(1);
+          fireEvent.transitionEnd(screen.getByLabelText("Name"), { propertyName: "transform" });
+          expect(panel()).toHaveAttribute("data-swipe-active");
+        });
+
+        it("springs back when the owner refuses the close", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(
+            <Modal open onClose={onClose} title="Edit">
+              body
+            </Modal>,
+          );
+          transition("0.15s");
+          act(() => drag(200)());
+          await act(async () => {});
+          expect(onClose).toHaveBeenCalledTimes(1);
+          expect(panel()).not.toHaveAttribute("data-dragging");
+          expect(offset()).toBe("0px");
+        });
+
+        it("leaves the close button its own pointer", async () => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(<Harness onClose={onClose} />);
+          await openModal();
+          const close = screen.getByRole("button", { name: "Close" });
+          fireEvent.pointerDown(close, { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+          fireEvent.pointerMove(close, { pointerId: 1, clientY: 300, pointerType: "touch" });
+          expect(panel()).not.toHaveAttribute("data-dragging");
+        });
+
+        it("clears a stale offset when a kept panel opens again", async () => {
+          stubPhone();
+          const view = (open: boolean) => (
+            <Modal open={open} onClose={() => {}} title="Edit" keepMounted>
+              body
+            </Modal>
+          );
+          const { rerender } = render(view(true));
+          act(() => drag(200)());
+          rerender(view(false));
+          const kept = document.querySelector<HTMLElement>('[data-lufia-part="panel"]')!;
+          expect(kept.style.getPropertyValue("--lufia-sheet-drag")).toBe("200px");
+          rerender(view(true));
+          expect(kept.style.getPropertyValue("--lufia-sheet-drag")).toBe("");
+          expect(kept).not.toHaveAttribute("data-swipe-active");
+        });
+
+        it.each([
+          ["swipeToClose={false}", { swipeToClose: false }],
+          ["closeOnOutsideClick={false}", { closeOnOutsideClick: false }],
+          ["busy", { busy: true }],
+          ['sheetPlacement="top"', { sheetPlacement: "top" }],
+          ['sheetPlacement="none"', { sheetPlacement: "none" }],
+        ] as const)("is off with %s", async (_name, props) => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(<Modal open onClose={onClose} title="Edit" {...props} />);
+          expect(header()).not.toHaveAttribute("data-swipe");
+          act(() => drag(200)());
+          expect(onClose).not.toHaveBeenCalled();
+          expect(panel()).not.toHaveAttribute("data-swipe-active");
+        });
+
+        it('is off with role="alertdialog"', () => {
+          stubPhone();
+          const onClose = vi.fn();
+          render(<Modal open onClose={onClose} title="Edit" role="alertdialog" />);
+          expect(header()).not.toHaveAttribute("data-swipe");
+          act(() => drag(200)());
+          expect(onClose).not.toHaveBeenCalled();
+        });
+
+        it("works in native dialog mode", () => {
+          stubPhone();
+          mockDialog();
+          const onClose = vi.fn();
+          render(<Modal open onClose={onClose} title="Edit" renderAs="dialog" />);
+          expect(header()).toHaveAttribute("data-swipe");
+          act(() => drag(200)());
+          expect(onClose).toHaveBeenCalledTimes(1);
+        });
+
+        it("has no axe violations", async () => {
+          stubPhone();
+          render(<Harness />);
+          await openModal();
+          expect(await axe(document.body)).toHaveNoViolations();
+        });
+      });
+
+      it("is off on a larger screen", () => {
+        const onClose = vi.fn();
+        render(<Modal open onClose={onClose} title="Edit" />);
+        const header = document.querySelector<HTMLElement>('[data-lufia-part="header"]')!;
+        expect(header).not.toHaveAttribute("data-swipe");
+        fireEvent.pointerDown(header, { pointerId: 1, clientY: 100, button: 0, pointerType: "touch" });
+        fireEvent.pointerMove(header, { pointerId: 1, clientY: 300, pointerType: "touch" });
+        fireEvent.pointerUp(header, { pointerId: 1, clientY: 300, pointerType: "touch" });
+        expect(onClose).not.toHaveBeenCalled();
+      });
     });
 
     it("defaults to a bottom sheet with a wrapping title and no scroll shadow", async () => {

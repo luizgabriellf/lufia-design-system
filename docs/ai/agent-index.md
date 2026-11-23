@@ -44,7 +44,7 @@ Shared UI comes from `@lufia/design-system`. Use a component listed here before 
 - CommandPalette: open* onOpenChange* items* labels* hint hintPlacement notice filter onQueryChange +8
 - ConfirmDialog: open* title* message* confirmLabel* cancelLabel* onConfirm* onCancel* closeLabel container +5 | also useConfirmDialog
 - Menu: label* items* role presentation trigger initialFocus closeOnSelect open defaultOpen +4
-- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow +16
+- Modal: open* onClose* title* description size sheetPlacement sheetHeight titleWrap scrollShadow +17
 - NotificationCenter: label* unreadCount* unreadLabel* unreadCountLabel* items* tabs activeTab defaultActiveTab onTabChange +18 | also NotificationPanel NotificationSummary
 - Popover: trigger* label* open defaultOpen onOpenChange placement align initialFocus
 - Tooltip: content* placement relation delay disabled

@@ -14,7 +14,7 @@
   {
     "name": "Modal",
     "path": "dist/components/Modal/**/*.{js,css}",
-    "limit": "9.5 kB",
+    "limit": "10.5 kB",
     "gzip": true
   },
   {

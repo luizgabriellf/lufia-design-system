@@ -284,6 +284,11 @@ export const KeepMounted: Story = {
     },
   },
 };
+/** On a phone the header can be dragged down to close; `swipeToClose={false}` turns it off. */
+export const SwipeToClosePhone: Story = {
+  args: { startOpen: true, paragraphs: 3 },
+  globals: { viewport: { value: "w390", isRotated: false } },
+};
 export const Phone: Story = {
   args: { startOpen: true, paragraphs: 3 },
   globals: { viewport: { value: "w390", isRotated: false } },

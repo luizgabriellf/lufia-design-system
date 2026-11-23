@@ -12344,6 +12344,13 @@
               "description": "Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported."
             },
             {
+              "name": "swipeToClose",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "On a phone bottom sheet, dragging the header down closes the dialog (swipe to close); a short drag springs back. It applies only where an outside click would also close: `closeOnOutsideClick` on, not `busy`, and `role=\"dialog\"`. Escape and the close button remain the keyboard route. Default `true`; turn it off to keep the sheet in place."
+            },
+            {
               "name": "scrollContainerSelectors",
               "type": "readonly string[]",
               "required": false,
@@ -12494,6 +12501,10 @@
             "id": "components-overlays-modal--keep-mounted"
           },
           {
+            "export": "SwipeToClosePhone",
+            "id": "components-overlays-modal--swipe-to-close-phone"
+          },
+          {
             "export": "Phone",
             "id": "components-overlays-modal--phone"
           },
@@ -12596,6 +12607,7 @@
         "--lufia-motion-distance-travel",
         "--lufia-motion-duration-enter",
         "--lufia-motion-duration-exit",
+        "--lufia-motion-duration-fast",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-drawer",
         "--lufia-motion-easing-in",
@@ -12603,9 +12615,11 @@
         "--lufia-motion-scale-enter-subtle",
         "--lufia-motion-scale-press",
         "--lufia-opacity-disabled",
+        "--lufia-radius-full",
         "--lufia-radius-md",
         "--lufia-radius-panel",
         "--lufia-shadow-lg",
+        "--lufia-sheet-drag",
         "--lufia-space-12",
         "--lufia-space-2",
         "--lufia-space-3",
