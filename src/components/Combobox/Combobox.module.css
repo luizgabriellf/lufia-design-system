@@ -30,7 +30,9 @@
   border-radius: var(--lufia-radius-full);
   cursor: pointer;
   touch-action: manipulation;
-  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 .button:focus-visible {
@@ -42,9 +44,16 @@
   cursor: not-allowed;
 }
 
-.button:hover:not(:disabled) {
-  color: var(--lufia-color-text-default);
-  background: var(--lufia-color-bg-surface-raised);
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    color: var(--lufia-color-text-default);
+    background: var(--lufia-color-bg-surface-raised);
+  }
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.button:active:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .chevron {
@@ -177,6 +186,12 @@
   font-size: var(--lufia-font-size-md);
   line-height: var(--lufia-font-line-height-tight);
   cursor: pointer;
+  transition: transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+/* Press feedback: the row compresses while held. The token is 1 under reduced motion. */
+.option:active:not([aria-disabled="true"]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .optionText {

@@ -4,11 +4,20 @@
   text-decoration: underline;
   text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.2em;
-  transition: color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out);
+  transition:
+    color var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out),
+    opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.root:hover {
-  text-decoration-thickness: 0.125rem;
+@media (hover: hover) {
+  .root:hover {
+    text-decoration-thickness: 0.125rem;
+  }
+}
+
+/* Pressed: inline text does not compress, it dims a little (the same step as a quiet action's hover). */
+.root:active {
+  opacity: 0.88;
 }
 
 .root:focus-visible {
@@ -22,9 +31,14 @@
   text-decoration-line: none;
 }
 
-.root[data-variant="standalone"]:hover,
 .root[data-variant="standalone"]:focus-visible {
   text-decoration-line: underline;
+}
+
+@media (hover: hover) {
+  .root[data-variant="standalone"]:hover {
+    text-decoration-line: underline;
+  }
 }
 
 .iconStart {

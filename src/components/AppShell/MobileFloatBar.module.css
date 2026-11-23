@@ -71,6 +71,9 @@
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;
+  transition:
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
 .button:focus-visible {
@@ -122,6 +125,7 @@
   color: var(--lufia-color-text-default);
 }
 
+.button[data-variant="search"]:active,
 .button[data-variant="primary"]:active,
 .button[data-variant="icon"]:active {
   transform: scale(var(--lufia-motion-scale-press));

@@ -73,7 +73,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-easing-out`, `--lufia-radius-xs`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-color-focus-ring`, `--lufia-color-text-accent`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-radius-xs`, `--lufia-target-touch`.
 
 ## Content guidelines
 

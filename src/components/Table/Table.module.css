@@ -361,16 +361,31 @@
   scroll-margin-block: var(--table-scroll-margin);
 }
 
-.table tr:has(.rowLink:not([aria-disabled="true"])):hover {
+@media (hover: hover) {
+  .table tr:has(.rowLink:not([aria-disabled="true"])):hover {
+    background: var(--table-row-hover);
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.table tr:has(.rowLink:not([aria-disabled="true"])):active {
   background: var(--table-row-hover);
 }
 
-.table tr[data-selected]:has(.rowLink):hover {
+@media (hover: hover) {
+  .table tr[data-selected]:has(.rowLink):hover {
+    background: var(--lufia-color-accent-subtle);
+  }
+}
+
+.table tr[data-selected]:has(.rowLink):active {
   background: var(--lufia-color-accent-subtle);
 }
 
-.emptyRow:hover {
-  background: none;
+@media (hover: hover) {
+  .emptyRow:hover {
+    background: none;
+  }
 }
 
 .emptyCell {
@@ -402,7 +417,13 @@
   border-block-end: 0;
 }
 
-.table tfoot tr:has(.rowLink:not([aria-disabled="true"])):hover {
+@media (hover: hover) {
+  .table tfoot tr:has(.rowLink:not([aria-disabled="true"])):hover {
+    background: none;
+  }
+}
+
+.table tfoot tr:has(.rowLink:not([aria-disabled="true"])):active {
   background: none;
 }
 

@@ -85,11 +85,13 @@
   color: var(--lufia-button-primary-fg, var(--lufia-color-text-on-accent));
 }
 
-.root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
-  background: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
-  background-origin: border-box;
-  border-color: var(--lufia-button-primary-border-hover, var(--lufia-button-primary-border, transparent));
-  box-shadow: var(--lufia-button-primary-shadow-hover, var(--lufia-button-primary-shadow, none));
+@media (hover: hover) {
+  .root[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    background: var(--lufia-button-primary-bg-hover, var(--lufia-color-accent-hover));
+    background-origin: border-box;
+    border-color: var(--lufia-button-primary-border-hover, var(--lufia-button-primary-border, transparent));
+    box-shadow: var(--lufia-button-primary-shadow-hover, var(--lufia-button-primary-shadow, none));
+  }
 }
 
 .root[data-variant="secondary"] {
@@ -100,37 +102,48 @@
   color: var(--lufia-button-secondary-fg, var(--lufia-color-text-default));
 }
 
-.root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
-  background: var(--lufia-button-secondary-bg-hover, var(--lufia-color-bg-surface-raised));
-  background-origin: border-box;
-  border-color: var(
-    --lufia-button-secondary-border-hover,
-    var(--lufia-button-secondary-border, var(--lufia-color-border-strong))
-  );
-  box-shadow: var(--lufia-button-secondary-shadow-hover, var(--lufia-button-secondary-shadow, none));
+@media (hover: hover) {
+  .root[data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    background: var(--lufia-button-secondary-bg-hover, var(--lufia-color-bg-surface-raised));
+    background-origin: border-box;
+    border-color: var(
+      --lufia-button-secondary-border-hover,
+      var(--lufia-button-secondary-border, var(--lufia-color-border-strong))
+    );
+    box-shadow: var(--lufia-button-secondary-shadow-hover, var(--lufia-button-secondary-shadow, none));
+  }
 }
 
 .root[data-variant="ghost"] {
   box-shadow: var(--lufia-button-ghost-shadow, none);
 }
 
-.root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
-  background: var(--lufia-color-accent-subtle);
-  box-shadow: var(--lufia-button-ghost-shadow-hover, var(--lufia-button-ghost-shadow, none));
+@media (hover: hover) {
+  .root[data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    background: var(--lufia-color-accent-subtle);
+    box-shadow: var(--lufia-button-ghost-shadow-hover, var(--lufia-button-ghost-shadow, none));
+  }
 }
 
 /* Pressed (a toggle: `aria-pressed="true"`, as on an IconButton): the accent subtle fill with the accent border and text,
    which reads apart from hover (fill only) and from rest. For the quiet variants; a primary or danger toggle keeps its
    fill. It sits after the hover rules and repeats their selector, so a pressed button stays pressed under the pointer. */
-.root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"],
-.root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"]:hover:not(
-    :disabled,
-    [aria-disabled="true"],
-    [data-loading]
-  ) {
+.root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"] {
   border-color: var(--lufia-color-accent-border);
   background: var(--lufia-color-accent-subtle);
   color: var(--lufia-color-text-accent);
+}
+
+@media (hover: hover) {
+  .root:is([data-variant="ghost"], [data-variant="secondary"])[aria-pressed="true"]:hover:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-loading]
+    ) {
+    border-color: var(--lufia-color-accent-border);
+    background: var(--lufia-color-accent-subtle);
+    color: var(--lufia-color-text-accent);
+  }
 }
 
 /* The fill has its own optional hooks, so a theme can tune destructive buttons apart from danger marks in charts. */
@@ -142,9 +155,11 @@
   color: var(--lufia-button-danger-fg, var(--lufia-color-status-danger-on-solid));
 }
 
-.root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
-  box-shadow: var(--lufia-button-danger-shadow-hover, var(--lufia-button-danger-shadow, none));
-  filter: brightness(0.9);
+@media (hover: hover) {
+  .root[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    box-shadow: var(--lufia-button-danger-shadow-hover, var(--lufia-button-danger-shadow, none));
+    filter: brightness(0.9);
+  }
 }
 
 /* A disabled button is flat: elevation says "can be pressed". */
@@ -213,20 +228,31 @@
 }
 
 /* The underline sits on the label, so an icon is never underlined. */
-.root[data-variant="link"]:focus-visible .label,
-.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) .label {
+.root[data-variant="link"]:focus-visible .label {
   text-decoration: underline;
   text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.2em;
 }
 
-/* Text does not lift or compress: no hover lift, no strip under it, no press scale. */
-.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
-  translate: none;
+@media (hover: hover) {
+  .root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) .label {
+    text-decoration: underline;
+    text-decoration-thickness: 0.0625rem;
+    text-underline-offset: 0.2em;
+  }
 }
 
-.root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading])::after {
-  content: none;
+/* Text does not lift or compress: no hover lift, no strip under it, no press scale. */
+@media (hover: hover) {
+  .root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading]) {
+    translate: none;
+  }
+}
+
+@media (hover: hover) {
+  .root[data-variant="link"]:hover:not(:disabled, [aria-disabled="true"], [data-loading])::after {
+    content: none;
+  }
 }
 
 .root[data-variant="link"]:active:not(:disabled, [aria-disabled="true"]) {

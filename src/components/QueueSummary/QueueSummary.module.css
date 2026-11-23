@@ -67,8 +67,10 @@
   display: none;
 }
 
-.clearSummary:hover {
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .clearSummary:hover {
+    color: var(--lufia-color-text-default);
+  }
 }
 
 .clearToggle {
@@ -111,8 +113,17 @@ div.clearRow {
   cursor: default;
 }
 
-a.clearRow:hover,
-button.clearRow:hover {
+@media (hover: hover) {
+  a.clearRow:hover,
+  button.clearRow:hover {
+    background: var(--lufia-color-bg-subtle);
+    color: var(--lufia-color-text-default);
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+a.clearRow:active,
+button.clearRow:active {
   background: var(--lufia-color-bg-subtle);
   color: var(--lufia-color-text-default);
 }
