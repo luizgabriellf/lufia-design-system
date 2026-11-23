@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { axe } from "../../test/axe";
 import hiddenStyles from "../VisuallyHidden/VisuallyHidden.module.css";
@@ -356,6 +358,37 @@ describe("FormField", () => {
         </FormField>,
       );
       expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+
+  describe("error motion", () => {
+    const css = readFileSync(resolve(__dirname, "FieldMessages.module.css"), "utf8");
+
+    it("eases the error in with a from-only, backwards-filled keyframe on tokens", () => {
+      const rule = /\.error\s*\{([^}]*)\}/s.exec(css)?.[1] ?? "";
+      expect(rule).toMatch(
+        /animation:\s*field-error-in var\(--lufia-motion-duration-fast\) var\(--lufia-motion-easing-out\) backwards/,
+      );
+      const frames = /@keyframes field-error-in\s*\{([\s\S]*?\n\})/.exec(css)?.[1] ?? "";
+      expect(frames).toMatch(
+        /from\s*\{[^}]*opacity:\s*0[^}]*translateY\(calc\(-1 \* var\(--lufia-motion-distance-nudge\)\)\)/s,
+      );
+      expect(frames).not.toMatch(/\bto\b/);
+    });
+
+    it("leaves the hint still and keeps the error's role and id wiring", () => {
+      expect(/\.hint\s*\{[^}]*animation/s.test(css)).toBe(false);
+      render(
+        <FormField label="Name" error="Required">
+          <TextInput />
+        </FormField>,
+      );
+      const alert = screen.getByRole("alert");
+      expect(alert).toHaveTextContent("Required");
+      expect(screen.getByRole("textbox")).toHaveAttribute(
+        "aria-describedby",
+        expect.stringContaining(alert.id),
+      );
     });
   });
 });

@@ -2798,11 +2798,18 @@
               "description": "Buttons or links for the next step. They sit beside the text, and below it when the banner is narrow."
             },
             {
+              "name": "open",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether the banner is shown. Set it to `false` to dismiss: the banner fades out and then unmounts (at once under reduced motion). Left out, the banner is always shown and removing it is up to you. Mounting with `false` renders nothing. The space it took closes when it unmounts; wrap it in `Collapse` if the height should ease too. Turning it back on mounts the banner again, so it plays the enter motion (with `animateIn`) and `focusOnMount` focuses it again."
+            },
+            {
               "name": "onDismiss",
               "type": "() => void",
               "required": false,
               "default": null,
-              "description": "Adds a dismiss button. The banner does not remove itself: unmount it, or collapse it, in this handler."
+              "description": "Adds a dismiss button. The banner does not remove itself: set `open` to `false` in this handler to fade it out, or unmount it."
             },
             {
               "name": "dismissLabel",
@@ -2999,7 +3006,7 @@
           "The text is always the default text colour on the tinted background, and the contrast check covers it, and the focus ring, on every variant in every theme and mode.",
           "Focus is visible on the dismiss button. In forced-colors mode the banner uses system colours (`Canvas`, `CanvasText`) and the icon shape keeps the variant readable.",
           "Long words break and the text wraps, so nothing overflows at 320px or at 200% zoom. The layout uses logical properties, so it mirrors in right-to-left.",
-          "The enter motion animates `opacity` and `transform` only and is removed under `prefers-reduced-motion`."
+          "The enter and exit motion animate `opacity` and `transform` only and are removed under `prefers-reduced-motion`. A banner that is leaving is `inert`, so it is not focusable and not read out again."
         ]
       },
       "motion": {
@@ -3046,7 +3053,9 @@
         "--lufia-font-weight-semibold",
         "--lufia-motion-distance-rise",
         "--lufia-motion-duration-enter",
+        "--lufia-motion-duration-exit",
         "--lufia-motion-duration-instant",
+        "--lufia-motion-easing-in",
         "--lufia-motion-easing-out",
         "--lufia-motion-scale-press",
         "--lufia-radius-card",
@@ -21526,7 +21535,7 @@
           "Roving tabindex: exactly one tab is in the tab order. With manual activation, after focus leaves the list it comes back to the chosen tab, not to the last one browsed.",
           "The panel is focusable (`tabindex=\"0\"`), so a panel with no focusable content is still reachable by keyboard.",
           "The chosen tab has a bar on the edge next to the panel as well as stronger text, so it reads without colour. The focus ring is visible, uses the focus-ring token and is kept in `forced-colors` mode.",
-          "Colour changes are the only transition and are removed under `prefers-reduced-motion`.",
+          "Colour changes are a transition, and a panel that appears because another tab was chosen fades in (opacity only, not on the first render). Both are removed under `prefers-reduced-motion`.",
           "Tabs are at least 2.5rem tall, and 2.75rem under a coarse pointer."
         ]
       },
@@ -21545,6 +21554,7 @@
         "--lufia-font-size-sm",
         "--lufia-font-weight-bold",
         "--lufia-font-weight-medium",
+        "--lufia-motion-duration-fast",
         "--lufia-motion-duration-instant",
         "--lufia-motion-easing-out",
         "--lufia-motion-scale-press-subtle",

@@ -88,8 +88,10 @@ Buttons or links go in `action`. They sit beside the text and drop below it when
 
 ### Dismissible
 
-`onDismiss` adds the dismiss button. The banner does not remove itself: your handler owns the state. To animate the exit,
-wrap the banner in `Collapse` as the story does; otherwise unmount it.
+`onDismiss` adds the dismiss button. The banner does not remove itself: your handler owns the state. Set `open` to `false`
+there and the banner fades out, inert while it does, and then unmounts (at once under reduced motion). Mounting with
+`open={false}` renders nothing; turning it back on mounts the banner again. The space it took closes when it unmounts;
+wrap it in `Collapse` as the story does if the height should ease too.
 
 <Canvas of={Stories.Dismissible} />
 
@@ -166,7 +168,7 @@ and the dismiss button works with Enter and Space.
   and the icon shape keeps the variant readable.
 - Long words break and the text wraps, so nothing overflows at 320px or at 200% zoom. The layout uses logical
   properties, so it mirrors in right-to-left.
-- The enter motion animates `opacity` and `transform` only and is removed under `prefers-reduced-motion`.
+- The enter and exit motion animate `opacity` and `transform` only and are removed under `prefers-reduced-motion`. A banner that is leaving is `inert`, so it is not focusable and not read out again.
 
 </Section>
 

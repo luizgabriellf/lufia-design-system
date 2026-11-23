@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { CloseIcon } from "../Icon/icons";
+import { usePresence } from "../internal/usePresence";
 import { StatusIcon, type StatusTone } from "../StatusIcon/StatusIcon";
 import styles from "./Banner.module.css";
 
@@ -31,7 +32,14 @@ export type BannerProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" 
   icon?: ReactNode;
   /** Buttons or links for the next step. They sit beside the text, and below it when the banner is narrow. */
   action?: ReactNode;
-  /** Adds a dismiss button. The banner does not remove itself: unmount it, or collapse it, in this handler. */
+  /**
+   * Whether the banner is shown. Set it to `false` to dismiss: the banner fades out and then unmounts (at once under
+   * reduced motion). Left out, the banner is always shown and removing it is up to you. Mounting with `false` renders
+   * nothing. The space it took closes when it unmounts; wrap it in `Collapse` if the height should ease too. Turning it
+   * back on mounts the banner again, so it plays the enter motion (with `animateIn`) and `focusOnMount` focuses it again.
+   */
+  open?: boolean;
+  /** Adds a dismiss button. The banner does not remove itself: set `open` to `false` in this handler to fade it out, or unmount it. */
   onDismiss?: () => void;
   /** The accessible name of the dismiss button, in your language. Required with `onDismiss`: the package has no copy, and an unnamed button fails axe. */
   dismissLabel?: string;
@@ -94,6 +102,7 @@ export function Banner({
   lead,
   live,
   animateIn = false,
+  open = true,
   focusOnMount = false,
   onDismiss,
   dismissLabel,
@@ -104,9 +113,13 @@ export function Banner({
   const root = useRef<HTMLDivElement | null>(null);
   // Mount only, on purpose: a later render or a change of the prop must not pull focus back from where the person is.
   const shouldFocus = useRef(focusOnMount);
+  const presence = usePresence(open, root);
+  const mounted = presence.phase !== "unmounted";
+  // The component stays mounted while the banner is hidden, so focus follows the DOM node: it runs on every real mount.
   useEffect(() => {
-    if (shouldFocus.current) root.current?.focus();
-  }, []);
+    if (mounted && shouldFocus.current) root.current?.focus();
+  }, [mounted]);
+  if (!mounted) return null;
   const announce = live ?? (variant === "warning" || variant === "danger" ? "assertive" : "polite");
   return (
     <div
@@ -122,6 +135,12 @@ export function Banner({
       data-variant={variant}
       data-size={size}
       data-animate-in={animateIn || undefined}
+      data-state={presence.phase === "open" ? "open" : "closed"}
+      inert={presence.phase !== "open" || undefined}
+      onAnimationEnd={(event) => {
+        rest.onAnimationEnd?.(event);
+        if (event.target === event.currentTarget && presence.phase === "closed") presence.finish();
+      }}
     >
       {icon === null ? null : (
         <span className={styles.icon} aria-hidden="true">
