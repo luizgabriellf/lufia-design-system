@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.81.0
+
+### Minor Changes
+
+- [#286](https://github.com/luizgabriellf/lufia-design-system/pull/286) [`b7414a7`](https://github.com/luizgabriellf/lufia-design-system/commit/b7414a7b3d800735dcace944ef6cc9366b08aea2) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - `Modal` phone bottom sheets can be closed by dragging the header down: a grabber shows above the title, a long drag or a quick flick calls `onClose`, and a short drag or a refused close springs back. It applies only where an outside click would also close (`closeOnOutsideClick` on, not `busy`, `role="dialog"`, `sheetPlacement="bottom"`), works in portal, `keepMounted` and `renderAs="dialog"` modes, and Escape and the close button remain the keyboard route. The new `swipeToClose` prop (default `true`) turns it off. The panel has no transform at rest, so `position: fixed` descendants keep their viewport positioning.
+
 ## 0.80.0
 
 ### Minor Changes
