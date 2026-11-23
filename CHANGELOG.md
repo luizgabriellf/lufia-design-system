@@ -1,5 +1,17 @@
 # @lufia/design-system
 
+## 0.80.0
+
+### Minor Changes
+
+- [#285](https://github.com/luizgabriellf/lufia-design-system/pull/285) [`23890a1`](https://github.com/luizgabriellf/lufia-design-system/commit/23890a1dbb12c8eb03f1ac08a252e916f7cc9834) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Three state changes that had no motion now have it. `Banner` takes a new `open` prop: set it to `false` and the banner fades out, is inert while it does, and then unmounts (at once under reduced motion); left out, it behaves as before. A field error eases in when it appears, in every field that shows one. In `Tabs`, the panel that appears after another tab is chosen fades in; nothing animates on first render. All of it is opacity and transform only and is removed under `prefers-reduced-motion`.
+
+### Patch Changes
+
+- [#283](https://github.com/luizgabriellf/lufia-design-system/pull/283) [`e137ddd`](https://github.com/luizgabriellf/lufia-design-system/commit/e137ddde507ab3d4f886946736dd107e9735f9a1) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Bottom sheets on phones move like sheets. `NotificationCenter` and `MoreActions` sheets can be swiped down from their grabber to dismiss, and enter with the drawer easing. `Modal` sheets on phones slide in from the edge they are anchored to instead of scaling and fading. `useSheetDrag` also drives any panel marked `data-sheet-panel`.
+
+- [#282](https://github.com/luizgabriellf/lufia-design-system/pull/282) [`ca665e4`](https://github.com/luizgabriellf/lufia-design-system/commit/ca665e4834829b74868b18aafca565ff498a3609) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - Interactive controls now show a pressed state on touch screens (the press scale for compact controls, the hover surface for rows, a slight dim for inline links), and `MobileFloatBar` eases its press instead of applying it at once. Hover-only feedback is limited to devices that can hover, so it no longer sticks after a tap.
+
 ## 0.79.1
 
 ### Patch Changes
