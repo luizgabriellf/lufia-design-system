@@ -74,7 +74,7 @@ Building your own control? `useFormFieldControl(props)` merges a control's own p
 <Canvas of={Stories.LabelHidden} />
 <Canvas of={Stories.RequiredFromProvider} />
 
-An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears. It also eases in (a short fade and nudge) when it is created, and not when a form loads already invalid; the motion is removed under `prefers-reduced-motion`.
+An error is never shown by colour alone: it has an icon and text, and it is announced with `role="alert"` when it appears. It also eases in (a short fade and nudge) whenever it is first painted, a form that loads already invalid included; the motion is instant under `prefers-reduced-motion`.
 A required field has an asterisk (a shape) and the accessible text `required`, defaults to the `required` label of `LufiaProvider`, so an app sets the localized word once. `requiredLabel` overrides it for one field.
 
 A required field also puts the native `required` attribute on its control. When the form runs its own validation and shows its own messages (from the server or the app), set `nativeRequired={false}`: the control then gets `aria-required="true"` and no `required`, so the browser shows no native bubble and the form does not need `noValidate`. The label still shows the asterisk and the text. Keep the default when the browser's own validation is what you want.

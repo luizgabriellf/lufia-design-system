@@ -15,7 +15,7 @@
   font-weight: var(--lufia-font-weight-medium);
   line-height: var(--lufia-font-line-height-normal);
 
-  /* Enters when the error is created, so a form that loads already invalid stays still. From only, filled backwards. */
+  /* Enters whenever the error is first painted, a form that loads already invalid included. From only, filled backwards. */
   animation: field-error-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 

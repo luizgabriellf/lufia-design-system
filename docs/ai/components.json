@@ -21535,7 +21535,7 @@
           "Roving tabindex: exactly one tab is in the tab order. With manual activation, after focus leaves the list it comes back to the chosen tab, not to the last one browsed.",
           "The panel is focusable (`tabindex=\"0\"`), so a panel with no focusable content is still reachable by keyboard.",
           "The chosen tab has a bar on the edge next to the panel as well as stronger text, so it reads without colour. The focus ring is visible, uses the focus-ring token and is kept in `forced-colors` mode.",
-          "Colour changes are a transition, and a panel that appears because another tab was chosen fades in (opacity only, not on the first render). Both are removed under `prefers-reduced-motion`.",
+          "Colour changes are a transition, and a panel that appears because another tab was chosen fades in (opacity only, not on the first render). Both are instant under `prefers-reduced-motion`.",
           "Tabs are at least 2.5rem tall, and 2.75rem under a coarse pointer."
         ]
       },
