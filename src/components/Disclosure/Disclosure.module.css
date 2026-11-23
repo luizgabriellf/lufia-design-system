@@ -70,7 +70,14 @@
   display: none;
 }
 
-.summary:hover {
+@media (hover: hover) {
+  .summary:hover {
+    background: var(--lufia-color-bg-surface-raised);
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.summary:active {
   background: var(--lufia-color-bg-surface-raised);
 }
 
@@ -140,7 +147,13 @@
   border-end-end-radius: 0;
 }
 
-.root[data-variant="plain"] > .summary:hover {
+@media (hover: hover) {
+  .root[data-variant="plain"] > .summary:hover {
+    background: transparent;
+  }
+}
+
+.root[data-variant="plain"] > .summary:active {
   background: transparent;
 }
 

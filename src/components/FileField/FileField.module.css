@@ -79,11 +79,15 @@
   font-weight: var(--lufia-font-weight-semibold);
   cursor: pointer;
   touch-action: manipulation;
-  transition: border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    border-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.trigger:hover {
-  border-color: var(--lufia-color-accent-default);
+@media (hover: hover) {
+  .trigger:hover {
+    border-color: var(--lufia-color-accent-default);
+  }
 }
 
 .input:focus-visible + .trigger {
@@ -93,6 +97,11 @@
 
 .input:disabled + .trigger {
   cursor: not-allowed;
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.input:not(:disabled) + .trigger:active {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .drop {
@@ -168,11 +177,14 @@
   font-size: var(--lufia-font-size-sm);
   cursor: pointer;
   touch-action: manipulation;
+  transition: transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.remove:hover {
-  color: var(--lufia-color-status-danger-fg);
-  background: var(--lufia-color-bg-surface-raised);
+@media (hover: hover) {
+  .remove:hover {
+    color: var(--lufia-color-status-danger-fg);
+    background: var(--lufia-color-bg-surface-raised);
+  }
 }
 
 .remove:focus-visible {
@@ -182,6 +194,11 @@
 
 .remove:disabled {
   cursor: not-allowed;
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.remove:active:not(:disabled) {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 /* A slot too narrow for the button and the hint side by side: the button takes the full inline size and the hint goes under

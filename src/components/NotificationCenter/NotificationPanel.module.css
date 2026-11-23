@@ -130,11 +130,15 @@
   font-weight: var(--lufia-font-weight-medium);
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.tab:hover {
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--lufia-color-text-default);
+  }
 }
 
 .tab[aria-selected="true"] {
@@ -175,6 +179,11 @@
   border-radius: var(--lufia-radius-xs);
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: -2px;
+}
+
+/* Press feedback: the tab compresses while held. The token is 1 under reduced motion. */
+.tab:active:not(:disabled, [aria-disabled="true"]) {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .count {
@@ -261,11 +270,28 @@
   background: var(--lufia-notification-unread-bg, var(--lufia-color-accent-subtle));
 }
 
-.row:hover {
+@media (hover: hover) {
+  .row:hover {
+    background: color-mix(in srgb, var(--lufia-color-text-default) 6%, transparent);
+  }
+}
+
+@media (hover: hover) {
+  .row[data-unread]:hover {
+    background: color-mix(
+      in srgb,
+      var(--lufia-color-accent-default) 14%,
+      var(--lufia-notification-unread-bg, var(--lufia-color-accent-subtle))
+    );
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.row:active {
   background: color-mix(in srgb, var(--lufia-color-text-default) 6%, transparent);
 }
 
-.row[data-unread]:hover {
+.row[data-unread]:active {
   background: color-mix(
     in srgb,
     var(--lufia-color-accent-default) 14%,
@@ -552,8 +578,10 @@
   transition: opacity var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.summaryAction:hover {
-  opacity: 0.88;
+@media (hover: hover) {
+  .summaryAction:hover {
+    opacity: 0.88;
+  }
 }
 
 .summaryAction:focus-visible {
@@ -591,8 +619,10 @@
   cursor: pointer;
 }
 
-.footerLink:hover {
-  background: color-mix(in srgb, var(--lufia-color-text-default) 6%, transparent);
+@media (hover: hover) {
+  .footerLink:hover {
+    background: color-mix(in srgb, var(--lufia-color-text-default) 6%, transparent);
+  }
 }
 
 .footerLink:focus-visible {

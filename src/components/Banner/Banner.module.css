@@ -175,11 +175,20 @@
   border-radius: var(--lufia-radius-md);
   cursor: pointer;
   touch-action: manipulation;
-  transition: background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+  transition:
+    background-color var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.dismiss:hover {
-  background: var(--lufia-color-bg-surface-raised);
+@media (hover: hover) {
+  .dismiss:hover {
+    background: var(--lufia-color-bg-surface-raised);
+  }
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.dismiss:active {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .dismiss:focus-visible {

@@ -102,8 +102,10 @@
   transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
-.segment:hover:not(:disabled, [aria-checked="true"]) {
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .segment:hover:not(:disabled, [aria-checked="true"]) {
+    color: var(--lufia-color-text-default);
+  }
 }
 
 .root[data-width="fill"] .segment {

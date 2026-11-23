@@ -79,23 +79,30 @@
   cursor: pointer;
 }
 
-.item:hover,
 .item:focus-visible {
   background: var(--lufia-color-accent-subtle);
-}
-
-.item:focus-visible {
   outline: var(--lufia-border-width-thick) solid var(--lufia-color-focus-ring);
   outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .item:hover {
+    background: var(--lufia-color-accent-subtle);
+  }
 }
 
 .item[data-tone="danger"] {
   color: var(--lufia-color-status-danger-fg);
 }
 
-.item[data-tone="danger"]:hover,
 .item[data-tone="danger"]:focus-visible {
   background: var(--lufia-color-status-danger-bg);
+}
+
+@media (hover: hover) {
+  .item[data-tone="danger"]:hover {
+    background: var(--lufia-color-status-danger-bg);
+  }
 }
 
 .item[aria-disabled="true"] {
@@ -237,6 +244,15 @@
 .sheetList .item {
   min-block-size: 3rem;
   font-size: var(--lufia-font-size-md);
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.item:active:not([aria-disabled="true"]) {
+  background: var(--lufia-color-accent-subtle);
+}
+
+.item[data-tone="danger"]:active:not([aria-disabled="true"]) {
+  background: var(--lufia-color-status-danger-bg);
 }
 
 /* It leaves faster than it came, along the way it came in, and on its way out it takes no pointer. */

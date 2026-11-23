@@ -54,8 +54,10 @@
   touch-action: manipulation;
 }
 
-.control:hover {
-  background: var(--lufia-color-bg-surface-raised);
+@media (hover: hover) {
+  .control:hover {
+    background: var(--lufia-color-bg-surface-raised);
+  }
 }
 
 .control:focus-visible {
@@ -80,9 +82,11 @@
   cursor: not-allowed;
 }
 
-.control[aria-disabled="true"]:hover,
-.control:disabled:hover {
-  background: transparent;
+@media (hover: hover) {
+  .control[aria-disabled="true"]:hover,
+  .control:disabled:hover {
+    background: transparent;
+  }
 }
 
 .control:active:not([aria-disabled="true"], [aria-current="page"], :disabled),

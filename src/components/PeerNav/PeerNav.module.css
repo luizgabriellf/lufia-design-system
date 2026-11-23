@@ -62,9 +62,11 @@
     transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.item:hover {
-  color: var(--lufia-color-text-default);
-  background: var(--lufia-color-bg-surface-raised);
+@media (hover: hover) {
+  .item:hover {
+    color: var(--lufia-color-text-default);
+    background: var(--lufia-color-bg-surface-raised);
+  }
 }
 
 .item:focus-visible {

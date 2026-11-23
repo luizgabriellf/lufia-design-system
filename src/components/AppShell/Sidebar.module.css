@@ -77,9 +77,11 @@
   cursor: pointer;
 }
 
-.collapseButton:hover {
-  background: var(--lufia-color-bg-surface-raised);
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .collapseButton:hover {
+    background: var(--lufia-color-bg-surface-raised);
+    color: var(--lufia-color-text-default);
+  }
 }
 
 .collapseButton:focus-visible {
@@ -210,7 +212,15 @@
   outline-offset: 2px;
 }
 
-.item:hover:not(:disabled) {
+@media (hover: hover) {
+  .item:hover:not(:disabled) {
+    background: var(--lufia-color-bg-surface-raised);
+    color: var(--lufia-color-text-default);
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.item:active:not(:disabled) {
   background: var(--lufia-color-bg-surface-raised);
   color: var(--lufia-color-text-default);
 }

@@ -88,8 +88,10 @@
   cursor: not-allowed;
 }
 
-.switch:hover:not(:disabled) {
-  border-color: var(--lufia-color-accent-default);
+@media (hover: hover) {
+  .switch:hover:not(:disabled) {
+    border-color: var(--lufia-color-accent-default);
+  }
 }
 
 .root[data-invalid] .switch {
@@ -163,8 +165,10 @@
   cursor: not-allowed;
 }
 
-.input:hover:not(:disabled) {
-  border-color: var(--lufia-color-accent-default);
+@media (hover: hover) {
+  .input:hover:not(:disabled) {
+    border-color: var(--lufia-color-accent-default);
+  }
 }
 
 .root[data-invalid] .input {

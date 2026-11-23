@@ -28,12 +28,20 @@
   transition:
     background var(--lufia-motion-duration-instant),
     border-color var(--lufia-motion-duration-instant),
-    color var(--lufia-motion-duration-instant);
+    color var(--lufia-motion-duration-instant),
+    transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.chip:hover:not([data-active]) {
-  color: var(--lufia-color-text-default);
-  border-color: var(--lufia-color-border-strong);
+@media (hover: hover) {
+  .chip:hover:not([data-active]) {
+    color: var(--lufia-color-text-default);
+    border-color: var(--lufia-color-border-strong);
+  }
+}
+
+/* Press feedback: the chip compresses while held. The token is 1 under reduced motion. */
+.chip:active {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 .chip[data-active] {
@@ -106,10 +114,18 @@
   cursor: pointer;
   background: none;
   border: 0;
+  transition: transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.clear:hover {
-  color: var(--lufia-color-text-muted);
+@media (hover: hover) {
+  .clear:hover {
+    color: var(--lufia-color-text-muted);
+  }
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.clear:active {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 @media (pointer: coarse), (width <= 959px) {

@@ -80,7 +80,7 @@
   {
     "name": "Banner",
     "path": "dist/components/Banner/**/*.{js,css}",
-    "limit": "3 kB",
+    "limit": "3.2 kB",
     "gzip": true
   },
   {
@@ -128,7 +128,7 @@
   {
     "name": "Disclosure",
     "path": "dist/components/Disclosure/**/*.{js,css}",
-    "limit": "2.5 kB",
+    "limit": "2.7 kB",
     "gzip": true
   },
   {

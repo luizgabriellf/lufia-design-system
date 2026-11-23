@@ -71,8 +71,10 @@
   content: "";
 }
 
-.tab:hover {
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--lufia-color-text-default);
+  }
 }
 
 .tab[data-selected] {
@@ -106,9 +108,11 @@
   cursor: not-allowed;
 }
 
-.tab:disabled:hover,
-.tab[aria-disabled="true"]:hover {
-  color: var(--lufia-color-text-muted);
+@media (hover: hover) {
+  .tab:disabled:hover,
+  .tab[aria-disabled="true"]:hover {
+    color: var(--lufia-color-text-muted);
+  }
 }
 
 .tab:active:not(:disabled, [aria-disabled="true"]) {

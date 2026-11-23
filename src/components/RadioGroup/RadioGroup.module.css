@@ -112,8 +112,10 @@
   cursor: not-allowed;
 }
 
-.option:hover:not(:disabled) .circle {
-  border-color: var(--lufia-color-accent-default);
+@media (hover: hover) {
+  .option:hover:not(:disabled) .circle {
+    border-color: var(--lufia-color-accent-default);
+  }
 }
 
 .root[data-invalid] .option .circle {
@@ -184,8 +186,10 @@
   outline-offset: 2px;
 }
 
-.group[data-variant="card"] .option:hover:not(:disabled) {
-  border-color: var(--lufia-color-accent-default);
+@media (hover: hover) {
+  .group[data-variant="card"] .option:hover:not(:disabled) {
+    border-color: var(--lufia-color-accent-default);
+  }
 }
 
 .group[data-variant="card"] .option[aria-checked="true"] {

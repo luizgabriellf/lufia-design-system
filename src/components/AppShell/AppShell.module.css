@@ -113,7 +113,15 @@
   cursor: pointer;
 }
 
-.search:hover {
+@media (hover: hover) {
+  .search:hover {
+    border-color: var(--lufia-color-border-strong);
+    color: var(--lufia-color-text-default);
+  }
+}
+
+/* Pressed: the hover look, so a tap on a touch screen shows too. */
+.search:active {
   border-color: var(--lufia-color-border-strong);
   color: var(--lufia-color-text-default);
 }

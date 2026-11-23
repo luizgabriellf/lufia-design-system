@@ -177,13 +177,17 @@
   transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
-.root[data-interactive]:hover {
-  border-color: var(--lufia-color-accent-border);
-  box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md));
+@media (hover: hover) {
+  .root[data-interactive]:hover {
+    border-color: var(--lufia-color-accent-border);
+    box-shadow: var(--lufia-card-shadow-hover, var(--lufia-shadow-md));
+  }
 }
 
-.root[data-interactive]:hover .link {
-  text-decoration: underline;
+@media (hover: hover) {
+  .root[data-interactive]:hover .link {
+    text-decoration: underline;
+  }
 }
 
 /* The ring goes on the card, not on the title text, because the whole card is the focus target. */

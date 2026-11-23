@@ -118,11 +118,20 @@
   background: transparent;
   color: var(--lufia-color-text-muted);
   cursor: pointer;
+  touch-action: manipulation;
+  transition: transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
 }
 
-.close:hover {
-  background: var(--lufia-color-bg-surface-raised);
-  color: var(--lufia-color-text-default);
+@media (hover: hover) {
+  .close:hover {
+    background: var(--lufia-color-bg-surface-raised);
+    color: var(--lufia-color-text-default);
+  }
+}
+
+/* Press feedback: the control compresses while held. The token is 1 under reduced motion. */
+.close:active {
+  transform: scale(var(--lufia-motion-scale-press));
 }
 
 .close:focus-visible {
@@ -167,6 +176,12 @@
   padding: 0.5rem var(--lufia-space-3);
   border-radius: var(--lufia-radius-control);
   cursor: pointer;
+  transition: transform var(--lufia-motion-duration-instant) var(--lufia-motion-easing-out);
+}
+
+/* Press feedback: the row compresses while held. The token is 1 under reduced motion. */
+.option:active {
+  transform: scale(var(--lufia-motion-scale-press-subtle));
 }
 
 /* The highlighted option is shown by a fill and by a bar on its inline-start edge, so colour is not the only cue. */
