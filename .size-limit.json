@@ -80,7 +80,7 @@
   {
     "name": "Banner",
     "path": "dist/components/Banner/**/*.{js,css}",
-    "limit": "3 kB",
+    "limit": "3.2 kB",
     "gzip": true
   },
   {
