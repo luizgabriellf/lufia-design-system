@@ -66,6 +66,15 @@ Set `sheetHeight="full"` for a full-screen dialog on phones, such as an editor: 
 
 <Canvas of={Stories.Large} story={{ inline: false, height: "30rem" }} />
 
+### Swipe to close
+
+On a phone bottom sheet (`sheetPlacement="bottom"`, below 600 px) a grabber shows above the title and dragging the header down
+closes the dialog: a long drag or a quick flick calls `onClose`, a short drag springs back, and so does a drag whose close you
+refuse in `onClose`. Buttons in the header keep their own pointer. It applies only where an outside click would also close:
+`closeOnOutsideClick` on, not `busy`, and `role="dialog"` (never `alertdialog`). Set `swipeToClose={false}` to turn it off. The
+gesture is never the only way out: Escape and the close button stay. The panel carries no transform at rest, so popovers and other
+`position: fixed` content inside the dialog keep their viewport positioning.
+
 ### Dismissal policy
 
 Three ways out, each one switchable: the close button (`hideCloseButton`), Escape (`closeOnEscape`) and a click on the
@@ -197,14 +206,15 @@ otherwise share a row in the sheet.
 
 Follows the WAI-ARIA APG [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) pattern.
 
-| Key / action          | Behaviour                                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------------- |
-| Tab                   | Moves to the next tabbable element in the dialog; from the last one, wraps to the first.           |
-| Shift+Tab             | Moves backwards; from the first (or the dialog itself), wraps to the last.                         |
-| Escape                | Calls `onClose` (when `closeOnEscape`). Only the topmost of stacked dialogs reacts.                |
-| Click on the backdrop | Calls `onClose` (when `closeOnOutsideClick`) if the press also began there.                        |
-| Open                  | Focus moves to the dialog (named by its title). `initialFocus="first"` or a ref chooses otherwise. |
-| Close                 | Focus returns to the element that opened it.                                                       |
+| Key / action          | Behaviour                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Tab                   | Moves to the next tabbable element in the dialog; from the last one, wraps to the first.                         |
+| Shift+Tab             | Moves backwards; from the first (or the dialog itself), wraps to the last.                                       |
+| Escape                | Calls `onClose` (when `closeOnEscape`). Only the topmost of stacked dialogs reacts.                              |
+| Click on the backdrop | Calls `onClose` (when `closeOnOutsideClick`) if the press also began there.                                      |
+| Drag the header down  | Phone bottom sheet only (`swipeToClose`): closes past a threshold, springs back otherwise. Not a keyboard route. |
+| Open                  | Focus moves to the dialog (named by its title). `initialFocus="first"` or a ref chooses otherwise.               |
+| Close                 | Focus returns to the element that opened it.                                                                     |
 
 - `role="dialog"` (or `alertdialog`), `aria-modal="true"`, `aria-labelledby` the title and `aria-describedby` the
   description when there is one.

@@ -10,7 +10,9 @@ import {
   type CSSProperties,
   type HTMLAttributes,
   type ReactNode,
+  type PointerEvent as ReactPointerEvent,
   type RefObject,
+  type TransitionEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { Reveal } from "../../motion/Reveal";
@@ -22,6 +24,7 @@ import { useTopModalDialog } from "./topModalDialog";
 import { useHeaderBlockSize } from "./useHeaderBlockSize";
 import { useNativeDialog } from "./useNativeDialog";
 import { useMediaQuery } from "../useMediaQuery";
+import { useSheetDrag } from "../AppShell/useSheetDrag";
 import { CloseIcon } from "../Icon/icons";
 import styles from "./Modal.module.css";
 
@@ -136,6 +139,12 @@ export type ModalProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "role"> 
   role?: "dialog" | "alertdialog";
   /** Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported. */
   container?: Element | DocumentFragment | null;
+  /**
+   * On a phone bottom sheet, dragging the header down closes the dialog (swipe to close); a short drag springs back. It
+   * applies only where an outside click would also close: `closeOnOutsideClick` on, not `busy`, and `role="dialog"`.
+   * Escape and the close button remain the keyboard route. Default `true`; turn it off to keep the sheet in place.
+   */
+  swipeToClose?: boolean;
   /** Inner scroll containers to lock instead of the document, for app shells that scroll an inner pane. */
   scrollContainerSelectors?: readonly string[];
 };
@@ -176,6 +185,7 @@ export function Modal({
   closeOnOutsideClick = true,
   initialFocus = "container",
   role = "dialog",
+  swipeToClose = true,
   scrollContainerSelectors,
   container,
   classNames,
@@ -229,6 +239,59 @@ export function Modal({
     if (!busy) onClose();
   };
   // Declared before the focus trap so the native dialog is open (and focusable) when the trap moves focus into it.
+  const swipe =
+    swipeToClose &&
+    phone &&
+    sheetPlacement === "bottom" &&
+    role === "dialog" &&
+    closeOnOutsideClick &&
+    !busy &&
+    open;
+  const sheetDrag = useSheetDrag(requestClose, swipe);
+  const clearSwipe = () => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    delete panel.dataset.swipeActive;
+    panel.style.removeProperty("--lufia-sheet-drag");
+  };
+  // A kept or native panel survives a close: a stale offset must not reappear when it opens again.
+  useEffect(() => {
+    if (open) clearSwipe();
+  }, [open]);
+  const headerDrag = swipe
+    ? {
+        ...sheetDrag,
+        // The panel rests with no transform (it would contain `position: fixed` descendants); it takes the drag transform
+        // only once a drag has begun.
+        onPointerMove(event: ReactPointerEvent<HTMLElement>) {
+          sheetDrag.onPointerMove(event);
+          const panel = panelRef.current;
+          if (panel && panel.dataset.dragging !== undefined) panel.dataset.swipeActive = "";
+        },
+        onPointerUp(event: ReactPointerEvent<HTMLElement>) {
+          sheetDrag.onPointerUp(event);
+          releaseSwipe();
+        },
+        onPointerCancel(event: ReactPointerEvent<HTMLElement>) {
+          sheetDrag.onPointerCancel(event);
+          releaseSwipe();
+        },
+      }
+    : {};
+  // A spring back that has no transition (reduced motion) never ends one: drop the transform at once.
+  function releaseSwipe() {
+    queueMicrotask(() => {
+      const panel = panelRef.current;
+      if (!panel || panel.dataset.dragging !== undefined || panel.dataset.swipeActive === undefined) return;
+      if (panel.style.getPropertyValue("--lufia-sheet-drag") !== "0px") return;
+      const durations = getComputedStyle(panel).transitionDuration.split(",").map(parseFloat);
+      if (durations.every((value) => value === 0)) clearSwipe();
+    });
+  }
+  const onSwipeTransitionEnd = (event: TransitionEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
+    if (event.currentTarget.dataset.dragging === undefined) clearSwipe();
+  };
   const nativeDialog = useNativeDialog(panelRef, native && (visible || leaving), {
     onCloseRequest: requestClose,
     closeOnCancel: closeOnEscape,
@@ -274,6 +337,14 @@ export function Modal({
     "data-scroll-shadow": scrollShadow ? "" : undefined,
     style: customSize ? ({ ...style, "--lufia-modal-size": customSize } as CSSProperties) : style,
     "data-lufia-part": "panel",
+    onTransitionEnd: (event: TransitionEvent<HTMLElement>) => {
+      rest.onTransitionEnd?.(event as TransitionEvent<HTMLDivElement>);
+      onSwipeTransitionEnd(event);
+    },
+    onTransitionCancel: (event: TransitionEvent<HTMLElement>) => {
+      rest.onTransitionCancel?.(event as TransitionEvent<HTMLDivElement>);
+      onSwipeTransitionEnd(event);
+    },
     className: cx(styles.panel, native && styles.native, className, classNames?.panel),
   };
 
@@ -282,7 +353,13 @@ export function Modal({
 
   const content = (
     <>
-      <header ref={headerRef} className={cx(styles.header, classNames?.header)} data-lufia-part="header">
+      <header
+        ref={headerRef}
+        className={cx(styles.header, classNames?.header)}
+        data-lufia-part="header"
+        data-swipe={swipe ? "" : undefined}
+        {...headerDrag}
+      >
         <h2
           id={titleId}
           className={cx(styles.title, classNames?.title)}

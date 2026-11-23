@@ -62,6 +62,7 @@ containment, scroll lock, an inert background and an enter/exit motion.
 | `initialFocus` | `RefObject<HTMLElement \| null> \| "container" \| "first"` | no | `"container"` | Where focus lands on open. Default: the dialog itself (named by the title, no keyboard pops up). |
 | `role` | `"dialog" \| "alertdialog"` | no | `"dialog"` | `alertdialog` for an interruption that needs an answer (see `ConfirmDialog`). Default `dialog`. |
 | `container` | `Element \| DocumentFragment \| null` | no |  | Where the modal is portaled. Defaults to `document.body`. Pass an element of the same document, for example a preview frame; a container inside another document (an iframe) is not supported. |
+| `swipeToClose` | `boolean` | no | `true` | On a phone bottom sheet, dragging the header down closes the dialog (swipe to close); a short drag springs back. It applies only where an outside click would also close: `closeOnOutsideClick` on, not `busy`, and `role="dialog"`. Escape and the close button remain the keyboard route. Default `true`; turn it off to keep the sheet in place. |
 | `scrollContainerSelectors` | `readonly string[]` | no |  | Inner scroll containers to lock instead of the document, for app shells that scroll an inner pane. |
 
 Other native element attributes pass through to the root element.
@@ -117,7 +118,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-modal-backdrop`, `--lufia-modal-body-padding`, `--lufia-modal-close-size`, `--lufia-modal-footer-padding`, `--lufia-modal-header-padding`, `--lufia-modal-radius`, `--lufia-modal-scroll-shadow`, `--lufia-modal-sheet-offset`, `--lufia-modal-sheet-radius`, `--lufia-modal-size`, `--lufia-modal-title-size`, `--lufia-motion-distance-rise`, `--lufia-motion-distance-travel`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-drawer`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-motion-scale-enter-subtle`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-space-12`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-z-modal`, `--lufia-z-overlay`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-bg-canvas`, `--lufia-color-bg-surface-raised`, `--lufia-color-bg-surface-solid`, `--lufia-color-border-strong`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-family-display`, `--lufia-font-line-height-normal`, `--lufia-font-line-height-tight`, `--lufia-font-size-md`, `--lufia-font-weight-semibold`, `--lufia-modal-backdrop`, `--lufia-modal-body-padding`, `--lufia-modal-close-size`, `--lufia-modal-footer-padding`, `--lufia-modal-header-padding`, `--lufia-modal-radius`, `--lufia-modal-scroll-shadow`, `--lufia-modal-sheet-offset`, `--lufia-modal-sheet-radius`, `--lufia-modal-size`, `--lufia-modal-title-size`, `--lufia-motion-distance-rise`, `--lufia-motion-distance-travel`, `--lufia-motion-duration-enter`, `--lufia-motion-duration-exit`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-drawer`, `--lufia-motion-easing-in`, `--lufia-motion-easing-out`, `--lufia-motion-scale-enter-subtle`, `--lufia-motion-scale-press`, `--lufia-opacity-disabled`, `--lufia-radius-full`, `--lufia-radius-md`, `--lufia-radius-panel`, `--lufia-shadow-lg`, `--lufia-sheet-drag`, `--lufia-space-12`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-space-5`, `--lufia-z-modal`, `--lufia-z-overlay`.
 
 ## Content guidelines
 
@@ -154,6 +155,7 @@ primary action sits on top.
 - `components-overlays-modal--native-top-layer`
 - `components-overlays-modal--native-keep-mounted`
 - `components-overlays-modal--keep-mounted`
+- `components-overlays-modal--swipe-to-close-phone`
 - `components-overlays-modal--phone`
 - `components-overlays-modal--stacked-modals`
 - `components-overlays-modal--native-then-portal-modal`

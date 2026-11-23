@@ -82,7 +82,10 @@ Under `@media (prefers-reduced-motion: reduce)`, `tokens.css` sets every `--lufi
   `transform: none`. The exceptions are the sheets that can be swiped down (`NavSheet`, and the `NotificationCenter` and `MoreActions`
   sheets), which rest on their own drag transform (`translateY(var(--lufia-sheet-drag, 0))`, driven by `useSheetDrag`);
   each sits inside a fixed layer, so the sheet's own position is unaffected; a `position: fixed` element rendered inside one is positioned against the sheet. Phone sheets enter with `--lufia-motion-easing-drawer`; `Modal`
-  sheets slide from their anchored edge. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
+  sheets slide from their anchored edge. A `Modal` phone bottom sheet can also be swiped down by its header (`swipeToClose`), but its
+  panel holds popovers and other fixed content, so it rests with `transform: none`: the drag writes `--lufia-sheet-drag` and sets
+  `data-swipe-active`, which applies the transform only while a drag or its spring back is under way and is removed on `transitionend`
+  (at once when the spring back has no transition, under reduced motion) and whenever the modal opens. Exits (`*-out`) may hold their last frame because the element is about to unmount. A test
   (`src/test/animationFill.test.ts`) fails on any entrance that animates `transform` and fills forwards.
 - **Keyframes animate `from` only**, so the resting state is the end state and a disabled animation leaves the content
   visible.
