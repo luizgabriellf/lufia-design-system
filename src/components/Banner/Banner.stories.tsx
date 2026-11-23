@@ -80,14 +80,14 @@ export const WithAction: Story = {
   },
 };
 
-/** The dismiss button is named by `dismissLabel`; the banner collapses by composing `Collapse`. */
+/** The dismiss button is named by `dismissLabel`; a controlled `open` fades the banner out, and `Collapse` eases the height. */
 export const Dismissible: Story = {
   render: (args) => {
     const [open, setOpen] = useState(true);
     return (
       <div>
         <Collapse open={open}>
-          <Banner {...args} onDismiss={() => setOpen(false)} dismissLabel="Dismiss message" />
+          <Banner {...args} open={open} onDismiss={() => setOpen(false)} dismissLabel="Dismiss message" />
         </Collapse>
         {open ? null : <Button onClick={() => setOpen(true)}>Show the banner again</Button>}
       </div>

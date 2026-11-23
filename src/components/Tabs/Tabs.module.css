@@ -96,6 +96,18 @@
   display: none;
 }
 
+/* A panel that appears because another tab was chosen fades in. `data-switched` is set only after the chosen tab has changed,
+   so the first paint of the page stays still. From only, filled backwards. */
+.panel[data-switched]:not([hidden]) {
+  animation: tabs-panel-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
+}
+
+@keyframes tabs-panel-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .tab:focus-visible,
 .panel:focus-visible {
   outline: var(--lufia-tabs-focus-width, var(--lufia-border-width-thick)) solid var(--lufia-color-focus-ring);

@@ -14,9 +14,19 @@
   font-size: var(--lufia-font-size-xs);
   font-weight: var(--lufia-font-weight-medium);
   line-height: var(--lufia-font-line-height-normal);
+
+  /* Enters whenever the error is first painted, a form that loads already invalid included. From only, filled backwards. */
+  animation: field-error-in var(--lufia-motion-duration-fast) var(--lufia-motion-easing-out) backwards;
 }
 
 .errorIcon {
   flex: 0 0 auto;
   margin-block-start: 0.0625rem;
+}
+
+@keyframes field-error-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--lufia-motion-distance-nudge)));
+  }
 }

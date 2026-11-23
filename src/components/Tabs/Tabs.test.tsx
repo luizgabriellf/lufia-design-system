@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -266,5 +268,52 @@ describe("Tabs as links", () => {
   it("has no axe violations", async () => {
     const { container } = render(<Tabs label="Sections" items={links} value="a" />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe("panel switch motion", () => {
+    it("marks no panel on the first render", () => {
+      render(<Tabs label="Sections" items={items} keepMounted />);
+      for (const panel of screen.getAllByRole("tabpanel", { hidden: true })) {
+        expect(panel).not.toHaveAttribute("data-switched");
+      }
+    });
+
+    it("marks the panel that appears after a click", async () => {
+      const user = userEvent.setup();
+      render(<Tabs label="Sections" items={items} />);
+      await user.click(screen.getByRole("tab", { name: "Work" }));
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Work panel");
+      expect(screen.getByRole("tabpanel")).toHaveAttribute("data-switched", "");
+    });
+
+    it("marks the panel that appears after an arrow key", async () => {
+      const user = userEvent.setup();
+      render(<Tabs label="Sections" items={items} />);
+      await user.tab();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Work panel");
+      expect(screen.getByRole("tabpanel")).toHaveAttribute("data-switched", "");
+    });
+
+    it("marks kept-mounted panels once the chosen tab changes", async () => {
+      const user = userEvent.setup();
+      render(<Tabs label="Sections" items={items} keepMounted />);
+      await user.click(screen.getByRole("tab", { name: "Work" }));
+      const shown = screen.getByRole("tabpanel");
+      expect(shown).toHaveTextContent("Work panel");
+      expect(shown).toHaveAttribute("data-switched", "");
+      expect(shown).not.toHaveAttribute("hidden");
+    });
+
+    it("fades the shown panel in with opacity only, from only, filled backwards", () => {
+      const css = readFileSync(resolve(__dirname, "Tabs.module.css"), "utf8");
+      const rule = /\.panel\[data-switched\]:not\(\[hidden\]\)\s*\{([^}]*)\}/s.exec(css)?.[1] ?? "";
+      expect(rule).toMatch(
+        /animation:\s*tabs-panel-in var\(--lufia-motion-duration-fast\) var\(--lufia-motion-easing-out\) backwards/,
+      );
+      const frames = /@keyframes tabs-panel-in\s*\{([\s\S]*?\n\})/.exec(css)?.[1] ?? "";
+      expect(frames).toMatch(/from\s*\{\s*opacity:\s*0;\s*\}/);
+      expect(frames).not.toMatch(/transform/);
+    });
   });
 });

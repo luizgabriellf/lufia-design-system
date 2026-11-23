@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createRef } from "react";
+import { createRef, useState } from "react";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { axe } from "../../test/axe";
+import { endAnimation, mockReducedMotion, stubExitAnimation } from "../../test/motion";
 import { BANNER_VARIANTS, Banner, type BannerVariant } from "./Banner";
 
 describe("Banner ref and focusOnMount", () => {
@@ -299,5 +300,111 @@ describe("Banner", () => {
         unmount();
       }
     }
+  });
+});
+
+describe("Banner open", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("is shown by default", () => {
+    render(<Banner>Message</Banner>);
+    expect(screen.getByRole("status")).toHaveAttribute("data-state", "open");
+    expect(screen.getByRole("status")).not.toHaveAttribute("inert");
+  });
+
+  it("renders nothing when it mounts with open false", () => {
+    const { container } = render(<Banner open={false}>Message</Banner>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("stays mounted, inert and marked closed while it fades out, and unmounts on animationend", () => {
+    mockReducedMotion(false);
+    stubExitAnimation("banner-out");
+    const { rerender } = render(<Banner open>Message</Banner>);
+    rerender(<Banner open={false}>Message</Banner>);
+    const banner = screen.getByRole("status", { hidden: true });
+    expect(banner).toHaveAttribute("data-state", "closed");
+    expect(banner).toHaveAttribute("inert");
+    // An animation that bubbles up from a child does not end the exit.
+    act(() => endAnimation(banner.querySelector("div")!));
+    expect(banner).toBeInTheDocument();
+    act(() => endAnimation(banner));
+    expect(screen.queryByRole("status", { hidden: true })).toBeNull();
+  });
+
+  it("unmounts at once under reduced motion", () => {
+    mockReducedMotion(true);
+    stubExitAnimation("banner-out");
+    const { container, rerender } = render(<Banner open>Message</Banner>);
+    rerender(<Banner open={false}>Message</Banner>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("goes back to open when asked for again during the exit", () => {
+    mockReducedMotion(false);
+    stubExitAnimation("banner-out");
+    const { rerender } = render(<Banner open>Message</Banner>);
+    rerender(<Banner open={false}>Message</Banner>);
+    rerender(<Banner open>Message</Banner>);
+    const banner = screen.getByRole("status");
+    expect(banner).toHaveAttribute("data-state", "open");
+    expect(banner).not.toHaveAttribute("inert");
+  });
+
+  it("dismisses through onDismiss with a controlled open", async () => {
+    mockReducedMotion(true);
+    const user = userEvent.setup();
+    function Controlled() {
+      const [open, setOpen] = useState(true);
+      return (
+        <Banner open={open} onDismiss={() => setOpen(false)} dismissLabel="Dismiss">
+          Message
+        </Banner>
+      );
+    }
+    render(<Controlled />);
+    await user.click(screen.getByRole("button", { name: "Dismiss" }));
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("focuses when it is first shown, not while it mounts closed", () => {
+    mockReducedMotion(true);
+    const { rerender } = render(
+      <Banner open={false} focusOnMount>
+        Message
+      </Banner>,
+    );
+    rerender(
+      <Banner open focusOnMount>
+        Message
+      </Banner>,
+    );
+    expect(screen.getByRole("status")).toHaveFocus();
+  });
+
+  it("keeps the ref working across a reopen and has no axe violations while open", async () => {
+    mockReducedMotion(true);
+    const ref = createRef<HTMLDivElement>();
+    const { container, rerender } = render(<Banner ref={ref}>Message</Banner>);
+    expect(await axe(container)).toHaveNoViolations();
+    rerender(
+      <Banner ref={ref} open={false}>
+        Message
+      </Banner>,
+    );
+    expect(ref.current).toBeNull();
+    rerender(<Banner ref={ref}>Message</Banner>);
+    expect(ref.current).toBe(screen.getByRole("status"));
+  });
+
+  it("animates out with the exit tokens, without a pointer, mirroring the enter", () => {
+    const css = readFileSync(resolve(__dirname, "Banner.module.css"), "utf8");
+    const closed = /\.root\[data-state="closed"\]\s*\{([^}]*)\}/s.exec(css)?.[1] ?? "";
+    expect(closed).toMatch(/banner-out var\(--lufia-motion-duration-exit\) var\(--lufia-motion-easing-in\)/);
+    expect(closed).toMatch(/pointer-events:\s*none/);
+    expect(css).toMatch(/@keyframes banner-out\s*\{\s*to\s*\{[^}]*opacity:\s*0/s);
   });
 });

@@ -83,7 +83,7 @@ Keyboard:
 - Roving tabindex: exactly one tab is in the tab order. With manual activation, after focus leaves the list it comes back to the chosen tab, not to the last one browsed.
 - The panel is focusable (`tabindex="0"`), so a panel with no focusable content is still reachable by keyboard.
 - The chosen tab has a bar on the edge next to the panel as well as stronger text, so it reads without colour. The focus ring is visible, uses the focus-ring token and is kept in `forced-colors` mode.
-- Colour changes are the only transition and are removed under `prefers-reduced-motion`.
+- Colour changes are a transition, and a panel that appears because another tab was chosen fades in (opacity only, not on the first render). Both are instant under `prefers-reduced-motion`.
 - Tabs are at least 2.5rem tall, and 2.75rem under a coarse pointer.
 
 ## Motion
@@ -92,7 +92,7 @@ Its stylesheet has a `prefers-reduced-motion` branch.
 
 ## Tokens
 
-Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-tabs-disabled-opacity`, `--lufia-tabs-focus-width`, `--lufia-tabs-gap`, `--lufia-tabs-indicator-color`, `--lufia-tabs-indicator-size`, `--lufia-tabs-panel-gap`, `--lufia-tabs-panel-padding`, `--lufia-tabs-selected-color`, `--lufia-tabs-tab-min-block-size`, `--lufia-tabs-tab-padding-block`, `--lufia-tabs-tab-padding-inline`, `--lufia-target-touch`.
+Reads these semantic tokens: `--lufia-border-width-thick`, `--lufia-border-width-thin`, `--lufia-color-accent-border`, `--lufia-color-border-subtle`, `--lufia-color-focus-ring`, `--lufia-color-text-default`, `--lufia-color-text-muted`, `--lufia-font-size-sm`, `--lufia-font-weight-bold`, `--lufia-font-weight-medium`, `--lufia-motion-duration-fast`, `--lufia-motion-duration-instant`, `--lufia-motion-easing-out`, `--lufia-motion-scale-press-subtle`, `--lufia-opacity-disabled`, `--lufia-space-1`, `--lufia-space-2`, `--lufia-space-3`, `--lufia-space-4`, `--lufia-tabs-disabled-opacity`, `--lufia-tabs-focus-width`, `--lufia-tabs-gap`, `--lufia-tabs-indicator-color`, `--lufia-tabs-indicator-size`, `--lufia-tabs-panel-gap`, `--lufia-tabs-panel-padding`, `--lufia-tabs-selected-color`, `--lufia-tabs-tab-min-block-size`, `--lufia-tabs-tab-padding-block`, `--lufia-tabs-tab-padding-inline`, `--lufia-target-touch`.
 
 ## Content guidelines
 

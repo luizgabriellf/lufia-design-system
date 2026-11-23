@@ -98,6 +98,14 @@ export function Tabs({
     defaultValue ?? enabled[0]?.key,
     onValueChange ? (next) => next !== undefined && onValueChange(next) : undefined,
   );
+  // Set once the chosen tab differs from the one at mount, so the first paint of a page never animates. Derived while
+  // rendering (no effect pass), and absent on the first render, so server and client markup match.
+  const [seenValue, setSeenValue] = useState(value);
+  const [switched, setSwitched] = useState(false);
+  if (value !== seenValue) {
+    setSeenValue(value);
+    setSwitched(true);
+  }
   // Where focus is inside the list (manual activation can focus a tab that is not the chosen one); null when it is outside.
   const [stop, setStop] = useState<string | null>(null);
   const rootClass = [styles.root, className].filter(Boolean).join(" ");
@@ -227,6 +235,7 @@ export function Tabs({
             aria-labelledby={tabId(item.key)}
             className={styles.panel}
             hidden={!selected}
+            data-switched={switched ? "" : undefined}
             tabIndex={0}
           >
             {item.panel}
