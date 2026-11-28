@@ -22,7 +22,7 @@ segment.
 
 - Moving between pages or sibling views with their own content: use `PeerNav` (links or tabs).
 - On and off: use `Switch`.
-- More than four options, or long labels: use `RadioGroup` or `Select`.
+- More than four options, or labels longer than a few words: use `RadioGroup` or `Select`.
 
 ## API
 
@@ -100,6 +100,7 @@ the dimension being chosen ("View", "Billing period").
 - `components-forms-segmentedtoggle--fill`
 - `components-forms-segmentedtoggle--long-text`
 - `components-forms-segmentedtoggle--phone-320`
+- `components-forms-segmentedtoggle--narrow-container`
 - `components-forms-segmentedtoggle--right-to-left`
 - `components-forms-segmentedtoggle--all-themes`
 - `components-forms-segmentedtoggle--status-picker`

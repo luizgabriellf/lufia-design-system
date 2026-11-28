@@ -308,6 +308,33 @@ describe("SegmentedToggle", () => {
     });
   });
 
+  describe("narrow containers", () => {
+    const priorities: SegmentedToggleOption[] = [
+      { value: "low", label: "Low" },
+      { value: "normal", label: "Normal" },
+      { value: "high", label: "High" },
+      { value: "urgent", label: "Urgent" },
+    ];
+
+    it("sets data-width on the group for both widths, fit by default", () => {
+      const { rerender } = render(<SegmentedToggle label="Priority" options={priorities} />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-width", "fit");
+      rerender(<SegmentedToggle label="Priority" options={priorities} width="fill" />);
+      expect(screen.getByRole("radiogroup")).toHaveAttribute("data-width", "fill");
+    });
+
+    it("keeps one radio per option with the full label text and the roving tab stop", async () => {
+      render(<SegmentedToggle label="Priority" options={priorities} width="fill" defaultValue="high" />);
+      const radios = screen.getAllByRole("radio");
+      expect(radios.map((radio) => radio.textContent)).toEqual(["Low", "Normal", "High", "Urgent"]);
+      expect(radios.map((radio) => radio.tabIndex)).toEqual([-1, -1, 0, -1]);
+      radios[2]!.focus();
+      await userEvent.setup().keyboard("{ArrowRight}{ArrowRight}");
+      expect(radios[0]).toBeChecked();
+      expect(radios[0]).toHaveFocus();
+    });
+  });
+
   describe("tone and size", () => {
     const toned: SegmentedToggleOption[] = [
       { value: "pass", label: "Pass", tone: "success" },

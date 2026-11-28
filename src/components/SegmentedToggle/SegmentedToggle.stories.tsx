@@ -63,6 +63,26 @@ export const Phone320: Story = {
   args: { width: "fill" },
   globals: { viewport: { value: "w320", isRotated: false } },
 };
+const priorityOptions: SegmentedToggleOption[] = [
+  { value: "low", label: "Low" },
+  { value: "normal", label: "Normal" },
+  { value: "high", label: "High" },
+  { value: "urgent", label: "Urgent" },
+];
+
+/**
+ * Labels are never truncated. When the segments do not fit one row at their natural width, they wrap onto further rows,
+ * in a container narrower than the content, for both widths.
+ */
+export const NarrowContainer: Story = {
+  args: { label: "Priority", options: priorityOptions, defaultValue: "normal" },
+  render: (args) => (
+    <div style={{ display: "grid", gap: "1rem", inlineSize: "11rem" }} data-testid="narrow-container">
+      <SegmentedToggle {...args} width="fit" label="Priority (fit)" />
+      <SegmentedToggle {...args} width="fill" label="Priority (fill)" />
+    </div>
+  ),
+};
 export const RightToLeft: Story = {
   decorators: [
     (Story) => (

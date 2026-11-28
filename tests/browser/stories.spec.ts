@@ -1377,6 +1377,30 @@ test.describe("segmented toggle status picker", () => {
   }
 });
 
+test.describe("segmented toggle narrow container", () => {
+  test("wraps onto several rows and never truncates a label, for both widths", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openStory(page, "components-forms-segmentedtoggle--narrow-container");
+    const groups = page.getByRole("radiogroup");
+    await expect(groups).toHaveCount(2);
+    for (const index of [0, 1]) {
+      const group = groups.nth(index);
+      const metrics = await group.evaluate((root) => {
+        const segments = [...root.querySelectorAll<HTMLElement>('[role="radio"]')];
+        const labels = [...root.querySelectorAll<HTMLElement>('[role="radio"] > span:last-of-type')];
+        return {
+          rows: new Set(segments.map((segment) => segment.offsetTop)).size,
+          clipped: labels.some((label) => label.scrollWidth > label.clientWidth),
+          overflows: root.scrollWidth > root.clientWidth,
+        };
+      });
+      expect(metrics.rows).toBeGreaterThan(1);
+      expect(metrics.clipped).toBe(false);
+      expect(metrics.overflows).toBe(false);
+    }
+  });
+});
+
 test.describe("command palette server search", () => {
   test("shows the searching row while loading and keeps the arrows working beside a notice", async ({
     page,
