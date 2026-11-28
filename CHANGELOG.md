@@ -1,5 +1,11 @@
 # @lufia/design-system
 
+## 0.81.1
+
+### Patch Changes
+
+- [#297](https://github.com/luizgabriellf/lufia-design-system/pull/297) [`8381a77`](https://github.com/luizgabriellf/lufia-design-system/commit/8381a773ff14a2031873403f417b7e694a12893c) Thanks [@luizgabriellf](https://github.com/luizgabriellf)! - SegmentedToggle wraps its segments onto further rows when the container is narrower than their natural width, for both `width="fit"` and `width="fill"`, instead of truncating labels with an ellipsis or overflowing.
+
 ## 0.81.0
 
 ### Minor Changes
