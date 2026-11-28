@@ -47,6 +47,16 @@ With `name`, the chosen value is submitted with the form.
 <Canvas of={Stories.Disabled} />
 <Canvas of={Stories.Fill} />
 
+### Narrow containers
+
+Labels are never truncated. While the segments fit one row at their natural width they stay on one row; when the container
+is narrower (a phone, a side panel) the segments wrap onto further rows, and each row shares its width between its cells.
+This applies to both `width="fit"` and `width="fill"`. A single label wider than the whole row wraps onto a second line.
+The wrap is plain flex wrapping with a natural-width basis, so no breakpoint or container query is involved and the one-row
+look is unchanged whenever everything fits; the last row may hold fewer cells (for example 3 and 1 for four options).
+
+<Canvas of={Stories.NarrowContainer} />
+
 ### Status picker
 
 A per-row picker where a fresh row has no status. `value={null}` (controlled) means nothing is chosen: no segment is checked and
@@ -127,7 +137,7 @@ segments. It is a radiogroup and not a tablist because it chooses a value and do
 
 - Moving between pages or sibling views with their own content: use `PeerNav` (links or tabs).
 - On and off: use `Switch`.
-- More than four options, or long labels: use `RadioGroup` or `Select`.
+- More than four options, or labels longer than a few words: use `RadioGroup` or `Select`.
 
 ### Content guidelines
 

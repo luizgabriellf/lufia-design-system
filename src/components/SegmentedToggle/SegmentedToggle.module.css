@@ -1,6 +1,10 @@
 .root {
   position: relative;
   display: inline-flex;
+
+  /* Segments keep one row while they fit at their natural width; otherwise the rest wrap onto further rows (never truncate). */
+  flex-wrap: wrap;
+  gap: 0.125rem;
   box-sizing: border-box;
   inline-size: fit-content;
   max-inline-size: 100%;
@@ -39,7 +43,7 @@
   position: relative;
   z-index: 1;
   display: inline-flex;
-  flex: 0 1 auto;
+  flex: 1 1 max-content;
   align-items: center;
   justify-content: center;
   gap: var(--lufia-space-2);
@@ -57,7 +61,7 @@
   font-size: var(--lufia-font-size-sm);
   font-weight: var(--lufia-font-weight-semibold);
   line-height: var(--lufia-font-line-height-tight);
-  white-space: nowrap;
+  text-align: center;
   cursor: pointer;
   touch-action: manipulation;
   transition:
@@ -66,8 +70,10 @@
 }
 
 .label {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  min-inline-size: 0;
+
+  /* A single label wider than the whole row wraps onto a second line instead of being cut with an ellipsis. */
+  overflow-wrap: break-word;
 }
 
 .icon {
@@ -106,10 +112,6 @@
   .segment:hover:not(:disabled, [aria-checked="true"]) {
     color: var(--lufia-color-text-default);
   }
-}
-
-.root[data-width="fill"] .segment {
-  flex: 1 1 0;
 }
 
 @media (forced-colors: active) {

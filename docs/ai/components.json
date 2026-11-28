@@ -17144,6 +17144,10 @@
             "id": "components-forms-segmentedtoggle--phone-320"
           },
           {
+            "export": "NarrowContainer",
+            "id": "components-forms-segmentedtoggle--narrow-container"
+          },
+          {
             "export": "RightToLeft",
             "id": "components-forms-segmentedtoggle--right-to-left"
           },
@@ -17170,7 +17174,7 @@
         "whenNotToUse": [
           "Moving between pages or sibling views with their own content: use `PeerNav` (links or tabs).",
           "On and off: use `Switch`.",
-          "More than four options, or long labels: use `RadioGroup` or `Select`."
+          "More than four options, or labels longer than a few words: use `RadioGroup` or `Select`."
         ],
         "contentGuidelines": "Labels are one or two words and parallel (\"List\", \"Board\"). They name what is shown, not the action. The group `label` names\nthe dimension being chosen (\"View\", \"Billing period\")."
       },
